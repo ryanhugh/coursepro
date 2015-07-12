@@ -1,0 +1,40 @@
+{
+    "wl11gp.neu.edu": [
+        {
+            "url": "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in={{term}}&subj_in={{subj}}&crse_in={{crse}}&schd_in={{schd}}",
+            "module":"ellucianSectionList",
+            "data": [
+                {
+                	"term":"11105",
+                	"year":"2015",
+                	"subj":"EECE",
+                	"crse":"2160",
+                	"schd":"%",
+                	"totalSeats":100,
+                	"totalOpenSeats":5,
+                	"totalSections":6,
+                	"sectionsOpenSeats":1,
+                	"emails":["rysquash@gmail.com"],
+                	"ips":["192.168.1.1"]
+                }
+            ]
+        },
+        {
+        	"url":"https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in={{term}}&crn_in={{crn}}",
+        	"module":"ellucianSection",
+        	"data":[
+                {
+                	"term":"11105",
+                	"crn":"15165",
+                	"year":"2015",
+                	"totalSeats":100,
+                	"totalOpenSeats":5,
+                	"totalSections":6,
+                	"sectionsOpenSeats":1,
+                	"emails":"rysquash@gmail.com",
+                	"ips":["192.168.1.1"]
+                }
+            ]
+        }
+    ]
+}
