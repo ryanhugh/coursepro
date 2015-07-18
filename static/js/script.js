@@ -19,30 +19,47 @@ function setUrlStatus (data) {
 	};
 
 	var reasonDict = {
-		'SERVERDOWN': 
-		{
-			labelClass:'label-warning',
-			labelText:'Warning',
-			reason:"Uh oh! Couln't connect to the server..."
-		},
 		'LOADING': 
 		{
 			labelClass:'label-default',
 			labelText:'Loading...',
 			reason:""
 		},
-		'ENOTFOUND': {
-			labelClass:'label-danger',
-			labelText:'Uh Oh!',
-			reason:data.hostname+ ' was not found.'
-
+		'SUCCESS':
+		{
+			labelClass:'label-success',
+			labelText:'Huzzah!',
+			reason:data.seatsRemaining + ' open seats found in '+ data.name + ' ('+data.seatsCapacity + ' total seats)'
 		},
-		'NOSUPPORT':{
+		'SERVERDOWN': 
+		{
+			labelClass:'label-warning',
+			labelText:'Uh oh!',
+			reason:"Couln't connect to the server..."
+		},
+		'NOSUPPORT':
+		{
 			labelClass:'label-warning',
 			labelText:'Warning',
 			reason:'Hmmm... '+data.hostname+' is not supported at the moment. Want to add support for it on github?'
+		},
+		'ENOTFOUND': 
+		{
+			labelClass:'label-danger',
+			labelText:'Uh Oh!',
+			reason:data.hostname+ ' was not found.'
+		},
+		'UNKNOWN':
+		{
+			labelClass:'label-default',
+			labelText:'...',
+			reason:'Something bad happened... (unknown state '+data.reason+')'
 		}
 	}
+
+	if (!reasonDict[data.reason]) {
+		data.reason='UNKNOWN'
+	};
 
 
 
@@ -108,7 +125,7 @@ function onURLChange (inputField) {
 	        //[green] Success!  '5 sections of %s found (1 with open spots)'
 	        //[yellow] Hmmm... %s is not supported at the moment. Want to add support for it on github?
 	        
-		}
+	    }
 	}
 	xmlhttp.open("POST", location.protocol + '//' + location.host+'/urlDetails', true);
 	xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");

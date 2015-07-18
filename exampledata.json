@@ -1,40 +1,111 @@
+
+
+with the database:
 {
-    "wl11gp.neu.edu": [
-        {
-            "url": "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in={{term}}&subj_in={{subj}}&crse_in={{crse}}&schd_in={{schd}}",
-            "module":"ellucianSectionList",
-            "data": [
-                {
-                	"term":"11105",
-                	"year":"2015",
-                	"subj":"EECE",
-                	"crse":"2160",
-                	"schd":"%",
-                	"totalSeats":100,
-                	"totalOpenSeats":5,
-                	"totalSections":6,
-                	"sectionsOpenSeats":1,
-                	"emails":["rysquash@gmail.com"],
-                	"ips":["192.168.1.1"]
-                }
-            ]
-        },
-        {
-        	"url":"https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in={{term}}&crn_in={{crn}}",
-        	"module":"ellucianSection",
-        	"data":[
-                {
-                	"term":"11105",
-                	"crn":"15165",
-                	"year":"2015",
-                	"totalSeats":100,
-                	"totalOpenSeats":5,
-                	"totalSections":6,
-                	"sectionsOpenSeats":1,
-                	"emails":"rysquash@gmail.com",
-                	"ips":["192.168.1.1"]
-                }
-            ]
-        }
+    //same between all courses with this url
+    "hostname":"wl11gp.neu.edu",
+    "formattableURL":"https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in={{term}}&subj_in={{subj}}&crse_in={{crse}}&schd_in={{schd}}",
+    "module": "ellucianSectionList",
+
+    //static data for each section
+    "term": "11105",
+    "crse": "2160",
+    "year": "2015",
+    "subj": "EECE",
+    "schd": "%",
+    "description":"long string about the course etc...",
+
+    //seat info on last check
+    "lastUpdateTime":"156484561", //utc sec since jan 1 1970
+    "sections":["id1","id2"],
+
+    "ips": [
+        "192.168.1.1"
+    ],
+    "emails": [
+        "rysquash@gmail.com"
     ]
+}
+
+{
+    "id":"id1",
+    //same between all courses with this url
+    "hostname":"wl11gp.neu.edu",
+    "formattableURL":"https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in={{term}}&crn_in={{crn}}",
+    "module": "ellucianSection",
+
+    //static data for each section
+    "term": "11105",
+    "year": "2015",
+    "crn": "15165",
+    "times":[
+        {
+            "day":0, //0-7
+            "start":4461,//min since midnight
+            "end":5000
+        }
+    ],
+
+    //seat info on last check
+    "lastUpdateTime":"156484561", //utc sec since jan 1 1970
+    "totalOpenSeats": 5,
+    "totalSeats": 100,
+    "totalSections": 6,
+    "sectionsOpenSeats": 1,
+
+    "ips": [
+        "192.168.1.1"
+    ],
+    "emails": [
+        "rysquash@gmail.com"
+    ]
+}
+
+
+old:
+
+
+{
+    "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in={{term}}&subj_in={{subj}}&crse_in={{crse}}&schd_in={{schd}}": {
+        "data": [
+            {
+                "term": "11105",
+                "crse": "2160",
+                "totalOpenSeats": 5,
+                "ips": [
+                    "192.168.1.1"
+                ],
+                "schd": "%",
+                "totalSeats": 100,
+                "year": "2015",
+                "totalSections": 6,
+                "subj": "EECE",
+                "emails": [
+                    "rysquash@gmail.com"
+                ],
+                "sectionsOpenSeats": 1
+            }
+        ],
+        "module": "ellucianSectionList"
+    },
+    "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in={{term}}&crn_in={{crn}}": {
+        "data": [
+            {
+                "term": "11105",
+                "totalOpenSeats": 5,
+                "ips": [
+                    "192.168.1.1"
+                ],
+                "totalSeats": 100,
+                "year": "2015",
+                "totalSections": 6,
+                "crn": "15165",
+                "emails": [
+                    "rysquash@gmail.com"
+                ],
+                "sectionsOpenSeats": 1
+            }
+        ],
+        "module": "ellucianSection"
+    }
 }

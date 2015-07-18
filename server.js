@@ -4,97 +4,90 @@ var path = require("path");
 var bodyParser = require('body-parser');
 var request = require('request');
 var fs = require('fs');
-
-var modules = [
-
-require('./ellucianSection'),
-require('./ellucianSectionList'),
+var Datastore = require('nedb')
+var sslRootCAs = require('ssl-root-cas/latest')
+sslRootCAs.inject()
 
 
-];
+var db = new Datastore({ filename: 'database', autoload: true });
 
 
 var app = express();
+app.use(bodyParser.json());       // to support JSON-encoded bodies
 
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
+var modules = [
+require('./modules/ellucianSection'),
+require('./modules/ellucianSectionList'),
+];
+
+
+
+
+//todo:
+// unsubscribe
+// save data
+// the actuall push req
+// backend
+
+
+
 
 var data={}
 
 
+function addData (module,formattableURL,newData) {
 
-
-function getPreviewData (module,hostname,url,html) {
-	// console.log(url,html)
-
-	//yay, something supports it
-	console.log(module.name+' supports it!');
 
 	//add initial hostname to dictionary
-	if (!data[hostname]) {
-		data[hostname]=[]
+	if (!data[formattableURL]) {
+		data[formattableURL]={
+			module:module.name,
+			data:[]
+		}
 	}
 
 
-	var formattableURL = module.getFormattableUrl(url,html);
-	module.getData(url,html,function  (instanceData) {
-		
+	var moduleDataList=data[formattableURL].data
 
-		var moduleData;
-		var moduleDataList;
+	
+	var oldData;
 
-		//find a matching template url
-		for (var i = 0; i < data[hostname].length; i++) {
 
-			//if existing data matches current data
-			if (data[hostname][i].url==formattableURL && data[hostname][i].module==module.name) {
-				moduleData = data[hostname][i];
-				moduleDataList=moduleData.data;
-			};
+	//search for existing matching data in data list
+	for (var i = 0; i < moduleDataList.length; i++) {
+		if (module.isSamePage(moduleDataList[i],newData)){
+			oldData=moduleDataList[i]
 		}
+	};
 
-		//url was not found under host
-		if (!moduleData) {
-			moduleDataList=[]
-			moduleData={
-				url:formattableURL,
-				module:module.name,
-				data:moduleDataList
+
+	//no data for this page!
+	if (!oldData) {
+		console.log('adding new data for '+formattableURL)
+		data[formattableURL].data.push(newData)
+		console.log(data[formattableURL].data[0])
+		return;
+	}
+
+	//add new data - emails
+	if (newData.emails) {
+		for (var i = 0; i < newData.emails.length; i++) {
+			if (oldData.emails.indexOf(newData.emails[i])<0) {
+				oldData.emails.push(newData.emails[i]);
+				console.log('added new email '+newData.emails[i]+' to '+formattableURL)
 			}
-
-			data[hostname].push(moduleData)
 		};
+	};
 
-		//no data for this url!
-		if (moduleDataList.length==0) {
-			moduleDataList.push(instanceData);
-		}
-		else {
-			for (var i = 0; i < moduleDataList.length; i++) {
-				if (module.isSamePage(moduleDataList[i],instanceData)){
-
-				}
-			};
-		}
-
-
-		//now data is setup, add 
-
-		console.log('HERE',data[hostname][0].data)
-
-	})
-
-
-
-
-
-	// //get entered term
-	// var term = module.getTerm(url,html);
-
-	// if (!data[hostname].term) {
-	// 	data[hostname].term={}
-	// };
-
-
+	//ips
+	if (newData.ips) {
+		for (var i = 0; i < newData.ips.length; i++) {
+			if (oldData.ips.indexOf(newData.ips[i])<0) {
+				oldData.ips.push(newData.ips[i]);
+				console.log('added new ip '+newData.ips[i]+' to '+formattableURL)
+			}
+		};
+	};
 }
 
 
@@ -110,19 +103,17 @@ app.post('/urlDetails', function(req, res) {
 	console.log(req.ip,req.body.url);
 
 
-	//client sent a (possibly) vailid url, check and parse page
-	// var xmlhttp = new XMLHttpRequest();
-
+	//client sent a (possibly) valid url, check and parse page
 	var url = req.body.url;
 
-	request(url, function (error, response, body) {
+	request({
+		url:url,
+		rejectUnauthorized: false
+	}, function (error, response, body) {
 
 
-
-		// console.log(error,response.request.uri.host)
 		if (error) {
 
-			// console.log('error..',error)
 			res.send(JSON.stringify({
 				reason:error.code,
 				hostname:error.hostname
@@ -136,56 +127,37 @@ app.post('/urlDetails', function(req, res) {
 	    for (var i = 0; i < modules.length; i++) {
 	    	if (modules[i].supportsPage(url,body)) {
 
-	    		getPreviewData(modules[i],hostname,url,body)
+				//yay, something supports it
+				console.log(modules[i].name+' supports it!');
 
+	    		modules[i].getData(url,body,function  (instanceData) {
 
+					//add req to database
+					if (true) {
+						instanceData.ips=[req.ip]
+						var formattableURL = modules[i].getFormattableUrl(url,body);
+						addData(modules[i],formattableURL,instanceData)
+					};
 
-	    		// data[]
+					res.send(JSON.stringify({
+						reason:"SUCCESS",
+						name:instanceData.name,
+						seatsCapacity:instanceData.seatsCapacity,
+						seatsRemaining:instanceData.seatsRemaining
+					}));
+				});
+	    		return;
+	    	}
+	    }
 
-	   //  		res.send(JSON.stringify({
-				// 	reason:"SUPPORT",
-				// 	hostname:response.request.uri.host
-				// }))
-	   //  		return;
-
-	}
-};
-
-
-	 //    console.log({
-		// 	reason:"NOSUPPORT",
-		// 	hostname:response.request.uri.host
-		// })
-
-    	//oh no! no modules support url
-    	res.send(JSON.stringify({
-    		reason:"NOSUPPORT",
-    		hostname:hostname
-    	}))
-
-    });
-
-	// xmlhttp.onreadystatechange = function() {
-
-
-
-   //  	//404 or something
-	  //   if (xmlhttp.status != 200) {
-	  //   	res.send(JSON.stringify({
-			// 	status:'red',
-			// 	reason:"Error code "+xmlhttp.status
-			// }))
-			// return;
-	  //   }
-
-    // }
-
-
-	// xmlhttp.open("POST", location.protocol + '//' + location.host+'/urlDetails', true);
-	// xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-	// xmlhttp.send(JSON.stringify({url:inputText}));
-
+		//oh no! no modules support url
+		res.send(JSON.stringify({
+			reason:"NOSUPPORT",
+			hostname:hostname
+		}));
+	});
 });
+
 
 
 
@@ -213,10 +185,22 @@ app.get("/*", function(req, res, next) {
 });
 
 
-// app.listen(3000);
+app.listen(3000);
 
-fs.readFile('tests/ellucianSection/1.html','utf8',function (err,body) {
-	var fileJSON = JSON.parse(body);
-	// console.log(fileJSON.url)
-	getPreviewData(modules[0],'wl11gp.neu.edu',fileJSON.url,fileJSON.html)
-});
+
+// fs.readFile('tests/ellucianSection/1.html','utf8',function (err,body) {
+// 	var fileJSON = JSON.parse(body);
+
+// 	var module=modules[0]
+// 	var formattableURL = module.getFormattableUrl(fileJSON.url,fileJSON.html);
+
+// 	module.getData(fileJSON.url,fileJSON.html,function  (instanceData) {
+// 		instanceData.ips=["192.168.1.1"]
+// 		addData(module,formattableURL,instanceData)
+// 	});
+
+// 	module.getData(fileJSON.url,fileJSON.html,function  (instanceData) {
+// 		instanceData.ips=["192.168.1.2"]
+// 		addData(module,formattableURL,instanceData)
+// 	});
+// });

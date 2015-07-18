@@ -44,6 +44,7 @@ exports.getFormattableUrl = function (url,html) {
 //required data:
 
 // "year":"2015",
+// "name":"Introduction to Economics"
 // "totalSeats":100,
 // "totalOpenSeats":5,
 // "totalSections":6,
@@ -73,6 +74,9 @@ exports.getData = function(url,html,callback){
 	    		currentData=boxOrder[boxCount]
 	    		boxCount++;
 	    	}
+	    	else if (name =='th' && attribs.class=='ddlabel' && attribs.scope=="row" && !data.name){
+	    		currentData='name'
+	    	}
 	    	else {
 	    		currentData=null;
 	    	}
@@ -81,18 +85,23 @@ exports.getData = function(url,html,callback){
 	    	if (!currentData) {
 	    		return;
 	    	}
-
-	    	if (currentData=='year') {
-	    		data[currentData]=text.match(/\d+/)[0];
+	    	//add text to corrosponding data
+	    	if (data[currentData]) {
+	    		data[currentData]+=text
 	    	}
-	    	if (boxOrder.indexOf(currentData)>-1) {
+	    	else {
 	    		data[currentData]=text
-	    	};
+	    	}
 	    },
 	    onclosetag: function(tagname){
 	    	currentData=null;
 	    },
 	    onend: function () {
+
+	    	//get rid of the unimportiant stuff
+    		data.year=data.year.match(/\d+/)[0];
+    		data.name=data.name.match(/(.+?)\s-\s/i)[1]
+
 	    	if (callback) {
 		    	callback(data)
 	    	};
@@ -103,10 +112,6 @@ exports.getData = function(url,html,callback){
 }
 
 
-
-exports.getTerm = function (url,html) {
-	return querystring.parse(urlParser.parse(url).query).term_in;
-}
 
 
 exports.isSamePage = function (a,b){
@@ -123,8 +128,6 @@ exports.tests = function () {
 		exports.getData(fileJSON.url,fileJSON.html,function (data) {
 			console.log(data);
 		})
-		// console.log(err)
-		// parser.write("Xyz <script type='text/javascript'>var foo = '<<bar>>';</ script>");
 	});
 
 
