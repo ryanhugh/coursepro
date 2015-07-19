@@ -55,8 +55,11 @@ app.post('/urlDetails', function(req, res) {
 
 	//dont keep invalid emails
 	if (!validateEmail(req.body.email)) {
+		console.log('Invalid email rejected',req.body.email)
 		req.body.email = null;
 	};
+
+	console.log('inbound data:',req.body)
 
 
 	//client sent a (possibly) valid url, check and parse page
@@ -65,7 +68,7 @@ app.post('/urlDetails', function(req, res) {
 	dataMgr.getDataFromURL({
 		url:req.body.url,
 		ip:req.connection.remoteAddress,
-		email:null
+		email:req.body.email
 	},function (err,data) {
 
 		if (err) {

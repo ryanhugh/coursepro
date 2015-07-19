@@ -12,6 +12,7 @@ with the database:
     "hostname":"wl11gp.neu.edu",
     "url":"https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=11105&subj_in=EECE&crse_in=2160&schd_in=%",
     "module": "ellucianClassParser",
+    "name": "Class name here yo",
 
     //static data for each section
     "year": "2015",
@@ -30,11 +31,37 @@ with the database:
 }
 
 {
+    "seatsRemaining": "-3",
+    "seatsCapacity": "50",
+    "seatsActual": "53",
+    "waitCapacity": "0",
+    "waitActual": "0",
+    "waitRemaining": "0",
+    
+    "name": "Principles of Accounting I:SI",
+    "term": "201560",
+    "lastUpdateTime": 1437323984056,
+    "url": "https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckschd.p_disp_detail_sched?term_in=201560&crn_in=6185",
+    "_id": "7dNB8TgUZHOlKxwg",
+    "ips": [
+        "::1"
+    ],
+    "year": "2015",
+    "crn": "6185",
+    "emails": [
+        "rysquash@gmail.com",
+        "ryan@gmail.com"
+    ]
+}
+
+
+{
     "id":"id1",
     //same between all courses with this url
     "hostname":"wl11gp.neu.edu",
     "url":"https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=11105&crn_in=15165",
     "module": "ellucianSectionParser",
+    "name": "Class name here yo",
 
     //static data for each section
     "year": "2015",

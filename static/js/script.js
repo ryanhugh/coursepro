@@ -1,5 +1,14 @@
 'use strict';
 
+function updateSubmitButton () {
+	if (emailStatus=="SUCCESS" && urlStatus=="SUCCESS") {
+		document.getElementById('submitbutton').removeAttribute('disabled');
+	}
+	else {
+		document.getElementById('submitbutton').setAttribute('disabled',true);
+	}
+}
+
 
 function extractDomain(url) {
 	var domain;
@@ -22,6 +31,8 @@ function extractDomain(url) {
     return domain;
 }
 
+
+var urlStatus;
 function setUrlStatus (data) {
 	var urlEntry = document.getElementById('urlEntry');
 	var urlStatusDetails = document.getElementById('urlStatusDetails');
@@ -86,6 +97,8 @@ function setUrlStatus (data) {
 		data.reason='UNKNOWN'
 	};
 
+	urlStatus = data.reason;
+	updateSubmitButton()
 
 
 	urlStatusLabel.classList.add(reasonDict[data.reason].labelClass)
@@ -99,24 +112,16 @@ function setUrlStatus (data) {
 }
 
 
-var lastValue = '';
-var xmlhttp = new XMLHttpRequest();
-var fireRequestTimeout;
-function onURLChange (inputField) {
-	var inputText=inputField.value.trim()
-
-	if (inputText===lastValue) {
-		return;
-	};
-	lastValue=inputText;
+function sendRequest (fromSubmitButton) {
+	var urlText = document.getElementById('urlEntry').value;
+	var emailText = document.getElementById('emailEntry').value;
 
 
-	if (!inputText.startsWith('https://') && !inputText.startsWith('http://')) {
-		inputText='http://'+inputText
+	if (!urlText.startsWith('https://') && !urlText.startsWith('http://')) {
+		urlText='http://'+urlText
 	};
 
 
-	console.log(inputText)
 
 	//cancel prior request
 	if (xmlhttp) {
@@ -126,7 +131,6 @@ function onURLChange (inputField) {
 		clearTimeout(fireRequestTimeout);
 	};
 
-	setUrlStatus({reason:'LOADING'})
 
 	xmlhttp.onerror = function (error) {
 		console.log('error..',error)
@@ -143,23 +147,43 @@ function onURLChange (inputField) {
 		else {
 			console.log(xmlhttp.responseText);
 			var resData = JSON.parse(xmlhttp.responseText);
-			resData.hostname = extractDomain(inputText)
+			resData.hostname = extractDomain(urlText)
 			setUrlStatus(resData);
-
-
-
-	        //[green] Success!  '5 sections of %s found (1 with open spots)'
-	        //[yellow] Hmmm... %s is not supported at the moment. Want to add support for it on github?
-	        
 	    }
 	}
 	xmlhttp.open("POST", location.protocol + '//' + location.host+'/urlDetails', true);
 	xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
 	fireRequestTimeout=setTimeout(function () {
-		console.log('fireing request!');
-		xmlhttp.send(JSON.stringify({url:inputText}));
+
+		var data = {url:urlText};
+		if (fromSubmitButton) {
+			data.email = emailText;
+		}
+		console.log('firing request!',data);
+
+
+		xmlhttp.send(JSON.stringify(data));
 	},200);
+
+}
+
+
+
+var lastValue = '';
+var xmlhttp = new XMLHttpRequest();
+var fireRequestTimeout;
+function onURLChange (inputField) {
+	var inputText=inputField.value.trim()
+
+	if (inputText===lastValue) {
+		return;
+	};
+	lastValue=inputText;
+
+	console.log(inputText)
+	setUrlStatus({reason:'LOADING'})
+	sendRequest(false);
 }
 
 // http://stackoverflow.com/a/46181/11236
@@ -172,6 +196,7 @@ function validateEmail(email) {
 
 var emailDelayTimer;
 var lastEmailValue;
+var emailStatus;
 function onEmailChange (inputField) {
 	var inputText=inputField.value.trim()
 
@@ -205,10 +230,18 @@ function onEmailChange (inputField) {
 		if (!validateEmail(email)) {
 			statusElement.className = 'label label-danger';
 			statusElement.innerHTML = "Uh Oh!"
+			emailStatus = "ERROR"
 		}
 		else {
+			emailStatus = "SUCCESS"
 			statusElement.innerHTML = "Looks Good!"
 			statusElement.className = 'label label-success';
 		}
+		updateSubmitButton()
 	},500);
+}
+
+
+function onSubmit () {
+	sendRequest(true);
 }
