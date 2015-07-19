@@ -5,20 +5,16 @@ var bodyParser = require('body-parser');
 var request = require('request');
 var fs = require('fs');
 var Datastore = require('nedb')
-var sslRootCAs = require('ssl-root-cas/latest')
-sslRootCAs.inject()
-
-
-var db = new Datastore({ filename: 'database', autoload: true });
+var DataMgr = require('./DataMgr')
 
 
 var app = express();
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 
-var modules = [
-require('./modules/ellucianSection'),
-require('./modules/ellucianSectionList'),
-];
+// var modules = [
+// require('./modules/ellucianSection'),
+// require('./modules/ellucianSectionList'),
+// ];
 
 
 
@@ -32,7 +28,7 @@ require('./modules/ellucianSectionList'),
 
 
 
-var data={}
+// var data={}
 
 
 function addData (module,formattableURL,newData) {
@@ -91,21 +87,7 @@ function addData (module,formattableURL,newData) {
 }
 
 
-
-
-app.post('/urlDetails', function(req, res) {
-
-	if (!req.body || !req.body.url) {
-		console.log('invalid req from '+req.ip);
-		return;
-	};
-
-	console.log(req.ip,req.body.url);
-
-
-	//client sent a (possibly) valid url, check and parse page
-	var url = req.body.url;
-
+function requestUrl (url) {
 	request({
 		url:url,
 		rejectUnauthorized: false
@@ -130,7 +112,7 @@ app.post('/urlDetails', function(req, res) {
 				//yay, something supports it
 				console.log(modules[i].name+' supports it!');
 
-	    		modules[i].getData(url,body,function  (instanceData) {
+	    		modules[i].getData(url,body,function (instanceData) {
 
 					//add req to database
 					if (true) {
@@ -155,6 +137,43 @@ app.post('/urlDetails', function(req, res) {
 			reason:"NOSUPPORT",
 			hostname:hostname
 		}));
+	});
+}
+
+
+var dataMgr = new DataMgr();
+
+
+app.post('/urlDetails', function(req, res) {
+
+	if (!req.body || !req.body.url) {
+		console.log('invalid req from '+req.ip);
+		return;
+	};
+
+	console.log(req.ip,req.body.url);
+
+
+	//client sent a (possibly) valid url, check and parse page
+	var url = req.body.url;
+
+	dataMgr.getDataFromURL(req.body.url,function (data) {
+
+		if (data) {
+			res.send(JSON.stringify({
+				reason:"SUCCESS",
+				name:data.name,
+				seatsCapacity:data.seatsCapacity,
+				seatsRemaining:data.seatsRemaining
+			}));
+		}
+		else {
+			//oh no! no modules support url
+			res.send(JSON.stringify({
+				reason:"NOSUPPORT",
+				hostname:req.body.url
+			}));
+		}
 	});
 });
 

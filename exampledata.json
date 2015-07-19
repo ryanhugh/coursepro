@@ -1,18 +1,20 @@
+between all the ellucian sites, have noticed some differences:
+ 
+neu's classes open spots are displayed on class section list page
+temple's returns 4xx error unauthorized unless referrer is set to the same hostname and has better https security
+
+
 
 
 with the database:
 {
     //same between all courses with this url
     "hostname":"wl11gp.neu.edu",
-    "formattableURL":"https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in={{term}}&subj_in={{subj}}&crse_in={{crse}}&schd_in={{schd}}",
-    "module": "ellucianSectionList",
+    "url":"https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=11105&subj_in=EECE&crse_in=2160&schd_in=%",
+    "module": "ellucianClassParser",
 
     //static data for each section
-    "term": "11105",
-    "crse": "2160",
     "year": "2015",
-    "subj": "EECE",
-    "schd": "%",
     "description":"long string about the course etc...",
 
     //seat info on last check
@@ -31,13 +33,11 @@ with the database:
     "id":"id1",
     //same between all courses with this url
     "hostname":"wl11gp.neu.edu",
-    "formattableURL":"https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in={{term}}&crn_in={{crn}}",
-    "module": "ellucianSection",
+    "url":"https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=11105&crn_in=15165",
+    "module": "ellucianSectionParser",
 
     //static data for each section
-    "term": "11105",
     "year": "2015",
-    "crn": "15165",
     "times":[
         {
             "day":0, //0-7
@@ -86,7 +86,7 @@ old:
                 "sectionsOpenSeats": 1
             }
         ],
-        "module": "ellucianSectionList"
+        "module": "ellucianClassParser"
     },
     "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in={{term}}&crn_in={{crn}}": {
         "data": [
@@ -106,6 +106,6 @@ old:
                 "sectionsOpenSeats": 1
             }
         ],
-        "module": "ellucianSection"
+        "module": "ellucianSectionParser"
     }
 }

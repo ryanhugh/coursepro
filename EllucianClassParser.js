@@ -1,44 +1,42 @@
 'use strict';
 var urlParser = require('url');
 var querystring = require('querystring');
-var assert = require('assert');
-var fs = require('fs');
-var he = require('he');
-var htmlparser = require('htmlparser2');
+var ellucianSectionParser = require('./ellucianSectionParser');
+var BaseParser = require('./BaseParser');
 
 //700+ college sites use this poor interface for their registration
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
-
-exports.name='ellucianSection'
-
-
-exports.supportsPage = function (url,html) {
-
-	if (html.indexOf('Ellucian')<0) {
-		return false;
-	}
-
-
-	if (url.indexOf('crn_in')>-1 && html.indexOf('Detailed Class Information')>-1){
-		return true;
-	}
-	else {
-		return false;
-	}
+function EllucianClassParser () {
+	BaseParser.constructor.call(this);
 }
 
-exports.getFormattableUrl = function (url,html) {
 
-	var detailIndex = url.indexOf('bwckschd.p_disp_detail_sched');
+//prototype constructor
+EllucianClassParser.prototype = Object.create(BaseParser.prototype);
+EllucianClassParser.prototype.constructor = EllucianClassParser;
 
-	if (detailIndex>-1) {
-		return decodeURI(urlParser.resolve(url.substr(0,detailIndex),'bwckschd.p_disp_detail_sched?term_in={{term}}&crn_in={{crn}}'))
+
+
+exports.name='ellucianClassParser'
+
+
+
+EllucianClassParser.prototype.supportsPage = function (url,html) {
+	return url.indexOf('bwckctlg.p_disp_listcrse')>-1;
+}
+
+
+EllucianClassParser.prototype.getFormattableUrl = function (url) {
+
+	var listIndex = url.indexOf('bwckctlg.p_disp_listcrse');
+
+	if (listIndex>-1) {
+		return decodeURI(urlParser.resolve(url.substr(0,listIndex),'bwckctlg.p_disp_listcrse?term_in={{term}}&subj_in={{subj}}&crse_in={{crse}}&schd_in={{schd}}'))
 	}
-
-
-	console.log('ERROR: could not find formattable url in '+url+' ellucianSection');
+	console.log('ERROR: could not find formattable url in '+url+' ellucianClassParser');
 	return 'ERROR';
 }
+
 
 
 //required data:
@@ -50,7 +48,8 @@ exports.getFormattableUrl = function (url,html) {
 // "totalSections":6,
 // "sectionsOpenSeats":1,
 // + anything else to format the format url
-exports.getData = function(url,html,callback){
+EllucianClassParser.prototype.getData = function(url,html,callback){
+	return 'NOY WORKIGN YET!!!'
 
 	var data={}
 
@@ -112,33 +111,16 @@ exports.getData = function(url,html,callback){
 }
 
 
+//https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=BUS&crse_in=480&schd_in=LE
 
+EllucianClassParser.prototype.tests = function () {
 
-exports.isSamePage = function (a,b){
-	return a.crn==b.crn && a.term==b.term;
+	console.log(this.getFormattableUrl('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2160&schd_in=LEC'))
 }
-
-
-exports.tests = function () {
-
-	fs.readFile('tests/'+exports.name+'/1.html','utf8',function (err,body) {
-
-		var fileJSON = JSON.parse(body);
-
-		exports.getData(fileJSON.url,fileJSON.html,function (data) {
-			console.log(data);
-		})
-	});
-
-
-	// assert.fail(true,false)
-
-}
-
 
 if (require.main === module) {
-    exports.tests();
+    new EllucianClassParser().tests();
 }
 
 
-// console.log(exports.getFormattableUrl('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633'))
+module.exports = EllucianClassParser

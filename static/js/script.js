@@ -1,5 +1,27 @@
 'use strict';
 
+
+function extractDomain(url) {
+    var domain;
+    //find & remove protocol (http, ftp, etc.) and get domain
+    if (url.indexOf("://") > -1) {
+        domain = url.split('/')[2];
+    }
+    else {
+        domain = url.split('/')[0];
+    }
+
+    //find & remove port number
+    domain = domain.split(':')[0];
+
+    //remove "www."
+    if (domain.startsWith('www.')) {
+		domain=domain.substr(4)
+	};
+
+    return domain;
+}
+
 function setUrlStatus (data) {
 	var urlEntry = document.getElementById('urlEntry');
 	var urlStatusDetails = document.getElementById('urlStatusDetails');
@@ -14,10 +36,7 @@ function setUrlStatus (data) {
 
 	urlStatusLabel.className = 'label';
 
-	if (data.hostname && data.hostname.startsWith('www.')) {
-		data.hostname=data.hostname.substr(4)
-	};
-
+	
 	var reasonDict = {
 		'LOADING': 
 		{
@@ -118,6 +137,7 @@ function onURLChange (inputField) {
 		else {
 			console.log(xmlhttp.responseText);
 			var resData = JSON.parse(xmlhttp.responseText);
+			resData.hostname = extractDomain(inputText)
 			setUrlStatus(resData);
 
 
