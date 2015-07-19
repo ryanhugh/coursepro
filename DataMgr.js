@@ -9,6 +9,7 @@ function DataMgr () {
 
 
 DataMgr.prototype.findSupportingParser = function(url) {
+	console.log(url)
 
 	for (var parserName in parsers) {
 		var parser = new parsers[parserName]()
@@ -19,78 +20,126 @@ DataMgr.prototype.findSupportingParser = function(url) {
 	};
 };
 
-DataMgr.prototype.addData = function(data,existingData) {
+DataMgr.prototype.updateData = function(newData) {
 
-	if (existingData) {
-		this.db.update({ _id: existingData._id }, {$set:data}, {}, function (err, numReplaced) {	
+	if (newData._id) {
+		this.db.update({ _id: newData._id }, {$set:newData}, {}, function (err, numReplaced) {	
 			if (numReplaced==0) {
-				console.log('ERROR: updated 0?',data,existingData);
+				console.log('ERROR: updated 0?',newData);
 			};
 		});
 	}
 	else {
-		this.db.insert(data);
+		this.db.insert(newData);
 	}
 };
 
+DataMgr.prototype.mergeAndUpdateData = function(clientData,dbData,pageData) {
 
-DataMgr.prototype.getDataFromURL = function(url,callback) {
+	//merge all attributes into dbData, and if it changed update the database
+	var shouldUpdateDB = false;
+	for (var attrName in pageData) {
+		if (pageData[attrName] != dbData[attrName]) {
+			dbData[attrName] = pageData[attrName]
+			shouldUpdateDB = true;
+			console.log('Set',attrName)
+		};
+	}
+
+	if (!dbData.emails || !dbData.ips) {
+		dbData.emails = []
+		dbData.ips = []
+		shouldUpdateDB=true;
+	};
+
+
+
+	if (clientData.email && dbData.emails.indexOf(clientData.email)<0) {
+		dbData.emails.push(clientData.email);
+		shouldUpdateDB=true;
+	}
+
+	if (clientData.ip && dbData.ips.indexOf(clientData.ip)<0) {
+		dbData.ips.push(clientData.ip)
+		shouldUpdateDB=true;
+	};
+
+	if (clientData.url!=dbData.url) {
+		dbData.url = clientData.url
+		shouldUpdateDB=true;
+	};
+
+	if (shouldUpdateDB) {
+		this.updateData(dbData);
+	};
+	
+};
+
+
+DataMgr.prototype.getDataFromURL = function(clientData,callback) {
 	
 
 	//if already in database, great
-	this.db.find({url:url}, function (err,docs) {
+	this.db.find({url:clientData.url}, function (err,docs) {
 
 		if (docs.length>1) {
 			console.log('ERROR: docs is longer than 1?',docs);
 			return;
 		}
 
+		console.log('DOCS:',docs)
+
 		//yay in cache and updated
 		var fifteeenMinAgo = new Date().getTime()-900000;
-		if (docs.length==1 && docs[0].lastUpdateTime>fifteeenMinAgo ) {
-			console.log('CACHE HIT!',url)
+		if (docs.length==1 && docs[0].lastUpdateTime>fifteeenMinAgo) {
+			console.log('RECENT CACHE HIT!',clientData.url)
 			callback(docs[0]);
+			this.mergeAndUpdateData(clientData,docs[0],{});
 			return;
 		};
 
-		var parser = this.findSupportingParser(url);
+		var parser = this.findSupportingParser(clientData.url);
 		if (!parser) {
-			console.log('no parser found for',url)
+			console.log('no parser found for',clientData.url)
 			callback(null);
 			return;
 		};
-		console.log('using ',parser,' and data in db is len',docs.length)
 
-		parser.getDataFromURL(url, function (data) {
+		parser.getDataFromURL(clientData.url, function (data) {
 			if (!data) {
-				callback(null);
+				if (docs[0]) {
+					console.log('ERROR: url in cache but could not update',url,docs[0]) //TODO bring this to frontend
+					callback(docs[0]);
+				}
+				else {
+					callback(null);
+				}
 				return;
-			};
-
-			//add some other stuff to the data
-			data.url=url
-			data.lastUpdateTime = new Date().getTime();
-
+			}
 
 			callback(data);
 
+			//update the lastUpdateTime
+			data.lastUpdateTime = new Date().getTime();
+
 			if (docs.length==0) {
-				this.addData(data);
+				this.mergeAndUpdateData(clientData,{},data)
 			}
 			else {
-				this.addData(data,docs[0]);
+				this.mergeAndUpdateData(clientData,docs[0],data)
 			}
 		}.bind(this));
-
-
-
 	}.bind(this));
 };
 
 
 DataMgr.prototype.tests = function() {
 	
-	this.getDataFromURL('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201120&crn_in=1445',function (data) {
+	this.getDataFromURL({
+		url:'https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201120&crn_in=1436',
+		// url:'https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201120&crn_in=1445',
+		ip:'localhost'
+	},function (data) {
 		console.log(data)
 	})
 

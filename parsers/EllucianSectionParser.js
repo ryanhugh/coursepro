@@ -37,19 +37,6 @@ EllucianSectionParser.prototype.parseHTML = function(url,html,callback){
 
 	var data={}
 
-	//get crn and term from url
-	//many checks in base parser to avoid crashing
-	var URLData = this.parseToURLQuery(url);
-	if (!URLData) {
-		callback(null);
-		return;
-	}
-
-
-	data.term = URLData.term_in;
-	data.crn = URLData.crn_in;
-
-
 	//get everything else from html
 	var currentData;
 	var boxCount = 0;

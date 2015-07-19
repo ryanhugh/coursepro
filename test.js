@@ -27,3 +27,4 @@ console.log(URLData);
 // console.log( rabbit.__proto__ ) // false, in prototype
 
 // console.log( new Date().getTime() ) // true, in object
+console.log(Set.prototype)

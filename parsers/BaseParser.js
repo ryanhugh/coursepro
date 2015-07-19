@@ -1,7 +1,4 @@
 var request = require('request');
-var urlParser = require('url');
-var he = require('he');
-var querystring = require('querystring');
 var sslRootCAs = require('ssl-root-cas/latest')
 sslRootCAs.inject()
 
@@ -31,22 +28,6 @@ BaseParser.prototype.isValidData = function(data) {
 	return true;
 };
 
-BaseParser.prototype.parseToURLQuery = function(url) {
-	var urlParsed = urlParser.parse(url);
-	if (!urlParsed || !urlParsed.query) {
-		callback(null);
-		return null;
-	}
-
-	var urlDecoded = he.decode(urlParsed.query);
-	if (!urlDecoded) {
-		callback(null);
-		return null;
-	};
-
-	
-	return querystring.parse(urlDecoded);
-};
 
 BaseParser.prototype.supportsPage = function() {
 	return false;
@@ -73,6 +54,7 @@ BaseParser.prototype.getPage = function(url,callback) {
 
 BaseParser.prototype.getDataFromURL = function(url,callback) {
 
+	console.log('firing request for',url)
 	this.getPage(url,function (html) {
 		if (!html) {
 			callback(null);
@@ -82,10 +64,18 @@ BaseParser.prototype.getDataFromURL = function(url,callback) {
 	}.bind(this));
 };
 
+BaseParser.prototype.tests = function() {
+	
 
-// var a = new BaseParser();
+
+};
 
 
-// console.log(a,BaseParser.prototype)
+if (require.main === module) {
+	new BaseParser().tests();
+}
+
+
+
 
 module.exports = BaseParser
