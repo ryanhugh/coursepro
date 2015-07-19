@@ -2,13 +2,13 @@
 
 
 function extractDomain(url) {
-    var domain;
+	var domain;
     //find & remove protocol (http, ftp, etc.) and get domain
     if (url.indexOf("://") > -1) {
-        domain = url.split('/')[2];
+    	domain = url.split('/')[2];
     }
     else {
-        domain = url.split('/')[0];
+    	domain = url.split('/')[0];
     }
 
     //find & remove port number
@@ -16,8 +16,8 @@ function extractDomain(url) {
 
     //remove "www."
     if (domain.startsWith('www.')) {
-		domain=domain.substr(4)
-	};
+    	domain=domain.substr(4)
+    };
 
     return domain;
 }
@@ -67,6 +67,12 @@ function setUrlStatus (data) {
 			labelClass:'label-danger',
 			labelText:'Uh Oh!',
 			reason:data.hostname+ ' was not found.'
+		},
+		'NOUPDATE': 
+		{
+			labelClass:'label-warning',
+			labelText:'Uh Oh!',
+			reason:data.hostname+ ' could not be updated.'
 		},
 		'UNKNOWN':
 		{
@@ -154,8 +160,55 @@ function onURLChange (inputField) {
 		console.log('fireing request!');
 		xmlhttp.send(JSON.stringify({url:inputText}));
 	},200);
+}
+
+// http://stackoverflow.com/a/46181/11236
+// this is also done server side
+function validateEmail(email) { 
+	var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	return re.test(email);
+}
+
+
+var emailDelayTimer;
+var lastEmailValue;
+function onEmailChange (inputField) {
+	var inputText=inputField.value.trim()
+
+	if (inputText===lastEmailValue) {
+		return;
+	};
+	lastEmailValue=inputText;
 
 
 
+	if (emailDelayTimer) {
+		clearTimeout(emailDelayTimer)
+	}
 
+	var statusElement = document.getElementById('emailStatusLabel');
+	statusElement.style.visibility = 'hidden'
+
+	emailDelayTimer= setTimeout(function (){
+
+		var email = inputField.value.trim();
+
+		if (email.length==0) {
+			statusElement.style.visibility = 'hidden'
+		}
+		else {
+			statusElement.style.visibility = 'visible'
+		}
+
+
+
+		if (!validateEmail(email)) {
+			statusElement.className = 'label label-danger';
+			statusElement.innerHTML = "Uh Oh!"
+		}
+		else {
+			statusElement.innerHTML = "Looks Good!"
+			statusElement.className = 'label label-success';
+		}
+	},500);
 }

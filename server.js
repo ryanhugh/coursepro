@@ -5,6 +5,7 @@ var request = require('request');
 var fs = require('fs');
 var Datastore = require('nedb')
 var DataMgr = require('./DataMgr')
+var blacklistedEmails = require('./blacklistedEmails.json')
 
 
 var app = express();
@@ -21,6 +22,30 @@ var dataMgr = new DataMgr();
 
 
 
+
+// http://stackoverflow.com/a/46181/11236
+// this is also done client side
+function validateEmail(email) { 
+	if (!email) {
+		return false;
+	};
+
+	var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	if (!re.test(email)) {
+		console.log('email failed regex',email)
+		return false;
+	}
+	// console.log(Object.getOwnPropertyNames(email))
+	for (var i = 0; i < blacklistedEmails.length; i++) {
+		if (email.slice(-blacklistedEmails[i].length) == blacklistedEmails[i]) {
+			console.log('email is blacklisted',email);
+			return false;
+		}
+	}
+	return true;
+}
+
+
 app.post('/urlDetails', function(req, res) {
 
 	if (!req.body || !req.body.url) {
@@ -28,7 +53,10 @@ app.post('/urlDetails', function(req, res) {
 		return;
 	};
 
-	console.log(req.ip,req.body.url);
+	//dont keep invalid emails
+	if (!validateEmail(req.body.email)) {
+		req.body.email = null;
+	};
 
 
 	//client sent a (possibly) valid url, check and parse page
@@ -38,20 +66,21 @@ app.post('/urlDetails', function(req, res) {
 		url:req.body.url,
 		ip:req.connection.remoteAddress,
 		email:null
-	},function (data) {
+	},function (err,data) {
 
-		if (data) {
+		if (err) {
+			//oh no! no modules support url
+			res.send(JSON.stringify({
+				reason:err
+			}));
+		}
+		else {
+
 			res.send(JSON.stringify({
 				reason:"SUCCESS",
 				name:data.name,
 				seatsCapacity:data.seatsCapacity,
 				seatsRemaining:data.seatsRemaining
-			}));
-		}
-		else {
-			//oh no! no modules support url
-			res.send(JSON.stringify({
-				reason:"NOSUPPORT"
 			}));
 		}
 	});
@@ -85,6 +114,9 @@ app.get("/*", function(req, res, next) {
 
 
 app.listen(3000);
+
+
+// console.log(validateEmail('bob@cuvox.de'))
 
 
 // fs.readFile('tests/ellucianSection/1.html','utf8',function (err,body) {

@@ -93,7 +93,7 @@ DataMgr.prototype.getDataFromURL = function(clientData,callback) {
 		var fifteeenMinAgo = new Date().getTime()-900000;
 		if (docs.length==1 && docs[0].lastUpdateTime>fifteeenMinAgo) {
 			console.log('RECENT CACHE HIT!',clientData.url)
-			callback(docs[0]);
+			callback(null,docs[0]);
 			this.mergeAndUpdateData(clientData,docs[0],{});
 			return;
 		};
@@ -101,23 +101,23 @@ DataMgr.prototype.getDataFromURL = function(clientData,callback) {
 		var parser = this.findSupportingParser(clientData.url);
 		if (!parser) {
 			console.log('no parser found for',clientData.url)
-			callback(null);
+			callback("NOSUPPORT",null);
 			return;
 		};
 
 		parser.getDataFromURL(clientData.url, function (data) {
 			if (!data) {
 				if (docs[0]) {
-					console.log('ERROR: url in cache but could not update',url,docs[0]) //TODO bring this to frontend
-					callback(docs[0]);
+					console.log('ERROR: url in cache but could not update',clientData.url,docs[0]) //TODO bring this to frontend
+					callback("NOUPDATE",docs[0]);
 				}
 				else {
-					callback(null);
+					callback("ENOTFOUND",null);
 				}
 				return;
 			}
 
-			callback(data);
+			callback(null,data);
 
 			//update the lastUpdateTime
 			data.lastUpdateTime = new Date().getTime();
