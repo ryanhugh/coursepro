@@ -7,6 +7,12 @@ var parsers = requireDir('./parsers');
 function DataMgr () {
 	this.db = new Datastore({ filename: 'database.db', autoload: true });
 	this.emailMgr = new EmailMgr();
+
+	//every 5 min
+	this.onInterval();
+	setInterval(this.onInterval.bind(this),300000)
+
+
 }
 
 
@@ -68,24 +74,23 @@ DataMgr.prototype.mergeAndUpdateData = function(clientData,dbData,pageData) {
 
 	//merge pageData into database data
 	if (pageData) {
-
 		for (var attrName in pageData) {
 			if (pageData[attrName] != dbData[attrName]) {
 				dbData[attrName] = pageData[attrName]
 				shouldUpdateDB = true;
-				console.log('Set',attrName,'on ',clientData.url)
+				console.log('Set',attrName,'on ',dbData.url)
 			};
 		}
 	};
 
 	if (clientData) {
 		//add email and ip to database, if they are not already there
-		if (dbData.emails.indexOf(clientData.email)<0) {
+		if (clientData.email && dbData.emails.indexOf(clientData.email)<0) {
 			dbData.emails.push(clientData.email);
 			shouldUpdateDB=true;
 		}
 
-		if (dbData.ips.indexOf(clientData.ip)<0) {
+		if (clientData.ip && dbData.ips.indexOf(clientData.ip)<0) {
 			dbData.ips.push(clientData.ip)
 			shouldUpdateDB=true;
 		};
@@ -98,71 +103,125 @@ DataMgr.prototype.mergeAndUpdateData = function(clientData,dbData,pageData) {
 };
 
 
-DataMgr.prototype.getDataFromURL = function(clientData,callback) {
+//merges the client data with dbData, and updates if anything changed
+//hits the page if there is no data in the db on 
+//and calls the callback with the 
+DataMgr.prototype.getDataFromURLWithDBData = function(clientData,dbData,callback) {
 	
+	console.log('PROCESSING:',clientData,dbData);
+
+	var url;
+	if (clientData) {
+		url = clientData.url;
+	}
+	else if (dbData) {
+		url = dbData.url;
+	}
+	else {
+		console.log('ERROR: clientData + dbdata called with both null??')
+		return;
+	}
+
+
+	//yay in cache and updated
+	var fifteeenMinAgo = new Date().getTime()-900000;
+	if (dbData && dbData.lastUpdateTime>fifteeenMinAgo) {
+		console.log('RECENT CACHE HIT!',url)
+		callback(null,dbData);
+		this.mergeAndUpdateData(clientData,dbData,null);
+		return;
+	};
+
+	var parser = this.findSupportingParser(url);
+	if (!parser) {
+		console.log('no parser found for',url)
+		callback("NOSUPPORT",null);
+		return;
+	}
+
+	console.log('Using parser:',parser.constructor.name,'for url',url)
+
+	parser.getDataFromURL(url, function (pageData) {
+		if (!pageData) {
+			if (dbData) {
+				console.log('ERROR: url in cache but could not update',url,dbData)
+				callback("NOUPDATE",dbData);
+			}
+			else {
+				callback("ENOTFOUND",null);
+			}
+			return;
+		}
+
+		//also calculate the page's dependencies
+		if (pageData.deps) {
+			pageData.deps.forEach(function (depUrl) {
+
+				var depClientData = {
+					url: depUrl,
+					ip:clientData.ip,
+					email:clientData.email
+				};
+
+				getDataFromURL(depClientData,function (pageData) {
+						
+				});
+			});
+		};
+
+
+		callback(null,pageData);
+
+		//update the lastUpdateTime
+		pageData.lastUpdateTime = new Date().getTime();
+
+		this.mergeAndUpdateData(clientData,dbData,pageData)
+		
+	}.bind(this));
+};
+
+
+
+
+DataMgr.prototype.getDataFromURL = function(clientData,callback) {
 
 	//if already in database, great
 	this.db.find({url:clientData.url}, function (err,docs) {
+		if (err) {
+			console.log('ERROR: DB lookup error:',err)
+			return;
+		};
 
 		if (docs.length>1) {
 			console.log('ERROR: docs is longer than 1?',docs);
 			return;
 		}
 
-		console.log('DOCS:',docs)
-
-		//yay in cache and updated
-		var fifteeenMinAgo = new Date().getTime()-900000;
-		if (docs.length==1 && docs[0].lastUpdateTime>fifteeenMinAgo) {
-			console.log('RECENT CACHE HIT!',clientData.url)
-			callback(null,docs[0]);
-			this.mergeAndUpdateData(clientData,docs[0],null);
-			return;
-		};
-
-		var parser = this.findSupportingParser(clientData.url);
-		if (!parser) {
-			console.log('no parser found for',clientData.url)
-			callback("NOSUPPORT",null);
-			return;
+		var dbData;
+		if (docs.length==0) {
+			dbData=null
+		}
+		else {
+			dbData=docs[0]
 		}
 
-		console.log('Using parser:',parser.constructor.name,'for url',clientData.url)
 
-		parser.getDataFromURL(clientData.url, function (data) {
-			if (!data) {
-				if (docs[0]) {
-					console.log('ERROR: url in cache but could not update',clientData.url,docs[0]) //TODO bring this to frontend
-					callback("NOUPDATE",docs[0]);
-				}
-				else {
-					callback("ENOTFOUND",null);
-				}
-				return;
-			}
+		this.getDataFromURLWithDBData(clientData,dbData,callback)
 
-			callback(null,data);
-
-			//update the lastUpdateTime
-			data.lastUpdateTime = new Date().getTime();
-
-			if (docs.length==0) {
-				this.mergeAndUpdateData(clientData,null,data)
-			}
-			else {
-				this.mergeAndUpdateData(clientData,docs[0],data)
-			}
-		}.bind(this));
 	}.bind(this));
 };
 
 
 
 DataMgr.prototype.onInterval = function() {
-	
-
-
-
+	console.log('UPDATING ALL DATA')
+	this.db.find({}, function (err,docs) {
+		for (var i = 0; i < docs.length; i++) {
+			if (docs[i].emails.length>0) {
+				this.getDataFromURLWithDBData(null,docs[i],function(){});
+			}
+		};
+	}.bind(this));
 };
 
 

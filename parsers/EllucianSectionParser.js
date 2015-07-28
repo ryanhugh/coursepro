@@ -84,8 +84,7 @@ EllucianSectionParser.prototype.parseHTML = function(url,html,callback){
 
 	    	//get rid of the unimportiant stuff
     		data.year=data.year.match(/\d+/)[0];
-    		data.name=data.name.match(/(.+?)\s-\s/i)[1]
-
+    		data.name=data.name.match(/(.+?)\s-\s/i)[1];    		
 	    	callback(data)
 	    }.bind(this)
 	}, {decodeEntities: true});
@@ -93,6 +92,9 @@ EllucianSectionParser.prototype.parseHTML = function(url,html,callback){
 	parser.end();
 }
 
+EllucianSectionParser.prototype.getClientString = function(pageData) {
+	return pageData.seatsRemaining + ' open seats found in '+ pageData.name + ' ('+pageData.seatsCapacity + ' total seats)'
+};
 
 
 
