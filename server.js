@@ -69,7 +69,7 @@ app.post('/urlDetails', function(req, res) {
 		url:req.body.url,
 		ip:req.connection.remoteAddress,
 		email:req.body.email
-	},function (err,data) {
+	},function (err,clientString) {
 
 		if (err) {
 			//oh no! no modules support url
@@ -81,9 +81,7 @@ app.post('/urlDetails', function(req, res) {
 
 			res.send(JSON.stringify({
 				reason:"SUCCESS",
-				name:data.name,
-				seatsCapacity:data.seatsCapacity,
-				seatsRemaining:data.seatsRemaining
+				clientString:clientString
 			}));
 		}
 	});

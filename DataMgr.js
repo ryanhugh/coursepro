@@ -106,7 +106,11 @@ DataMgr.prototype.mergeAndUpdateData = function(clientData,dbData,pageData) {
 //merges the client data with dbData, and updates if anything changed
 //hits the page if there is no data in the db on 
 //and calls the callback with the 
-DataMgr.prototype.getDataFromURLWithDBData = function(clientData,dbData,callback) {
+DataMgr.prototype.getClientStringForClientAndDB = function(clientData,dbData,callback) {
+
+	if (!callback) {
+		callback = function (){};
+	};
 	
 	console.log('PROCESSING:',clientData,dbData);
 
@@ -122,16 +126,6 @@ DataMgr.prototype.getDataFromURLWithDBData = function(clientData,dbData,callback
 		return;
 	}
 
-
-	//yay in cache and updated
-	var fifteeenMinAgo = new Date().getTime()-900000;
-	if (dbData && dbData.lastUpdateTime>fifteeenMinAgo) {
-		console.log('RECENT CACHE HIT!',url)
-		callback(null,dbData);
-		this.mergeAndUpdateData(clientData,dbData,null);
-		return;
-	};
-
 	var parser = this.findSupportingParser(url);
 	if (!parser) {
 		console.log('no parser found for',url)
@@ -141,11 +135,21 @@ DataMgr.prototype.getDataFromURLWithDBData = function(clientData,dbData,callback
 
 	console.log('Using parser:',parser.constructor.name,'for url',url)
 
+	//yay in cache and updated
+	var fifteeenMinAgo = new Date().getTime()-900000;
+	if (dbData && dbData.lastUpdateTime>fifteeenMinAgo) {
+		console.log('RECENT CACHE HIT!',url)
+		callback(null,parser.getClientString(dbData));
+		this.mergeAndUpdateData(clientData,dbData,null);
+		return;
+	};
+
+	
 	parser.getDataFromURL(url, function (pageData) {
 		if (!pageData) {
 			if (dbData) {
 				console.log('ERROR: url in cache but could not update',url,dbData)
-				callback("NOUPDATE",dbData);
+				callback("NOUPDATE",parser.getClientString(dbData));
 			}
 			else {
 				callback("ENOTFOUND",null);
@@ -153,6 +157,8 @@ DataMgr.prototype.getDataFromURLWithDBData = function(clientData,dbData,callback
 			return;
 		}
 
+
+		var depsPageData = [];
 		//also calculate the page's dependencies
 		if (pageData.deps) {
 			pageData.deps.forEach(function (depUrl) {
@@ -163,14 +169,20 @@ DataMgr.prototype.getDataFromURLWithDBData = function(clientData,dbData,callback
 					email:clientData.email
 				};
 
-				getDataFromURL(depClientData,function (pageData) {
-						
+				this.getClientStringWithClientData(depClientData,function (depPageData) {
+					depsPageData.push(depPageData);
+
+					//all urls have been processed
+					if (depsPageData.length==depPageData.deps.length) {
+						parser.getClientString(pageData,depsPageData);
+						return;
+					};
 				});
 			});
 		};
 
 
-		callback(null,pageData);
+		callback(null,parser.getClientString(pageData));
 
 		//update the lastUpdateTime
 		pageData.lastUpdateTime = new Date().getTime();
@@ -183,7 +195,7 @@ DataMgr.prototype.getDataFromURLWithDBData = function(clientData,dbData,callback
 
 
 
-DataMgr.prototype.getDataFromURL = function(clientData,callback) {
+DataMgr.prototype.getClientStringWithClientData = function(clientData,callback) {
 
 	//if already in database, great
 	this.db.find({url:clientData.url}, function (err,docs) {
@@ -206,7 +218,7 @@ DataMgr.prototype.getDataFromURL = function(clientData,callback) {
 		}
 
 
-		this.getDataFromURLWithDBData(clientData,dbData,callback)
+		this.getClientStringForClientAndDB(clientData,dbData,callback)
 
 	}.bind(this));
 };
@@ -218,7 +230,7 @@ DataMgr.prototype.onInterval = function() {
 	this.db.find({}, function (err,docs) {
 		for (var i = 0; i < docs.length; i++) {
 			if (docs[i].emails.length>0) {
-				this.getDataFromURLWithDBData(null,docs[i],function(){});
+				this.getClientStringForClientAndDB(null,docs[i]);
 			}
 		};
 	}.bind(this));
@@ -227,7 +239,7 @@ DataMgr.prototype.onInterval = function() {
 
 DataMgr.prototype.tests = function() {
 	
-	this.getDataFromURL({
+	this.getClientStringWithClientData({
 		url:'https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201120&crn_in=1436',
 		// url:'https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201120&crn_in=1445',
 		ip:'localhost'

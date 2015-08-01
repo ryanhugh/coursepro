@@ -59,7 +59,7 @@ function setUrlStatus (data) {
 		{
 			labelClass:'label-success',
 			labelText:'Huzzah!',
-			reason:data.seatsRemaining + ' open seats found in '+ data.name + ' ('+data.seatsCapacity + ' total seats)'
+			reason:data.clientString
 		},
 		'SERVERDOWN': 
 		{
