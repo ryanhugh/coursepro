@@ -92,8 +92,10 @@ EllucianSectionParser.prototype.parseHTML = function(url,html,callback){
 	parser.end();
 }
 
-EllucianSectionParser.prototype.getClientString = function(pageData) {
-	return pageData.seatsRemaining + ' open seats found in '+ pageData.name + ' ('+pageData.seatsCapacity + ' total seats)'
+EllucianSectionParser.prototype.getMetadata = function(data) {
+	return {
+		clientString:data.seatsRemaining + ' open seats found in '+ data.name + ' ('+data.seatsCapacity + ' total seats)'
+	};
 };
 
 

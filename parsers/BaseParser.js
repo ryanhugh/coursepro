@@ -1,6 +1,7 @@
+'use strict';
 var request = require('request');
-var sslRootCAs = require('ssl-root-cas/latest')
-sslRootCAs.inject()
+var DataMgr = require('../DataMgr');
+var async = require('async');
 
 
 function BaseParser () {
@@ -42,6 +43,7 @@ BaseParser.prototype.getPage = function(url,callback) {
 		    "Referer":url //trololololol
 		}
 	}, function (error, response, body) {
+		console.log('back from request',body.length)
 		if (error) {
 			console.log('REQUESTS ERROR:',error,body);
 			callback(null);
@@ -52,7 +54,8 @@ BaseParser.prototype.getPage = function(url,callback) {
 	}.bind(this));
 };
 
-BaseParser.prototype.getDataFromURL = function(url,callback) {
+//callback here is pageData (stuff to store in db), and metadata (stuff dont store in db)
+BaseParser.prototype.getDataFromURL = function(url,ip,email,callback) {
 
 	console.log('firing request for',url)
 	this.getPage(url,function (html) {
@@ -60,9 +63,37 @@ BaseParser.prototype.getDataFromURL = function(url,callback) {
 			callback(null);
 			return;
 		};
-		this.parseHTML(url,html,callback);
+		console.log('back in get data')
+		this.parseHTML(url,html,function (pageData) {
+			console.log('got pageData:',pageData)
+
+			pageData.lastUpdateTime = new Date().getTime();
+
+
+			if (pageData.deps){
+
+				async.filter(pageData.deps, function (url,callback) {
+					return DataMgr.getClientData(url,ip,email,callback);	
+				}.bind(this),
+
+
+				function (results) {
+					callback(pageData,this.getMetadata(pageData,results));
+				}.bind(this));
+			}
+			else {
+				callback(pageData,this.getMetadata(pageData));
+			}
+		}.bind(this));
 	}.bind(this));
 };
+
+
+
+
+
+
+
 
 BaseParser.prototype.tests = function() {
 	

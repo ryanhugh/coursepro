@@ -1,6 +1,7 @@
 // // var a = require('./parsers/BaseParser')
 // // console.log('fdas'.indexOf)
 // var urlParser = require('url');
+var async = require('async');
 // var querystring = require('querystring');
 // var assert = require('assert');
 // var fs = require('fs');
@@ -14,20 +15,20 @@
 // var URLData= querystring.parse(he.decode('null'));
 // console.log(URLData);
 
-var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'coursenotifyer@gmail.com',
-        pass: 'coursenotifyer890'
-    }
-});
-transporter.sendMail({
-    from: 'coursenotifyer@gmail.com',
-    to: 'rysquash@gmail.com',
-    subject: 'hello',
-    html: '<a href="http://google.com"><div style="font-size:100px">Link!</div></a>'
-});
+// var nodemailer = require('nodemailer');
+// var transporter = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//         user: 'coursenotifyer@gmail.com',
+//         pass: 'coursenotifyer890'
+//     }
+// });
+// transporter.sendMail({
+//     from: 'coursenotifyer@gmail.com',
+//     to: 'rysquash@gmail.com',
+//     subject: 'hello',
+//     html: '<a href="http://google.com"><div style="font-size:100px">Link!</div></a>'
+// });
 
 
 // function Rabbit(name) {
@@ -42,3 +43,14 @@ transporter.sendMail({
 
 // console.log( new Date().getTime() ) // true, in object
 // console.log(Set.prototype)
+
+
+
+function test (arg1,arg2,arg3,callback) {
+	console.log(arguments)
+	callback('hi');
+}
+
+async.filter(['file1','file2','file3'], test, function(results){
+    console.log(results)
+});

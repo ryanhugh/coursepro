@@ -3,8 +3,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
 var fs = require('fs');
-var Datastore = require('nedb')
-var DataMgr = require('./DataMgr')
+var DataMgr = require('./DataMgr');
 var blacklistedEmails = require('./blacklistedEmails.json')
 
 
