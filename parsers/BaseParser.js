@@ -1,7 +1,7 @@
 'use strict';
 var request = require('request');
-
-
+var URI = require('uri-js');
+var htmlparser = require('htmlparser2');
 
 function BaseParser () {
 }	
@@ -53,6 +53,72 @@ BaseParser.prototype.getDataFromURL = function(url,callback) {
 		}.bind(this));
 	}.bind(this));
 };
+
+BaseParser.prototype.onBeginParsing = function(parsingData) {
+	
+};
+
+BaseParser.prototype.onOpenTag = function(parsingData,name,attribs) {
+	parsingData.currentData=null;
+};
+
+BaseParser.prototype.onText = function(parsingData,text) {
+	if (!parsingData.currentData) {
+		return;
+	}
+
+	//add text to corrosponding data
+	//would just do data[currentData] but if there is a & this is called twice for some reason
+	if (parsingData.htmlData[parsingData.currentData]) {
+		parsingData.htmlData[parsingData.currentData]+=text
+	}
+	else {
+		parsingData.htmlData[parsingData.currentData]=text
+	}
+};
+
+BaseParser.prototype.onCloseTag = function(parsingData,tagname) {
+	parsingData.currentData=null;
+};
+
+BaseParser.prototype.onEndParsing = function(parsingData,callback) {
+	callback(parsingData.htmlData)
+};
+
+BaseParser.prototype.parseHTML = function(url,html,callback){
+	if (!callback) {
+		callback = function () {}
+	};
+
+	var urlParsed = URI.parse(url)
+	var urlStart = urlParsed.scheme +'://'+ urlParsed.host;
+
+	var parsingData={
+		htmlData:{
+			deps:[]
+		},
+		urlStart:urlStart,
+		currentData:null
+	};
+	this.onBeginParsing(parsingData);
+
+	//get everything else from html
+	var parser = new htmlparser.Parser({
+		onopentag: this.onOpenTag.bind(this,parsingData),
+		ontext: this.onText.bind(this,parsingData),
+		onclosetag: this.onCloseTag.bind(this,parsingData),
+	    onend: function () {
+	    	this.onEndParsing(parsingData,callback);
+	    }.bind(this)
+	}, {decodeEntities: true});
+	parser.write(html);
+	parser.end();
+}
+
+
+
+
+
 
 
 

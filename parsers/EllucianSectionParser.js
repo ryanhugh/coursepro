@@ -2,7 +2,6 @@
 var assert = require('assert');
 var fs = require('fs');
 var he = require('he');
-var htmlparser = require('htmlparser2');
 var BaseParser = require('./BaseParser');
 
 //700+ college sites use this poor interface for their registration
@@ -46,87 +45,60 @@ EllucianSectionParser.prototype.isValidData = function(data) {
 };
 
 
-
-//required data:
-
-// "year":"2015",
-// "name":"Introduction to Economics"
-// "totalSeats":100,
-// "totalOpenSeats":5,
-// "totalSections":6,
-// "sectionsOpenSeats":1,
-EllucianSectionParser.prototype.parseHTML = function(url,html,callback){
-
-	var data={}
-
-	//get everything else from html
-	var currentData;
-	var boxCount = 0;
-	var boxOrder = [null,'seatsCapacity','seatsActual','seatsRemaining','waitCapacity','waitActual','waitRemaining']
-	var parser = new htmlparser.Parser({
-	    onopentag: function(name, attribs){
-	    	if (name=='div' && attribs.class=='staticheaders') {
-	    		currentData = 'year';
-	    	}
-	    	else if (name =='td' && attribs.class=='dddefault'){
-	    		currentData=boxOrder[boxCount]
-	    		boxCount++;
-	    	}
-	    	else if (name =='th' && attribs.class=='ddlabel' && attribs.scope=="row" && !data.name){
-	    		currentData='name'
-	    	}
-	    	else {
-	    		currentData=null;
-	    	}
-	    }.bind(this),
-	    ontext: function(text){
-	    	if (!currentData) {
-	    		return;
-	    	}
-	    	//add text to corrosponding data
-	    	//would just do data[currentData] but if there is a & this is called twice for some reason
-	    	if (data[currentData]) {
-	    		data[currentData]+=text
-	    	}
-	    	else {
-	    		data[currentData]=text
-	    	}
-	    }.bind(this),
-	    onclosetag: function(tagname){
-	    	currentData=null;
-	    }.bind(this),
-	    onend: function () {
+EllucianSectionParser.prototype.onBeginParsing = function(parsingData) {
+	parsingData.boxCount=0;
+};
 
 
-	    	//add optional data
-	    	['waitCapacity','waitActual','waitRemaining'].forEach(function (optionalVal) {
-	    		if (!data[optionalVal]) {
-	    			data[optionalVal]=0;
-	    		};
-	    	});
 
-	    	//convert numbers to ints
-			['seatsCapacity','seatsActual','seatsRemaining','waitCapacity','waitActual','waitRemaining'].forEach(function (intAttr) {
-				data[intAttr] = parseInt(data[intAttr]);
-			})
+var boxOrder = [null,'seatsCapacity','seatsActual','seatsRemaining','waitCapacity','waitActual','waitRemaining'];
 
-
-	    	//missed something, or invalid page
-	    	if (!this.isValidData(data)) {
-	    		console.log("ERROR: though url was good, but missed data",url,data);
-	    		callback(null);
-	    		return;
-	    	};
-
-	    	//get rid of the unimportiant stuff
-    		data.year=parseInt(data.year.match(/\d+/)[0]);
-    		data.name=data.name.match(/(.+?)\s-\s/i)[1];    		
-	    	callback(data)
-	    }.bind(this)
-	}, {decodeEntities: true});
-	parser.write(html);
-	parser.end();
+EllucianSectionParser.prototype.onOpenTag = function(parsingData,name,attribs) {
+	if (name=='div' && attribs.class=='staticheaders') {
+		parsingData.currentData = 'year';
+	}
+	else if (name =='td' && attribs.class=='dddefault'){
+		parsingData.currentData=boxOrder[parsingData.boxCount]
+		parsingData.boxCount++;
+	}
+	else if (name =='th' && attribs.class=='ddlabel' && attribs.scope=="row" && !parsingData.htmlData.name){
+		parsingData.currentData='name'
+	}
+	else {
+		parsingData.currentData=null;
+	}
 }
+
+EllucianSectionParser.prototype.onEndParsing = function(parsingData,callback) {
+
+	//add optional data
+	['waitCapacity','waitActual','waitRemaining'].forEach(function (optionalVal) {
+		if (!parsingData.htmlData[optionalVal]) {
+			 parsingData.htmlData[optionalVal]=0;
+		};
+	});
+
+
+	//missed something, or invalid page
+	if (!this.isValidData(parsingData.htmlData)) {
+		console.log("ERROR: though url was good, but missed data", parsingData);
+		return callback(null);
+	};
+
+	//convert numbers to ints
+	['seatsCapacity','seatsActual','seatsRemaining','waitCapacity','waitActual','waitRemaining'].forEach(function (intAttr) {
+		 parsingData.htmlData[intAttr] = parseInt( parsingData.htmlData[intAttr]);
+	})
+
+
+	//get rid of the unimportiant stuff
+	 parsingData.htmlData.year=parseInt( parsingData.htmlData.year.match(/\d+/)[0]);
+	 parsingData.htmlData.name= parsingData.htmlData.name.match(/(.+?)\s-\s/i)[1];  
+	 callback(parsingData.htmlData);
+};
+
+
+
 
 EllucianSectionParser.prototype.getMetadata = function(pageData) {
 	return {

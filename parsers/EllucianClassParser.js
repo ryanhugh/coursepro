@@ -3,7 +3,7 @@ var urlParser = require('url');
 var fs = require('fs');
 var querystring = require('querystring');
 var BaseParser = require('./BaseParser');
-var htmlparser = require('htmlparser2');
+
 var URI = require('uri-js');
 
 var EllucianSectionParser = require('./ellucianSectionParser');
@@ -24,86 +24,56 @@ EllucianClassParser.prototype = Object.create(BaseParser.prototype);
 EllucianClassParser.prototype.constructor = EllucianClassParser;
 
 
-
-
 EllucianClassParser.prototype.supportsPage = function (url,html) {
 	return url.indexOf('bwckctlg.p_disp_listcrse')>-1;
 }
 
 
 
-//required data:
-
-// "year":"2015",
-// "name":"Introduction to Economics"
-// "totalSeats":100,
-// "totalOpenSeats":5,
-// "totalSections":6,
-// "sectionsOpenSeats":1,
-// + anything else to format the format url
-EllucianClassParser.prototype.parseHTML = function(url,html,callback){
-	
-	
-	var urlParsed = URI.parse(url)
-	var urlStart = urlParsed.scheme +'://'+ urlParsed.host;
+//parsing the htmls
 
 
-	var data={
-		deps:[]
+EllucianClassParser.prototype.onOpenTag = function(parsingData,name,attribs) {
+	if (name=='span' && attribs.class=='fieldlabeltext') {
+		parsingData.currentData = 'year';
 	}
+	else if (name =='a' && attribs.href){
+		var attrURL = attribs.href;
 
-	var currentData;
-	var parser = new htmlparser.Parser({
-		onopentag: function(name, attribs){
-			if (name=='span' && attribs.class=='fieldlabeltext') {
-				currentData = 'year';
-			}
-			else if (name =='a' && attribs.href){
-				var attrURL = attribs.href;
+		//add hostname + port if not specified
+		if (URI.parse(attrURL).reference=='relative') {
+			attrURL = parsingData.urlStart + attrURL;
+		}
 
-				//add hostname + port if not specified
-				if (URI.parse(attrURL).reference=='relative') {
-					attrURL = urlStart + attrURL;
-				}
-
-				if (ellucianSectionParser.supportsPage(attrURL)){
-					data.deps.push(attrURL);
-				}
-			}
-			else {
-				currentData=null;
-			}
-		},
-		ontext: function(text){
-			if (!currentData) {
-				return;
-			}
-	    	//add text to corrosponding data
-	    	if (data[currentData]) {
-	    		data[currentData]+=text
-	    	}
-	    	else {
-	    		data[currentData]=text
-	    	}
-	    },
-	    onclosetag: function(tagname){
-	    	if (currentData!='year') {
-	    		currentData=null;
-	    	};
-	    },
-	    onend: function () {
-
-	    	//get rid of the unimportiant stuff
-	    	data.year=data.year.match(/\d+/)[0];
-
-	    	if (callback) {
-	    		callback(data)
-	    	};
-	    }
-	}, {decodeEntities: true});
-	parser.write(html);
-	parser.end();
+		if (ellucianSectionParser.supportsPage(attrURL)){
+			parsingData.htmlData.deps.push(attrURL);
+		}
+	}
+	else {
+		parsingData.currentData=null;
+	}
 }
+
+EllucianClassParser.prototype.onCloseTag = function(parsingData,tagname) {
+	if (parsingData.currentData!='year') {
+		parsingData.currentData=null;
+	};
+};
+
+
+
+EllucianClassParser.prototype.onEndParsing = function(parsingData,callback) {
+	
+	//get rid of the unimportiant stuff
+	parsingData.htmlData.year=parsingData.htmlData.year.match(/\d+/)[0];
+	callback(parsingData.htmlData);
+};
+
+
+
+
+
+//meta data and email data
 
 
 EllucianClassParser.prototype.getMetadata = function(pageData) {
