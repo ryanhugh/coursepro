@@ -1,14 +1,13 @@
 'use strict';
 var Datastore = require('nedb');
 var EmailMgr = require('./EmailMgr');
-var requireDir = require('require-dir');
-var parsers = requireDir('./parsers');
+
 
 
 function DataMgr () {
 	console.log('Loading dataMgr!!');
 	this.db = new Datastore({ filename: 'database.db', autoload: true });
-	this.emailMgr = new EmailMgr();
+	
 
 	//every 5 min
 	this.onInterval();
@@ -18,22 +17,47 @@ function DataMgr () {
 }
 
 
-DataMgr.prototype.findSupportingParser = function(url) {
-
-	for (var parserName in parsers) {
-		var parser = new parsers[parserName]()
-		if (parser.supportsPage(url)) {
-			return parser;
-		};
-	}
-	return null;
-};
-
 
 //db 
 
 
-DataMgr.prototype.updateData = function(newData) {
+DataMgr.prototype.shouldUpdateDB = function(newData,oldData) {
+
+	var shouldUpdateDB  = false;
+	for (var attrName in newData) {
+
+		//check new values in emails and ips
+		if (attrName == "emails") {
+			newData.emails.forEach(function (newEmail) {
+				if (oldData.emails.indexOf(newEmail)<0) {
+					shouldUpdateDB = true;
+				}
+			}.bind(this));
+		}
+		else if (attrName == 'ips'){
+
+			newData.ips.forEach(function (newIp) {
+				if (oldData.ips.indexOf(newIp)<0) {
+					shouldUpdateDB = true;
+				}
+			}.bind(this));
+		}
+
+		//check difference for all other attributes
+		else if (newData[attrName] != oldData[attrName]) {
+			shouldUpdateDB = true;
+		};
+	}
+	return shouldUpdateDB;
+
+};
+
+
+DataMgr.prototype.updateDatabase = function(newData,oldData) {
+	if (!this.shouldUpdateDB(newData,oldData)) {
+		return;
+	};
+
 
 	if (newData._id) {
 		this.db.update({ _id: newData._id }, {$set:newData}, {}, function (err, numReplaced) {	
@@ -64,7 +88,7 @@ DataMgr.prototype.fetchDBData = function(url,callback) {
 
 		var dbData;
 		if (docs.length==0) {
-			dbData=null
+			dbData={}
 		}
 		else {
 			dbData=docs[0]
@@ -76,115 +100,71 @@ DataMgr.prototype.fetchDBData = function(url,callback) {
 };
 
 
-//main starting point
-
-//only url is required
-DataMgr.prototype.getClientString = function(url,ip,email,callback) {
-
-	if (!callback) {
-		callback = function (){};
-	}
-
-	console.log('PROCESSING:',url);
-
-	var parser = this.findSupportingParser(url);
-	if (!parser) {
-		console.log('no parser found for',url)
-		callback("NOSUPPORT",null);
-		return;
-	}
-
-	console.log('Using parser:',parser.constructor.name,'for url',url);
-
-	this.fetchDBData(url,function (err,dbData) {
-		if (err) {
-			return;
-		};
-
-		//yay in cache and updated
-		var fifteeenMinAgo = new Date().getTime()-900000;
-		if (dbData.lastUpdateTime>fifteeenMinAgo) {
-			console.log('RECENT CACHE HIT!',url);
-			callback(null,parser.getMetadata(dbData));
-			this.updateDatabase(url,ip,email,dbData);
-
-		}
-		//no recent data, need to hit page
-		else {
-
-			parser.getDataFromURL(url,ip,email, function (pageData,metaData) {
-				if (!pageData) {
-					if (dbData) {
-						console.log('ERROR: url in cache but could not update',url,dbData)
-						callback("NOUPDATE",metaData.clientString); //SAME HERE
-					}
-					else {
-						callback("ENOTFOUND");
-					}
-					return;
-				}
-
-				callback(null,metaData.clientString);
-				this.updateDatabase(url,ip,email,dbData,pageData);
+// DataMgr.prototype.updateDatabase = function(oldData,newData) {
+// 	var shouldUpdateDB = false;
 
 
-			}.bind(this));
-		}
+	
+// 	// this.emailMgr.onDbDataUpdate(oldData,newData);
 
-	}.bind(this));
-};
+
+
+
+
+
+// };
 
 
 
 //page data
 
-DataMgr.prototype.updateDatabase = function(url,ip,email,dbData,pageData) {
+// DataMgr.prototype.updateDatabase = function(pageData) {
 
-	//notify the email manager
-	if (dbData && pageData) {
-		this.emailMgr.onDbDataUpdate(dbData,pageData);
-	};
+// 	//notify the email manager
+// 	if (dbData && pageData) {
+// 		this.emailMgr.onDbDataUpdate(dbData,pageData);
+// 	};
 
-	//merge all attributes into dbData, and if it changed update the database
-	var shouldUpdateDB = false;
+// 	//merge all attributes into dbData, and if it changed update the database
+// 	var shouldUpdateDB = false;
 
-	if (!dbData) {
-		dbData = {
-			url:url,
-			emails:[],
-			ips:[]
-		};
-		shouldUpdateDB=true;
-	};
-
-
-	//merge pageData into database data
-	if (pageData) {
-		for (var attrName in pageData) {
-			if (pageData[attrName] != dbData[attrName]) {
-				dbData[attrName] = pageData[attrName]
-				shouldUpdateDB = true;
-				console.log('Set',attrName,'on ',dbData.url)
-			};
-		}
-	};
-
-	//add email and ip to database, if they are not already there
-	if (email && dbData.emails.indexOf(email)<0) {
-		dbData.emails.push(email);
-		shouldUpdateDB=true;
-	}
-
-	if (ip && dbData.ips.indexOf(ip)<0) {
-		dbData.ips.push(ip)
-		shouldUpdateDB=true;
-	};
+// 	if (!dbData) {
+// 		dbData = {
+// 			url:url,
+// 			emails:[],
+// 			ips:[]
+// 		};
+// 		shouldUpdateDB=true;
+// 	};
 
 
-	if (shouldUpdateDB) {
-		this.updateData(dbData);
-	};
-};
+// 	//merge pageData into database data
+// 	if (pageData) {
+// 		for (var attrName in pageData) {
+// 			if (pageData[attrName] != dbData[attrName]) {
+// 				dbData[attrName] = pageData[attrName]
+// 				shouldUpdateDB = true;
+// 				console.log('Set',attrName,'on ',dbData.url)
+// 			};
+// 		}
+// 	};
+
+// 	//add email and ip to database, if they are not already there
+// 	if (email && dbData.emails.indexOf(email)<0) {
+// 		dbData.emails.push(email);
+// 		shouldUpdateDB=true;
+// 	}
+
+// 	if (ip && dbData.ips.indexOf(ip)<0) {
+// 		dbData.ips.push(ip)
+// 		shouldUpdateDB=true;
+// 	};
+
+
+// 	if (shouldUpdateDB) {
+// 		this.updateData(dbData);
+// 	};
+// };
 
 
 // interval
@@ -195,7 +175,9 @@ DataMgr.prototype.onInterval = function() {
 	this.db.find({}, function (err,docs) {
 		for (var i = 0; i < docs.length; i++) {
 			if (docs[i].emails.length>0) {
-				this.getClientString(docs[i].url);
+
+
+				new PageData(docs[i].url).processUrl();
 			}
 		};
 	}.bind(this));

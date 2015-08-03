@@ -12,6 +12,7 @@ var BaseParser = require('./BaseParser');
 function EllucianSectionParser () {
 	BaseParser.constructor.call(this);
 }
+console.log(BaseParser)
 
 //prototype constructor
 EllucianSectionParser.prototype = Object.create(BaseParser.prototype);
@@ -95,6 +96,39 @@ EllucianSectionParser.prototype.parseHTML = function(url,html,callback){
 EllucianSectionParser.prototype.getMetadata = function(data) {
 	return {
 		clientString:data.seatsRemaining + ' open seats found in '+ data.name + ' ('+data.seatsCapacity + ' total seats)'
+	};
+};
+
+
+
+//email stuff
+
+
+EllucianSectionParser.prototype.getOptionallyPlural = function(num) {
+	if (num>1) {
+		return 'seats'
+	}
+	else {
+		return 'seat'
+	}
+};
+
+EllucianSectionParser.prototype.getEmailData = function(newData,oldData) {
+	
+	// spot opened on wait list
+	if (newData.waitRemaining>oldData.waitRemaining && newData.waitRemaining>0) {
+		var newSeatsOpen = (newData.waitRemaining-oldData.waitRemaining);
+		return {
+			title:newSeatsOpen + ' '+this.getOptionallyPlural(newSeatsOpen)+' opened on wait list for '+newData.name+'!'
+		};
+	}
+
+	//spot opened on class
+	if (newData.seatsRemaining>oldData.seatsRemaining && newData.seatsRemaining>0) {
+		var newSeatsOpen = (newData.seatsRemaining-oldData.seatsRemaining);
+		return {
+			title:newSeatsOpen + ' '+this.getOptionallyPlural(newSeatsOpen)+' opened for '+newData.name+'!'
+		};
 	};
 };
 

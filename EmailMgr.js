@@ -13,27 +13,22 @@ function EmailMgr () {
 }
 
 
-EmailMgr.prototype.sendEmails = function(emailData) {
+EmailMgr.prototype.sendEmails = function(pageData,emailData) {
+	if (!emailData) {
+		return;
+	};
 	
-	console.log('Sending email to ',emailData.emails)
+	console.log('Sending email to ',pageData.dbData.emails)
 
 	transporter.sendMail({
 	    from: 'coursenotifyer@gmail.com',
-	    to: emailData.emails,
+	    to: pageData.dbData.emails,
 	    subject: emailData.title,
-	    html: '<a href="'+emailData.url+'"><div style="font-size:100px">Link!</div></a>'
+	    html: '<a href="'+pageData.url+'"><div style="font-size:100px">Link!</div></a>'
 	});
 
 };
 
-EmailMgr.prototype.getOptionallyPlural = function(num) {
-	if (num>1) {
-		return 'seats'
-	}
-	else {
-		return 'seat'
-	}
-};
 
 
 EmailMgr.prototype.onDbDataUpdate = function(dbData,newData) {
@@ -42,29 +37,29 @@ EmailMgr.prototype.onDbDataUpdate = function(dbData,newData) {
 		return;
 	};
 	
-	// spot opened on wait list
-	if (newData.waitRemaining>dbData.waitRemaining && newData.waitRemaining>0) {
-		var newSeatsOpen = (newData.waitRemaining-dbData.waitRemaining);
-		this.sendEmails( 
-		{
-			title:newSeatsOpen + ' '+this.getOptionallyPlural(newSeatsOpen)+' opened on wait list for '+dbData.name+'!',
-			url:dbData.url,
-			emails:dbData.emails
-		});
-	}
+	// // spot opened on wait list
+	// if (newData.waitRemaining>dbData.waitRemaining && newData.waitRemaining>0) {
+	// 	var newSeatsOpen = (newData.waitRemaining-dbData.waitRemaining);
+	// 	this.sendEmails( 
+	// 	{
+	// 		title:newSeatsOpen + ' '+this.getOptionallyPlural(newSeatsOpen)+' opened on wait list for '+dbData.name+'!',
+	// 		url:dbData.url,
+	// 		emails:dbData.emails
+	// 	});
+	// }
 
-	//spot opened on class
-	if (newData.seatsRemaining>dbData.seatsRemaining && newData.seatsRemaining>0) {
+	// //spot opened on class
+	// if (newData.seatsRemaining>dbData.seatsRemaining && newData.seatsRemaining>0) {
 
-		var newSeatsOpen = (newData.seatsRemaining-dbData.seatsRemaining);
+	// 	var newSeatsOpen = (newData.seatsRemaining-dbData.seatsRemaining);
 
-		this.sendEmails( 
-		{
-			title:newSeatsOpen + ' '+this.getOptionallyPlural(newSeatsOpen)+' opened for '+dbData.name+'!',
-			url:dbData.url,
-			emails:dbData.emails
-		});
-	};
+	// 	this.sendEmails( 
+	// 	{
+	// 		title:newSeatsOpen + ' '+this.getOptionallyPlural(newSeatsOpen)+' opened for '+dbData.name+'!',
+	// 		url:dbData.url,
+	// 		emails:dbData.emails
+	// 	});
+	// };
 };
 
 

@@ -1,0 +1,4 @@
+data does not need to go to client.js, just clientString
+
+
+have an array of examples and of user agents

@@ -3,14 +3,13 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
 var fs = require('fs');
-var DataMgr = require('./DataMgr');
+var PageData = require('./PageData');
 var blacklistedEmails = require('./blacklistedEmails.json')
 
 
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 
-var dataMgr = new DataMgr();
 
 
 //todo:
@@ -34,7 +33,8 @@ function validateEmail(email) {
 		console.log('email failed regex',email)
 		return false;
 	}
-	// console.log(Object.getOwnPropertyNames(email))
+	
+
 	for (var i = 0; i < blacklistedEmails.length; i++) {
 		if (email.slice(-blacklistedEmails[i].length) == blacklistedEmails[i]) {
 			console.log('email is blacklisted',email);
@@ -62,13 +62,9 @@ app.post('/urlDetails', function(req, res) {
 
 
 	//client sent a (possibly) valid url, check and parse page
-	var url = req.body.url;
+	var pageData = new PageData(req.body.url,req.connection.remoteAddress,req.body.email);
 
-	dataMgr.getDataFromURL({
-		url:req.body.url,
-		ip:req.connection.remoteAddress,
-		email:req.body.email
-	},function (err,clientString) {
+	pageData.getClientString(function (err,clientString) {
 
 		if (err) {
 			//oh no! no modules support url

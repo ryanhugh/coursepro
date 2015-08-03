@@ -46,11 +46,15 @@ var async = require('async');
 
 
 
-function test (arg1,arg2,arg3,callback) {
-	console.log(arguments)
-	callback('hi');
-}
+// function test (arg1,arg2,arg3,callback) {
+// 	console.log(arguments)
+// 	callback('hi');
+// }
 
-async.filter(['file1','file2','file3'], test, function(results){
-    console.log(results)
-});
+// async.filter(['file1','file2','file3'], test, function(results){
+//     console.log(results)
+// });
+
+global.shared=5
+
+console.log(shared)
