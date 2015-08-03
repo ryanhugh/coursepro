@@ -117,27 +117,16 @@ EllucianClassParser.prototype.getEmailData = function(pageData) {
 
 
 
-//https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=BUS&crse_in=480&schd_in=LE
-
 
 EllucianClassParser.prototype.tests = function () {
 
 	fs.readFile('../tests/'+this.constructor.name+'/1.html','utf8',function (err,body) {
 
 
-		// console.log(JSON.stringify({
-		// 	url:'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2160&schd_in=LEC',
-		// 	body:body
-		// }))
-
-	console.log(err,body)
 
 	var fileJSON = JSON.parse(body);
 
 
-
-
-	console.log(this.__proto__)
 	this.parseHTML(fileJSON.url,fileJSON.body,function (data) {
 		console.log(data);
 	}.bind(this));
