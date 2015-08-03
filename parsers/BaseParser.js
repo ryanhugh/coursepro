@@ -20,15 +20,11 @@ BaseParser.prototype.getPage = function(url,callback) {
 		    "Referer":url //trololololol
 		}
 	}, function (error, response, body) {
-
-
-
 		if (error) {
 			console.log('REQUESTS ERROR:',error,body);
 			callback(error);
 		}
 		else {
-			console.log('back from request',body.length)
 			callback(null,body);
 		}
 	}.bind(this));
@@ -38,7 +34,6 @@ BaseParser.prototype.getPage = function(url,callback) {
 BaseParser.prototype.getDataFromURL = function(url,callback) {
 
 	console.log('firing request for',url)
-	// console.trace("Here I am!")
 	this.getPage(url,function (err,html) {
 		if (err) {
 			callback(err);

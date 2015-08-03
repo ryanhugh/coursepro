@@ -150,7 +150,6 @@ EllucianSectionParser.prototype.getOptionallyPlural = function(num) {
 };
 
 EllucianSectionParser.prototype.getEmailData = function(newData,oldData) {
-	console.log(newData,oldData)
 	
 	// spot opened on wait list
 	if (newData.waitRemaining>oldData.waitRemaining && newData.waitRemaining>0) {

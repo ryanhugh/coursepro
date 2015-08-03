@@ -110,7 +110,6 @@ EllucianClassParser.prototype.getMetadata = function(pageData) {
 
 	var totalSeats = 0;
 	pageData.deps.forEach(function (depData) {
-		console.log('this is ',depData.dbData.seatsRemaining);
 		totalSeats+=parseInt(depData.dbData.seatsRemaining)
 	});
 

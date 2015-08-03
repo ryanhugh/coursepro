@@ -112,14 +112,11 @@ PageData.prototype.fetchDBData = function(callback) {
 		};
 		this.originalData.dbData = dbData;
 
-
 		this.addDBData(dbData);
-		
 
 		//yay in cache and updated
 		var fifteeenMinAgo = new Date().getTime()-900000;
 		if (this.dbData.lastUpdateTime>fifteeenMinAgo) {
-			console.log('RECENT CACHE HIT!',this.dbData.url);
 			return callback(null,true);
 
 		}
@@ -157,8 +154,6 @@ PageData.prototype.processDeps = function(callback) {
 	};
 
 	async.map(this.dbData.deps, function (url,callback) {
-
-		console.log('dep:',url)
 
 		pageDataMgr.create(url,this.originalData.ip,this.originalData.email,function (err,depData) {
 			return callback(null,depData);

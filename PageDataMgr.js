@@ -15,8 +15,6 @@ PageDataMgr.prototype.create = function(url,ip,email,callback) {
 
 	console.log('PROCESSING:',url);
 
-	
-
 
 	var pageData = new PageData(url,ip,email);
 
@@ -44,7 +42,6 @@ PageDataMgr.prototype.create = function(url,ip,email,callback) {
 
 		else {
 			pageData.fetchHTMLData(function (err) {
-				console.log('back in mgr')
 				if (err) {
 					return callback(err);
 				}
