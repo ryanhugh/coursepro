@@ -38,7 +38,7 @@ EllucianSectionParser.prototype.isValidData = function(data) {
 	];
 	//ensure that data has all of these attributes
 	for (var attrName of requiredAttrs) {
-		if (!data[attrName]) {
+		if (data[attrName]===undefined) {
 			console.log('MISSING',attrName)
 			return false;
 		};
@@ -102,9 +102,14 @@ EllucianSectionParser.prototype.parseHTML = function(url,html,callback){
 	    	//add optional data
 	    	['waitCapacity','waitActual','waitRemaining'].forEach(function (optionalVal) {
 	    		if (!data[optionalVal]) {
-	    			data[optionalVal]='0';
+	    			data[optionalVal]=0;
 	    		};
-	    	})
+	    	});
+
+	    	//convert numbers to ints
+			['seatsCapacity','seatsActual','seatsRemaining','waitCapacity','waitActual','waitRemaining'].forEach(function (intAttr) {
+				data[intAttr] = parseInt(data[intAttr]);
+			})
 
 
 	    	//missed something, or invalid page
@@ -115,7 +120,7 @@ EllucianSectionParser.prototype.parseHTML = function(url,html,callback){
 	    	};
 
 	    	//get rid of the unimportiant stuff
-    		data.year=data.year.match(/\d+/)[0];
+    		data.year=parseInt(data.year.match(/\d+/)[0]);
     		data.name=data.name.match(/(.+?)\s-\s/i)[1];    		
 	    	callback(data)
 	    }.bind(this)
@@ -145,6 +150,7 @@ EllucianSectionParser.prototype.getOptionallyPlural = function(num) {
 };
 
 EllucianSectionParser.prototype.getEmailData = function(newData,oldData) {
+	console.log(newData,oldData)
 	
 	// spot opened on wait list
 	if (newData.waitRemaining>oldData.waitRemaining && newData.waitRemaining>0) {

@@ -46,6 +46,9 @@ BaseParser.prototype.getDataFromURL = function(pageData,callback) {
 		};
 		console.log('back in get data')
 		this.parseHTML(pageData.dbData.url,html,function (htmlData) {
+			if (!htmlData) {
+				return callback('html parse error',null);
+			};
 			console.log('got htmlData:',htmlData)
 
 			htmlData.lastUpdateTime = new Date().getTime();
