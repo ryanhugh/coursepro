@@ -177,9 +177,9 @@ PageData.prototype.processDeps = function(callback) {
 PageData.prototype.finish = function(callback) {
 	
 	//update database if something changed (db does delta calculations)
-	dataMgr.updateDatabase(this.dbData,this.originalData.dbData);
+	dataMgr.updateDatabase(this);
 
-	emailMgr.sendEmails(this,this.parser.getEmailData(this.dbData,this.originalData.dbData));
+	emailMgr.sendEmails(this,this.parser.getEmailData(this));
 
 	return this.processDeps(callback);
 };

@@ -122,7 +122,7 @@ EllucianClassParser.prototype.getMetadata = function(pageData) {
 
 
 
-EllucianClassParser.prototype.getEmailData = function(newData,oldData) {
+EllucianClassParser.prototype.getEmailData = function(pageData) {
 
 	//ADD NUMBER OF CLASSES!!!
 	

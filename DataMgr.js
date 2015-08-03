@@ -53,7 +53,10 @@ DataMgr.prototype.shouldUpdateDB = function(newData,oldData) {
 };
 
 
-DataMgr.prototype.updateDatabase = function(newData,oldData) {
+DataMgr.prototype.updateDatabase = function(pageData) {
+	var newData = pageData.dbData;
+	var oldData = pageData.originalData.dbData;
+
 	if (!this.shouldUpdateDB(newData,oldData)) {
 		return;
 	};

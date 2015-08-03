@@ -12,7 +12,6 @@ var BaseParser = require('./BaseParser');
 function EllucianSectionParser () {
 	BaseParser.constructor.call(this);
 }
-console.log(BaseParser)
 
 //prototype constructor
 EllucianSectionParser.prototype = Object.create(BaseParser.prototype);
@@ -149,7 +148,10 @@ EllucianSectionParser.prototype.getOptionallyPlural = function(num) {
 	}
 };
 
-EllucianSectionParser.prototype.getEmailData = function(newData,oldData) {
+EllucianSectionParser.prototype.getEmailData = function(pageData) {
+	var newData = pageData.dbData;
+	var oldData = pageData.originalData.dbData;
+
 	
 	// spot opened on wait list
 	if (newData.waitRemaining>oldData.waitRemaining && newData.waitRemaining>0) {

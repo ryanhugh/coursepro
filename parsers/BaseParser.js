@@ -44,7 +44,7 @@ BaseParser.prototype.getDataFromURL = function(url,callback) {
 			if (!htmlData) {
 				return callback('html parse error',null);
 			};
-			console.log('got htmlData:',htmlData)
+			
 
 			htmlData.lastUpdateTime = new Date().getTime();
 
