@@ -129,9 +129,9 @@ EllucianSectionParser.prototype.parseHTML = function(url,html,callback){
 	parser.end();
 }
 
-EllucianSectionParser.prototype.getMetadata = function(data) {
+EllucianSectionParser.prototype.getMetadata = function(pageData) {
 	return {
-		clientString:data.seatsRemaining + ' open seats found in '+ data.name + ' ('+data.seatsCapacity + ' total seats)'
+		clientString:pageData.dbData.seatsRemaining + ' open seats found in '+ pageData.dbData.name + ' ('+pageData.dbData.seatsCapacity + ' total seats)'
 	};
 };
 

@@ -35,17 +35,17 @@ BaseParser.prototype.getPage = function(url,callback) {
 };
 
 //callback here is pageData (stuff to store in db), and metadata (stuff dont store in db)
-BaseParser.prototype.getDataFromURL = function(pageData,callback) {
+BaseParser.prototype.getDataFromURL = function(url,callback) {
 
-	console.log('firing request for',pageData.dbData.url,pageData)
+	console.log('firing request for',url)
 	// console.trace("Here I am!")
-	this.getPage(pageData.dbData.url,function (err,html) {
+	this.getPage(url,function (err,html) {
 		if (err) {
 			callback(err);
 			return;
 		};
 		console.log('back in get data')
-		this.parseHTML(pageData.dbData.url,html,function (htmlData) {
+		this.parseHTML(url,html,function (htmlData) {
 			if (!htmlData) {
 				return callback('html parse error',null);
 			};

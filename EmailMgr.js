@@ -26,7 +26,7 @@ EmailMgr.prototype.sendEmails = function(pageData,emailData) {
 	    from: 'coursenotifyer@gmail.com',
 	    to: pageData.dbData.emails,
 	    subject: emailData.title,
-	    html: '<a href="'+pageData.url+'"><div style="font-size:100px">Link!</div></a>'
+	    html: '<a href="'+pageData.dbData.url+'"><div style="font-size:100px">Link!</div></a>'
 	});
 
 };

@@ -1,5 +1,6 @@
 'use strict';
 var async = require('async');
+
 var requireDir = require('require-dir');
 var parsersClasses = requireDir('./parsers');
 
@@ -9,11 +10,13 @@ var EmailMgr = require('./EmailMgr');
 var dataMgr = new DataMgr();
 var emailMgr = new EmailMgr();
 
+
 var parsers = [];
 //create a list of parser objects
 for (var parserName in parsersClasses) {
 	parsers.push(new parsersClasses[parserName]())
 }
+
 
 //this is called in 3 places
 //server.js
@@ -22,6 +25,7 @@ for (var parserName in parsersClasses) {
 function PageData (url,ip,email) {
 	if (!url) {
 		console.log('page data needs a url!');
+		console.trace();
 		return null
 	}
 
@@ -60,10 +64,10 @@ PageData.prototype.findSupportingParser = function() {
 
 	for (var i = 0; i < parsers.length; i++) {
 		if (parsers[i].supportsPage(this.dbData.url)) {
-			return parsers[i];
+			this.parser= parsers[i];
+			return;
 		}
 	};
-	return null;
 };
 
 
@@ -97,6 +101,55 @@ PageData.prototype.addDBData = function(data) {
 	}
 };
 
+
+//callback = function (err,foundData) {}
+PageData.prototype.fetchDBData = function(callback) {
+	
+	dataMgr.fetchDBData(this.dbData.url,function (err,dbData) {
+		if (err) {
+			console.log(err);
+			return callback(err);
+		};
+		this.originalData.dbData = dbData;
+
+
+		this.addDBData(dbData);
+		
+
+		//yay in cache and updated
+		var fifteeenMinAgo = new Date().getTime()-900000;
+		if (this.dbData.lastUpdateTime>fifteeenMinAgo) {
+			console.log('RECENT CACHE HIT!',this.dbData.url);
+			return callback(null,true);
+
+		}
+		else {
+			return callback(null,false);
+		}
+	}.bind(this));
+};
+
+PageData.prototype.fetchHTMLData = function(callback) {
+	this.parser.getDataFromURL(this.dbData.url, function (err,pageData) {
+		if (err) {
+			console.log(err)
+			if (this.dbData.lastUpdateTime) {
+				console.log('ERROR: url in cache but could not update',this.dbData.url,this.dbData)
+				return callback("NOUPDATE");
+			}
+			else {
+				return callback("ENOTFOUND");
+			}
+		}
+		this.deps = pageData.deps
+		this.addDBData(pageData);
+		callback();
+
+
+	}.bind(this));
+};
+
+
 PageData.prototype.processDeps = function(callback) {
 	
 	if (!this.dbData.deps || this.dbData.deps.length==0){ 
@@ -107,10 +160,8 @@ PageData.prototype.processDeps = function(callback) {
 
 		console.log('dep:',url)
 
-		var depData = new PageData(url,this.originalData.ip,this.originalData.email);
-
-		depData.processUrl(function (err,clientString) {
-			return callback(null,depData)
+		pageDataMgr.create(url,this.originalData.ip,this.originalData.email,function (err,depData) {
+			return callback(null,depData);
 		}.bind(this));
 
 	}.bind(this),function (err,results) {
@@ -128,88 +179,19 @@ PageData.prototype.processDeps = function(callback) {
 };
 
 
-//main starting point
-PageData.prototype.processUrl = function(callback) {
-	if (!callback) {
-		callback = function (){};
-	}
+PageData.prototype.finish = function(callback) {
+	
+	//update database if something changed (db does delta calculations)
+	dataMgr.updateDatabase(this.dbData,this.originalData.dbData);
 
-	console.log('PROCESSING:',this.dbData.url);
+	emailMgr.sendEmails(this,this.parser.getEmailData(this.dbData,this.originalData.dbData));
 
-	this.parser = this.findSupportingParser();
-	if (!this.parser) {
-		console.log('no parser found for',this.dbData.url)
-		return callback("NOSUPPORT");
-	}
-
-	console.log('Using parser:',this.parser.constructor.name,'for url',this.dbData.url);
-
-	dataMgr.fetchDBData(this.dbData.url,function (err,dbData) {
-		if (err) {
-			console.log(err);
-			return callback(err);
-		};
-		this.originalData.dbData = dbData;
-
-
-		this.addDBData(dbData);
-		
-
-		//yay in cache and updated
-		var fifteeenMinAgo = new Date().getTime()-900000;
-		if (this.dbData.lastUpdateTime>fifteeenMinAgo) {
-			console.log('RECENT CACHE HIT!',this.dbData.url);
-
-			dataMgr.updateDatabase(this.dbData,this.originalData.dbData);
-
-			return this.processDeps(function () {
-				return this.sendClientData(null,callback)	
-			}.bind(this));
-
-
-			
-
-		}
-		//no recent data, need to hit page
-		else {
-
-			this.parser.getDataFromURL(this, function (err,pageData,deps) {
-				if (err) {
-					console.log(err)
-					if (this.dbData.lastUpdateTime) {
-						console.log('ERROR: url in cache but could not update',this.dbData.url,this.dbData)
-						return this.sendClientData("NOUPDATE",callback);
-					}
-					else {
-						return this.sendClientData("ENOTFOUND",callback);
-					}
-				}
-				this.deps = deps
-				this.addDBData(pageData);
-
-				//if found new data on page
-				dataMgr.updateDatabase(this.dbData,this.originalData.dbData);
-
-				emailMgr.sendEmails(this,this.parser.getEmailData(this.dbData,this.originalData.dbData));
-				
-
-				return this.processDeps(function () {
-					return this.sendClientData(null,callback)	
-				}.bind(this));
-
-
-			}.bind(this));
-		}
-
-	}.bind(this));
+	return this.processDeps(callback);
 };
 
-
-PageData.prototype.sendClientData = function(err,callback) {
-	return callback(err,this.parser.getMetadata(this).clientString);
+PageData.prototype.getClientString = function() {
+	return this.parser.getMetadata(this).clientString;
 };
-
-// 
 
 
 
@@ -221,10 +203,10 @@ if (require.main === module) {
 	
 	// var a = new PageData("https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201536&crn_in=23361");
 
-	var a = new PageData("https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201536&subj_in=ACCT&crse_in=2101&schd_in=BAS");
-	a.processUrl(function () {
-		process.exit()
-	});
+	// var a = new PageData("https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201536&subj_in=ACCT&crse_in=2101&schd_in=BAS");
+	// a.processUrl(function () {
+	// 	process.exit()
+	// });
 
 
 
@@ -238,4 +220,3 @@ if (require.main === module) {
 
 
 module.exports = PageData;
-global.PageData = PageData;

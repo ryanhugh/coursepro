@@ -1,9 +1,10 @@
 'use strict';
 var express = require('express');
 var bodyParser = require('body-parser');
+var PageDataMgr = require('./PageDataMgr');
 var request = require('request');
 var fs = require('fs');
-var PageData = require('./PageData');
+
 var blacklistedEmails = require('./blacklistedEmails.json')
 
 
@@ -62,10 +63,7 @@ app.post('/urlDetails', function(req, res) {
 
 
 	//client sent a (possibly) valid url, check and parse page
-	var pageData = new PageData(req.body.url,req.connection.remoteAddress,req.body.email);
-	console.log(pageData)
-
-	pageData.processUrl(function (err,clientString) {
+	pageDataMgr.create(req.body.url,req.connection.remoteAddress,req.body.email, function (err,pageData) {
 
 		if (err) {
 			//oh no! no modules support url
@@ -77,7 +75,7 @@ app.post('/urlDetails', function(req, res) {
 
 			res.send(JSON.stringify({
 				reason:"SUCCESS",
-				clientString:clientString
+				clientString:pageData.getClientString()
 			}));
 		}
 	});
