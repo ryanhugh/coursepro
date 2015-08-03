@@ -33,17 +33,17 @@ BaseParser.prototype.getPage = function(url,callback) {
 //callback here is pageData (stuff to store in db), and metadata (stuff dont store in db)
 BaseParser.prototype.getDataFromURL = function(url,callback) {
 
-	console.log('firing request for',url)
+
 	this.getPage(url,function (err,html) {
 		if (err) {
 			callback(err);
 			return;
 		};
-		console.log('back in get data')
 		this.parseHTML(url,html,function (htmlData) {
 			if (!htmlData) {
 				return callback('html parse error',null);
 			};
+			console.log('parsed '+html.length+' bytes from',url);
 			
 
 			htmlData.lastUpdateTime = new Date().getTime();

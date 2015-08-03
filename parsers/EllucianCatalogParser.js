@@ -54,6 +54,10 @@ EllucianCatalogParser.prototype.parseHTML = function(url,html,callback){
 				}
 
 				if (ellucianClassParser.supportsPage(attrURL)){
+
+					//register for all types of classes
+
+
 					data.deps.push(attrURL);
 				}
 			}
@@ -102,12 +106,7 @@ EllucianCatalogParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianCatalogParser.prototype.tests = function () {
-	// return;
 
-	// this.getDataFromURL('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201120&crn_in=331', function (data) {
-	// 	console.log(data)
-	// })
-	// return;
 
 	fs.readFile('../tests/'+this.constructor.name+'/1.html','utf8',function (err,body) {
 
