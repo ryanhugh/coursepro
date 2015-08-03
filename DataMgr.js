@@ -29,7 +29,7 @@ DataMgr.prototype.shouldUpdateDB = function(newData,oldData) {
 		//check new values in emails and ips
 		if (attrName == "emails") {
 			newData.emails.forEach(function (newEmail) {
-				if (oldData.emails.indexOf(newEmail)<0) {
+				if (!oldData.emails || oldData.emails.indexOf(newEmail)<0) {
 					shouldUpdateDB = true;
 				}
 			}.bind(this));
@@ -37,7 +37,7 @@ DataMgr.prototype.shouldUpdateDB = function(newData,oldData) {
 		else if (attrName == 'ips'){
 
 			newData.ips.forEach(function (newIp) {
-				if (oldData.ips.indexOf(newIp)<0) {
+				if (!oldData.ips || oldData.ips.indexOf(newIp)<0) {
 					shouldUpdateDB = true;
 				}
 			}.bind(this));
@@ -186,9 +186,9 @@ DataMgr.prototype.onInterval = function() {
 
 DataMgr.prototype.tests = function() {
 	
-	this.getClientString('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201120&crn_in=1436',function (data) {
-		console.log(data)
-	})
+	// this.processUrl('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201120&crn_in=1436',function (data) {
+	// 	console.log(data)
+	// })
 };
 
 

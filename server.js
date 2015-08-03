@@ -63,8 +63,9 @@ app.post('/urlDetails', function(req, res) {
 
 	//client sent a (possibly) valid url, check and parse page
 	var pageData = new PageData(req.body.url,req.connection.remoteAddress,req.body.email);
+	console.log(pageData)
 
-	pageData.getClientString(function (err,clientString) {
+	pageData.processUrl(function (err,clientString) {
 
 		if (err) {
 			//oh no! no modules support url

@@ -8,6 +8,8 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+
+
 function EmailMgr () {
 	
 }
@@ -27,39 +29,6 @@ EmailMgr.prototype.sendEmails = function(pageData,emailData) {
 	    html: '<a href="'+pageData.url+'"><div style="font-size:100px">Link!</div></a>'
 	});
 
-};
-
-
-
-EmailMgr.prototype.onDbDataUpdate = function(dbData,newData) {
-
-	if (dbData.emails.length==0) {
-		return;
-	};
-	
-	// // spot opened on wait list
-	// if (newData.waitRemaining>dbData.waitRemaining && newData.waitRemaining>0) {
-	// 	var newSeatsOpen = (newData.waitRemaining-dbData.waitRemaining);
-	// 	this.sendEmails( 
-	// 	{
-	// 		title:newSeatsOpen + ' '+this.getOptionallyPlural(newSeatsOpen)+' opened on wait list for '+dbData.name+'!',
-	// 		url:dbData.url,
-	// 		emails:dbData.emails
-	// 	});
-	// }
-
-	// //spot opened on class
-	// if (newData.seatsRemaining>dbData.seatsRemaining && newData.seatsRemaining>0) {
-
-	// 	var newSeatsOpen = (newData.seatsRemaining-dbData.seatsRemaining);
-
-	// 	this.sendEmails( 
-	// 	{
-	// 		title:newSeatsOpen + ' '+this.getOptionallyPlural(newSeatsOpen)+' opened for '+dbData.name+'!',
-	// 		url:dbData.url,
-	// 		emails:dbData.emails
-	// 	});
-	// };
 };
 
 

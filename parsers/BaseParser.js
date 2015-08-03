@@ -1,32 +1,10 @@
 'use strict';
 var request = require('request');
-var async = require('async');
+
 
 
 function BaseParser () {
 }	
-
-BaseParser.prototype.isValidData = function(data) {
-	var requiredAttrs = [
-	"year",
-	"name",
-	"seatsCapacity",
-	"seatsActual",
-	"seatsRemaining",
-	"waitCapacity",
-	"waitActual",
-	"waitRemaining",
-	];
-
-	//ensure that data has all of these attributes
-	for (var attrName of requiredAttrs) {
-		if (!data[attrName]) {
-			console.log('MISSING',attrName)
-			return false;
-		};
-	}
-	return true;
-};
 
 
 BaseParser.prototype.supportsPage = function() {
@@ -72,35 +50,8 @@ BaseParser.prototype.getDataFromURL = function(pageData,callback) {
 
 			htmlData.lastUpdateTime = new Date().getTime();
 
+			callback(null,htmlData);
 
-			if (htmlData.deps){
-
-				async.map(htmlData.deps, 
-					function (url,callback) {
-
-						console.log('dep:',url)
-
-						//client sent a (possibly) valid url, check and parse page
-						var depData = new PageData(url,pageData.originalData.ip,pageData.originalData.email);
-
-						depData.processUrl(function (err,clientString) {
-							return callback(null,depData)
-						}.bind(this));
-
-					}.bind(this),function (err,results) {
-
-						if (err) {
-							console.log('error found while processing dep of',url,err);
-							return callback("DEPERROR");
-						}
-						else {
-							return callback(null,htmlData);
-						}
-					}.bind(this));
-			}
-			else {
-				callback(null,htmlData);
-			}
 		}.bind(this));
 	}.bind(this));
 };

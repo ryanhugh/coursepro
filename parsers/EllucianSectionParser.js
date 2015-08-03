@@ -25,6 +25,28 @@ EllucianSectionParser.prototype.supportsPage = function (url) {
 }
 
 
+EllucianSectionParser.prototype.isValidData = function(data) {
+	var requiredAttrs = [
+	"year",
+	"name",
+	"seatsCapacity",
+	"seatsActual",
+	"seatsRemaining",
+	"waitCapacity",
+	"waitActual",
+	"waitRemaining",
+	];
+	//ensure that data has all of these attributes
+	for (var attrName of requiredAttrs) {
+		if (!data[attrName]) {
+			console.log('MISSING',attrName)
+			return false;
+		};
+	}
+	return true;
+};
+
+
 
 //required data:
 
@@ -75,6 +97,15 @@ EllucianSectionParser.prototype.parseHTML = function(url,html,callback){
 	    	currentData=null;
 	    }.bind(this),
 	    onend: function () {
+
+
+	    	//add optional data
+	    	['waitCapacity','waitActual','waitRemaining'].forEach(function (optionalVal) {
+	    		if (!data[optionalVal]) {
+	    			data[optionalVal]='0';
+	    		};
+	    	})
+
 
 	    	//missed something, or invalid page
 	    	if (!this.isValidData(data)) {

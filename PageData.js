@@ -1,4 +1,5 @@
 'use strict';
+var async = require('async');
 var requireDir = require('require-dir');
 var parsersClasses = requireDir('./parsers');
 
@@ -24,7 +25,7 @@ function PageData (url,ip,email) {
 		return null
 	}
 
-	//dbdata is added when search for
+	//dbdata is added after db search returns
 	this.originalData = {
 		ip:ip,
 		email:email
@@ -49,6 +50,9 @@ function PageData (url,ip,email) {
 	// this.metaData = {}
 
 	this.parser = null;
+
+	//dependencies (instances of PageData)
+	this.deps = [];
 }
 
 
@@ -89,9 +93,38 @@ PageData.prototype.addDBData = function(data) {
 		//override all other attributes
 		else if (data[attrName] != this.dbData[attrName]) {
 			this.dbData[attrName] = data[attrName]
-			console.log('Set',attrName,'on ',this.dbData.url)
 		};
 	}
+};
+
+PageData.prototype.processDeps = function(callback) {
+	
+	if (!this.dbData.deps || this.dbData.deps.length==0){ 
+		return callback();
+	};
+
+	async.map(this.dbData.deps, function (url,callback) {
+
+		console.log('dep:',url)
+
+		var depData = new PageData(url,this.originalData.ip,this.originalData.email);
+
+		depData.processUrl(function (err,clientString) {
+			return callback(null,depData)
+		}.bind(this));
+
+	}.bind(this),function (err,results) {
+
+		if (err) {
+			console.log('error found while processing dep of',url,err);
+			return callback(err);
+		}
+		else {
+			this.deps = results
+			return callback();
+		}
+	}.bind(this));
+
 };
 
 
@@ -124,19 +157,25 @@ PageData.prototype.processUrl = function(callback) {
 
 		//yay in cache and updated
 		var fifteeenMinAgo = new Date().getTime()-900000;
-		if (this.lastUpdateTime>fifteeenMinAgo) {
+		if (this.dbData.lastUpdateTime>fifteeenMinAgo) {
 			console.log('RECENT CACHE HIT!',this.dbData.url);
 
 			dataMgr.updateDatabase(this.dbData,this.originalData.dbData);
 
-			return this.sendClientData(null,callback)
+			return this.processDeps(function () {
+				return this.sendClientData(null,callback)	
+			}.bind(this));
+
+
+			
 
 		}
 		//no recent data, need to hit page
 		else {
 
-			this.parser.getDataFromURL(this, function (err,pageData) {
-				if (!pageData) {
+			this.parser.getDataFromURL(this, function (err,pageData,deps) {
+				if (err) {
+					console.log(err)
 					if (this.dbData.lastUpdateTime) {
 						console.log('ERROR: url in cache but could not update',this.dbData.url,this.dbData)
 						return this.sendClientData("NOUPDATE",callback);
@@ -145,16 +184,18 @@ PageData.prototype.processUrl = function(callback) {
 						return this.sendClientData("ENOTFOUND",callback);
 					}
 				}
-				this.shouldUpdateDB =this.addDBData(pageData);
+				this.deps = deps
+				this.addDBData(pageData);
 
 				//if found new data on page
-				// console.log(this)
 				dataMgr.updateDatabase(this.dbData,this.originalData.dbData);
 
 				emailMgr.sendEmails(this,this.parser.getEmailData(this.dbData,this.originalData.dbData));
 				
 
-				return this.sendClientData(null,callback);
+				return this.processDeps(function () {
+					return this.sendClientData(null,callback)	
+				}.bind(this));
 
 
 			}.bind(this));
@@ -165,8 +206,35 @@ PageData.prototype.processUrl = function(callback) {
 
 
 PageData.prototype.sendClientData = function(err,callback) {
-	return callback(err,this.parser.getMetadata(this.dbData).clientString);
+	return callback(err,this.parser.getMetadata(this).clientString);
 };
+
+// 
+
+
+
+
+
+
+
+if (require.main === module) {
+	
+	// var a = new PageData("https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201536&crn_in=23361");
+
+	var a = new PageData("https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201536&subj_in=ACCT&crse_in=2101&schd_in=BAS");
+	a.processUrl(function () {
+		process.exit()
+	});
+
+
+
+}
+
+
+
+
+
+
 
 
 module.exports = PageData;
