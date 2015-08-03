@@ -124,6 +124,20 @@ BaseParser.prototype.parseHTML = function(url,html,callback){
 
 
 
+BaseParser.prototype.getOptionallyPlural = function(num) {
+	if (num>1) {
+		return 's'
+	}
+	else {
+		return ''
+	}
+};
+
+
+
+
+
+
 
 
 

@@ -85,7 +85,7 @@ EllucianClassParser.prototype.getMetadata = function(pageData) {
 
 
 	return {
-		clientString:totalSeats + ' open seats found across '+ pageData.deps.length + ' sections'
+		clientString:totalSeats + ' open seats found across '+ pageData.deps.length + ' sections of '+pageData.deps[0].name+' !'
 	};
 };
 
@@ -93,24 +93,15 @@ EllucianClassParser.prototype.getMetadata = function(pageData) {
 
 
 EllucianClassParser.prototype.getEmailData = function(pageData) {
+	var newData = pageData.dbData;
+	var oldData = pageData.originalData.dbData;
 
-	//ADD NUMBER OF CLASSES!!!
-	
-	// spot opened on wait list
-	// if (newData.waitRemaining>oldData.waitRemaining && newData.waitRemaining>0) {
-	// 	var newSeatsOpen = (newData.waitRemaining-oldData.waitRemaining);
-	// 	return {
-	// 		title:newSeatsOpen + ' '+this.getOptionallyPlural(newSeatsOpen)+' opened on wait list for '+newData.name+'!'
-	// 	};
-	// }
-
-	// //spot opened on class
-	// if (newData.seatsRemaining>oldData.seatsRemaining && newData.seatsRemaining>0) {
-	// 	var newSeatsOpen = (newData.seatsRemaining-oldData.seatsRemaining);
-	// 	return {
-	// 		title:newSeatsOpen + ' '+this.getOptionallyPlural(newSeatsOpen)+' opened for '+newData.name+'!'
-	// 	};
-	// };
+	if (newData.deps.length>oldData.deps.length) {
+		var newSectionCount = newData.deps.length-oldData.deps.length;
+		return {
+			title:newSectionCount + ' new section'+this.getOptionallyPlural(newSectionCount)+' of '+newData.deps[0].name +' was added!'
+		}
+	};
 };
 
 
