@@ -50,8 +50,16 @@ EllucianCatalogParser.prototype.onOpenTag = function(parsingData,name,attribs) {
 
 
 EllucianCatalogParser.prototype.getMetadata = function(pageData) {
-	return ellucianClassParser.getMetadata(pageData.deps[0]);
-};
+	if (pageData.deps.length==0) {
+		console.log("Warning: 0 sections of ",pageData.dbData.url,'found in get getMetadata')
+		return {
+			clientString:"0 sections found!"
+		};
+	}
+	else {
+		return ellucianClassParser.getMetadata(pageData.deps[0]);
+	}
+}
 
 
 
@@ -59,7 +67,13 @@ EllucianCatalogParser.prototype.getMetadata = function(pageData) {
 
 
 EllucianCatalogParser.prototype.getEmailData = function(pageData) {
-	return ellucianClassParser.getEmailData(pageData.deps[0]);
+	if (pageData.deps.length==0) {
+		console.log("Warning: 0 sections of ",pageData.dbData.url,'found in email')
+		return null;
+	}
+	else {
+		return ellucianClassParser.getEmailData(pageData.deps[0]);
+	}
 };
 
 

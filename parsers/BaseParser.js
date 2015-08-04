@@ -2,6 +2,7 @@
 var request = require('request');
 var URI = require('uri-js');
 var htmlparser = require('htmlparser2');
+var domutils = require('domutils');
 
 function BaseParser () {
 }	

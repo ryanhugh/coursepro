@@ -103,71 +103,8 @@ DataMgr.prototype.fetchDBData = function(pageData,callback) {
 };
 
 
-// DataMgr.prototype.updateDatabase = function(oldData,newData) {
-// 	var shouldUpdateDB = false;
 
 
-	
-// 	// this.emailMgr.onDbDataUpdate(oldData,newData);
-
-
-
-
-
-
-// };
-
-
-
-//page data
-
-// DataMgr.prototype.updateDatabase = function(pageData) {
-
-// 	//notify the email manager
-// 	if (dbData && pageData) {
-// 		this.emailMgr.onDbDataUpdate(dbData,pageData);
-// 	};
-
-// 	//merge all attributes into dbData, and if it changed update the database
-// 	var shouldUpdateDB = false;
-
-// 	if (!dbData) {
-// 		dbData = {
-// 			url:url,
-// 			emails:[],
-// 			ips:[]
-// 		};
-// 		shouldUpdateDB=true;
-// 	};
-
-
-// 	//merge pageData into database data
-// 	if (pageData) {
-// 		for (var attrName in pageData) {
-// 			if (pageData[attrName] != dbData[attrName]) {
-// 				dbData[attrName] = pageData[attrName]
-// 				shouldUpdateDB = true;
-// 				console.log('Set',attrName,'on ',dbData.url)
-// 			};
-// 		}
-// 	};
-
-// 	//add email and ip to database, if they are not already there
-// 	if (email && dbData.emails.indexOf(email)<0) {
-// 		dbData.emails.push(email);
-// 		shouldUpdateDB=true;
-// 	}
-
-// 	if (ip && dbData.ips.indexOf(ip)<0) {
-// 		dbData.ips.push(ip)
-// 		shouldUpdateDB=true;
-// 	};
-
-
-// 	if (shouldUpdateDB) {
-// 		this.updateData(dbData);
-// 	};
-// };
 
 
 // interval

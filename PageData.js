@@ -27,6 +27,14 @@ function PageData (url,ip,email) {
 		emails:[]
 	}
 
+	this.parser = null;
+
+	//dependencies (instances of PageData)
+	this.deps = [];
+
+
+
+	//add the email and ip, if given
 	if (ip) {
 		this.dbData.ips.push(ip);
 	}
@@ -35,13 +43,6 @@ function PageData (url,ip,email) {
 		this.dbData.emails.push(email);
 	}
 
-	//client string
-	// this.metaData = {}
-
-	this.parser = null;
-
-	//dependencies (instances of PageData)
-	this.deps = [];
 }
 
 
@@ -158,7 +159,14 @@ PageData.prototype.getClientString = function() {
 
 
 
+PageData.prototype.addDep = function(depDdata) {
+	
+};
 
+
+PageData.prototype.method_name = function(first_argument) {
+	// body...
+};
 
 
 if (require.main === module) {
