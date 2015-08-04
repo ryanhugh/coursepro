@@ -26,9 +26,14 @@ fs.readFile('tests/EllucianCatalogParser/1.html','utf8',function (err,body) {
 		// 	return element.name=='a' && element.attribs.href && element.attribs.href.indexOf( 'bwckctlg.p_disp_listcrse')>-1
 		// },dom);
 
-		var a = domutils.findAll(function () {return true;},dom)[55];
+
+		var a = domutils.getElementsByTagName('big',dom);
+		// var a = domutils.findAll(function () {return true;},dom);
 		console.log(a)
-		console.log(domutils.getText(a))
+		// console.log(a.next)
+
+
+		// console.log(domutils.getText(a))
 
 
 
@@ -37,7 +42,10 @@ fs.readFile('tests/EllucianCatalogParser/1.html','utf8',function (err,body) {
 		// console.log(dom);
 	});
 	var parser = new htmlparser.Parser(handler);
-	parser.write(fileJSON.body);
+	// parser.write(fileJSON.body);
+
+    var html= '<a href="http://google.com"><div style="font-size:100px">Link!</div></a><big>Yoooooo</big>'
+    parser.write(html);
 	parser.done();
 
 

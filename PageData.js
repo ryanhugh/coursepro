@@ -121,18 +121,23 @@ PageData.prototype.isUpdated = function() {
 
 PageData.prototype.processDeps = function(callback) {
 	
-	if (!this.dbData.deps || this.dbData.deps.length==0){ 
+	if (!this.depsToProcess || this.depsToProcess.length==0){ 
 		return callback();
 	};
 
 	//any dep data will be inserted into main pageData for dep
-	async.map(this.dbData.deps, function (url,callback) {
+	async.map(this.depsToProcess, function (addToDepData,callback) {
 
-		pageDataMgr.create(url,this.originalData.ip,this.originalData.email,function (err,newDepData) {
+		pageDataMgr.create(addToDepData.url,this.originalData.ip,this.originalData.email,function (err,newDepData) {
 			if (err) {
 				console.log('ERROR:',err);
-				callback(err);
+				return callback(err);
 			};
+
+			//copy the new data to the dep
+			for (var attrName in addToDepData) {
+				newDepData.setData(attrName,addToDepData[attrName])
+			}
 
 			return callback(null,newDepData);
 		}.bind(this));
@@ -159,7 +164,11 @@ PageData.prototype.getClientString = function() {
 
 PageData.prototype.getUrlStart = function() {
 	var urlParsed = URI.parse(this.dbData.url);
-	return urlParsed.scheme +'://'+ urlParsed.host;
+	var retval = urlParsed.scheme +'://'+ urlParsed.host;
+	if (urlParsed.port) {
+		retval+=':' + urlParsed.port;
+	}
+	return retval;
 };
 
 PageData.prototype.addDep = function(depData) {
@@ -167,10 +176,19 @@ PageData.prototype.addDep = function(depData) {
 		console.trace('Error:Tried to add invalid depdata??',depData,this);
 		return;
 	}
+	if (!this.dbData.deps) {
+		this.dbData.deps = []
+	};
+
+
+
 	this.depsToProcess.push(depData);
+	this.dbData.deps.push(depData.url);
 };
 
 
+
+//used in html parser and updateDeps, here
 PageData.prototype.setData = function(name,value) {
 	if (['emails','ips','deps'].indexOf(name)>-1) {
 		console.log('ERROR: html set tried to override emails ips or deps');
@@ -189,6 +207,8 @@ PageData.prototype.getData = function(name) {
 
 
 if (require.main === module) {
+
+	console.log(new PageData('https://google.google.com:9000/jfdsajfk').getUrlStart())
 	
 	// var a = new PageData("https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201536&crn_in=23361");
 

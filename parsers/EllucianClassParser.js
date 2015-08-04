@@ -1,6 +1,10 @@
 'use strict';
 var URI = require('uri-js');
 var domutils = require('domutils');
+var moment = require('moment');
+var he = require('he');
+
+var timeZero = moment('0','h');
 
 var BaseParser = require('./BaseParser');
 var EllucianSectionParser = require('./ellucianSectionParser');
@@ -28,7 +32,126 @@ EllucianClassParser.prototype.supportsPage = function (url,html) {
 	return url.indexOf('bwckctlg.p_disp_listcrse')>-1;
 }
 
+//format is min from midnight, 0 = sunday, 6= saterday
+//	8:00 am - 9:05 am	MWR -> {0:[{start:248309,end:390987}],1:...}
+EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 
+	if ((times.match(/m|-/g) || []).length!=3) {
+		console.log('ERROR: multiple times in times',times,days);
+		return false;
+	};
+
+	var retVal = {}
+
+	var dayLetterToIndex = {
+		'M':1,
+		"T":2,
+		"W":3,
+		'R':4,
+		'F':5
+	};
+
+	for (var i = 0; i < days.length; i++) {
+		var dayIndex = dayLetterToIndex[days[i]];
+		if (!dayIndex) {
+			console.log('ERROR: unknown letter ',days,' !!!');
+			return false;
+		}
+
+		var timesMatch = times.match(/(.*?) - (.*?)$/i)
+		
+		var start = moment(timesMatch[1],"hh:mm a").diff(timeZero,'seconds');
+		var end = moment(timesMatch[2],"hh:mm a").diff(timeZero,'seconds');
+
+		retVal[dayIndex] = [{
+			start:start,
+			end:end
+		}];
+	};
+	return retVal;
+};
+
+
+
+
+
+
+
+
+
+
+EllucianClassParser.prototype.parseClassData = function(pageData,element) {
+
+	var depData = {};
+
+
+	//find the url
+	domutils.findAll(function (element) {
+		if (!element.attribs.href) {
+			return;
+		}
+
+		var attrURL = he.decode(element.attribs.href);
+
+		//add hostname + port if not specified
+		if (URI.parse(attrURL).reference=='relative') {
+			attrURL = pageData.getUrlStart() + attrURL;
+		}
+
+		if (ellucianSectionParser.supportsPage(attrURL)){
+			depData.url = attrURL;
+		}
+	}.bind(this),element.children);
+
+	//find the next row
+	var classDetails=element.next;
+	while (classDetails.type!='tag') {
+		classDetails=classDetails.next;
+	}
+
+	//find the times
+	var rows = domutils.getElementsByTagName('tr',classDetails.children);
+	rows.forEach(function (element) {
+		var items = domutils.getElementsByTagName('td',element.children);
+
+		//the header row
+		if (items.length==0) {
+			return;
+		};
+
+		//found the row were looking for
+		if (domutils.getText(items[0]).trim().toLowerCase()=='class') {
+			var prof = domutils.getText(items[6]).trim();
+			if (prof.toLowerCase()!='tba' && prof.length>2) {
+				depData.prof=prof;
+			};
+
+
+			var times = domutils.getText(items[1]).trim().toLowerCase();
+			if (times=='tba') {
+				console.log('not adding tba times on ',depData.url);
+			}
+			else {
+				depData.times=this.parseTimeStamps(times,domutils.getText(items[2]));
+			}
+		};
+	}.bind(this));
+
+	pageData.addDep(depData);
+
+
+
+
+
+	// if (ellucianSectionParser.supportsPage(attrURL)){
+	// 	pageData.addDep({
+	// 		url:attrURL
+	// 	});
+	// }
+
+
+
+};
 
 //parsing the htmls
 
@@ -41,19 +164,9 @@ EllucianClassParser.prototype.parseElement = function(pageData,element) {
 	if (element.name=='span' && element.attribs.class=='fieldlabeltext') {
 		this.findYear(pageData,element.parent);
 	}
-	else if (element.name =='a' && element.attribs.href){
-		var attrURL = element.attribs.href;
-
-		//add hostname + port if not specified
-		if (URI.parse(attrURL).reference=='relative') {
-			attrURL = pageData.getUrlStart() + attrURL;
-		}
-
-		if (ellucianSectionParser.supportsPage(attrURL)){
-			pageData.addDep({
-				url:attrURL
-			});
-		}
+	else if (element.name =='a' && element.attribs.href && element.parent.attribs.class=='ddtitle' && element.parent.attribs.scope=='colgroup'){
+		this.parseClassData(pageData,element.parent.parent);
+		
 	}
 };
 
