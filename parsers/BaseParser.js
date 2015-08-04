@@ -82,8 +82,25 @@ BaseParser.prototype.onCloseTag = function(parsingData,tagname) {
 	parsingData.currentData=null;
 };
 
+
+BaseParser.prototype.isValidData = function(data) {
+	
+	//ensure that data has all of these attributes
+	for (var attrName of this.requiredAttrs) {
+		if (data[attrName]===undefined) {
+			console.log('MISSING',attrName)
+			return false;
+		};
+	}
+	return true;
+};
+
+
+
+
+
 BaseParser.prototype.onEndParsing = function(parsingData,callback) {
-	callback(parsingData.htmlData)
+
 };
 
 BaseParser.prototype.parseHTML = function(url,html,callback){
@@ -109,7 +126,19 @@ BaseParser.prototype.parseHTML = function(url,html,callback){
 		ontext: this.onText.bind(this,parsingData),
 		onclosetag: this.onCloseTag.bind(this,parsingData),
 		onend: function () {
-			this.onEndParsing(parsingData,callback);
+			this.onEndParsing(parsingData);
+
+			console.log('jfadsljlk',parsingData,this.isValidData(parsingData.htmlData))
+
+			//missed something, or invalid page
+			if (!this.isValidData(parsingData.htmlData)) {
+				console.log("ERROR: though url was good, but missed data", parsingData);
+				return callback(null);
+			};
+
+			callback(parsingData.htmlData);
+
+			
 		}.bind(this)
 	}, {decodeEntities: true});
 	parser.write(html);

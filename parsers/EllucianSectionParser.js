@@ -10,6 +10,17 @@ var BaseParser = require('./BaseParser');
 
 function EllucianSectionParser () {
 	BaseParser.constructor.call(this);
+
+	this.requiredAttrs = [
+	"year",
+	"name",
+	"seatsCapacity",
+	"seatsActual",
+	"seatsRemaining",
+	"waitCapacity",
+	"waitActual",
+	"waitRemaining",
+	];
 }
 
 //prototype constructor
@@ -21,28 +32,6 @@ EllucianSectionParser.prototype.constructor = EllucianSectionParser;
 EllucianSectionParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckschd.p_disp_detail_sched')>-1;
 }
-
-
-EllucianSectionParser.prototype.isValidData = function(data) {
-	var requiredAttrs = [
-	"year",
-	"name",
-	"seatsCapacity",
-	"seatsActual",
-	"seatsRemaining",
-	"waitCapacity",
-	"waitActual",
-	"waitRemaining",
-	];
-	//ensure that data has all of these attributes
-	for (var attrName of requiredAttrs) {
-		if (data[attrName]===undefined) {
-			console.log('MISSING',attrName)
-			return false;
-		};
-	}
-	return true;
-};
 
 
 EllucianSectionParser.prototype.onBeginParsing = function(parsingData) {
@@ -69,7 +58,7 @@ EllucianSectionParser.prototype.onOpenTag = function(parsingData,name,attribs) {
 	}
 }
 
-EllucianSectionParser.prototype.onEndParsing = function(parsingData,callback) {
+EllucianSectionParser.prototype.onEndParsing = function(parsingData) {
 
 	//add optional data
 	['waitCapacity','waitActual','waitRemaining'].forEach(function (optionalVal) {
@@ -78,12 +67,6 @@ EllucianSectionParser.prototype.onEndParsing = function(parsingData,callback) {
 		};
 	});
 
-
-	//missed something, or invalid page
-	if (!this.isValidData(parsingData.htmlData)) {
-		console.log("ERROR: though url was good, but missed data", parsingData);
-		return callback(null);
-	};
 
 	//convert numbers to ints
 	['seatsCapacity','seatsActual','seatsRemaining','waitCapacity','waitActual','waitRemaining'].forEach(function (intAttr) {
@@ -94,7 +77,6 @@ EllucianSectionParser.prototype.onEndParsing = function(parsingData,callback) {
 	//get rid of the unimportiant stuff
 	 parsingData.htmlData.year=parseInt( parsingData.htmlData.year.match(/\d+/)[0]);
 	 parsingData.htmlData.name= parsingData.htmlData.name.match(/(.+?)\s-\s/i)[1];  
-	 callback(parsingData.htmlData);
 };
 
 

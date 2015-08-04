@@ -15,6 +15,8 @@ var ellucianClassParser = new EllucianClassParser();
 
 function EllucianCatalogParser () {
 	BaseParser.constructor.call(this);
+
+	this.requiredAttrs = ["deps"];
 }
 
 

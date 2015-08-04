@@ -16,6 +16,9 @@ var ellucianSectionParser = new EllucianSectionParser();
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
 function EllucianClassParser () {
 	BaseParser.constructor.call(this);
+
+	this.requiredAttrs = ["deps","year"];
+
 }
 
 
@@ -61,12 +64,23 @@ EllucianClassParser.prototype.onCloseTag = function(parsingData,tagname) {
 };
 
 
+EllucianSectionParser.prototype.isValidData = function(data) {
+	
+	//ensure that data has all of these attributes
+	for (var attrName of requiredAttrs) {
+		if (data[attrName]===undefined) {
+			console.log('MISSING',attrName)
+			return false;
+		};
+	}
+	return true;
+};
 
-EllucianClassParser.prototype.onEndParsing = function(parsingData,callback) {
+
+EllucianClassParser.prototype.onEndParsing = function(parsingData) {
 	
 	//get rid of the unimportiant stuff
 	parsingData.htmlData.year=parsingData.htmlData.year.match(/\d+/)[0];
-	callback(parsingData.htmlData);
 };
 
 
