@@ -55,6 +55,9 @@ var async = require('async');
 //     console.log(results)
 // });
 
+
+// https://sail.oakland.edu/PROD/bwckctlg.p_display_courses?term_in=201610&one_subj=ACC&sel_crse_strt=200&sel_crse_end=200&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=
+
 global.shared=5
 
 console.log(shared)

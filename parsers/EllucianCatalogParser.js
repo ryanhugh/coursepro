@@ -25,7 +25,7 @@ EllucianCatalogParser.prototype.constructor = EllucianCatalogParser;
 
 
 EllucianCatalogParser.prototype.supportsPage = function (url) {
-	return url.indexOf('bwckctlg.p_display_courses')>-1;
+	return url.indexOf('bwckctlg.p_display_courses')>-1 || url.indexOf('bwckctlg.p_disp_course_detail')>-1;
 }
 
 EllucianCatalogParser.prototype.onOpenTag = function(parsingData,name,attribs) {

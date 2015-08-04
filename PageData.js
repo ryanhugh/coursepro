@@ -60,6 +60,10 @@ PageData.prototype.findSupportingParser = function(parsers) {
 
 
 PageData.prototype.addData = function(data) {
+	if (!data) {
+		console.trace('ERROR tried to add null data');
+		return;
+	};
 	
 	for (var attrName in data) {
 
@@ -88,7 +92,6 @@ PageData.prototype.addData = function(data) {
 };
 
 PageData.prototype.addDBData = function(data) {
-	// console.log('ADDING,',data,'TO',this)
 	this.originalData.dbData=data;
 	this.addData(data);
 }
@@ -147,13 +150,6 @@ PageData.prototype.processDeps = function(callback) {
 
 };
 
-
-PageData.prototype.finish = function(callback) {
-	
-
-	
-
-};
 
 PageData.prototype.getClientString = function() {
 	return this.parser.getMetadata(this).clientString;
