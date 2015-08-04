@@ -138,7 +138,6 @@ PageData.prototype.fetchHTMLData = function(callback) {
 				return callback("ENOTFOUND");
 			}
 		}
-		this.deps = pageData.deps
 		this.addDBData(pageData);
 		callback();
 
@@ -153,10 +152,19 @@ PageData.prototype.processDeps = function(callback) {
 		return callback();
 	};
 
+	//any dep data will be inserted into main pageData for dep
 	async.map(this.dbData.deps, function (url,callback) {
 
-		pageDataMgr.create(url,this.originalData.ip,this.originalData.email,function (err,depData) {
-			return callback(null,depData);
+		pageDataMgr.create(url,this.originalData.ip,this.originalData.email,function (err,newDepData) {
+			// console.log('NEW DEP1!',newDepData)
+
+			// for (var attr in depData) {
+			// 	newDepData.dbData[attr] = depData[attr]
+			// }
+			// console.log('NEW DEP2!',newDepData)
+
+
+			return callback(null,newDepData);
 		}.bind(this));
 
 	}.bind(this),function (err,results) {
@@ -179,9 +187,12 @@ PageData.prototype.finish = function(callback) {
 	//update database if something changed (db does delta calculations)
 	dataMgr.updateDatabase(this);
 
-	emailMgr.sendEmails(this,this.parser.getEmailData(this));
+	
 
-	return this.processDeps(callback);
+	return this.processDeps(function () {
+		emailMgr.sendEmails(this,this.parser.getEmailData(this));	
+		callback();
+	}.bind(this));
 };
 
 PageData.prototype.getClientString = function() {

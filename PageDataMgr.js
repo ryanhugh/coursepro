@@ -13,8 +13,6 @@ PageDataMgr.prototype.create = function(url,ip,email,callback) {
 		callback = function (){};
 	}
 
-	console.log('PROCESSING:',url);
-
 
 	var pageData = new PageData(url,ip,email);
 
@@ -56,6 +54,24 @@ PageDataMgr.prototype.create = function(url,ip,email,callback) {
 
 };
 
+PageDataMgr.prototype.tests = function() {
+	
+	this.create('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+};
+
 
 module.exports = PageDataMgr
 global.pageDataMgr = new PageDataMgr();
+
+
+if (require.main === module) {
+	pageDataMgr.tests()
+}
+
+
+
+
+
+
+
+

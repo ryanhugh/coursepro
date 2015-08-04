@@ -178,9 +178,7 @@ DataMgr.prototype.onInterval = function() {
 	this.db.find({}, function (err,docs) {
 		for (var i = 0; i < docs.length; i++) {
 			if (docs[i].emails.length>0) {
-
-
-				new PageData(docs[i].url).processUrl();
+				pageDataMgr.create(docs[i].url)
 			}
 		};
 	}.bind(this));
