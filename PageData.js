@@ -1,5 +1,6 @@
 'use strict';
 var async = require('async');
+var URI = require('uri-js');
 
 
 //this is called in 3 places
@@ -32,6 +33,11 @@ function PageData (url,ip,email) {
 	//dependencies (instances of PageData)
 	this.deps = [];
 
+	//some tem variables used while parsing, not relavant when done
+	this.parsingData = {}
+
+	//{} that the new pageData objects should have in dbData
+	this.depsToProcess = []
 
 
 	//add the email and ip, if given
@@ -128,12 +134,6 @@ PageData.prototype.processDeps = function(callback) {
 				callback(err);
 			};
 
-			// for (var attr in depData) {
-			// 	newDepData.dbData[attr] = depData[attr]
-			// }
-			// console.log('NEW DEP2!',newDepData)
-
-
 			return callback(null,newDepData);
 		}.bind(this));
 
@@ -157,16 +157,35 @@ PageData.prototype.getClientString = function() {
 };
 
 
+PageData.prototype.getUrlStart = function() {
+	var urlParsed = URI.parse(this.dbData.url);
+	return urlParsed.scheme +'://'+ urlParsed.host;
+};
 
-
-PageData.prototype.addDep = function(depDdata) {
-	
+PageData.prototype.addDep = function(depData) {
+	if (!depData || !depData.url) {
+		console.trace('Error:Tried to add invalid depdata??',depData,this);
+		return;
+	}
+	this.depsToProcess.push(depData);
 };
 
 
-PageData.prototype.method_name = function(first_argument) {
-	// body...
+PageData.prototype.setData = function(name,value) {
+	if (['emails','ips','deps'].indexOf(name)>-1) {
+		console.log('ERROR: html set tried to override emails ips or deps');
+		return;
+	};
+
+
+	this.dbData[name]=value;
 };
+
+PageData.prototype.getData = function(name) {
+	return this.dbData[name];
+};
+
+
 
 
 if (require.main === module) {

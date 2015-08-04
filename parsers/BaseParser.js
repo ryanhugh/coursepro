@@ -1,8 +1,10 @@
 'use strict';
 var request = require('request');
+var assert = require('assert');
 var URI = require('uri-js');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
+var fs = require('fs');
 
 function BaseParser () {
 }	
@@ -39,56 +41,47 @@ BaseParser.prototype.parse = function(pageData,callback) {
 		if (err) {
 			return callback(err);
 		};
-		this.parseHTML(pageData.dbData.url,html,function (htmlData) {
-			if (!htmlData) {
-				return callback('html parse error',null);
+		this.parseHTML(pageData,html,function (err) {
+			if (err) {
+				return callback(err);
 			};
+
 			console.log('parsed '+html.length+' bytes from',pageData.dbData.url);
+
+			pageData.setData('lastUpdateTime',new Date().getTime());
 			
-			console.log(htmlData)
-			htmlData.lastUpdateTime = new Date().getTime();
-
-
-			pageData.addHTMLData(htmlData);
 			callback();
 
 		}.bind(this));
 	}.bind(this));
 };
 
-BaseParser.prototype.onBeginParsing = function(parsingData) {
-	
-};
 
-BaseParser.prototype.onOpenTag = function(parsingData,name,attribs) {
-	parsingData.currentData=null;
-};
 
-BaseParser.prototype.onText = function(parsingData,text) {
-	if (!parsingData.currentData) {
+
+
+
+
+//html parsing helpers and common functions
+
+BaseParser.prototype.findYear = function(pageData,element) {
+	var text = domutils.getText(element);
+	var match = text.match(/\d{4}/);
+	if (!match || match.length ==0) {
+		console.log('UNabled to find year!!!',match,text)
 		return;
 	}
 
-	//add text to corrosponding data
-	//would just do data[currentData] but if there is a & this is called twice for some reason
-	if (parsingData.htmlData[parsingData.currentData]) {
-		parsingData.htmlData[parsingData.currentData]+=text
-	}
-	else {
-		parsingData.htmlData[parsingData.currentData]=text
-	}
-};
-
-BaseParser.prototype.onCloseTag = function(parsingData,tagname) {
-	parsingData.currentData=null;
+	var year = parseInt(match[0]);
+	pageData.setData('year',year);
 };
 
 
-BaseParser.prototype.isValidData = function(data) {
+BaseParser.prototype.isValidData = function(pageData) {
 	
 	//ensure that data has all of these attributes
 	for (var attrName of this.requiredAttrs) {
-		if (data[attrName]===undefined) {
+		if (pageData.getData(attrName)===undefined) {
 			console.log('MISSING',attrName)
 			return false;
 		};
@@ -98,52 +91,46 @@ BaseParser.prototype.isValidData = function(data) {
 
 
 
-
+BaseParser.prototype.onBeginParsing = function(parsingData) {
+	
+};
 
 BaseParser.prototype.onEndParsing = function(parsingData,callback) {
 
 };
 
-BaseParser.prototype.parseHTML = function(url,html,callback){
+BaseParser.prototype.parseHTML = function(pageData,html,callback){
 	if (!callback) {
 		callback = function () {}
 	};
 
-	var urlParsed = URI.parse(url)
-	var urlStart = urlParsed.scheme +'://'+ urlParsed.host;
+	this.onBeginParsing(pageData);
 
-	var parsingData={
-		htmlData:{
-			deps:[]
-		},
-		urlStart:urlStart,
-		currentData:null
-	};
-	this.onBeginParsing(parsingData);
 
-	//get everything else from html
-	var parser = new htmlparser.Parser({
-		onopentag: this.onOpenTag.bind(this,parsingData),
-		ontext: this.onText.bind(this,parsingData),
-		onclosetag: this.onCloseTag.bind(this,parsingData),
-		onend: function () {
-			this.onEndParsing(parsingData);
+	var handler = new htmlparser.DomHandler(function (error, dom) {
+		if (error) {
+			console.log(error);
+			return callback(error);
+		};
 
-			console.log('jfadsljlk',parsingData,this.isValidData(parsingData.htmlData))
 
-			//missed something, or invalid page
-			if (!this.isValidData(parsingData.htmlData)) {
-				console.log("ERROR: though url was good, but missed data", parsingData);
-				return callback(null);
-			};
+		var elements = domutils.findAll(function () {return true;},dom);
+		elements.forEach(this.parseElement.bind(this,pageData));
 
-			callback(parsingData.htmlData);
+		this.onEndParsing(pageData);
 
-			
-		}.bind(this)
-	}, {decodeEntities: true});
+		//missed something, or invalid page
+		if (!this.isValidData(pageData)) {
+			console.log("ERROR: though url was good, but missed data", pageData);
+			return callback(null);
+		};
+
+		return callback();
+	}.bind(this));
+
+	var parser = new htmlparser.Parser(handler);
 	parser.write(html);
-	parser.end();
+	parser.done();
 }
 
 
@@ -171,12 +158,25 @@ BaseParser.prototype.getOptionallyPlural = function(num) {
 
 
 
+BaseParser.prototype.tests = function () {
 
-BaseParser.prototype.tests = function() {
+	var PageData = require('../PageData');
+
+	fs.readFile('../tests/'+this.constructor.name+'/1.html','utf8',function (err,body) {
 
 
+		var fileJSON = JSON.parse(body);
+		
+		var pageData = new PageData(fileJSON.url);
 
-};
+		
+		this.parseHTML(pageData,fileJSON.body,function (data) {
+			console.log("HERE",pageData);
+		}.bind(this));
+
+	}.bind(this));
+
+}
 
 
 if (require.main === module) {

@@ -1,11 +1,8 @@
 'use strict';
-var urlParser = require('url');
-var fs = require('fs');
-var querystring = require('querystring');
-var BaseParser = require('./BaseParser');
-
 var URI = require('uri-js');
+var domutils = require('domutils');
 
+var BaseParser = require('./BaseParser');
 var EllucianSectionParser = require('./ellucianSectionParser');
 
 var ellucianSectionParser = new EllucianSectionParser();
@@ -17,7 +14,7 @@ var ellucianSectionParser = new EllucianSectionParser();
 function EllucianClassParser () {
 	BaseParser.constructor.call(this);
 
-	this.requiredAttrs = ["deps","year"];
+	this.requiredAttrs = ["year"];
 
 }
 
@@ -35,54 +32,30 @@ EllucianClassParser.prototype.supportsPage = function (url,html) {
 
 //parsing the htmls
 
+EllucianClassParser.prototype.parseElement = function(pageData,element) {
+	if (element.type!='tag') {
+		return;
+	};
 
-EllucianClassParser.prototype.onOpenTag = function(parsingData,name,attribs) {
-	if (name=='span' && attribs.class=='fieldlabeltext') {
-		parsingData.currentData = 'year';
+	
+	if (element.name=='span' && element.attribs.class=='fieldlabeltext') {
+		this.findYear(pageData,element.parent);
 	}
-	else if (name =='a' && attribs.href){
-		var attrURL = attribs.href;
+	else if (element.name =='a' && element.attribs.href){
+		var attrURL = element.attribs.href;
 
 		//add hostname + port if not specified
 		if (URI.parse(attrURL).reference=='relative') {
-			attrURL = parsingData.urlStart + attrURL;
+			attrURL = pageData.getUrlStart() + attrURL;
 		}
 
 		if (ellucianSectionParser.supportsPage(attrURL)){
-			parsingData.htmlData.deps.push(attrURL);
+			pageData.addDep({
+				url:attrURL
+			});
 		}
 	}
-	else {
-		parsingData.currentData=null;
-	}
-}
-
-EllucianClassParser.prototype.onCloseTag = function(parsingData,tagname) {
-	if (parsingData.currentData!='year') {
-		parsingData.currentData=null;
-	};
 };
-
-
-EllucianSectionParser.prototype.isValidData = function(data) {
-	
-	//ensure that data has all of these attributes
-	for (var attrName of requiredAttrs) {
-		if (data[attrName]===undefined) {
-			console.log('MISSING',attrName)
-			return false;
-		};
-	}
-	return true;
-};
-
-
-EllucianClassParser.prototype.onEndParsing = function(parsingData) {
-	
-	//get rid of the unimportiant stuff
-	parsingData.htmlData.year=parsingData.htmlData.year.match(/\d+/)[0];
-};
-
 
 
 
@@ -135,21 +108,8 @@ EllucianClassParser.prototype.getEmailData = function(pageData) {
 
 
 
-EllucianClassParser.prototype.tests = function () {
-
-	fs.readFile('../tests/'+this.constructor.name+'/1.html','utf8',function (err,body) {
 
 
-
-	var fileJSON = JSON.parse(body);
-
-
-	this.parseHTML(fileJSON.url,fileJSON.body,function (data) {
-		console.log(data);
-	}.bind(this));
-
-}.bind(this));
-}
 
 if (require.main === module) {
 	new EllucianClassParser().tests();

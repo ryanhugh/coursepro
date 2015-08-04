@@ -20,11 +20,15 @@ fs.readFile('tests/EllucianCatalogParser/1.html','utf8',function (err,body) {
 	var fileJSON = JSON.parse(body);
 
 	var handler = new htmlparser.DomHandler(function (error, dom) {
-		var elements = domutils.findAll(function (element) {
-			return element.name=='a' && element.attribs.href && element.attribs.href.indexOf( 'bwckctlg.p_disp_listcrse')>-1
-		},dom);
 
-		console.log(elements)
+
+		// var elements = domutils.findAll(function (element) {
+		// 	return element.name=='a' && element.attribs.href && element.attribs.href.indexOf( 'bwckctlg.p_disp_listcrse')>-1
+		// },dom);
+
+		var a = domutils.findAll(function () {return true;},dom)[55];
+		console.log(a)
+		console.log(domutils.getText(a))
 
 
 

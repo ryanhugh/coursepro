@@ -1,7 +1,5 @@
 'use strict';
-var assert = require('assert');
-var fs = require('fs');
-var he = require('he');
+var domutils = require('domutils');
 var BaseParser = require('./BaseParser');
 
 //700+ college sites use this poor interface for their registration
@@ -34,49 +32,56 @@ EllucianSectionParser.prototype.supportsPage = function (url) {
 }
 
 
-EllucianSectionParser.prototype.onBeginParsing = function(parsingData) {
-	parsingData.boxCount=0;
-};
+EllucianSectionParser.prototype.onBeginParsing = function(pageData) {
+	pageData.parsingData.boxCount=0;
 
-
-
-var boxOrder = [null,'seatsCapacity','seatsActual','seatsRemaining','waitCapacity','waitActual','waitRemaining'];
-
-EllucianSectionParser.prototype.onOpenTag = function(parsingData,name,attribs) {
-	if (name=='div' && attribs.class=='staticheaders') {
-		parsingData.currentData = 'year';
-	}
-	else if (name =='td' && attribs.class=='dddefault'){
-		parsingData.currentData=boxOrder[parsingData.boxCount]
-		parsingData.boxCount++;
-	}
-	else if (name =='th' && attribs.class=='ddlabel' && attribs.scope=="row" && !parsingData.htmlData.name){
-		parsingData.currentData='name'
-	}
-	else {
-		parsingData.currentData=null;
-	}
-}
-
-EllucianSectionParser.prototype.onEndParsing = function(parsingData) {
 
 	//add optional data
 	['waitCapacity','waitActual','waitRemaining'].forEach(function (optionalVal) {
-		if (!parsingData.htmlData[optionalVal]) {
-			 parsingData.htmlData[optionalVal]=0;
-		};
+		pageData.setData(optionalVal,0);
 	});
 
+};
+var boxOrder = [null,'seatsCapacity','seatsActual','seatsRemaining','waitCapacity','waitActual','waitRemaining'];
 
-	//convert numbers to ints
-	['seatsCapacity','seatsActual','seatsRemaining','waitCapacity','waitActual','waitRemaining'].forEach(function (intAttr) {
-		 parsingData.htmlData[intAttr] = parseInt( parsingData.htmlData[intAttr]);
-	})
+EllucianSectionParser.prototype.parseElement = function(pageData,element) {
+	if (element.type!='tag') {
+		return;
+	};
 
 
-	//get rid of the unimportiant stuff
-	 parsingData.htmlData.year=parseInt( parsingData.htmlData.year.match(/\d+/)[0]);
-	 parsingData.htmlData.name= parsingData.htmlData.name.match(/(.+?)\s-\s/i)[1];  
+	if (element.name=='div' && element.attribs.class=='staticheaders') {
+		this.findYear(pageData,element);
+	}
+	else if (element.name =='td' && element.attribs.class=='dddefault'){
+		var attrName = boxOrder[pageData.parsingData.boxCount];
+		if (attrName) {
+			var value = domutils.getText(element);
+			if (value===undefined || value.trim().length==0) {
+				console.log('could not find number!',value,element);
+				return;
+			};
+			pageData.setData(attrName,parseInt(value));
+		};
+
+		pageData.parsingData.boxCount++;
+
+	}
+	else if (element.name =='th' && element.attribs.class=='ddlabel' && element.attribs.scope=="row"){
+		if (pageData.parsingData.didFindName) {
+			return;
+		};
+		pageData.parsingData.didFindName = true;
+
+		var value = domutils.getText(element);
+
+		var match = value.match(/(.+?)\s-\s/i);
+		if (!match || match.length<2) {
+			console.log('could not find title!',match,element);
+		}
+
+		pageData.setData('name',match[1]);
+	}
 };
 
 
@@ -121,28 +126,7 @@ EllucianSectionParser.prototype.getEmailData = function(pageData) {
 
 
 
-EllucianSectionParser.prototype.tests = function () {
-	// return;
 
-	// this.getDataFromURL('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201120&crn_in=331', function (data) {
-	// 	console.log(data)
-	// })
-	// return;
-
-	fs.readFile('../tests/'+this.constructor.name+'/1.html','utf8',function (err,body) {
-
-
-		console.log(err,body)
-
-		var fileJSON = JSON.parse(body);
-
-		console.log(this.__proto__)
-		this.parseHTML(fileJSON.url,fileJSON.html,function (data) {
-			console.log(data);
-		}.bind(this));
-
-	}.bind(this));
-}
 
 
 if (require.main === module) {
