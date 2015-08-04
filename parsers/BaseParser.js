@@ -31,24 +31,25 @@ BaseParser.prototype.getPage = function(url,callback) {
 };
 
 //callback here is pageData (stuff to store in db), and metadata (stuff dont store in db)
-BaseParser.prototype.getDataFromURL = function(url,callback) {
+BaseParser.prototype.parse = function(pageData,callback) {
 
 
-	this.getPage(url,function (err,html) {
+	this.getPage(pageData.dbData.url,function (err,html) {
 		if (err) {
-			callback(err);
-			return;
+			return callback(err);
 		};
-		this.parseHTML(url,html,function (htmlData) {
+		this.parseHTML(pageData.dbData.url,html,function (htmlData) {
 			if (!htmlData) {
 				return callback('html parse error',null);
 			};
-			console.log('parsed '+html.length+' bytes from',url);
+			console.log('parsed '+html.length+' bytes from',pageData.dbData.url);
 			
-
+			console.log(htmlData)
 			htmlData.lastUpdateTime = new Date().getTime();
 
-			callback(null,htmlData);
+
+			pageData.addHTMLData(htmlData);
+			callback();
 
 		}.bind(this));
 	}.bind(this));
@@ -107,9 +108,9 @@ BaseParser.prototype.parseHTML = function(url,html,callback){
 		onopentag: this.onOpenTag.bind(this,parsingData),
 		ontext: this.onText.bind(this,parsingData),
 		onclosetag: this.onCloseTag.bind(this,parsingData),
-	    onend: function () {
-	    	this.onEndParsing(parsingData,callback);
-	    }.bind(this)
+		onend: function () {
+			this.onEndParsing(parsingData,callback);
+		}.bind(this)
 	}, {decodeEntities: true});
 	parser.write(html);
 	parser.end();

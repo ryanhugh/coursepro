@@ -2,6 +2,26 @@
 var async = require('async');
 var PageData = require('./PageData');
 
+
+var requireDir = require('require-dir');
+var parsersClasses = requireDir('./parsers');
+
+var DataMgr = require('./DataMgr');
+var EmailMgr = require('./EmailMgr');
+
+var dataMgr = new DataMgr();
+var emailMgr = new EmailMgr();
+
+
+var parsers = [];
+//create a list of parser objects
+for (var parserName in parsersClasses) {
+	parsers.push(new parsersClasses[parserName]())
+}
+
+
+
+
 function PageDataMgr () {
 }
 
@@ -17,46 +37,67 @@ PageDataMgr.prototype.create = function(url,ip,email,callback) {
 	var pageData = new PageData(url,ip,email);
 
 
-	pageData.findSupportingParser();
-	if (!pageData.parser) {
-		console.log('no parser found for',pageData.dbData.url)
+	if (!pageData.findSupportingParser(parsers)) {
 		return callback("NOSUPPORT");
 	}
-	console.log('Using parser:',pageData.parser.constructor.name,'for url',pageData.dbData.url);
 
 
 	//main control flow for processing a url
-	pageData.fetchDBData(function (err,foundData) {
+	dataMgr.fetchDBData(pageData,function (err) {
 		if (err) {
 			return callback(err);
 		}
 
-		if (foundData) {
-			console.log('CACHE HIT!',url)
-			return pageData.finish(function () {
-				callback(null,pageData);	
-			});
+		if (pageData.isUpdated()) {
+			console.log('CACHE HIT!',url);
+			this.finish(pageData,callback);
 		}
-
 		else {
-			pageData.fetchHTMLData(function (err) {
+			pageData.parser.parse(pageData,function (err) {
 				if (err) {
-					return callback(err);
+					console.log(err)
+					if (pageData.dbData.lastUpdateTime) {
+						console.log('ERROR: url in cache but could not update',this.dbData.url,this.dbData)
+						return callback("NOUPDATE");
+					}
+					else {
+						return callback("ENOTFOUND");
+					}
 				}
-
-				return pageData.finish(function () {
-					callback(null,pageData);
-				});
-			});
+				this.finish(pageData,callback);
+			}.bind(this));
 		}
-	})	
-
-
+	}.bind(this));
 };
+
+
+PageDataMgr.prototype.finish = function(pageData,callback) {
+
+	// console.log('fda',pageData)
+	//update database if something changed (db does delta calculations)
+	dataMgr.updateDatabase(pageData);
+
+
+	return pageData.processDeps(function () {
+		
+		emailMgr.sendEmails(pageData,pageData.parser.getEmailData(pageData));	
+		callback(null,pageData);
+	}.bind(this));
+};
+
+
+
+
+
+
+
 
 PageDataMgr.prototype.tests = function() {
 	
-	this.create('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.create('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	this.create('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_detail_sched?term_in=201580&crn_in=81471',null,null,function (argument) {
+		console.log(arguments,"HRERE");
+	})
 };
 
 

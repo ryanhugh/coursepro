@@ -114,6 +114,9 @@ EllucianSectionParser.prototype.getMetadata = function(pageData) {
 EllucianSectionParser.prototype.getEmailData = function(pageData) {
 	var newData = pageData.dbData;
 	var oldData = pageData.originalData.dbData;
+	if (!oldData) {
+		return;
+	};
 
 	
 	// spot opened on wait list

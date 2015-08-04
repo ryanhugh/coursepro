@@ -1,22 +1,6 @@
 'use strict';
 var async = require('async');
 
-var requireDir = require('require-dir');
-var parsersClasses = requireDir('./parsers');
-
-var DataMgr = require('./DataMgr');
-var EmailMgr = require('./EmailMgr');
-
-var dataMgr = new DataMgr();
-var emailMgr = new EmailMgr();
-
-
-var parsers = [];
-//create a list of parser objects
-for (var parserName in parsersClasses) {
-	parsers.push(new parsersClasses[parserName]())
-}
-
 
 //this is called in 3 places
 //server.js
@@ -38,6 +22,7 @@ function PageData (url,ip,email) {
 	//stuff stored in the db
 	this.dbData = {
 		url:url,
+		lastUpdateTime:0,
 		ips:[],
 		emails:[]
 	}
@@ -60,27 +45,28 @@ function PageData (url,ip,email) {
 }
 
 
-PageData.prototype.findSupportingParser = function() {
+PageData.prototype.findSupportingParser = function(parsers) {
 
 	for (var i = 0; i < parsers.length; i++) {
 		if (parsers[i].supportsPage(this.dbData.url)) {
 			this.parser= parsers[i];
-			return;
+			console.log('Using parser:',this.parser.constructor.name,'for url',this.dbData.url);
+			return true;
 		}
-	};
+	}
+	console.log('no parser found for',this.dbData.url);
+	return false;
 };
 
 
-//returns true if any data was added to self
-//this is used when adding page data, but not when adding db data
-PageData.prototype.addDBData = function(data) {
-
+PageData.prototype.addData = function(data) {
+	
 	for (var attrName in data) {
 
 		//merge email and ip lists
 		if (attrName == "emails") {
 			data.emails.forEach(function (newEmail) {
-				if (this.dbData.emails.indexOf(newEmail)<0) {
+				if (newEmail && this.dbData.emails.indexOf(newEmail)<0) {
 					this.dbData.emails.push(newEmail);
 				}
 			}.bind(this));
@@ -88,7 +74,7 @@ PageData.prototype.addDBData = function(data) {
 		else if (attrName == 'ips'){
 
 			data.ips.forEach(function (newIp) {
-				if (this.dbData.ips.indexOf(newIp)<0) {
+				if (newIp && this.dbData.ips.indexOf(newIp)<0) {
 					this.dbData.ips.push(newIp);
 				}
 			}.bind(this));
@@ -101,49 +87,26 @@ PageData.prototype.addDBData = function(data) {
 	}
 };
 
+PageData.prototype.addDBData = function(data) {
+	// console.log('ADDING,',data,'TO',this)
+	this.originalData.dbData=data;
+	this.addData(data);
+}
+PageData.prototype.addHTMLData = function(data) {
+	this.addData(data);
+};
 
-//callback = function (err,foundData) {}
-PageData.prototype.fetchDBData = function(callback) {
+
+
+
+
+
+PageData.prototype.isUpdated = function() {
 	
-	dataMgr.fetchDBData(this.dbData.url,function (err,dbData) {
-		if (err) {
-			console.log(err);
-			return callback(err);
-		};
-		this.originalData.dbData = dbData;
-
-		this.addDBData(dbData);
-
-		//yay in cache and updated
-		var fifteeenMinAgo = new Date().getTime()-900000;
-		if (this.dbData.lastUpdateTime>fifteeenMinAgo) {
-			return callback(null,true);
-
-		}
-		else {
-			return callback(null,false);
-		}
-	}.bind(this));
+	var fifteeenMinAgo = new Date().getTime()-900000;
+	return this.dbData.lastUpdateTime>fifteeenMinAgo;
 };
 
-PageData.prototype.fetchHTMLData = function(callback) {
-	this.parser.getDataFromURL(this.dbData.url, function (err,pageData) {
-		if (err) {
-			console.log(err)
-			if (this.dbData.lastUpdateTime) {
-				console.log('ERROR: url in cache but could not update',this.dbData.url,this.dbData)
-				return callback("NOUPDATE");
-			}
-			else {
-				return callback("ENOTFOUND");
-			}
-		}
-		this.addDBData(pageData);
-		callback();
-
-
-	}.bind(this));
-};
 
 
 PageData.prototype.processDeps = function(callback) {
@@ -156,7 +119,10 @@ PageData.prototype.processDeps = function(callback) {
 	async.map(this.dbData.deps, function (url,callback) {
 
 		pageDataMgr.create(url,this.originalData.ip,this.originalData.email,function (err,newDepData) {
-			// console.log('NEW DEP1!',newDepData)
+			if (err) {
+				console.log('ERROR:',err);
+				callback(err);
+			};
 
 			// for (var attr in depData) {
 			// 	newDepData.dbData[attr] = depData[attr]
@@ -170,11 +136,11 @@ PageData.prototype.processDeps = function(callback) {
 	}.bind(this),function (err,results) {
 
 		if (err) {
-			console.log('error found while processing dep of',url,err);
+			console.log('error found while processing dep of',this.dbData.url,err);
 			return callback(err);
 		}
 		else {
-			this.deps = results
+			this.deps = results;
 			return callback();
 		}
 	}.bind(this));
@@ -184,15 +150,9 @@ PageData.prototype.processDeps = function(callback) {
 
 PageData.prototype.finish = function(callback) {
 	
-	//update database if something changed (db does delta calculations)
-	dataMgr.updateDatabase(this);
 
 	
 
-	return this.processDeps(function () {
-		emailMgr.sendEmails(this,this.parser.getEmailData(this));	
-		callback();
-	}.bind(this));
 };
 
 PageData.prototype.getClientString = function() {

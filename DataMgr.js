@@ -22,6 +22,9 @@ function DataMgr () {
 
 
 DataMgr.prototype.shouldUpdateDB = function(newData,oldData) {
+	if (!oldData) {
+		return true;
+	};
 
 	var shouldUpdateDB  = false;
 	for (var attrName in newData) {
@@ -75,29 +78,26 @@ DataMgr.prototype.updateDatabase = function(pageData) {
 };
 
 
-DataMgr.prototype.fetchDBData = function(url,callback) {
+DataMgr.prototype.fetchDBData = function(pageData,callback) {
 	
 	//if already in database, great
-	this.db.find({url:url}, function (err,docs) {
+	this.db.find({url:pageData.dbData.url}, function (err,docs) {
 		if (err) {
-			console.log('ERROR: DB lookup error:',err,url)
-			callback();
+			console.log('ERROR: DB lookup error:',err,pageData.dbData.url)
+			callback(err);
 		};
-
-		if (docs.length>1) {
-			console.log('ERROR: docs is longer than 1?',url,docs);
+		
+		if (docs.length==0) {
 			callback();
 		}
-
-		var dbData;
-		if (docs.length==0) {
-			dbData={}
+		else if (docs.length==1) {
+			pageData.addDBData(docs[0]);
+			callback();
 		}
-		else {
-			dbData=docs[0]
+		else if (docs.length>1) {
+			console.log('ERROR: docs is longer than 1?',pageData.dbData.url,docs);
+			callback("BADDATA");
 		}
-
-		callback(null,dbData);
 
 	}.bind(this));
 };

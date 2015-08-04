@@ -85,7 +85,7 @@ EllucianClassParser.prototype.getMetadata = function(pageData) {
 
 
 	return {
-		clientString:totalSeats + ' open seats found across '+ pageData.deps.length + ' sections of '+pageData.deps[0].name+' !'
+		clientString:totalSeats + ' open seats found across '+ pageData.deps.length + ' sections of '+pageData.deps[0].dbData.name+' !'
 	};
 };
 
@@ -95,6 +95,9 @@ EllucianClassParser.prototype.getMetadata = function(pageData) {
 EllucianClassParser.prototype.getEmailData = function(pageData) {
 	var newData = pageData.dbData;
 	var oldData = pageData.originalData.dbData;
+	if (!oldData) {
+		return null;
+	};
 
 	if (newData.deps.length>oldData.deps.length) {
 		var newSectionCount = newData.deps.length-oldData.deps.length;
