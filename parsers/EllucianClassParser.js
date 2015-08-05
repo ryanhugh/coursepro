@@ -185,7 +185,7 @@ EllucianClassParser.prototype.getMetadata = function(pageData) {
 
 
 	return {
-		clientString:totalSeats + ' open seats found across '+ pageData.deps.length + ' sections of '+pageData.deps[0].dbData.name+' !'
+		clientString:totalSeats + ' open seats found across '+ pageData.deps.length + ' section'+this.getOptionallyPlural(pageData.deps.length)+' of '+pageData.deps[0].dbData.name+' !'
 	};
 };
 
