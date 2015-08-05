@@ -8,52 +8,122 @@ var fs = require('fs');
 // var he = require('he');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
+
+var XMLHttpRequest = require('XMLHttpRequest').XMLHttpRequest
 // // var BaseParser = require('./BaseParser');
+var http = require('http');
+var https = require('https');
+
+var url = 'https://198.99.190.15:9000/pls/gram/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=ACCT&crse_in=201&schd_in=SL'
+
+
+// PYTHON REDIRECT SErVER?????
+
+
+// var xhr = new XMLHttpRequest();
+
+// xhr.onreadystatechange = function() {
+// 	console.log("State: " + this.readyState);
+
+// 	if (this.readyState == 4) {
+// 		console.log("Complete.\nBody length: " + this.responseText.length);
+// 		console.log("Body:\n" + this.responseText);
+// 	}
+// };
+
+// xhr.open("GET",url);
+// xhr.send();
+
+
+// var options = {
+// 	host: 'bappas2.gram.edu',
+// 	port: 9000,
+// 	path: '/pls/gram/bwckctlg.p_disp_dyn_ctlg',
+// 	method: 'GET'
+// };
+
+// var req = https.request(options, function(res) {
+// 	console.log('STATUS: ' + res.statusCode);
+// 	console.log('HEADERS: ' + JSON.stringify(res.headers));
+// 	res.setEncoding('utf8');
+// 	res.on('data', function (chunk) {
+// 		console.log('BODY: ' + chunk);
+// 	});
+// });
+
+// req.on('error', function(e) {
+// 	console.log('problem with request: ' + e.message);
+// });
+
+// req.end();
+
+
+var needle = require('needle');
+
+var options = {
+  compressed         : true, // sets 'Accept-Encoding' to 'gzip,deflate' 
+  follow_max         : 5,    // follow up to five redirects 
+  rejectUnauthorized : false  // verify SSL certificate 
+}
+
+
+needle.get(url,options
+	, function (error, response, body) {
+		console.log(error,body)
+		// if (error) {
+			// console.log('REQUESTS ERROR:',error,body);
+			// callback(error);
+		// // }
+		// else {
+		// 	callback(null,body);
+		// }
+	}.bind(this));
 
 
 
 
 
-fs.readFile('tests/EllucianCatalogParser/1.html','utf8',function (err,body) {
-	console.log(err)
 
-	var fileJSON = JSON.parse(body);
+// fs.readFile('tests/EllucianCatalogParser/1.html','utf8',function (err,body) {
+// 	console.log(err)
 
-	var handler = new htmlparser.DomHandler(function (error, dom) {
+// 	var fileJSON = JSON.parse(body);
 
-
-		// var elements = domutils.findAll(function (element) {
-		// 	return element.name=='a' && element.attribs.href && element.attribs.href.indexOf( 'bwckctlg.p_disp_listcrse')>-1
-		// },dom);
+// 	var handler = new htmlparser.DomHandler(function (error, dom) {
 
 
-		var a = domutils.getElementsByTagName('big',dom);
-		// var a = domutils.findAll(function () {return true;},dom);
-		console.log(a)
-		// console.log(a.next)
+// 		// var elements = domutils.findAll(function (element) {
+// 		// 	return element.name=='a' && element.attribs.href && element.attribs.href.indexOf( 'bwckctlg.p_disp_listcrse')>-1
+// 		// },dom);
 
 
-		// console.log(domutils.getText(a))
+// 		var a = domutils.getElementsByTagName('big',dom);
+// 		// var a = domutils.findAll(function () {return true;},dom);
+// 		console.log(a)
+// 		// console.log(a.next)
+
+
+// 		// console.log(domutils.getText(a))
 
 
 
 
 
-		// console.log(dom);
-	});
-	var parser = new htmlparser.Parser(handler);
-	// parser.write(fileJSON.body);
+// 		// console.log(dom);
+// 	});
+// 	var parser = new htmlparser.Parser(handler);
+// 	// parser.write(fileJSON.body);
 
-    var html= '<a href="http://google.com"><div style="font-size:100px">Link!</div></a><big>Yoooooo</big>'
-    parser.write(html);
-	parser.done();
+//     var html= '<a href="http://google.com"><div style="font-size:100px">Link!</div></a><big>Yoooooo</big>'
+//     parser.write(html);
+// 	parser.done();
 
 
-	// this.parseHTML(fileJSON.url,fileJSON.body,function (data) {
-	// 	console.log(data);
-	// }.bind(this));
+// 	// this.parseHTML(fileJSON.url,fileJSON.body,function (data) {
+// 	// 	console.log(data);
+// 	// }.bind(this));
 
-}.bind(this));
+// }.bind(this));
 
 
 

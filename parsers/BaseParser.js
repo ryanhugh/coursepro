@@ -15,6 +15,14 @@ BaseParser.prototype.supportsPage = function() {
 };
 
 BaseParser.prototype.getPage = function(url,callback) {
+	var urlParsed = URI.parse(url);
+	if (urlParsed.scheme=='https' && urlParsed.port!=undefined && urlParsed!='443') {
+		console.log('ERROR: nodejs cant hit https over non 443... :('); //)
+		callback("NOSUPPORT");
+		return;
+	};
+
+
 	request({
 		url:url,
 		rejectUnauthorized: false,
