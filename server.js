@@ -63,7 +63,10 @@ app.post('/urlDetails', function(req, res) {
 
 
 	//client sent a (possibly) valid url, check and parse page
-	pageDataMgr.create(req.body.url,req.connection.remoteAddress,req.body.email, function (err,pageData) {
+	pageDataMgr.create(req.body.url,{
+		ip:req.connection.remoteAddress,
+		email:req.body.email
+	}, function (err,pageData) {
 
 		if (err) {
 			//oh no! no modules support url

@@ -7,17 +7,21 @@ var URI = require('uri-js');
 //server.js
 //baseParser.js (for deps)
 //datamgr.js (for auto updates)
-function PageData (url,ip,email) {
+function PageData (url,startingData) {
 	if (!url) {
 		console.log('page data needs a url!');
 		console.trace();
 		return null
 	}
 
+	if (startingData===undefined || startingData===null) {
+		startingData={}
+	};
+
 	//dbdata is added after db search returns
 	this.originalData = {
-		ip:ip,
-		email:email
+		ip:startingData.ip,
+		email:startingData.email
 	}
 
 	//stuff stored in the db
@@ -41,14 +45,19 @@ function PageData (url,ip,email) {
 
 
 	//add the email and ip, if given
-	if (ip) {
-		this.dbData.ips.push(ip);
+	if (startingData.ip) {
+		this.dbData.ips.push(startingData.ip);
 	}
 
-	if (email) {
-		this.dbData.emails.push(email);
+	if (startingData.email) {
+		this.dbData.emails.push(startingData.email);
 	}
 
+	if (startingData.dbData) {
+		for (var attrName in startingData.dbData) {
+			this.setData(attrName,startingData.dbData[attrName]);
+		}
+	};
 }
 
 
@@ -90,6 +99,11 @@ PageData.prototype.addData = function(data) {
 				}
 			}.bind(this));
 		}
+		else if (attrName == 'deps') {
+			data.deps.forEach(function (newDepURL) {
+				this.addDep({url:newDepURL});
+			}.bind(this));
+		}
 
 		//override all other attributes
 		else if (data[attrName] != this.dbData[attrName]) {
@@ -120,25 +134,29 @@ PageData.prototype.isUpdated = function() {
 
 
 PageData.prototype.processDeps = function(callback) {
+	// console.log('starting to process deps1!')
 	
 	if (!this.depsToProcess || this.depsToProcess.length==0){ 
+		// console.log('starting to process deps3!')
 		return callback();
 	};
+	// console.log('starting to process deps2!')
 
 	//any dep data will be inserted into main pageData for dep
 	async.map(this.depsToProcess, function (addToDepData,callback) {
 
-		pageDataMgr.create(addToDepData.url,this.originalData.ip,this.originalData.email,function (err,newDepData) {
+
+		var startingData = {
+			ip:this.originalData.ip,
+			email:this.originalData.email,
+			dbData:addToDepData
+		}
+		
+		pageDataMgr.create(addToDepData.url,startingData,function (err,newDepData) {
 			if (err) {
 				console.log('ERROR:',err);
 				return callback(err);
 			};
-
-			//copy the new data to the dep
-			for (var attrName in addToDepData) {
-				console.log('updating ',attrName,'on dep',addToDepData[attrName])
-				newDepData.setData(attrName,addToDepData[attrName])
-			}
 
 			return callback(null,newDepData);
 		}.bind(this));
@@ -150,6 +168,7 @@ PageData.prototype.processDeps = function(callback) {
 			return callback(err);
 		}
 		else {
+			console.log('DONE processing deps!',results)
 			this.deps = results;
 			return callback();
 		}
@@ -181,11 +200,30 @@ PageData.prototype.addDep = function(depData) {
 		this.dbData.deps = []
 	};
 
-	this.depsToProcess.push(depData);
+	console.log('added dep ',depData)
 
 	if (this.dbData.deps.indexOf(depData.url)<0) {	
 		this.dbData.deps.push(depData.url);
 	};
+
+
+	//if dep url not in deps to process, add it there
+	for (var i = 0; i < this.depsToProcess.length; i++) {
+		if(this.depsToProcess[i].url==depData.url) {
+			console.log('URL was already in deps, adding new attrs!',depData.url)
+			for (var newAttrName in depData) {
+				console.log('adding ',newAttrName,depData[newAttrName])
+				this.depsToProcess[i][newAttrName]=depData[newAttrName];
+			}
+			console.log(this);
+			d
+			return;
+		}
+	};
+
+
+	this.depsToProcess.push(depData);
+
 
 };
 
@@ -193,6 +231,12 @@ PageData.prototype.addDep = function(depData) {
 
 //used in html parser and updateDeps, here
 PageData.prototype.setData = function(name,value) {
+	if (name===undefined || value ===undefined) {
+		console.trace('ERROR:name or value was undefined!');
+		return;
+	};
+
+
 	if (['emails','ips','deps'].indexOf(name)>-1) {
 		console.log('ERROR: html set tried to override emails ips or deps');
 		return;
@@ -211,7 +255,8 @@ PageData.prototype.getData = function(name) {
 
 if (require.main === module) {
 
-	console.log(new PageData('https://google.google.com:9000/jfdsajfk').getUrlStart())
+	// console.log(new PageData('https://google.google.com:9000/jfdsajfk').getUrlStart())
+	console.log(new PageData('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=').getUrlStart())
 	
 	// var a = new PageData("https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201536&crn_in=23361");
 

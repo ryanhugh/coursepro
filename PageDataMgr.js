@@ -28,13 +28,13 @@ function PageDataMgr () {
 //main starting point for parsing urls
 //only url is required
 //callback = function (err,pageData) {}
-PageDataMgr.prototype.create = function(url,ip,email,callback) {
+PageDataMgr.prototype.create = function(url,startingData,callback) {
 	if (!callback) {
 		callback = function (){};
 	}
 
 
-	var pageData = new PageData(url,ip,email);
+	var pageData = new PageData(url,startingData);
 
 
 	if (!pageData.findSupportingParser(parsers)) {
@@ -72,6 +72,7 @@ PageDataMgr.prototype.create = function(url,ip,email,callback) {
 
 
 PageDataMgr.prototype.finish = function(pageData,callback) {
+	// cons
 
 	// console.log('fda',pageData)
 	//update database if something changed (db does delta calculations)
@@ -95,9 +96,11 @@ PageDataMgr.prototype.finish = function(pageData,callback) {
 PageDataMgr.prototype.tests = function() {
 	
 	// this.create('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	this.create('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_detail_sched?term_in=201580&crn_in=81471',null,null,function (argument) {
-		console.log(arguments,"HRERE");
-	})
+	this.create('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=',null,function (err,pageData) {
+	// this.create('https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%',null,function (err,pageData) {
+	// this.create('https://genisys.regent.edu/pls/prod/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=10739',null,function (err,pageData) {
+		console.log("CALLBACK WAS CALLED!!!!!!!",pageData.getClientString());
+	}.bind(this));
 };
 
 
