@@ -102,9 +102,9 @@ PageData.prototype.addDBData = function(data) {
 	this.originalData.dbData=data;
 	this.addData(data);
 }
-PageData.prototype.addHTMLData = function(data) {
-	this.addData(data);
-};
+// PageData.prototype.addHTMLData = function(data) {
+// 	this.addData(data);
+// };
 
 
 
@@ -136,6 +136,7 @@ PageData.prototype.processDeps = function(callback) {
 
 			//copy the new data to the dep
 			for (var attrName in addToDepData) {
+				console.log('updating ',attrName,'on dep',addToDepData[attrName])
 				newDepData.setData(attrName,addToDepData[attrName])
 			}
 
@@ -180,10 +181,12 @@ PageData.prototype.addDep = function(depData) {
 		this.dbData.deps = []
 	};
 
-
-
 	this.depsToProcess.push(depData);
-	this.dbData.deps.push(depData.url);
+
+	if (this.dbData.deps.indexOf(depData.url)<0) {	
+		this.dbData.deps.push(depData.url);
+	};
+
 };
 
 

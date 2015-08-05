@@ -17,6 +17,17 @@ var https = require('https');
 var url = 'https://198.99.190.15:9000/pls/gram/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=ACCT&crse_in=201&schd_in=SL'
 
 
+function test () {
+	this.hi()
+}
+
+
+test.prototype.hi = function(hi) {
+	console.log('it worked')
+};
+
+new test()
+
 // PYTHON REDIRECT SErVER?????
 
 

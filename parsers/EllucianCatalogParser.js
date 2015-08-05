@@ -53,6 +53,7 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 	//find the description
 	depData.desc=domutils.getText( element.children[0]).trim()
 
+	console.log(depData)
 	if (depData.desc.trim()=='' || depData.url===undefined) {
 		return;
 	};
