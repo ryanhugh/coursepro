@@ -7,7 +7,7 @@ var he = require('he');
 var timeZero = moment('0','h');
 
 var BaseParser = require('./BaseParser');
-var EllucianSectionParser = require('./ellucianSectionParser');
+var EllucianSectionParser = require('./EllucianSectionParser');
 
 var ellucianSectionParser = new EllucianSectionParser();
 

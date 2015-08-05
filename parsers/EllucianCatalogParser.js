@@ -3,7 +3,7 @@ var URI = require('uri-js');
 var domutils = require('domutils');
 var he = require('he');
 var BaseParser = require('./BaseParser');
-var EllucianClassParser = require('./ellucianClassParser');
+var EllucianClassParser = require('./EllucianClassParser');
 
 var ellucianClassParser = new EllucianClassParser();
 
