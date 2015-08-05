@@ -9,24 +9,25 @@ var fs = require('fs');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 
-var XMLHttpRequest = require('XMLHttpRequest').XMLHttpRequest
+// var XMLHttpRequest = require('XMLHttpRequest').XMLHttpRequest
 // // var BaseParser = require('./BaseParser');
 var http = require('http');
 var https = require('https');
 
-var url = 'https://198.99.190.15:9000/pls/gram/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=ACCT&crse_in=201&schd_in=SL'
+// var url = 'https://bappas2.gram.edu:9000/pls/gram/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=ACCT&crse_in=201&schd_in=SL'
+var url = 'http://usu.edu'
 
 
-function test () {
-	this.hi()
-}
+// function test () {
+// 	this.hi()
+// }
 
 
-test.prototype.hi = function(hi) {
-	console.log('it worked')
-};
+// test.prototype.hi = function(hi) {
+// 	console.log('it worked')
+// };
 
-new test()
+// new test()
 
 // PYTHON REDIRECT SErVER?????
 
@@ -72,14 +73,21 @@ new test()
 var needle = require('needle');
 
 var options = {
-  compressed         : true, // sets 'Accept-Encoding' to 'gzip,deflate' 
-  follow_max         : 5,    // follow up to five redirects 
-  rejectUnauthorized : false  // verify SSL certificate 
+  // compressed         : true, // sets 'Accept-Encoding' to 'gzip,deflate'
+  follow_max         : 5,    // follow up to five redirects
+  rejectUnauthorized : false  // verify SSL certificate
 }
 
 
-needle.get(url,options
-	, function (error, response, body) {
+needle.get(url, {
+  // compressed         : true, // sets 'Accept-Encoding' to 'gzip,deflate'
+  follow_max         : 5,    // follow up to five redirects
+  rejectUnauthorized : false,  // verify SSL certificate
+  headers: {
+    'Accept-Encoding': '*',
+    'User-Agent':'I MIGHT BE A ROBOT I DUNNO ASK SIRI'
+  }
+}	, function (error, response, body) {
 		console.log(error,body)
 		// if (error) {
 			// console.log('REQUESTS ERROR:',error,body);

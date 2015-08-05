@@ -15,13 +15,24 @@ scrape times + description
 
 
 BUGS:
+
+
+//baseparser.js
+https://bappas2.gram.edu:9000/pls/gram/bwckctlg.p_disp_dyn_ctlg
 nodejs cant access a https over non standard port???
-effcts: needle, https, requests, xmlhttprequest 
+effcts: needle, https, requests, xmlhttprequest
 works in python and in the browser (chrome)
 use eff.org to test
+update: could access localhost on port 8443 which forwarded from eff.org 443 (so non port 443 works, maybe something wierd with this site+nodejs?) (double check this on remote server)
+
+
+
+//collegenames.js
+'https://banner.uregina.ca/prod/sct/bwckctlg.p_disp_dyn_ctlg', //has a js redirect after a couple of seconds -> www.uregina.ca (the title before the redirect is personal web site...)
 
 
 
 
+//ellucian catalog parser
 no DESC here, causes dep to be missed
 https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=CTV&sel_crse_strt=580&sel_crse_end=580&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=
