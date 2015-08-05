@@ -1,14 +1,11 @@
 'use strict';
 var URI = require('uri-js');
-var htmlparser = require('htmlparser2');
-
+var domutils = require('domutils');
+var he = require('he');
 var BaseParser = require('./BaseParser');
 var EllucianClassParser = require('./ellucianClassParser');
 
 var ellucianClassParser = new EllucianClassParser();
-
-
-
 
 
 function EllucianCatalogParser () {
@@ -29,28 +26,50 @@ EllucianCatalogParser.prototype.supportsPage = function (url) {
 }
 
 
-
-EllucianCatalogParser.prototype.parseElement = function(pageData,element) {
-	if (element.type!='tag') {
-		return;
-	};
+EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
+	
+	var depData = {};
 
 
-	if (element.name =='a' && element.attribs.href){
-		var attrURL = element.attribs.href;
+	//find the url
+	domutils.findAll(function (element) {
+		if (!element.attribs.href) {
+			return;
+		}
+
+		var attrURL = he.decode(element.attribs.href);
 
 		//add hostname + port if not specified
 		if (URI.parse(attrURL).reference=='relative') {
 			attrURL = pageData.getUrlStart() + attrURL;
 		}
 
-		//register for all types of classes
 		if (ellucianClassParser.supportsPage(attrURL)){
-			pageData.addDep({
-				url:attrURL
-			});
+			depData.url = attrURL;
 		}
-	}
+	}.bind(this),element.children);
+
+
+	//find the description
+	depData.desc=domutils.getText( element.children[0]).trim()
+
+	if (depData.desc.trim()=='' || depData.url===undefined) {
+		return;
+	};
+
+	pageData.addDep(depData);
+};
+
+
+
+EllucianCatalogParser.prototype.parseElement = function(pageData,element) {
+	if (element.type!='tag') {
+		return;
+	};
+
+	if (element.name == 'td' && element.attribs.class == 'ntdefault' && element.parent.name=='tr' && element.parent.parent.attribs.class=='datadisplaytable') {
+		this.parseClass(pageData,element);
+	};
 };
 
 
@@ -94,11 +113,8 @@ EllucianCatalogParser.prototype.getEmailData = function(pageData) {
 
 
 
-
 if (require.main === module) {
 	new EllucianCatalogParser().tests();
 }
 
 module.exports = EllucianCatalogParser
-
-// console.log(exports.getFormattableUrl('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633'))
