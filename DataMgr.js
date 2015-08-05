@@ -6,7 +6,7 @@ var EmailMgr = require('./EmailMgr');
 
 function DataMgr () {
 	console.log('Loading dataMgr!!');
-	this.db = new Datastore({ filename: 'database.db', autoload: true });
+	this.db = new Datastore({ filename: 'classes.db', autoload: true });
 	
 
 	//every 5 min

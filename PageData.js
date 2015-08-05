@@ -168,7 +168,6 @@ PageData.prototype.processDeps = function(callback) {
 			return callback(err);
 		}
 		else {
-			console.log('DONE processing deps!',results)
 			this.deps = results;
 			return callback();
 		}
