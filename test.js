@@ -13,9 +13,39 @@ var domutils = require('domutils');
 // // var BaseParser = require('./BaseParser');
 var http = require('http');
 var https = require('https');
+var dns = require('dns');
+
+
+// var whois = require('whois-ux');
+console.log(whois)
+ 
+ 
+// this works, but lehigh.edu does not
+// whois.whois('128.180.2.57', function (err, data){
+
+
+// dns.lookup('rcgc.edu', function onLookup(err, ip, family) {
+//   console.log(ip);
+
+//   whois.whois(ip, function (err, data){
+//       console.log('HERE',JSON.stringify(data));
+//   });
+// });
+
+var whois = require('node-whois')
+whois.lookup('neu.edu', function(err, data) {
+    console.log(data)
+})
+
+
+
+
+
+
+
 
 // var url = 'https://bappas2.gram.edu:9000/pls/gram/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=ACCT&crse_in=201&schd_in=SL'
-var url = 'http://usu.edu'
+// var url = 'http://usu.edu'
 
 
 // function test () {
@@ -70,33 +100,33 @@ var url = 'http://usu.edu'
 // req.end();
 
 
-var needle = require('needle');
+// var needle = require('needle');
 
-var options = {
-  // compressed         : true, // sets 'Accept-Encoding' to 'gzip,deflate'
-  follow_max         : 5,    // follow up to five redirects
-  rejectUnauthorized : false  // verify SSL certificate
-}
+// var options = {
+//   // compressed         : true, // sets 'Accept-Encoding' to 'gzip,deflate'
+//   follow_max         : 5,    // follow up to five redirects
+//   rejectUnauthorized : false  // verify SSL certificate
+// }
 
 
-needle.get(url, {
-  // compressed         : true, // sets 'Accept-Encoding' to 'gzip,deflate'
-  follow_max         : 5,    // follow up to five redirects
-  rejectUnauthorized : false,  // verify SSL certificate
-  headers: {
-    'Accept-Encoding': '*',
-    'User-Agent':'I MIGHT BE A ROBOT I DUNNO ASK SIRI'
-  }
-}	, function (error, response, body) {
-		console.log(error,body)
-		// if (error) {
-			// console.log('REQUESTS ERROR:',error,body);
-			// callback(error);
-		// // }
-		// else {
-		// 	callback(null,body);
-		// }
-	}.bind(this));
+// needle.get(url, {
+//   // compressed         : true, // sets 'Accept-Encoding' to 'gzip,deflate'
+//   follow_max         : 5,    // follow up to five redirects
+//   rejectUnauthorized : false,  // verify SSL certificate
+//   headers: {
+//     'Accept-Encoding': '*',
+//     'User-Agent':'I MIGHT BE A ROBOT I DUNNO ASK SIRI'
+//   }
+// }	, function (error, response, body) {
+// 		console.log(error,body)
+// 		// if (error) {
+// 			// console.log('REQUESTS ERROR:',error,body);
+// 			// callback(error);
+// 		// // }
+// 		// else {
+// 		// 	callback(null,body);
+// 		// }
+// 	}.bind(this));
 
 
 

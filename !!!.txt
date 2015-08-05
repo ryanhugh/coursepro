@@ -29,8 +29,13 @@ update: could access localhost on port 8443 which forwarded from eff.org 443 (so
 
 //collegenames.js
 'https://banner.uregina.ca/prod/sct/bwckctlg.p_disp_dyn_ctlg', //has a js redirect after a couple of seconds -> www.uregina.ca (the title before the redirect is personal web site...)
+lehigh.edu "Home| Lehigh University" - whois on their ip address does work tho
+rcgc.edu - theres like newlines and stuff in the title...
 
+whois rcgc.edu on command line works, but in js whois-ux and whois-ux on the ip both dont work (whois on ip on command line dosent work either)
 
+http://www.columbiastate.edu/
+is just "Home" as title
 
 
 //ellucian catalog parser
