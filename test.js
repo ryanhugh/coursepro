@@ -17,7 +17,7 @@ var dns = require('dns');
 
 
 // var whois = require('whois-ux');
-console.log(whois)
+// console.log(whois)
  
  
 // this works, but lehigh.edu does not
@@ -33,13 +33,46 @@ console.log(whois)
 // });
 
 var whois = require('node-whois')
-whois.lookup('neu.edu', function(err, data) {
+whois.lookup('uillinois.edu', function(err, data) {
+    // console.log(data)
+    
+    data=data.match(/Registrant:\n[\w\d \t]+/i);
+    data = data[0].replace('Registrant:','').trim()
     console.log(data)
+    
+    
+    
+    
 })
 
+// var tldtools = require('tldtools').init();
+// tldtools.whois('neu.edu',
+//     {
+//         'onSuccess' : function(whoisData, fqdn, cbPassthrough) {
+//             console.log(whoisData);
+//             console.log(fqdn + ' ultimate success!');
+//             console.log(cbPassthrough);
+//         },
+//         'onFail' : function(errorMessage, fqdn, cbPassthrough) {
+//             console.log(errorMessage);
+//             console.log(fqdn + ' WHOIS FAILED');
+//             console.log(cbPassthrough);
+//         }
+//     }
+// );
 
 
+// var whoisAvailable = require('whois-available');
+ 
+// whoisAvailable('neu.edu', function(err, whoisResponse, isAvailable) {
+//   console.log(whoisResponse)
+// });
 
+// var whois = require('whois-json');
+
+// whois('neu.edu', function(err, result){
+//     console.log(JSON.stringify(result, null, 2))
+// })
 
 
 
