@@ -438,85 +438,62 @@ Spider.prototype.tests = function () {
 
 
 
-  // this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec')
-  this.go('https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched')
-  return;
-  
-  
-  fs.readFile('./tests/'+this.constructor.name+'/search.json','utf8',function (err,body) {
-
-	 // console.log(JSON.stringify({
-	 //   url:'https://ssb.cc.binghamton.edu/banner/bwckgens.p_proc_term_date',
-	 //   body:body
-	 // }));
-  var jsonBody = JSON.parse(body);
-  
-  var handler = new htmlparser.DomHandler(function (error, dom) {
-  	if (error) {
-  		console.log('ERROR: college names html parsing error',error);
-  		return callback(error);
-  	}
-  	console.log(this.parseForm(jsonBody.url, dom));
-		// console.log(jsonBody)
-
-		 //console.log(this.parseForm(dom)[1])
+	// this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec')
+	this.go('https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched')
+	return;
 
 
-		}.bind(this));
-  
-  var parser = new htmlparser.Parser(handler);
-  parser.write(jsonBody.body);
-  parser.done();
-  
-  
-  
-}.bind(this));
-  
-  
-  fs.readFile('./tests/'+this.constructor.name+'/termselection.json','utf8',function (err,body) {
-  	return;
+	fs.readFile('./tests/'+this.constructor.name+'/search.json','utf8',function (err,body) {
 
 
-  	var jsonBody = JSON.parse(body);
+		
+		//   url:'https://ssb.cc.binghamton.edu/banner/bwckgens.p_proc_term_date',
 
+		var jsonBody = JSON.parse(body);
 
-  	var handler = new htmlparser.DomHandler(function (error, dom) {
-  		if (error) {
-  			console.log('ERROR: college names html parsing error',error);
-  			return callback(error);
-  		}
-		// console.log(jsonBody)
+		var handler = new htmlparser.DomHandler(function (error, dom) {
+			if (error) {
+				console.log('ERROR: college names html parsing error',error);
+				return callback(error);
+			}
+			console.log(this.parseForm(jsonBody.url, dom));
+			// console.log(jsonBody)
 
-		 //console.log(this.parseForm(dom)[1])
+			//console.log(this.parseForm(dom)[1])
 
 
 		}.bind(this));
 
-  	var parser = new htmlparser.Parser(handler);
-  	parser.write(jsonBody.body);
-  	parser.done();
+		var parser = new htmlparser.Parser(handler);
+		parser.write(jsonBody.body);
+		parser.done();
+	}.bind(this));
 
 
 
-	 //this.parseTermsPage
-  // console.log(fScraper)
-  
-  
-  
-  // var formStructure = new fScraper.ScrapingFormProvider()
-  
-  // console.log(formStructure.__proto__)
-  
-  // formStructure.fetchFormDataFromHttpResponse(jsonBody.body);
-  
-  
-  // var loginDetails = { user: "my user", password: "my password" };
-  
-  
-  
-  
-  // this.parseTermsPage('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched')
-}.bind(this));
+	fs.readFile('./tests/'+this.constructor.name+'/termselection.json','utf8',function (err,body) {
+		return;
+
+
+		var jsonBody = JSON.parse(body);
+
+
+		var handler = new htmlparser.DomHandler(function (error, dom) {
+			if (error) {
+				console.log('ERROR: college names html parsing error',error);
+				return callback(error);
+			}
+
+		}.bind(this));
+
+		var parser = new htmlparser.Parser(handler);
+		parser.write(jsonBody.body);
+		parser.done();
+
+
+
+		// this.parseTermsPage('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched')
+	}.bind(this));
 }
 
 

@@ -272,7 +272,7 @@ CollegeNames.prototype.getTitle = function(url,callback) {
 			console.log('ERROR: more than 1 match this homepage??',homepage);
 		}
 
-		
+
 		//yay, return value
 		// console.log('COLLGE NAMES cache hit',homepage,docs[0].title);
 		return callback(null,docs[0].title);
@@ -329,10 +329,7 @@ CollegeNames.prototype.tests = function() {
 
 
 			}.bind(this));
-
-
 		}.bind(this));
-
 	}.bind(this));
 
 
