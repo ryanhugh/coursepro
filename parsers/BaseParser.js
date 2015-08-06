@@ -50,6 +50,11 @@ BaseParser.prototype.parse = function(pageData,callback) {
 		if (err) {
 			return callback(err);
 		};
+		
+		//record the main hostname in the url TODO
+		
+		
+		
 		this.parseHTML(pageData,html,function (err) {
 			if (err) {
 				return callback(err);

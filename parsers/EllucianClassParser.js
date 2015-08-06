@@ -122,6 +122,10 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		//found the row were looking for
 		if (domutils.getText(items[0]).trim().toLowerCase()=='class') {
 			var prof = domutils.getText(items[6]).trim();
+			
+			//replace double spaces with a single space
+			prof = prof.replace(/\s+/g,' ');
+			
 			if (prof.toLowerCase()!='tba' && prof.length>2) {
 				depData.prof=prof;
 			};
