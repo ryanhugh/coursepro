@@ -277,6 +277,30 @@ CollegeNames.prototype.getTitle = function(url,callback) {
 }
 
 
+CollegeNames.prototype.getAll = function(callback) {
+  var retVal = [];
+  
+  this.db.find({},function(err,docs){
+    if (err){
+      console.log("ERROR: nedb college names.getAll error",err);
+      return callback(err);
+    }
+    
+    docs.forEach(function(doc){
+      var newItem = {};
+      newItem.homepage = doc.homepage;
+      newItem.title = doc.title;
+      retVal.push(newItem);
+    });
+    return callback(retVal);
+  });
+}
+
+
+
+
+
+
 
 
 

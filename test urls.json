@@ -38,5 +38,13 @@
   "https://selfservice.brown.edu/ss/bwckschd.p_disp_dyn_sched",
   "https://ssbprod.wichita.edu/PROD/bwckschd.p_disp_dyn_sched",
   "https://prodssb.mscc.edu/PROD/bwckschd.p_disp_dyn_sched",
-  "https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckschd.p_disp_dyn_sched"
+  "https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckschd.p_disp_dyn_sched",
+  "https://banner4.utm.edu/prod/bwckschd.p_disp_dyn_sched",
+  "https://nssb-p.adm.fit.edu/prod/bwckschd.p_disp_dyn_sched",
+  "https://prodssb.ws.edu/pls/PROD/bwckschd.p_disp_dyn_sched",
+  "https://oasis.farmingdale.edu/banner/bwckschd.p_disp_dyn_sched",
+  "https://oxford.blinn.edu:9010/PROD/bwckschd.p_disp_dyn_sched",
+  "https://ssb.ship.edu/prod/bwckschd.p_disp_dyn_sched",
+  "https://telaris.wlu.ca/ssb_prod/bwckschd.p_disp_dyn_sched",
+  "https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_dyn_sched"
   ]
