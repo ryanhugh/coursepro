@@ -64,10 +64,20 @@ Spider.prototype.minYear = function(){
 //add inputs if they have a value = name:value
 //add all select options if they have multiple
 //add just the first select option if is only 1
-Spider.prototype.parseForm = function (form) {
+Spider.prototype.parseForm = function (dom) {
+  
+  //find the form, bail if !=1 on the page
+  var forms = domutils.getElementsByTagName('form',dom);
+  if (forms.length!=1) {
+    console.log('there is !=1 forms??',dom);
+    return
+  }
+  var form = forms[0];
+  
+  
+  
   
   var payloads = [];
-  
   
   //inputs
   var inputs = domutils.getElementsByTagName('input',form);
@@ -77,9 +87,10 @@ Spider.prototype.parseForm = function (form) {
       return;
     }
     
-    var newData = {}
-    newData[input.attribs.name]=input.attribs.value;
-    payloads.push(newData);
+    payloads.push({
+      name:input.attribs.name,
+      value:input.attribs.value
+    });
   });
   
   
@@ -93,36 +104,14 @@ Spider.prototype.parseForm = function (form) {
       return;
     }
     
-    console.log(select.attribs,'fdsa')
+    // console.log(select.attribs,'fdsa')
       
     //add all of them :)
     if (select.attribs.multiple!==undefined){
+      console.log('adding all of ',select.attribs)
         
   		options.forEach(function (option){
   		    var text = domutils.getText(option).trim();
-  		    
-  		    
-  		    //move all this to other function
-  		    // if (text.toLowerCase()==='none') {
-  		    //   return;
-  		    // }
-  		    
-  		    //dont process this element on error
-  		    // if (text.length<2) {
-  		    //   console.log('ERROR: empty text on form?',url);
-        //     return;
-  		    // }
-  		    
-  		    // var year = text.match(/\d{4}/);
-  		    // if (!year) {
-  		    //   console.log('ERROR: could not find year for ',text,url);
-  		    //   return;
-  		    // }
-  		    
-  		    // //skip past years
-  		    // if (parseInt(year)<this.minYear()) {
-  		    //   return;
-  		    // }
   		    
   		    payloads.push({
   		      value:option.attribs.value,
@@ -136,10 +125,12 @@ Spider.prototype.parseForm = function (form) {
     
     //just add the first select
     else {
+      console.log('using alts for',select.attribs)
       
       var alts=[];
       
       options.slice(1).forEach(function (option){
+        var text = domutils.getText(option).trim();
         alts.push({
   	      value:option.attribs.value,
   	      text:text,
@@ -155,31 +146,22 @@ Spider.prototype.parseForm = function (form) {
 	      name:select.attribs.name,
 	      alts:alts
 	    });
-	    
-	    
-	    
-	    
-	    
-	    
     }
   });
   
-  
   return payloads;
-  
-  
 }
 
 
 //step 1, select the terms
 //callback (err,url,[payloads])
-Spider.prototype.parseTermsPage = function (url,callback) {
+Spider.prototype.parseTermsPage = function (baseURL,callback) {
   
   if (!callback) {
     callback = function (){}
   }
   
-  
+  var url = baseURL + 'bwckschd.p_disp_dyn_sched'
   
   this.request(url,function (err,body) {
     if (err) {
@@ -192,79 +174,99 @@ Spider.prototype.parseTermsPage = function (url,callback) {
   			console.log('ERROR: college names html parsing error',error);
   			return callback(error);
   		}
-  		
-  		var selectElement = domutils.getElementById('term_input_id',dom);
-  		if (!selectElement) {
-  		  console.log('ERROR: no select element, idk',url)
-  		  return callback('parse error');
+
+  		var requestsData = [];
+
+  		var defaultFormData = this.parseForm(dom);
+  		if (!defaultFormData) {
+  		  console.log('default form data failed')
+  		  return callback('default form data failed');
   		}
   		
-  		var options = domutils.getElementsByTagName('option',selectElement.children);
-  		if (options.length === 0) {
-  		  console.log('ERROR: no options on the menu?',url);
-  		  return callback('parse error');
-  		}
-  		
-  		var payloads = [];
-  		
-  		options.forEach(function (option){
-  		    var title = domutils.getText(option).trim();
-  		    
-  		    
-  		    
-  		    if (title.toLowerCase()==='none') {
-  		      return;
-  		    }
-  		    
-  		    //dont process this element on error
-  		    if (title.length<2) {
-  		      console.log('ERROR: empty title on form?',url);
-            return;
-  		    }
-  		    
-  		    var year = title.match(/\d{4}/);
-  		    if (!year) {
-  		      console.log('ERROR: could not find year for ',title,url);
-  		      return;
-  		    }
-  		    
-  		    //skip past years
-  		    if (parseInt(year)<this.minYear()) {
-  		      return;
-  		    }
-  		    
-  		    payloads.push({
-  		      value:option.attribs.value,
-  		      title:title
-  		    });
-  		    
-  		    
+  		//find the term entry and all the other entries
+  		var termEntry;
+  		var otherEntries = [];
+  		defaultFormData.forEach(function(entry) {
+  		  if (entry.name=='p_term') {
+  		    termEntry = entry;
+  		  }
+  		  else {
+  		    otherEntries.push(entry);
+  		  }
   		}.bind(this));
   		
-  		var formElement = this.findFormElement(selectElement);
-  		if (!formElement) {
-  		  console.log('ERROR: could not find form element',url)
-  		  return callback('could not find form element')
-  		}
+  		//setup an indidual request for each valid entry on the form - includes the term entry and all other other entries
+  		termEntry.alts.forEach(function(entry) {
+  		  if (entry.name!='p_term') {
+  		    console.log('ERROR: entry was alt of term entry but not same name?',entry);
+  		    return;
+  		  }
+  		    
+		    if (entry.text.toLowerCase()==='none') {
+		      return;
+		    }
+		    
+		    //dont process this element on error
+		    if (entry.text.length<2) {
+		      console.log('ERROR: empty entry.text on form?',url);
+          return;
+		    }
+		    
+		    var year = entry.text.match(/\d{4}/);
+		    if (!year) {
+		      console.log('ERROR: could not find year for ',entry.text,url);
+		      return;
+		    }
+		    
+		    //skip past years
+		    if (parseInt(year)<this.minYear()) {
+		      return;
+		    }
+		    
+		    var fullRequestData = otherEntries.slice(0);
+		    
+		    fullRequestData.push({
+		      name:entry.name,
+		      value:entry.value,
+		      text:entry.text
+		    });
+		    
+		    requestsData.push(fullRequestData);
+		  
+  		}.bind(this));
   		
-  		
-  		var hitUrl = this.findBaseURL(url) + formElement.attribs.action
-  		
-  		console.log(hitUrl,payloads);
-  		callback(null,hitUrl,payloads)
-
-		  }.bind(this));
-  
-  	var parser = new htmlparser.Parser(handler);
-  	parser.write(body);
-  	parser.done();
-  
-  
-    
-    
-  }.bind(this));
+  		callback(null,requestsData);
+  	})
+  })
 }
 
+
+Spider.prototype.parseSearchPage = function (baseURL,callback) {
+  if (!callback) {
+    callback = function (){}
+  }
+  
+  var url = baseURL + 'bwckschd.p_disp_dyn_sched'
+  
+  this.request(url,function (err,body) {
+    if (err) {
+      console.log('ERROR requests error step 1,',err);
+      return callback(error);
+    }
+    
+  	var handler = new htmlparser.DomHandler(function (error, dom) {
+  		if (error) {
+  			console.log('ERROR: college names html parsing error',error);
+  			return callback(error);
+  		}
+  		
+  		console.log(this.parseForm(dom));
+  		callback(null,url,)
+  		
+  		
+  	}.bind(this))
+  }.bind(this))
+}
 
 
 Spider.prototype.findBaseURL = function (url) {
@@ -294,7 +296,17 @@ Spider.prototype.go = function(url) {
       return;
     }
     
-    baseURL += 'bwckschd.p_disp_dyn_sched'
+    this.parseTermsPage(baseURL,function (err,url,payloads) {
+      //just the first payload for now
+      var payload = payloads[0]; //TODO
+      
+      
+      
+      
+      
+    })
+    
+    // baseURL += 'bwckschd.p_disp_dyn_sched'
     
     
     
@@ -314,13 +326,39 @@ Spider.prototype.go = function(url) {
 Spider.prototype.tests = function () {
   
   
-	fs.readFile('./tests/'+this.constructor.name+'/termselection.json','utf8',function (err,body) {
+	fs.readFile('./tests/'+this.constructor.name+'/search.json','utf8',function (err,body) {
 	  
 	 // console.log(JSON.stringify({
-	 //   url:'https://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_dyn_sched',
+	 //   url:'https://ssb.cc.binghamton.edu/banner/bwckgens.p_proc_term_date',
 	 //   body:body
 	 // }));
+	 var jsonBody = JSON.parse(body);
 	 
+  	var handler = new htmlparser.DomHandler(function (error, dom) {
+  		if (error) {
+  			console.log('ERROR: college names html parsing error',error);
+  			return callback(error);
+  		}
+  		console.log(this.parseForm(dom));
+  		// console.log(jsonBody)
+	 
+    	 //console.log(this.parseForm(dom)[1])
+	 
+	 
+		  }.bind(this));
+  
+  	var parser = new htmlparser.Parser(handler);
+  	parser.write(jsonBody.body);
+  	parser.done();
+	 
+	  
+	 
+	}.bind(this));
+	
+	
+	fs.readFile('./tests/'+this.constructor.name+'/termselection.json','utf8',function (err,body) {
+	  
+	  
 	 var jsonBody = JSON.parse(body);
 	 
 	 
@@ -329,9 +367,9 @@ Spider.prototype.tests = function () {
   			console.log('ERROR: college names html parsing error',error);
   			return callback(error);
   		}
-  		console.log(jsonBody)
+  		// console.log(jsonBody)
 	 
-    	 console.log(this.parseForm(dom))
+    	 //console.log(this.parseForm(dom)[1])
 	 
 	 
 		  }.bind(this));

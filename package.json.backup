@@ -1,0 +1,13 @@
+{
+  "name"         : "courseoff2",
+  "version"      : "0.0.1",
+  "description"  : "Awesome sauce!",
+  "main"         : "server.js",
+  "author"       : "ryan",
+  "dependencies" : {
+    "express"    : "latest",
+    "he"    : "latest",
+    "request"    : "latest",
+    "domutils"    : "latest"
+  }
+}
