@@ -32,18 +32,20 @@ var dns = require('dns');
 //   });
 // });
 
-var whois = require('node-whois')
-whois.lookup('uillinois.edu', function(err, data) {
-    // console.log(data)
+// var whois = require('node-whois')
+// whois.lookup('uillinois.edu', function(err, data) {
+//     // console.log(data)
     
-    data=data.match(/Registrant:\n[\w\d \t]+/i);
-    data = data[0].replace('Registrant:','').trim()
-    console.log(data)
-    
-    
+//     data=data.match(/Registrant:\n[\w\d \t]+/i);
+//     data = data[0].replace('Registrant:','').trim()
+//     console.log(data)
     
     
-})
+    
+    
+// })
+
+console.debug('HIII')
 
 // var tldtools = require('tldtools').init();
 // tldtools.whois('neu.edu',
