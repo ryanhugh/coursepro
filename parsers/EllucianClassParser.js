@@ -44,16 +44,18 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 	var retVal = {}
 
 	var dayLetterToIndex = {
+	  'U':0,
 		'M':1,
 		"T":2,
 		"W":3,
 		'R':4,
-		'F':5
+		'F':5,
+		'S':6
 	};
 
 	for (var i = 0; i < days.length; i++) {
 		var dayIndex = dayLetterToIndex[days[i]];
-		if (!dayIndex) {
+		if (dayIndex===undefined) {
 			console.log('ERROR: unknown letter ',days,' !!!');
 			return false;
 		}

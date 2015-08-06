@@ -16,6 +16,14 @@ var https = require('https');
 var dns = require('dns');
 
 
+
+
+var a = '<TR><TD CLASS="pllabel"><LABEL for=insm_id><SPAN class="fieldlabeltext">Instructional Method: </SPAN></LABEL></TD><TD COLSPAN="7" CLASS="pldefault"><SELECT NAME="sel_insm" SIZE="3" MULTIPLE ID="insm_id"><OPTION VALUE="%" SELECTED>All<OPTION VALUE="DI">Dist Learning Taught by BU Fac<OPTION VALUE="OA">On-Line Asynchronous<OPTION VALUE="OC">On-Line Combined<OPTION VALUE="OH">On-Line Hybrid<OPTION VALUE="OS">On-Line Synchronous<OPTION VALUE="TR">Traditional</SELECT></TD></TR>';
+
+
+
+
+
 // var whois = require('whois-ux');
 // console.log(whois)
  
@@ -45,7 +53,7 @@ var dns = require('dns');
     
 // })
 
-console.debug('HIII')
+// console.debug('HIII')
 
 // var tldtools = require('tldtools').init();
 // tldtools.whois('neu.edu',
@@ -173,34 +181,34 @@ console.debug('HIII')
 
 // 	var fileJSON = JSON.parse(body);
 
-// 	var handler = new htmlparser.DomHandler(function (error, dom) {
+	var handler = new htmlparser.DomHandler(function (error, dom) {
 
 
-// 		// var elements = domutils.findAll(function (element) {
-// 		// 	return element.name=='a' && element.attribs.href && element.attribs.href.indexOf( 'bwckctlg.p_disp_listcrse')>-1
-// 		// },dom);
+		// var elements = domutils.findAll(function (element) {
+		// 	return element.name=='a' && element.attribs.href && element.attribs.href.indexOf( 'bwckctlg.p_disp_listcrse')>-1
+		// },dom);
 
 
-// 		var a = domutils.getElementsByTagName('big',dom);
-// 		// var a = domutils.findAll(function () {return true;},dom);
-// 		console.log(a)
-// 		// console.log(a.next)
+		var a = domutils.getElementsByTagName('select',dom);
+		// var a = domutils.findAll(function () {return true;},dom);
+		console.log(a[0].attribs.multiple!==undefined)
+		// console.log(a.next)
 
 
-// 		// console.log(domutils.getText(a))
+		// console.log(domutils.getText(a))
 
 
 
 
 
-// 		// console.log(dom);
-// 	});
-// 	var parser = new htmlparser.Parser(handler);
-// 	// parser.write(fileJSON.body);
+		// console.log(dom);
+	});
+	var parser = new htmlparser.Parser(handler);
+	// parser.write(fileJSON.body);
 
-//     var html= '<a href="http://google.com"><div style="font-size:100px">Link!</div></a><big>Yoooooo</big>'
-//     parser.write(html);
-// 	parser.done();
+    var html= a;
+    parser.write(html);
+	parser.done();
 
 
 // 	// this.parseHTML(fileJSON.url,fileJSON.body,function (data) {

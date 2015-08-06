@@ -104,7 +104,7 @@ CollegeNames.prototype.hitPage = function(homepage,callback) {
   
     	var handler = new htmlparser.DomHandler(function (error, dom) {
     		if (error) {
-    			console.log(error);
+    			console.log('ERROR: college names html parsing error',error);
     			return callback(error);
     		}
     		
