@@ -112,24 +112,3 @@ app.get("/*", function(req, res, next) {
 
 
 app.listen(3000);
-
-
-// console.log(validateEmail('bob@cuvox.de'))
-
-
-// fs.readFile('tests/ellucianSection/1.html','utf8',function (err,body) {
-// 	var fileJSON = JSON.parse(body);
-
-// 	var module=modules[0]
-// 	var formattableURL = module.getFormattableUrl(fileJSON.url,fileJSON.html);
-
-// 	module.getData(fileJSON.url,fileJSON.html,function  (instanceData) {
-// 		instanceData.ips=["192.168.1.1"]
-// 		addData(module,formattableURL,instanceData)
-// 	});
-
-// 	module.getData(fileJSON.url,fileJSON.html,function  (instanceData) {
-// 		instanceData.ips=["192.168.1.2"]
-// 		addData(module,formattableURL,instanceData)
-// 	});
-// });
