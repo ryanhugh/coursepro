@@ -3,41 +3,79 @@ var needle = require('needle');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var fs = require('fs');
-var fScraper = require("form-scraper");
- 
+var he = require('he');
+var URI = require('URIjs');
+var EllucianCatalogParser = require('./parsers/EllucianCatalogParser');
+
+var ellucianCatalogParser = new EllucianCatalogParser();
 
 //takes in any url of a site, and fills the main db with all the classes and all the sections
 //and puts
 
 function Spider () {
   
-};
+}
 
 
-//course catalog
-
-// https://wl11gp.neu.edu/udcprod8/twbkwbis.P_GenMenu?name=homepage
-
-
-// bwckschd.p_disp_dyn_sched
-
-
-// https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_dyn_ctlg
-
-
-Spider.prototype.request = function (url,callback) {
+Spider.prototype.handleRequestResponce = function (url,error,body,callback) {
+  if (error) {
+    console.trace('ERROR: request error in spider',error,url);
+    return callback(error);
+  }
   
-  needle.get(url, {
+
+	var handler = new htmlparser.DomHandler(function (error, dom) {
+	    console.log('parsed ',body.length,' bytes')
+			return callback(error,dom);
+  }.bind(this));
+
+	var parser = new htmlparser.Parser(handler);
+	parser.write(body);
+	parser.done();
+}
+
+
+
+Spider.prototype.request = function (url,payload,callback) {
+  
+  var options ={
     follow_max         : 5,
     rejectUnauthorized : false,
     headers:  {
   			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:24.0) Gecko/20100101 Firefox/24.0',
-  		    "Referer":url, //trololololol
+  		    "Referer":'https://ssb.cc.binghamton.edu/banner/bwckgens.p_proc_term_date', //trololololol
   		    'Accept-Encoding': '*'
   		}
-  }, function (error, response, body) {
-			return callback(error,body);
-  });
+  };
+  
+  var go;
+  if (payload) {
+    
+    var urlParsed = new URI();
+    
+    //create the string
+    payload.forEach(function(entry){
+      urlParsed.addQuery(entry.name,entry.value)
+    });
+    
+    options.headers['Content-Type']='application/x-www-form-urlencoded';
+    var postData = urlParsed.toString().slice(1)
+
+    console.log('firing post len ',postData.length,' to ',url);
+    needle.post(url,postData,options, function (error, response, body) {
+      this.handleRequestResponce(url,error,body,callback);
+    }.bind(this));
+  }
+  else {
+    
+    console.log('firing get to ',url);
+    needle.get(url,options, function (error, response, body) {
+      this.handleRequestResponce(url,error,body,callback);
+    }.bind(this));
+  }
+  
+  //callback is called by this.handleRequestResponce
+  
 }
 
 
@@ -64,12 +102,12 @@ Spider.prototype.minYear = function(){
 //add inputs if they have a value = name:value
 //add all select options if they have multiple
 //add just the first select option if is only 1
-Spider.prototype.parseForm = function (dom) {
+Spider.prototype.parseForm = function (url,dom) {
   
   //find the form, bail if !=1 on the page
   var forms = domutils.getElementsByTagName('form',dom);
   if (forms.length!=1) {
-    console.log('there is !=1 forms??',dom);
+    console.trace('there is !=1 forms??',forms);
     return
   }
   var form = forms[0];
@@ -83,8 +121,12 @@ Spider.prototype.parseForm = function (dom) {
   var inputs = domutils.getElementsByTagName('input',form);
   inputs.forEach(function(input){
     
-    if (input.attribs.name===undefined || input.attribs.value===undefined){
+    if (input.attribs.name===undefined){
       return;
+    }
+    
+    if (input.attribs.value === undefined || input.attribs.value=='') {
+      input.attribs.value=''
     }
     
     payloads.push({
@@ -108,7 +150,6 @@ Spider.prototype.parseForm = function (dom) {
       
     //add all of them :)
     if (select.attribs.multiple!==undefined){
-      console.log('adding all of ',select.attribs)
         
   		options.forEach(function (option){
   		    var text = domutils.getText(option).trim();
@@ -125,7 +166,6 @@ Spider.prototype.parseForm = function (dom) {
     
     //just add the first select
     else {
-      console.log('using alts for',select.attribs)
       
       var alts=[];
       
@@ -149,7 +189,16 @@ Spider.prototype.parseForm = function (dom) {
     }
   });
   
-  return payloads;
+  
+  //parse the url, and return the url the post request should go to
+  var urlParsed = new URI(url);
+  
+  // console.log('parsed a form, returning',url,urlParsed ,'||||', form.attribs.action);
+  
+  return {
+    url:urlParsed.protocol()+'://' +urlParsed.host() + form.attribs.action,
+    data:payloads
+  };
 }
 
 
@@ -163,21 +212,19 @@ Spider.prototype.parseTermsPage = function (baseURL,callback) {
   
   var url = baseURL + 'bwckschd.p_disp_dyn_sched'
   
-  this.request(url,function (err,body) {
+  this.request(url,null,function (err,dom) {
     if (err) {
       console.log('ERROR requests error step 1,',error);
       return callback(error);
     }
     
-  	var handler = new htmlparser.DomHandler(function (error, dom) {
-  		if (error) {
-  			console.log('ERROR: college names html parsing error',error);
-  			return callback(error);
-  		}
-
   		var requestsData = [];
 
-  		var defaultFormData = this.parseForm(dom);
+  		var parsedData = this.parseForm(baseURL,dom);
+  		
+  		var postURL = parsedData.url;
+  		var defaultFormData = parsedData.data;
+  		
   		if (!defaultFormData) {
   		  console.log('default form data failed')
   		  return callback('default form data failed');
@@ -235,38 +282,72 @@ Spider.prototype.parseTermsPage = function (baseURL,callback) {
 		  
   		}.bind(this));
   		
-  		callback(null,requestsData);
-  	})
-  })
+  		callback(null,postURL,requestsData);
+  	}.bind(this))
 }
 
 
-Spider.prototype.parseSearchPage = function (baseURL,callback) {
+Spider.prototype.parseSearchPage = function (url,payload,callback) {
   if (!callback) {
     callback = function (){}
   }
   
-  var url = baseURL + 'bwckschd.p_disp_dyn_sched'
-  
-  this.request(url,function (err,body) {
+  this.request(url,payload,function (err,dom) {
     if (err) {
-      console.log('ERROR requests error step 1,',err);
+      console.log('ERROR requests error for seach page,',err);
       return callback(error);
     }
-    
-  	var handler = new htmlparser.DomHandler(function (error, dom) {
-  		if (error) {
-  			console.log('ERROR: college names html parsing error',error);
-  			return callback(error);
-  		}
-  		
-  		console.log(this.parseForm(dom));
-  		callback(null,url,)
+    console.log(domutils.getInnerHTML( dom));
+		
+		var formData = this.parseForm(url,dom);
+		callback(null,formData.url,formData.data);
   		
   		
-  	}.bind(this))
-  }.bind(this))
+	}.bind(this));
 }
+
+
+
+//callback (err,urls)
+Spider.prototype.parseResultsPage = function(url,payload,callback) {
+  
+  this.request(url,payload,function (err,dom) {
+    if (err) {
+      console.trace('error: ',err)
+      return callback('error getting results page')
+    }
+    
+    
+    var links = domutils.getElementsByTagName('a',dom);
+    var validLinks=[];
+    
+    links.forEach(function(link){
+      
+      var href = link.attribs.href;
+      
+      if (!href || href.length<2) {
+        return;
+      }
+      
+      href = he.decode(href);
+      
+      if (!ellucianCatalogParser.supportsPage(href)) {
+        return;
+      }
+      
+      if (validLinks.indexOf(href)>-1){
+        return;
+      }
+      
+      validLinks.push(href);
+      
+    }.bind(this));
+    
+    return callback(null,validLinks);
+    
+  }.bind(this));
+}
+
 
 
 Spider.prototype.findBaseURL = function (url) {
@@ -291,32 +372,38 @@ Spider.prototype.findBaseURL = function (url) {
 
 Spider.prototype.go = function(url) {
     
-    var baseURL = this.findBaseURL();
+    var baseURL = this.findBaseURL(url);
     if (!baseURL) {
       return;
     }
+    console.log('beginning!')
     
     this.parseTermsPage(baseURL,function (err,url,payloads) {
-      //just the first payload for now
-      var payload = payloads[0]; //TODO
+      if (err) {
+        return;
+      }
       
+      console.log('found terms:',payloads)
       
-      
-      
-      
-    })
+      this.parseSearchPage(url,payloads[0],function(err,url,payload){
+        // console.log('HERE2',err,url,payload)
+      // console.log('found terms:',payloads)
+        
+        if (err) {
+          return;
+        }
+        
+        this.parseResultsPage(url,payload,function (err,urls){
+          // console.log('DONE!',err,urls)
+        }.bind(this));
+        
+        
+        
+        
+        
+      }.bind(this));
     
-    // baseURL += 'bwckschd.p_disp_dyn_sched'
-    
-    
-    
-    
-    
-    
-    
-    
-    //get
-    
+    }.bind(this))
     
     
 }
@@ -324,6 +411,13 @@ Spider.prototype.go = function(url) {
 
 
 Spider.prototype.tests = function () {
+  
+  
+  
+  
+  
+  this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec')
+  return;
   
   
 	fs.readFile('./tests/'+this.constructor.name+'/search.json','utf8',function (err,body) {
@@ -339,7 +433,7 @@ Spider.prototype.tests = function () {
   			console.log('ERROR: college names html parsing error',error);
   			return callback(error);
   		}
-  		console.log(this.parseForm(dom));
+  		console.log(this.parseForm(jsonBody.url, dom));
   		// console.log(jsonBody)
 	 
     	 //console.log(this.parseForm(dom)[1])
@@ -357,6 +451,7 @@ Spider.prototype.tests = function () {
 	
 	
 	fs.readFile('./tests/'+this.constructor.name+'/termselection.json','utf8',function (err,body) {
+	  return;
 	  
 	  
 	 var jsonBody = JSON.parse(body);
