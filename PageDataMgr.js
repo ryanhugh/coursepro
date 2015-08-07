@@ -1,5 +1,6 @@
 'use strict';
 var async = require('async');
+var fs = require('fs');
 var PageData = require('./PageData');
 
 
@@ -81,7 +82,7 @@ PageDataMgr.prototype.finish = function(pageData,callback) {
 
 	return pageData.processDeps(function () {
 		
-		emailMgr.sendEmails(pageData,pageData.parser.getEmailData(pageData));	
+		emailMgr.sendEmails(pageData,pageData.parser.getEmailData(pageData));
 		callback(null,pageData);
 	}.bind(this));
 };
@@ -94,6 +95,25 @@ PageDataMgr.prototype.finish = function(pageData,callback) {
 
 
 PageDataMgr.prototype.tests = function() {
+  
+  // this.create('https://sisssb.clemson.edu/sisbnprd/bwckctlg.p_display_courses?term_in=201508&one_subj=AL&sel_crse_strt=3510&sel_crse_end=3510&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+  
+  // return;
+  
+  
+	fs.readFile('./parsethese.json','utf8',function (err,body) {
+	  
+	  var urls = JSON.parse(body);
+	  
+	  
+    for (var i=0;i<Math.min(2590,urls.length);i++){
+      this.create(urls[i]);
+    }
+	  
+	 // this.create(urls[4]);
+	  
+	}.bind(this));
+	return;
 	
 	// this.create('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	this.create('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=',null,function (err,pageData) {
@@ -109,7 +129,7 @@ global.pageDataMgr = new PageDataMgr();
 
 
 if (require.main === module) {
-	pageDataMgr.tests()
+	global.pageDataMgr.tests();
 }
 
 

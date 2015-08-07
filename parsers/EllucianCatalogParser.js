@@ -29,16 +29,21 @@ EllucianCatalogParser.prototype.supportsPage = function (url) {
 EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 	
 	var depData = {};
+	
+// 	console.log('parse class called',pageData)
 
 
 	//find the url
-	domutils.findAll(function (element) {
+	domutils.getElementsByTagName('a',element).forEach(function (element) {
 		if (!element.attribs.href) {
+		// 	console.log('bad href matching',element);
 			return;
 		}
 
 		var attrURL = he.decode(element.attribs.href);
 
+  // 	console.log('parse class called',pageData,element);
+  	
 		//add hostname + port if not specified
 		if (URI.parse(attrURL).reference=='relative') {
 			attrURL = pageData.getUrlStart() + attrURL;
@@ -47,16 +52,24 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 		if (ellucianClassParser.supportsPage(attrURL)){
 			depData.url = attrURL;
 		}
-	}.bind(this),element.children);
+		else {
+		  // console.log('not supported',element);
+		}
+	}.bind(this));
 
 
 	//find the description
 	depData.desc=domutils.getText( element.children[0]).trim()
 
-	console.log(depData)
-	if (depData.desc.trim()=='' || depData.url===undefined) {
+// 	console.log(depData)
+	if (depData.desc.trim()==='' && depData.url===undefined) {
 		return;
-	};
+	}
+	
+	if (depData.desc.trim()==='' || depData.url===undefined) {
+	  console.log('Warning: dropping',depData)
+		return;
+	}
 
 	pageData.addDep(depData);
 };
@@ -66,11 +79,18 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 EllucianCatalogParser.prototype.parseElement = function(pageData,element) {
 	if (element.type!='tag') {
 		return;
-	};
+	}
+// 	console.log('hi')
 
-	if (element.name == 'td' && element.attribs.class == 'ntdefault' && element.parent.name=='tr' && element.parent.parent.attribs.class=='datadisplaytable') {
-		this.parseClass(pageData,element);
-	};
+	if (element.name == 'td') {
+	  
+	  if (element.attribs.class == 'ntdefault') {
+  		this.parseClass(pageData,element);
+  	}
+  	else {
+  	 // console.log(element,element.attribs.class)
+  	}
+  }
 };
 
 

@@ -28,8 +28,8 @@ BaseParser.prototype.getPage = function(url,callback) {
 		rejectUnauthorized: false,
 		headers:  {
 			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0',
-		    "Referer":url, //trololololol
-		    'Accept-Encoding': '*'
+		    "Referer":url //trololololol
+		    // 'Accept-Encoding': '*'
 		}
 	}, function (error, response, body) {
 		if (error) {

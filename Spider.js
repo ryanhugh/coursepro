@@ -40,10 +40,12 @@ Spider.prototype.request = function (url,payload,callback) {
   
   var options ={
     follow_max         : 5,
+    open_timeout: 60*5000,
+    read_timeout: 60*5000,
     rejectUnauthorized : false,
     headers:  {
   			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:24.0) Gecko/20100101 Firefox/24.0',
-  		    "Referer":'https://ssb.cc.binghamton.edu/banner/bwckgens.p_proc_term_date', //trololololol
+  		    "Referer":url, //trololololol
   		    'Accept-Encoding': '*'
   		}
   };
@@ -62,6 +64,7 @@ Spider.prototype.request = function (url,payload,callback) {
     var postData = urlParsed.toString().slice(1)
 
     console.log('firing post len ',postData.length,' to ',url);
+    console.log('data',postData)
     needle.post(url,postData,options, function (error, response, body) {
       this.handleRequestResponce(url,error,body,callback);
     }.bind(this));
@@ -121,7 +124,7 @@ Spider.prototype.parseForm = function (url,dom) {
   var inputs = domutils.getElementsByTagName('input',form);
   inputs.forEach(function(input){
     
-    if (input.attribs.name===undefined){
+    if (input.attribs.name===undefined || input.attribs.type=="checkbox"){
       return;
     }
     
@@ -292,12 +295,14 @@ Spider.prototype.parseSearchPage = function (url,payload,callback) {
     callback = function (){}
   }
   
+  
+  
+  
   this.request(url,payload,function (err,dom) {
     if (err) {
       console.log('ERROR requests error for seach page,',err);
       return callback(error);
     }
-    console.log(domutils.getInnerHTML( dom));
 		
 		var formData = this.parseForm(url,dom);
 		callback(null,formData.url,formData.data);
@@ -311,7 +316,24 @@ Spider.prototype.parseSearchPage = function (url,payload,callback) {
 //callback (err,urls)
 Spider.prototype.parseResultsPage = function(url,payload,callback) {
   
-  this.request(url,payload,function (err,dom) {
+  
+  //remove sel_subj = ''
+  var validPayload = [];
+  payload.forEach(function(entry) {
+    if (entry.name=='sel_subj' && entry.value=='%'){
+      console.log('removed it!!!!!!!!!!!!!!!!!!!!!!')
+      return;
+    }
+    else {
+      // console.log(entry)
+      validPayload.push(entry);
+    }
+  });
+  
+  // console.log('HIIIII',validPayload,pay)
+  
+  
+  this.request(url,validPayload,function (err,dom) {
     if (err) {
       console.trace('error: ',err)
       return callback('error getting results page')
@@ -330,6 +352,10 @@ Spider.prototype.parseResultsPage = function(url,payload,callback) {
       }
       
       href = he.decode(href);
+      
+      var urlParsed = new URI(url);
+      
+      href = urlParsed.protocol()+'://' +urlParsed.host() + href
       
       if (!ellucianCatalogParser.supportsPage(href)) {
         return;
@@ -386,15 +412,24 @@ Spider.prototype.go = function(url) {
       console.log('found terms:',payloads)
       
       this.parseSearchPage(url,payloads[0],function(err,url,payload){
-        // console.log('HERE2',err,url,payload)
-      // console.log('found terms:',payloads)
-        
         if (err) {
           return;
         }
         
+
+        
+        
+        
+        
         this.parseResultsPage(url,payload,function (err,urls){
-          // console.log('DONE!',err,urls)
+          console.log('DONE!',err,urls)
+          
+          // for (var i=0;i<Math.min(10,urls.length);i++){
+            // pageDataMgr.create(urls[i]);
+          // }
+          
+          
+          
         }.bind(this));
         
         
@@ -411,12 +446,13 @@ Spider.prototype.go = function(url) {
 
 
 Spider.prototype.tests = function () {
+  var pageDataMgr = require('./PageDataMgr.js')
   
   
   
   
-  
-  this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec')
+  // this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec')
+  this.go('https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched')
   return;
   
   
