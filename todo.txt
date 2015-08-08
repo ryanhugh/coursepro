@@ -1,12 +1,28 @@
 !!!!
 
 
-https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckctlg.p_display_courses CRASHES THE SERVER BECAUSE ALL ATTRS ARE SATIFIED... (and the email thing assums 1 dep, but 0 exist)
 
 
 
-have an array of examples on script.js and of user agents for baseParser.js
 
+
+
+
+
+
+
+
+
+
+
+FRONTEND:
+have an array of examples on script.js
+
+
+
+POINTER: 
+array of user agents for baseParser.js
+sometimes add other headers and pull from array of user agents
 
 
 TODO:
@@ -25,23 +41,11 @@ https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201612&su
 
 
 
-BUGS:
+LATER BUGS:
 
 
-//baseparser.js
-https://bappas2.gram.edu:9000/pls/gram/bwckctlg.p_disp_dyn_ctlg
-nodejs cant access a https over non standard port???
-effcts: needle, https, requests, xmlhttprequest
-works in python and in the browser (chrome)
-use eff.org to test
-update: could access localhost on port 8443 which forwarded from eff.org 443 (so non port 443 works, maybe something wierd with this site+nodejs?) (double check this on remote server)
 
-abstract the request/needle call in collegenames.js and baseparser.js and spider.js
-- sometimes add other headers and pull from array of user agents
-
-regex used for main hostname will fail on google.com.uk
-
-
+PARSERS
 
 
 https://banners.presby.edu/prod/hzskschd.P_ViewSchedule
@@ -49,42 +53,21 @@ uses an old version of the site - different parser needed (easy to write, add la
 
 
 
+BASEPARSER.JS
+https://bappas2.gram.edu:9000/pls/gram/bwckctlg.p_disp_dyn_ctlg
+nodejs cant access a https over non standard port???
+effcts: needle, https, requests, xmlhttprequest
+works in python and in the browser (chrome)
+use eff.org to test
+update: could access localhost on port 8443 which forwarded from eff.org 443 (so non port 443 works, maybe something wierd with this site+nodejs?) (double check this on remote server)
+
+
+
+
 
 // ---- collegenames.js ----
-'https://banner.uregina.ca/prod/sct/bwckctlg.p_disp_dyn_ctlg', //has a js redirect after a couple of seconds -> www.uregina.ca (the title before the redirect is personal web site...)
+regex used for main hostname will fail on google.com.uk
 
-
-//parse the title - solved, using whois
-lehigh.edu "Home| Lehigh University" - whois on their ip address does work tho
-rcgc.edu - theres like newlines and stuff in the title...
-
-whois rcgc.edu on command line works, but in js whois-ux and whois-ux on the ip both dont work (whois on ip on command line dosent work either)
-
-http://www.columbiastate.edu/
-is just "Home" as title
-
-
-
-//whois
-node modules: (solved - self parsed + node-whois)
-whois does not work
-tldtools returns just the tos, lol
-node-whois and whois-available work, but just returns the same unparsed as whois-cli
-whois-json is a simple wrapper for node-whois, but dosent work because it dosent support .edu
-
-
-//current:
 titleCase will replace all on \w with a space.... (Texas A&M University -> Texas A M University)
 
 fallback to hittitle if dns fails
-
-
-
-
-
-
-
-
-//ellucian catalog parser
-no DESC here, causes dep to be missed
-https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=CTV&sel_crse_strt=580&sel_crse_end=580&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=

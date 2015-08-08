@@ -32,7 +32,7 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 	//find the description
 	depData.desc=domutils.getText( element.children[0]).trim();
 
-	var invalidDescriptions = ['xml extract','new search',''];
+	var invalidDescriptions = ['xml extract','new search'];
 
 	if (invalidDescriptions.indexOf(depData.desc.trim().toLowerCase())>-1) {
 		return;
@@ -57,10 +57,11 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 		}
 	}.bind(this));
 
-
 	
-	if (depData.desc.trim()==='' || depData.url===undefined) {
-		console.log('Warning: dropping',depData)
+	if (depData.url===undefined) {
+		if (depData.desc!='') {
+			console.log('Warning: dropping',depData)
+		};
 		return;
 	}
 
