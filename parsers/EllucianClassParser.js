@@ -35,6 +35,9 @@ EllucianClassParser.prototype.supportsPage = function (url,html) {
 //format is min from midnight, 0 = sunday, 6= saterday
 //	8:00 am - 9:05 am	MWR -> {0:[{start:248309,end:390987}],1:...}
 EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
+  if (days=='&nbsp;') {
+    return;
+  }
 
 	if ((times.match(/m|-/g) || []).length!=3) {
 		console.log('ERROR: multiple times in times',times,days);
@@ -57,7 +60,7 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 		var dayIndex = dayLetterToIndex[days[i]];
 		if (dayIndex===undefined) {
 			console.log('ERROR: unknown letter ',days,' !!!');
-			return false;
+			return;
 		}
 
 		var timesMatch = times.match(/(.*?) - (.*?)$/i)
@@ -138,7 +141,11 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 				console.log('not adding tba times on ',depData.url);
 			}
 			else {
-				depData.times=this.parseTimeStamps(times,domutils.getText(items[2]));
+				var times = this.parseTimeStamps(times,domutils.getText(items[2]));
+				if (times) {
+				  depData.times=times;
+				}
+				
 			}
 		};
 	}.bind(this));
