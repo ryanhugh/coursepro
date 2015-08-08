@@ -17,8 +17,6 @@ scraper.js
 frontend
 
 
-small things:
-convert uri-js to URIjs in collegenames and pagedata
 
 
 

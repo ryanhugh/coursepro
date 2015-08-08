@@ -2,6 +2,8 @@
 var async = require('async');
 var URI = require('URIjs');
 
+// console.log(pageDataMgr.__proto__)
+// process.exit();
 
 //this is called in 3 places
 //server.js
@@ -210,8 +212,6 @@ PageData.prototype.addDep = function(depData) {
 				console.log('adding ',newAttrName,depData[newAttrName])
 				this.depsToProcess[i][newAttrName]=depData[newAttrName];
 			}
-			console.log(this);
-			d
 			return;
 		}
 	};

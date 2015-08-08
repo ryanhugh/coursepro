@@ -3,12 +3,12 @@ var URI = require('URIjs');
 var domutils = require('domutils');
 var moment = require('moment');
 var he = require('he');
-
-var timeZero = moment('0','h');
+var changeCase = require('change-case');
 
 var BaseParser = require('./BaseParser').BaseParser;
 var ellucianSectionParser = require('./EllucianSectionParser');
 
+var timeZero = moment('0','h');
 
 
 //700+ college sites use this poor interface for their registration
@@ -130,7 +130,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
 			
 			if (prof.toLowerCase()!='tba' && prof.length>2) {
-				depData.prof=prof;
+				depData.prof=changeCase.titleCase(prof);
 			};
 
 

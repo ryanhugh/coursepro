@@ -31,5 +31,5 @@ EmailMgr.prototype.sendEmails = function(pageData,emailData) {
 
 };
 
-
-module.exports = EmailMgr;
+EmailMgr.prototype.EmailMgr=EmailMgr;
+module.exports = new EmailMgr();

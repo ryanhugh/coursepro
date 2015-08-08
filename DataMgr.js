@@ -1,20 +1,15 @@
 'use strict';
 var Datastore = require('nedb');
-var EmailMgr = require('./EmailMgr');
 
 
 
 function DataMgr () {
-	console.log('Loading dataMgr!!');
+
 	this.db = new Datastore({ filename: 'classes.db', autoload: true });
 	
-
-	//every 5 min
-	this.onInterval();
-	setInterval(this.onInterval.bind(this),300000)
-
-
+	this.updateTimer = null;
 }
+
 
 
 
@@ -122,11 +117,20 @@ DataMgr.prototype.onInterval = function() {
 };
 
 
+DataMgr.prototype.startUpdates = function() {
+	
+	//every 5 min
+	this.onInterval();
+	this.updateTimer= setInterval(this.onInterval.bind(this),300000);
+};
+DataMgr.prototype.stopUpdates = function() {
+	clearInterval(this.updateTimer);
+};
+
+
 DataMgr.prototype.tests = function() {
 	
-	// this.processUrl('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201120&crn_in=1436',function (data) {
-	// 	console.log(data)
-	// })
+	
 };
 
 
@@ -136,4 +140,5 @@ if (require.main === module) {
 
 
 
-module.exports = DataMgr;
+DataMgr.prototype.DataMgr= DataMgr;
+module.exports = new DataMgr();

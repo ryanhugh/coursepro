@@ -1,6 +1,7 @@
 'use strict';
 var domutils = require('domutils');
 var BaseParser = require('./BaseParser').BaseParser;
+var changeCase = require('change-case');
 
 //700+ college sites use this poor interface for their registration
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
@@ -82,7 +83,9 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 			console.log('could not find title!',match,element);
 		}
 
-		pageData.setData('name',match[1]);
+
+
+		pageData.setData('name',changeCase.titleCase(match[1]));
 	}
 };
 

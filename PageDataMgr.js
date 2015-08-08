@@ -7,11 +7,9 @@ var PageData = require('./PageData');
 var requireDir = require('require-dir');
 var parsersClasses = requireDir('./parsers');
 
-var DataMgr = require('./DataMgr');
-var EmailMgr = require('./EmailMgr');
+var dataMgr = require('./DataMgr');
+var emailMgr = require('./EmailMgr');
 
-var dataMgr = new DataMgr();
-var emailMgr = new EmailMgr();
 
 
 var parsers = [];
@@ -99,6 +97,8 @@ PageDataMgr.prototype.tests = function() {
   
   // return;
   
+	// this.create('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.create('https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201612&subj_in=ALHS&crse_in=1127&schd_in=C')
 	this.create('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	return;
   
@@ -132,12 +132,24 @@ PageDataMgr.prototype.tests = function() {
 };
 
 
-module.exports = PageDataMgr
-global.pageDataMgr = new PageDataMgr();
+
+var instance = new PageDataMgr();
+
+
+
+
+
+
+PageDataMgr.prototype.PageDataMgr=PageDataMgr;
+global.pageDataMgr = instance
+
 
 
 if (require.main === module) {
-	global.pageDataMgr.tests();
+	instance.tests();
+}
+else {
+	dataMgr.startUpdates();
 }
 
 
