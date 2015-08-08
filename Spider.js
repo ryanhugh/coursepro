@@ -49,20 +49,6 @@ Spider.prototype.request = function (url,payload,callback) {
 }
 
 
-//json is like this [{"name":"sel_subj","value":"MATH"},]
-//becuse there can be multiple values with the same name
-Spider.prototype.getPayloadString = function(payloadJson) {
-	
-	var urlParsed = new URI();
-
-	//create the string
-	payload.forEach(function(entry){
-		urlParsed.addQuery(entry.name,entry.value)
-	});
-
-	
-	return urlParsed.toString().slice(1)
-};
 
 Spider.prototype.minYear = function(){
 	return new Date().getFullYear();
@@ -167,198 +153,164 @@ Spider.prototype.parseForm = function (url,dom) {
 
 
 //step 1, select the terms
-//callback (err,url,[payloads])
-Spider.prototype.parseTermsPage = function (baseURL,callback) {
+Spider.prototype.parseTermsPage = function (startingURL,dom) {
+	var parsedForm = this.parseForm(startingURL,dom);
 
-	if (!callback) {
-		callback = function (){}
+	if (!parsedForm) {
+		console.log('default form data failed');
+		return;
 	}
 
-	var url = baseURL + 'bwckschd.p_disp_dyn_sched'
+	var defaultFormData = parsedForm.payloads;
 
-	this.request(url,null,function (err,dom) {
-		if (err) {
-			console.trace('ERROR requests error step 1,',error);
-			return callback(error);
+
+	//find the term entry and all the other entries
+	var termEntry;
+	var otherEntries = [];
+	defaultFormData.forEach(function(entry) {
+		if (entry.name=='p_term') {
+			termEntry = entry;
+		}
+		else {
+			otherEntries.push(entry);
+		}
+	}.bind(this));
+
+
+
+
+	var requestsData = [];
+	
+	//setup an indidual request for each valid entry on the form - includes the term entry and all other other entries
+	termEntry.alts.forEach(function(entry) {
+		if (entry.name!='p_term') {
+			console.log('ERROR: entry was alt of term entry but not same name?',entry);
+			return;
 		}
 
-
-		var parsedForm = this.parseForm(baseURL,dom);
-
-		var postURL = parsedForm.postURL;
-		var defaultFormData = parsedForm.payloads;
-
-		if (!defaultFormData) {
-			console.log('default form data failed')
-			return callback('default form data failed');
+		if (entry.text.toLowerCase()==='none') {
+			return;
 		}
 
-		//find the term entry and all the other entries
-		var termEntry;
-		var otherEntries = [];
-		defaultFormData.forEach(function(entry) {
-			if (entry.name=='p_term') {
-				termEntry = entry;
-			}
-			else {
-				otherEntries.push(entry);
-			}
-		}.bind(this));
-
-
-
-
-		var requestsData = [];
-		
-		//setup an indidual request for each valid entry on the form - includes the term entry and all other other entries
-		termEntry.alts.forEach(function(entry) {
-			if (entry.name!='p_term') {
-				console.log('ERROR: entry was alt of term entry but not same name?',entry);
-				return;
-			}
-
-			if (entry.text.toLowerCase()==='none') {
-				return;
-			}
-
-			//dont process this element on error
-			if (entry.text.length<2) {
-				console.log('ERROR: empty entry.text on form?',url);
-				return;
-			}
-
-			var year = entry.text.match(/\d{4}/);
-			if (!year) {
-				console.log('ERROR: could not find year for ',entry.text,url);
-				return;
-			}
-
-			//skip past years
-			if (parseInt(year)<this.minYear()) {
-				return;
-			}
-
-			var fullRequestData = otherEntries.slice(0);
-
-			fullRequestData.push({
-				name:entry.name,
-				value:entry.value,
-				text:entry.text
-			});
-
-			requestsData.push(fullRequestData);
-
-		}.bind(this));
-
-		callback(null,postURL,requestsData);
-	}.bind(this))
-}
-
-
-Spider.prototype.parseSearchPage = function (url,payload,callback) {
-	if (!callback) {
-		callback = function (){}
-	}
-
-	this.request(url,payload,function (err,dom) {
-		if (err) {
-			console.log('ERROR requests error for seach page,',err);
-			return callback(error);
+		//dont process this element on error
+		if (entry.text.length<2) {
+			console.log('ERROR: empty entry.text on form?',url);
+			return;
 		}
 
-		var parsedForm = this.parseForm(url,dom);
+		var year = entry.text.match(/\d{4}/);
+		if (!year) {
+			console.log('ERROR: could not find year for ',entry.text,url);
+			return;
+		}
 
-		//remove sel_subj = ''
-		var payloads = [];
+		//skip past years
+		if (parseInt(year)<this.minYear()) {
+			return;
+		}
 
-		//if there is an all given on the other pages, use those (and don't pick every option)
-		//some sites have a limit of 2000 parameters per request, and picking every option sometimes exceeds that
-		var allOptionsFound =[];
+		var fullRequestData = otherEntries.slice(0);
 
-		parsedForm.payloads.forEach(function(entry) {
-			if (entry.name=='sel_subj' && entry.value=='%'){
-				console.log('Removing all box on courses')
-				return;
-			}
-			else if (entry.value=='%') {
-				allOptionsFound.push(entry.name);
-			}
-			payloads.push(entry);
-		}.bind(this));
+		fullRequestData.push({
+			name:entry.name,
+			value:entry.value,
+			text:entry.text
+		});
 
-		console.log('allOptionsFound',allOptionsFound);
-
-
-		var finalPayloads=[]
-
-		//loop through again to make sure not includes any values which have an all set
-		payloads.forEach(function (entry) {
-			if (allOptionsFound.indexOf(entry.name)<0 || entry.value=='%' || entry.value=='dummy') {
-				finalPayloads.push(entry)
-			}
-		}.bind(this));
-
-		console.log(finalPayloads);
-
-
-		callback(null,parsedForm.postURL,finalPayloads);
-
+		requestsData.push(fullRequestData);
 
 	}.bind(this));
+
+	return {
+		postURL:parsedForm.postURL,
+		requestsData:requestsData
+	};
+}
+
+
+Spider.prototype.parseSearchPage = function (startingURL,dom) {
+	
+
+	var parsedForm = this.parseForm(startingURL,dom);
+
+	//remove sel_subj = ''
+	var payloads = [];
+
+	//if there is an all given on the other pages, use those (and don't pick every option)
+	//some sites have a limit of 2000 parameters per request, and picking every option sometimes exceeds that
+	var allOptionsFound =[];
+
+	parsedForm.payloads.forEach(function(entry) {
+		if (entry.name=='sel_subj' && entry.value=='%'){
+			console.log('Removing all box on courses')
+			return;
+		}
+		else if (entry.value=='%') {
+			allOptionsFound.push(entry.name);
+		}
+		payloads.push(entry);
+	}.bind(this));
+
+	console.log('allOptionsFound',allOptionsFound);
+
+
+	var finalPayloads=[]
+
+	//loop through again to make sure not includes any values which have an all set
+	payloads.forEach(function (entry) {
+		if (allOptionsFound.indexOf(entry.name)<0 || entry.value=='%' || entry.value=='dummy') {
+			finalPayloads.push(entry)
+		}
+	}.bind(this));
+
+	console.log(finalPayloads);
+
+	return {
+		postURL:parsedForm.postURL,
+		payloads:finalPayloads
+	};
 }
 
 
 
-//callback (err,urls)
-Spider.prototype.parseResultsPage = function(url,payload,callback) {
+Spider.prototype.parseResultsPage = function(startingURL,dom) {
 
 
+	var links = domutils.getElementsByTagName('a',dom);
+	var validLinks=[];
 
+	links.forEach(function(link){
 
-	this.request(url,payload,function (err,dom) {
-		if (err) {
-			console.trace('error: ',err)
-			return callback('error getting results page')
+		var href = link.attribs.href;
+
+		if (!href || href.length<2) {
+			return;
 		}
 
+		href = he.decode(href);
 
-		var links = domutils.getElementsByTagName('a',dom);
-		var validLinks=[];
+		var urlParsed = new URI(startingURL);
 
-		links.forEach(function(link){
+		href = urlParsed.protocol()+'://' +urlParsed.host() + href
 
-			var href = link.attribs.href;
+		if (!ellucianCatalogParser.supportsPage(href)) {
+			return;
+		}
 
-			if (!href || href.length<2) {
-				return;
-			}
+		if (validLinks.indexOf(href)>-1){
+			return;
+		}
 
-			href = he.decode(href);
-
-			var urlParsed = new URI(url);
-
-			href = urlParsed.protocol()+'://' +urlParsed.host() + href
-
-			if (!ellucianCatalogParser.supportsPage(href)) {
-				return;
-			}
-
-			if (validLinks.indexOf(href)>-1){
-				return;
-			}
-
-			validLinks.push(href);
-
-		}.bind(this));
-
-		return callback(null,validLinks);
+		validLinks.push(href);
 
 	}.bind(this));
+
+	return validLinks;
 }
 
 
 
-Spider.prototype.findBaseURL = function (url) {
+Spider.prototype.findStartingURL = function (url) {
 
 	var splitAfter = ['bwckctlg.p','bwckschd.p'];
 
@@ -367,7 +319,7 @@ Spider.prototype.findBaseURL = function (url) {
 		var index = url.indexOf(splitAfter[i]);
 
 		if (index>-1) {
-			return url.substr(0,index);
+			return url.substr(0,index)+ 'bwckschd.p_disp_dyn_sched';
 		}
 	}
 
@@ -380,31 +332,47 @@ Spider.prototype.findBaseURL = function (url) {
 
 Spider.prototype.go = function(url) {
 
-	var baseURL = this.findBaseURL(url);
-	if (!baseURL) {
+	console.log('Scraping ',url,'!')
+	var startingURL = this.findStartingURL(url);
+	if (!startingURL) {
 		return;
 	}
-	console.log('beginning!')
 
-	this.parseTermsPage(baseURL,function (err,url,payloads) {
+	this.request(startingURL,null,function (err,dom) {
 		if (err) {
+			console.trace('ERROR requests error step 1,',err);
 			return;
 		}
 
-		console.log('found terms:',payloads)
+		var parsedTermsPage = this.parseTermsPage(startingURL,dom);
+		if (!parsedTermsPage) {
+			return;
+		};
 
-		this.parseSearchPage(url,payloads[0],function(err,url,payload){
+		console.log('found terms:',parsedTermsPage.requestsData)
+		//TODO scrape all terms
+
+		this.request(parsedTermsPage.postURL,parsedTermsPage.requestsData[0],function (err,dom) {
 			if (err) {
+				console.trace('ERROR requests error step 2,',err);
 				return;
 			}
 
 
+			var parsedSearchPage = this.parseSearchPage(startingURL,dom);
+			if (!parsedSearchPage) {
+				return;
+			};
 
 
+			this.request(parsedSearchPage.postURL,parsedSearchPage.payloads,function (err,dom) {
+				if (err) {
+					return;
+				}
 
+				var parsedResultsPage = this.parseResultsPage(startingURL,dom);
+				console.log('DONE!',parsedResultsPage)
 
-			this.parseResultsPage(url,payload,function (err,urls){
-				console.log('DONE!',err,urls)
 
 
 			}.bind(this));
@@ -437,7 +405,7 @@ Spider.prototype.tests = function () {
 		var handler = new htmlparser.DomHandler(function (error, dom) {
 			if (error) {
 				console.log('ERROR: college names html parsing error',error);
-				return callback(error);
+				return;
 			}
 			console.log(this.parseForm(jsonBody.url, dom));
 			// console.log(jsonBody)
@@ -464,7 +432,7 @@ Spider.prototype.tests = function () {
 		var handler = new htmlparser.DomHandler(function (error, dom) {
 			if (error) {
 				console.log('ERROR: college names html parsing error',error);
-				return callback(error);
+				return;
 			}
 
 		}.bind(this));
