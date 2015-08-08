@@ -4,14 +4,9 @@
 https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckctlg.p_display_courses CRASHES THE SERVER BECAUSE ALL ATTRS ARE SATIFIED... (and the email thing assums 1 dep, but 0 exist)
 
 
-if deps are loaded from db, depsToProcess are not updated
-
 
 have an array of examples on script.js and of user agents for baseParser.js
 
-
-list sections
-scrape times + description
 
 
 TODO:

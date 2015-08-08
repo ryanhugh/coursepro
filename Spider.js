@@ -388,8 +388,8 @@ Spider.prototype.tests = function () {
 
 
 
-	this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec')
-	// this.go('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched')
+	// this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec')
+	this.go('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched')
 	// this.go('https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched')
 	return;
 

@@ -1,6 +1,6 @@
 'use strict';
 var Datastore = require('nedb');
-var URI = require('uri-js');
+var URI = require('URIjs');
 var request = require('request');
 var domutils = require('domutils');
 var htmlparser = require('htmlparser2');
@@ -10,6 +10,7 @@ var fs = require('fs');
 var whois = require('node-whois')
 var changeCase = require('change-case');
 
+var pointer = require('./pointer');
 
 
 function CollegeNames () {
@@ -18,9 +19,9 @@ function CollegeNames () {
 
 
 CollegeNames.prototype.gethomepage = function(url) {
-	var homepage = URI.parse(url).host;
-	if (!homepage) {
-		console.log('ERROR: could not find homepage of',url,URI.parse(url));
+	var homepage = new URI(url).hostname();
+	if (!homepage || homepage=='') {
+		console.log('ERROR: could not find homepage of',url);
 		return;
 	}
 
@@ -74,18 +75,9 @@ CollegeNames.prototype.hitPage = function(homepage,callback) {
 	
 	console.log('firing request to ',homepage)
 
-
-	needle.get('http://'+homepage, {
-		follow_max         : 5,
-		rejectUnauthorized : false,
-		headers:  {
-			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:24.0) Gecko/20100101 Firefox/24.0',
-			"Referer":homepage, //trololololol
-			'Accept-Encoding': '*'
-		}
-	}, function (error, response, body) {
+	pointer.request('http://'+homepage,null,null, function (error, dom) {
 		if (error) {
-			console.log('REQUESTS ERROR:',homepage,error,body);
+			console.log('REQUESTS ERROR:',homepage,error);
 			
 			if (error.code=='ENOTFOUND' || error.code=='ETIMEDOUT' || error.code=='ECONNRESET') {
 				if (homepage.indexOf('www.')===0) {
@@ -100,65 +92,51 @@ CollegeNames.prototype.hitPage = function(homepage,callback) {
 		}
 		else {
 
+			//find the title
+			var elements = domutils.getElementsByTagName('title',dom);
+			if (elements.length===0) {
+				console.log('ERROR: ',homepage,'has no title??');
+				return callback('no title');
+			}
+			else if (elements.length===1) {
 
 
-			var handler = new htmlparser.DomHandler(function (error, dom) {
-				if (error) {
-					console.log('ERROR: college names html parsing error',error);
-					return callback(error);
+				//get the text from the title element
+				var title = domutils.getText(elements[0]).trim();
+				if (title.length<2) {
+					console.log('empty title',homepage,title);
+					return callback('empty title');
+				}
+				title = he.decode(title);
+				
+				
+				//get rid of newlines and replace large sections of whitespace with one space
+				title=title.replace(/\n/g,'').replace(/\r/g,'').replace(/\s+/g,' ');
+				
+				//strip off any description from the end
+				title = title.match(/[\w\d\s&]+/i);
+				if(!title) {
+					console.log('ERROR: title match failed,',homepage);
+					return callback('title match failed')
 				}
 
-				//find the title
-				var elements = domutils.getElementsByTagName('title',dom);
-				if (elements.length===0) {
-					console.log('ERROR: ',homepage,'has no title??');
-					return callback('no title');
-				}
-				else if (elements.length===1) {
-
-
-					//get the text from the title element
-					var title = domutils.getText(elements[0]).trim();
-					if (title.length<2) {
-						console.log('empty title',homepage,title);
-						return callback('empty title');
-					}
-					title = he.decode(title);
-					
-					
-					//get rid of newlines and replace large sections of whitespace with one space
-					title=title.replace(/\n/g,'').replace(/\r/g,'').replace(/\s+/g,' ');
-					
-					//strip off any description from the end
-					title = title.match(/[\w\d\s&]+/i);
-					if(!title) {
-						console.log('ERROR: title match failed,',homepage);
-						return callback('title match failed')
-					}
-
-					title=title[0].trim();
-					if (title.length<2) {
-						console.log('empty title2',homepage,title);
-						return callback('empty title2');
-					}
-
-					title = this.standardizeNames(['welcome to'],['home'],title);
-
-					if (title.length===0) {
-						console.log('Warning: zero title after processing',homepage);
-						return callback('zero title after processing')
-					}
-
-
-					callback(null,title);
+				title=title[0].trim();
+				if (title.length<2) {
+					console.log('empty title2',homepage,title);
+					return callback('empty title2');
 				}
 
-			}.bind(this));
+				title = this.standardizeNames(['welcome to'],['home'],title);
 
-			//
-			var parser = new htmlparser.Parser(handler);
-			parser.write(body);
-			parser.done();
+				if (title.length===0) {
+					console.log('Warning: zero title after processing',homepage);
+					return callback('zero title after processing')
+				}
+
+
+				callback(null,title);
+			}
+
 		}
 	}.bind(this));
 };
@@ -174,7 +152,6 @@ CollegeNames.prototype.hitWhois = function (homepage,callback,tryCount) {
 
 	whois.lookup(homepage, function(err, data) {
 		if(err){
-
 
 			if (tryCount<5 && err.code=='ECONNREFUSED') {
 
@@ -310,26 +287,33 @@ CollegeNames.prototype.getAll = function(callback) {
 
 CollegeNames.prototype.tests = function() {
 
+	this.hitPage('neu.edu',function (err,title) {
+		console.log(err,title)
+	})
+
+	return;
 
 
-	fs.readFile('./test urls.json','utf8',function (err,body) {
+	fs.readFile('./tests/differentCollegeUrls.json','utf8',function (err,body) {
 
-
-
-		JSON.parse(body).forEach(function(url){
-
-			this.getTitle(url,function (err,title) {
-				if  (err) {
-					console.log('TEST: ',err,title,url);
-				}
-				else {
-					console.log('GOOD:',title,url);
-				}
+		// this.
 
 
 
-			}.bind(this));
-		}.bind(this));
+		// JSON.parse(body).forEach(function(url){
+
+		// 	this.getTitle(url,function (err,title) {
+		// 		if  (err) {
+		// 			console.log('TEST: ',err,title,url);
+		// 		}
+		// 		else {
+		// 			console.log('GOOD:',title,url);
+		// 		}
+
+
+
+		// 	}.bind(this));
+		// }.bind(this));
 	}.bind(this));
 
 

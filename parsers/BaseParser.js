@@ -16,37 +16,6 @@ BaseParser.prototype.supportsPage = function() {
 	return false;
 };
 
-BaseParser.prototype.getPage = function(url,callback) {
-
-
-	var urlParsed = new URI(url);
-
-	if (urlParsed.scheme()=='https' && urlParsed.port()!='' && urlParsed.port()!='443') {
-		console.log('ERROR: nodejs cant hit https over non 443... :('); //)
-		callback("NOSUPPORT");
-		return;
-	};
-
-
-	request({
-		url:url,
-		rejectUnauthorized: false,
-		headers:  {
-			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/20100101 Firefox/24.0',
-		    "Referer":url //trololololol
-		    // 'Accept-Encoding': '*'
-		}
-	}, function (error, response, body) {
-		if (error) {
-			console.log('REQUESTS ERROR:',error,body);
-			callback(error);
-		}
-		else {
-			callback(null,body);
-		}
-	}.bind(this));
-};
-
 //callback here is pageData (stuff to store in db), and metadata (stuff dont store in db)
 BaseParser.prototype.parse = function(pageData,callback) {
 
@@ -63,14 +32,8 @@ BaseParser.prototype.parse = function(pageData,callback) {
 
 		callback();
 
-
 	}.bind(this));
 };
-
-
-
-
-
 
 
 //html parsing helpers and common functions

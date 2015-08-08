@@ -126,8 +126,8 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		if (domutils.getText(items[0]).trim().toLowerCase()=='class') {
 			var prof = domutils.getText(items[6]).trim();
 			
-			//replace double spaces with a single space
-			prof = prof.replace(/\s+/g,' ');
+			//replace double spaces with a single space,trim, and remove the (p) at the end
+			prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
 			
 			if (prof.toLowerCase()!='tba' && prof.length>2) {
 				depData.prof=prof;
