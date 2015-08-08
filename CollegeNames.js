@@ -155,7 +155,7 @@ CollegeNames.prototype.hitPage = function(homepage,callback) {
 
 			}.bind(this));
 
-			//j
+			//
 			var parser = new htmlparser.Parser(handler);
 			parser.write(body);
 			parser.done();

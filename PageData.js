@@ -1,6 +1,6 @@
 'use strict';
 var async = require('async');
-var URI = require('uri-js');
+var URI = require('URIjs');
 
 
 //this is called in 3 places
@@ -182,12 +182,8 @@ PageData.prototype.getClientString = function() {
 
 
 PageData.prototype.getUrlStart = function() {
-	var urlParsed = URI.parse(this.dbData.url);
-	var retval = urlParsed.scheme +'://'+ urlParsed.host;
-	if (urlParsed.port) {
-		retval+=':' + urlParsed.port;
-	}
-	return retval;
+	var urlParsed = new URI(this.dbData.url);
+	return urlParsed.scheme() +'://'+ urlParsed.host();
 };
 
 PageData.prototype.addDep = function(depData) {
@@ -255,7 +251,7 @@ PageData.prototype.getData = function(name) {
 if (require.main === module) {
 
 	// console.log(new PageData('https://google.google.com:9000/jfdsajfk').getUrlStart())
-	console.log(new PageData('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=').getUrlStart())
+	console.log(new PageData('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr='))
 	
 	// var a = new PageData("https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201536&crn_in=23361");
 

@@ -1,15 +1,13 @@
 'use strict';
-var URI = require('uri-js');
+var URI = require('URIjs');
 var domutils = require('domutils');
 var moment = require('moment');
 var he = require('he');
 
 var timeZero = moment('0','h');
 
-var BaseParser = require('./BaseParser');
-var EllucianSectionParser = require('./EllucianSectionParser');
-
-var ellucianSectionParser = new EllucianSectionParser();
+var BaseParser = require('./BaseParser').BaseParser;
+var ellucianSectionParser = require('./EllucianSectionParser');
 
 
 
@@ -96,15 +94,15 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			return;
 		}
 
-		var attrURL = he.decode(element.attribs.href);
+		var urlParsed = new URI(he.decode(element.attribs.href));
 
-		//add hostname + port if not specified
-		if (URI.parse(attrURL).reference=='relative') {
-			attrURL = pageData.getUrlStart() + attrURL;
+		//add hostname + port if path is relative
+		if (urlParsed.is('relative')) {
+			urlParsed = urlParsed.absoluteTo(pageData.getUrlStart()).toString()
 		}
 
-		if (ellucianSectionParser.supportsPage(attrURL)){
-			depData.url = attrURL;
+		if (ellucianSectionParser.supportsPage(urlParsed.toString())){
+			depData.url = urlParsed.toString();
 		}
 	}.bind(this),element.children);
 
@@ -228,5 +226,6 @@ if (require.main === module) {
 	new EllucianClassParser().tests();
 }
 
+EllucianClassParser.prototype.EllucianClassParser=EllucianClassParser;
 
-module.exports = EllucianClassParser
+module.exports = new EllucianClassParser();

@@ -5,52 +5,27 @@ var domutils = require('domutils');
 var fs = require('fs');
 var he = require('he');
 var URI = require('URIjs');
-var EllucianCatalogParser = require('./parsers/EllucianCatalogParser');
+var pointer = require('./Pointer');
+var ellucianCatalogParser = require('./parsers/EllucianCatalogParser');
 
-var ellucianCatalogParser = new EllucianCatalogParser();
 
 //takes in any url of a site, and fills the main db with all the classes and all the sections
-//and puts
+
+
 
 function Spider () {
 
 }
 
 
-Spider.prototype.handleRequestResponce = function (url,error,body,callback) {
-	if (error) {
-		console.trace('ERROR: request error in spider',error,url);
-		return callback(error);
-	}
-
-
-	var handler = new htmlparser.DomHandler(function (error, dom) {
-		console.log('parsed ',body.length,' bytes')
-		return callback(error,dom);
-	}.bind(this));
-
-	var parser = new htmlparser.Parser(handler);
-	parser.write(body);
-	parser.done();
-}
-
-
-
+//just adds the content type header
 Spider.prototype.request = function (url,payload,callback) {
 
-	var options ={
-		follow_max         : 5,
-		open_timeout: 60*5000,
-		read_timeout: 60*5000,
-		rejectUnauthorized : false,
-		headers:  {
-			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:24.0) Gecko/20100101 Firefox/24.0',
-			"Referer":url, //trololololol
-			'Accept-Encoding': '*'
-		}
-	};
+	//convert the list of payload dictionaries to a string
 
-	var go;
+	var payloadString;
+	var headers;
+
 	if (payload) {
 
 		var urlParsed = new URI();
@@ -59,41 +34,35 @@ Spider.prototype.request = function (url,payload,callback) {
 		payload.forEach(function(entry){
 			urlParsed.addQuery(entry.name,entry.value)
 		});
+		payloadString=urlParsed.toString().slice(1)
 
-		options.headers['Content-Type']='application/x-www-form-urlencoded';
-		var postData = urlParsed.toString().slice(1)
-
-		console.log('firing post len ',postData.length,' to ',url);
-		console.log('data',postData)
-		needle.post(url,postData,options, function (error, response, body) {
-			this.handleRequestResponce(url,error,body,callback);
-		}.bind(this));
+		headers = {
+			'Content-Type':'application/x-www-form-urlencoded'
+		}
 	}
 	else {
-
-		console.log('firing get to ',url);
-		needle.get(url,options, function (error, response, body) {
-			this.handleRequestResponce(url,error,body,callback);
-		}.bind(this));
+		headers = {}	
 	}
 
-	//callback is called by this.handleRequestResponce
+
+	pointer.request(url,payloadString,headers,callback);
 }
 
 
+//json is like this [{"name":"sel_subj","value":"MATH"},]
+//becuse there can be multiple values with the same name
+Spider.prototype.getPayloadString = function(payloadJson) {
+	
+	var urlParsed = new URI();
 
-Spider.prototype.findFormElement = function (element) {
+	//create the string
+	payload.forEach(function(entry){
+		urlParsed.addQuery(entry.name,entry.value)
+	});
 
-
-	var form = element;
-	while (form.name!='form') {
-		if (form.parent == form || !form.parent) {
-			return null;
-		}
-		form=form.parent;
-	}
-	return form;
-}
+	
+	return urlParsed.toString().slice(1)
+};
 
 Spider.prototype.minYear = function(){
 	return new Date().getFullYear();
@@ -113,9 +82,6 @@ Spider.prototype.parseForm = function (url,dom) {
 		return
 	}
 	var form = forms[0];
-
-
-
 
 	var payloads = [];
 
@@ -147,12 +113,8 @@ Spider.prototype.parseForm = function (url,dom) {
 			console.log('ERROR:no options in form???',select);
 			return;
 		}
-
-
-		// console.log(select.attribs,'fdsa')
 		
 		//add all of them
-
 		if (select.attribs.multiple!==undefined){
 
 			options.forEach(function (option){
@@ -197,11 +159,9 @@ Spider.prototype.parseForm = function (url,dom) {
 	//parse the url, and return the url the post request should go to
 	var urlParsed = new URI(url);
 
-	// console.log('parsed a form, returning',url,urlParsed ,'||||', form.attribs.action);
-
 	return {
-		url:urlParsed.protocol()+'://' +urlParsed.host() + form.attribs.action,
-		data:payloads
+		postURL:urlParsed.protocol()+'://' +urlParsed.host() + form.attribs.action,
+		payloads:payloads
 	};
 }
 
@@ -218,16 +178,15 @@ Spider.prototype.parseTermsPage = function (baseURL,callback) {
 
 	this.request(url,null,function (err,dom) {
 		if (err) {
-			console.log('ERROR requests error step 1,',error);
+			console.trace('ERROR requests error step 1,',error);
 			return callback(error);
 		}
 
-		var requestsData = [];
 
-		var parsedData = this.parseForm(baseURL,dom);
+		var parsedForm = this.parseForm(baseURL,dom);
 
-		var postURL = parsedData.url;
-		var defaultFormData = parsedData.data;
+		var postURL = parsedForm.postURL;
+		var defaultFormData = parsedForm.payloads;
 
 		if (!defaultFormData) {
 			console.log('default form data failed')
@@ -245,6 +204,11 @@ Spider.prototype.parseTermsPage = function (baseURL,callback) {
 				otherEntries.push(entry);
 			}
 		}.bind(this));
+
+
+
+
+		var requestsData = [];
 		
 		//setup an indidual request for each valid entry on the form - includes the term entry and all other other entries
 		termEntry.alts.forEach(function(entry) {
@@ -296,17 +260,48 @@ Spider.prototype.parseSearchPage = function (url,payload,callback) {
 		callback = function (){}
 	}
 
-
-
-
 	this.request(url,payload,function (err,dom) {
 		if (err) {
 			console.log('ERROR requests error for seach page,',err);
 			return callback(error);
 		}
 
-		var formData = this.parseForm(url,dom);
-		callback(null,formData.url,formData.data);
+		var parsedForm = this.parseForm(url,dom);
+
+		//remove sel_subj = ''
+		var payloads = [];
+
+		//if there is an all given on the other pages, use those (and don't pick every option)
+		//some sites have a limit of 2000 parameters per request, and picking every option sometimes exceeds that
+		var allOptionsFound =[];
+
+		parsedForm.payloads.forEach(function(entry) {
+			if (entry.name=='sel_subj' && entry.value=='%'){
+				console.log('Removing all box on courses')
+				return;
+			}
+			else if (entry.value=='%') {
+				allOptionsFound.push(entry.name);
+			}
+			payloads.push(entry);
+		}.bind(this));
+
+		console.log('allOptionsFound',allOptionsFound);
+
+
+		var finalPayloads=[]
+
+		//loop through again to make sure not includes any values which have an all set
+		payloads.forEach(function (entry) {
+			if (allOptionsFound.indexOf(entry.name)<0 || entry.value=='%' || entry.value=='dummy') {
+				finalPayloads.push(entry)
+			}
+		}.bind(this));
+
+		console.log(finalPayloads);
+
+
+		callback(null,parsedForm.postURL,finalPayloads);
 
 
 	}.bind(this));
@@ -318,23 +313,9 @@ Spider.prototype.parseSearchPage = function (url,payload,callback) {
 Spider.prototype.parseResultsPage = function(url,payload,callback) {
 
 
-	//remove sel_subj = ''
-	var validPayload = [];
-	payload.forEach(function(entry) {
-		if (entry.name=='sel_subj' && entry.value=='%'){
-			console.log('Removing all box on courses')
-			return;
-		}
-		else {
-			// console.log(entry)
-			validPayload.push(entry);
-		}
-	});
-
-	// console.log('HIIIII',validPayload,pay)
 
 
-	this.request(url,validPayload,function (err,dom) {
+	this.request(url,payload,function (err,dom) {
 		if (err) {
 			console.trace('error: ',err)
 			return callback('error getting results page')
@@ -425,6 +406,7 @@ Spider.prototype.go = function(url) {
 			this.parseResultsPage(url,payload,function (err,urls){
 				console.log('DONE!',err,urls)
 
+
 			}.bind(this));
 		}.bind(this));
 	}.bind(this))
@@ -438,8 +420,9 @@ Spider.prototype.tests = function () {
 
 
 
-	// this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec')
-	this.go('https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched')
+	this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec')
+	// this.go('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched')
+	// this.go('https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched')
 	return;
 
 

@@ -1,10 +1,12 @@
 'use strict';
 var request = require('request');
 var assert = require('assert');
-var URI = require('uri-js');
+var URI = require('URIjs');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var fs = require('fs');
+
+var pointer = require('../pointer');
 
 function BaseParser () {
 }
@@ -15,8 +17,11 @@ BaseParser.prototype.supportsPage = function() {
 };
 
 BaseParser.prototype.getPage = function(url,callback) {
-	var urlParsed = URI.parse(url);
-	if (urlParsed.scheme=='https' && urlParsed.port!=undefined && urlParsed!='443') {
+
+
+	var urlParsed = new URI(url);
+
+	if (urlParsed.scheme()=='https' && urlParsed.port()!='' && urlParsed.port()!='443') {
 		console.log('ERROR: nodejs cant hit https over non 443... :('); //)
 		callback("NOSUPPORT");
 		return;
@@ -46,27 +51,19 @@ BaseParser.prototype.getPage = function(url,callback) {
 BaseParser.prototype.parse = function(pageData,callback) {
 
 
-	this.getPage(pageData.dbData.url,function (err,html) {
+	pointer.request(pageData.dbData.url,null,null,function (err,dom) {
 		if (err) {
 			return callback(err);
 		};
 		
 		//record the main hostname in the url TODO
-		
-		
-		
-		this.parseHTML(pageData,html,function (err) {
-			if (err) {
-				return callback(err);
-			};
+		this.parseDOM(pageData,dom);
 
-			console.log('parsed '+html.length+' bytes from',pageData.dbData.url);
+		pageData.setData('lastUpdateTime',new Date().getTime());
 
-			pageData.setData('lastUpdateTime',new Date().getTime());
-			
-			callback();
+		callback();
 
-		}.bind(this));
+
 	}.bind(this));
 };
 
@@ -105,46 +102,29 @@ BaseParser.prototype.isValidData = function(pageData) {
 
 
 
-BaseParser.prototype.onBeginParsing = function(parsingData) {
+BaseParser.prototype.onBeginParsing = function(pageData) {
 	
 };
 
-BaseParser.prototype.onEndParsing = function(parsingData,callback) {
+BaseParser.prototype.onEndParsing = function(pageData) {
 
 };
 
-BaseParser.prototype.parseHTML = function(pageData,html,callback){
-	if (!callback) {
-		callback = function () {}
-	};
+BaseParser.prototype.parseDOM = function(pageData,dom){
+
 
 	this.onBeginParsing(pageData);
 
 
-	var handler = new htmlparser.DomHandler(function (error, dom) {
-		if (error) {
-			console.log(error);
-			return callback(error);
-		};
+	domutils.findAll(this.parseElement.bind(this,pageData),dom);
 
+	this.onEndParsing(pageData);
 
-		var elements = domutils.findAll(function () {return true;},dom);
-		elements.forEach(this.parseElement.bind(this,pageData));
-
-		this.onEndParsing(pageData);
-
-		//missed something, or invalid page
-		if (!this.isValidData(pageData)) {
-			console.log("ERROR: though url was good, but missed data", pageData);
-			return callback(null);
-		};
-
-		return callback();
-	}.bind(this));
-
-	var parser = new htmlparser.Parser(handler);
-	parser.write(html);
-	parser.done();
+	//missed something, or invalid page
+	if (!this.isValidData(pageData)) {
+		console.log("ERROR: though url was good, but missed data", pageData);
+		return null;
+	};
 }
 
 
@@ -183,10 +163,21 @@ BaseParser.prototype.tests = function () {
 		
 		var pageData = new PageData(fileJSON.url);
 
-		
-		this.parseHTML(pageData,fileJSON.body,function (data) {
+		pointer.handleRequestResponce(fileJSON.body,function (err,dom) {
+			if (err) {
+				console.trace(err);
+			}
+
+
+			this.parseDOM(pageData,dom);
+
 			console.log("HERE",pageData);
-		}.bind(this));
+			
+			// this.parseDOM()
+		}.bind(this))
+
+
+
 
 	}.bind(this));
 
@@ -199,5 +190,5 @@ if (require.main === module) {
 
 
 
-
-module.exports = BaseParser
+BaseParser.prototype.BaseParser=BaseParser;
+module.exports = new BaseParser()

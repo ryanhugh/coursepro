@@ -1,6 +1,6 @@
 'use strict';
 var domutils = require('domutils');
-var BaseParser = require('./BaseParser');
+var BaseParser = require('./BaseParser').BaseParser;
 
 //700+ college sites use this poor interface for their registration
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
@@ -50,6 +50,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 	};
 
 
+
 	if (element.name=='div' && element.attribs.class=='staticheaders') {
 		this.findYear(pageData,element);
 	}
@@ -61,6 +62,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 				console.log('could not find number!',value,element);
 				return;
 			};
+
 			pageData.setData(attrName,parseInt(value));
 		};
 
@@ -83,8 +85,6 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 		pageData.setData('name',match[1]);
 	}
 };
-
-
 
 
 EllucianSectionParser.prototype.getMetadata = function(pageData) {
@@ -133,6 +133,8 @@ if (require.main === module) {
 	new EllucianSectionParser().tests();
 }
 
-module.exports = EllucianSectionParser
+//this allows subclassing, http://bites.goodeggs.com/posts/export-this/ (Mongoose section)
+EllucianSectionParser.prototype.EllucianSectionParser=EllucianSectionParser;
+module.exports = new EllucianSectionParser();
 
 // console.log(exports.getFormattableUrl('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633'))

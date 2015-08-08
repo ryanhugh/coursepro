@@ -1,11 +1,9 @@
 'use strict';
-var URI = require('uri-js');
+var URI = require('URIjs');
 var domutils = require('domutils');
 var he = require('he');
-var BaseParser = require('./BaseParser');
-var EllucianClassParser = require('./EllucianClassParser');
-
-var ellucianClassParser = new EllucianClassParser();
+var BaseParser = require('./BaseParser').BaseParser;
+var ellucianClassParser = require('./EllucianClassParser');
 
 
 function EllucianCatalogParser () {
@@ -30,44 +28,39 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 	
 	var depData = {};
 	
-// 	console.log('parse class called',pageData)
+
+	//find the description
+	depData.desc=domutils.getText( element.children[0]).trim();
+
+	var invalidDescriptions = ['xml extract','new search',''];
+
+	if (invalidDescriptions.indexOf(depData.desc.trim().toLowerCase())>-1) {
+		return;
+	}
 
 
 	//find the url
 	domutils.getElementsByTagName('a',element).forEach(function (element) {
 		if (!element.attribs.href) {
-		// 	console.log('bad href matching',element);
 			return;
 		}
 
-		var attrURL = he.decode(element.attribs.href);
+		var urlParsed = new URI(he.decode(element.attribs.href));
 
-  // 	console.log('parse class called',pageData,element);
-  	
-		//add hostname + port if not specified
-		if (URI.parse(attrURL).reference=='relative') {
-			attrURL = pageData.getUrlStart() + attrURL;
+		//add hostname + port if path is relative
+		if (urlParsed.is('relative')) {
+			urlParsed = urlParsed.absoluteTo(pageData.getUrlStart()).toString()
 		}
 
-		if (ellucianClassParser.supportsPage(attrURL)){
-			depData.url = attrURL;
-		}
-		else {
-		  // console.log('not supported',element);
+		if (ellucianClassParser.supportsPage(urlParsed.toString())){
+			depData.url = urlParsed.toString();
 		}
 	}.bind(this));
 
 
-	//find the description
-	depData.desc=domutils.getText( element.children[0]).trim()
-
-// 	console.log(depData)
-	if (depData.desc.trim()==='' && depData.url===undefined) {
-		return;
-	}
 	
 	if (depData.desc.trim()==='' || depData.url===undefined) {
-	  console.log('Warning: dropping',depData)
+		console.log('Warning: dropping',depData)
 		return;
 	}
 
@@ -80,15 +73,12 @@ EllucianCatalogParser.prototype.parseElement = function(pageData,element) {
 	if (element.type!='tag') {
 		return;
 	}
-// 	console.log('hi')
+
 
 	if (element.name == 'td') {
 	  
 	  if (element.attribs.class == 'ntdefault') {
   		this.parseClass(pageData,element);
-  	}
-  	else {
-  	 // console.log(element,element.attribs.class)
   	}
   }
 };
@@ -138,4 +128,5 @@ if (require.main === module) {
 	new EllucianCatalogParser().tests();
 }
 
-module.exports = EllucianCatalogParser
+EllucianCatalogParser.prototype.EllucianCatalogParser=EllucianCatalogParser;
+module.exports = new EllucianCatalogParser();
