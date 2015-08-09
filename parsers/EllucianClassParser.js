@@ -33,7 +33,7 @@ EllucianClassParser.prototype.supportsPage = function (url,html) {
 
 //format is min from midnight, 0 = sunday, 6= saterday
 //	8:00 am - 9:05 am	MWR -> {0:[{start:248309,end:390987}],1:...}
-EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
+EllucianClassParser.prototype.parseTimeStamps = function(times,days,existingDays) {
 	if (times.toLowerCase()=='tba' || days=='&nbsp;') {
 		return;
 	}
@@ -43,7 +43,14 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 		return false;
 	};
 
-	var retVal = {}
+	var retVal;
+	if (!existingDays) {
+		retVal={}
+	}
+	else {
+		retVal = existingDays;
+	}
+
 
 	var dayLetterToIndex = {
 		'U':0,
@@ -125,19 +132,34 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 	var tableData = this.parseTable(tables[0]);
 
+	if (tableData._rowCount<1) {
+		console.trace('ERROR, no rows found',tableData)
+		return;
+	};
+
+	if (tableData._rowCount!=1) {
+		console.log('Warning, > 1 row',tableData,pageData.dbData.url)
+	};
+
 
 	for (var i = 0; i < tableData._rowCount; i++) {
+	
+		//if is a single day class (exams, and some classes that happen like 2x a month specify specific dates)
+		var splitTimeString = tableData['date range'][i].split('-')
+		console.log(splitTimeString)
+		if (splitTimeString.length==2 && splitTimeString[0].trim()==splitTimeString[1].trim()) {
+			console.log('warning, single day class ',splitTimeString,pageData.dbData.url)
+			continue;
+		};
 
-		if (tableData['Type'][i]!='Class') {
-			if (!_(['Final Exam']).includes(tableData['Type'][i])) {
-				console.log('warning unknown type of section',tableData['Type'][i],i);
-				continue;
-			}
-		}
+
+
+
+
 
 
 		//parse the professors
-		var prof = tableData['Instructors'][i]
+		var prof = tableData['instructors'][i]
 
 		//replace double spaces with a single space,trim, and remove the (p) at the end
 		prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
@@ -160,7 +182,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 
 		//parse and add the times
-		var times = this.parseTimeStamps(tableData['Time'][i],tableData['Days'][i]);
+		var times = this.parseTimeStamps(tableData['time'][i],tableData['days'][i],depData.times);
 		if (times) {
 			depData.times=times;
 		};

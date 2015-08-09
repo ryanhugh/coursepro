@@ -117,7 +117,7 @@ PageDataMgr.prototype.tests = function() {
 		var urls = JSON.parse(body);
 	  
 	  
-		 for (var i=0;i<Math.min(10,urls.length);i++){
+		 for (var i=0;i<Math.min(100,urls.length);i++){
 		   this.create(urls[i]);
 		 }
 

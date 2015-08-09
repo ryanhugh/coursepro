@@ -115,13 +115,13 @@ BaseParser.prototype.parseTable = function(table) {
 	}
 	var heads = []
 
-	//the heeaderss
+	//the heeaders
 	rows[0].children.forEach(function (element) {
 		if (element.type!='tag' || ['th','td'].indexOf(element.name)===-1) {
 			return;
 		}
 
-		var text = domutils.getText(element).trim()
+		var text = domutils.getText(element).trim().toLowerCase()
 		retVal[text] = []
 		heads.push(text);
 
@@ -185,7 +185,7 @@ BaseParser.prototype.tests = function () {
 		}
 		catch (exception_var_1){
 			console.log(JSON.stringify({
-				// url:
+				url:"https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=BAS",
 				body:body
 			}))
 			return;
