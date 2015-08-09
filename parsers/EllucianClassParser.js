@@ -33,7 +33,7 @@ EllucianClassParser.prototype.supportsPage = function (url,html) {
 
 //format is min from midnight, 0 = sunday, 6= saterday
 //	8:00 am - 9:05 am	MWR -> {0:[{start:248309,end:390987}],1:...}
-EllucianClassParser.prototype.parseTimeStamps = function(times,days,existingDays) {
+EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 	if (times.toLowerCase()=='tba' || days=='&nbsp;') {
 		return;
 	}
@@ -43,13 +43,7 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days,existingDays
 		return false;
 	};
 
-	var retVal;
-	if (!existingDays) {
-		retVal={}
-	}
-	else {
-		retVal = existingDays;
-	}
+	var retVal={};
 
 
 	var dayLetterToIndex = {
@@ -94,7 +88,7 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days,existingDays
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 	var depData = {
-		profs:[]
+		meetings:[]
 	};
 
 
@@ -143,18 +137,29 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 
 	for (var i = 0; i < tableData._rowCount; i++) {
+
+		depData.meetings.push({});
+		var index= depData.meetings.length-1;
+
 	
 		//if is a single day class (exams, and some classes that happen like 2x a month specify specific dates)
-		var splitTimeString = tableData['date range'][i].split('-')
-		console.log(splitTimeString)
-		if (splitTimeString.length==2 && splitTimeString[0].trim()==splitTimeString[1].trim()) {
-			console.log('warning, single day class ',splitTimeString,pageData.dbData.url)
-			continue;
+		var splitTimeString = tableData['date range'][i].split('-');
+		var startDate = moment(splitTimeString[0].trim(),'MMM D,YYYY');
+		var endDate = moment(splitTimeString[1].trim(),'MMM D,YYYY');
+
+		if (!startDate.isValid() || !endDate.isValid()) {
+			console.log('ERROR: one of parsed dates is not valid',splitTimeString,pageData.dbData,url);
 		};
 
-
-
-
+		//add the dates if they are valid
+		//store as days since epoch 1970
+		if (startDate.isValid()) {
+			depData.meetings[index].startDate = startDate.diff(0,'day');
+		}
+		
+		if (endDate.isValid()) {
+			depData.meetings[index].endDate = endDate.diff(0,'day');
+		}
 
 
 
@@ -174,18 +179,21 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			prof=changeCase.titleCase(prof);
 		}
 
+		depData.meetings[index].prof = prof;
 
-		if (!_(depData.profs).includes(prof)){
-			depData.profs.push(prof);
+
+
+
+		//start time and end time of class each day
+		var times = this.parseTimeStamps(tableData['time'][i],tableData['days'][i]);
+
+		//parse and add the times
+		if (times) {
+			depData.meetings[index].times=times;
 		}
 
 
 
-		//parse and add the times
-		var times = this.parseTimeStamps(tableData['time'][i],tableData['days'][i],depData.times);
-		if (times) {
-			depData.times=times;
-		};
 	};
 
 	pageData.addDep(depData);
