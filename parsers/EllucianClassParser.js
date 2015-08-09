@@ -17,7 +17,7 @@ var timeZero = moment('0','h');
 function EllucianClassParser () {
 	BaseParser.constructor.call(this);
 
-	this.requiredAttrs = [];
+	this.requiredAttrs = ['deps'];
 
 }
 

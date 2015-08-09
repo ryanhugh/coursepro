@@ -156,7 +156,7 @@ PageData.prototype.processDeps = function(callback) {
 		
 		pageDataMgr.create(addToDepData.url,startingData,function (err,newDepData) {
 			if (err) {
-				console.log('ERROR:',err);
+				console.log('ERROR: processing deps',err);
 				return callback(err);
 			};
 

@@ -1,11 +1,12 @@
 'use strict'
 var needle = require('needle');
 var htmlparser = require('htmlparser2');
+var domutils = require('domutils');
 var URI = require('URIjs');
 
 
 function Pointer () {
-	
+	this.maxRetryCount = 7;
 }
 
 
@@ -38,7 +39,7 @@ Pointer.prototype.fireRequest = function (url,payload,headers,callback) {
 		rejectUnauthorized : false,
 		headers:  {
 			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:24.0) Gecko/20100101 Firefox/24.0',
-			"Referer":url, //trololololol
+			"Referer":url, //trololololol - needed on temple, etc
 			// 'Accept-Encoding': '*' if data is returned as gzip, is is not uncompressed...
 		}
 	}
@@ -74,14 +75,34 @@ Pointer.prototype.fireRequest = function (url,payload,headers,callback) {
 }
 
 
+Pointer.prototype.tryAgain = function(url,payload,headers,callback,tryCount) {
+	setTimeout(function (){
+		this.request(url,payload,headers,callback,tryCount+1);
+	}.bind(this),10000+parseInt(Math.random()*5000));
+};
 
 
-Pointer.prototype.request = function(url,payload,headers,callback) {
+
+//try count is internal use only
+Pointer.prototype.request = function(url,payload,headers,callback,tryCount) {
 	this.fireRequest(url,payload,headers,function (error,response,body) {
+
+		if (tryCount===undefined) {
+			tryCount=0;
+		}
+
 		if (error) {
-			console.trace('ERROR: needle error',url,error);
-			return callback(error);
+			//try again in a second or so
+
+			if (tryCount<this.maxRetryCount && error.code=='ECONNRESET') {
+				return this.tryAgain(url,payload,headers,callback,tryCount);
+			}
+			else {
+				console.trace('ERROR: needle error',url,error);
+				return callback(error);
+			}
 		};
+
 
 
 
@@ -94,7 +115,40 @@ Pointer.prototype.request = function(url,payload,headers,callback) {
 
 			
 			console.log('Parsed',body.length,'from ',url);
-			callback(null,dom)
+
+			//if the body is really short, something probably didn't work
+			if (body.length<1000) {
+
+				var titles = domutils.getElementsByTagName('title',dom);
+
+				if (titles.length ==0 ) {
+					console.log('warning, short body 0 title?',body)
+					return callback(null,body); //might be correct, not sure
+				}
+
+				else if (titles.length == 1 && domutils.getText(titles[0]).trim().toLowerCase()=='application web server busy') {
+
+
+					//try again in a couple seconds
+					if (tryCount<this.maxRetryCount) {
+						return this.tryAgain(url,payload,headers,callback,tryCount);
+					}
+					else {
+						console.log('ERROR, hit max retry count in pointer app web server busy',body);
+						return callback('max retry count hit in pointer')
+					}
+				}
+				else {
+
+					//could be right?
+					console.log('warning: short body, didnt match title?',body);
+					return callback(null,dom);
+				}
+			}
+			else {
+				return callback(null,dom)
+			}
+
 
 
 		}.bind(this))
