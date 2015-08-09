@@ -4,7 +4,7 @@
 
 
 
-fix econnreset
+fix econnreset -- added logging to see if its retrying?
 
 parse credits and other stuff on courseoff
 

@@ -18,6 +18,8 @@ function EllucianSectionParser () {
 	"waitCapacity",
 	"waitActual",
 	"waitRemaining",
+	"minCredits",
+	"maxCredits"
 	];
 }
 
@@ -32,17 +34,6 @@ EllucianSectionParser.prototype.supportsPage = function (url) {
 }
 
 
-EllucianSectionParser.prototype.onBeginParsing = function(pageData) {
-	pageData.parsingData.boxCount=0;
-
-
-	//add optional data
-	['waitCapacity','waitActual','waitRemaining'].forEach(function (optionalVal) {
-		pageData.setData(optionalVal,0);
-	});
-
-};
-var boxOrder = [null,'seatsCapacity','seatsActual','seatsRemaining','waitCapacity','waitActual','waitRemaining'];
 
 EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 	if (element.type!='tag') {
@@ -50,21 +41,76 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 	};
 
 
+	if (element.name == 'table' && element.attribs.class=='datadisplaytable' && element.parent.name=='td') {
+		var tableData = this.parseTable(element);
 
-	if (element.name =='td' && element.attribs.class=='dddefault'){
-		var attrName = boxOrder[pageData.parsingData.boxCount];
-		if (attrName) {
-			var value = domutils.getText(element);
-			if (value===undefined || value.trim().length==0) {
-				console.log('could not find number!',value,element);
-				return;
-			};
+		if (!tableData || tableData._rowCount==0 || !tableData.capacity || !tableData.actual || !tableData.remaining) {
+			console.log('ERROR: invalid table in section parser',tableData,pageData.dbData.url);
+			return;
+		}
+		console.log(tableData)
 
-			pageData.setData(attrName,parseInt(value));
-		};
+		pageData.setData('seatsCapacity',parseInt(tableData.capacity[0]));
+		pageData.setData('seatsActual',parseInt(tableData.actual[0]));
+		pageData.setData('seatsRemaining',parseInt(tableData.remaining[0]));
 
-		pageData.parsingData.boxCount++;
 
+		//second row is waitlist, sometimes not listed
+		if (tableData._rowCount>1) {
+			pageData.setData('waitCapacity',parseInt(tableData.capacity[1]));
+			pageData.setData('waitActual',parseInt(tableData.actual[1]));
+			pageData.setData('waitRemaining',parseInt(tableData.remaining[1]));
+		}
+		else {
+			pageData.setData('waitCapacity',0);
+			pageData.setData('waitActual',0);
+			pageData.setData('waitRemaining',0);
+		}
+
+		//third row is cross list seats, rarely listed and not doing anyting with that now
+		// https://ssb.ccsu.edu/pls/ssb_cPROD/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=12532
+
+
+		//grab credits
+		var containsCreditsText = domutils.getText(element.parent);
+
+		//should match 3.000 Credits  or 1.000 TO 21.000 Credits 
+		var creditsMatch = containsCreditsText.match(/(?:\d(:?.\d*)?\s*to\s*)?(\d+(:?.\d*)?)\s*credits/i)
+		if (creditsMatch) {
+			var maxCredits = parseFloat(creditsMatch[2]);
+			var minCredits;
+
+			//sometimes a range is given,
+			if (creditsMatch[1]) {
+				minCredits = parseFloat(creditsMatch[1]);
+			}
+			else {
+				minCredits = maxCredits;
+			}
+
+			if (minCredits>maxCredits) {
+				console.log('error, min credits>max credits...',containsCreditsText,pageData.dbData.url);
+				minCredits=maxCredits;
+			}
+
+			pageData.setData('minCredits',minCredits);
+			pageData.setData('maxCredits',maxCredits);
+			return;
+		}
+
+
+		//Credit Hours: 3.000 
+		creditsMatch = containsCreditsText.match(/credits?\s*(?:hours?)?:?\s*(\d+(:?.\d*)?)/i);
+		if (creditsMatch) {
+
+			var credits = parseFloat(creditsMatch[1]);
+			pageData.setData('minCredits',credits);
+			pageData.setData('maxCredits',credits);
+
+			return;
+		}
+
+		console.log('ERROR, nothing matchied credits',containsCreditsText,pageData.dbData.url);
 	}
 	else if (element.name =='th' && element.attribs.class=='ddlabel' && element.attribs.scope=="row"){
 		if (pageData.parsingData.didFindName) {
