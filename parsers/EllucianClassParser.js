@@ -4,6 +4,7 @@ var domutils = require('domutils');
 var moment = require('moment');
 var he = require('he');
 var changeCase = require('change-case');
+var _ = require('lodash');
 
 var BaseParser = require('./BaseParser').BaseParser;
 var ellucianSectionParser = require('./EllucianSectionParser');
@@ -33,7 +34,7 @@ EllucianClassParser.prototype.supportsPage = function (url,html) {
 //format is min from midnight, 0 = sunday, 6= saterday
 //	8:00 am - 9:05 am	MWR -> {0:[{start:248309,end:390987}],1:...}
 EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
-	if (days=='&nbsp;') {
+	if (times.toLowerCase()=='tba' || days=='&nbsp;') {
 		return;
 	}
 
@@ -85,7 +86,9 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
-	var depData = {};
+	var depData = {
+		profs:[]
+	};
 
 
 	//find the url
@@ -112,41 +115,56 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		classDetails=classDetails.next;
 	}
 
-	//find the times
-	var rows = domutils.getElementsByTagName('tr',classDetails.children);
-	rows.forEach(function (element) {
-		var items = domutils.getElementsByTagName('td',element.children);
-
-		//the header row
-		if (items.length==0) {
-			return;
-		};
-
-		//found the row were looking for
-		if (domutils.getText(items[0]).trim().toLowerCase()=='class') {
-			var prof = domutils.getText(items[6]).trim();
-			
-			//replace double spaces with a single space,trim, and remove the (p) at the end
-			prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
-			
-			if (prof.toLowerCase()!='tba' && prof.length>2) {
-				depData.prof=changeCase.titleCase(prof);
-			};
+	//find the table in this section
+	var tables = domutils.getElementsByTagName('table',classDetails);
+	if (tables.length!=1) {
+		console.trace('!=1 table in page?');
+		return
+	};
 
 
-			var times = domutils.getText(items[1]).trim().toLowerCase();
-			if (times=='tba') {
-				console.log('not adding tba times on ',depData.url);
+	var tableData = this.parseTable(tables[0]);
+
+
+	for (var i = 0; i < tableData._rowCount; i++) {
+
+		if (tableData['Type'][i]!='Class') {
+			if (!_(['Final Exam']).includes(tableData['Type'][i])) {
+				console.log('warning unknown type of section',tableData['Type'][i],i);
+				continue;
 			}
-			else {
-				var times = this.parseTimeStamps(times,domutils.getText(items[2]));
-				if (times) {
-					depData.times=times;
-				}
-				
-			}
+		}
+
+
+		//parse the professors
+		var prof = tableData['Instructors'][i]
+
+		//replace double spaces with a single space,trim, and remove the (p) at the end
+		prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
+
+		if (prof.length<3) {
+			console.log('ERROR: empty/short prof name??',prof,tableData)
+		}
+		if (prof.toLowerCase()=='tba') {
+			prof = "TBA";
+		}
+		else {
+			prof=changeCase.titleCase(prof);
+		}
+
+
+		if (!_(depData.profs).includes(prof)){
+			depData.profs.push(prof);
+		}
+
+
+
+		//parse and add the times
+		var times = this.parseTimeStamps(tableData['Time'][i],tableData['Days'][i]);
+		if (times) {
+			depData.times=times;
 		};
-	}.bind(this));
+	};
 
 	pageData.addDep(depData);
 };

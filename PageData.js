@@ -197,7 +197,7 @@ PageData.prototype.addDep = function(depData) {
 		this.dbData.deps = []
 	};
 
-	console.log('added dep ',depData)
+	// console.log('added dep ',depData)
 
 	if (this.dbData.deps.indexOf(depData.url)<0) {	
 		this.dbData.deps.push(depData.url);

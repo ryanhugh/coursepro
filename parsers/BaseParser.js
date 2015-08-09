@@ -92,6 +92,61 @@ BaseParser.prototype.parseDOM = function(pageData,dom){
 
 
 
+//returns a {colName:[values]} where colname is the first in the column
+//regardless if its part of the header or the first row of the body
+BaseParser.prototype.parseTable = function(table) {
+	if (table.name!='table') {
+		console.trace('parse table was not given a table..')
+		return;
+	};
+
+
+	//includes both header rows and body rows
+	var rows = domutils.getElementsByTagName('tr',table);
+
+	if (rows.length===0) {
+		console.trace('zero rows???')
+		return;
+	};
+
+
+	var retVal = {
+		_rowCount:rows.length-1
+	}
+	var heads = []
+
+	//the heeaderss
+	rows[0].children.forEach(function (element) {
+		if (element.type!='tag' || ['th','td'].indexOf(element.name)===-1) {
+			return;
+		}
+
+		var text = domutils.getText(element).trim()
+		retVal[text] = []
+		heads.push(text);
+
+	}.bind(this));
+
+
+
+	//add the other rows
+	rows.slice(1).forEach(function (row) {
+
+		var index=0;
+		row.children.forEach(function (element) {
+			if (element.type!='tag' || ['th','td'].indexOf(element.name)===-1) {
+				return;
+			}
+			retVal[heads[index]].push(domutils.getText(element).trim())
+
+			//only count valid elements
+			index++;
+
+		}.bind(this));
+	}.bind(this));
+	return retVal;
+};
+
 
 
 
@@ -120,21 +175,39 @@ BaseParser.prototype.tests = function () {
 	var PageData = require('../PageData');
 
 	fs.readFile('../tests/'+this.constructor.name+'/1.html','utf8',function (err,body) {
+		if (err) {
+			console.log(err)
+			return
+		};
 
-
-		var fileJSON = JSON.parse(body);
+		try{
+			var fileJSON = JSON.parse(body);
+		}
+		catch (exception_var_1){
+			console.log(JSON.stringify({
+				// url:
+				body:body
+			}))
+			return;
+		}
 		
-		var pageData = new PageData(fileJSON.url);
+		
 
 		pointer.handleRequestResponce(fileJSON.body,function (err,dom) {
 			if (err) {
 				console.trace(err);
 			}
 
+			if (this.constructor.name=="BaseParser") {
+				this.parseTable(dom[0]);
+			}
+			else {
+				var pageData = new PageData(fileJSON.url);
+				this.parseDOM(pageData,dom);
+				console.log("HERE",JSON.stringify(pageData,null,4));
 
-			this.parseDOM(pageData,dom);
+			}
 
-			console.log("HERE",pageData);
 			
 			// this.parseDOM()
 		}.bind(this))
