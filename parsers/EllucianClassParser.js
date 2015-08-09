@@ -87,9 +87,7 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
-	var depData = {
-		
-	};
+	var depData = {};
 
 
 	//find the url
@@ -133,7 +131,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 
 	if (tables.length>1) {
-		console.trace('>1 table in page?');
+		console.log('>1 table in page?',tables,pageData.dbData.url);
 		return
 	}
 
@@ -142,8 +140,8 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 	var tableData = this.parseTable(tables[0]);
 
-	if (tableData._rowCount<1) {
-		console.trace('ERROR, no rows found',tableData)
+	if (tableData._rowCount<1 || !tableData.daterange || !tableData.where || !tableData.instructors || !tableData.time || !tableData.days) {
+		console.log('ERROR, invalid table in class parser',tableData,pageData.dbData.url)
 		return;
 	};
 
@@ -154,12 +152,12 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 	
 		//if is a single day class (exams, and some classes that happen like 2x a month specify specific dates)
-		var splitTimeString = tableData['date range'][i].split('-');
+		var splitTimeString = tableData.daterange[i].split('-');
 		var startDate = moment(splitTimeString[0].trim(),'MMM D,YYYY');
 		var endDate = moment(splitTimeString[1].trim(),'MMM D,YYYY');
 
 		if (!startDate.isValid() || !endDate.isValid()) {
-			console.log('ERROR: one of parsed dates is not valid',splitTimeString,pageData.dbData,url);
+			console.log('ERROR: one of parsed dates is not valid',splitTimeString,pageData.dbData.url);
 		};
 
 		//add the dates if they are valid
@@ -175,7 +173,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 
 		//parse the professors
-		var prof = tableData['instructors'][i]
+		var prof = tableData.instructors[i]
 
 		//replace double spaces with a single space,trim, and remove the (p) at the end
 		prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
@@ -193,10 +191,14 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		depData.meetings[index].prof = prof;
 
 
+		//parse the location
+		depData.meetings[index].where = tableData.where[i]		
+
+
 
 
 		//start time and end time of class each day
-		var times = this.parseTimeStamps(tableData['time'][i],tableData['days'][i]);
+		var times = this.parseTimeStamps(tableData.time[i],tableData.days[i]);
 
 		//parse and add the times
 		if (times) {

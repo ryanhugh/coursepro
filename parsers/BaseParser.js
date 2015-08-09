@@ -108,7 +108,7 @@ BaseParser.prototype.parseTable = function(table) {
 			return;
 		}
 
-		var text = domutils.getText(element).trim().toLowerCase()
+		var text = domutils.getText(element).trim().toLowerCase().replace(/\s/gi,'');
 		retVal[text] = []
 		heads.push(text);
 
