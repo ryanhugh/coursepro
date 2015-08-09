@@ -11,7 +11,6 @@ function EllucianSectionParser () {
 	BaseParser.constructor.call(this);
 
 	this.requiredAttrs = [
-	"year",
 	"name",
 	"seatsCapacity",
 	"seatsActual",
@@ -52,10 +51,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 
 
 
-	if (element.name=='div' && element.attribs.class=='staticheaders') {
-		this.findYear(pageData,element);
-	}
-	else if (element.name =='td' && element.attribs.class=='dddefault'){
+	if (element.name =='td' && element.attribs.class=='dddefault'){
 		var attrName = boxOrder[pageData.parsingData.boxCount];
 		if (attrName) {
 			var value = domutils.getText(element);

@@ -4,6 +4,7 @@ var domutils = require('domutils');
 var he = require('he');
 var BaseParser = require('./BaseParser').BaseParser;
 var ellucianClassParser = require('./EllucianClassParser');
+var _ = require('lodash');
 
 
 function EllucianCatalogParser () {
@@ -26,11 +27,21 @@ EllucianCatalogParser.prototype.supportsPage = function (url) {
 
 EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 	
-	var depData = {};
-	
+	var depData = {
+		desc:''
+	};
 
-	//find the description
-	depData.desc=domutils.getText( element.children[0]).trim();
+
+	//list all texts between this and next element, not including <br> or <i>
+	for (var i = 0; i < element.children.length; i++) {
+		if (element.children[i].type=='tag' && !_(['i','br']).includes(element.children[i].name)) {
+			break;
+		}
+		depData.desc+='  '+domutils.getText(element.children[i]).trim();
+	}
+
+	depData.desc=depData.desc.trim()
+
 
 	var invalidDescriptions = ['xml extract','new search'];
 

@@ -38,19 +38,6 @@ BaseParser.prototype.parse = function(pageData,callback) {
 
 //html parsing helpers and common functions
 
-BaseParser.prototype.findYear = function(pageData,element) {
-	var text = domutils.getText(element);
-	var match = text.match(/\d{4}/);
-	if (!match || match.length ==0) {
-		console.log('UNabled to find year!!!',match,text)
-		return;
-	}
-
-	var year = parseInt(match[0]);
-	pageData.setData('year',year);
-};
-
-
 BaseParser.prototype.isValidData = function(pageData) {
 	
 	//ensure that data has all of these attributes

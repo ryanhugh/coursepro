@@ -17,7 +17,7 @@ var timeZero = moment('0','h');
 function EllucianClassParser () {
 	BaseParser.constructor.call(this);
 
-	this.requiredAttrs = ["year"];
+	this.requiredAttrs = [];
 
 }
 
@@ -88,7 +88,7 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 	var depData = {
-		meetings:[]
+		
 	};
 
 
@@ -110,6 +110,13 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		}
 	}.bind(this),element.children);
 
+	if (!depData.url) {
+		console.log('warning, no url found',pageData.dbData.url)
+		return;
+	};
+
+
+
 	//find the next row
 	var classDetails=element.next;
 	while (classDetails.type!='tag') {
@@ -118,10 +125,19 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 	//find the table in this section
 	var tables = domutils.getElementsByTagName('table',classDetails);
-	if (tables.length!=1) {
-		console.trace('!=1 table in page?');
+	if (tables.length===0) {
+		console.log('warning, 0 tables found',pageData.dbData.url);
+		pageData.addDep(depData);
+		return;
+	}
+
+
+	if (tables.length>1) {
+		console.trace('>1 table in page?');
 		return
-	};
+	}
+
+	depData.meetings=[]
 
 
 	var tableData = this.parseTable(tables[0]);
@@ -130,11 +146,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		console.trace('ERROR, no rows found',tableData)
 		return;
 	};
-
-	if (tableData._rowCount!=1) {
-		console.log('Warning, > 1 row',tableData,pageData.dbData.url)
-	};
-
 
 	for (var i = 0; i < tableData._rowCount; i++) {
 
@@ -207,10 +218,7 @@ EllucianClassParser.prototype.parseElement = function(pageData,element) {
 	};
 
 	
-	if (element.name=='span' && element.attribs.class=='fieldlabeltext') {
-		this.findYear(pageData,element.parent);
-	}
-	else if (element.name =='a' && element.attribs.href && element.parent.attribs.class=='ddtitle' && element.parent.attribs.scope=='colgroup'){
+	if (element.name =='a' && element.attribs.href && element.parent.attribs.class=='ddtitle' && element.parent.attribs.scope=='colgroup'){
 		this.parseClassData(pageData,element.parent.parent);
 		
 	}
@@ -243,6 +251,11 @@ EllucianClassParser.prototype.getEmailData = function(pageData) {
 	var oldData = pageData.originalData.dbData;
 	if (!oldData) {
 		return null;
+	};
+
+	if (!newData.deps || !oldData.deps) {
+		console.log('Warning: no deps??',pageData.dbData.url)
+		return;
 	};
 
 	if (newData.deps.length>oldData.deps.length) {
