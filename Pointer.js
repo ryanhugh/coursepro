@@ -6,7 +6,7 @@ var URI = require('URIjs');
 
 
 function Pointer () {
-	this.maxRetryCount = 7;
+	this.maxRetryCount = 10;
 }
 
 
@@ -33,9 +33,9 @@ Pointer.prototype.fireRequest = function (url,payload,headers,callback) {
 	var options ={
 		follow_max : 5,
 
-		//five min
-		open_timeout: 60*5000,
-		read_timeout: 60*5000,
+		//ten min
+		open_timeout: 60*10000,
+		read_timeout: 60*10000,
 		rejectUnauthorized : false,
 		headers:  {
 			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:24.0) Gecko/20100101 Firefox/24.0',
@@ -78,7 +78,7 @@ Pointer.prototype.fireRequest = function (url,payload,headers,callback) {
 Pointer.prototype.tryAgain = function(url,payload,headers,callback,tryCount) {
 	setTimeout(function (){
 		this.request(url,payload,headers,callback,tryCount+1);
-	}.bind(this),10000+parseInt(Math.random()*5000));
+	}.bind(this),8000+parseInt(Math.random()*7000));
 };
 
 
@@ -95,10 +95,11 @@ Pointer.prototype.request = function(url,payload,headers,callback,tryCount) {
 			//try again in a second or so
 
 			if (tryCount<this.maxRetryCount && error.code=='ECONNRESET') {
+				console.log('warning, got a ECONNRESET, but trying again',tryCount,url)
 				return this.tryAgain(url,payload,headers,callback,tryCount);
 			}
 			else {
-				console.trace('ERROR: needle error',url,error);
+				console.log('ERROR: needle error',url,error);
 				return callback(error);
 			}
 		};
@@ -108,7 +109,7 @@ Pointer.prototype.request = function(url,payload,headers,callback,tryCount) {
 
 		this.handleRequestResponce(body,function (err,dom) {
 			if (error) {
-				console.trace('ERROR: cant parse html of ',url)
+				console.log('ERROR: cant parse html of ',url)
 				return callback(error);
 			};
 

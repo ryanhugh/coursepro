@@ -251,8 +251,6 @@ Spider.prototype.parseSearchPage = function (startingURL,dom) {
 		payloads.push(entry);
 	}.bind(this));
 
-	console.log('allOptionsFound',allOptionsFound);
-
 
 	var finalPayloads=[]
 
@@ -350,48 +348,52 @@ Spider.prototype.go = function(url) {
 		};
 
 		console.log('found terms:',parsedTermsPage.requestsData)
-		//TODO scrape all terms
 
-		this.request(parsedTermsPage.postURL,parsedTermsPage.requestsData[0],function (err,dom) {
-			if (err) {
-				console.trace('ERROR requests error step 2,',err);
-				return;
-			}
-
-
-			var parsedSearchPage = this.parseSearchPage(startingURL,dom);
-			if (!parsedSearchPage) {
-				return;
-			};
-
-
-			this.request(parsedSearchPage.postURL,parsedSearchPage.payloads,function (err,dom) {
+		parsedTermsPage.requestsData.forEach(function (requestsData) {
+			
+			this.request(parsedTermsPage.postURL,requestsData,function (err,dom) {
 				if (err) {
+					console.trace('ERROR requests error step 2,',err);
 					return;
 				}
 
-				var parsedResultsPage = this.parseResultsPage(startingURL,dom);
-				console.log('DONE!',parsedResultsPage)
+
+				var parsedSearchPage = this.parseSearchPage(startingURL,dom);
+				if (!parsedSearchPage) {
+					return;
+				};
+
+
+				this.request(parsedSearchPage.postURL,parsedSearchPage.payloads,function (err,dom) {
+					if (err) {
+						return;
+					}
+
+					var parsedResultsPage = this.parseResultsPage(startingURL,dom);
+					console.log('DONE!',parsedResultsPage)
 
 
 
+				}.bind(this));
 			}.bind(this));
-		}.bind(this));
+		}.bind(this));		
+
 	}.bind(this))
 }
 
 
 
 Spider.prototype.tests = function () {
-	var pageDataMgr = require('./PageDataMgr.js')
+	// var pageDataMgr = require('./PageDataMgr.js')
 
 
 
 
 	// this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec')
 	// this.go('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched')
-	this.go('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_dyn_ctlg')
+	// this.go('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_dyn_ctlg')
 	// this.go('https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched')
+	this.go('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=AE&crse_in=2355&schd_in=%')
 	return;
 
 
