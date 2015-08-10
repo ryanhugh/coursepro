@@ -15,7 +15,7 @@ var timeZero = moment('0','h');
 //700+ college sites use this poor interface for their registration
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
 function EllucianClassParser () {
-	EllucianBaseParser.constructor.call(this);
+	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
 	this.requiredAttrs = ['deps'];
 }
@@ -293,11 +293,12 @@ EllucianClassParser.prototype.getEmailData = function(pageData) {
 
 
 
-
-if (require.main === module) {
-	new EllucianClassParser().tests();
-}
-
 EllucianClassParser.prototype.EllucianClassParser=EllucianClassParser;
 
 module.exports = new EllucianClassParser();
+
+
+
+if (require.main === module) {
+	module.exports.tests();
+}

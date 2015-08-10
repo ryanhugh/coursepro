@@ -14,7 +14,7 @@ var EllucianBaseParser = require('./EllucianBaseParser').EllucianBaseParser;
 
 
 function EllucianSectionParser () {
-	EllucianBaseParser.constructor.call(this);
+	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
 	this.requiredAttrs = [
 	"name",
@@ -96,6 +96,12 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 			}
 			else if (classDetails[i].name=='a'){
 
+				var elementText = domutils.getText(classDetails[i]);
+				if (elementText.trim()=='') {
+					console.log('warning, not matching ',sectionName,' with no text in the link',pageData.dbData.url)
+					continue;
+				};
+
 				var catalogURL = he.decode(classDetails[i].attribs.href)
 				if (!catalogURL || catalogURL=='') {
 					console.log('error could not get catalogURL',catalogURL,classDetails[i].attribs,pageData.dbData.url);
@@ -142,9 +148,9 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 		}
 	}
 
-	//no section given, or invalid section
+	//no section given, or invalid section, or page does not list any pre/co reqs
 	if (elements.length==0) {
-		console.log('error: zero elements found when searching for',sectionName,elements,pageData.dbData.url)
+		// console.log('error: zero elements found when searching for',sectionName,elements,pageData.dbData.url)
 		return;
 	};
 	
@@ -384,12 +390,12 @@ EllucianSectionParser.prototype.tests = function() {
 
 
 
-if (require.main === module) {
-	new EllucianSectionParser().tests();
-}
-
 //this allows subclassing, http://bites.goodeggs.com/posts/export-this/ (Mongoose section)
 EllucianSectionParser.prototype.EllucianSectionParser=EllucianSectionParser;
 module.exports = new EllucianSectionParser();
 
 // console.log(exports.getFormattableUrl('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633'))
+
+if (require.main === module) {
+	module.exports.tests();
+}

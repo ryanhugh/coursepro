@@ -4,15 +4,12 @@ var domutils = require('domutils');
 var he = require('he');
 var _ = require('lodash');
 
-var pointer = require('../pointer');
 var EllucianBaseParser = require('./EllucianBaseParser').EllucianBaseParser;
 var ellucianClassParser = require('./EllucianClassParser');
 
 
 function EllucianCatalogParser () {
-	EllucianBaseParser.constructor.call(this);
-
-	
+	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
 	this.requiredAttrs = [];
 }
@@ -32,7 +29,6 @@ EllucianCatalogParser.prototype.supportsPage = function (url) {
 
 
 EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
-	// console.log(pageData)
 	
 	var depData = {
 		desc:''
@@ -136,9 +132,9 @@ EllucianCatalogParser.prototype.getEmailData = function(pageData) {
 
 
 
-if (require.main === module) {
-	new EllucianCatalogParser().tests();
-}
-
 EllucianCatalogParser.prototype.EllucianCatalogParser=EllucianCatalogParser;
 module.exports = new EllucianCatalogParser();
+
+if (require.main === module) {
+	module.exports.tests();
+}

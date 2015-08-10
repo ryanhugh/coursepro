@@ -6,6 +6,7 @@ var fs = require('fs');
 var he = require('he');
 var URI = require('URIjs');
 var pointer = require('./Pointer');
+
 var ellucianCatalogParser = require('./parsers/EllucianCatalogParser');
 require('./PageDataMgr.js')
 
@@ -321,7 +322,7 @@ Spider.prototype.go = function(url) {
 
 	console.log('Scraping ',url,'!')
 
-	var baseURL = pointer.getBaseURL(url);
+	var baseURL = ellucianCatalogParser.getBaseURL(url);
 	if (!baseURL) {
 		return;
 	}
@@ -390,7 +391,8 @@ Spider.prototype.tests = function () {
 	// this.go('https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched')
 	// this.go('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=AE&crse_in=2355&schd_in=%')
 	// this.go('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched')
-	this.go('https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched')
+	// this.go('https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched')
+	this.go('https://genisys.regent.edu/pls/prod/bwckschd.p_disp_dyn_sched')
 	return;
 
 

@@ -9,6 +9,7 @@ var fs = require('fs');
 var pointer = require('../pointer');
 
 function BaseParser () {
+
 }
 
 
@@ -18,8 +19,6 @@ BaseParser.prototype.supportsPage = function() {
 
 //callback here is pageData (stuff to store in db), and metadata (stuff dont store in db)
 BaseParser.prototype.parse = function(pageData,callback) {
-
-
 	pointer.request(pageData.dbData.url,{requiredInBody:this.requiredInBody},function (err,dom) {
 		if (err) {
 			return callback(err);

@@ -5,7 +5,7 @@ var BaseParser = require('./BaseParser').BaseParser;
 
 
 function EllucianBaseParser () {
-	BaseParser.constructor.call(this);
+	BaseParser.prototype.constructor.apply(this,arguments);
 	this.requiredInBody="Ellucian";
 }
 

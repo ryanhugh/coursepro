@@ -8,6 +8,7 @@ var URI = require('URIjs');
 
 function Pointer () {
 	this.maxRetryCount = 10;
+	this.openRequests = 0;
 }
 
 
@@ -79,7 +80,7 @@ Pointer.prototype.fireRequest = function (url,options,callback) {
 Pointer.prototype.tryAgain = function(url,options,callback,tryCount) {
 	setTimeout(function (){
 		this.request(url,options,callback,tryCount+1);
-	}.bind(this),8000+parseInt(Math.random()*7000));
+	}.bind(this),20000+parseInt(Math.random()*15000));
 };
 
 
@@ -101,11 +102,11 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 			//try again in a second or so
 
 			if (tryCount<this.maxRetryCount && _(['ECONNRESET','ETIMEDOUT']).includes(error.code)) {
-				console.log('warning, got a ECONNRESET, but trying again',tryCount,resp.statusCode,url)
+				console.log('warning, got a ECONNRESET, but trying again',tryCount,url)
 				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {
-				console.log('ERROR: needle error',url,resp.statusCode,error);
+				console.log('ERROR: needle error',url,error);
 				return callback(error);
 			}
 		};
@@ -115,13 +116,16 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 		if (options.requiredInBody && !_(body).includes(options.requiredInBody)) {
 			// try again in a couple seconds
 			if (tryCount<this.maxRetryCount) {
-				console.log('pointer warning, body did not contain specified text, trying again',tryCount,resp.statusCode,body);
+				console.log('pointer warning, body did not contain specified text, trying again',tryCount,response.statusCode,url);
 				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {
-				console.log('pointer error, body did not contain specified text, at max retry count',tryCount,resp.statusCode,body);
+				console.log('pointer error, body did not contain specified text, at max retry count',tryCount,response.statusCode,body);
 				return callback('max retry count hit in pointer')
 			}
+		}
+		else if (body.length<4000) {
+			console.log('warning, short body',url,body);
 		};
 
 
@@ -142,5 +146,5 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 };
 
 
-
+Pointer.prototype.Pointer=Pointer;
 module.exports = new Pointer();
