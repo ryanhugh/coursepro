@@ -54,7 +54,7 @@ Pointer.prototype.fireRequest = function (url,options,callback) {
 		}
 	}
 
-	var go;
+	this.openRequests++;
 	if (options.payload) {
 
 		
@@ -91,22 +91,29 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 		options={}
 	};
 
+	if (tryCount===undefined) {
+		tryCount=0;
+	}
+
+
+	if (_(['genisys.regent.edu']).includes(new URI(url).hostname()) && this.openRequests>50) {
+		console.log('warning postponing request to ',this.openRequests,url);
+		return this.tryAgain(url,options,callback,tryCount-1);
+	};
+
 
 	this.fireRequest(url,options,function (error,response,body) {
-
-		if (tryCount===undefined) {
-			tryCount=0;
-		}
+		this.openRequests--;
 
 		if (error) {
 			//try again in a second or so
 
 			if (tryCount<this.maxRetryCount && _(['ECONNRESET','ETIMEDOUT']).includes(error.code)) {
-				console.log('warning, got a ECONNRESET, but trying again',tryCount,url)
+				console.log('warning, got a ECONNRESET, but trying again',tryCount,url,this.openRequests)
 				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {
-				console.log('ERROR: needle error',url,error);
+				console.log('ERROR: needle error',url,this.openRequests,error);
 				return callback(error);
 			}
 		};
@@ -116,16 +123,16 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 		if (options.requiredInBody && !_(body).includes(options.requiredInBody)) {
 			// try again in a couple seconds
 			if (tryCount<this.maxRetryCount) {
-				console.log('pointer warning, body did not contain specified text, trying again',tryCount,response.statusCode,url);
+				console.log('pointer warning, body did not contain specified text, trying again',tryCount,body.length,response.statusCode,this.openRequests,url);
 				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {
-				console.log('pointer error, body did not contain specified text, at max retry count',tryCount,response.statusCode,body);
+				console.log('pointer error, body did not contain specified text, at max retry count',tryCount,body.length,response.statusCode,this.openRequests,body);
 				return callback('max retry count hit in pointer')
 			}
 		}
 		else if (body.length<4000) {
-			console.log('warning, short body',url,body);
+			console.log('warning, short body',url,body,this.openRequests);
 		};
 
 
