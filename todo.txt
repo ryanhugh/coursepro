@@ -2,6 +2,9 @@
 
 
 
+require that ellucian is in body or retry (not if len<1000)
+log responce code when it fails
+
 
 
 fix econnreset -- added logging to see if its retrying?
@@ -15,6 +18,7 @@ parse EECE abbr from search page
 
 pre and co reqs and restrictions -- test!!
 https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201508&crn_in=90660
+https://bannerweb.upstate.edu/isis/bwckschd.p_disp_detail_sched?term_in=201580&crn_in=83848
 
 {type:and,values:[{values:[1,2],type:or}]}
 

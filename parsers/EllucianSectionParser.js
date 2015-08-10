@@ -145,7 +145,23 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 	else {
 		text = text + '"]' 
 	}
-	text = JSON.parse(text)
+
+
+
+	//parse the new json
+	try{
+		text = JSON.parse(text)
+	}
+	catch (err){
+		console.log('ERROR: unabled to parse formed json string',text,pageData.dbData.url)
+		return;
+	}
+
+
+
+	if (text.length==1 && Array.isArray(text[0])) {
+		text=text[0];
+	};
 
 	text=this.formatRequirements(text)
 
@@ -304,23 +320,23 @@ EllucianSectionParser.prototype.getEmailData = function(pageData) {
 
 
 
-// EllucianSectionParser.prototype.tests = function() {
+EllucianSectionParser.prototype.tests = function() {
 		
-// 	fs.readFile('../tests/'+this.constructor.name+'/reqs.html','utf8',function (err,body) {
+	fs.readFile('../tests/'+this.constructor.name+'/reqs.html','utf8',function (err,body) {
 
 
-// 		pointer.handleRequestResponce(body,function (err,dom) {
-// 			this.findRequirementSection({dbData:{url:'https://google.com'}},dom,'prerequisites')
-// 			this.findRequirementSection({dbData:{url:'https://google.com'}},dom,'corequisites')
-// 		}.bind(this));
+		pointer.handleRequestResponce(body,function (err,dom) {
+			console.log(JSON.stringify(this.parseRequirementSection ({dbData:{url:'https://google.com'}},dom,'prerequisites'),null,2))
+			console.log(JSON.stringify(this.parseRequirementSection ({dbData:{url:'https://google.com'}},dom,'corequisites'),null,2))
+		}.bind(this));
 
-// 		// pointer.handleRequestResponce('body',function (err,dom) {
-// 		// 	this.findRequirementSection(dom,'prerequisites:')
-// 		// }.bind(this));
+		// pointer.handleRequestResponce('body',function (err,dom) {
+		// 	this.parsere (dom,'prerequisites:')
+		// }.bind(this));
 
-// 	}.bind(this));
+	}.bind(this));
 
-// };
+};
 
 
 

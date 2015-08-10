@@ -7,6 +7,7 @@ var he = require('he');
 var URI = require('URIjs');
 var pointer = require('./Pointer');
 var ellucianCatalogParser = require('./parsers/EllucianCatalogParser');
+require('./PageDataMgr.js')
 
 
 //takes in any url of a site, and fills the main db with all the classes and all the sections
@@ -194,13 +195,13 @@ Spider.prototype.parseTermsPage = function (startingURL,dom) {
 
 		//dont process this element on error
 		if (entry.text.length<2) {
-			console.log('ERROR: empty entry.text on form?',url);
+			console.log('ERROR: empty entry.text on form?',entry,startingURL);
 			return;
 		}
 
 		var year = entry.text.match(/\d{4}/);
 		if (!year) {
-			console.log('ERROR: could not find year for ',entry.text,url);
+			console.log('ERROR: could not find year for ',entry.text);
 			return;
 		}
 
@@ -366,25 +367,29 @@ Spider.prototype.go = function(url) {
 
 				this.request(parsedSearchPage.postURL,parsedSearchPage.payloads,function (err,dom) {
 					if (err) {
+						console.log('error request error part 3',err)
 						return;
 					}
 
+
 					var parsedResultsPage = this.parseResultsPage(startingURL,dom);
+					
 					console.log('DONE!',parsedResultsPage)
 
-
+					parsedResultsPage.forEach(function (catalogURL) {
+						pageDataMgr.create(catalogURL);
+					}.bind(this));
 
 				}.bind(this));
 			}.bind(this));
 		}.bind(this));		
-
 	}.bind(this))
 }
 
 
 
 Spider.prototype.tests = function () {
-	// var pageDataMgr = require('./PageDataMgr.js')
+	
 
 
 
@@ -393,7 +398,8 @@ Spider.prototype.tests = function () {
 	// this.go('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched')
 	// this.go('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_dyn_ctlg')
 	// this.go('https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched')
-	this.go('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=AE&crse_in=2355&schd_in=%')
+	// this.go('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=AE&crse_in=2355&schd_in=%')
+	this.go('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched')
 	return;
 
 
