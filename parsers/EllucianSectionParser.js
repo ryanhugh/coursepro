@@ -117,8 +117,8 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 					continue;
 				};
 
-
-				elements.push('"'+classURL+'"');
+				
+				elements.push('"'+classURL+'",');
 			}
 			else {
 				break;
@@ -139,8 +139,10 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 
 			dividers.forEach(function (divider) {
 
-				// and -> ,"and",
-				text = text.replace( new RegExp("[^\\]]*"+divider+"[^\\[]*","gi"),	',"'+divider+'",');
+				// and -> "and",
+				text = text.replace( new RegExp("[^\\]]*"+divider+"[^\\[]*","gi"),	'"'+divider+'",');
+
+
 			}.bind(this));
 
 			
