@@ -1,7 +1,12 @@
 'use strict';
 var domutils = require('domutils');
+var fs = require('fs');
+var he = require('he');
+var URI = require('URIjs');
+var pointer = require('../pointer');
 var BaseParser = require('./BaseParser').BaseParser;
 var changeCase = require('change-case');
+var _ = require('lodash');
 
 //700+ college sites use this poor interface for their registration
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
@@ -12,6 +17,8 @@ function EllucianSectionParser () {
 
 	this.requiredAttrs = [
 	"name",
+	"coreqs",
+	"prereqs",
 	"seatsCapacity",
 	"seatsActual",
 	"seatsRemaining",
@@ -33,6 +40,117 @@ EllucianSectionParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckschd.p_disp_detail_sched')>-1;
 }
 
+
+EllucianSectionParser.prototype.formatRequirements = function(data) {
+	var retVal = {
+		type:'and',
+		values:[]
+	}
+
+	data.forEach(function (val) {
+		if (Array.isArray(val)) {
+
+			//found another array, convert sub array and add it to retval
+			retVal.values.push(this.formatRequirements(val));
+		}
+		else if (val=='or' || val=='and'){
+			retVal.type=val;
+		}
+		else {
+			retVal.values.push(val);
+		}
+	}.bind(this));
+
+	return retVal;
+
+};
+
+
+EllucianSectionParser.prototype.parseRequirementSection = function(pageData,classDetails,sectionName) {
+	var elements =[];
+	var i=0;
+
+	//skip all elements until the section
+	for (; i < classDetails.length; i++) {
+		if (classDetails[i].type == 'tag' && _(domutils.getText(classDetails[i]).trim().toLowerCase()).includes(sectionName)) {
+			break;
+		}
+	}
+	i++;
+
+	//add all text/elements until next element
+	for (; i < classDetails.length; i++) {
+		if (classDetails[i].type=='tag'){
+			if (classDetails[i].name=='br') {
+
+			}
+			else if (classDetails[i].name=='a'){
+				var link = new URI(he.decode(classDetails[i].attribs.href));
+				elements.push(link.absoluteTo(pageData.dbData.url));
+			}
+			else {
+				break;
+			}
+		}
+		else {
+			var text = domutils.getOuterHTML(classDetails[i]).trim();
+			if (text=='') {
+				continue;
+			}
+
+			if (!_(text).includes('and') && !_(text).includes('or') && !_(text).includes('(') && !_(text).includes(')')) {
+				continue;
+			};
+
+			var dividers = ['and','or'];
+
+			dividers.forEach(function (divider) {
+
+				// ) and ( -> "],"and",["
+				text = text.replace( new RegExp(".*\\)\\s+"+divider+"\\s+\\(.*","gi"),	'"],"'+divider+'",["');
+				
+				// and ( -> ","and",["
+				text = text.replace( new RegExp(".*\\s+"   +divider+"\\s+\\(.*","gi"),	'","' +divider+'",["');
+
+				// ) and -> "],"and","
+				text = text.replace( new RegExp(".*\\)\\s+"+divider+"\\s+.*","gi"),		'"],"'+divider+'","');
+
+				// and -> ","and","
+				text = text.replace( new RegExp(".*\\s+"   +divider+"\\s+.*","gi"),		'","' +divider+'","');
+			}.bind(this));
+
+			text=text.replace(/\(.*/,'["').replace(/.*\)/,'"]')
+			
+			elements.push(text);
+		}
+	}
+	if (elements.length==0) {
+		console.log('error: zero elements found when searching for',sectionName,pageData.dbData.url)
+		return;
+	};
+
+	var text =  elements.join("");
+
+	if (_(text).startsWith('[')) {
+		text = '[' + text;
+	}
+	else {
+		text = '["' + text;
+	}
+
+	if (_(text).endsWith(']')) {
+		text = text + ']';
+	}
+	else {
+		text = text + '"]' 
+	}
+	text = JSON.parse(text)
+
+	text=this.formatRequirements(text)
+
+	console.log(JSON.stringify(text,null,2));
+	return text;
+};
 
 
 EllucianSectionParser.prototype.parseElement = function(pageData,element) {
@@ -69,6 +187,20 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 
 		//third row is cross list seats, rarely listed and not doing anyting with that now
 		// https://ssb.ccsu.edu/pls/ssb_cPROD/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=12532
+
+
+
+		//find co and pre reqs and restrictions
+		var prereqs =this.parseRequirementSection(pageData,element.parent.children,'prerequisites');
+		if (prereqs) {
+			pageData.setData('prereqs',prereqs);
+		}
+
+		var coreqs =this.parseRequirementSection(pageData,element.parent.children,'corequisites');
+		if (coreqs) {
+			pageData.setData('coreqs',coreqs);
+		};
+
 
 
 		//grab credits
@@ -169,6 +301,25 @@ EllucianSectionParser.prototype.getEmailData = function(pageData) {
 };
 
 
+
+
+// EllucianSectionParser.prototype.tests = function() {
+		
+// 	fs.readFile('../tests/'+this.constructor.name+'/reqs.html','utf8',function (err,body) {
+
+
+// 		pointer.handleRequestResponce(body,function (err,dom) {
+// 			this.findRequirementSection({dbData:{url:'https://google.com'}},dom,'prerequisites')
+// 			this.findRequirementSection({dbData:{url:'https://google.com'}},dom,'corequisites')
+// 		}.bind(this));
+
+// 		// pointer.handleRequestResponce('body',function (err,dom) {
+// 		// 	this.findRequirementSection(dom,'prerequisites:')
+// 		// }.bind(this));
+
+// 	}.bind(this));
+
+// };
 
 
 
