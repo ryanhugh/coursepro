@@ -10,6 +10,8 @@ var _ = require('lodash');
 function EllucianCatalogParser () {
 	BaseParser.constructor.call(this);
 
+	this.requiredInBody="Ellucian";
+
 	this.requiredAttrs = [];
 }
 

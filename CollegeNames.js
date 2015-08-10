@@ -75,7 +75,7 @@ CollegeNames.prototype.hitPage = function(homepage,callback) {
 	
 	console.log('firing request to ',homepage)
 
-	pointer.request('http://'+homepage,null,null, function (error, dom) {
+	pointer.request('http://'+homepage,null, function (error, dom) {
 		if (error) {
 			console.log('REQUESTS ERROR:',homepage,error);
 			

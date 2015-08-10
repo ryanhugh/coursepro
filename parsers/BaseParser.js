@@ -20,7 +20,7 @@ BaseParser.prototype.supportsPage = function() {
 BaseParser.prototype.parse = function(pageData,callback) {
 
 
-	pointer.request(pageData.dbData.url,null,null,function (err,dom) {
+	pointer.request(pageData.dbData.url,{requiredInBody:this.requiredInBody},function (err,dom) {
 		if (err) {
 			return callback(err);
 		};

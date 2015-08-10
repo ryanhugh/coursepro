@@ -46,7 +46,10 @@ Spider.prototype.request = function (url,payload,callback) {
 	}
 
 
-	pointer.request(url,payloadString,headers,callback);
+	pointer.request(url,{
+		payload:payloadString,
+		headers:headers,
+		requiredInBody:"Ellucian"},callback);
 }
 
 
@@ -195,13 +198,13 @@ Spider.prototype.parseTermsPage = function (startingURL,dom) {
 
 		//dont process this element on error
 		if (entry.text.length<2) {
-			console.log('ERROR: empty entry.text on form?',entry,startingURL);
+			console.log('warning: empty entry.text on form?',entry,startingURL);
 			return;
 		}
 
 		var year = entry.text.match(/\d{4}/);
 		if (!year) {
-			console.log('ERROR: could not find year for ',entry.text);
+			console.log('warning: could not find year for ',entry.text);
 			return;
 		}
 

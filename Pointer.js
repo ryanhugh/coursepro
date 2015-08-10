@@ -2,6 +2,7 @@
 var needle = require('needle');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
+var _ = require('lodash');
 var URI = require('URIjs');
 
 
@@ -19,7 +20,7 @@ Pointer.prototype.handleRequestResponce = function(body,callback) {
 
 
 
-Pointer.prototype.fireRequest = function (url,payload,headers,callback) {
+Pointer.prototype.fireRequest = function (url,options,callback) {
 
 	var urlParsed = new URI(url);
 
@@ -30,7 +31,7 @@ Pointer.prototype.fireRequest = function (url,payload,headers,callback) {
 	};
 
 
-	var options ={
+	var needleConfig ={
 		follow_max : 5,
 
 		//ten min
@@ -45,47 +46,52 @@ Pointer.prototype.fireRequest = function (url,payload,headers,callback) {
 	}
 
 
-	//if more headers given, copy them to the options headers
-	if (headers) {
-		for (var attrName in headers) {
-			options.headers[attrName] = headers[attrName];
+	//if more headers given, copy them to the needleConfig headers
+	if (options.headers) {
+		for (var attrName in options.headers) {
+			needleConfig.headers[attrName] = options.headers[attrName];
 		}
 	}
 
 	var go;
-	if (payload) {
+	if (options.payload) {
 
 		
-		if (!options.headers['Content-Type']) {
+		if (!needleConfig.headers['Content-Type']) {
 			console.trace('ERROR:content type not given for request!')
 			return callback('no content type for post')
 		};
 
 
-		console.log('firing post len ',payload.length,' to ',url);
-		console.log('data',payload)
-		needle.post(url,payload,options, callback);
+		console.log('firing post len ',options.payload.length,' to ',url);
+		console.log('data',options.payload)
+		needle.post(url,options.payload,needleConfig, callback);
 	}
 	else {
 
 		console.log('firing get to ',url);
-		needle.get(url,options, callback);
+		needle.get(url,needleConfig, callback);
 	}
 	//callback is called by the needle code
 }
 
 
-Pointer.prototype.tryAgain = function(url,payload,headers,callback,tryCount) {
+Pointer.prototype.tryAgain = function(url,options,callback,tryCount) {
 	setTimeout(function (){
-		this.request(url,payload,headers,callback,tryCount+1);
+		this.request(url,options,callback,tryCount+1);
 	}.bind(this),8000+parseInt(Math.random()*7000));
 };
 
 
 
 //try count is internal use only
-Pointer.prototype.request = function(url,payload,headers,callback,tryCount) {
-	this.fireRequest(url,payload,headers,function (error,response,body) {
+Pointer.prototype.request = function(url,options,callback,tryCount) {
+	if (!options) {
+		options={}
+	};
+
+
+	this.fireRequest(url,options,function (error,response,body) {
 
 		if (tryCount===undefined) {
 			tryCount=0;
@@ -94,13 +100,27 @@ Pointer.prototype.request = function(url,payload,headers,callback,tryCount) {
 		if (error) {
 			//try again in a second or so
 
-			if (tryCount<this.maxRetryCount && error.code=='ECONNRESET') {
+			if (tryCount<this.maxRetryCount && _(['ECONNRESET','ETIMEDOUT']).includes(error.code)) {
 				console.log('warning, got a ECONNRESET, but trying again',tryCount,url)
-				return this.tryAgain(url,payload,headers,callback,tryCount);
+				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {
 				console.log('ERROR: needle error',url,error);
 				return callback(error);
+			}
+		};
+
+
+		//ensure that body contains given string
+		if (options.requiredInBody && !_(body).includes(options.requiredInBody)) {
+			// try again in a couple seconds
+			if (tryCount<this.maxRetryCount) {
+				console.log('pointer warning, body did not contain specified text, trying again',tryCount,body);
+				return this.tryAgain(url,options,callback,tryCount);
+			}
+			else {
+				console.log('pointer error, body did not contain specified text, at max retry count',tryCount,body);
+				return callback('max retry count hit in pointer')
 			}
 		};
 
@@ -113,44 +133,9 @@ Pointer.prototype.request = function(url,payload,headers,callback,tryCount) {
 				return callback(error);
 			};
 
-
-			
 			console.log('Parsed',body.length,'from ',url);
 
-			//if the body is really short, something probably didn't work
-			if (body.length<1000) {
-
-				var titles = domutils.getElementsByTagName('title',dom);
-
-				if (titles.length ==0 ) {
-					console.log('warning, short body 0 title?',body)
-					return callback(null,body); //might be correct, not sure
-				}
-
-				else if (titles.length == 1 && domutils.getText(titles[0]).trim().toLowerCase()=='application web server busy') {
-
-
-					//try again in a couple seconds
-					if (tryCount<this.maxRetryCount) {
-						return this.tryAgain(url,payload,headers,callback,tryCount);
-					}
-					else {
-						console.log('ERROR, hit max retry count in pointer app web server busy',body);
-						return callback('max retry count hit in pointer')
-					}
-				}
-				else {
-
-					//could be right?
-					console.log('warning: short body, didnt match title?',body);
-					return callback(null,dom);
-				}
-			}
-			else {
-				return callback(null,dom)
-			}
-
-
+			return callback(null,dom)
 
 		}.bind(this))
 	}.bind(this));

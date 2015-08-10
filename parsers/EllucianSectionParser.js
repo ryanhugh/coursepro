@@ -15,6 +15,8 @@ var _ = require('lodash');
 function EllucianSectionParser () {
 	BaseParser.constructor.call(this);
 
+	this.requiredInBody="Ellucian";
+
 	this.requiredAttrs = [
 	"name",
 	"seatsCapacity",

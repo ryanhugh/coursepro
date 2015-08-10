@@ -19,6 +19,8 @@ function EllucianClassParser () {
 
 	this.requiredAttrs = ['deps'];
 
+	this.requiredInBody="Ellucian";
+
 }
 
 
@@ -173,22 +175,32 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 
 		//parse the professors
-		var prof = tableData.instructors[i]
+		var profs = tableData.instructors[i].split(',')
 
-		//replace double spaces with a single space,trim, and remove the (p) at the end
-		prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
+		profs.forEach(function (prof) {
+			
+			//replace double spaces with a single space,trim, and remove the (p) at the end
+			prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
 
-		if (prof.length<3) {
-			console.log('ERROR: empty/short prof name??',prof,tableData)
-		}
-		if (prof.toLowerCase()=='tba') {
-			prof = "TBA";
-		}
-		else {
-			prof=changeCase.titleCase(prof);
-		}
+			if (prof.length<3) {
+				console.log('ERROR: empty/short prof name??',prof,tableData)
+			}
+			if (prof.toLowerCase()=='tba') {
+				prof = "TBA";
+			}
+			else {
+				prof=changeCase.titleCase(prof);
+			}
 
-		depData.meetings[index].prof = prof;
+			if (!depData.meetings[index].profs) {
+				depData.meetings[index].profs = [prof];
+			}
+			else {
+				depData.meetings[index].profs.push(prof);	
+			}
+		}.bind(this));
+
+
 
 
 		//parse the location
