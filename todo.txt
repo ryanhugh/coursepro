@@ -13,7 +13,7 @@ parse credits and other stuff on courseoff
 parse EECE abbr from search page
 
 
-pre and co reqs and restrictions
+pre and co reqs and restrictions -- test!!
 https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201508&crn_in=90660
 
 {type:and,values:[{values:[1,2],type:or}]}

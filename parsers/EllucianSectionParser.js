@@ -17,8 +17,6 @@ function EllucianSectionParser () {
 
 	this.requiredAttrs = [
 	"name",
-	"coreqs",
-	"prereqs",
 	"seatsCapacity",
 	"seatsActual",
 	"seatsRemaining",
@@ -98,7 +96,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 				continue;
 			}
 
-			if (!_(text).includes('and') && !_(text).includes('or') && !_(text).includes('(') && !_(text).includes(')')) {
+			if (!_(text).includes(' and ') && !_(text).includes(' or ') && !_(text).includes('(') && !_(text).includes(')')) {
 				continue;
 			};
 
@@ -124,10 +122,13 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 			elements.push(text);
 		}
 	}
+
+	//no section given, or invalid section
 	if (elements.length==0) {
-		console.log('error: zero elements found when searching for',sectionName,pageData.dbData.url)
+		// console.log('error: zero elements found when searching for',sectionName,pageData.dbData.url)
 		return;
 	};
+	
 
 	var text =  elements.join("");
 
@@ -148,7 +149,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 
 	text=this.formatRequirements(text)
 
-	console.log(JSON.stringify(text,null,2));
+	// console.log(JSON.stringify(text,null,2));
 	return text;
 };
 
@@ -159,14 +160,14 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 	};
 
 
-	if (element.name == 'table' && element.attribs.class=='datadisplaytable' && element.parent.name=='td') {
+	if (element.name == 'table' && element.attribs.class=='datadisplaytable' && element.parent.name=='td' && _(element.attribs.summary).includes("seating")) {
 		var tableData = this.parseTable(element);
 
 		if (!tableData || tableData._rowCount==0 || !tableData.capacity || !tableData.actual || !tableData.remaining) {
 			console.log('ERROR: invalid table in section parser',tableData,pageData.dbData.url);
 			return;
 		}
-		console.log(tableData)
+		// console.log(tableData)
 
 		pageData.setData('seatsCapacity',parseInt(tableData.capacity[0]));
 		pageData.setData('seatsActual',parseInt(tableData.actual[0]));
