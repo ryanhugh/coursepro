@@ -6,7 +6,7 @@ var he = require('he');
 var changeCase = require('change-case');
 var _ = require('lodash');
 
-var BaseParser = require('./BaseParser').BaseParser;
+var EllucianBaseParser = require('./EllucianBaseParser').EllucianBaseParser;
 var ellucianSectionParser = require('./EllucianSectionParser');
 
 var timeZero = moment('0','h');
@@ -15,17 +15,14 @@ var timeZero = moment('0','h');
 //700+ college sites use this poor interface for their registration
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
 function EllucianClassParser () {
-	BaseParser.constructor.call(this);
+	EllucianBaseParser.constructor.call(this);
 
 	this.requiredAttrs = ['deps'];
-
-	this.requiredInBody="Ellucian";
-
 }
 
 
 //prototype constructor
-EllucianClassParser.prototype = Object.create(BaseParser.prototype);
+EllucianClassParser.prototype = Object.create(EllucianBaseParser.prototype);
 EllucianClassParser.prototype.constructor = EllucianClassParser;
 
 

@@ -315,33 +315,17 @@ Spider.prototype.parseResultsPage = function(startingURL,dom) {
 
 
 
-Spider.prototype.findStartingURL = function (url) {
-
-	var splitAfter = ['bwckctlg.p','bwckschd.p'];
-
-	for (var i=0;i<splitAfter.length;i++) {
-
-		var index = url.indexOf(splitAfter[i]);
-
-		if (index>-1) {
-			return url.substr(0,index)+ 'bwckschd.p_disp_dyn_sched';
-		}
-	}
-
-	console.log('ERROR: given url does not contain a split from');
-	return null;
-}
-
-
 
 
 Spider.prototype.go = function(url) {
 
 	console.log('Scraping ',url,'!')
-	var startingURL = this.findStartingURL(url);
-	if (!startingURL) {
+
+	var baseURL = pointer.getBaseURL(url);
+	if (!baseURL) {
 		return;
 	}
+	var startingURL = baseURL + 'bwckschd.p_disp_dyn_sched';
 
 	this.request(startingURL,null,function (err,dom) {
 		if (err) {

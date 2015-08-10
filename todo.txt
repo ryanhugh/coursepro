@@ -2,8 +2,10 @@
 
 
 
+get base url (up to first / after host) is in pagedata, and get ellucian startin url is in pointer(move to ellucianParser)
 
-log responce code when it fails
+
+log responce code when it fails -- done, test
 
 
 move prerequs to the class and make catalog on depend on all % and have prerequs be classes

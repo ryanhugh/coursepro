@@ -3,19 +3,18 @@ var domutils = require('domutils');
 var fs = require('fs');
 var he = require('he');
 var URI = require('URIjs');
-var pointer = require('../pointer');
-var BaseParser = require('./BaseParser').BaseParser;
 var changeCase = require('change-case');
 var _ = require('lodash');
+
+var pointer = require('../pointer');
+var EllucianBaseParser = require('./EllucianBaseParser').EllucianBaseParser;
 
 //700+ college sites use this poor interface for their registration
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
 
 
 function EllucianSectionParser () {
-	BaseParser.constructor.call(this);
-
-	this.requiredInBody="Ellucian";
+	EllucianBaseParser.constructor.call(this);
 
 	this.requiredAttrs = [
 	"name",
@@ -31,7 +30,7 @@ function EllucianSectionParser () {
 }
 
 //prototype constructor
-EllucianSectionParser.prototype = Object.create(BaseParser.prototype);
+EllucianSectionParser.prototype = Object.create(EllucianBaseParser.prototype);
 EllucianSectionParser.prototype.constructor = EllucianSectionParser;
 
 
@@ -96,9 +95,24 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 
 			}
 			else if (classDetails[i].name=='a'){
-				var link = new URI(he.decode(classDetails[i].attribs.href));
 
-				elements.push('"'+link.absoluteTo(pageData.dbData.url)+'"');
+				var catalogURL = he.decode(classDetails[i].attribs.href)
+				if (!catalogURL || catalogURL=='') {
+					console.log('error could not get catalogURL',catalogURL,classDetails[i].attribs,pageData.dbData.url);
+					continue;
+				};
+
+				catalogURL = new URI(catalogURL).absoluteTo(pageData.dbData.url).toString();
+
+
+				var classURL = this.catalogURLtoClassURL(catalogURL);
+				if (!classURL || classURL=='') {
+					console.log('error could not convert req url to class url',catalogURL,classDetails[i].attribs,pageData.dbData.url)
+					continue;
+				};
+
+
+				elements.push('"'+classURL+'"');
 			}
 			else {
 				break;
@@ -194,7 +208,6 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 
 	text=this.formatRequirements(text)
 
-	// console.log(JSON.stringify(text,null,2));
 	return text;
 };
 

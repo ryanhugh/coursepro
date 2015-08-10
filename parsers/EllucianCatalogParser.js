@@ -2,22 +2,24 @@
 var URI = require('URIjs');
 var domutils = require('domutils');
 var he = require('he');
-var BaseParser = require('./BaseParser').BaseParser;
-var ellucianClassParser = require('./EllucianClassParser');
 var _ = require('lodash');
+
+var pointer = require('../pointer');
+var EllucianBaseParser = require('./EllucianBaseParser').EllucianBaseParser;
+var ellucianClassParser = require('./EllucianClassParser');
 
 
 function EllucianCatalogParser () {
-	BaseParser.constructor.call(this);
+	EllucianBaseParser.constructor.call(this);
 
-	this.requiredInBody="Ellucian";
+	
 
 	this.requiredAttrs = [];
 }
 
 
 //prototype constructor
-EllucianCatalogParser.prototype = Object.create(BaseParser.prototype);
+EllucianCatalogParser.prototype = Object.create(EllucianBaseParser.prototype);
 EllucianCatalogParser.prototype.constructor = EllucianCatalogParser;
 
 
@@ -27,7 +29,10 @@ EllucianCatalogParser.prototype.supportsPage = function (url) {
 }
 
 
+
+
 EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
+	// console.log(pageData)
 	
 	var depData = {
 		desc:''
@@ -51,24 +56,7 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 		return;
 	}
 
-
-	//find the url
-	domutils.getElementsByTagName('a',element).forEach(function (element) {
-		if (!element.attribs.href) {
-			return;
-		}
-
-		var urlParsed = new URI(he.decode(element.attribs.href));
-
-		//add hostname + port if path is relative
-		if (urlParsed.is('relative')) {
-			urlParsed = urlParsed.absoluteTo(pageData.getUrlStart()).toString()
-		}
-
-		if (ellucianClassParser.supportsPage(urlParsed.toString())){
-			depData.url = urlParsed.toString();
-		}
-	}.bind(this));
+	depData.url = this.catalogURLtoClassURL(pageData.dbData.url);
 
 	
 	if (depData.url===undefined) {
@@ -82,19 +70,22 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 };
 
 
-
 EllucianCatalogParser.prototype.parseElement = function(pageData,element) {
 	if (element.type!='tag') {
 		return;
 	}
 
 
-	if (element.name == 'td') {
-	  
-	  if (element.attribs.class == 'ntdefault') {
-  		this.parseClass(pageData,element);
-  	}
-  }
+	if (element.name == 'td' && element.attribs.class == 'ntdefault' && _(element.parent.parent.attribs.summary).includes('term')) {
+		if (pageData.parsingData.foundDesc) {
+			console.log('error, already found desc!?!',pageData.dbData.url);
+			return;
+		};
+
+		pageData.parsingData.foundDesc=true;
+
+		this.parseClass(pageData,element);
+	}
 };
 
 
@@ -133,6 +124,13 @@ EllucianCatalogParser.prototype.getEmailData = function(pageData) {
 
 
 
+
+// EllucianCatalogParser.prototype.tests = function() {
+	
+
+
+// 	this.parseClassURL('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_display_courses?term_in=201508&one_subj=AE&sel_subj=&sel_crse_strt=1601&sel_crse_end=1601&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+// };
 
 
 

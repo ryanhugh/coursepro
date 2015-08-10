@@ -101,11 +101,11 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 			//try again in a second or so
 
 			if (tryCount<this.maxRetryCount && _(['ECONNRESET','ETIMEDOUT']).includes(error.code)) {
-				console.log('warning, got a ECONNRESET, but trying again',tryCount,url)
+				console.log('warning, got a ECONNRESET, but trying again',tryCount,resp.statusCode,url)
 				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {
-				console.log('ERROR: needle error',url,error);
+				console.log('ERROR: needle error',url,resp.statusCode,error);
 				return callback(error);
 			}
 		};
@@ -115,11 +115,11 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 		if (options.requiredInBody && !_(body).includes(options.requiredInBody)) {
 			// try again in a couple seconds
 			if (tryCount<this.maxRetryCount) {
-				console.log('pointer warning, body did not contain specified text, trying again',tryCount,body);
+				console.log('pointer warning, body did not contain specified text, trying again',tryCount,resp.statusCode,body);
 				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {
-				console.log('pointer error, body did not contain specified text, at max retry count',tryCount,body);
+				console.log('pointer error, body did not contain specified text, at max retry count',tryCount,resp.statusCode,body);
 				return callback('max retry count hit in pointer')
 			}
 		};
@@ -140,6 +140,7 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 		}.bind(this))
 	}.bind(this));
 };
+
 
 
 module.exports = new Pointer();
