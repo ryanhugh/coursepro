@@ -50,8 +50,15 @@ EllucianSectionParser.prototype.formatRequirements = function(data) {
 	data.forEach(function (val) {
 		if (Array.isArray(val)) {
 
-			//found another array, convert sub array and add it to retval
-			retVal.values.push(this.formatRequirements(val));
+			var subValues = this.formatRequirements(val);
+			if (!subValues) {
+				console.log('warning could not parse sub values',data,val);
+			}
+			else {
+				//found another array, convert sub array and add it to retval
+				retVal.values.push(subValues);
+			}
+
 		}
 		else if (val=='or' || val=='and'){
 			retVal.type=val;
@@ -60,6 +67,10 @@ EllucianSectionParser.prototype.formatRequirements = function(data) {
 			retVal.values.push(val);
 		}
 	}.bind(this));
+
+	if (retVal.values.length==0) {
+		return null;
+	};
 
 	return retVal;
 
@@ -86,6 +97,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 			}
 			else if (classDetails[i].name=='a'){
 				var link = new URI(he.decode(classDetails[i].attribs.href));
+
 				elements.push('"'+link.absoluteTo(pageData.dbData.url)+'"');
 			}
 			else {
@@ -118,13 +130,21 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 
 	//no section given, or invalid section
 	if (elements.length==0) {
-		// console.log('error: zero elements found when searching for',sectionName,pageData.dbData.url)
+		console.log('error: zero elements found when searching for',sectionName,elements,pageData.dbData.url)
 		return;
 	};
 	
 
 	var text =  elements.join("");
+	if (text.trim()=='') {
+		console.log('warning, found elements, but no links or and or',elements);
+		return;
+	};
+
+
 	text = '[' + text + ']';
+
+	text = text.replace(',]',']').replace('[,','[')
 
 
 	//parse the new json
@@ -132,8 +152,38 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 		text = JSON.parse(text)
 	}
 	catch (err){
-		console.log('ERROR: unabled to parse formed json string',text,pageData.dbData.url)
-		return;
+
+
+		//maybe there are more starting than ending...
+		var openingBrackedCount = (text.match(/\[/g) || []).length;
+		var closingBrackedCount = (text.match(/\]/g) || []).length;
+		
+		if (openingBrackedCount>closingBrackedCount && _(text).startsWith('[')) {
+			text = text.slice(1);
+			try{
+				text = JSON.parse(text)
+			}
+			catch (err){
+				console.log('error, tried to remove [ from beginning, didnt work',text,elements);
+				return;
+			}
+
+		}
+		else if (closingBrackedCount>openingBrackedCount && _(text).endsWith(']')) {
+			text = text.slice(0,text.length-1);
+			try{
+				text = JSON.parse(text)
+			}
+			catch (err){
+				console.log('error, tried to remove ] from end, didnt work',text,elements);
+				return;
+			}
+		}
+		else {
+
+			console.log('ERROR: unabled to parse formed json string',err,text,elements,pageData.dbData.url)
+			return;
+		}
 	}
 
 

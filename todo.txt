@@ -2,28 +2,11 @@
 
 
 
-require that ellucian is in body or retry (not if len<1000)
+
 log responce code when it fails
 
 
-
-fix econnreset -- added logging to see if its retrying?
-
-parse credits and other stuff on courseoff
-
-
-multiple profs
-https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=FAMP&crse_in=1650&schd_in=9
-
-
-parse EECE abbr from search page
-
-pre and co reqs and restrictions -- test!! --seems to be working test more
-https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201508&crn_in=90660
-https://bannerweb.upstate.edu/isis/bwckschd.p_disp_detail_sched?term_in=201580&crn_in=83848
-
-{type:and,values:[{values:[1,2],type:or}]}
-
+move prerequs to the class and make catalog on depend on all % and have prerequs be classes
 
 
 
@@ -83,3 +66,22 @@ regex used for main hostname will fail on google.com.uk
 titleCase will replace all on \w with a space.... (Texas A&M University -> Texas A M University)
 
 fallback to hittitle if dns fails
+
+
+
+DONE
+
+
+
+multiple profs
+https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=FAMP&crse_in=1650&schd_in=9
+
+
+parse EECE abbr from search page
+
+pre and co reqs and restrictions -- test!! --seems to be working test more
+https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201508&crn_in=90660
+https://bannerweb.upstate.edu/isis/bwckschd.p_disp_detail_sched?term_in=201580&crn_in=83848
+
+{type:and,values:[{values:[1,2],type:or}]}
+

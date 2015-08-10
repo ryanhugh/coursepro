@@ -9,6 +9,9 @@ var pointer = require('./Pointer');
 var ellucianCatalogParser = require('./parsers/EllucianCatalogParser');
 require('./PageDataMgr.js')
 
+var dataMgr = require('./DataMgr');
+dataMgr.stopUpdates();
+
 
 //takes in any url of a site, and fills the main db with all the classes and all the sections
 
@@ -402,7 +405,8 @@ Spider.prototype.tests = function () {
 	// this.go('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_dyn_ctlg')
 	// this.go('https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched')
 	// this.go('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=AE&crse_in=2355&schd_in=%')
-	this.go('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched')
+	// this.go('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched')
+	this.go('https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched')
 	return;
 
 
