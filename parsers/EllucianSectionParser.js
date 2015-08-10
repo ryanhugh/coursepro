@@ -84,14 +84,14 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 			}
 			else if (classDetails[i].name=='a'){
 				var link = new URI(he.decode(classDetails[i].attribs.href));
-				elements.push(link.absoluteTo(pageData.dbData.url));
+				elements.push('"'+link.absoluteTo(pageData.dbData.url)+'"');
 			}
 			else {
 				break;
 			}
 		}
 		else {
-			var text = domutils.getOuterHTML(classDetails[i]).trim();
+			var text = domutils.getOuterHTML(classDetails[i]);
 			if (text=='') {
 				continue;
 			}
@@ -99,25 +99,16 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 			if (!_(text).includes(' and ') && !_(text).includes(' or ') && !_(text).includes('(') && !_(text).includes(')')) {
 				continue;
 			};
+			text=text.replace(/\(.*/,'[').replace(/.*\)/,']')
 
 			var dividers = ['and','or'];
 
 			dividers.forEach(function (divider) {
 
-				// ) and ( -> "],"and",["
-				text = text.replace( new RegExp(".*\\)\\s+"+divider+"\\s+\\(.*","gi"),	'"],"'+divider+'",["');
-				
-				// and ( -> ","and",["
-				text = text.replace( new RegExp(".*\\s+"   +divider+"\\s+\\(.*","gi"),	'","' +divider+'",["');
-
-				// ) and -> "],"and","
-				text = text.replace( new RegExp(".*\\)\\s+"+divider+"\\s+.*","gi"),		'"],"'+divider+'","');
-
-				// and -> ","and","
-				text = text.replace( new RegExp(".*\\s+"   +divider+"\\s+.*","gi"),		'","' +divider+'","');
+				// and -> ,"and",
+				text = text.replace( new RegExp("[^\\]]*"+divider+"[^\\[]*","gi"),	',"'+divider+'",');
 			}.bind(this));
 
-			text=text.replace(/\(.*/,'["').replace(/.*\)/,'"]')
 			
 			elements.push(text);
 		}
@@ -131,21 +122,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 	
 
 	var text =  elements.join("");
-
-	if (_(text).startsWith('[')) {
-		text = '[' + text;
-	}
-	else {
-		text = '["' + text;
-	}
-
-	if (_(text).endsWith(']')) {
-		text = text + ']';
-	}
-	else {
-		text = text + '"]' 
-	}
-
+	text = '[' + text + ']';
 
 
 	//parse the new json

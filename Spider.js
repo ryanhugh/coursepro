@@ -262,7 +262,7 @@ Spider.prototype.parseSearchPage = function (startingURL,dom) {
 		}
 	}.bind(this));
 
-	console.log(finalPayloads);
+	// console.log(finalPayloads);
 
 	return {
 		postURL:parsedForm.postURL,
@@ -348,7 +348,7 @@ Spider.prototype.go = function(url) {
 			return;
 		};
 
-		console.log('found terms:',parsedTermsPage.requestsData)
+		// console.log('found terms:',parsedTermsPage.requestsData)
 
 		parsedTermsPage.requestsData.forEach(function (requestsData) {
 			
