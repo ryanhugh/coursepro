@@ -70,15 +70,8 @@ PageDataMgr.prototype.create = function(url,startingData,callback) {
 
 
 PageDataMgr.prototype.finish = function(pageData,callback) {
-	// cons
-
-	// console.log('fda',pageData)
-	//update database if something changed (db does delta calculations)
-	dataMgr.updateDatabase(pageData);
-
-
-	return pageData.processDeps(function () {
-		
+	pageData.processDeps(function () {
+		dataMgr.updateDatabase(pageData);
 		emailMgr.sendEmails(pageData,pageData.parser.getEmailData(pageData));
 		callback(null,pageData);
 	}.bind(this));
@@ -108,7 +101,8 @@ PageDataMgr.prototype.tests = function() {
   // this.create('https://jweb.kettering.edu/cku1/bwckschd.p_disp_detail_sched?term_in=201504&crn_in=42746')
   // this.create('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_detail_sched?term_in=201580&crn_in=83848') // 1 and (2 or 3) prerequs
   // this.create('https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=FAMP&crse_in=1650&schd_in=9') //2 profs
-  this.create('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201508&crn_in=90660') //lots of prerequs and 1 coreq
+  // this.create('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201508&crn_in=90660') //lots of prerequs and 1 coreq
+  this.create('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_display_courses?term_in=201508&one_subj=AE&sel_crse_strt=2610&sel_crse_end=2610&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=') //lots of prerequs and 1 coreq
   // this.create('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633')
   return;
   

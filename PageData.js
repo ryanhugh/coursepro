@@ -43,7 +43,12 @@ function PageData (url,startingData) {
 	this.parsingData = {}
 
 	//{} that the new pageData objects should have in dbData
+	//when processDeps is ran, this is emptied and this.deps and this.dbData.deps are filled
 	this.depsToProcess = []
+
+	//data to give to parent
+	//if this does not have a parent, this is never read
+	this.parentData = {};
 
 
 	//add the email and ip, if given
@@ -54,6 +59,8 @@ function PageData (url,startingData) {
 	if (startingData.email) {
 		this.dbData.emails.push(startingData.email);
 	}
+
+	this.parent = startingData.parent;
 
 	if (startingData.dbData) {
 		for (var attrName in startingData.dbData) {
@@ -136,13 +143,10 @@ PageData.prototype.isUpdated = function() {
 
 
 PageData.prototype.processDeps = function(callback) {
-	// console.log('starting to process deps1!')
 	
 	if (!this.depsToProcess || this.depsToProcess.length==0){ 
-		// console.log('starting to process deps3!')
 		return callback();
 	};
-	// console.log('starting to process deps2!')
 
 	//any dep data will be inserted into main pageData for dep
 	async.map(this.depsToProcess, function (addToDepData,callback) {
@@ -151,7 +155,8 @@ PageData.prototype.processDeps = function(callback) {
 		var startingData = {
 			ip:this.originalData.ip,
 			email:this.originalData.email,
-			dbData:addToDepData
+			dbData:addToDepData,
+			parent:this
 		}
 		
 		pageDataMgr.create(addToDepData.url,startingData,function (err,newDepData) {
@@ -159,6 +164,7 @@ PageData.prototype.processDeps = function(callback) {
 				console.log('ERROR: processing deps',err);
 				return callback(err);
 			};
+
 
 			return callback(null,newDepData);
 		}.bind(this));
@@ -219,7 +225,16 @@ PageData.prototype.addDep = function(depData) {
 
 	this.depsToProcess.push(depData);
 
+}
 
+
+PageData.prototype.setParentData = function(name,value) {
+	if (!this.parent) {
+		console.log('error told to add to parent but dont have parent',name,value)
+		return;
+	};
+
+	this.parent.setData(name,value);
 };
 
 

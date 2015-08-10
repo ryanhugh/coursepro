@@ -252,12 +252,12 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 		//find co and pre reqs and restrictions
 		var prereqs =this.parseRequirementSection(pageData,element.parent.children,'prerequisites');
 		if (prereqs) {
-			pageData.setData('prereqs',prereqs);
+			pageData.setParentData('prereqs',prereqs);
 		}
 
 		var coreqs =this.parseRequirementSection(pageData,element.parent.children,'corequisites');
 		if (coreqs) {
-			pageData.setData('coreqs',coreqs);
+			pageData.setParentData('coreqs',coreqs);
 		};
 
 
