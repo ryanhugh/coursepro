@@ -9,7 +9,7 @@ var fs = require('fs');
 var pointer = require('../pointer');
 
 function BaseParser () {
-
+	this.requiredAttrs = [];
 }
 
 

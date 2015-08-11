@@ -1,20 +1,34 @@
 'use strict';
 var Datastore = require('nedb');
+var _ = require('lodash');
+var path = require("path");
+
+
+// if (_(process.cwd()).endsWith('databases') || _(process.cwd()).endsWith('parsers')) {
+// 	process.chdir('..');
+// }
+
+
 
 
 //if getting this.db undefined its baseDB trying to run something...
 function BaseDB () {
+
 	if (this.filename) {
-		this.db = new Datastore({ filename: 'databases/'+ this.filename, autoload: true });
+
+		var filePath = process.cwd();
+		if (_(filePath).endsWith('parsers')) {
+			filePath = path.join(filePath,'..')
+		}
+
+		filePath = path.join(filePath,'databases',this.filename)
+
+		this.db = new Datastore({ filename:filePath , autoload: true });
 	}
 
 	this.updateTimer = null;
 }
 
-
-
-
-//db 
 
 
 BaseDB.prototype.shouldUpdateDB = function(newData,oldData) {

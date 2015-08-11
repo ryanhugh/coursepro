@@ -7,7 +7,6 @@ var PageData = require('./PageData');
 var requireDir = require('require-dir');
 var parsersClasses = requireDir('./parsers');
 
-// var dataMgr = require('./dataMgr');
 var emailMgr = require('./emailMgr');
 
 
@@ -72,7 +71,11 @@ PageDataMgr.prototype.create = function(url,startingData,callback) {
 PageDataMgr.prototype.finish = function(pageData,callback) {
 	pageData.processDeps(function () {
 		pageData.parser.dataMgr.updateDatabase(pageData);
-		emailMgr.sendEmails(pageData,pageData.parser.getEmailData(pageData));
+		
+		if (pageData.parser.dataMgr.peopleCanRegister) {
+			emailMgr.sendEmails(pageData,pageData.parser.getEmailData(pageData));
+		};
+
 		callback(null,pageData);
 	}.bind(this));
 };

@@ -2,6 +2,8 @@
 
 
 
+make sure the dbs that should be updating are
+
 parse terms and subj
 
 
@@ -9,6 +11,7 @@ add termId, subj, homepage to classes
 add termId, subj, homepage, course#, to sections
 
 
+add optional terms for parsers, and if dont have 50%, complain
 
 
 birmham limits results to 350, fix this

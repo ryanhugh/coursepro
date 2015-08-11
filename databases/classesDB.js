@@ -5,6 +5,7 @@ var BaseDB = require('./baseDB').BaseDB;
 function ClassesDB () {
 	this.filename = 'classes.db'
 	this.shouldAutoUpdate = true;
+	this.peopleCanRegister = true;
 	BaseDB.prototype.constructor.apply(this,arguments);
 }
 
@@ -12,17 +13,6 @@ function ClassesDB () {
 //prototype constructor
 ClassesDB.prototype = Object.create(BaseDB.prototype);
 ClassesDB.prototype.constructor = ClassesDB;
-
-
-
-
-
-
-
-
-
-
-
 
 
 

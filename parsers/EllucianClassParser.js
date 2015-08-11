@@ -31,7 +31,7 @@ EllucianClassParser.prototype = Object.create(EllucianBaseParser.prototype);
 EllucianClassParser.prototype.constructor = EllucianClassParser;
 
 
-EllucianClassParser.prototype.supportsPage = function (url,html) {
+EllucianClassParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckctlg.p_disp_listcrse')>-1;
 }
 

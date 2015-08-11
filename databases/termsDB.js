@@ -2,8 +2,8 @@
 var BaseDB = require('./baseDB').BaseDB;
 
 
-function LinksDB () {
-	this.filename = 'links.db'
+function TermsDB () {
+	this.filename = 'terms.db'
 	this.shouldAutoUpdate = false;
 	this.peopleCanRegister = false;
 	BaseDB.prototype.constructor.apply(this,arguments);
@@ -11,13 +11,14 @@ function LinksDB () {
 
 
 //prototype constructor
-LinksDB.prototype = Object.create(BaseDB.prototype);
-LinksDB.prototype.constructor = LinksDB;
+TermsDB.prototype = Object.create(BaseDB.prototype);
+TermsDB.prototype.constructor = TermsDB;
 
 
 
-LinksDB.prototype.LinksDB= LinksDB;
-module.exports = new LinksDB();
+
+TermsDB.prototype.TermsDB= TermsDB;
+module.exports = new TermsDB();
 
 
 if (require.main === module) {

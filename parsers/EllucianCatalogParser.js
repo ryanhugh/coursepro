@@ -14,7 +14,7 @@ function EllucianCatalogParser () {
 
 
 	this.dataMgr = linksDB;
-	this.requiredAttrs = [];
+	
 }
 
 

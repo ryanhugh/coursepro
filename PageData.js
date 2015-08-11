@@ -2,8 +2,6 @@
 var async = require('async');
 var URI = require('URIjs');
 
-// console.log(pageDataMgr.__proto__)
-// process.exit();
 
 //this is called in 3 places
 //server.js
@@ -202,8 +200,6 @@ PageData.prototype.addDep = function(depData) {
 	if (!this.dbData.deps) {
 		this.dbData.deps = []
 	};
-
-	// console.log('added dep ',depData)
 
 	if (this.dbData.deps.indexOf(depData.url)<0) {	
 		this.dbData.deps.push(depData.url);

@@ -8,6 +8,7 @@ var URI = require('URIjs');
 var pointer = require('./pointer');
 
 var ellucianCatalogParser = require('./parsers/ellucianCatalogParser');
+var ellucianTermsParser = require('./parsers/ellucianTermsParser');
 require('./pageDataMgr.js')
 
 var dataMgr = require('./dataMgr');
@@ -55,13 +56,6 @@ Spider.prototype.request = function (url,payload,callback) {
 		headers:headers,
 		requiredInBody:"Ellucian"},callback);
 }
-
-
-
-Spider.prototype.minYear = function(){
-	return new Date().getFullYear();
-}
-
 
 
 //add inputs if they have a value = name:value
@@ -205,17 +199,11 @@ Spider.prototype.parseTermsPage = function (startingURL,dom) {
 			console.log('warning: empty entry.text on form?',entry,startingURL);
 			return;
 		}
-
-		var year = entry.text.match(/\d{4}/);
-		if (!year) {
-			console.log('warning: could not find year for ',entry.text);
+		
+		if (!ellucianTermsParser.isValidTerm(entry.value,entry.text)) {
 			return;
 		}
 
-		//skip past years
-		if (parseInt(year)<this.minYear()) {
-			return;
-		}
 
 		var fullRequestData = otherEntries.slice(0);
 
