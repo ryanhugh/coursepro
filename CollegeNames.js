@@ -237,11 +237,11 @@ CollegeNames.prototype.getTitle = function(url,callback) {
 				}
 
 
-	  		//no error, good to go
-	  		this.addToDB(homepage,title);
-	  		return callback(null,title);
-	  	}.bind(this))
-
+		  		//no error, good to go
+		  		this.addToDB(homepage,title);
+		  		return callback(null,title);
+		  	}.bind(this))
+ 
 
 			return;
 		}
@@ -287,33 +287,35 @@ CollegeNames.prototype.getAll = function(callback) {
 
 CollegeNames.prototype.tests = function() {
 
-	this.hitPage('neu.edu',function (err,title) {
-		console.log(err,title)
+
+	this.getAll(function (stuff) {
+		console.log(stuff)
 	})
-
 	return;
+	// this.hitPage('neu.edu',function (err,title) {
+	// 	console.log(err,title)
+	// })
+
+	// return;
 
 
+	//this reads from the file and gets all the names
 	fs.readFile('./tests/differentCollegeUrls.json','utf8',function (err,body) {
 
-		// this.
+		JSON.parse(body).forEach(function(url){
+
+			this.getTitle(url,function (err,title) {
+				if  (err) {
+					console.log('TEST: ',err,title,url);
+				}
+				else {
+					console.log('GOOD:',title,url);
+				}
 
 
 
-		// JSON.parse(body).forEach(function(url){
-
-		// 	this.getTitle(url,function (err,title) {
-		// 		if  (err) {
-		// 			console.log('TEST: ',err,title,url);
-		// 		}
-		// 		else {
-		// 			console.log('GOOD:',title,url);
-		// 		}
-
-
-
-		// 	}.bind(this));
-		// }.bind(this));
+			}.bind(this));
+		}.bind(this));
 	}.bind(this));
 
 

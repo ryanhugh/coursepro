@@ -4,6 +4,7 @@ var domutils = require('domutils');
 var he = require('he');
 var _ = require('lodash');
 
+var linksDB = require('../databases/linksDB')
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 var ellucianClassParser = require('./ellucianClassParser');
 
@@ -11,6 +12,8 @@ var ellucianClassParser = require('./ellucianClassParser');
 function EllucianCatalogParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
+
+	this.dataMgr = linksDB;
 	this.requiredAttrs = [];
 }
 

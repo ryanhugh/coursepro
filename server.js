@@ -6,7 +6,7 @@ var request = require('request');
 var fs = require('fs');
 
 var blacklistedEmails = require('./blacklistedEmails.json')
-
+var collegeNames = require('./collegeNames');
 
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
@@ -85,7 +85,12 @@ app.post('/urlDetails', function(req, res) {
 });
 
 
+app.get('/listColleges',function (req,res) {
+	 collegeNames.getAll(function (names) {
+		res.send(JSON.stringify(names));	
+	});
 
+})
 
 
 

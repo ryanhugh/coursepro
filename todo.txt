@@ -1,25 +1,17 @@
 !!!!
 
 
-https://telaris.wlu.ca/ssb_prod/bwckctlg.p_disp_listcrse?term_in=201601&subj_in=MU&crse_in=296&schd_in=%25
-baseparser.parsetable the body row is 1 less than the main row
+
+parse terms and subj
 
 
- --- THIS IS NOT A SECTION, not a bug
-https://telaris.wlu.ca/ssb_prod/bwckctlg.p_disp_listcrse?term_in=201505&subj_in=BE&crse_in=100W&schd_in=%25
-class table is outside of details box, but it hit category view and its a differnt ver num at the bottom???
-- should i parse this??, yes, there are ppl signed up here https://telaris.wlu.ca/ssb_prod/bwckschd.p_disp_detail_sched?term_in=201601&crn_in=2900
+add termId, subj, homepage to classes
+add termId, subj, homepage, course#, to sections
+
 
 
 
 birmham limits results to 350, fix this
-
-store class name in class, not section
-
-
-
-almost working, need to parse things that arnt linked
-https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_detail_sched?term_in=201516&crn_in=10483
 
 
 
@@ -115,4 +107,24 @@ log responce code when it fails -- done, test
 
 
 move prerequs to the class and make catalog on depend on all % and have prerequs be classes --done, test
+
+
+
+
+
+https://telaris.wlu.ca/ssb_prod/bwckctlg.p_disp_listcrse?term_in=201601&subj_in=MU&crse_in=296&schd_in=%25
+baseparser.parsetable the body row is 1 less than the main row
+
+
+ --- THIS IS NOT A SECTION, not a bug
+https://telaris.wlu.ca/ssb_prod/bwckctlg.p_disp_listcrse?term_in=201505&subj_in=BE&crse_in=100W&schd_in=%25
+class table is outside of details box, but it hit category view and its a differnt ver num at the bottom???
+- should i parse this??, yes, there are ppl signed up here https://telaris.wlu.ca/ssb_prod/bwckschd.p_disp_detail_sched?term_in=201601&crn_in=2900
+
+
+store class name in class, not section
+
+
+almost working, need to parse things that arnt linked
+https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_detail_sched?term_in=201516&crn_in=10483
 

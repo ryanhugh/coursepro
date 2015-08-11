@@ -6,6 +6,7 @@ var he = require('he');
 var changeCase = require('change-case');
 var _ = require('lodash');
 
+var classDB = require('../databases/classesDB.js')
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 var ellucianSectionParser = require('./ellucianSectionParser');
 
@@ -18,6 +19,7 @@ function EllucianClassParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
 	this.requiredAttrs = [];
+	this.dataMgr = classDB;
 
 	//name and deps are optional, but if there is no deps there is nowhere to parse name...
 

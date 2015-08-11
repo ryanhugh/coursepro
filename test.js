@@ -243,6 +243,11 @@ console.log()
 
 
 
+
+fs.readFile('classes.db.sample.json','utf8',function (err,body) {
+	
+	console.log('hi',JSON.parse(body).length)
+})
 // fs.readFile('tests/EllucianCatalogParser/1.html','utf8',function (err,body) {
 // 	console.log(err)
 

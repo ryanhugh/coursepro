@@ -6,6 +6,7 @@ var URI = require('URIjs');
 var changeCase = require('change-case');
 var _ = require('lodash');
 
+var sectionDB = require('../databases/sectionsDB');
 var pointer = require('../pointer');
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
@@ -15,6 +16,8 @@ var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
 function EllucianSectionParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
+
+	this.dataMgr = sectionDB;
 
 	this.requiredAttrs = [
 	"seatsCapacity",
