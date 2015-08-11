@@ -94,6 +94,13 @@ Pointer.prototype.doAnyStringsInArray = function(array,body) {
 
 
 
+var throtteling = {
+	'genisys.regent.edu':50,
+	'prod-ssb-01.dccc.edu':100
+}
+
+
+
 //try count is internal use only
 Pointer.prototype.request = function(url,options,callback,tryCount) {
 	if (!options) {
@@ -104,11 +111,14 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 		tryCount=0;
 	}
 
+	var currentHostname = new URI(url).hostname();
 
-	if (_(['genisys.regent.edu']).includes(new URI(url).hostname()) && this.openRequests>50) {
-		console.log('warning postponing request to ',this.openRequests,url);
-		return this.tryAgain(url,options,callback,tryCount-1);
-	};
+	for (var siteHostName in throtteling) {
+		if (siteHostName==currentHostname && this.openRequests>throtteling[siteHostName]) {
+			console.log('warning postponing request to ',this.openRequests,url);
+			return this.tryAgain(url,options,callback,tryCount-1);
+		}
+	}
 
 
 	this.fireRequest(url,options,function (error,response,body) {
@@ -117,8 +127,9 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 		if (error) {
 			//try again in a second or so
 
-			if (tryCount<this.maxRetryCount && _(['ECONNRESET','ETIMEDOUT']).includes(error.code)) {
-				console.log('warning, got a ECONNRESET, but trying again',tryCount,url,this.openRequests)
+			//most sites just give a ECONNRESET or ETIMEDOUT, but dccc also gives a EPROTO and ECONNREFUSED...
+			if (tryCount<this.maxRetryCount) {
+				console.log('warning, got a ',error.code,' but trying again',tryCount,this.openRequests,url)
 				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {
