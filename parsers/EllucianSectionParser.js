@@ -39,7 +39,9 @@ EllucianSectionParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckschd.p_disp_detail_sched')>-1;
 }
 
-
+//follow the order of operations (and before or)
+//and group a (something and something or something) to ((something and something) or something)
+//unnecesary groupings are undone by simplifyRequirements
 EllucianSectionParser.prototype.groupRequirementsByAnd = function(data) {
 	var retVal = [];
 
@@ -68,11 +70,9 @@ EllucianSectionParser.prototype.groupRequirementsByAnd = function(data) {
 
 			retVal.push([beforeAnd,'and',afterAnd]);
 			i+=2;
-			// console.log('found!')
 			continue;
 		}
 		else {
-			// console.log(data[i+1])
 			retVal.push(data[i]);
 		}
 	}
@@ -82,14 +82,14 @@ EllucianSectionParser.prototype.groupRequirementsByAnd = function(data) {
 
 
 //this is given the output of formatRequirements, where data.type and data.values exist
+// if there is an or embedded in another or, merge them (and and's too)
+//and if there is a subvalue of only 1 len, merge that too
 EllucianSectionParser.prototype.simplifyRequirements = function(data) {
 
 	var retVal = {
 		type:data.type,
 		values:[]
 	}
-
-
 
 	data.values.forEach(function (subData) {
 		if ((typeof subData) == 'string') {
@@ -117,29 +117,34 @@ EllucianSectionParser.prototype.simplifyRequirements = function(data) {
 	return retVal;
 };
 
+
+
+//converts the ['','and',''] to {type:and,values:'',''}
+// input:  [["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]
+// output: {"type":"or","values":[{"type":"or","values":["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]},{"type":"or","values":["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]}]}
 EllucianSectionParser.prototype.formatRequirements = function(data) {
 	var retVal = {
 		type:'and',
 		values:[]
 	}
 
-	data.forEach(function (val) {
+	data.forEach(function (val,index) {
 		if (Array.isArray(val)) {
 
 			var subValues = this.formatRequirements(val);
 			
+			//found another array, convert sub array and add it to retval
 			if (!subValues) {
 				console.log('warning could not parse sub values',data,val);
 			}
 			else {
-
-				
-				//found another array, convert sub array and add it to retval
 				retVal.values.push(subValues);
 			}
-
 		}
 		else if (val=='or' || val=='and'){
+			if (index==0) {
+				console.log('warning, divider found at index 0??',data)
+			};
 			retVal.type=val;
 		}
 		else {
@@ -154,64 +159,51 @@ EllucianSectionParser.prototype.formatRequirements = function(data) {
 	return retVal;
 };
 
-// EllucianSectionParser.prototype.convertParenToBracket = function(text,onlyMax) {
-// 	var openCount = (text.match(/\(/g) || []).length;
-// 	var closeCount = (text.match(/\)/g) || []).length;
 
-// 	if (openCount>closeCount && (!onlyMax || onlyMax=='(')) {
-// 		return '['
-// 	}
-// 	else if (openCount<closeCount && (!onlyMax || onlyMax==')')) {
-// 		return ']'
-// 	}
-// 	else {
-// 		return ''
-// 	}
-// };
-
-
-
-// '(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'
-// [["https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",[" Eng - Place (Test) 03","and","Nelson Denny Total 081","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]
-EllucianSectionParser.prototype.convertStringToArray2 = function(text) {
+// input: '(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'
+// output: [["https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",[" Eng - Place (Test) 03","and","Nelson Denny Total 081","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]
+EllucianSectionParser.prototype.convertStringToJSON = function(text) {
 	var elements = []	
 
+	//split the string by dividers " and " and " or "
 	text.split(' or ').forEach(function (splitByOr,index,arr) {
 		splitByOr.split(' and ').forEach(function (splitByAnd,index,arr) {
 			elements.push(splitByAnd);
 			if (index!=arr.length-1) {
 				elements.push('and')
 			};
-		})
+		}.bind(this))
 
 		if (index!=arr.length-1) {
 			elements.push('or')
 		};
-	})
+	}.bind(this))
 
 
 	var retVal = [];
 
-
+	//convert the elements to a json parsable string
+	//each element has quotes put around it, and comma after it
 	elements.forEach(function (element) {
+		//just put quotes around the dividers
 		if (element=='and' || element=='or') {
 			retVal.push('"'+element+'",');
 			return
 		};
 		element = element.trim()
 
+		//all of the grouping parens will be at end or start of element string
 		if (_(element).startsWith('(')) {
 			element = element.slice(1)
 			retVal.push('[')
 		};
 
+		//ending bracket needs to be checked here, but inserted after url/text parsed
 		var insertEndBracket = false;
-
 		if (_(element).endsWith(')')) {
 			element = element.slice(0,element.length-1)
 			insertEndBracket = true;
 		};
-
 
 
 		//match the url if it is there
@@ -229,80 +221,13 @@ EllucianSectionParser.prototype.convertStringToArray2 = function(text) {
 		};
 
 
-	})
+	}.bind(this))
 
+	//clean up invalid syntax
 	var text = '['+retVal.join("")+']'
 	text = text.replace(/,\]/gi,']').replace(/\[,/gi,'[').replace(/",+"/gi,'","').replace(/\n|\r/gi,'')
 
 	return text;
-
-
-};
-
-
-
-
-
-EllucianSectionParser.prototype.convertStringToArray = function(text) {
-	var retVal = '';
-
-	var parsingFillerString = true
-	var fillerString = ''
-
-	var isInLink = false;
-
-	for (var i = 0; i < text.length; i++) {
-		if (text[i]=='(') {
-			if (parsingFillerString && fillerString.trim()!='') {
-				retVal+='"'+fillerString.trim()+'",'
-			};
-			parsingFillerString = true
-			fillerString = ''
-			retVal+='['
-		}
-		else if (text[i]==')') {
-			if (parsingFillerString && fillerString.trim()!='') {
-				retVal+='"'+fillerString.trim()+'",'
-			};
-			fillerString = ''
-			retVal+=']'
-		}
-		else if (text.slice(i,i+5)==' and '){
-			if (parsingFillerString && fillerString.trim()!='') {
-				retVal+='"'+fillerString.trim()+'",'
-			};
-			parsingFillerString = true
-			fillerString = ''
-			retVal+='"and",'
-			i+=4; // i is increased in the for loop too
-		}
-		else if (text.slice(i,i+4)==' or '){
-			if (parsingFillerString && fillerString.trim()!='') {
-				retVal+='"'+fillerString.trim()+'",'
-			};
-			parsingFillerString = true
-			fillerString = ''
-			retVal+='"or",'
-			i+=3;
-		}
-		else if (text[i]=='"') {
-			retVal+=text[i];
-			if (isInLink) {
-				retVal+=','
-			};
-			parsingFillerString = false
-			isInLink=!isInLink;
-		}
-		else if (isInLink) {
-			retVal+=text[i];
-		}
-		else if (parsingFillerString) {
-			fillerString+=text[i];
-		}
-	};
-
-	return '['+retVal.replace(/]"/gi,'],"')+']';
-
 };
 
 
@@ -379,19 +304,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 		console.log('warning, found elements, but no links or and or',elements);
 		return;
 	};
-	console.log(text);
-
-	text=this.convertStringToArray2(text);
-
-
-	console.log(text);
-	// return;
-
-
-	// text = '[' + text + ']';
-
-
-	// console.log(elements,text)
+	text=this.convertStringToJSON(text);
 
 	//parse the new json
 	try{
@@ -438,10 +351,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 
 
 
-	// console.log('input;',text);
 	text = this.groupRequirementsByAnd(text)
-	// console.log('out;',text);
-	// console.log(text,this.groupRequirementsByAnd(text))
 
 	text=this.formatRequirements(text)
 	if (!text) {
@@ -467,7 +377,6 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 			console.log('ERROR: invalid table in section parser',tableData,pageData.dbData.url);
 			return;
 		}
-		// console.log(tableData)
 
 		pageData.setData('seatsCapacity',parseInt(tableData.capacity[0]));
 		pageData.setData('seatsActual',parseInt(tableData.actual[0]));
@@ -488,6 +397,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 
 		//third row is cross list seats, rarely listed and not doing anyting with that now
 		// https://ssb.ccsu.edu/pls/ssb_cPROD/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=12532
+
 
 
 
@@ -605,8 +515,7 @@ EllucianSectionParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianSectionParser.prototype.tests = function() {
-	// var a =this.convertStringToArray2('(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)')
-	// console.log(a)
+	// var a =this.convertStringToJSON('(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)')
 	// return;
 
 	// console.log(this.convertParenToBracket('( Eng - Place Test 03 and  Accuplacer (Reading) 071 and Collegiate Credit level'))
@@ -620,8 +529,10 @@ EllucianSectionParser.prototype.tests = function() {
 
 
 
-	// var a= this.formatRequirements([ ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]);
+	var a= this.formatRequirements([ ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]);
 
+	console.log(JSON.stringify(a))
+	return;
 
 	// console.log(this.simplifyRequirements({
 	// 	type:'or',
