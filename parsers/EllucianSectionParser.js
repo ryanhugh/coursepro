@@ -17,7 +17,6 @@ function EllucianSectionParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
 	this.requiredAttrs = [
-	"name",
 	"seatsCapacity",
 	"seatsActual",
 	"seatsRemaining",
@@ -376,7 +375,6 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 			console.log('ERROR: invalid table in section parser',tableData,pageData.dbData.url);
 			return;
 		}
-		// console.log('found table')
 
 		pageData.setData('seatsCapacity',parseInt(tableData.capacity[0]));
 		pageData.setData('seatsActual',parseInt(tableData.actual[0]));
@@ -454,24 +452,6 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 		}
 
 		console.log('warning, nothing matchied credits',pageData.dbData.url,containsCreditsText);
-	}
-	else if (element.name =='th' && element.attribs.class=='ddlabel' && element.attribs.scope=="row"){
-		if (pageData.parsingData.didFindName) {
-			return;
-		};
-		pageData.parsingData.didFindName = true;
-
-		var value = domutils.getText(element);
-
-		var match = value.match(/(.+?)\s-\s/i);
-		if (!match || match.length<2) {
-			console.log('could not find title!',match,element,value);
-			return;
-		}
-
-
-
-		pageData.setData('name',changeCase.titleCase(match[1]));
 	}
 };
 

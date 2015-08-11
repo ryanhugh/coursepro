@@ -97,7 +97,7 @@ Pointer.prototype.doAnyStringsInArray = function(array,body) {
 var throtteling = {
 	'genisys.regent.edu':50,
 	'prod-ssb-01.dccc.edu':100,
-	'telaris.wlu.ca':700
+	'telaris.wlu.ca':400
 }
 
 
@@ -116,7 +116,7 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 
 	for (var siteHostName in throtteling) {
 		if (siteHostName==currentHostname && this.openRequests>throtteling[siteHostName]) {
-			console.log('warning postponing request to ',this.openRequests,url);
+			// console.log('warning postponing request to ',this.openRequests,url);
 			return this.tryAgain(url,options,callback,tryCount-1);
 		}
 	}
@@ -130,7 +130,7 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 
 			//most sites just give a ECONNRESET or ETIMEDOUT, but dccc also gives a EPROTO and ECONNREFUSED...
 			if (tryCount<this.maxRetryCount) {
-				console.log('warning, got a ',error.code,' but trying again',tryCount,this.openRequests,url)
+				console.log('info, got a ',error.code,' but trying again',tryCount,this.openRequests,url)
 				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {
@@ -144,7 +144,7 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 		if (options.requiredInBody && !this.doAnyStringsInArray(options.requiredInBody,body)) {
 			// try again in a couple seconds
 			if (tryCount<this.maxRetryCount) {
-				console.log('pointer warning, body did not contain specified text, trying again',tryCount,body.length,response.statusCode,this.openRequests,url);
+				console.log('pointer info, body did not contain specified text, trying again',tryCount,body.length,response.statusCode,this.openRequests,url);
 				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {

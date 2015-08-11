@@ -365,7 +365,7 @@ Spider.prototype.go = function(url) {
 
 					var parsedResultsPage = this.parseResultsPage(startingURL,dom);
 					
-					console.log('DONE!',parsedResultsPage)
+					// console.log('DONE!',parsedResultsPage)
 
 					parsedResultsPage.forEach(function (catalogURL) {
 						pageDataMgr.create(catalogURL);

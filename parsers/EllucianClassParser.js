@@ -17,7 +17,10 @@ var timeZero = moment('0','h');
 function EllucianClassParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
-	this.requiredAttrs = ['deps'];
+	this.requiredAttrs = [];
+
+	//name and deps are optional, but if there is no deps there is nowhere to parse name...
+
 }
 
 
@@ -105,6 +108,21 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		if (ellucianSectionParser.supportsPage(urlParsed.toString())){
 			depData.url = urlParsed.toString();
 		}
+
+		//also parse the name from the link
+		var value = domutils.getText(element);
+
+		var match = value.match(/(.+?)\s-\s/i);
+		if (!match || match.length<2) {
+			console.log('could not find title!',match,element,value);
+			return;
+		}
+
+
+		pageData.setData('name',changeCase.titleCase(match[1]));
+
+
+
 	}.bind(this),element.children);
 
 	if (!depData.url) {
@@ -180,7 +198,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
 
 			if (prof.length<3) {
-				console.log('ERROR: empty/short prof name??',prof,tableData)
+				console.log('warning: empty/short prof name??',prof,tableData)
 			}
 			if (prof.toLowerCase()=='tba') {
 				prof = "TBA";
