@@ -4,9 +4,11 @@ var bodyParser = require('body-parser');
 var pageDataMgr = require('./pageDataMgr');
 var request = require('request');
 var fs = require('fs');
+var URI = require('URIjs');
 
 var blacklistedEmails = require('./blacklistedEmails.json')
 var collegeNames = require('./collegeNames');
+var termsDB = require('./databases/termsDB');
 
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
@@ -89,8 +91,19 @@ app.get('/listColleges',function (req,res) {
 	 collegeNames.getAll(function (names) {
 		res.send(JSON.stringify(names));	
 	});
-
 })
+
+
+
+app.get('/listTerms/*',function (req,res) {
+
+	var url = new URI(req.url).segment();
+
+	termsDB.find(url[1],function (err,terms) {
+		res.send(JSON.stringify(terms));
+	})
+})
+
 
 
 

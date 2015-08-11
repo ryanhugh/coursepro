@@ -77,6 +77,38 @@ Pointer.prototype.fireRequest = function (url,options,callback) {
 }
 
 
+
+
+
+
+
+Pointer.prototype.getBaseHostname = function(url) {
+	var homepage = new URI(url).hostname();
+	if (!homepage || homepage=='') {
+		console.log('ERROR: could not find homepage of',url);
+		return;
+	}
+
+	var match =  homepage.match(/[^.]+\.[^.]+$/i);
+	if (!match) {
+		console.log('ERROR: homepage match failed...',homepage);
+		return;
+	}
+	return match[0];
+}
+
+
+
+
+
+
+
+
+
+
+
+//fire the connection and try again functions
+
 Pointer.prototype.tryAgain = function(url,options,callback,tryCount) {
 	setTimeout(function (){
 		this.request(url,options,callback,tryCount+1);

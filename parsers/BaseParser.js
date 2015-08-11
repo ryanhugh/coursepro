@@ -64,7 +64,6 @@ BaseParser.prototype.parseDOM = function(pageData,dom){
 
 	this.onBeginParsing(pageData);
 
-
 	domutils.findAll(this.parseElement.bind(this,pageData),dom);
 
 	this.onEndParsing(pageData);
@@ -73,7 +72,10 @@ BaseParser.prototype.parseDOM = function(pageData,dom){
 	if (!this.isValidData(pageData)) {
 		console.log("ERROR: though url was good, but missed data", pageData);
 		return null;
-	};
+	}
+
+	pageData.setData('host',pointer.getBaseHostname(pageData.dbData.url));
+
 }
 
 

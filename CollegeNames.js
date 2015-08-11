@@ -18,21 +18,6 @@ function CollegeNames () {
 }
 
 
-CollegeNames.prototype.gethomepage = function(url) {
-	var homepage = new URI(url).hostname();
-	if (!homepage || homepage=='') {
-		console.log('ERROR: could not find homepage of',url);
-		return;
-	}
-
-	var match =  homepage.match(/[^.]+\.[^.]+$/i);
-	if (!match) {
-		console.log('ERROR: homepage match failed...',homepage);
-		return;
-	}
-	return match[0];
-}
-
 
 
 CollegeNames.prototype.standardizeNames = function(startStrip,endStrip,title) {
@@ -197,8 +182,7 @@ CollegeNames.prototype.hitWhois = function (homepage,callback,tryCount) {
 
 
 //no callback, could easily add one
-CollegeNames.prototype.addToDB= function (homepage,title) {
-
+CollegeNames.prototype.addToDB= function (homepage,title,url) {
 
   //add to db if not already in db
   this.db.find({homepage:homepage},function (err,docs) {
@@ -210,7 +194,8 @@ CollegeNames.prototype.addToDB= function (homepage,title) {
 
   	this.db.insert({
   		homepage:homepage,
-  		title:title
+  		title:title,
+  		url:url
   	});
 
   }.bind(this));
@@ -221,7 +206,7 @@ CollegeNames.prototype.addToDB= function (homepage,title) {
 CollegeNames.prototype.getTitle = function(url,callback) {
 
 
-	var homepage= this.gethomepage(url);
+	var homepage= pointer.getBaseHostname(url);
 	if(!homepage) {
 		return callback(null);
 	}
@@ -238,7 +223,7 @@ CollegeNames.prototype.getTitle = function(url,callback) {
 
 
 		  		//no error, good to go
-		  		this.addToDB(homepage,title);
+		  		this.addToDB(homepage,title,url);
 		  		return callback(null,title);
 		  	}.bind(this))
  
