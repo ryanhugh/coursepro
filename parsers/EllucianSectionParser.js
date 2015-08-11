@@ -23,10 +23,10 @@ function EllucianSectionParser () {
 	"seatsRemaining",
 	"waitCapacity",
 	"waitActual",
-	"waitRemaining",
-	"minCredits",
-	"maxCredits"
+	"waitRemaining"
 	];
+
+	//minCredits and maxCredits are optional
 }
 
 //prototype constructor
@@ -171,7 +171,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 	for (; i < classDetails.length; i++) {
 		if (classDetails[i].type=='tag'){
 			if (classDetails[i].name=='br') {
-
+				continue;
 			}
 			else if (classDetails[i].name=='a'){
 
@@ -399,7 +399,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 			return;
 		}
 
-		console.log('ERROR, nothing matchied credits',containsCreditsText,pageData.dbData.url);
+		console.log('warning, nothing matchied credits',pageData.dbData.url,containsCreditsText);
 	}
 	else if (element.name =='th' && element.attribs.class=='ddlabel' && element.attribs.scope=="row"){
 		if (pageData.parsingData.didFindName) {

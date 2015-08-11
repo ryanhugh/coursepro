@@ -3,6 +3,13 @@
 
 birmham limits results to 350, fix this
 
+
+
+almost working, need to parse things that arnt linked
+https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_detail_sched?term_in=201516&crn_in=10483
+
+
+
 pretty case on where
 https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_detail_sched?term_in=201514&crn_in=10585
 
