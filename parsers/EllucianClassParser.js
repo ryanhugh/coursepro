@@ -123,7 +123,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	//find the table in this section
 	var tables = domutils.getElementsByTagName('table',classDetails);
 	if (tables.length===0) {
-		console.log('warning, 0 tables found',pageData.dbData.url);
+		console.log('warning, 0 meetings tables found',pageData.dbData.url);
 		pageData.addDep(depData);
 		return;
 	}
