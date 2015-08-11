@@ -4,8 +4,8 @@ var domutils = require('domutils');
 var he = require('he');
 var _ = require('lodash');
 
-var EllucianBaseParser = require('./EllucianBaseParser').EllucianBaseParser;
-var ellucianClassParser = require('./EllucianClassParser');
+var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
+var ellucianClassParser = require('./ellucianClassParser');
 
 
 function EllucianCatalogParser () {

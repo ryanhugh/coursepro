@@ -1,7 +1,6 @@
 'use strict';
 var URI = require('URIjs')
-var BaseParser = require('./BaseParser').BaseParser;
-// var pointer = require('../pointer');
+var BaseParser = require('./baseParser').BaseParser;
 
 
 function EllucianBaseParser () {

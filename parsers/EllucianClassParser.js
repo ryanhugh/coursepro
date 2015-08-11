@@ -6,8 +6,8 @@ var he = require('he');
 var changeCase = require('change-case');
 var _ = require('lodash');
 
-var EllucianBaseParser = require('./EllucianBaseParser').EllucianBaseParser;
-var ellucianSectionParser = require('./EllucianSectionParser');
+var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
+var ellucianSectionParser = require('./ellucianSectionParser');
 
 var timeZero = moment('0','h');
 

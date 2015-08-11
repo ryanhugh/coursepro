@@ -7,8 +7,8 @@ var PageData = require('./PageData');
 var requireDir = require('require-dir');
 var parsersClasses = requireDir('./parsers');
 
-var dataMgr = require('./DataMgr');
-var emailMgr = require('./EmailMgr');
+var dataMgr = require('./dataMgr');
+var emailMgr = require('./emailMgr');
 
 
 

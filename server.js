@@ -1,7 +1,7 @@
 'use strict';
 var express = require('express');
 var bodyParser = require('body-parser');
-var pageDataMgr = require('./PageDataMgr');
+var pageDataMgr = require('./pageDataMgr');
 var request = require('request');
 var fs = require('fs');
 

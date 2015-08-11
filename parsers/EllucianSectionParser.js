@@ -7,7 +7,7 @@ var changeCase = require('change-case');
 var _ = require('lodash');
 
 var pointer = require('../pointer');
-var EllucianBaseParser = require('./EllucianBaseParser').EllucianBaseParser;
+var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
 //700+ college sites use this poor interface for their registration
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible

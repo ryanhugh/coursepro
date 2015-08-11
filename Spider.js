@@ -5,12 +5,12 @@ var domutils = require('domutils');
 var fs = require('fs');
 var he = require('he');
 var URI = require('URIjs');
-var pointer = require('./Pointer');
+var pointer = require('./pointer');
 
-var ellucianCatalogParser = require('./parsers/EllucianCatalogParser');
-require('./PageDataMgr.js')
+var ellucianCatalogParser = require('./parsers/ellucianCatalogParser');
+require('./pageDataMgr.js')
 
-var dataMgr = require('./DataMgr');
+var dataMgr = require('./dataMgr');
 dataMgr.stopUpdates();
 
 

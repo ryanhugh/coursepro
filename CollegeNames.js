@@ -328,6 +328,13 @@ CollegeNames.prototype.tests = function() {
 };
 
 
+
+
+
+CollegeNames.prototype.CollegeNames=CollegeNames;
+module.exports = new CollegeNames()
+
+
 if (require.main === module) {
-	new CollegeNames().tests();
+	module.exports.tests();
 }
