@@ -68,7 +68,7 @@ EllucianSectionParser.prototype.groupRequirementsByAnd = function(data) {
 
 			retVal.push([beforeAnd,'and',afterAnd]);
 			i+=2;
-			console.log('found!')
+			// console.log('found!')
 			continue;
 		}
 		else {
@@ -154,6 +154,157 @@ EllucianSectionParser.prototype.formatRequirements = function(data) {
 	return retVal;
 };
 
+// EllucianSectionParser.prototype.convertParenToBracket = function(text,onlyMax) {
+// 	var openCount = (text.match(/\(/g) || []).length;
+// 	var closeCount = (text.match(/\)/g) || []).length;
+
+// 	if (openCount>closeCount && (!onlyMax || onlyMax=='(')) {
+// 		return '['
+// 	}
+// 	else if (openCount<closeCount && (!onlyMax || onlyMax==')')) {
+// 		return ']'
+// 	}
+// 	else {
+// 		return ''
+// 	}
+// };
+
+
+
+// '(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'
+// [["https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",[" Eng - Place (Test) 03","and","Nelson Denny Total 081","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]
+EllucianSectionParser.prototype.convertStringToArray2 = function(text) {
+	var elements = []	
+
+	text.split(' or ').forEach(function (splitByOr,index,arr) {
+		splitByOr.split(' and ').forEach(function (splitByAnd,index,arr) {
+			elements.push(splitByAnd);
+			if (index!=arr.length-1) {
+				elements.push('and')
+			};
+		})
+
+		if (index!=arr.length-1) {
+			elements.push('or')
+		};
+	})
+
+
+	var retVal = [];
+
+
+	elements.forEach(function (element) {
+		if (element=='and' || element=='or') {
+			retVal.push('"'+element+'",');
+			return
+		};
+		element = element.trim()
+
+		if (_(element).startsWith('(')) {
+			element = element.slice(1)
+			retVal.push('[')
+		};
+
+		var insertEndBracket = false;
+
+		if (_(element).endsWith(')')) {
+			element = element.slice(0,element.length-1)
+			insertEndBracket = true;
+		};
+
+
+
+		//match the url if it is there
+		var match = element.match(/\@\#\$"(.*?)"/i);
+		if (_(element).includes('@#$') && match) {
+			retVal.push('"'+match[1]+'",')
+		}
+		//just add all of the text
+		else {
+			retVal.push('"'+element.trim()+'",')
+		}
+
+		if (insertEndBracket) {
+			retVal.push('],')
+		};
+
+
+	})
+
+	var text = '['+retVal.join("")+']'
+	text = text.replace(/,\]/gi,']').replace(/\[,/gi,'[').replace(/",+"/gi,'","').replace(/\n|\r/gi,'')
+
+	return text;
+
+
+};
+
+
+
+
+
+EllucianSectionParser.prototype.convertStringToArray = function(text) {
+	var retVal = '';
+
+	var parsingFillerString = true
+	var fillerString = ''
+
+	var isInLink = false;
+
+	for (var i = 0; i < text.length; i++) {
+		if (text[i]=='(') {
+			if (parsingFillerString && fillerString.trim()!='') {
+				retVal+='"'+fillerString.trim()+'",'
+			};
+			parsingFillerString = true
+			fillerString = ''
+			retVal+='['
+		}
+		else if (text[i]==')') {
+			if (parsingFillerString && fillerString.trim()!='') {
+				retVal+='"'+fillerString.trim()+'",'
+			};
+			fillerString = ''
+			retVal+=']'
+		}
+		else if (text.slice(i,i+5)==' and '){
+			if (parsingFillerString && fillerString.trim()!='') {
+				retVal+='"'+fillerString.trim()+'",'
+			};
+			parsingFillerString = true
+			fillerString = ''
+			retVal+='"and",'
+			i+=4; // i is increased in the for loop too
+		}
+		else if (text.slice(i,i+4)==' or '){
+			if (parsingFillerString && fillerString.trim()!='') {
+				retVal+='"'+fillerString.trim()+'",'
+			};
+			parsingFillerString = true
+			fillerString = ''
+			retVal+='"or",'
+			i+=3;
+		}
+		else if (text[i]=='"') {
+			retVal+=text[i];
+			if (isInLink) {
+				retVal+=','
+			};
+			parsingFillerString = false
+			isInLink=!isInLink;
+		}
+		else if (isInLink) {
+			retVal+=text[i];
+		}
+		else if (parsingFillerString) {
+			fillerString+=text[i];
+		}
+	};
+
+	return '['+retVal.replace(/]"/gi,'],"')+']';
+
+};
+
 
 EllucianSectionParser.prototype.parseRequirementSection = function(pageData,classDetails,sectionName) {
 	var elements =[];
@@ -197,7 +348,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 				};
 
 
-				elements.push(',"'+classURL+'",');
+				elements.push('@#$"'+classURL+'"');
 			}
 			else {
 				break;
@@ -208,23 +359,10 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 			if (text=='') {
 				continue;
 			}
-
-			if (!_(text).includes(' and ') && !_(text).includes(' or ') && !_(text).includes('(') && !_(text).includes(')')) {
-				continue;
+			if (_(text).includes('@#$')) {
+				console.log('warning @#$ used to designate url was found in string?!?',pageData.dbData.url);
+				text = text.replace(/\@\#\$/gi,'')
 			};
-			text=text.replace(/\(.*/,'[').replace(/.*\)/,']')
-
-			var dividers = ['and','or'];
-
-			dividers.forEach(function (divider) {
-
-				// and -> "and",
-				text = text.replace( new RegExp("[^\\]]*"+divider+"[^\\[]*","gi"),	',"'+divider+'",');
-
-
-			}.bind(this));
-
-			
 			elements.push(text);
 		}
 	}
@@ -236,16 +374,22 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 	};
 	
 
-	var text =  elements.join("");
-	if (text.trim()=='') {
+	var text =  elements.join("").trim();
+	if (text=='') {
 		console.log('warning, found elements, but no links or and or',elements);
 		return;
 	};
+	console.log(text);
+
+	text=this.convertStringToArray2(text);
 
 
-	text = '[' + text + ']';
+	console.log(text);
+	// return;
 
-	text = text.replace(/,\]/gi,']').replace(/\[,/gi,'[').replace(/",+"/gi,'","').replace(/\n|\r/gi,'')
+
+	// text = '[' + text + ']';
+
 
 	// console.log(elements,text)
 
@@ -461,6 +605,13 @@ EllucianSectionParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianSectionParser.prototype.tests = function() {
+	// var a =this.convertStringToArray2('(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)')
+	// console.log(a)
+	// return;
+
+	// console.log(this.convertParenToBracket('( Eng - Place Test 03 and  Accuplacer (Reading) 071 and Collegiate Credit level'))
+
+	// return;
 
 
 	// var a =this.groupRequirementsByAnd(["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25","and","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"])
