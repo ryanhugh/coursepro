@@ -43,7 +43,7 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 		depData.desc+='  '+domutils.getText(element.children[i]).trim();
 	}
 
-	depData.desc=depData.desc.trim()
+	depData.desc=depData.desc.trim().replace(/\n|\r/gi,' ').replace(/\s+/gi,' ')
 
 
 	var invalidDescriptions = ['xml extract','new search'];

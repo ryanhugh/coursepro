@@ -396,8 +396,8 @@ Spider.prototype.tests = function () {
 	// this.go('https://nssb-p.adm.fit.edu/prod/bwckschd.p_disp_dyn_sched')
 	// this.go('https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_dyn_sched')
 	// this.go('https://oasis.farmingdale.edu/banner/bwckschd.p_disp_dyn_sched')
-	this.go('https://prod-ssb-01.dccc.edu/PROD/bwckschd.p_disp_dyn_sched')
-	// this.go('https://telaris.wlu.ca/ssb_prod/bwckschd.p_disp_dyn_sched')
+	// this.go('https://prod-ssb-01.dccc.edu/PROD/bwckschd.p_disp_dyn_sched')
+	this.go('https://telaris.wlu.ca/ssb_prod/bwckschd.p_disp_dyn_sched')
 	return;
 
 

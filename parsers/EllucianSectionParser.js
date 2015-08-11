@@ -294,7 +294,6 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 
 	//no section given, or invalid section, or page does not list any pre/co reqs
 	if (elements.length==0) {
-		// console.log('error: zero elements found when searching for',sectionName,elements,pageData.dbData.url)
 		return;
 	};
 	
@@ -377,6 +376,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 			console.log('ERROR: invalid table in section parser',tableData,pageData.dbData.url);
 			return;
 		}
+		// console.log('found table')
 
 		pageData.setData('seatsCapacity',parseInt(tableData.capacity[0]));
 		pageData.setData('seatsActual',parseInt(tableData.actual[0]));
@@ -465,7 +465,8 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 
 		var match = value.match(/(.+?)\s-\s/i);
 		if (!match || match.length<2) {
-			console.log('could not find title!',match,element);
+			console.log('could not find title!',match,element,value);
+			return;
 		}
 
 
@@ -529,10 +530,10 @@ EllucianSectionParser.prototype.tests = function() {
 
 
 
-	var a= this.formatRequirements([ ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]);
+	// var a= this.formatRequirements([ ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]);
 
-	console.log(JSON.stringify(a))
-	return;
+	// console.log(JSON.stringify(a))
+	// return;
 
 	// console.log(this.simplifyRequirements({
 	// 	type:'or',
@@ -580,17 +581,22 @@ EllucianSectionParser.prototype.tests = function() {
 
 	
 
-	fs.readFile('../tests/'+this.constructor.name+'/reqs.html','utf8',function (err,body) {
+	fs.readFile('../tests/'+this.constructor.name+'/test.html','utf8',function (err,body) {
 
+
+		// pointer.handleRequestResponce(body,function (err,dom) {
+		// 	console.log(JSON.stringify(this.parseRequirementSection ({dbData:{url:'https://google.com'}},dom,'prerequisites'),null,2))
+		// 	console.log(JSON.stringify(this.parseRequirementSection ({dbData:{url:'https://google.com'}},dom,'corequisites'),null,2))
+		// }.bind(this));
 
 		pointer.handleRequestResponce(body,function (err,dom) {
-			console.log(JSON.stringify(this.parseRequirementSection ({dbData:{url:'https://google.com'}},dom,'prerequisites'),null,2))
-			console.log(JSON.stringify(this.parseRequirementSection ({dbData:{url:'https://google.com'}},dom,'corequisites'),null,2))
-		}.bind(this));
+			// console.log(dom,body)
 
-		// pointer.handleRequestResponce('body',function (err,dom) {
-		// 	this.parsere (dom,'prerequisites:')
-		// }.bind(this));
+			this.parseDOM ({dbData:{},parsingData:{},getData:function(){return true}},dom)
+
+
+
+		}.bind(this));
 
 	}.bind(this));
 

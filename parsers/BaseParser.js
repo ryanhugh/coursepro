@@ -123,12 +123,24 @@ BaseParser.prototype.parseTable = function(table) {
 			if (element.type!='tag' || ['th','td'].indexOf(element.name)===-1) {
 				return;
 			}
+			if (index>=heads.length) {
+				console.log('error, table row is longer than head, ignoring content',index,heads,rows);
+				return;
+			};
+
 			retVal[heads[index]].push(domutils.getText(element).trim())
 
-			//only count valid elements
+			//only count valid elements, not all row.children
 			index++;
-
 		}.bind(this));
+
+
+		//add empty strings until reached heads length
+		for (; index < heads.length; index++) {
+			retVal[heads[index]].push('')
+		};
+
+
 	}.bind(this));
 	return retVal;
 };
@@ -185,7 +197,7 @@ BaseParser.prototype.tests = function () {
 			}
 
 			if (this.constructor.name=="BaseParser") {
-				this.parseTable(dom[0]);
+				console.log(this.parseTable(dom[0]))
 			}
 			else {
 				var pageData = new PageData(fileJSON.url);
