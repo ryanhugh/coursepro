@@ -83,6 +83,15 @@ Pointer.prototype.tryAgain = function(url,options,callback,tryCount) {
 	}.bind(this),20000+parseInt(Math.random()*15000));
 };
 
+Pointer.prototype.doAnyStringsInArray = function(array,body) {
+	for (var i = 0; i < array.length; i++) {
+		if (_(body).includes(array[i])) {
+			return true;
+		};
+	}
+	return false;
+};
+
 
 
 //try count is internal use only
@@ -120,7 +129,7 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 
 
 		//ensure that body contains given string
-		if (options.requiredInBody && !_(body).includes(options.requiredInBody)) {
+		if (options.requiredInBody && !this.doAnyStringsInArray(options.requiredInBody,body)) {
 			// try again in a couple seconds
 			if (tryCount<this.maxRetryCount) {
 				console.log('pointer warning, body did not contain specified text, trying again',tryCount,body.length,response.statusCode,this.openRequests,url);

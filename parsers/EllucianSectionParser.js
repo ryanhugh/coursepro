@@ -294,9 +294,9 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 
 
 
-	console.log('input;',text);
+	// console.log('input;',text);
 	text = this.groupRequirementsByAnd(text)
-	console.log('out;',text);
+	// console.log('out;',text);
 	// console.log(text,this.groupRequirementsByAnd(text))
 
 	text=this.formatRequirements(text)
