@@ -17,11 +17,25 @@ var https = require('https');
 var dns = require('dns');
 
 
+a=[1,2,3,4,5,6]
+t=a
+
+for (var i = 0; i < a.length; i++) {
+	var b=a[i]
 
 
-needle.get('https://bluegolf.com', function (err,resp,body) {
-	console.log(err,resp.statusCode,body)
-});
+	console.log(b);
+
+
+	if (b<5) {
+		t.push(b+5)
+	};
+};
+console.log(a)
+
+// needle.get('https://bluegolf.com', function (err,resp,body) {
+// 	console.log(err,resp.statusCode,body)
+// });
 // var nodeM
 
 // define a simple function with callback(err, value)

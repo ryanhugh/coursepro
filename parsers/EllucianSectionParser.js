@@ -40,6 +40,83 @@ EllucianSectionParser.prototype.supportsPage = function (url) {
 }
 
 
+EllucianSectionParser.prototype.groupRequirementsByAnd = function(data) {
+	var retVal = [];
+
+	for (var i = 0; i < data.length; i++) {
+		if (i+2>=data.length) {
+			retVal.push(data[i]);
+			continue;
+		}
+
+		if (data[i+1]=='and' && data.length>3){
+			var beforeAnd;
+			if (Array.isArray(data[i])) {
+				beforeAnd = this.groupRequirementsByAnd(data[i]);
+			}
+			else {
+				beforeAnd = data[i];
+			}
+
+			var afterAnd;
+			if (Array.isArray(data[i+2])) {
+				afterAnd = this.groupRequirementsByAnd(data[i+2]);
+			}
+			else {
+				afterAnd = data[i+2];
+			}
+
+			retVal.push([beforeAnd,'and',afterAnd]);
+			i+=2;
+			console.log('found!')
+			continue;
+		}
+		else {
+			// console.log(data[i+1])
+			retVal.push(data[i]);
+		}
+	}
+	return retVal;
+};
+
+
+
+//this is given the output of formatRequirements, where data.type and data.values exist
+EllucianSectionParser.prototype.simplifyRequirements = function(data) {
+
+	var retVal = {
+		type:data.type,
+		values:[]
+	}
+
+
+
+	data.values.forEach(function (subData) {
+		if ((typeof subData) == 'string') {
+			retVal.values.push(subData);
+			return;
+		}
+
+		subData = this.simplifyRequirements(subData);
+
+		//if same type, merge
+		if (subData.type == data.type) {
+			retVal.values = retVal.values.concat(subData.values);
+		}
+
+		//if only contains 1 value, merge
+		else if (subData.values.length==1) {
+			retVal.values.push(subData.values[0]);
+		}
+
+		//just add the subdata
+		else {
+			retVal.values.push(subData);
+		}
+	}.bind(this));
+	return retVal;
+};
+
 EllucianSectionParser.prototype.formatRequirements = function(data) {
 	var retVal = {
 		type:'and',
@@ -50,10 +127,13 @@ EllucianSectionParser.prototype.formatRequirements = function(data) {
 		if (Array.isArray(val)) {
 
 			var subValues = this.formatRequirements(val);
+			
 			if (!subValues) {
 				console.log('warning could not parse sub values',data,val);
 			}
 			else {
+
+				
 				//found another array, convert sub array and add it to retval
 				retVal.values.push(subValues);
 			}
@@ -72,7 +152,6 @@ EllucianSectionParser.prototype.formatRequirements = function(data) {
 	};
 
 	return retVal;
-
 };
 
 
@@ -117,8 +196,8 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 					continue;
 				};
 
-				
-				elements.push('"'+classURL+'",');
+
+				elements.push(',"'+classURL+'",');
 			}
 			else {
 				break;
@@ -140,7 +219,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 			dividers.forEach(function (divider) {
 
 				// and -> "and",
-				text = text.replace( new RegExp("[^\\]]*"+divider+"[^\\[]*","gi"),	'"'+divider+'",');
+				text = text.replace( new RegExp("[^\\]]*"+divider+"[^\\[]*","gi"),	',"'+divider+'",');
 
 
 			}.bind(this));
@@ -166,8 +245,9 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 
 	text = '[' + text + ']';
 
-	text = text.replace(',]',']').replace('[,','[')
+	text = text.replace(/,\]/gi,']').replace(/\[,/gi,'[').replace(/",+"/gi,'","').replace(/\n|\r/gi,'')
 
+	// console.log(elements,text)
 
 	//parse the new json
 	try{
@@ -208,13 +288,23 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 		}
 	}
 
-
-
 	if (text.length==1 && Array.isArray(text[0])) {
 		text=text[0];
 	};
 
+
+
+	console.log('input;',text);
+	text = this.groupRequirementsByAnd(text)
+	console.log('out;',text);
+	// console.log(text,this.groupRequirementsByAnd(text))
+
 	text=this.formatRequirements(text)
+	if (!text) {
+		console.log('error formatting requirements, ',pageData.dbData.url,elements)
+		return;
+	};
+	text=this.simplifyRequirements(text);
 
 	return text;
 };
@@ -371,7 +461,63 @@ EllucianSectionParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianSectionParser.prototype.tests = function() {
-		
+
+
+	// var a =this.groupRequirementsByAnd(["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25","and","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"])
+	// console.log(a)
+	// return 
+
+
+
+	// var a= this.formatRequirements([ ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]);
+
+
+	// console.log(this.simplifyRequirements({
+	// 	type:'or',
+	// 	values:[
+	// 	{
+	// 		type:'or',
+	// 		values:['1',{
+	// 			type:'or',
+	// 			values:['6']
+	// 		}]
+	// 	},
+	// 	{
+	// 		type:'or',
+	// 		values:['1',{
+	// 			type:'or',
+	// 			values:[{
+	// 				type:'or',
+	// 				values:['1',{
+	// 					type:'or',
+	// 					values:['6']
+	// 				}]
+	// 			},
+	// 			{
+	// 				type:'or',
+	// 				values:['1',{
+	// 					type:'or',
+	// 					values:['6']
+	// 				}]
+	// 			}]
+	// 		}]
+	// 	}
+	// 	]
+	// }))
+
+
+	// this.groupRequirementsByAnd(
+	// [[ 'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1011&schd_in=%25',
+	//     'or',
+	//     'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCH&crse_in=101&schd_in=%25' ],
+	//   'and',
+	//   [ 'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25',
+	//     'or',
+	//     'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25' ],'or','link here']);
+ //    return;
+
+	
+
 	fs.readFile('../tests/'+this.constructor.name+'/reqs.html','utf8',function (err,body) {
 
 
