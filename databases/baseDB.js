@@ -4,13 +4,6 @@ var _ = require('lodash');
 var path = require("path");
 
 
-// if (_(process.cwd()).endsWith('databases') || _(process.cwd()).endsWith('parsers')) {
-// 	process.chdir('..');
-// }
-
-
-
-
 //if getting this.db undefined its baseDB trying to run something...
 function BaseDB () {
 
@@ -66,12 +59,12 @@ BaseDB.prototype.shouldUpdateDB = function(newData,oldData) {
 };
 
 
-BaseDB.prototype.updateDatabase = function(pageData) {
+BaseDB.prototype.updateDatabase = function(pageData,callback) {
 	var newData = pageData.dbData;
 	var oldData = pageData.originalData.dbData;
 
 	if (!this.shouldUpdateDB(newData,oldData)) {
-		return;
+		return callback(null,newData);
 	};
 
 
@@ -83,15 +76,42 @@ BaseDB.prototype.updateDatabase = function(pageData) {
 		});
 	}
 	else {
-		this.db.insert(newData);
+		this.db.insert(newData,function (err,newDoc) {
+			if (err) {
+				console.log('error, nedb inserting error',err);
+				return callback(err);
+			}
+			pageData.dbData = newDoc;
+
+			return callback(null,newDoc);
+
+
+		});
 	}
 };
 
 
 BaseDB.prototype.fetchDBData = function(pageData,callback) {
+
+	var lookupValues = {};
+
+	if (pageData.dbData._id) {
+		lookupValues._id = pageData.dbData._id;
+	}
+	else if (pageData.dbData.url) {
+		lookupValues.url = pageData.dbData.url;
+
+		if (pageData.dbData.postData) {
+			lookupValues.postData = pageData.dbData.postData
+		};
+	}
+	else {
+		console.log('error in base db - cant lookup page data wihout url or _id!',pageData)
+		return callback('cant lookup')
+	}
 	
 	//if already in database, great
-	this.db.find({url:pageData.dbData.url}, function (err,docs) {
+	this.db.find(lookupValues, function (err,docs) {
 		if (err) {
 			console.log('ERROR: DB lookup error:',err,pageData.dbData.url)
 			callback(err);
@@ -105,7 +125,7 @@ BaseDB.prototype.fetchDBData = function(pageData,callback) {
 			callback();
 		}
 		else if (docs.length>1) {
-			console.log('ERROR: docs is longer than 1?',pageData.dbData.url,docs);
+			console.log('ERROR: docs is longer than 1?',lookupValues,pageData.dbData,docs);
 			callback("BADDATA");
 		}
 
@@ -125,7 +145,7 @@ BaseDB.prototype.onInterval = function() {
 	this.db.find({}, function (err,docs) {
 		for (var i = 0; i < docs.length; i++) {
 			if (docs[i].emails.length>0) {
-				pageBaseDB.create(docs[i].url)
+				pageBaseDB.create({url:docs[i].url})
 			}
 		};
 	}.bind(this));

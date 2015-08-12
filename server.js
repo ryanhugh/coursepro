@@ -65,9 +65,12 @@ app.post('/urlDetails', function(req, res) {
 
 
 	//client sent a (possibly) valid url, check and parse page
-	pageDataMgr.create(req.body.url,{
+	pageDataMgr.create({
 		ip:req.connection.remoteAddress,
-		email:req.body.email
+		email:req.body.email,
+		dbData:{
+			url:req.body.url
+		}
 	}, function (err,pageData) {
 
 		if (err) {
@@ -104,7 +107,14 @@ app.get('/listTerms/*',function (req,res) {
 	})
 })
 
+app.get('/listSubjects/*/*',function (req,res) {
+	
+	var url = new URI(req.url).segment();
 
+	subjDB.find(url[1],url[2],function (err,subjects) {
+		res.send(JSON.stringify(subjects));
+	})
+})
 
 
 

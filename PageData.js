@@ -7,18 +7,14 @@ var URI = require('URIjs');
 //server.js
 //baseParser.js (for deps)
 //datamgr.js (for auto updates)
-function PageData (url,startingData) {
-	if (!url) {
-		console.log('page data needs a url!');
+function PageData (startingData) {
+	if (!startingData.dbData.url && !startingData.dbData._id) {
+		console.log('page data needs a url or an id!',startingData);
 		console.trace();
 		return null
 	}
 
-	if (startingData===undefined || startingData===null) {
-		startingData={}
-	};
-
-	//dbdata is added after db search returns
+	//dbData is added after db search returns
 	this.originalData = {
 		ip:startingData.ip,
 		email:startingData.email
@@ -26,38 +22,55 @@ function PageData (url,startingData) {
 
 	//stuff stored in the db
 	this.dbData = {
-		url:url,
-		lastUpdateTime:0,
-		ips:[],
-		emails:[]
+		lastUpdateTime:0
 	}
 
-	this.parser = null;
+	// //add post data if given post data
+	// if (startingData.dbData && startingData.dbData.postData) {
+	// 	this.dbData.postData = startingData.dbData.postData;
+	// }
 
-	//dependencies (instances of PageData)
-	this.deps = [];
+	this.parser = null;
 
 	//some tem variables used while parsing, not relavant when done
 	this.parsingData = {}
 
-	//{} that the new pageData objects should have in dbData
+
+
+
+
+	this.database = null;
+
+	this.dependencyDatabase = null;
+
+	//dependencies (instances of PageData)
+	this.deps = [];
+
+	//{name:value} that the new pageData objects should have in dbData
 	//when processDeps is ran, this is emptied and this.deps and this.dbData.deps are filled
 	this.depsToProcess = []
 
-	//data to give to parent
-	//if this does not have a parent, this is never read
-	this.parentData = {};
 
+
+
+
+	//add the starting data
 
 	//add the email and ip, if given
 	if (startingData.ip) {
-		this.dbData.ips.push(startingData.ip);
+		this.dbData.ips = [startingData.ip]
 	}
-
 	if (startingData.email) {
-		this.dbData.emails.push(startingData.email);
+		this.dbData.emails = [startingData.email];
 	}
+	// if (startingData.url) {
+	// 	this.dbData.url = startingData.url;
+	// };
+	// if (startingData._id) {
+	// 	this.dbData._id = startingData._id;
+	// };
 
+	this.database = startingData.database
 	this.parent = startingData.parent;
 
 	if (startingData.dbData) {
@@ -74,6 +87,30 @@ PageData.prototype.findSupportingParser = function(parsers) {
 		if (parsers[i].supportsPage(this.dbData.url)) {
 			this.parser= parsers[i];
 			console.log('Using parser:',this.parser.constructor.name,'for url',this.dbData.url);
+
+			this.dependencyDatabase = parsers[i].getDependancyDatabase(this)
+
+			var newDatabase = parsers[i].getDatabase(this);
+
+			if (this.database && newDatabase && newDatabase!=this.database) {
+				console.log('error: in find parser, already had a database')
+			}
+			else {
+				this.database = newDatabase;
+			}
+
+
+			if (this.database.peopleCanRegister) {
+
+				if (this.dbData.emails === undefined) {
+					this.dbData.emails=[];
+				};
+				if (this.dbData.ips === undefined) {
+					this.dbData.ips = [];
+				};
+			}
+
+
 			return true;
 		}
 	}
@@ -107,8 +144,8 @@ PageData.prototype.addData = function(data) {
 			}.bind(this));
 		}
 		else if (attrName == 'deps') {
-			data.deps.forEach(function (newDepURL) {
-				this.addDep({url:newDepURL});
+			data.deps.forEach(function (newDepId) {
+				this.addDep({_id:newDepId});
 			}.bind(this));
 		}
 
@@ -123,12 +160,6 @@ PageData.prototype.addDBData = function(data) {
 	this.originalData.dbData=data;
 	this.addData(data);
 }
-// PageData.prototype.addHTMLData = function(data) {
-// 	this.addData(data);
-// };
-
-
-
 
 
 
@@ -146,21 +177,28 @@ PageData.prototype.processDeps = function(callback) {
 		return callback();
 	};
 
+	this.dbData.deps = []
+
 	//any dep data will be inserted into main pageData for dep
 	async.map(this.depsToProcess, function (addToDepData,callback) {
-
 
 		var startingData = {
 			ip:this.originalData.ip,
 			email:this.originalData.email,
 			dbData:addToDepData,
-			parent:this
+			parent:this,
+			database:this.dependencyDatabase
 		}
 		
-		pageDataMgr.create(addToDepData.url,startingData,function (err,newDepData) {
+		pageDataMgr.create(startingData,function (err,newDepData) {
 			if (err) {
 				console.log('ERROR: processing deps',err);
 				return callback(err);
+			};
+
+
+			if (this.dbData.deps.indexOf(newDepData.dbData._id)<0) {	
+				this.dbData.deps.push(newDepData.dbData._id);
 			};
 
 
@@ -192,28 +230,41 @@ PageData.prototype.getUrlStart = function() {
 	return urlParsed.scheme() +'://'+ urlParsed.host();
 };
 
+//can add by url or _id - one of two is required
+//depData.postData must not contain objects! it must be a string that can be compared with ===
 PageData.prototype.addDep = function(depData) {
-	if (!depData || !depData.url) {
+	if (!depData || (!depData.url && !depData._id)) {
 		console.trace('Error:Tried to add invalid depdata??',depData,this);
 		return;
 	}
-	if (!this.dbData.deps) {
-		this.dbData.deps = []
-	};
-
-	if (this.dbData.deps.indexOf(depData.url)<0) {	
-		this.dbData.deps.push(depData.url);
-	};
 
 
-	//if dep url not in deps to process, add it there
+
+	//check to make sure the dep dosent already exist in depsToProcess
 	for (var i = 0; i < this.depsToProcess.length; i++) {
-		if(this.depsToProcess[i].url==depData.url) {
-			console.log('URL was already in deps, adding new attrs!',depData.url)
+
+		var isMatch = false;
+
+		//if given an _id to search for, make sure it matches the id in the existing depsToProcess
+		if (depData._id) {
+			if (this.depsToProcess[i]._id==depData._id) {
+				isMatch=true;
+			};
+		}
+		else if (depData.url) {
+			if (this.depsToProcess[i].url==depData.url && this.depsToProcess[i].postData===depData.postData) {
+				isMatch=true;
+			}
+		}
+
+		if (isMatch) {
+			console.log('URL was already in deps, adding new attrs!',this.depsToProcess[i],depData)
 			for (var newAttrName in depData) {
 				console.log('adding ',newAttrName,depData[newAttrName])
 				this.depsToProcess[i][newAttrName]=depData[newAttrName];
 			}
+
+			//insert the new data into the dep here, instead of adding a new dep below
 			return;
 		}
 	};

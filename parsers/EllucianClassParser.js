@@ -7,6 +7,7 @@ var changeCase = require('change-case');
 var _ = require('lodash');
 
 var classDB = require('../databases/classesDB.js')
+var sectionDB = require('../databases/sectionsDB');
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 var ellucianSectionParser = require('./ellucianSectionParser');
 
@@ -19,10 +20,8 @@ function EllucianClassParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
 	this.requiredAttrs = [];
-	this.dataMgr = classDB;
 
 	//name and deps are optional, but if there is no deps there is nowhere to parse name...
-
 }
 
 
@@ -34,6 +33,18 @@ EllucianClassParser.prototype.constructor = EllucianClassParser;
 EllucianClassParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckctlg.p_disp_listcrse')>-1;
 }
+
+
+EllucianClassParser.prototype.getDependancyDatabase = function(pageData) {
+	return sectionDB;
+};
+
+EllucianClassParser.prototype.getDatabase = function(pageData) {
+	return classDB;
+};
+
+
+
 
 //format is min from midnight, 0 = sunday, 6= saterday
 //	8:00 am - 9:05 am	MWR -> {0:[{start:248309,end:390987}],1:...}

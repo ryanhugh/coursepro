@@ -1,14 +1,16 @@
 'use strict';
 var domutils = require('domutils');
 
-var termsDB = require('../databases/termsDB.js')
+var pointer = require('../pointer')
+var termsDB = require('../databases/termsDB')
+var subjectsDB = require('../databases/subjectsDB')
+
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
-var ellucianSectionParser = require('./ellucianSectionParser');
+var ellucianSubjectParser = require('./ellucianSubjectParser');
 
 
 function EllucianTermsParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
-	this.dataMgr = termsDB;
 }
 
 
@@ -17,6 +19,14 @@ function EllucianTermsParser () {
 EllucianTermsParser.prototype = Object.create(EllucianBaseParser.prototype);
 EllucianTermsParser.prototype.constructor = EllucianTermsParser;
 
+
+EllucianTermsParser.prototype.getDependancyDatabase = function(pageData) {
+	return subjectsDB;
+};
+
+EllucianTermsParser.prototype.getDatabase = function(pageData) {
+	return termsDB;
+};
 
 
 EllucianTermsParser.prototype.supportsPage = function (url) {
@@ -44,41 +54,119 @@ EllucianTermsParser.prototype.isValidTerm = function(termId,text) {
 
 };
 
-EllucianTermsParser.prototype.onBeginParsing = function(pageData) {
-	pageData.parsingData.terms=[];
-};
 
 
 EllucianTermsParser.prototype.parseElement = function(pageData,element) {
-	if (element.type!='tag') {
+
+};
+
+
+EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
+	var formData = this.parseTermsPage(pageData.dbData.url,dom);
+	var terms = []
+
+	formData.requestsData.forEach(function (singleRequestPayload) {
+
+		//record all the terms and their id's
+		singleRequestPayload.forEach(function (payloadVar) {
+			if (payloadVar.name=='p_term') {
+				terms.push({
+					id:payloadVar.value,
+					text:payloadVar.text
+				})
+			};
+		}.bind(this));
+
+		//also pass the data to the dependencies 
+		pageData.addDep({
+			url:formData.postURL,
+			postData:pointer.payloadJSONtoString(singleRequestPayload)
+		});
+
+
+	}.bind(this))
+
+	
+	if (terms.length>0) {
+		pageData.setData('terms',terms);
+	}
+	else {
+		console.log('ERROR, found 0 terms??',pageData.dbData.url)
+	}
+};
+
+
+
+
+//step 1, select the terms
+//starting url is the terms page
+EllucianTermsParser.prototype.parseTermsPage = function (startingURL,dom) {
+	var parsedForm = this.parseForm(startingURL,dom);
+
+	if (!parsedForm) {
+		console.log('default form data failed');
 		return;
 	}
 
-	if (element.name == 'option' && element.parent.attribs.name == 'p_term' && element.parent.name == 'select') {
-		var termId = element.attribs.value;
-		var text = domutils.getText(element).trim()
+	var defaultFormData = parsedForm.payloads;
 
-		if (!this.isValidTerm(termId,text)) {
+
+	//find the term entry and all the other entries
+	var termEntry;
+	var otherEntries = [];
+	defaultFormData.forEach(function(entry) {
+		if (entry.name=='p_term') {
+			termEntry = entry;
+		}
+		else {
+			otherEntries.push(entry);
+		}
+	}.bind(this));
+
+
+
+
+	var requestsData = [];
+	
+	//setup an indidual request for each valid entry on the form - includes the term entry and all other other entries
+	termEntry.alts.forEach(function(entry) {
+		if (entry.name!='p_term') {
+			console.log('ERROR: entry was alt of term entry but not same name?',entry);
 			return;
 		}
 
-		pageData.parsingData.terms.push({
-			id:termId,
-			text:text
+		if (entry.text.toLowerCase()==='none') {
+			return;
+		}
+
+		//dont process this element on error
+		if (entry.text.length<2) {
+			console.log('warning: empty entry.text on form?',entry,startingURL);
+			return;
+		}
+		
+		if (!this.isValidTerm(entry.value,entry.text)) {
+			return;
+		}
+
+
+		var fullRequestData = otherEntries.slice(0);
+
+		fullRequestData.push({
+			name:entry.name,
+			value:entry.value,
+			text:entry.text
 		});
-	}
-};
 
+		requestsData.push(fullRequestData);
 
+	}.bind(this));
 
-EllucianTermsParser.prototype.onEndParsing = function(pageData) {
-	
-	if (pageData.parsingData.terms.length>0) {
-		pageData.setData('terms',pageData.parsingData.terms);
+	return {
+		postURL:parsedForm.postURL,
+		requestsData:requestsData
 	};
-};
-
-
+}
 
 
 EllucianTermsParser.prototype.getMetadata = function(pageData) {

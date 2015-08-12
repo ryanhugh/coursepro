@@ -5,16 +5,13 @@ var he = require('he');
 var _ = require('lodash');
 
 var linksDB = require('../databases/linksDB')
+var classesDB = require('../databases/classesDB')
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 var ellucianClassParser = require('./ellucianClassParser');
 
 
 function EllucianCatalogParser () {
-	EllucianBaseParser.prototype.constructor.apply(this,arguments);
-
-
-	this.dataMgr = linksDB;
-	
+	EllucianBaseParser.prototype.constructor.apply(this,arguments);	
 }
 
 
@@ -28,6 +25,14 @@ EllucianCatalogParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckctlg.p_display_courses')>-1 || url.indexOf('bwckctlg.p_disp_course_detail')>-1;
 }
 
+EllucianCatalogParser.prototype.getDependancyDatabase = function(pageData) {
+	return classesDB;
+};
+
+
+EllucianCatalogParser.prototype.getDatabase = function(pageData) {
+	return linksDB;
+};
 
 
 

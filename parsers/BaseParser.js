@@ -17,9 +17,28 @@ BaseParser.prototype.supportsPage = function() {
 	return false;
 };
 
+BaseParser.prototype.getDependancyDatabase = function(pageData) {
+	return null;
+};
+
 //callback here is pageData (stuff to store in db), and metadata (stuff dont store in db)
 BaseParser.prototype.parse = function(pageData,callback) {
-	pointer.request(pageData.dbData.url,{requiredInBody:this.requiredInBody},function (err,dom) {
+
+	var pointerConfig = {
+		requiredInBody:this.requiredInBody
+	};
+
+	//sending a post, add the data and a content type header
+	if (pageData.dbData.postData) {
+		pointerConfig.payload = pageData.dbData.postData;
+		pointerConfig.headers = {
+			'Content-Type': this.postContentType
+		}
+	};
+
+
+
+	pointer.request(pageData.dbData.url,pointerConfig,function (err,dom) {
 		if (err) {
 			return callback(err);
 		};
@@ -62,11 +81,11 @@ BaseParser.prototype.onEndParsing = function(pageData) {
 BaseParser.prototype.parseDOM = function(pageData,dom){
 
 
-	this.onBeginParsing(pageData);
+	this.onBeginParsing(pageData,dom);
 
 	domutils.findAll(this.parseElement.bind(this,pageData),dom);
 
-	this.onEndParsing(pageData);
+	this.onEndParsing(pageData,dom);
 
 	//missed something, or invalid page
 	if (!this.isValidData(pageData)) {
@@ -149,6 +168,102 @@ BaseParser.prototype.parseTable = function(table) {
 
 
 
+//add inputs if they have a value = name:value
+//add all select options if they have multiple
+//add just the first select option if is only 1
+BaseParser.prototype.parseForm = function (url,dom) {
+
+	//find the form, bail if !=1 on the page
+	var forms = domutils.getElementsByTagName('form',dom);
+	if (forms.length!=1) {
+		console.log('there is !=1 forms??',forms,url);
+		return
+	}
+	var form = forms[0];
+
+	var payloads = [];
+
+	//inputs
+	var inputs = domutils.getElementsByTagName('input',form);
+	inputs.forEach(function(input){
+
+		if (input.attribs.name===undefined || input.attribs.type=="checkbox"){
+			return;
+		}
+
+		if (input.attribs.value === undefined || input.attribs.value=='') {
+			input.attribs.value=''
+		}
+
+		payloads.push({
+			name:input.attribs.name,
+			value:input.attribs.value
+		});
+	});
+
+
+	var selects = domutils.getElementsByTagName('select',form);
+
+	selects.forEach(function (select) {
+
+		var options = domutils.getElementsByTagName('option',select);
+		if (options.length===0) {
+			console.log('ERROR:no options in form???',select);
+			return;
+		}
+		
+		//add all of them
+		if (select.attribs.multiple!==undefined){
+
+			options.forEach(function (option){
+				var text = domutils.getText(option).trim();
+
+				payloads.push({
+					value:option.attribs.value,
+					text:text,
+					name:select.attribs.name
+				});
+
+
+			}.bind(this));
+		}
+
+		//just add the first select
+		else {
+
+			var alts=[];
+
+			options.slice(1).forEach(function (option){
+				var text = domutils.getText(option).trim();
+				alts.push({
+					value:option.attribs.value,
+					text:text,
+					name:select.attribs.name
+				})
+			})
+
+			//get default option
+			var text = domutils.getText(options[0]).trim();
+			payloads.push({
+				value:options[0].attribs.value,
+				text:text,
+				name:select.attribs.name,
+				alts:alts
+			});
+		}
+	});
+
+
+	//parse the url, and return the url the post request should go to
+	var urlParsed = new URI(url);
+
+	return {
+		postURL:urlParsed.protocol()+'://' +urlParsed.host() + form.attribs.action,
+		payloads:payloads
+	};
+}
+
+
 
 
 
@@ -202,7 +317,7 @@ BaseParser.prototype.tests = function () {
 				console.log(this.parseTable(dom[0]))
 			}
 			else {
-				var pageData = new PageData(fileJSON.url);
+				var pageData = new PageData({dbData:{url:fileJSON.url}});
 				this.parseDOM(pageData,dom);
 				console.log("HERE",JSON.stringify(pageData,null,4));
 

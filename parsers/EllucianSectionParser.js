@@ -17,8 +17,6 @@ var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 function EllucianSectionParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
-	this.dataMgr = sectionDB;
-
 	this.requiredAttrs = [
 	"seatsCapacity",
 	"seatsActual",
@@ -40,6 +38,11 @@ EllucianSectionParser.prototype.constructor = EllucianSectionParser;
 EllucianSectionParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckschd.p_disp_detail_sched')>-1;
 }
+
+EllucianSectionParser.prototype.getDatabase = function(pageData) {
+	return sectionDB;
+};
+
 
 //follow the order of operations (and before or)
 //and group a (something and something or something) to ((something and something) or something)

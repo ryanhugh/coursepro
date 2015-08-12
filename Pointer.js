@@ -98,7 +98,16 @@ Pointer.prototype.getBaseHostname = function(url) {
 }
 
 
+Pointer.prototype.payloadJSONtoString = function(json) {
+	
+	var urlParsed = new URI();
 
+	//create the string
+	json.forEach(function(entry){
+		urlParsed.addQuery(entry.name,entry.value)
+	});
+	return urlParsed.query()
+};
 
 
 
@@ -206,5 +215,25 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 };
 
 
+
+
+Pointer.prototype.tests = function() {
+	var a =this.payloadJSONtoString([{name:'name',value:'value'},{name:'name2',value:'value2'}]);
+
+	console.log(a)
+};
+
+
+
+
+
+
+
+
 Pointer.prototype.Pointer=Pointer;
 module.exports = new Pointer();
+
+
+if (require.main === module) {
+	module.exports.tests();
+}

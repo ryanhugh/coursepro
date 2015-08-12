@@ -1,6 +1,6 @@
 // // var a = require('./parsers/BaseParser')
 // // console.log('fdas'.indexOf)
-// var urlParser = require('url');
+var URI = require('URIjs');
 var async = require('async');
 // var querystring = require('querystring');
 var assert = require('assert');
@@ -17,21 +17,29 @@ var https = require('https');
 var dns = require('dns');
 
 
-a=[1,2,3,4,5,6]
-t=a
 
-for (var i = 0; i < a.length; i++) {
-	var b=a[i]
+var a = '???p_calling_proc=bwckschd.p_disp_dyn_sched&p_by_date=Y&p_from_date=&p_to_date=&p_term=201550'
 
 
-	console.log(b);
+console.log(new URI(a).query(true))
 
 
-	if (b<5) {
-		t.push(b+5)
-	};
-};
-console.log(a)
+
+// a=[1,2,3,4,5,6]
+// t=a
+
+// for (var i = 0; i < a.length; i++) {
+// 	var b=a[i]
+
+
+// 	console.log(b);
+
+
+// 	if (b<5) {
+// 		t.push(b+5)
+// 	};
+// };
+// console.log(a)
 
 // needle.get('https://bluegolf.com', function (err,resp,body) {
 // 	console.log(err,resp.statusCode,body)
@@ -52,7 +60,7 @@ console.log(a)
 // })
 
 
-console.log()
+// console.log()
 
 // assert.equal("",{})
 // process.exit()
@@ -244,10 +252,10 @@ console.log()
 
 
 
-fs.readFile('classes.db.sample.json','utf8',function (err,body) {
+// fs.readFile('classes.db.sample.json','utf8',function (err,body) {
 	
-	console.log('hi',JSON.parse(body).length)
-})
+// 	console.log('hi',JSON.parse(body).length)
+// })
 // fs.readFile('tests/EllucianCatalogParser/1.html','utf8',function (err,body) {
 // 	console.log(err)
 
@@ -339,6 +347,6 @@ fs.readFile('classes.db.sample.json','utf8',function (err,body) {
 
 // https://sail.oakland.edu/PROD/bwckctlg.p_display_courses?term_in=201610&one_subj=ACC&sel_crse_strt=200&sel_crse_end=200&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=
 
-global.shared=5
+// global.shared=5
 
-console.log(shared)
+// console.log(shared)
