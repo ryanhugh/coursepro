@@ -19,11 +19,7 @@ function EllucianSectionParser () {
 
 	this.requiredAttrs = [
 	"seatsCapacity",
-	"seatsActual",
-	"seatsRemaining",
-	"waitCapacity",
-	"waitActual",
-	"waitRemaining"
+	"seatsRemaining"
 	];
 
 	//minCredits and maxCredits are optional
@@ -382,22 +378,33 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 			return;
 		}
 
-		pageData.setData('seatsCapacity',parseInt(tableData.capacity[0]));
-		pageData.setData('seatsActual',parseInt(tableData.actual[0]));
-		pageData.setData('seatsRemaining',parseInt(tableData.remaining[0]));
+		//dont need to store all 3, if can determine the 3rd from the other 2 (yay math)
+		var seatsCapacity = parseInt(tableData.capacity[0]);
+		var seatsActual = parseInt(tableData.actual[0]);
+		var seatsRemaining = parseInt(tableData.remaining[0]);
+
+		if (seatsActual+seatsRemaining!=seatsCapacity) {
+			console.log('warning, actual + remaining != capacity',seatsCapacity,seatsActual,seatsRemaining,pageData.dbData.url);
+		}
+
+		pageData.setData('seatsCapacity',seatsCapacity);
+		pageData.setData('seatsRemaining',seatsRemaining);
 
 
-		//second row is waitlist, sometimes not listed
 		if (tableData._rowCount>1) {
-			pageData.setData('waitCapacity',parseInt(tableData.capacity[1]));
-			pageData.setData('waitActual',parseInt(tableData.actual[1]));
-			pageData.setData('waitRemaining',parseInt(tableData.remaining[1]));
-		}
-		else {
-			pageData.setData('waitCapacity',0);
-			pageData.setData('waitActual',0);
-			pageData.setData('waitRemaining',0);
-		}
+
+			var waitCapacity = parseInt(tableData.capacity[1]);
+			var waitActual = parseInt(tableData.actual[1]);
+			var waitRemaining = parseInt(tableData.remaining[1]);
+
+			if (waitActual + waitRemaining != waitCapacity) {
+				console.log('warning, wait actual + remaining != capacity',waitCapacity,waitActual,waitRemaining,pageData.dbData.url);
+			}
+
+			pageData.setData('waitCapacity',waitCapacity);
+			pageData.setData('waitRemaining',waitRemaining);
+		};
+
 
 		//third row is cross list seats, rarely listed and not doing anyting with that now
 		// https://ssb.ccsu.edu/pls/ssb_cPROD/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=12532

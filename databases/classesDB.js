@@ -30,7 +30,7 @@ ClassesDB.prototype.find = function(host,termId,subject,callback) {
 			return callback(err);
 		}
 
-		// dont return a couple fields (emails, ips, _id, deps)
+		
 		var retVal = [];
 
 		docs.forEach(function (doc) {

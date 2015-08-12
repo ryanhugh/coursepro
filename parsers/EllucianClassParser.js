@@ -244,16 +244,61 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		if (times) {
 			depData.meetings[index].times=times;
 		}
+	};
 
 
+	//add data about the class
+	if (pageData.parsingData.termId) {
+		depData.termId = pageData.parsingData.termId;
+	}
 
+	if (pageData.parsingData.subject) {
+		depData.subject = pageData.parsingData.subject;
+	}
+	if (pageData.parsingData.courseId) {
+		depData.courseId = pageData.parsingData.courseId;
 	};
 
 	pageData.addDep(depData);
 };
 
-//parsing the htmls
 
+
+EllucianClassParser.prototype.onBeginParsing = function(pageData) {
+	
+
+	//parse the term from the url
+	var query = new URI(pageData.dbData.url).query(true);
+
+	if (!query.term_in) {
+		console.log('could not find term_in id ellucian class parser!',query,pageData.dbData.postData)
+	}
+	else {
+		pageData.parsingData.termId = query.term_in;
+		pageData.setData('termId',query.term_in)
+	}
+
+	if (!query.subj_in) {
+		console.log('could not find subj_in id ellucian class parser!',query,pageData.dbData.postData)
+	}
+	else {
+		pageData.parsingData.subject = query.subj_in;
+		pageData.setData('subject',query.subj_in)
+	}
+
+	if (!query.crse_in) {
+		console.log('could not find crse_in id ellucian class parser!',query,pageData.dbData.postData)
+	}
+	else {
+		pageData.parsingData.courseId = query.crse_in;
+		pageData.setData('courseId',query.crse_in)
+	}
+};
+
+
+
+
+//parsing the htmls
 EllucianClassParser.prototype.parseElement = function(pageData,element) {
 	if (element.type!='tag') {
 		return;
@@ -266,34 +311,6 @@ EllucianClassParser.prototype.parseElement = function(pageData,element) {
 	}
 };
 
-
-EllucianClassParser.prototype.onEndParsing = function(pageData) {
-	
-
-	//parse the term from the url
-	var query = new URI(pageData.dbData.url).query(true);
-
-	if (!query.term_in) {
-		console.log('could not find term_in id ellucian class parser!',query,pageData.dbData.postData)
-	}
-	else {
-		pageData.setData('termId',query.term_in)
-	}
-
-	if (!query.subj_in) {
-		console.log('could not find subj_in id ellucian class parser!',query,pageData.dbData.postData)
-	}
-	else {
-		pageData.setData('subject',query.subj_in)
-	}
-
-	if (!query.crse_in) {
-		console.log('could not find crse_in id ellucian class parser!',query,pageData.dbData.postData)
-	}
-	else {
-		pageData.setData('courseId',query.crse_in)
-	}
-};
 
 
 

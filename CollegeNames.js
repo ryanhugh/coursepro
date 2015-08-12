@@ -257,7 +257,7 @@ CollegeNames.prototype.getAll = function(callback) {
 			newItem.title = doc.title;
 			retVal.push(newItem);
 		});
-		return callback(retVal);
+		return callback(null,retVal);
 	});
 }
 

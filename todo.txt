@@ -1,5 +1,10 @@
 !!!!
 
+remove parser from the end of the parsers
+
+move college names to databases, and make it the same format as the others
+
+
 //convert the uri json to this
 uri.setSearch({ foo: "bar", goodbye : ["world", "mars"] });
 // uri == "?hello=mars&foo=bar&goodbye=world&goodbye=mars"

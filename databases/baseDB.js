@@ -132,6 +132,8 @@ BaseDB.prototype.fetchDBData = function(pageData,callback) {
 	}.bind(this));
 };
 
+
+// dont return a couple fields (emails, ips, _id, deps, etc)
 BaseDB.prototype.removeInternalFields = function(doc) {
 	var retVal={};
 	for (var attrName in doc) {
@@ -143,9 +145,9 @@ BaseDB.prototype.removeInternalFields = function(doc) {
 };
 
 
+
+
 // interval
-
-
 BaseDB.prototype.onInterval = function() {
 	console.log('UPDATING ALL DATA FOR '+this.constructor.name)
 	this.db.find({}, function (err,docs) {
