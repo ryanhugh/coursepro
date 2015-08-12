@@ -174,7 +174,8 @@ Spider.prototype.tests = function () {
 	// this.go('https://oasis.farmingdale.edu/banner/bwckschd.p_disp_dyn_sched')
 	// this.go('https://prod-ssb-01.dccc.edu/PROD/bwckschd.p_disp_dyn_sched')
 	// this.go('https://telaris.wlu.ca/ssb_prod/bwckschd.p_disp_dyn_sched')
-	// return;
+	this.go('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched')
+	return;
 
 
 	// fs.readFile('./tests/'+this.constructor.name+'/search.json','utf8',function (err,body) {
@@ -227,7 +228,6 @@ Spider.prototype.tests = function () {
 
 
 
-		// this.parseTermsPage('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched')
 	}.bind(this));
 }
 

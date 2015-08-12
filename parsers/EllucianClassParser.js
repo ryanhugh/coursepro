@@ -267,6 +267,34 @@ EllucianClassParser.prototype.parseElement = function(pageData,element) {
 };
 
 
+EllucianClassParser.prototype.onEndParsing = function(pageData) {
+	
+
+	//parse the term from the url
+	var query = new URI(pageData.dbData.url).query(true);
+
+	if (!query.term_in) {
+		console.log('could not find term_in id ellucian class parser!',query,pageData.dbData.postData)
+	}
+	else {
+		pageData.setData('termId',query.term_in)
+	}
+
+	if (!query.subj_in) {
+		console.log('could not find subj_in id ellucian class parser!',query,pageData.dbData.postData)
+	}
+	else {
+		pageData.setData('subject',query.subj_in)
+	}
+
+	if (!query.crse_in) {
+		console.log('could not find crse_in id ellucian class parser!',query,pageData.dbData.postData)
+	}
+	else {
+		pageData.setData('courseId',query.crse_in)
+	}
+};
+
 
 
 //meta data and email data

@@ -11,6 +11,7 @@ var collegeNames = require('./collegeNames');
 
 var termsDB = require('./databases/termsDB');
 var subjectsDB = require('./databases/subjectsDB');
+var classesDB = require('./databases/classesDB');
 
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
@@ -122,6 +123,22 @@ app.get('/listSubjects/*/*',function (req,res) {
 	var url = new URI(req.url).segment();
 
 	subjectsDB.find(url[1],url[2],function (err,subjects) {
+
+		if (err) {
+			res.send(err);
+			return;
+		};
+		res.header('access-control-allow-origin','*')
+		res.send(JSON.stringify(subjects));
+	})
+})
+
+
+app.get('/listClasses/*/*/*',function (req,res) {
+	
+	var url = new URI(req.url).segment();
+
+	classesDB.find(url[1],url[2],url[3],function (err,subjects) {
 
 		if (err) {
 			res.send(err);
