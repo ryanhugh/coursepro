@@ -15,8 +15,12 @@ SubjectsDB.prototype = Object.create(BaseDB.prototype);
 SubjectsDB.prototype.constructor = SubjectsDB;
 
 SubjectsDB.prototype.find = function(host,termId,callback) {
+	if (!host || !termId) {
+		console.log('error subject find needs both host and termId',host,termId);
+		return callback('need more data')
+	};
 	
-	this.db.find({host:host,id:termId},function (err,docs) {
+	this.db.find({host:host,termId:termId},function (err,docs) {
 		if (err) {
 			console.log('NEDB error in subjects db, ',err,host);
 			return callback(err);

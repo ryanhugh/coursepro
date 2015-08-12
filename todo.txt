@@ -103,6 +103,7 @@ update: could access localhost on port 8443 which forwarded from eff.org 443 (so
 regex used for main hostname will fail on google.com.uk (in pointer)
 
 titleCase will replace all on \w with a space.... (Texas A&M University -> Texas A M University)
+Saint Joseph S University
 
 fallback to hittitle if dns fails
 

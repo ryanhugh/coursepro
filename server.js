@@ -8,7 +8,9 @@ var URI = require('URIjs');
 
 var blacklistedEmails = require('./blacklistedEmails.json')
 var collegeNames = require('./collegeNames');
+
 var termsDB = require('./databases/termsDB');
+var subjectsDB = require('./databases/subjectsDB');
 
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
@@ -103,6 +105,14 @@ app.get('/listTerms/*',function (req,res) {
 	var url = new URI(req.url).segment();
 
 	termsDB.find(url[1],function (err,terms) {
+
+		//probably change this later
+		if (err) {
+			res.send(err)
+			return;
+		};
+
+		res.header('access-control-allow-origin','*')
 		res.send(JSON.stringify(terms));
 	})
 })
@@ -111,7 +121,13 @@ app.get('/listSubjects/*/*',function (req,res) {
 	
 	var url = new URI(req.url).segment();
 
-	subjDB.find(url[1],url[2],function (err,subjects) {
+	subjectsDB.find(url[1],url[2],function (err,subjects) {
+
+		if (err) {
+			res.send(err);
+			return;
+		};
+		res.header('access-control-allow-origin','*')
 		res.send(JSON.stringify(subjects));
 	})
 })

@@ -153,7 +153,7 @@ CollegeNames.prototype.hitWhois = function (homepage,callback,tryCount) {
 
 		}
 
-		var match=data.match(/Registrant:\n[\w\d\s&:]+?(\n|-)/i);
+		var match=data.match(/Registrant:\n[\w\d\s&:']+?(\n|-)/i);
 
 		if  (!match) {
 			console.log('ERROR: whois regex fail',data,homepage);
@@ -273,10 +273,10 @@ CollegeNames.prototype.getAll = function(callback) {
 CollegeNames.prototype.tests = function() {
 
 
-	this.getAll(function (stuff) {
-		console.log(stuff)
-	})
-	return;
+	// this.getAll(function (stuff) {
+	// 	console.log(stuff)
+	// })
+	// return;
 	// this.hitPage('neu.edu',function (err,title) {
 	// 	console.log(err,title)
 	// })
