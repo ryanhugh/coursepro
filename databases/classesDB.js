@@ -21,18 +21,24 @@ ClassesDB.prototype.find = function(host,termId,subject,callback) {
 		console.log('error classes find needs host, termId, and subject',host,termId);
 		return callback('need more data')
 	};
-	console.log(host,termId)
+	
+
+
 	this.db.find({host:host,termId:termId,subject:subject},function (err,docs) {
 		if (err) {
 			console.log('NEDB error in subjects db, ',err,host);
 			return callback(err);
 		}
 
-		// if (docs.length>1) {
-		// 	console.log('WARNING: multiple docs returned for ',host);
-		// };
+		// dont return a couple fields (emails, ips, _id, deps)
+		var retVal = [];
 
-		return callback(null,docs);
+		docs.forEach(function (doc) {
+			retVal.push(this.removeInternalFields(doc));
+		}.bind(this));
+
+
+		return callback(null,retVal);
 	}.bind(this))
 
 

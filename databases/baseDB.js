@@ -4,7 +4,7 @@ var _ = require('lodash');
 var path = require("path");
 
 
-//if getting this.db undefined its baseDB trying to run something...
+//if getting this.db undefined its BaseDB trying to run something...
 function BaseDB () {
 
 	if (this.filename) {
@@ -132,9 +132,15 @@ BaseDB.prototype.fetchDBData = function(pageData,callback) {
 	}.bind(this));
 };
 
-
-
-
+BaseDB.prototype.removeInternalFields = function(doc) {
+	var retVal={};
+	for (var attrName in doc) {
+		if (!_(['emails','ips','_id','deps','lastUpdateTime']).includes(attrName)) {
+			retVal[attrName]=doc[attrName];
+		}
+	}
+	return retVal;
+};
 
 
 // interval
