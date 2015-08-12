@@ -14,7 +14,33 @@ function SectionsDB () {
 SectionsDB.prototype = Object.create(BaseDB.prototype);
 SectionsDB.prototype.constructor = SectionsDB;
 
+SectionsDB.prototype.find = function(host,termId,subject,classId,callback) {
+	
+	if (!host || !termId || !subject || !classId) {
+		console.log('error classes find needs host, termId, subject, classId',host,termId,subject,classId);
+		return callback('need more data')
+	};
+	
 
+
+	this.db.find({host:host,termId:termId,subject:subject,classId:classId},function (err,docs) {
+		if (err) {
+			console.log('NEDB error in section db, ',err,host);
+			return callback(err);
+		}
+
+		
+		var retVal = [];
+
+		docs.forEach(function (doc) {
+			retVal.push(this.removeInternalFields(doc));
+		}.bind(this));
+
+
+		return callback(null,retVal);
+	}.bind(this))
+
+};
 
 
 SectionsDB.prototype.SectionsDB= SectionsDB;

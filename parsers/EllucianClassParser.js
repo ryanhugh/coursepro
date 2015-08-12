@@ -255,8 +255,8 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	if (pageData.parsingData.subject) {
 		depData.subject = pageData.parsingData.subject;
 	}
-	if (pageData.parsingData.courseId) {
-		depData.courseId = pageData.parsingData.courseId;
+	if (pageData.parsingData.classId) {
+		depData.classId = pageData.parsingData.classId;
 	};
 
 	pageData.addDep(depData);
@@ -290,8 +290,8 @@ EllucianClassParser.prototype.onBeginParsing = function(pageData) {
 		console.log('could not find crse_in id ellucian class parser!',query,pageData.dbData.postData)
 	}
 	else {
-		pageData.parsingData.courseId = query.crse_in;
-		pageData.setData('courseId',query.crse_in)
+		pageData.parsingData.classId = query.crse_in;
+		pageData.setData('classId',query.crse_in)
 	}
 };
 

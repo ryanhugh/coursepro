@@ -114,19 +114,19 @@ BaseDB.prototype.fetchDBData = function(pageData,callback) {
 	this.db.find(lookupValues, function (err,docs) {
 		if (err) {
 			console.log('ERROR: DB lookup error:',err,pageData.dbData.url)
-			callback(err);
+			return callback(err);
 		};
 		
 		if (docs.length==0) {
-			callback();
+			return callback();
 		}
 		else if (docs.length==1) {
 			pageData.addDBData(docs[0]);
-			callback();
+			return callback();
 		}
 		else if (docs.length>1) {
 			console.log('ERROR: docs is longer than 1?',lookupValues,pageData.dbData,docs);
-			callback("BADDATA");
+			return callback("BADDATA");
 		}
 
 	}.bind(this));

@@ -61,6 +61,10 @@ PageDataMgr.prototype.create = function(startingData,callback) {
 		if (err) {
 			return callback(err);
 		}
+		if (!pageData.dbData.url) {
+			console.log('started pageData without url and could not find it in db!',pageData,startingData);
+			return callback('cant find dep');
+		};
 
 
 		//if haven't found the parser yet, try again

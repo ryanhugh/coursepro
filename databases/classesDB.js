@@ -18,7 +18,7 @@ ClassesDB.prototype.constructor = ClassesDB;
 ClassesDB.prototype.find = function(host,termId,subject,callback) {
 	
 	if (!host || !termId || !subject) {
-		console.log('error classes find needs host, termId, and subject',host,termId);
+		console.log('error classes find needs host, termId, and subject',host,termId,subject);
 		return callback('need more data')
 	};
 	
@@ -26,7 +26,7 @@ ClassesDB.prototype.find = function(host,termId,subject,callback) {
 
 	this.db.find({host:host,termId:termId,subject:subject},function (err,docs) {
 		if (err) {
-			console.log('NEDB error in subjects db, ',err,host);
+			console.log('NEDB error in ClassesDB db, ',err,host);
 			return callback(err);
 		}
 
