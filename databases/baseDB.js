@@ -10,7 +10,7 @@ function BaseDB () {
 	if (this.filename) {
 
 		var filePath = process.cwd();
-		if (_(filePath).endsWith('parsers')) {
+		if (_(filePath).endsWith('parsers') || _(filePath).endsWith('databases')) {
 			filePath = path.join(filePath,'..')
 		}
 

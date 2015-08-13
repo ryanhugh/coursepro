@@ -7,8 +7,8 @@ var fs = require('fs');
 var URI = require('URIjs');
 
 var blacklistedEmails = require('./blacklistedEmails.json')
-var collegeNames = require('./collegeNames');
 
+var collegeNamesDB = require('./collegeNamesDB');
 var termsDB = require('./databases/termsDB');
 var subjectsDB = require('./databases/subjectsDB');
 var classesDB = require('./databases/classesDB');
@@ -95,7 +95,7 @@ app.post('/urlDetails', function(req, res) {
 
 
 app.get('/listColleges',function (req,res) {
-	 collegeNames.getAll(function (err,names) {
+	 collegeNamesDB.find({},false,function (err,docs) {
 	 	if (err) {
 	 		console.log('error college names failed',req.url,err);
 	 		res.send(err);

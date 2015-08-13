@@ -23,7 +23,6 @@ ClassesDB.prototype.isValidLookupValues = function(lookupValues) {
 		return true;
 	}
 	else {
-		console.log('ERERE???',lookupValues.host , lookupValues.termId , lookupValues.subject)
 		return false;
 	}
 };
