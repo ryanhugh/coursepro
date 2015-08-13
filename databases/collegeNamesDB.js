@@ -202,9 +202,9 @@ CollegeNamesDB.prototype.addToDB= function (homepage,title) {
   this.find({homepage:homepage},{
 	 	shouldBeOnlyOne:true,
 	 	sanatize:false
-	 },function (err,docs) {
+	 },function (err,doc) {
 
-  	if (docs.length!==0) {
+  	if (doc) {
   		console.log('Warning: not inserting',homepage,'because it already exists');
   		return;
   	}
@@ -230,10 +230,15 @@ CollegeNamesDB.prototype.getTitle = function(url,callback) {
 	this.find({homepage:homepage},{
 	 	shouldBeOnlyOne:true,
 	 	sanatize:false
-	 },function (err,docs) {
+	 },function (err,doc) {
+
+	 	if (doc) {
+			//yay, return value
+			return callback(null,doc.title);
+	 	}
 
 		//not in db, hit page and add it
-		if (docs.length===0) {
+		else {
 
 			this.hitWhois(homepage,function (err,title) {
 				if (err){
@@ -249,13 +254,8 @@ CollegeNamesDB.prototype.getTitle = function(url,callback) {
 
 			return;
 		}
-		else if (docs.length>1) {
-			console.log('ERROR: more than 1 match this homepage??',homepage);
-		}
 
 
-		//yay, return value
-		return callback(null,docs[0].title);
 	}.bind(this));
 }
 

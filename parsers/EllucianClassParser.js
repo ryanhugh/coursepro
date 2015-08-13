@@ -232,7 +232,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 
 		//parse the location
-		depData.meetings[index].where = tableData.where[i]		
+		depData.meetings[index].where = toTitleCase(tableData.where[i]);
 
 
 
