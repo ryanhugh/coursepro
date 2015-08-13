@@ -4,15 +4,23 @@ var bodyParser = require('body-parser');
 var pageDataMgr = require('./pageDataMgr');
 var request = require('request');
 var fs = require('fs');
+var _ = require('lodash');
 var URI = require('URIjs');
 
 var blacklistedEmails = require('./blacklistedEmails.json')
 
-var collegeNamesDB = require('./collegeNamesDB');
+var collegeNamesDB = require('./databases/collegeNamesDB');
 var termsDB = require('./databases/termsDB');
 var subjectsDB = require('./databases/subjectsDB');
 var classesDB = require('./databases/classesDB');
 var sectionsDB = require('./databases/sectionsDB');
+
+//tell all the db's to update every 15 min
+collegeNamesDB.startUpdates();
+termsDB.startUpdates();
+subjectsDB.startUpdates();
+classesDB.startUpdates();
+sectionsDB.startUpdates();
 
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
@@ -43,7 +51,7 @@ function validateEmail(email) {
 	
 
 	for (var i = 0; i < blacklistedEmails.length; i++) {
-		if (email.slice(-blacklistedEmails[i].length) == blacklistedEmails[i]) {
+		if (_(email).endsWith(blacklistedEmails[i])) {
 			console.log('email is blacklisted',email);
 			return false;
 		}
@@ -95,7 +103,7 @@ app.post('/urlDetails', function(req, res) {
 
 
 app.get('/listColleges',function (req,res) {
-	 collegeNamesDB.find({},false,function (err,docs) {
+	 collegeNamesDB.find({},false,function (err,names) {
 	 	if (err) {
 	 		console.log('error college names failed',req.url,err);
 	 		res.send(err);

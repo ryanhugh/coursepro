@@ -7,6 +7,10 @@ var path = require("path");
 //if getting this.db undefined its BaseDB trying to run something...
 function BaseDB () {
 
+	this.updateTimer = null;
+	this.shouldAutoUpdate = false;
+	this.peopleCanRegister = false;
+
 	if (this.filename) {
 
 		var filePath = process.cwd();
@@ -17,9 +21,8 @@ function BaseDB () {
 		filePath = path.join(filePath,'databases',this.filename)
 
 		this.db = new Datastore({ filename:filePath , autoload: true });
-	}
 
-	this.updateTimer = null;
+	}
 }
 
 
@@ -123,6 +126,9 @@ BaseDB.prototype.onInterval = function() {
 
 // auto update the db
 BaseDB.prototype.startUpdates = function() {
+	if (!this.shouldAutoUpdate) {
+		return;
+	};
 	
 	//every 5 min
 	this.onInterval();

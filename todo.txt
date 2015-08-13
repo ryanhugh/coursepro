@@ -1,8 +1,10 @@
 !!!!
 
-remove parser from the end of the parsers?
 
-move college names to databases, and make it the same format as the others
+on the terms api, just return the terms not the other stuff
+
+
+why is there 16k section parsing in the log and only 8k in the db?
 
 
 //convert the uri json to this
@@ -14,25 +16,11 @@ put spider into all separate ellucian files??/
 
 
 
-if url is in termsDB does it need to be in collegenames too?
- - why does it have to be in collegenames again?
-
-
-remove ips and email unless they are used
-
-make sure the dbs that should be updating are
-
-parse terms and subj
-
-
-add termId, subj, homepage to classes
-add termId, subj, homepage, course#, to sections
-
 
 add optional terms for parsers, and if dont have 50%, complain
 
 
-birmham limits results to 350, fix this
+birmham limits results to 350, fix this, and dosent have a class page??
 
 
 
