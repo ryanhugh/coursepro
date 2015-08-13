@@ -160,7 +160,16 @@ BaseDB.prototype.findByPageData = function(pageData,callback) {
 	}
 
 
-	this.find(lookupValues,true,callback);
+	this.find(lookupValues,true,function (err,doc) {
+		if (err) {
+			return callback(err);
+		}
+		else 
+		{
+			pageData.addDBData(docs[0]);
+			return callback();
+		}
+	});
 };
 
 
@@ -199,8 +208,14 @@ BaseDB.prototype.find = function(lookupValues,shouldBeOnlyOne,callback) {
 			retVal.push(this.removeInternalFields(doc));
 		}.bind(this));
 
+		if (shouldBeOnlyOne) {
+			return callback(null,retVal[0]);
+		}
+		else {
+			return callback(null,retVal);
+		}
 
-		return callback(null,retVal);
+
 	}.bind(this))
 };
 

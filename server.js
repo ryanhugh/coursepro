@@ -121,7 +121,7 @@ app.get('/listTerms/*',function (req,res) {
 
 	var url = new URI(req.url).segment();
 
-	termsDB.find({host:url[1]},true,function (err,terms) {
+	termsDB.find({host:url[1]},true,function (err,doc) {
 
 		//probably change this later
 		if (err) {
@@ -130,7 +130,7 @@ app.get('/listTerms/*',function (req,res) {
 		};
 
 		res.header('access-control-allow-origin','*')
-		res.send(JSON.stringify(terms));
+		res.send(JSON.stringify(doc.terms));
 	})
 })
 
@@ -141,14 +141,14 @@ app.get('/listSubjects/*/*',function (req,res) {
 	subjectsDB.find({
 		host:url[1],
 		termId:url[2]
-	},true,function (err,subjects) {
+	},true,function (err,doc) {
 
 		if (err) {
 			res.send(err);
 			return;
 		};
 		res.header('access-control-allow-origin','*')
-		res.send(JSON.stringify(subjects));
+		res.send(JSON.stringify(doc.subjects));
 	})
 })
 
