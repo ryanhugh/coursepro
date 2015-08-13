@@ -3,7 +3,6 @@ var domutils = require('domutils');
 var fs = require('fs');
 var he = require('he');
 var URI = require('URIjs');
-var changeCase = require('change-case');
 var _ = require('lodash');
 
 var sectionDB = require('../databases/sectionsDB');

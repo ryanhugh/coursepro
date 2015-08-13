@@ -1,12 +1,6 @@
 !!!!
 
 
-on the terms api, just return the terms not the other stuff
-
-
-why is there 16k section parsing in the log and only 8k in the db?
-
-
 //convert the uri json to this
 uri.setSearch({ foo: "bar", goodbye : ["world", "mars"] });
 // uri == "?hello=mars&foo=bar&goodbye=world&goodbye=mars"
@@ -20,7 +14,7 @@ put spider into all separate ellucian files??/
 add optional terms for parsers, and if dont have 50%, complain
 
 
-birmham limits results to 350, fix this, and dosent have a class page??
+birmham limits results to 350, fix this, and dosent have a class page?????
 
 
 

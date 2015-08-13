@@ -9,7 +9,7 @@ var _ = require('lodash');
 var needle = require('needle');
 var fs = require('fs');
 var whois = require('node-whois')
-var changeCase = require('change-case');
+var toTitleCase = require('to-title-case');
 
 var pointer = require('../pointer');
 var BaseDB = require('./baseDB').BaseDB;
@@ -57,7 +57,7 @@ CollegeNamesDB.prototype.standardizeNames = function(startStrip,endStrip,title) 
 
 
 	// standardize the case
-	title = changeCase.titleCase(title);
+	title = toTitleCase(title);
 
 	return title.trim();
 }
@@ -199,7 +199,10 @@ CollegeNamesDB.prototype.isValidLookupValues = function(lookupValues) {
 CollegeNamesDB.prototype.addToDB= function (homepage,title) {
 
   //add to db if not already in db
-  this.find({homepage:homepage},true,function (err,docs) {
+  this.find({homepage:homepage},{
+	 	shouldBeOnlyOne:true,
+	 	sanatize:false
+	 },function (err,docs) {
 
   	if (docs.length!==0) {
   		console.log('Warning: not inserting',homepage,'because it already exists');
@@ -224,7 +227,10 @@ CollegeNamesDB.prototype.getTitle = function(url,callback) {
 		return callback(null);
 	}
 
-	this.find({homepage:homepage},true,function (err,docs) {
+	this.find({homepage:homepage},{
+	 	shouldBeOnlyOne:true,
+	 	sanatize:false
+	 },function (err,docs) {
 
 		//not in db, hit page and add it
 		if (docs.length===0) {

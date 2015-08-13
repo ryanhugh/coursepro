@@ -103,7 +103,10 @@ app.post('/urlDetails', function(req, res) {
 
 
 app.get('/listColleges',function (req,res) {
-	 collegeNamesDB.find({},false,function (err,names) {
+	 collegeNamesDB.find({},{
+	 	shouldBeOnlyOne:false,
+	 	sanatize:true
+	 },function (err,names) {
 	 	if (err) {
 	 		console.log('error college names failed',req.url,err);
 	 		res.send(err);
@@ -121,7 +124,10 @@ app.get('/listTerms/*',function (req,res) {
 
 	var url = new URI(req.url).segment();
 
-	termsDB.find({host:url[1]},true,function (err,doc) {
+	termsDB.find({host:url[1]},{
+	 	shouldBeOnlyOne:true,
+	 	sanatize:true
+	 },function (err,doc) {
 
 		//probably change this later
 		if (err) {
@@ -141,7 +147,10 @@ app.get('/listSubjects/*/*',function (req,res) {
 	subjectsDB.find({
 		host:url[1],
 		termId:url[2]
-	},true,function (err,doc) {
+	},{
+	 	shouldBeOnlyOne:true,
+	 	sanatize:true
+	 },function (err,doc) {
 
 		if (err) {
 			res.send(err);
@@ -161,7 +170,10 @@ app.get('/listClasses/*/*/*',function (req,res) {
 		host:url[1],
 		termId:url[2],
 		subject:url[3]
-	},false,function (err,classes) {
+	},{
+	 	shouldBeOnlyOne:false,
+	 	sanatize:true
+	 },function (err,classes) {
 
 		if (err) {
 			res.send(err);
@@ -181,7 +193,10 @@ app.get('/listSections/*/*/*/*',function (req,res) {
 		termId:url[2],
 		subject:url[3],
 		classId:url[4]
-	},false,function (err,classes) {
+	},{
+	 	shouldBeOnlyOne:false,
+	 	sanatize:true
+	 },function (err,classes) {
 
 		if (err) {
 			res.send(err);

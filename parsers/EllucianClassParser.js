@@ -3,7 +3,7 @@ var URI = require('URIjs');
 var domutils = require('domutils');
 var moment = require('moment');
 var he = require('he');
-var changeCase = require('change-case');
+var toTitleCase = require('to-title-case');
 var _ = require('lodash');
 
 var classDB = require('../databases/classesDB.js')
@@ -132,7 +132,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		}
 
 
-		pageData.setData('name',changeCase.titleCase(match[1]));
+		pageData.setData('name',toTitleCase(match[1]));
 
 
 
@@ -217,7 +217,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 				prof = "TBA";
 			}
 			else {
-				prof=changeCase.titleCase(prof);
+				prof=toTitleCase(prof);
 			}
 
 			if (!depData.meetings[index].profs) {

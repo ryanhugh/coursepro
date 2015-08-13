@@ -160,15 +160,23 @@ BaseDB.prototype.findByPageData = function(pageData,callback) {
 	}
 
 
-	this.find(lookupValues,true,function (err,doc) {
+	this.find(lookupValues,{
+	 	shouldBeOnlyOne:true,
+	 	sanatize:false
+	},function (err,doc) {
 		if (err) {
 			return callback(err);
 		}
-		else 
-		{
-			pageData.addDBData(docs[0]);
-			return callback();
-		}
+
+		if (doc) {
+			pageData.addDBData(doc);
+		};
+
+		return callback();
+
+
+
+		
 	});
 };
 
@@ -184,7 +192,7 @@ BaseDB.prototype.isValidLookupValues = function(lookupValues) {
 };
 
 
-BaseDB.prototype.find = function(lookupValues,shouldBeOnlyOne,callback) {
+BaseDB.prototype.find = function(lookupValues,config,callback) {
 	if (!this.isValidLookupValues(lookupValues)) {
 		console.log('invalid terms in '+this.constructor.name+' ',lookupValues);
 		return callback('invalid search')
@@ -197,19 +205,30 @@ BaseDB.prototype.find = function(lookupValues,shouldBeOnlyOne,callback) {
 			return callback(err);
 		}
 
-		if (docs.length>1 && shouldBeOnlyOne) {
+		if (docs.length>1 && config.shouldBeOnlyOne) {
 			console.log('error in '+this.constructor.name+ ' there was '+docs.length+' and was supposed to be just 1!',lookupValues,docs);
 		};
 
 		
 		var retVal = [];
 
-		docs.forEach(function (doc) {
-			retVal.push(this.removeInternalFields(doc));
-		}.bind(this));
+		if (config.sanatize) {
+			docs.forEach(function (doc) {
+				retVal.push(this.removeInternalFields(doc));
+			}.bind(this));
+		}
+		else {
+			retVal = docs;
+		}
 
-		if (shouldBeOnlyOne) {
-			return callback(null,retVal[0]);
+
+		if (config.shouldBeOnlyOne) {
+			if (retVal.length>0) {
+				return callback(null,retVal[0]);
+			}
+			else {
+				return callback(null,null);
+			}
 		}
 		else {
 			return callback(null,retVal);
