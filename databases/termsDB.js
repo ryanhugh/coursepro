@@ -14,25 +14,17 @@ function TermsDB () {
 TermsDB.prototype = Object.create(BaseDB.prototype);
 TermsDB.prototype.constructor = TermsDB;
 
-TermsDB.prototype.find = function(host,callback) {
-	
-	this.db.find({host:host},function (err,docs) {
-		if (err) {
-			console.log('NEDB error in terms db, ',err,host);
-			return callback(err);
-		}
 
-		if (docs.length>1) {
-			console.log('WARNING: multiple docs returned for ',host);
-		};
-
-		if (docs.length==0) {
-			return callback(null,[]);
-		}
-		else {
-			return callback(null,docs[0].terms)
-		}
-	}.bind(this))
+TermsDB.prototype.isValidLookupValues = function(lookupValues) {
+	if (BaseDB.prototype.isValidLookupValues(lookupValues)) {
+		return true;
+	}
+	else if (lookupValues.host) {
+		return true;
+	}
+	else {
+		return false;
+	}
 };
 
 

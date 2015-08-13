@@ -113,7 +113,7 @@ app.get('/listTerms/*',function (req,res) {
 
 	var url = new URI(req.url).segment();
 
-	termsDB.find(url[1],function (err,terms) {
+	termsDB.find({host:url[1]},true,function (err,terms) {
 
 		//probably change this later
 		if (err) {
@@ -130,7 +130,10 @@ app.get('/listSubjects/*/*',function (req,res) {
 	
 	var url = new URI(req.url).segment();
 
-	subjectsDB.find(url[1],url[2],function (err,subjects) {
+	subjectsDB.find({
+		host:url[1],
+		termId:url[2]
+	},true,function (err,subjects) {
 
 		if (err) {
 			res.send(err);
@@ -146,7 +149,11 @@ app.get('/listClasses/*/*/*',function (req,res) {
 	
 	var url = new URI(req.url).segment();
 
-	classesDB.find(url[1],url[2],url[3],function (err,classes) {
+	classesDB.find({
+		host:url[1],
+		termId:url[2],
+		subject:url[3]
+	},false,function (err,classes) {
 
 		if (err) {
 			res.send(err);
@@ -161,7 +168,12 @@ app.get('/listSections/*/*/*/*',function (req,res) {
 	
 	var url = new URI(req.url).segment();
 
-	sectionsDB.find(url[1],url[2],url[3],url[4],function (err,classes) {
+	sectionsDB.find({
+		host:url[1],
+		termId:url[2],
+		subject:url[3],
+		classId:url[4]
+	},false,function (err,classes) {
 
 		if (err) {
 			res.send(err);

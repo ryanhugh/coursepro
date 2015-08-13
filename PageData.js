@@ -1,6 +1,7 @@
 'use strict';
 var async = require('async');
 var URI = require('URIjs');
+var _ = require('lodash')
 
 
 //this is called in 3 places
@@ -21,9 +22,7 @@ function PageData (startingData) {
 	}
 
 	//stuff stored in the db
-	this.dbData = {
-		lastUpdateTime:0
-	}
+	this.dbData = {}
 
 	// //add post data if given post data
 	// if (startingData.dbData && startingData.dbData.postData) {
@@ -166,7 +165,12 @@ PageData.prototype.addDBData = function(data) {
 PageData.prototype.isUpdated = function() {
 	
 	var fifteeenMinAgo = new Date().getTime()-900000;
-	return this.dbData.lastUpdateTime>fifteeenMinAgo;
+	if (this.dbData.lastUpdateTime!==undefined && this.dbData.lastUpdateTime>fifteeenMinAgo) {
+		return true;
+	}
+	else {
+		return false;
+	}
 };
 
 
@@ -297,6 +301,9 @@ PageData.prototype.setData = function(name,value) {
 	if (['emails','ips','deps'].indexOf(name)>-1) {
 		console.log('ERROR: html set tried to override emails ips or deps');
 		return;
+	};
+	if (this.dbData[name]!==undefined && !_.isEqual(this.dbData[name],value)) {
+		console.log('warning, overriding pageData.'+name+' with new data',this.dbData[name],value)
 	};
 
 

@@ -14,29 +14,17 @@ function SubjectsDB () {
 SubjectsDB.prototype = Object.create(BaseDB.prototype);
 SubjectsDB.prototype.constructor = SubjectsDB;
 
-SubjectsDB.prototype.find = function(host,termId,callback) {
-	if (!host || !termId) {
-		console.log('error subject find needs both host and termId',host,termId);
-		return callback('need more data')
-	};
-	
-	this.db.find({host:host,termId:termId},function (err,docs) {
-		if (err) {
-			console.log('NEDB error in subjects db, ',err,host);
-			return callback(err);
-		}
 
-		if (docs.length>1) {
-			console.log('WARNING: multiple docs returned for ',host);
-		};
-
-		if (docs.length==0) {
-			return callback(null,[]);
-		}
-		else {
-			return callback(null,docs[0].subjects)
-		}
-	}.bind(this))
+SubjectsDB.prototype.isValidLookupValues = function(lookupValues) {
+	if (BaseDB.prototype.isValidLookupValues(lookupValues)) {
+		return true;
+	}
+	else if (lookupValues.host && lookupValues.termId) {
+		return true;
+	}
+	else {
+		return false;
+	}
 };
 
 

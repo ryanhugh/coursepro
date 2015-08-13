@@ -14,7 +14,7 @@ var pointer = require('./pointer');
 
 
 function CollegeNames () {
-	this.db = new Datastore({ filename: 'CollegeNames.db', autoload: true });
+	this.db = new Datastore({ filename: 'collegeNames.db', autoload: true });
 }
 
 
@@ -182,7 +182,7 @@ CollegeNames.prototype.hitWhois = function (homepage,callback,tryCount) {
 
 
 //no callback, could easily add one
-CollegeNames.prototype.addToDB= function (homepage,title,url) {
+CollegeNames.prototype.addToDB= function (homepage,title) {
 
   //add to db if not already in db
   this.db.find({homepage:homepage},function (err,docs) {
@@ -194,8 +194,7 @@ CollegeNames.prototype.addToDB= function (homepage,title,url) {
 
   	this.db.insert({
   		homepage:homepage,
-  		title:title,
-  		url:url
+  		title:title
   	});
 
   }.bind(this));
@@ -236,28 +235,19 @@ CollegeNames.prototype.getTitle = function(url,callback) {
 
 
 		//yay, return value
-		// console.log('COLLGE NAMES cache hit',homepage,docs[0].title);
 		return callback(null,docs[0].title);
 	}.bind(this));
 }
 
 
 CollegeNames.prototype.getAll = function(callback) {
-	var retVal = [];
-
 	this.db.find({},function(err,docs){
 		if (err){
 			console.log("ERROR: nedb college names.getAll error",err);
 			return callback(err);
 		}
 
-		docs.forEach(function(doc){
-			var newItem = {};
-			newItem.homepage = doc.homepage;
-			newItem.title = doc.title;
-			retVal.push(newItem);
-		});
-		return callback(null,retVal);
+		return callback(null,docs);
 	});
 }
 

@@ -73,7 +73,7 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 			if (numReplaced==0) {
 				console.log('ERROR: updated 0?',newData);
 			};
-		});
+		}.bind(this));
 	}
 	else {
 		this.db.insert(newData,function (err,newDoc) {
@@ -85,52 +85,10 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 
 			return callback(null,newDoc);
 
-
-		});
+		}.bind(this));
 	}
 };
 
-
-BaseDB.prototype.fetchDBData = function(pageData,callback) {
-
-	var lookupValues = {};
-
-	if (pageData.dbData._id) {
-		lookupValues._id = pageData.dbData._id;
-	}
-	else if (pageData.dbData.url) {
-		lookupValues.url = pageData.dbData.url;
-
-		if (pageData.dbData.postData) {
-			lookupValues.postData = pageData.dbData.postData
-		};
-	}
-	else {
-		console.log('error in base db - cant lookup page data wihout url or _id!',pageData)
-		return callback('cant lookup')
-	}
-	
-	//if already in database, great
-	this.db.find(lookupValues, function (err,docs) {
-		if (err) {
-			console.log('ERROR: DB lookup error:',err,pageData.dbData.url)
-			return callback(err);
-		};
-		
-		if (docs.length==0) {
-			return callback();
-		}
-		else if (docs.length==1) {
-			pageData.addDBData(docs[0]);
-			return callback();
-		}
-		else if (docs.length>1) {
-			console.log('ERROR: docs is longer than 1?',lookupValues,pageData.dbData,docs);
-			return callback("BADDATA");
-		}
-
-	}.bind(this));
-};
 
 
 // dont return a couple fields (emails, ips, _id, deps, etc)
@@ -161,6 +119,9 @@ BaseDB.prototype.onInterval = function() {
 
 
 
+
+
+// auto update the db
 BaseDB.prototype.startUpdates = function() {
 	
 	//every 5 min
@@ -170,6 +131,74 @@ BaseDB.prototype.startUpdates = function() {
 BaseDB.prototype.stopUpdates = function() {
 	clearInterval(this.updateTimer);
 };
+
+
+
+
+BaseDB.prototype.findByPageData = function(pageData,callback) {
+	var lookupValues = {};
+
+	if (pageData.dbData._id) {
+		lookupValues._id = pageData.dbData._id;
+	}
+	else if (pageData.dbData.url) {
+		lookupValues.url = pageData.dbData.url;
+
+		if (pageData.dbData.postData) {
+			lookupValues.postData = pageData.dbData.postData
+		};
+	}
+	else {
+		console.log('error in base db - cant lookup page data wihout url or _id!',pageData)
+		return callback('cant lookup')
+	}
+
+
+	this.find(lookupValues,true,callback);
+};
+
+
+
+//api search 
+
+BaseDB.prototype.isValidLookupValues = function(lookupValues) {
+	if (lookupValues._id || lookupValues.url) {
+		return true;
+	}
+	return false;
+};
+
+
+BaseDB.prototype.find = function(lookupValues,shouldBeOnlyOne,callback) {
+	if (!this.isValidLookupValues(lookupValues)) {
+		console.log('invalid terms in '+this.constructor.name+' ',lookupValues);
+		return callback('invalid search')
+	};
+
+
+	this.db.find(lookupValues,function (err,docs) {
+		if (err) {
+			console.log('NEDB error in section db, ',err,host);
+			return callback(err);
+		}
+
+		if (docs.length>1 && shouldBeOnlyOne) {
+			console.log('error in '+this.constructor.name+ ' there was '+docs.length+' and was supposed to be just 1!',lookupValues,docs);
+		};
+
+		
+		var retVal = [];
+
+		docs.forEach(function (doc) {
+			retVal.push(this.removeInternalFields(doc));
+		}.bind(this));
+
+
+		return callback(null,retVal);
+	}.bind(this))
+};
+
+
 
 
 

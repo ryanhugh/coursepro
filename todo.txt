@@ -1,6 +1,6 @@
 !!!!
 
-remove parser from the end of the parsers
+remove parser from the end of the parsers?
 
 move college names to databases, and make it the same format as the others
 
@@ -8,12 +8,6 @@ move college names to databases, and make it the same format as the others
 //convert the uri json to this
 uri.setSearch({ foo: "bar", goodbye : ["world", "mars"] });
 // uri == "?hello=mars&foo=bar&goodbye=world&goodbye=mars"
-
-when loading from cache, populate pageData.deps and fully load those too, (they will probably be in cache too)
-
-finish scraping subj
-
-deps of terms page are all the same urls because its the post data that matters??
 
 
 put spider into all separate ellucian files??/

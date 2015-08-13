@@ -57,7 +57,7 @@ PageDataMgr.prototype.create = function(startingData,callback) {
 
 
 	//main control flow for processing a url
-	pageData.database.fetchDBData(pageData,function (err) {
+	pageData.database.findByPageData(pageData,function (err) {
 		if (err) {
 			return callback(err);
 		}
