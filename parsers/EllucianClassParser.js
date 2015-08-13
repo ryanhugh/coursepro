@@ -153,99 +153,93 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 	//find the table in this section
 	var tables = domutils.getElementsByTagName('table',classDetails);
-	if (tables.length===0) {
-		console.log('warning, 0 meetings tables found',pageData.dbData.url);
-		pageData.addDep(depData);
-		return;
+	if (tables.length!==1) {
+		console.log('warning, '+tables.length+' meetings tables found',pageData.dbData.url);
 	}
 
+	if (tables.length>0) {
+		depData.meetings=[]
 
-	if (tables.length>1) {
-		console.log('>1 table in page?',tables,pageData.dbData.url);
-		return
-	}
+		var tableData = this.parseTable(tables[0]);
 
-	depData.meetings=[]
-
-
-	var tableData = this.parseTable(tables[0]);
-
-	if (tableData._rowCount<1 || !tableData.daterange || !tableData.where || !tableData.instructors || !tableData.time || !tableData.days) {
-		console.log('ERROR, invalid table in class parser',tableData,pageData.dbData.url)
-		return;
-	};
-
-	for (var i = 0; i < tableData._rowCount; i++) {
-
-		depData.meetings.push({});
-		var index= depData.meetings.length-1;
-
-	
-		//if is a single day class (exams, and some classes that happen like 2x a month specify specific dates)
-		var splitTimeString = tableData.daterange[i].split('-');
-		var startDate = moment(splitTimeString[0].trim(),'MMM D,YYYY');
-		var endDate = moment(splitTimeString[1].trim(),'MMM D,YYYY');
-
-		if (!startDate.isValid() || !endDate.isValid()) {
-			console.log('ERROR: one of parsed dates is not valid',splitTimeString,pageData.dbData.url);
+		if (tableData._rowCount<1 || !tableData.daterange || !tableData.where || !tableData.instructors || !tableData.time || !tableData.days) {
+			console.log('ERROR, invalid table in class parser',tableData,pageData.dbData.url)
+			return;
 		};
 
-		//add the dates if they are valid
-		//store as days since epoch 1970
-		if (startDate.isValid()) {
-			depData.meetings[index].startDate = startDate.diff(0,'day');
-		}
+		for (var i = 0; i < tableData._rowCount; i++) {
+
+			depData.meetings.push({});
+			var index= depData.meetings.length-1;
+
 		
-		if (endDate.isValid()) {
-			depData.meetings[index].endDate = endDate.diff(0,'day');
-		}
+			//if is a single day class (exams, and some classes that happen like 2x a month specify specific dates)
+			var splitTimeString = tableData.daterange[i].split('-');
+			var startDate = moment(splitTimeString[0].trim(),'MMM D,YYYY');
+			var endDate = moment(splitTimeString[1].trim(),'MMM D,YYYY');
 
+			if (!startDate.isValid() || !endDate.isValid()) {
+				console.log('ERROR: one of parsed dates is not valid',splitTimeString,pageData.dbData.url);
+			};
 
-
-		//parse the professors
-		var profs = tableData.instructors[i].split(',')
-
-		profs.forEach(function (prof) {
+			//add the dates if they are valid
+			//store as days since epoch 1970
+			if (startDate.isValid()) {
+				depData.meetings[index].startDate = startDate.diff(0,'day');
+			}
 			
-			//replace double spaces with a single space,trim, and remove the (p) at the end
-			prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
-
-			if (prof.length<3) {
-				console.log('warning: empty/short prof name??',prof,tableData)
-			}
-			if (prof.toLowerCase()=='tba') {
-				prof = "TBA";
-			}
-			else {
-				prof=toTitleCase(prof);
+			if (endDate.isValid()) {
+				depData.meetings[index].endDate = endDate.diff(0,'day');
 			}
 
-			if (!depData.meetings[index].profs) {
-				depData.meetings[index].profs = [prof];
+
+
+			//parse the professors
+			var profs = tableData.instructors[i].split(',')
+
+			profs.forEach(function (prof) {
+				
+				//replace double spaces with a single space,trim, and remove the (p) at the end
+				prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
+
+				if (prof.length<3) {
+					console.log('warning: empty/short prof name??',prof,tableData)
+				}
+				if (prof.toLowerCase()=='tba') {
+					prof = "TBA";
+				}
+				else {
+					prof=toTitleCase(prof);
+				}
+
+				if (!depData.meetings[index].profs) {
+					depData.meetings[index].profs = [prof];
+				}
+				else {
+					depData.meetings[index].profs.push(prof);	
+				}
+			}.bind(this));
+
+
+
+
+			//parse the location
+			depData.meetings[index].where = toTitleCase(tableData.where[i]);
+
+
+
+
+			//start time and end time of class each day
+			var times = this.parseTimeStamps(tableData.time[i],tableData.days[i]);
+
+			//parse and add the times
+			if (times) {
+				depData.meetings[index].times=times;
 			}
-			else {
-				depData.meetings[index].profs.push(prof);	
-			}
-		}.bind(this));
+		};
 
-
-
-
-		//parse the location
-		depData.meetings[index].where = toTitleCase(tableData.where[i]);
-
-
-
-
-		//start time and end time of class each day
-		var times = this.parseTimeStamps(tableData.time[i],tableData.days[i]);
-
-		//parse and add the times
-		if (times) {
-			depData.meetings[index].times=times;
-		}
 	};
-
+	
 
 	//add data about the class
 	if (pageData.parsingData.termId) {
@@ -271,7 +265,7 @@ EllucianClassParser.prototype.onBeginParsing = function(pageData) {
 	var query = new URI(pageData.dbData.url).query(true);
 
 	if (!query.term_in) {
-		console.log('could not find term_in id ellucian class parser!',query,pageData.dbData.postData)
+		console.log('could not find term_in id ellucian class parser!',query,pageData.dbData.url)
 	}
 	else {
 		pageData.parsingData.termId = query.term_in;
@@ -279,7 +273,7 @@ EllucianClassParser.prototype.onBeginParsing = function(pageData) {
 	}
 
 	if (!query.subj_in) {
-		console.log('could not find subj_in id ellucian class parser!',query,pageData.dbData.postData)
+		console.log('could not find subj_in id ellucian class parser!',query,pageData.dbData.url)
 	}
 	else {
 		pageData.parsingData.subject = query.subj_in;
@@ -287,7 +281,7 @@ EllucianClassParser.prototype.onBeginParsing = function(pageData) {
 	}
 
 	if (!query.crse_in) {
-		console.log('could not find crse_in id ellucian class parser!',query,pageData.dbData.postData)
+		console.log('could not find crse_in id ellucian class parser!',query,pageData.dbData.url)
 	}
 	else {
 		pageData.parsingData.classId = query.crse_in;

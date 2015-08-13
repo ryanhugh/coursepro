@@ -235,7 +235,6 @@ PageData.prototype.getUrlStart = function() {
 };
 
 //can add by url or _id - one of two is required
-//depData.postData must not contain objects! it must be a string that can be compared with ===
 PageData.prototype.addDep = function(depData) {
 	if (!depData || (!depData.url && !depData._id)) {
 		console.trace('Error:Tried to add invalid depdata??',depData,this);
@@ -256,7 +255,7 @@ PageData.prototype.addDep = function(depData) {
 			};
 		}
 		else if (depData.url) {
-			if (this.depsToProcess[i].url==depData.url && this.depsToProcess[i].postData===depData.postData) {
+			if (this.depsToProcess[i].url==depData.url && _.isEqual(this.depsToProcess[i].postData,depData.postData)) {
 				isMatch=true;
 			}
 		}

@@ -177,7 +177,8 @@ Spider.prototype.tests = function () {
 	// this.go('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched')
 	// this.go('https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched')
 	// this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_dyn_sched')
-	this.go('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched')
+	// this.go('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched')
+	this.go('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched') //this is a really good site, small + quick. finished in like 2 min
 	return;
 
 
