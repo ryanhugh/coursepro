@@ -62,7 +62,7 @@ function PageData (startingData) {
 		this.dbData.emails = [startingData.email];
 	}
 
-	this.storedInArray = startingData.storedInArray;
+	// this.storedInArray = startingData.storedInArray;
 	this.database = startingData.database
 	this.parent = startingData.parent;
 
@@ -74,7 +74,28 @@ function PageData (startingData) {
 }
 
 
-PageData.prototype.findSupportingParser = function(parsers) {
+// when loading from db, 3 steps
+// load data from db
+// find parser
+// ^ these steps for all deps (recursivly)
+
+// when loading from page, 
+// 1 set parser
+// 2. load data (need to get name data from db so in eclass another entry is not made)
+// 3. continue parsing
+
+
+
+
+PageData.prototype.findSupportingParser = function() {
+	if (this.parser) {
+		console.log('error, told to find a parser but already have one???',this)
+		console.trace();
+		return;
+	};
+
+
+	var parsers = pageDataMgr.getParsers();
 
 	for (var i = 0; i < parsers.length; i++) {
 		if (parsers[i].supportsPage(this.dbData.url)) {
@@ -137,9 +158,24 @@ PageData.prototype.addData = function(data) {
 			}.bind(this));
 		}
 		else if (attrName == 'deps') {
-			data.deps.forEach(function (newDepId) {
-				this.addDep({_id:newDepId});
-			}.bind(this));
+			if (!this.parser) {
+				console.log('error!!!! cannot load deps if dont have parser',pageData)
+				continue;
+			};
+
+			//iterate over each type of dep
+			for (var parserName in data.deps) {
+
+				data.deps[parserName].forEach(function (newDepId) {
+
+					var newDep = this.addDep({
+						_id:newDepId
+					},{
+						parserName:parserName
+					});
+				}.bind(this));
+
+			}
 		}
 
 		//override all other attributes
@@ -175,6 +211,8 @@ PageData.prototype.processDeps = function(callback) {
 		return callback();
 	};
 
+	this.dbData.deps = {};
+
 	//any dep data will be inserted into main PageData for dep
 	async.map(this.depsToProcess, function (depPageData,callback) {
 		pageDataMgr.go(depPageData,function (err,newDepData) {
@@ -183,19 +221,20 @@ PageData.prototype.processDeps = function(callback) {
 				return callback(err);
 			};
 
-			var depArrayName = 'deps';
-			if (newDepData.storedInArray) {
-				depArrayName = newDepData.storedInArray
-			}
-			console.log('storing in ',depArrayName,'newDepData',newDepData)
-
-			if (!this.dbData[depArrayName]) {
-				this.dbData[depArrayName] = [];
+			if (!newDepData.parser || !newDepData.parser.name) {
+				console.log('error, cannot add dep, dont know where to add it',newDepData.parser,newDepData)
 			};
 
 
-			if (this.dbData[depArrayName].indexOf(newDepData.dbData._id)<0) {	
-				this.dbData[depArrayName].push(newDepData.dbData._id);
+			console.log('storing in ',newDepData.parser.name,'newDepData',newDepData)
+
+			if (!this.dbData.deps[newDepData.parser.name]) {
+				this.dbData.deps[newDepData.parser.name] = [];
+			};
+
+
+			if (this.dbData.deps[newDepData.parser.name].indexOf(newDepData.dbData._id)<0) {	
+				this.dbData.deps[newDepData.parser.name].push(newDepData.dbData._id);
 			};
 
 
@@ -338,32 +377,22 @@ PageData.prototype.getData = function(name) {
 };
 
 
-// PageData.prototype.addEntry = function(first_argument) {
-// 	// body...
-// };
 
 
-
-// PageData.prototype.setMultiDBMode = function(value) {
-// 	this.multiDBMode = value;
-// };
-
-
-
-PageData.prototype.addDBEntry = function(dbData) {
-	// if (!this.multiDBMode) {
-		// console.log('error tried to add another db entry and not in multiDBMode!',dbData)
-		// return;
-	// };
+// PageData.prototype.addDBEntry = function(dbData) {
+// 	// if (!this.multiDBMode) {
+// 		// console.log('error tried to add another db entry and not in multiDBMode!',dbData)
+// 		// return;
+// 	// };
 	
-	// if (dbData.url!=this.dbData.url) {
-	// 	console.log('warning, wtf',dbData,this.dbData);
-	// }
+// 	// if (dbData.url!=this.dbData.url) {
+// 	// 	console.log('warning, wtf',dbData,this.dbData);
+// 	// }
 
-	this.dbEntries.push(dbData);
+// 	this.dbEntries.push(dbData);
 
 
-};
+// };
 
 
 

@@ -1,9 +1,18 @@
 !!!!
 
 
-deps need to be processed before parent is processed so that when the parent hits the page it knows which dep to update
+storedInArray -> depType
+
+deps:{classes:[],sections:[]}
+
+id also say change it back to just deps: and add a loadDependencyChain() and then just search through deps for matching title
+- and add the class data to the other classes
+
+and 
+
+deps need to be processed before parent is processed so that when the parent hits the page it knows which dep to update -> load all, then parse all
 instead of adding more deps (which it does currently)
-and load classes: somehow
+and load classes: somehow -- nope
 
 
 

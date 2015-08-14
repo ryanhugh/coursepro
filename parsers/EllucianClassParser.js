@@ -21,6 +21,8 @@ function EllucianClassParser () {
 
 	this.requiredAttrs = [];
 
+	this.name = 'EllucianClassParser'
+
 	//name and deps are optional, but if there is no deps there is nowhere to parse name...
 }
 
