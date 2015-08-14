@@ -114,7 +114,10 @@ BaseDB.prototype.onInterval = function() {
 	this.db.find({}, function (err,docs) {
 		for (var i = 0; i < docs.length; i++) {
 			if (docs[i].emails.length>0) {
-				pageBaseDB.create({url:docs[i].url})
+
+				var pageData = pageDataMgr.create({url:docs[i].url});
+				pageDataMgr.go(pageData);
+
 			}
 		};
 	}.bind(this));

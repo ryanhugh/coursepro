@@ -25,28 +25,36 @@ function PageDataMgr () {
 
 
 PageDataMgr.prototype.createFromURL = function(url,callback) {
-	return this.create({dbData:{url:url}},callback);
+	var pageData = this.create({dbData:{url:url}});
+	pageDataMgr.go(pageData,callback);
 };
 
 
+
+PageDataMgr.prototype.create = function(startingData) {
+
+	var pageData = new PageData(startingData);
+	if (!pageData.dbData) {
+		console.log('ERROR could not create a pagedata!')
+		return null;
+	}
+	return pageData;
+
+};
 
 
 //main starting point for parsing urls
 //startingData.url or startingData._id is required
 //callback = function (err,pageData) {}
-PageDataMgr.prototype.create = function(startingData,callback) {
+PageDataMgr.prototype.go = function(pageData,callback) {
 	if (!callback) {
 		callback = function (){};
 	}
-
-
-	var pageData = new PageData(startingData);
-	if (!pageData.dbData) {
-		console.log('ERROR could not create a pagedata!')
-		return callback('invalid pagedata')
+	if (pageData.dbData.updatedByParent) {
+		return this.finish(pageData,callback);
 	};
 
-
+	
 	if (pageData.dbData.url && !pageData.findSupportingParser(parsers)) {
 		return callback("NOSUPPORT");
 	}
@@ -62,7 +70,7 @@ PageDataMgr.prototype.create = function(startingData,callback) {
 			return callback(err);
 		}
 		if (!pageData.dbData.url) {
-			console.log('started pageData without url and could not find it in db!',pageData,startingData);
+			console.log('started pageData without url and could not find it in db!',pageData);
 			return callback('cant find dep');
 		};
 
@@ -186,13 +194,13 @@ PageDataMgr.prototype.tests = function() {
 
 
 
-	// this.create('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.create('https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201612&subj_in=ALHS&crse_in=1127&schd_in=C')
-	// this.create('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.create('https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckctlg.p_display_courses')
-	// this.create('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=CTV&sel_crse_strt=580&sel_crse_end=580&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.create('https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=ANTH&sel_crse_strt=2764&sel_crse_end=2764&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.create('https://tturedss1.tntech.edu/pls/PROD/bwckctlg.p_display_courses?term_in=201580&one_subj=ACCT&sel_crse_strt=1010&sel_crse_end=1010&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201612&subj_in=ALHS&crse_in=1127&schd_in=C')
+	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckctlg.p_display_courses')
+	// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=CTV&sel_crse_strt=580&sel_crse_end=580&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=ANTH&sel_crse_strt=2764&sel_crse_end=2764&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckctlg.p_display_courses?term_in=201580&one_subj=ACCT&sel_crse_strt=1010&sel_crse_end=1010&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// return;
   
   // https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=6610
@@ -209,19 +217,19 @@ PageDataMgr.prototype.tests = function() {
 	  
 	  
 		 for (var i=0;i<Math.min(10000,urls.length);i++){
-		   this.create(urls[i]);
+		   this.createFromURL(urls[i]);
 		 }
 
 
-		// this.create(urls[4]);
+		// this.createFromURL(urls[4]);
 
 		}.bind(this));
 	return;
 
-	// this.create('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	this.create('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=',null,function (err,pageData) {
-	// this.create('https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%',null,function (err,pageData) {
-	// this.create('https://genisys.regent.edu/pls/prod/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=10739',null,function (err,pageData) {
+	// this.createFromURL('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=',null,function (err,pageData) {
+	// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%',null,function (err,pageData) {
+	// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=10739',null,function (err,pageData) {
 	console.log("CALLBACK WAS CALLED!!!!!!!",pageData.getClientString());
 
 	}.bind(this));

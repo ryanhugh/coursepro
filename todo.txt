@@ -1,6 +1,21 @@
 !!!!
 
 
+deps need to be processed before parent is processed so that when the parent hits the page it knows which dep to update
+instead of adding more deps (which it does currently)
+and load classes: somehow
+
+
+
+different names:
+if eclass has name, only parse those with name
+pagedatamgr.createFromParser - give desc
+
+
+.dbData when in multi mode reads dbEntries[0] ?
+
+
+
 //convert the uri json to this
 uri.setSearch({ foo: "bar", goodbye : ["world", "mars"] });
 // uri == "?hello=mars&foo=bar&goodbye=world&goodbye=mars"

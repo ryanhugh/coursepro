@@ -9,8 +9,8 @@ var _ = require('lodash')
 //baseParser.js (for deps)
 //datamgr.js (for auto updates)
 function PageData (startingData) {
-	if (!startingData.dbData.url && !startingData.dbData._id) {
-		console.log('page data needs a url or an id!',startingData);
+	if (!startingData.dbData.url && !startingData.dbData._id && !startingData.dbData.updatedByParent) {
+		console.log('page data needs a url or an _id or an updater id!',startingData);
 		console.trace();
 		return null
 	}
@@ -21,14 +21,6 @@ function PageData (startingData) {
 		email:startingData.email
 	}
 
-	//stuff stored in the db
-	this.dbData = {}
-
-	// //add post data if given post data
-	// if (startingData.dbData && startingData.dbData.postData) {
-	// 	this.dbData.postData = startingData.dbData.postData;
-	// }
-
 	this.parser = null;
 
 	//some tem variables used while parsing, not relavant when done
@@ -36,6 +28,14 @@ function PageData (startingData) {
 
 
 
+
+	//stuff stored in the db
+	this.dbData = {}
+
+	//if multi db mode is used, this is used instead
+	this.dbEntries = [];
+
+	this.multiDBMode = false;
 
 
 	this.database = null;
@@ -45,10 +45,9 @@ function PageData (startingData) {
 	//dependencies (instances of PageData)
 	this.deps = [];
 
-	//{name:value} that the new pageData objects should have in dbData
+	//{name:value} that the new PageData objects should have in dbData
 	//when processDeps is ran, this is emptied and this.deps and this.dbData.deps are filled
 	this.depsToProcess = []
-
 
 
 
@@ -62,13 +61,8 @@ function PageData (startingData) {
 	if (startingData.email) {
 		this.dbData.emails = [startingData.email];
 	}
-	// if (startingData.url) {
-	// 	this.dbData.url = startingData.url;
-	// };
-	// if (startingData._id) {
-	// 	this.dbData._id = startingData._id;
-	// };
 
+	this.storedInArray = startingData.storedInArray;
 	this.database = startingData.database
 	this.parent = startingData.parent;
 
@@ -181,28 +175,27 @@ PageData.prototype.processDeps = function(callback) {
 		return callback();
 	};
 
-	this.dbData.deps = []
-
-	//any dep data will be inserted into main pageData for dep
-	async.map(this.depsToProcess, function (addToDepData,callback) {
-
-		var startingData = {
-			ip:this.originalData.ip,
-			email:this.originalData.email,
-			dbData:addToDepData,
-			parent:this,
-			database:this.dependencyDatabase
-		}
-		
-		pageDataMgr.create(startingData,function (err,newDepData) {
+	//any dep data will be inserted into main PageData for dep
+	async.map(this.depsToProcess, function (depPageData,callback) {
+		pageDataMgr.go(depPageData,function (err,newDepData) {
 			if (err) {
-				console.log('ERROR: processing deps',err);
+				console.log('ERROR: processing deps:',err);
 				return callback(err);
 			};
 
+			var depArrayName = 'deps';
+			if (newDepData.storedInArray) {
+				depArrayName = newDepData.storedInArray
+			}
+			console.log('storing in ',depArrayName,'newDepData',newDepData)
 
-			if (this.dbData.deps.indexOf(newDepData.dbData._id)<0) {	
-				this.dbData.deps.push(newDepData.dbData._id);
+			if (!this.dbData[depArrayName]) {
+				this.dbData[depArrayName] = [];
+			};
+
+
+			if (this.dbData[depArrayName].indexOf(newDepData.dbData._id)<0) {	
+				this.dbData[depArrayName].push(newDepData.dbData._id);
 			};
 
 
@@ -235,11 +228,14 @@ PageData.prototype.getUrlStart = function() {
 };
 
 //can add by url or _id - one of two is required
-PageData.prototype.addDep = function(depData) {
-	if (!depData || (!depData.url && !depData._id)) {
+PageData.prototype.addDep = function(depData,depPageDataConfig) {
+	if (!depData || (!depData.url && !depData._id && !depData.updatedByParent)) {
 		console.trace('Error:Tried to add invalid depdata??',depData,this);
 		return;
 	}
+	if (!depPageDataConfig) {
+		depPageDataConfig={}
+	};
 
 
 
@@ -250,12 +246,12 @@ PageData.prototype.addDep = function(depData) {
 
 		//if given an _id to search for, make sure it matches the id in the existing depsToProcess
 		if (depData._id) {
-			if (this.depsToProcess[i]._id==depData._id) {
+			if (this.depsToProcess[i].dbData._id==depData._id) {
 				isMatch=true;
 			};
 		}
 		else if (depData.url) {
-			if (this.depsToProcess[i].url==depData.url && _.isEqual(this.depsToProcess[i].postData,depData.postData)) {
+			if (this.depsToProcess[i].dbData.url==depData.url && _.isEqual(this.depsToProcess[i].dbData.postData,depData.postData)) {
 				isMatch=true;
 			}
 		}
@@ -264,17 +260,42 @@ PageData.prototype.addDep = function(depData) {
 			console.log('URL was already in deps, adding new attrs!',this.depsToProcess[i],depData)
 			for (var newAttrName in depData) {
 				console.log('adding ',newAttrName,depData[newAttrName])
-				this.depsToProcess[i][newAttrName]=depData[newAttrName];
+				this.depsToProcess[i].setData(newAttrName,depData[newAttrName]);
 			}
 
 			//insert the new data into the dep here, instead of adding a new dep below
 			return;
 		}
+	}
+
+
+	var startingData = {
+		ip:this.originalData.ip,
+		email:this.originalData.email,
+		dbData:depData,
+		parent:this,
+		database:this.dependencyDatabase
+	}
+
+
+	for (var attrName in depPageDataConfig) {
+		if (attrName=='dbData') {//TODO add the other ones too... (or maybe whitelist)
+			console.log('error cant override dbdata...');
+		}
+		else {
+			startingData[attrName]=depPageDataConfig[attrName]
+		}
+	}	
+
+	//create the dep, add it to the array and return it
+	var dep = pageDataMgr.create(startingData);
+	if (!dep) {
+		console.log('could not create dep in add dep!')
+		return;
 	};
-
-
-	this.depsToProcess.push(depData);
-
+	console.log('startingData',startingData,'depPageDataConfig',depPageDataConfig,'dep:',dep)
+	this.depsToProcess.push(dep);
+	return dep;
 }
 
 
@@ -301,17 +322,50 @@ PageData.prototype.setData = function(name,value) {
 		console.log('ERROR: html set tried to override emails ips or deps');
 		return;
 	};
+
+
 	if (this.dbData[name]!==undefined && !_.isEqual(this.dbData[name],value)) {
-		console.log('warning, overriding pageData.'+name+' with new data',this.dbData[name],value)
+		console.log('warning, overriding PageData.'+name+' with new data',this.dbData[name],value)
 	};
 
 
 	this.dbData[name]=value;
 };
 
+
 PageData.prototype.getData = function(name) {
 	return this.dbData[name];
 };
+
+
+// PageData.prototype.addEntry = function(first_argument) {
+// 	// body...
+// };
+
+
+
+// PageData.prototype.setMultiDBMode = function(value) {
+// 	this.multiDBMode = value;
+// };
+
+
+
+PageData.prototype.addDBEntry = function(dbData) {
+	// if (!this.multiDBMode) {
+		// console.log('error tried to add another db entry and not in multiDBMode!',dbData)
+		// return;
+	// };
+	
+	// if (dbData.url!=this.dbData.url) {
+	// 	console.log('warning, wtf',dbData,this.dbData);
+	// }
+
+	this.dbEntries.push(dbData);
+
+
+};
+
+
 
 
 

@@ -102,7 +102,11 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
-	var depData = {};
+	//if different name than this class, save to new class 
+	var dbAltEntry = null;
+
+
+	var sectionStartingData = {};
 
 
 	//find the url
@@ -119,7 +123,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		}
 
 		if (ellucianSectionParser.supportsPage(urlParsed.toString())){
-			depData.url = urlParsed.toString();
+			sectionStartingData.url = urlParsed.toString();
 		}
 
 		//also parse the name from the link
@@ -132,13 +136,31 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		}
 
 
-		pageData.setData('name',toTitleCase(match[1]));
+		var className = toTitleCase(match[1]);
+
+		//name was already set to something different, make another db entry for this class
+		if (pageData.parsingData.name && className!=pageData.parsingData.name) {
+			// console.log('creating another class from a class!')
+
+			dbAltEntry = pageData.addDep({
+				name:className,
+				updatedByParent:true
+			},{
+				storedInArray:'classes',
+				database:classDB
+			});
+			// console.log('and the class is',dbAltEntry)
 
 
+		}
+		else {
+			pageData.parsingData.name = className;
+			pageData.setData('name',className);
+		}
 
 	}.bind(this),element.children);
 
-	if (!depData.url) {
+	if (!sectionStartingData.url) {
 		console.log('warning, no url found',pageData.dbData.url)
 		return;
 	};
@@ -158,7 +180,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	}
 
 	if (tables.length>0) {
-		depData.meetings=[]
+		sectionStartingData.meetings=[]
 
 		var tableData = this.parseTable(tables[0]);
 
@@ -169,8 +191,8 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 		for (var i = 0; i < tableData._rowCount; i++) {
 
-			depData.meetings.push({});
-			var index= depData.meetings.length-1;
+			sectionStartingData.meetings.push({});
+			var index= sectionStartingData.meetings.length-1;
 
 		
 			//if is a single day class (exams, and some classes that happen like 2x a month specify specific dates)
@@ -185,11 +207,11 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			//add the dates if they are valid
 			//store as days since epoch 1970
 			if (startDate.isValid()) {
-				depData.meetings[index].startDate = startDate.diff(0,'day');
+				sectionStartingData.meetings[index].startDate = startDate.diff(0,'day');
 			}
 			
 			if (endDate.isValid()) {
-				depData.meetings[index].endDate = endDate.diff(0,'day');
+				sectionStartingData.meetings[index].endDate = endDate.diff(0,'day');
 			}
 
 
@@ -212,21 +234,17 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 					prof=toTitleCase(prof);
 				}
 
-				if (!depData.meetings[index].profs) {
-					depData.meetings[index].profs = [prof];
+				if (!sectionStartingData.meetings[index].profs) {
+					sectionStartingData.meetings[index].profs = [prof];
 				}
 				else {
-					depData.meetings[index].profs.push(prof);	
+					sectionStartingData.meetings[index].profs.push(prof);	
 				}
 			}.bind(this));
 
 
-
-
 			//parse the location
-			depData.meetings[index].where = toTitleCase(tableData.where[i]);
-
-
+			sectionStartingData.meetings[index].where = toTitleCase(tableData.where[i]);
 
 
 			//start time and end time of class each day
@@ -234,26 +252,34 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 			//parse and add the times
 			if (times) {
-				depData.meetings[index].times=times;
+				sectionStartingData.meetings[index].times=times;
 			}
 		};
-
 	};
 	
 
 	//add data about the class
 	if (pageData.parsingData.termId) {
-		depData.termId = pageData.parsingData.termId;
+		sectionStartingData.termId = pageData.parsingData.termId;
 	}
 
 	if (pageData.parsingData.subject) {
-		depData.subject = pageData.parsingData.subject;
+		sectionStartingData.subject = pageData.parsingData.subject;
 	}
 	if (pageData.parsingData.classId) {
-		depData.classId = pageData.parsingData.classId;
+		sectionStartingData.classId = pageData.parsingData.classId;
 	};
 
-	pageData.addDep(depData);
+
+
+	if (dbAltEntry) {
+		console.log('adding dep to dep!!!')
+		dbAltEntry.addDep(sectionStartingData);
+	}
+	else {
+		pageData.addDep(sectionStartingData);
+	}
+
 };
 
 
