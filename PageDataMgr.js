@@ -29,6 +29,9 @@ PageDataMgr.prototype.createFromURL = function(url,callback) {
 	pageDataMgr.go(pageData,callback);
 };
 
+PageDataMgr.prototype.getParsers = function() {
+	return parsers;
+};
 
 
 PageDataMgr.prototype.create = function(startingData) {
@@ -55,7 +58,7 @@ PageDataMgr.prototype.go = function(pageData,callback) {
 	};
 
 	
-	if (pageData.dbData.url && !pageData.findSupportingParser(parsers)) {
+	if (pageData.dbData.url && !pageData.findSupportingParser()) {
 		return callback("NOSUPPORT");
 	}
 	if (!pageData.database) {
@@ -78,7 +81,7 @@ PageDataMgr.prototype.go = function(pageData,callback) {
 		//if haven't found the parser yet, try again
 		//this will happen when parent loaded this from cache with just an _id
 		if (pageData.dbData.url && !pageData.parser) {
-			if (!pageData.findSupportingParser(parsers)) {
+			if (!pageData.findSupportingParser()) {
 				return callback("NOSUPPORT");
 			};
 		}
