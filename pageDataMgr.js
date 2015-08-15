@@ -57,8 +57,8 @@ PageDataMgr.prototype.go = function(pageData,callback) {
 		return this.finish(pageData,callback);
 	}
 
-	
-	if (pageData.dbData.url && !pageData.findSupportingParser()) {
+  //unless this is the initial starting point the parser will be set when loading from db or from parent
+	if (!pageData.parser && pageData.dbData.url && !pageData.findSupportingParser()) {
 		return callback("NOSUPPORT");
 	}
 	if (!pageData.database) {

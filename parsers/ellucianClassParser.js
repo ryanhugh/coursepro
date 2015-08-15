@@ -145,8 +145,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			// console.log('creating another class from a class!')
 			
 			
-			var dbAltEntry;
-			
 			//search for an existing dep with the matching classname, etc
 			for (var i=0;i<pageData.deps.length;i++) {
 			  
@@ -171,6 +169,10 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			  
 			}
 			
+			//could not create a dep with this data.. uh oh
+			if (!dbAltEntry) {
+			  return;
+			}
 			 
 			dbAltEntry.parser = this;
 			

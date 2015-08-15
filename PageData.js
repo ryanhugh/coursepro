@@ -86,11 +86,11 @@ PageData.prototype.findSupportingParser = function(parserName) {
 	if (this.parser) {
 		console.log('error, told to find a parser but already have one???',this)
 		console.trace();
-		return;
+		return true;
 	}
 	if (!this.dbData.url && !parserName) {
 	  console.log('error cant find parser without url and name');
-	  return;
+	  return false;
 	}
 
 
@@ -99,7 +99,7 @@ PageData.prototype.findSupportingParser = function(parserName) {
 	for (var i = 0; i < parsers.length; i++) {
 		if ((this.dbData.url && parsers[i].supportsPage(this.dbData.url)) || (parserName && parserName==parsers[i].name)) {
 			this.parser= parsers[i];
-			console.log('Using parser:',this.parser.constructor.name,'for url',this.dbData.url);
+			console.log('Using parser:',this.parser.constructor.name,'for url',this.dbData.url,' and name',parserName);
 
 			this.dependencyDatabase = parsers[i].getDependancyDatabase(this)
 
@@ -127,7 +127,7 @@ PageData.prototype.findSupportingParser = function(parserName) {
 			return true;
 		}
 	}
-	console.log('error no parser found for',this.dbData.url,parserName);
+	console.log('error no parser found for',this.dbData.url,parserName,this);
 	return false;
 };
 
@@ -185,6 +185,10 @@ PageData.prototype.loadFromDB = function(callback) {
 				this.dbData.deps[parserName].forEach(function (newDepId) {
 
 					var newDepPageData = this.addDep({_id:newDepId});
+					if (!newDepPageData) {
+					  console.log('error!!!!!!, failed to load dep from db');
+					  return;
+					}
 					
 					newDepPageData.findSupportingParser(parserName);
 					
@@ -234,7 +238,10 @@ PageData.prototype.processDeps = function(callback) {
 			}
 
 			if (!newDepData.parser || !newDepData.parser.name) {
-				console.log('error, cannot add dep, dont know where to add it',newDepData.parser.constructor.name,newDepData.parser.name)
+				console.log('error, cannot add dep, dont know where to add it',newDepData.parser,newDepData);
+				if (newDepData.parser) {
+				  console.log('error more data on the cannot add dep',newDepData.parser.constructor.name,newDepData.parser.name);
+				}
 			}
 
 
@@ -279,13 +286,20 @@ PageData.prototype.getUrlStart = function() {
 };
 
 //can add by url or _id - one of two is required
-PageData.prototype.addDep = function(depData,depPageDataConfig) {
-	if (!depData || (!depData.url && !depData._id && !depData.updatedByParent)) {
-		console.trace('Error:Tried to add invalid depdata??',depData,this);
-		return;
+PageData.prototype.addDep = function(depData) {
+	if (!depData || (!depData._id && !depData.url)) {
+		console.log('Error:Tried to add invalid depdata??',depData);
+		if (depData) {
+		  console.log('error, more data for invalid depdata',depData.parser);
+		}
+		console.trace()
+		return null;
 	}
-	if (!depPageDataConfig) {
-		depPageDataConfig={}
+	
+	//this is just temp
+	if (arguments.length>1) {
+	  console.log('error!!! add dep only takes 1 argument')
+	  console.trace()
 	}
 
 
@@ -298,11 +312,13 @@ PageData.prototype.addDep = function(depData,depPageDataConfig) {
 		//if given an _id to search for, make sure it matches the id in the existing depsToProcess
 		if (depData._id) {
 			if (this.depsToProcess[i].dbData._id==depData._id) {
+			  console.log('error matched by _id!')
 				isMatch=true;
 			}
 		}
 		else if (depData.url) {
 			if (this.depsToProcess[i].dbData.url==depData.url && _.isEqual(this.depsToProcess[i].dbData.postData,depData.postData)) {
+			  console.log('error matched by url+pagedata')
 				isMatch=true;
 			}
 		}
@@ -325,18 +341,8 @@ PageData.prototype.addDep = function(depData,depPageDataConfig) {
 		email:this.originalData.email,
 		dbData:depData,
 		parent:this,
-		database:this.dependencyDatabase
 	}
 
-
-	for (var attrName in depPageDataConfig) {
-		if (attrName=='dbData') {//TODO add the other ones too... (or maybe whitelist)
-			console.log('error cant override dbdata...');
-		}
-		else {
-			startingData[attrName]=depPageDataConfig[attrName]
-		}
-	}
 
 	//create the dep, add it to the array and return it
 	var dep = pageDataMgr.create(startingData);
@@ -344,7 +350,7 @@ PageData.prototype.addDep = function(depData,depPageDataConfig) {
 		console.log('could not create dep in add dep!')
 		return;
 	}
-	console.log('startingData',startingData,'depPageDataConfig',depPageDataConfig,'dep:',dep)
+	console.log('startingData',startingData,'dep:',dep)
 	this.depsToProcess.push(dep);
 	return dep;
 }

@@ -28,25 +28,29 @@ a=["Student Rec & Fitness Ctr","Ray Morris Hall - STEM Center 150","Hyder/Burks 
 // 	// body...
 // })
 
-var q = queue()
 
-q.defer(function(callback){
-  console.log('1 called')
-  setTimeout(function(){
-    console.log('1 done')
-    callback()
-  },1000);
-});
+depData= { _id: 'ubz315SMhK4cWsA4' }
+console.log((!depData || (!depData._id && !depData.url)))
+
+// var q = queue()
 
 // q.defer(function(callback){
-//   console.log('2 called')
+//   console.log('1 called')
 //   setTimeout(function(){
-//     console.log('2 done')
+//     console.log('1 done')
 //     callback()
 //   },1000);
 // });
 
-q.awaitAll(function(error, results) { console.log("all done!"); });
+// // q.defer(function(callback){
+// //   console.log('2 called')
+// //   setTimeout(function(){
+// //     console.log('2 done')
+// //     callback()
+// //   },1000);
+// // });
+
+// q.awaitAll(function(error, results) { console.log("all done!"); });
 
 
 
