@@ -72,7 +72,7 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 
 
 	if (newData._id) {
-		this.db.update({ _id: newData._id }, {$set:newData}, {}, function (err, numReplaced) {	
+		this.db.update({ _id: newData._id }, {$set:newData}, {}, function (err, numReplaced) {
 			if (numReplaced==0) {
 				console.log('ERROR: updated 0?',newData);
 			};
@@ -144,48 +144,7 @@ BaseDB.prototype.stopUpdates = function() {
 
 
 
-BaseDB.prototype.findByPageData = function(pageData,callback) {
-	var lookupValues = {};
-
-	if (pageData.dbData._id) {
-		lookupValues._id = pageData.dbData._id;
-	}
-	else if (pageData.dbData.url) {
-		lookupValues.url = pageData.dbData.url;
-
-		if (pageData.dbData.postData) {
-			lookupValues.postData = pageData.dbData.postData
-		};
-	}
-	else {
-		console.log('error in base db - cant lookup page data wihout url or _id!',pageData)
-		return callback('cant lookup')
-	}
-
-
-	this.find(lookupValues,{
-	 	shouldBeOnlyOne:true,
-	 	sanatize:false
-	},function (err,doc) {
-		if (err) {
-			return callback(err);
-		}
-
-		if (doc) {
-			pageData.addDBData(doc);
-		};
-
-		return callback();
-
-
-
-		
-	});
-};
-
-
-
-//api search 
+//api search
 
 BaseDB.prototype.isValidLookupValues = function(lookupValues) {
 	if (lookupValues._id || lookupValues.url) {

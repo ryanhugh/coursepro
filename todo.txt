@@ -1,5 +1,9 @@
 !!!!
 
+class need to reuse existing deps
+
+make sure getdependencydatabase is not called anywhere
+
 
 storedInArray -> depType
 
@@ -8,7 +12,7 @@ deps:{classes:[],sections:[]}
 id also say change it back to just deps: and add a loadDependencyChain() and then just search through deps for matching title
 - and add the class data to the other classes
 
-and 
+and
 
 deps need to be processed before parent is processed so that when the parent hits the page it knows which dep to update -> load all, then parse all
 instead of adding more deps (which it does currently)
@@ -61,7 +65,7 @@ have an array of examples on script.js
 
 
 
-POINTER: 
+POINTER:
 array of user agents for baseParser.js
 sometimes add other headers and pull from array of user agents
 

@@ -6,6 +6,7 @@ var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
 
 function EllucianSubjectParser () {
+  this.name = "EllucianSubjectParser"
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 }
 
@@ -44,17 +45,17 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 	var subjects = []
 
 	formData.payloads.forEach(function (payloadVar) {
-		if (payloadVar.name!='sel_subj') { 
+		if (payloadVar.name!='sel_subj') {
 			return;
 		}
 
-		if (!payloadVar.text || payloadVar.text=='') {
+		if (!payloadVar.text || payloadVar.text==='') {
 			return;
 		}
 
-		if (!payloadVar.value || payloadVar.value=='') {
+		if (!payloadVar.value || payloadVar.value==='') {
 			return;
-		};
+		}
 
 		//record all the subjects and their id's
 		if (payloadVar.name=='sel_subj') {
@@ -62,7 +63,7 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 				id:payloadVar.value,
 				text:payloadVar.text
 			})
-		};
+		}
 	}.bind(this))
 
 	
@@ -81,7 +82,7 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 		console.log('could not find p_term id!',query,pageData.dbData.postData)
 	}
 	else {
-		pageData.setData('termId',query.p_term)
+		pageData.setData('termId',query.p_term);
 	}
 
 };

@@ -11,6 +11,8 @@ var ellucianSubjectParser = require('./ellucianSubjectParser');
 
 function EllucianTermsParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
+	
+	this.name = "EllucianTermsParser"
 }
 
 
@@ -20,9 +22,6 @@ EllucianTermsParser.prototype = Object.create(EllucianBaseParser.prototype);
 EllucianTermsParser.prototype.constructor = EllucianTermsParser;
 
 
-EllucianTermsParser.prototype.getDependancyDatabase = function(pageData) {
-	return subjectsDB;
-};
 
 EllucianTermsParser.prototype.getDatabase = function(pageData) {
 	return termsDB;
@@ -56,10 +55,6 @@ EllucianTermsParser.prototype.isValidTerm = function(termId,text) {
 
 
 
-EllucianTermsParser.prototype.parseElement = function(pageData,element) {
-
-};
-
 
 EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 	var formData = this.parseTermsPage(pageData.dbData.url,dom);
@@ -74,14 +69,15 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 					id:payloadVar.value,
 					text:payloadVar.text
 				})
-			};
+			}
 		}.bind(this));
 
-		//also pass the data to the dependencies 
-		pageData.addDep({
+		//also pass the data to the dependencies
+		var dep = pageData.addDep({
 			url:formData.postURL,
 			postData:pointer.payloadJSONtoString(singleRequestPayload)
 		});
+		dep.parser = ellucianSubjectParser;
 
 
 	}.bind(this))
