@@ -11,6 +11,10 @@ var ellucianClassParser = require('./ellucianClassParser');
 
 
 function EllucianCatalogParser () {
+<<<<<<< HEAD:parsers/ellucianCatalogParser.js
+=======
+  this.name = "EllucianCatalogParser"
+>>>>>>> withPlane:parsers/ellucianCatalogParser.js
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 }
 
@@ -25,10 +29,13 @@ EllucianCatalogParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckctlg.p_display_courses')>-1 || url.indexOf('bwckctlg.p_disp_course_detail')>-1;
 }
 
+<<<<<<< HEAD:parsers/ellucianCatalogParser.js
 // EllucianCatalogParser.prototype.getDependancyDatabase = function(pageData) {
 // 	return classesDB;
 // };
 
+=======
+>>>>>>> withPlane:parsers/ellucianCatalogParser.js
 
 EllucianCatalogParser.prototype.getDatabase = function(pageData) {
 	return linksDB;
@@ -70,7 +77,8 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 		return;
 	}
 
-	pageData.addDep(depData);
+	var dep = pageData.addDep(depData);
+	dep.parser = ellucianClassParser;
 };
 
 
