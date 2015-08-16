@@ -15,17 +15,43 @@ var domutils = require('domutils');
 var http = require('http');
 var https = require('https');
 var dns = require('dns');
-var title = require('to-title-case');
+// var title = require('to-title-case');
+var queue = require("queue-async")
 
 
 
 a=["Student Rec & Fitness Ctr","Ray Morris Hall - STEM Center 150","Hyder/Burks Arena 113","Ray Morris Hall - STEM Center 150","Hyder/Burks Arena 113","CC Glass & Metal 110","Student Rec & Fitness Ctr","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 135","CC Glass & Metal 106","Hyder/Burks Arena 113","CC Glass & Metal 118","Ray Morris Hall - STEM Center 139","Ray Morris Hall - STEM Center 137","Ray Morris Hall - STEM Center 137","CC Glass & Metal 110","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 150","CC Glass & Metal 118","CC Glass & Metal 106","Hyder/Burks Arena 113","Ray Morris Hall - STEM Center 131","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 150","CC Glass & Metal 118","CC Glass & Metal 106","Ray Morris Hall - STEM Center 150","CC Glass & Metal 110","CC Glass & Metal 106","Ray Morris Hall - STEM Center 137","Ray Morris Hall - STEM Center 139","CC Glass & Metal 118","Ray Morris Hall - STEM Center 135","CC Glass & Metal 118","Ray Morris Hall - STEM Center 137","CC Glass & Metal 110","Hyder/Burks Arena 113","Hyder/Burks Arena 113","CC Glass & Metal 110","CC Glass & Metal 118","CC Glass & Metal 118","Ray Morris Hall - STEM Center 150","CC Glass & Metal 110","Ray Morris Hall - STEM Center 150","CC Glass & Metal 118","Ray Morris Hall - STEM Center 139","Hyder/Burks Arena 113","Ray Morris Hall - STEM Center 139","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 150","Hyder/Burks Arena 113","CC Glass & Metal 118","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 137","CC Glass & Metal 110","Hyder/Burks Arena 113","Ray Morris Hall - STEM Center 139","CC Glass & Metal 106","Ray Morris Hall - STEM Center 139","CC Glass & Metal 118","Ray Morris Hall - STEM Center 131","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 139","Ray Morris Hall - STEM Center 150","CC Glass & Metal 110","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 139","Ray Morris Hall - STEM Center 139","CC Glass & Metal 110","CC Glass & Metal 110","CC Glass & Metal 118","CC Glass & Metal 106","CC Glass & Metal 110","Ray Morris Hall - STEM Center 131","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 137","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 139","Ray Morris Hall - STEM Center 131","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 139","CC Glass & Metal 106","Ray Morris Hall - STEM Center 150","CC Glass & Metal 110","Hyder/Burks Arena 113","Ray Morris Hall - STEM Center 131","CC Glass & Metal 110","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 139","CC Glass & Metal 118","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 150","Hyder/Burks Arena 113","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 137","CC Glass & Metal 118","Ray Morris Hall - STEM Center 139","Ray Morris Hall - STEM Center 150","CC Glass & Metal 118","CC Glass & Metal 118","Ray Morris Hall - STEM Center 135","CC Glass & Metal 106","CC Glass & Metal 106","Ray Morris Hall - STEM Center 139","Ray Morris Hall - STEM Center 139","Ray Morris Hall - STEM Center 139","CC Glass & Metal 118","Ray Morris Hall - STEM Center 131","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 135","CC Glass & Metal 118","CC Glass & Metal 106","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 139","CC Glass & Metal 106","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 131","CC Glass & Metal 110","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 135","CC Glass & Metal 106","Ray Morris Hall - STEM Center 137","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 135","Ray Morris Hall - STEM Center 150","CC Glass & Metal 118","CC Glass & Metal 110","CC Glass & Metal 117","Volpe Library/Learning Assist 348","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 150","CC Glass & Metal 110","Hyder/Burks Arena 113","Hyder/Burks Arena 113","Ray Morris Hall - STEM Center 131","Ray Morris Hall - STEM Center 150","Ray Morris Hall - STEM Center 135","Hyder/Burks Arena","Ray Morris Hall - STEM Center 150",]
 
 
-a.forEach(function (b) {
-	console.log(title(b))
-	// body...
-})
+// a.forEach(function (b) {
+// 	console.log(title(b))
+// 	// body...
+// })
+
+
+depData= { _id: 'ubz315SMhK4cWsA4' }
+console.log((!depData || (!depData._id && !depData.url)))
+
+// var q = queue()
+
+// q.defer(function(callback){
+//   console.log('1 called')
+//   setTimeout(function(){
+//     console.log('1 done')
+//     callback()
+//   },1000);
+// });
+
+// // q.defer(function(callback){
+// //   console.log('2 called')
+// //   setTimeout(function(){
+// //     console.log('2 done')
+// //     callback()
+// //   },1000);
+// // });
+
+// q.awaitAll(function(error, results) { console.log("all done!"); });
+
 
 
 // var a = '???p_calling_proc=bwckschd.p_disp_dyn_sched&p_by_date=Y&p_from_date=&p_to_date=&p_term=201550'

@@ -1,5 +1,33 @@
 !!!!
 
+class need to reuse existing deps
+
+make sure getdependencydatabase is not called anywhere
+
+
+storedInArray -> depType
+
+deps:{classes:[],sections:[]}
+
+id also say change it back to just deps: and add a loadDependencyChain() and then just search through deps for matching title
+- and add the class data to the other classes
+
+and
+
+deps need to be processed before parent is processed so that when the parent hits the page it knows which dep to update -> load all, then parse all
+instead of adding more deps (which it does currently)
+and load classes: somehow -- nope
+
+
+
+different names:
+if eclass has name, only parse those with name
+pagedatamgr.createFromParser - give desc
+
+
+.dbData when in multi mode reads dbEntries[0] ?
+
+
 
 //convert the uri json to this
 uri.setSearch({ foo: "bar", goodbye : ["world", "mars"] });
@@ -24,6 +52,8 @@ https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_detail_sched?term_in=20151
 
 
 sections with different names?!?!
+-- also have different prerequs...
+https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=%
 https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201540&subj_in=LAW&crse_in=575&schd_in=%25
 
 
@@ -35,7 +65,7 @@ have an array of examples on script.js
 
 
 
-POINTER: 
+POINTER:
 array of user agents for baseParser.js
 sometimes add other headers and pull from array of user agents
 

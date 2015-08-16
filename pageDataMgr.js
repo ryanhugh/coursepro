@@ -25,54 +25,65 @@ function PageDataMgr () {
 
 
 PageDataMgr.prototype.createFromURL = function(url,callback) {
-	return this.create({dbData:{url:url}},callback);
+	var pageData = this.create({dbData:{url:url}});
+	pageDataMgr.go(pageData,callback);
+};
+
+PageDataMgr.prototype.getParsers = function() {
+	return parsers;
 };
 
 
+PageDataMgr.prototype.create = function(startingData) {
+
+	var pageData = new PageData(startingData);
+	if (!pageData.dbData) {
+		console.log('ERROR could not create a pagedata!')
+		return null;
+	}
+	return pageData;
+
+};
 
 
 //main starting point for parsing urls
 //startingData.url or startingData._id is required
 //callback = function (err,pageData) {}
-PageDataMgr.prototype.create = function(startingData,callback) {
+PageDataMgr.prototype.go = function(pageData,callback) {
 	if (!callback) {
 		callback = function (){};
 	}
+	if (pageData.dbData.updatedByParent) {
+		return this.finish(pageData,callback);
+	}
 
-
-	var pageData = new PageData(startingData);
-	if (!pageData.dbData) {
-		console.log('ERROR could not create a pagedata!')
-		return callback('invalid pagedata')
-	};
-
-
-	if (pageData.dbData.url && !pageData.findSupportingParser(parsers)) {
+  //unless this is the initial starting point the parser will be set when loading from db or from parent
+	if (!pageData.parser && pageData.dbData.url && !pageData.findSupportingParser()) {
 		return callback("NOSUPPORT");
 	}
 	if (!pageData.database) {
 		console.log('error dont have a url or a db',pageData)
 		return callback('no db')
-	};
+	}
 
 
 	//main control flow for processing a url
-	pageData.database.findByPageData(pageData,function (err) {
+	pageData.loadFromDB(function (err) {
 		if (err) {
 			return callback(err);
 		}
 		if (!pageData.dbData.url) {
-			console.log('started pageData without url and could not find it in db!',pageData,startingData);
+			console.log('started pageData without url and could not find it in db!',pageData);
 			return callback('cant find dep');
-		};
+		}
 
 
 		//if haven't found the parser yet, try again
 		//this will happen when parent loaded this from cache with just an _id
 		if (pageData.dbData.url && !pageData.parser) {
-			if (!pageData.findSupportingParser(parsers)) {
+			if (!pageData.findSupportingParser()) {
 				return callback("NOSUPPORT");
-			};
+			}
 		}
 
 
@@ -105,12 +116,12 @@ PageDataMgr.prototype.finish = function(pageData,callback) {
 			if (err) {
 				console.log('error adding to db?',err);
 				return callback(err);
-			};
+			}
 
 
 			if (pageData.database.peopleCanRegister) {
 				emailMgr.sendEmails(pageData,pageData.parser.getEmailData(pageData));
-			};
+			}
 
 			callback(null,pageData);
 		});
@@ -127,7 +138,7 @@ PageDataMgr.prototype.finish = function(pageData,callback) {
 
 PageDataMgr.prototype.tests = function() {
 	// this.createFromURL('https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched')
-	this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_display_courses?term_in=201610&one_subj=MUS&sel_crse_strt=147A&sel_crse_end=147A&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_display_courses?term_in=201610&one_subj=MUS&sel_crse_strt=147A&sel_crse_end=147A&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_display_courses?term_in=201610&one_subj=VTE&sel_crse_strt=113&sel_crse_end=113&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_display_courses?term_in=201610&one_subj=TH&sel_crse_strt=488&sel_crse_end=488&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_display_courses?term_in=201610&one_subj=ENG&sel_crse_strt=522&sel_crse_end=522&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
@@ -153,10 +164,12 @@ PageDataMgr.prototype.tests = function() {
   // this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201540&one_subj=PSYC&sel_crse_strt=411&sel_crse_end=411&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=%20found%20in%20email')
   // this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=MATH&sel_crse_strt=102&sel_crse_end=102&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=  ')
   // this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633')
-  this.createFromURL('https://prod-ssb-01.dccc.edu/PROD/bwckctlg.p_display_courses?term_in=201509&one_subj=ESS&sel_crse_strt=102&sel_crse_end=102&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+  // this.createFromURL('https://prod-ssb-01.dccc.edu/PROD/bwckctlg.p_display_courses?term_in=201509&one_subj=ESS&sel_crse_strt=102&sel_crse_end=102&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
   // this.createFromURL('https://prod-ssb-01.dccc.edu/PROD/bwckschd.p_disp_dyn_sched')
   // // this.createFromURL('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched')
   // this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched')
+  // this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched')
+  this.createFromURL('https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=%25')
   return;
   
 
@@ -169,7 +182,7 @@ PageDataMgr.prototype.tests = function() {
 		if (err) {
 			console.trace(err)
 			return;
-		};
+		}
 
 	  
 		var urls = JSON.parse(body);
@@ -184,13 +197,13 @@ PageDataMgr.prototype.tests = function() {
 
 
 
-	// this.create('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.create('https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201612&subj_in=ALHS&crse_in=1127&schd_in=C')
-	// this.create('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.create('https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckctlg.p_display_courses')
-	// this.create('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=CTV&sel_crse_strt=580&sel_crse_end=580&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.create('https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=ANTH&sel_crse_strt=2764&sel_crse_end=2764&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.create('https://tturedss1.tntech.edu/pls/PROD/bwckctlg.p_display_courses?term_in=201580&one_subj=ACCT&sel_crse_strt=1010&sel_crse_end=1010&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201612&subj_in=ALHS&crse_in=1127&schd_in=C')
+	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckctlg.p_display_courses')
+	// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=CTV&sel_crse_strt=580&sel_crse_end=580&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=ANTH&sel_crse_strt=2764&sel_crse_end=2764&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckctlg.p_display_courses?term_in=201580&one_subj=ACCT&sel_crse_strt=1010&sel_crse_end=1010&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// return;
   
   // https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=6610
@@ -207,19 +220,19 @@ PageDataMgr.prototype.tests = function() {
 	  
 	  
 		 for (var i=0;i<Math.min(10000,urls.length);i++){
-		   this.create(urls[i]);
+		   this.createFromURL(urls[i]);
 		 }
 
 
-		// this.create(urls[4]);
+		// this.createFromURL(urls[4]);
 
 		}.bind(this));
 	return;
 
-	// this.create('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	this.create('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=',null,function (err,pageData) {
-	// this.create('https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%',null,function (err,pageData) {
-	// this.create('https://genisys.regent.edu/pls/prod/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=10739',null,function (err,pageData) {
+	// this.createFromURL('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=',null,function (err,pageData) {
+	// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%',null,function (err,pageData) {
+	// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=10739',null,function (err,pageData) {
 	console.log("CALLBACK WAS CALLED!!!!!!!",pageData.getClientString());
 
 	}.bind(this));

@@ -16,6 +16,8 @@ var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 function EllucianSectionParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
+  this.name = 'EllucianSectionParser'
+
 	this.requiredAttrs = [
 	"seatsCapacity",
 	"seatsRemaining"
@@ -163,7 +165,7 @@ EllucianSectionParser.prototype.formatRequirements = function(data) {
 // input: '(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'
 // output: [["https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",[" Eng - Place (Test) 03","and","Nelson Denny Total 081","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]
 EllucianSectionParser.prototype.convertStringToJSON = function(text) {
-	var elements = []	
+	var elements = []
 
 	//split the string by dividers " and " and " or "
 	text.split(' or ').forEach(function (splitByOr,index,arr) {
@@ -363,6 +365,25 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 };
 
 
+
+
+EllucianSectionParser.prototype.onBeginParsing = function(pageData) {
+	
+
+	//parse the term from the url
+	var query = new URI(pageData.dbData.url).query(true);
+
+	if (!query.crn_in) {
+		console.log('could not find crn_in id ellucian class parser!',query,pageData.dbData.url)
+	}
+	else {
+		pageData.setData('crn',query.crn_in)
+	}
+};
+
+
+
+
 EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 	if (element.type!='tag') {
 		return;
@@ -427,7 +448,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 		//grab credits
 		var containsCreditsText = domutils.getText(element.parent);
 
-		//should match 3.000 Credits  or 1.000 TO 21.000 Credits 
+		//should match 3.000 Credits  or 1.000 TO 21.000 Credits
 		var creditsMatch = containsCreditsText.match(/(?:\d(:?.\d*)?\s*to\s*)?(\d+(:?.\d*)?)\s*credits/i)
 		if (creditsMatch) {
 			var maxCredits = parseFloat(creditsMatch[2]);
@@ -452,7 +473,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 		}
 
 
-		//Credit Hours: 3.000 
+		//Credit Hours: 3.000
 		creditsMatch = containsCreditsText.match(/credits?\s*(?:hours?)?:?\s*(\d+(:?.\d*)?)/i);
 		if (creditsMatch) {
 
@@ -518,7 +539,7 @@ EllucianSectionParser.prototype.tests = function() {
 
 	// var a =this.groupRequirementsByAnd(["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25","and","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"])
 	// console.log(a)
-	// return 
+	// return
 
 
 

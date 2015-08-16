@@ -74,6 +74,11 @@ BaseParser.prototype.onBeginParsing = function(pageData) {
 	
 };
 
+BaseParser.prototype.parseElement = function(pageData,element) {
+
+};
+
+
 BaseParser.prototype.onEndParsing = function(pageData) {
 
 };

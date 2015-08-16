@@ -77,13 +77,15 @@ app.post('/urlDetails', function(req, res) {
 
 
 	//client sent a (possibly) valid url, check and parse page
-	pageDataMgr.create({
+
+	var pageData = pageDataMgr.create({
 		ip:req.connection.remoteAddress,
 		email:req.body.email,
 		dbData:{
 			url:req.body.url
-		}
-	}, function (err,pageData) {
+		}});
+	
+	pageDataMgr.go(pageData, function (err,pageData) {
 
 		if (err) {
 			//oh no! no modules support url
