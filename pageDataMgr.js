@@ -38,7 +38,7 @@ PageDataMgr.prototype.create = function(startingData) {
 
 	var pageData = new PageData(startingData);
 	if (!pageData.dbData) {
-		console.log('ERROR could not create a pagedata!')
+		console.log('ERROR could not create a pagedata!');
 		return null;
 	}
 	return pageData;
@@ -53,23 +53,25 @@ PageDataMgr.prototype.go = function(pageData,callback) {
 	if (!callback) {
 		callback = function (){};
 	}
+
 	if (pageData.dbData.updatedByParent) {
+	  console.log('not running on here, because parent updates this');
 		return this.finish(pageData,callback);
 	}
 
   //unless this is the initial starting point the parser will be set when loading from db or from parent
-	if (!pageData.parser && pageData.dbData.url && !pageData.findSupportingParser()) {
+	if (!pageData.parser && pageData.dbData.url && pageData.findSupportingParser()===false) {
 		return callback("NOSUPPORT");
 	}
 	if (!pageData.database) {
-		console.log('error dont have a url or a db',pageData)
-		return callback('no db')
+		console.log('error dont have a url or a db',pageData);
+		return callback('no db');
 	}
-
 
 	//main control flow for processing a url
 	pageData.loadFromDB(function (err) {
 		if (err) {
+		  console.log("error ",err);
 			return callback(err);
 		}
 		if (!pageData.dbData.url) {
@@ -82,6 +84,7 @@ PageDataMgr.prototype.go = function(pageData,callback) {
 		//this will happen when parent loaded this from cache with just an _id
 		if (pageData.dbData.url && !pageData.parser) {
 			if (!pageData.findSupportingParser()) {
+			  console.log('error cant find parser after second try');
 				return callback("NOSUPPORT");
 			}
 		}

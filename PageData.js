@@ -140,6 +140,7 @@ PageData.prototype.setParser = function (parser) {
 			this.dbData.ips = [];
 		}
 	}
+	return true;
 }
 
 
@@ -260,7 +261,7 @@ PageData.prototype.processDeps = function(callback) {
 
 
 
-			console.log('storing in ',newDepData.parser.name,'newDepData',newDepData)
+		// 	console.log('storing in ',newDepData.parser.name)
 
 			if (!this.dbData.deps[newDepData.parser.name]) {
 				this.dbData.deps[newDepData.parser.name] = [];
@@ -303,7 +304,7 @@ PageData.prototype.getUrlStart = function() {
 //can add by url or _id - one of two is required
 
 PageData.prototype.addDep = function(depData) {
-	if (!depData || (!depData._id && !depData.url)) {
+	if (!depData) {
 		console.log('Error:Tried to add invalid depdata??',depData);
 		if (depData) {
 		  console.log('error, more data for invalid depdata',depData.parser);

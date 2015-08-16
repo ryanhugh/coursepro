@@ -103,6 +103,7 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 
 
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
+  console.log('parsing a class')
 
 	//if different name than this class, save to new class
 	var dbAltEntry = null;
@@ -142,7 +143,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 		//name was already set to something different, make another db entry for this class
 		if (pageData.parsingData.name && className!=pageData.parsingData.name) {
-			// console.log('creating another class from a class!')
+			console.log('creating another class from a class!')
 			
 			
 			//search for an existing dep with the matching classname, etc
@@ -154,13 +155,14 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			  }
 			  
 			  if (pageData.deps[i].dbData.name == className && pageData.deps[i].dbData.updatedByParent) {
-            console.log('re using existing dep!');
+            console.log('re using existing dep!',pageData.deps.length);
   		      dbAltEntry = pageData.deps[i];
 			  }
 			}
 	
 	    //entry
 			if (!dbAltEntry) {
+			  console.log('creating a new dep entry',pageData.deps.length)
   
   			dbAltEntry = pageData.addDep({
   				name:className,
@@ -175,18 +177,11 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			}
 			
 			dbAltEntry.setParser(this);
-			
-			
-			// console.log('and the class is',dbAltEntry)
-
-  		//name was already set to something different, make another db entry for this class
-  		if (pageData.parsingData.name && className!=pageData.parsingData.name) {
-  			// console.log('creating another class from a class!')
-  		}
-  		else {
-  			pageData.parsingData.name = className;
-  			pageData.setData('name',className);
-  		}
+		}
+		else {
+		  console.log('adding to main!')
+			pageData.parsingData.name = className;
+			pageData.setData('name',className);
 		}
 
 	}.bind(this),element.children);
@@ -246,10 +241,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 				sectionStartingData.meetings[index].endDate = endDate.diff(0,'day');
 			}
 
-
-			//parse the professors
-			var profs = tableData.instructors[i].split(',')
-
 			//parse the professors
 			var profs = tableData.instructors[i].split(',')
 
@@ -279,10 +270,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			//parse the location
 			sectionStartingData.meetings[index].where = toTitleCase(tableData.where[i]);
 
-			//parse the location
-			sectionStartingData.meetings[index].where = toTitleCase(tableData.where[i]);
-
-
 			//start time and end time of class each day
 			var times = this.parseTimeStamps(tableData.time[i],tableData.days[i]);
 
@@ -307,9 +294,10 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	}
 
 
+  console.log('adding dep ',dbAltEntry,' and section',sectionStartingData);
   var sectionPageData;
 	if (dbAltEntry) {
-		console.log('adding section dep to class dep!!!')
+		console.log('adding section dep to class dep!!!');
 		sectionPageData = dbAltEntry.addDep(sectionStartingData);
 	}
 	else {
