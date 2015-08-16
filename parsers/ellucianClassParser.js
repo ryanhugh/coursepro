@@ -104,11 +104,7 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
-<<<<<<< HEAD:parsers/ellucianClassParser.js
-	//if different name than this class, save to new class 
-=======
 	//if different name than this class, save to new class
->>>>>>> withPlane:parsers/ellucianClassParser.js
 	var dbAltEntry = null;
 
 
@@ -143,8 +139,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 
 		var className = toTitleCase(match[1]);
-<<<<<<< HEAD:parsers/ellucianClassParser.js
-=======
 
 		//name was already set to something different, make another db entry for this class
 		if (pageData.parsingData.name && className!=pageData.parsingData.name) {
@@ -184,29 +178,15 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			
 			
 			// console.log('and the class is',dbAltEntry)
->>>>>>> withPlane:parsers/ellucianClassParser.js
 
-		//name was already set to something different, make another db entry for this class
-		if (pageData.parsingData.name && className!=pageData.parsingData.name) {
-			// console.log('creating another class from a class!')
-
-<<<<<<< HEAD:parsers/ellucianClassParser.js
-			dbAltEntry = pageData.addDep({
-				name:className,
-				updatedByParent:true
-			},{
-				storedInArray:'classes',
-				database:classDB
-			});
-			// console.log('and the class is',dbAltEntry)
-
-
-=======
->>>>>>> withPlane:parsers/ellucianClassParser.js
-		}
-		else {
-			pageData.parsingData.name = className;
-			pageData.setData('name',className);
+  		//name was already set to something different, make another db entry for this class
+  		if (pageData.parsingData.name && className!=pageData.parsingData.name) {
+  			// console.log('creating another class from a class!')
+  		}
+  		else {
+  			pageData.parsingData.name = className;
+  			pageData.setData('name',className);
+  		}
 		}
 
 	}.bind(this),element.children);
@@ -238,15 +218,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		if (tableData._rowCount<1 || !tableData.daterange || !tableData.where || !tableData.instructors || !tableData.time || !tableData.days) {
 			console.log('ERROR, invalid table in class parser',tableData,pageData.dbData.url)
 			return;
-<<<<<<< HEAD:parsers/ellucianClassParser.js
-		};
-
-		for (var i = 0; i < tableData._rowCount; i++) {
-
-			sectionStartingData.meetings.push({});
-			var index= sectionStartingData.meetings.length-1;
-
-=======
 		}
 
 		for (var i = 0; i < tableData._rowCount; i++) {
@@ -254,7 +225,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			sectionStartingData.meetings.push({});
 			var index= sectionStartingData.meetings.length-1;
 
->>>>>>> withPlane:parsers/ellucianClassParser.js
+
 		
 			//if is a single day class (exams, and some classes that happen like 2x a month specify specific dates)
 			var splitTimeString = tableData.daterange[i].split('-');
@@ -263,20 +234,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 			if (!startDate.isValid() || !endDate.isValid()) {
 				console.log('ERROR: one of parsed dates is not valid',splitTimeString,pageData.dbData.url);
-<<<<<<< HEAD:parsers/ellucianClassParser.js
-			};
-
-			//add the dates if they are valid
-			//store as days since epoch 1970
-			if (startDate.isValid()) {
-				sectionStartingData.meetings[index].startDate = startDate.diff(0,'day');
-			}
-			
-			if (endDate.isValid()) {
-				sectionStartingData.meetings[index].endDate = endDate.diff(0,'day');
-			}
-
-=======
 			}
 
 			//add the dates if they are valid
@@ -288,36 +245,11 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			if (endDate.isValid()) {
 				sectionStartingData.meetings[index].endDate = endDate.diff(0,'day');
 			}
->>>>>>> withPlane:parsers/ellucianClassParser.js
 
 
 			//parse the professors
 			var profs = tableData.instructors[i].split(',')
 
-<<<<<<< HEAD:parsers/ellucianClassParser.js
-			profs.forEach(function (prof) {
-				
-				//replace double spaces with a single space,trim, and remove the (p) at the end
-				prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
-
-				if (prof.length<3) {
-					console.log('warning: empty/short prof name??',prof,tableData)
-				}
-				if (prof.toLowerCase()=='tba') {
-					prof = "TBA";
-				}
-				else {
-					prof=toTitleCase(prof);
-				}
-
-				if (!sectionStartingData.meetings[index].profs) {
-					sectionStartingData.meetings[index].profs = [prof];
-				}
-				else {
-					sectionStartingData.meetings[index].profs.push(prof);	
-				}
-			}.bind(this));
-=======
 			//parse the professors
 			var profs = tableData.instructors[i].split(',')
 
@@ -335,7 +267,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 				else {
 					prof=toTitleCase(prof);
 				}
->>>>>>> withPlane:parsers/ellucianClassParser.js
 
 				if (!sectionStartingData.meetings[index].profs) {
 					sectionStartingData.meetings[index].profs = [prof];
@@ -348,12 +279,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			//parse the location
 			sectionStartingData.meetings[index].where = toTitleCase(tableData.where[i]);
 
-<<<<<<< HEAD:parsers/ellucianClassParser.js
-
-			//start time and end time of class each day
-			var times = this.parseTimeStamps(tableData.time[i],tableData.days[i]);
-
-=======
 			//parse the location
 			sectionStartingData.meetings[index].where = toTitleCase(tableData.where[i]);
 
@@ -361,18 +286,12 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			//start time and end time of class each day
 			var times = this.parseTimeStamps(tableData.time[i],tableData.days[i]);
 
->>>>>>> withPlane:parsers/ellucianClassParser.js
 			//parse and add the times
 			if (times) {
 				sectionStartingData.meetings[index].times=times;
 			}
-<<<<<<< HEAD:parsers/ellucianClassParser.js
-		};
-	};
-=======
 		}
 	}
->>>>>>> withPlane:parsers/ellucianClassParser.js
 	
 
 	//add data about the class
@@ -385,20 +304,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	}
 	if (pageData.parsingData.classId) {
 		sectionStartingData.classId = pageData.parsingData.classId;
-<<<<<<< HEAD:parsers/ellucianClassParser.js
-	};
-
-
-
-	if (dbAltEntry) {
-		console.log('adding dep to dep!!!')
-		dbAltEntry.addDep(sectionStartingData);
-	}
-	else {
-		pageData.addDep(sectionStartingData);
-	}
-
-=======
 	}
 
 
@@ -412,7 +317,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	}
 	sectionPageData.parser = ellucianSectionParser;
 
->>>>>>> withPlane:parsers/ellucianClassParser.js
 };
 
 
