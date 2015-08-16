@@ -77,7 +77,7 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 			url:formData.postURL,
 			postData:pointer.payloadJSONtoString(singleRequestPayload)
 		});
-		dep.parser = ellucianSubjectParser;
+		dep.setParser(ellucianSubjectParser);
 
 
 	}.bind(this))

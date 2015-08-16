@@ -35,8 +35,6 @@ function PageData (startingData) {
 
 	this.database = null;
 
-	this.dependencyDatabase = null;
-
 	//dependencies (instances of PageData)
 	this.deps = [];
 
@@ -98,38 +96,51 @@ PageData.prototype.findSupportingParser = function(parserName) {
 
 	for (var i = 0; i < parsers.length; i++) {
 		if ((this.dbData.url && parsers[i].supportsPage(this.dbData.url)) || (parserName && parserName==parsers[i].name)) {
-			this.parser= parsers[i];
-			console.log('Using parser:',this.parser.constructor.name,'for url',this.dbData.url,' and name',parserName);
-
-			this.dependencyDatabase = parsers[i].getDependancyDatabase(this)
-
-			var newDatabase = parsers[i].getDatabase(this);
-
-			if (this.database && newDatabase && newDatabase!=this.database) {
-				console.log('error: in find parser, already had a database')
-			}
-			else {
-				this.database = newDatabase;
-			}
-
-
-			if (this.database.peopleCanRegister) {
-
-				if (this.dbData.emails === undefined) {
-					this.dbData.emails=[];
-				}
-				if (this.dbData.ips === undefined) {
-					this.dbData.ips = [];
-				}
-			}
-
-
-			return true;
+			return this.setParser(parsers[i]);
 		}
 	}
 	console.log('error no parser found for',this.dbData.url,parserName,this);
 	return false;
 };
+
+
+//returns true if successful, else false
+PageData.prototype.setParser = function (parser) {
+  if (!parser || !parser.name) {
+    console.log('error tried to set to invalid parser',parser);
+    return false;
+  }
+  
+  if (this.parser) {
+    console.log('error, tried to set parser, already have a parser',this.parser.constructor.name,parser.constructor.name);
+    console.trace();
+    return false;
+  }
+  
+  
+  this.parser= parser;
+	console.log('Using parser:',this.parser.constructor.name,'for url',this.dbData.url,' and name',parser.name);
+
+	var newDatabase = parser.getDatabase(this);
+
+	if (this.database && newDatabase && newDatabase!=this.database) {
+		console.log('error: in find parser, already had a database')
+	}
+	else {
+		this.database = newDatabase;
+	}
+
+
+	if (this.database.peopleCanRegister) {
+
+		if (this.dbData.emails === undefined) {
+			this.dbData.emails=[];
+		}
+		if (this.dbData.ips === undefined) {
+			this.dbData.ips = [];
+		}
+	}
+}
 
 
 PageData.prototype.loadFromDB = function(callback) {
@@ -307,10 +318,6 @@ PageData.prototype.addDep = function(depData) {
 	  console.trace()
 
 	}
-	if (!depPageDataConfig) {
-		depPageDataConfig={}
-	}
-
 
 
 	//check to make sure the dep dosent already exist in depsToProcess
@@ -361,7 +368,7 @@ PageData.prototype.addDep = function(depData) {
 		console.log('could not create dep in add dep!')
 		return;
 	}
-	console.log('startingData',startingData,'dep:',dep)
+// 	console.log('startingData',startingData,'dep:',dep)
 	this.depsToProcess.push(dep);
 	return dep;
 }

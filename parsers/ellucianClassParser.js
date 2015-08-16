@@ -173,8 +173,8 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			if (!dbAltEntry) {
 			  return;
 			}
-			 
-			dbAltEntry.parser = this;
+			
+			dbAltEntry.setParser(this);
 			
 			
 			// console.log('and the class is',dbAltEntry)
@@ -315,7 +315,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	else {
 		sectionPageData = pageData.addDep(sectionStartingData);
 	}
-	sectionPageData.parser = ellucianSectionParser;
+	sectionPageData.setParser(ellucianSectionParser);
 
 };
 
