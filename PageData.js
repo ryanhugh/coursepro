@@ -325,7 +325,7 @@ PageData.prototype.addDep = function(depData,depPageDataConfig) {
 		email:this.originalData.email,
 		dbData:depData,
 		parent:this,
-		database:this.dependencyDatabase
+		// database:this.dependencyDatabase
 	}
 
 

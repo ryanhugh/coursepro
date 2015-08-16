@@ -20,9 +20,9 @@ EllucianSubjectParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckgens.p_proc_term_date')>-1;
 }
 
-EllucianSubjectParser.prototype.getDependancyDatabase = function(pageData) {
-	return null;
-};
+// EllucianSubjectParser.prototype.getDependancyDatabase = function(pageData) {
+// 	return null;
+// };
 
 
 EllucianSubjectParser.prototype.getDatabase = function(pageData) {
