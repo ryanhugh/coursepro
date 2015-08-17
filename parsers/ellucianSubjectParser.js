@@ -1,12 +1,15 @@
-'use strict';
+  'use strict';
 var URI = require('URIjs');
+var fs = require('fs');
+var assert = require('assert');
 
-var subjectsDB = require('../databases/subjectsDB')
+var pointer = require('../pointer');
+var subjectsDB = require('../databases/subjectsDB');
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
 
 function EllucianSubjectParser () {
-  this.name = "EllucianSubjectParser"
+  this.name = "EllucianSubjectParser";
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 }
 
@@ -18,12 +21,7 @@ EllucianSubjectParser.prototype.constructor = EllucianSubjectParser;
 
 EllucianSubjectParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckgens.p_proc_term_date')>-1;
-}
-
-// EllucianSubjectParser.prototype.getDependancyDatabase = function(pageData) {
-// 	return null;
-// };
-
+};
 
 EllucianSubjectParser.prototype.getDatabase = function(pageData) {
 	return subjectsDB;
@@ -42,7 +40,7 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 
 	//parse the form data
 	var formData = this.parseSearchPage(pageData.dbData.url,dom);
-	var subjects = []
+	var subjects = [];
 
 	formData.payloads.forEach(function (payloadVar) {
 		if (payloadVar.name!='sel_subj') {
@@ -62,16 +60,16 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 			subjects.push({
 				id:payloadVar.value,
 				text:payloadVar.text
-			})
+			});
 		}
-	}.bind(this))
+	}.bind(this));
 
 	
 	if (subjects.length>0) {
 		pageData.setData('subjects',subjects);
 	}
 	else {
-		console.log('ERROR, found 0 subjects??',pageData.dbData.url)
+		console.log('ERROR, found 0 subjects??',pageData.dbData.url);
 	}
 
 
@@ -79,7 +77,7 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 	//parse the term from the url
 	var query = new URI('?'+pageData.dbData.postData).query(true);
 	if (!query.p_term) {
-		console.log('could not find p_term id!',query,pageData.dbData.postData)
+		console.log('could not find p_term id!',query,pageData.dbData.postData);
 	}
 	else {
 		pageData.setData('termId',query.p_term);
@@ -111,12 +109,12 @@ EllucianSubjectParser.prototype.parseSearchPage = function (startingURL,dom) {
 	}.bind(this));
 
 
-	var finalPayloads=[]
+	var finalPayloads=[];
 
 	//loop through again to make sure not includes any values which have an all set
 	payloads.forEach(function (entry) {
 		if (allOptionsFound.indexOf(entry.name)<0 || entry.value=='%' || entry.value=='dummy') {
-			finalPayloads.push(entry)
+			finalPayloads.push(entry);
 		}
 	}.bind(this));
 
@@ -124,7 +122,7 @@ EllucianSubjectParser.prototype.parseSearchPage = function (startingURL,dom) {
 		postURL:parsedForm.postURL,
 		payloads:finalPayloads
 	};
-}
+};
 
 
 
@@ -138,6 +136,70 @@ EllucianSubjectParser.prototype.getEmailData = function(pageData) {
 	console.log('ERROR: getEmailData called for EllucianSubjectParser????');
 };
 
+
+
+
+
+EllucianSubjectParser.prototype.tests = function(){
+  require('../pageDataMgr')
+  
+	fs.readFile('../tests/ellucianSubjectParser/1.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	  
+		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  var url = 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date';
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+      var pageData = pageDataMgr.create({dbData:{
+        url:url,
+        postData:'p_calling_proc=bwckschd.p_disp_dyn_sched&p_by_date=Y&p_from_date=&p_to_date=&p_term=201510'
+      }});
+      
+      assert.notEqual(null,pageData);
+		  
+		  this.parseDOM(pageData,dom);
+		  
+		  assert.deepEqual(pageData.dbData,{ url: 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date',
+            postData: 'p_calling_proc=bwckschd.p_disp_dyn_sched&p_by_date=Y&p_from_date=&p_to_date=&p_term=201510',
+            subjects:
+             [ { id: 'ANAT', text: 'Anatomy CM' },
+               { id: 'ANES', text: 'Anesthesiology CM' },
+               { id: 'CBHX', text: 'Bioethics and Humanities' },
+               { id: 'CCFM', text: 'Consortium - Culture/Medicine' },
+               { id: 'EMED', text: 'Emergency Medicine CM&HP' },
+               { id: 'FAMP', text: 'Family Medicine CM' },
+               { id: 'GERI', text: 'Geriatrics CM' },
+               { id: 'INTD', text: 'Interdepartmental CM&HP' },
+               { id: 'INTL', text: 'International Experience' },
+               { id: 'MDCN', text: 'Medicine CM' },
+               { id: 'MICB', text: 'Microbiology CM' },
+               { id: 'M', text: 'Microbiology and Immunology GS' }, //this is same as html
+               { id: 'NEUR', text: 'Neurology CM' },
+               { id: 'NSUG', text: 'Neurosurgery CM' },
+               { id: 'OBGY', text: 'Obstetrics and Gynecology CM' },
+               { id: 'OPTH', text: 'Opthalmology CM' },
+               { id: 'ORTH', text: 'Orthopaedic Surgery CM' },
+               { id: 'OTOL', text: 'Otolaryngology CM' },
+               { id: 'PATH', text: 'Pathology CM&HP' },
+               { id: 'PEDS', text: 'Pediatrics CM' },
+               { id: 'RMED', text: 'Physical Med/Rehabilitation CM' },
+               { id: 'PRVM', text: 'Preventive Medicine' },
+               { id: 'PYCH', text: 'Psychiatry CM' },
+               { id: 'RONC', text: 'Radiation Oncology CM' },
+               { id: 'RADL', text: 'Radiology CM' },
+               { id: 'SURG', text: 'Surgery CM' },
+               { id: 'UROL', text: 'Urology CM' } ],
+            termId: '201510',
+            host: 'upstate.edu' });
+		  
+		  console.log('all tests done bro');
+		  
+		}.bind(this));
+	}.bind(this));
+};
 
 
 

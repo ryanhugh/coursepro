@@ -194,8 +194,11 @@ EllucianTermsParser.prototype.tests = function() {
 		  
 		  this.parseDOM(pageData,dom);
 		  
+		  var url = 'https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched';
 		  
-		  assert.deepEqual(pageData.dbData,{ url: 'https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched',
+		  assert.equal(true,this.supportsPage(url));
+		  
+		  assert.deepEqual(pageData.dbData,{ url: url,
             terms:
              [ { id: '201610', text: 'Spring 2016' },
                { id: '201580', text: 'Fall 2015' },
@@ -205,11 +208,13 @@ EllucianTermsParser.prototype.tests = function() {
             
             
       assert.equal(pageData.depsToProcess.length,4);
-      assert.equal(pageData.depsToProcess.parent,pageData);
-      
+      pageData.depsToProcess.forEach(function (dep) {
+        assert.equal(dep.parent,pageData);
+      }.bind(this));
       
       // could add some more stuff
       // console.log(pageData.depsToProcess);
+      
 		  
 		  
 		  console.log('all tests done bro');

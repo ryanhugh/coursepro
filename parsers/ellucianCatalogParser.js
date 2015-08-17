@@ -3,7 +3,10 @@ var URI = require('URIjs');
 var domutils = require('domutils');
 var he = require('he');
 var _ = require('lodash');
+var assert = require('assert');
+var fs = require('fs')
 
+var pointer = require('../pointer');
 var linksDB = require('../databases/linksDB')
 var classesDB = require('../databases/classesDB')
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
@@ -61,9 +64,9 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 
 	
 	if (depData.url===undefined) {
-		if (depData.desc!='') {
-			console.log('Warning: dropping',depData)
-		};
+		if (depData.desc!=='') {
+			console.log('Warning: dropping',depData);
+		}
 		return;
 	}
 
@@ -127,12 +130,98 @@ EllucianCatalogParser.prototype.getEmailData = function(pageData) {
 
 
 
-// EllucianCatalogParser.prototype.tests = function() {
+EllucianCatalogParser.prototype.tests = function() {
+  
+  // 1
+  // https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=2041&sel_crse_end=2041&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=
+  
+  
+  require('../pageDataMgr')
+  
+	fs.readFile('../tests/ellucianCatalogParser/1.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=2041&sel_crse_end=2041&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+		  
+		  var classURL= "https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25";
+		  
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+      var pageData = pageDataMgr.create({dbData:{
+        url:url
+      }});
+      
+      this.parseDOM(pageData,dom);
+      
+      assert.equal(pageData.depsToProcess.length,1);
+      assert.equal(pageData.depsToProcess[0].dbData.url,classURL);
+      }.bind(this));
+	}.bind(this));
 	
 
 
-// 	this.parseClassURL('https://oscar.gatech.edu/pls/bprod/bwckctlg.p_display_courses?term_in=201508&one_subj=AE&sel_subj=&sel_crse_strt=1601&sel_crse_end=1601&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-// };
+
+  
+	fs.readFile('../tests/ellucianCatalogParser/2.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	  
+		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  var url = 'https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+		  
+		  var classURL= "https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201580&subj_in=MDCN&crse_in=2064&schd_in=%25";
+		  
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+      var pageData = pageDataMgr.create({dbData:{
+        url:url
+      }});
+      
+      this.parseDOM(pageData,dom);
+      
+      assert.equal(pageData.depsToProcess.length,1);
+      assert.equal(pageData.depsToProcess[0].dbData.url,classURL);
+      
+		}.bind(this));
+	}.bind(this));
+	
+	
+	
+	
+	fs.readFile('../tests/ellucianCatalogParser/3.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	  
+		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  var url = 'https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+		  
+		  var classURL= "https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%25";
+		  
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+      var pageData = pageDataMgr.create({dbData:{
+        url:url
+      }});
+      
+      this.parseDOM(pageData,dom);
+      
+      assert.equal(pageData.depsToProcess.length,1);
+      assert.equal(pageData.depsToProcess[0].dbData.url,classURL);
+      
+		}.bind(this));
+	}.bind(this));
+	
+	
+	console.log('all tests done bro');
+	
+};
 
 
 

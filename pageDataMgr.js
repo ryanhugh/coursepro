@@ -251,7 +251,8 @@ var instance = new PageDataMgr();
 
 
 PageDataMgr.prototype.PageDataMgr=PageDataMgr;
-global.pageDataMgr = instance
+global.pageDataMgr = instance;
+// module.exports = instance
 
 
 
