@@ -1,5 +1,6 @@
 'use strict';
 var URI = require('URIjs')
+var assert = require('assert')
 var BaseParser = require('./baseParser').BaseParser;
 
 
@@ -18,31 +19,32 @@ EllucianBaseParser.prototype.constructor = EllucianBaseParser;
 
 EllucianBaseParser.prototype.catalogURLtoClassURL = function(catalogURL) {
 	var catalogParsed = new URI(catalogURL);
-	if (!catalogParsed || catalogParsed.host()=='') {
+	if (!catalogParsed || catalogParsed.host()==='') {
 		console.log('error given invalid catalog url?',catalogURL);
+		return;
 	}
 
 	var query = catalogParsed.query(true);
 
 	var term_in = query.term_in;
-	if (!term_in || term_in=='') {
+	if (!term_in || term_in==='') {
 		console.log('error cant get class url, invalid term',catalogURL)
 		return;
 	}
 
 	var subj = query.one_subj;
-	if (!subj || subj=='') {
+	if (!subj || subj==='') {
 		console.log('error, cant get class url, invalid subj',catalogURL);
 		return;
 	}
 
 	var startcrse = query.sel_crse_strt;
-	if (!startcrse || startcrse=='') {
+	if (!startcrse || startcrse==='') {
 		console.log('error, cant get class url, invalid startcrse',catalogURL);
 		return;
-	}	
+	}
 	var endcrse = query.sel_crse_end;
-	if (!endcrse || endcrse=='') {
+	if (!endcrse || endcrse==='') {
 		console.log('error, cant get class url, invalid endcrse',catalogURL);
 		return;
 	}
@@ -87,5 +89,25 @@ EllucianBaseParser.prototype.getBaseURL = function(url) {
 };
 
 
+EllucianBaseParser.prototype.tests = function() {
+  var catagoryURL = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=2041&sel_crse_end=2041&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr='
+  
+  var classURL = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25';
+  
+  assert.equal(this.catalogURLtoClassURL(catagoryURL),classURL);
+  assert.equal(this.getBaseURL(catagoryURL),'https://prd-wlssb.temple.edu/prod8/');
+  assert.equal(this.getBaseURL(classURL),'https://prd-wlssb.temple.edu/prod8/');
+  
+  
+  console.log('all tests done bro')
+};
+
+
+
 EllucianBaseParser.prototype.EllucianBaseParser=EllucianBaseParser;
 module.exports = new EllucianBaseParser()
+
+
+if (require.main === module) {
+  module.exports.tests();
+}

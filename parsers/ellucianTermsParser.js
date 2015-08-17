@@ -1,9 +1,11 @@
 'use strict';
 var domutils = require('domutils');
+var assert = require('assert');
+var fs = require('fs');
 
-var pointer = require('../pointer')
-var termsDB = require('../databases/termsDB')
-var subjectsDB = require('../databases/subjectsDB')
+var pointer = require('../pointer');
+var termsDB = require('../databases/termsDB');
+var subjectsDB = require('../databases/subjectsDB');
 
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 var ellucianSubjectParser = require('./ellucianSubjectParser');
@@ -12,7 +14,7 @@ var ellucianSubjectParser = require('./ellucianSubjectParser');
 function EllucianTermsParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 	
-	this.name = "EllucianTermsParser"
+	this.name = "EllucianTermsParser";
 }
 
 
@@ -30,12 +32,12 @@ EllucianTermsParser.prototype.getDatabase = function(pageData) {
 
 EllucianTermsParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckschd.p_disp_dyn_sched')>-1;
-}
+};
 
 
 EllucianTermsParser.prototype.minYear = function(){
 	return new Date().getFullYear();
-}
+};
 
 EllucianTermsParser.prototype.isValidTerm = function(termId,text) {
 	
@@ -58,7 +60,7 @@ EllucianTermsParser.prototype.isValidTerm = function(termId,text) {
 
 EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 	var formData = this.parseTermsPage(pageData.dbData.url,dom);
-	var terms = []
+	var terms = [];
 
 	formData.requestsData.forEach(function (singleRequestPayload) {
 
@@ -68,7 +70,7 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 				terms.push({
 					id:payloadVar.value,
 					text:payloadVar.text
-				})
+				});
 			}
 		}.bind(this));
 
@@ -80,14 +82,14 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 		dep.setParser(ellucianSubjectParser);
 
 
-	}.bind(this))
+	}.bind(this));
 
 	
 	if (terms.length>0) {
 		pageData.setData('terms',terms);
 	}
 	else {
-		console.log('ERROR, found 0 terms??',pageData.dbData.url)
+		console.log('ERROR, found 0 terms??',pageData.dbData.url);
 	}
 };
 
@@ -162,7 +164,7 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL,dom) {
 		postURL:parsedForm.postURL,
 		requestsData:requestsData
 	};
-}
+};
 
 
 EllucianTermsParser.prototype.getMetadata = function(pageData) {
@@ -171,6 +173,56 @@ EllucianTermsParser.prototype.getMetadata = function(pageData) {
 EllucianTermsParser.prototype.getEmailData = function(pageData) {
 	console.log('ERROR: getEmailData called for EllucianTermsParser????');
 };
+
+
+
+
+
+EllucianTermsParser.prototype.tests = function() {
+  require('../pageDataMgr')
+  
+	fs.readFile('../tests/ellucianTermsParser/1.json','utf8',function (err,body) {
+	  assert.equal(null,err);
+	  var fileJSON = JSON.parse(body);
+	  
+		pointer.handleRequestResponce(fileJSON.body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  
+      var pageData = pageDataMgr.create({dbData:{url:fileJSON.url}});
+      assert.notEqual(null,pageData);
+		  
+		  this.parseDOM(pageData,dom);
+		  
+		  
+		  assert.deepEqual(pageData.dbData,{ url: 'https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched',
+            terms:
+             [ { id: '201610', text: 'Spring 2016' },
+               { id: '201580', text: 'Fall 2015' },
+               { id: '201550', text: 'Summer 2015' },
+               { id: '201510', text: 'Spring 2015 (View only)' } ],
+            host: 'upstate.edu' });
+            
+            
+      assert.equal(pageData.depsToProcess.length,4);
+      assert.equal(pageData.depsToProcess.parent,pageData);
+      
+      
+      // could add some more stuff
+      // console.log(pageData.depsToProcess);
+		  
+		  
+		  console.log('all tests done bro');
+		  
+		}.bind(this));
+	}.bind(this));
+};
+
+
+
+
+
+
 
 
 EllucianTermsParser.prototype.EllucianTermsParser=EllucianTermsParser;
