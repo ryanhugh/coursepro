@@ -21,7 +21,7 @@ function EllucianClassParser () {
 
 	this.requiredAttrs = [];
 
-	this.name = 'EllucianClassParser'
+	this.name = 'EllucianClassParser';
 
 	//name and deps are optional, but if there is no deps there is nowhere to parse name...
 }
@@ -34,7 +34,7 @@ EllucianClassParser.prototype.constructor = EllucianClassParser;
 
 EllucianClassParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckctlg.p_disp_listcrse')>-1;
-}
+};
 
 
 EllucianClassParser.prototype.getDependancyDatabase = function(pageData) {
@@ -80,7 +80,7 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 			return;
 		}
 
-		var timesMatch = times.match(/(.*?) - (.*?)$/i)
+		var timesMatch = times.match(/(.*?) - (.*?)$/i);
 		
 		var start = moment(timesMatch[1],"hh:mm a").diff(timeZero,'seconds');
 		var end = moment(timesMatch[2],"hh:mm a").diff(timeZero,'seconds');
@@ -103,7 +103,7 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 
 
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
-  console.log('parsing a class')
+  console.log('parsing a class');
 
 	//if different name than this class, save to new class
 	var dbAltEntry = null;
@@ -122,7 +122,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 		//add hostname + port if path is relative
 		if (urlParsed.is('relative')) {
-			urlParsed = urlParsed.absoluteTo(pageData.getUrlStart()).toString()
+			urlParsed = urlParsed.absoluteTo(pageData.getUrlStart()).toString();
 		}
 
 		if (ellucianSectionParser.supportsPage(urlParsed.toString())){
@@ -143,7 +143,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 		//name was already set to something different, make another db entry for this class
 		if (pageData.parsingData.name && className!=pageData.parsingData.name) {
-			console.log('creating another class from a class!')
+			console.log('creating another class from a class!');
 			
 			
 			//search for an existing dep with the matching classname, etc
@@ -162,7 +162,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	
 	    //entry
 			if (!dbAltEntry) {
-			  console.log('creating a new dep entry',pageData.deps.length)
+			  console.log('creating a new dep entry',pageData.deps.length);
   
   			dbAltEntry = pageData.addDep({
   				name:className,
@@ -179,7 +179,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			dbAltEntry.setParser(this);
 		}
 		else {
-		  console.log('adding to main!')
+		  console.log('adding to main!');
 			pageData.parsingData.name = className;
 			pageData.setData('name',className);
 		}
@@ -187,7 +187,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	}.bind(this),element.children);
 
 	if (!sectionStartingData.url) {
-		console.log('warning, no url found',pageData.dbData.url)
+		console.log('warning, no url found',pageData.dbData.url);
 		return;
 	}
 
@@ -206,12 +206,12 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	}
 
 	if (tables.length>0) {
-		sectionStartingData.meetings=[]
+		sectionStartingData.meetings=[];
 
 		var tableData = this.parseTable(tables[0]);
 
 		if (tableData._rowCount<1 || !tableData.daterange || !tableData.where || !tableData.instructors || !tableData.time || !tableData.days) {
-			console.log('ERROR, invalid table in class parser',tableData,pageData.dbData.url)
+			console.log('ERROR, invalid table in class parser',tableData,pageData.dbData.url);
 			return;
 		}
 
@@ -242,7 +242,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			}
 
 			//parse the professors
-			var profs = tableData.instructors[i].split(',')
+			var profs = tableData.instructors[i].split(',');
 
 			profs.forEach(function (prof) {
 				
@@ -250,7 +250,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 				prof = prof.replace(/\s+/g,' ').trim().replace(/\(P\)$/gi,'').trim();
 
 				if (prof.length<3) {
-					console.log('warning: empty/short prof name??',prof,tableData)
+					console.log('warning: empty/short prof name??',prof,tableData);
 				}
 				if (prof.toLowerCase()=='tba') {
 					prof = "TBA";
@@ -316,27 +316,27 @@ EllucianClassParser.prototype.onBeginParsing = function(pageData) {
 	var query = new URI(pageData.dbData.url).query(true);
 
 	if (!query.term_in) {
-		console.log('could not find term_in id ellucian class parser!',query,pageData.dbData.url)
+		console.log('could not find term_in id ellucian class parser!',query,pageData.dbData.url);
 	}
 	else {
 		pageData.parsingData.termId = query.term_in;
-		pageData.setData('termId',query.term_in)
+		pageData.setData('termId',query.term_in);
 	}
 
 	if (!query.subj_in) {
-		console.log('could not find subj_in id ellucian class parser!',query,pageData.dbData.url)
+		console.log('could not find subj_in id ellucian class parser!',query,pageData.dbData.url);
 	}
 	else {
 		pageData.parsingData.subject = query.subj_in;
-		pageData.setData('subject',query.subj_in)
+		pageData.setData('subject',query.subj_in);
 	}
 
 	if (!query.crse_in) {
-		console.log('could not find crse_in id ellucian class parser!',query,pageData.dbData.url)
+		console.log('could not find crse_in id ellucian class parser!',query,pageData.dbData.url);
 	}
 	else {
 		pageData.parsingData.classId = query.crse_in;
-		pageData.setData('classId',query.crse_in)
+		pageData.setData('classId',query.crse_in);
 	}
 };
 
@@ -366,7 +366,7 @@ EllucianClassParser.prototype.getMetadata = function(pageData) {
 
 	var totalSeats = 0;
 	pageData.deps.forEach(function (depData) {
-		totalSeats+=parseInt(depData.dbData.seatsRemaining)
+		totalSeats+=parseInt(depData.dbData.seatsRemaining);
 	});
 
 
@@ -386,7 +386,7 @@ EllucianClassParser.prototype.getEmailData = function(pageData) {
 	}
 
 	if (!newData.deps || !oldData.deps) {
-		console.log('Warning: no deps??',pageData.dbData.url)
+		console.log('Warning: no deps??',pageData.dbData.url);
 		return;
 	}
 
@@ -394,7 +394,7 @@ EllucianClassParser.prototype.getEmailData = function(pageData) {
 		var newSectionCount = newData.deps.length-oldData.deps.length;
 		return {
 			title:newSectionCount + ' new section'+this.getOptionallyPlural(newSectionCount)+' of '+newData.deps[0].name +' was added!'
-		}
+		};
 	}
 };
 

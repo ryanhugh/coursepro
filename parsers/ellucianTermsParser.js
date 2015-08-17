@@ -181,6 +181,7 @@ EllucianTermsParser.prototype.getEmailData = function(pageData) {
 EllucianTermsParser.prototype.tests = function() {
   require('../pageDataMgr')
   
+  
 	fs.readFile('../tests/ellucianTermsParser/1.json','utf8',function (err,body) {
 	  assert.equal(null,err);
 	  var fileJSON = JSON.parse(body);
@@ -221,6 +222,11 @@ EllucianTermsParser.prototype.tests = function() {
 		  
 		}.bind(this));
 	}.bind(this));
+	
+	
+	//make sure a name is defined
+	assert(this.name);
+	
 };
 
 
