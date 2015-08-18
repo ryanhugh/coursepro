@@ -35,13 +35,9 @@ function PageData (startingData) {
 
 	this.database = null;
 
-	//dependencies (instances of PageData)
+	//dependencies [instances of pagedata]
+	//note that this.dbData.deps is {parser.name:[_id,_id],...}
 	this.deps = [];
-
-	//{name:value} that the new PageData objects should have in dbData
-	//when processDeps is ran, this is emptied and this.deps and this.dbData.deps are filled
-	this.depsToProcess = [];
-
 
 
 
@@ -237,18 +233,25 @@ PageData.prototype.isUpdated = function() {
 
 PageData.prototype.processDeps = function(callback) {
 	
-	if (!this.depsToProcess || this.depsToProcess.length===0){
+	if (!this.deps){
 		return callback();
+	}
+	if (this.dbData.deps) {
+	  console.log('error process already ran????',this.deps,this.dbData.deps)
 	}
 
 	this.dbData.deps = {};
 
 	//any dep data will be inserted into main PageData for dep
-	async.map(this.depsToProcess, function (depPageData,callback) {
+	async.map(this.deps, function (depPageData,callback) {
 		pageDataMgr.go(depPageData,function (err,newDepData) {
 			if (err) {
 				console.log('ERROR: processing deps:',err);
 				return callback(err);
+			}
+			if (newDepData!=depPageData) {
+			  console.log('error pagedata was called on is diff than returned??');
+			  return;
 			}
 
 			if (!newDepData.parser || !newDepData.parser.name) {
@@ -260,14 +263,12 @@ PageData.prototype.processDeps = function(callback) {
 			}
 
 
-
-		// 	console.log('storing in ',newDepData.parser.name)
-
+      //create the array if it dosent exist
 			if (!this.dbData.deps[newDepData.parser.name]) {
 				this.dbData.deps[newDepData.parser.name] = [];
 			}
 
-
+      //add it to the array if it dosent already exist
 			if (this.dbData.deps[newDepData.parser.name].indexOf(newDepData.dbData._id)<0) {
 				this.dbData.deps[newDepData.parser.name].push(newDepData.dbData._id);
 			}
@@ -303,32 +304,30 @@ PageData.prototype.getUrlStart = function() {
 
 //can add by url or _id - one of two is required
 
-PageData.prototype.addDep = function(depData) {
-	if (!depData) {
-		console.log('Error:Tried to add invalid depdata??',depData);
+PageData.prototype.addDep = function(parser,depData) {
+	if (!depData || !parser) {
+		console.log('Error:Tried to add invalid depdata??',depData,parser);
 		if (depData) {
 		  console.log('error, more data for invalid depdata',depData.parser);
 		}
 		console.trace()
 		return null;
 	}
-	
-	//this is just temp
-	if (arguments.length>1) {
-	  console.log('error!!! add dep only takes 1 argument')
-	  console.trace()
-
+	if  (!parser.name) {
+	  console.log('error given parser does not have a name');
+	  return;
 	}
+	
 
 
-	//check to make sure the dep dosent already exist in depsToProcess
-	for (var i = 0; i < this.depsToProcess.length; i++) {
+	//check to make sure the dep dosent already exist in deps
+	for (var i = 0; i < this.deps.length; i++) {
 
 		var isMatch = false;
 
 		//if given an _id to search for, make sure it matches the id in the existing depsToProcess
 		if (depData._id) {
-			if (this.depsToProcess[i].dbData._id==depData._id) {
+			if (this.deps[i].dbData._id==depData._id) {
 
 			  console.log('error matched by _id!')
 
@@ -336,21 +335,21 @@ PageData.prototype.addDep = function(depData) {
 			}
 		}
 		else if (depData.url) {
-			if (this.depsToProcess[i].dbData.url==depData.url && _.isEqual(this.depsToProcess[i].dbData.postData,depData.postData)) {
+			if (this.deps[i].dbData.url==depData.url && _.isEqual(this.deps[i].dbData.postData,depData.postData)) {
 			  console.log('error matched by url+pagedata')
 				isMatch=true;
 			}
 		}
 
 		if (isMatch) {
-			console.log('URL was already in deps, adding new attrs!',this.depsToProcess[i],depData)
+			console.log('URL was already in deps, adding new attrs!',this.deps[i],depData)
 			for (var newAttrName in depData) {
 				console.log('adding ',newAttrName,depData[newAttrName])
-				this.depsToProcess[i].setData(newAttrName,depData[newAttrName]);
+				this.deps[i].setData(newAttrName,depData[newAttrName]);
 			}
 
 			//insert the new data into the dep here, instead of adding a new dep below
-			return this.depsToProcess[i];
+			return this.deps[i];
 		}
 	}
 
@@ -369,8 +368,8 @@ PageData.prototype.addDep = function(depData) {
 		console.log('could not create dep in add dep!')
 		return;
 	}
-// 	console.log('startingData',startingData,'dep:',dep)
-	this.depsToProcess.push(dep);
+	dep.setParser(parser);
+	this.deps.push(dep);
 	return dep;
 }
 

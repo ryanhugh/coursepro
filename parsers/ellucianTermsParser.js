@@ -75,11 +75,10 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 		}.bind(this));
 
 		//also pass the data to the dependencies
-		var dep = pageData.addDep({
+		var dep = pageData.addDep(ellucianSubjectParser,{
 			url:formData.postURL,
 			postData:pointer.payloadJSONtoString(singleRequestPayload)
 		});
-		dep.setParser(ellucianSubjectParser);
 
 
 	}.bind(this));
@@ -206,13 +205,13 @@ EllucianTermsParser.prototype.tests = function() {
             host: 'upstate.edu' });
             
             
-      assert.equal(pageData.depsToProcess.length,4);
-      pageData.depsToProcess.forEach(function (dep) {
+      assert.equal(pageData.deps.length,4);
+      pageData.deps.forEach(function (dep) {
         assert.equal(dep.parent,pageData);
       }.bind(this));
       
       // could add some more stuff
-      // console.log(pageData.depsToProcess);
+      // console.log(pageData.deps);
       
 		  
 		  

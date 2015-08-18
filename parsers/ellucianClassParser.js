@@ -167,7 +167,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			if (!dbAltEntry) {
 			  console.log('creating a new dep entry',pageData.deps.length);
   
-  			dbAltEntry = pageData.addDep({
+  			dbAltEntry = pageData.addDep(this,{
   				name:className,
   				updatedByParent:true
   			});
@@ -178,8 +178,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			if (!dbAltEntry) {
 			  return;
 			}
-			
-			dbAltEntry.setParser(this);
 		}
 		else {
 		  console.log('adding to main!');
@@ -301,13 +299,11 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
   var sectionPageData;
 	if (dbAltEntry) {
 		console.log('adding section dep to class dep!!!');
-		sectionPageData = dbAltEntry.addDep(sectionStartingData);
+		sectionPageData = dbAltEntry.addDep(ellucianSectionParser,sectionStartingData);
 	}
 	else {
-		sectionPageData = pageData.addDep(sectionStartingData);
+		sectionPageData = pageData.addDep(ellucianSectionParser,sectionStartingData);
 	}
-	sectionPageData.setParser(ellucianSectionParser);
-
 };
 
 
@@ -405,6 +401,47 @@ EllucianClassParser.prototype.getEmailData = function(pageData) {
 
 EllucianClassParser.prototype.tests = function () {
   require('../pageDataMgr')
+  
+  
+  
+	//sections have different names
+	fs.readFile('../tests/ellucianClassParser/multiname.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	 		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  
+		  //set up variables -- this url might not be correct
+		  var url = 'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=LE';
+      var pageData = pageDataMgr.create({dbData:{url:url}});
+      assert.notEqual(null,pageData);
+		  
+		  //main parse
+		  this.parseDOM(pageData,dom);
+		  
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+		  // console.log(pageData.dbData)
+		  assert.deepEqual(pageData.dbData,{
+		    url:url,
+        termId: '201502',
+        subject: 'PHYS',
+        classId: '013',
+        name: 'Thermodynamic/ Mech',
+        host: 'swarthmore.edu' });
+        console.log('-----')
+        console.log(pageData.deps);
+		          
+    //   assert.equal(pageData.depsToProcess.length,1);
+    //   pageData.depsToProcess.forEach(function (dep) {
+    //     assert.equal(dep.parent,pageData);
+    //     assert.equal(dep.parser,ellucianSectionParser);
+    //   }.bind(this));
+		}.bind(this));
+	}.bind(this));
+	
+	return;
   
 	fs.readFile('../tests/ellucianClassParser/1.html','utf8',function (err,body) {
 	  assert.equal(null,err);
@@ -679,44 +716,6 @@ EllucianClassParser.prototype.tests = function () {
         assert.equal(dep.parent,pageData);
         assert.equal(dep.parser,ellucianSectionParser);
       }.bind(this));
-		}.bind(this));
-	}.bind(this));
-	
-  
-	//sections have different names
-	fs.readFile('../tests/ellucianClassParser/multiname.html','utf8',function (err,body) {
-	  assert.equal(null,err);
-	 		pointer.handleRequestResponce(body,function (err,dom) {
-		  assert.equal(null,err);
-		  
-		  
-		  //set up variables -- this url might not be correct
-		  var url = 'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=LE';
-      var pageData = pageDataMgr.create({dbData:{url:url}});
-      assert.notEqual(null,pageData);
-		  
-		  //main parse
-		  this.parseDOM(pageData,dom);
-		  
-		  
-		  assert.equal(true,this.supportsPage(url));
-		  
-		  // console.log(pageData.dbData)
-		  assert.deepEqual(pageData.dbData,{
-		    url:url,
-        termId: '201502',
-        subject: 'PHYS',
-        classId: '013',
-        name: 'Thermodynamic/ Mech',
-        host: 'swarthmore.edu' });
-        
-        console.log(pageData.depsToProcess)
-		          
-    //   assert.equal(pageData.depsToProcess.length,1);
-    //   pageData.depsToProcess.forEach(function (dep) {
-    //     assert.equal(dep.parent,pageData);
-    //     assert.equal(dep.parser,ellucianSectionParser);
-    //   }.bind(this));
 		}.bind(this));
 	}.bind(this));
 	
