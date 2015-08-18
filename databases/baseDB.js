@@ -73,7 +73,7 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 
 	if (newData._id) {
 		this.db.update({ _id: newData._id }, {$set:newData}, {}, function (err, numReplaced) {
-			if (numReplaced==0) {
+			if (numReplaced===0) {
 				console.log('ERROR: updated 0?',newData);
 			};
 		}.bind(this));
@@ -163,7 +163,7 @@ BaseDB.prototype.find = function(lookupValues,config,callback) {
 
 	this.db.find(lookupValues,function (err,docs) {
 		if (err) {
-			console.log('NEDB error in section db, ',err,host);
+			console.log('NEDB error in section db, ',err,lookupValues);
 			return callback(err);
 		}
 

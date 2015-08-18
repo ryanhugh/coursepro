@@ -40,7 +40,7 @@ Spider.prototype.request = function (url,payload,callback) {
 		}
 	}
 	else {
-		headers = {}	
+		headers = {}
 	}
 
 
@@ -149,7 +149,7 @@ Spider.prototype.go = function(url) {
 
 				}.bind(this));
 			}.bind(this));
-		}.bind(this));		
+		}.bind(this));
 	}.bind(this))
 }
 
@@ -178,7 +178,7 @@ Spider.prototype.tests = function () {
 	// this.go('https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched')
 	// this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_dyn_sched')
 	// this.go('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched')
-	this.go('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched') //this is a really good site, small + quick. finished in like 2 min
+	this.go('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'); //this is a really good site, small + quick. finished in like 2 min
 	return;
 
 

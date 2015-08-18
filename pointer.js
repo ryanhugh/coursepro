@@ -1,9 +1,10 @@
-'use strict'
+'use strict';
 var needle = require('needle');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var _ = require('lodash');
 var URI = require('URIjs');
+var assert = require('assert');
 
 
 function Pointer () {
@@ -218,9 +219,9 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 
 
 Pointer.prototype.tests = function() {
-	var a =this.payloadJSONtoString([{name:'name',value:'value'},{name:'name2',value:'value2'}]);
+  assert.equal(this.payloadJSONtoString([{name:'name',value:'value'},{name:'name2',value:'value2'}]),'name=value&name2=value2');
 
-	console.log(a)
+	console.log('all tests done bro')
 };
 
 

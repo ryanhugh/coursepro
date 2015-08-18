@@ -400,7 +400,7 @@ PageData.prototype.setData = function(name,value) {
 
 
 	if (this.dbData[name]!==undefined && !_.isEqual(this.dbData[name],value)) {
-		console.log('warning, overriding PageData.'+name+' with new data',this.dbData[name],value)
+		console.log('warning, overriding PageData.dbData.'+name+' with new data',this.dbData[name],value)
 	}
 
 
@@ -411,24 +411,6 @@ PageData.prototype.setData = function(name,value) {
 PageData.prototype.getData = function(name) {
 	return this.dbData[name];
 };
-
-
-
-
-// PageData.prototype.addDBEntry = function(dbData) {
-// 	// if (!this.multiDBMode) {
-// 		// console.log('error tried to add another db entry and not in multiDBMode!',dbData)
-// 		// return;
-// 	// };
-	
-// 	// if (dbData.url!=this.dbData.url) {
-// 	// 	console.log('warning, wtf',dbData,this.dbData);
-// 	// }
-
-// 	this.dbEntries.push(dbData);
-
-
-// };
 
 
 
