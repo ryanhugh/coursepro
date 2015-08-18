@@ -155,7 +155,7 @@ Spider.prototype.go = function(url) {
 
 
 
-Spider.prototype.tests = function () {
+Spider.prototype.go = function () {
 	
 
 
@@ -179,6 +179,11 @@ Spider.prototype.tests = function () {
 	// this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_dyn_sched')
 	// this.go('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched')
 	this.go('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'); //this is a really good site, small + quick. finished in like 2 min
+	return;
+};
+
+Spider.prototype.tests = function () {
+  
 	return;
 
 
@@ -239,10 +244,10 @@ Spider.prototype.tests = function () {
 
 
 
+Spider.prototype.Spider=Spider;
+module.exports = new Spider();
 
 if (require.main === module) {
-	new Spider().tests();
+	module.exports.tests();
 }
 
-
-module.exports = Spider

@@ -266,6 +266,12 @@ CollegeNamesDB.prototype.getTitle = function(url,callback) {
 
 CollegeNamesDB.prototype.tests = function() {
 
+  
+};
+
+
+CollegeNamesDB.prototype.go = function() {
+
 
 	// this.getAll(function (stuff) {
 	// 	console.log(stuff)
@@ -317,5 +323,5 @@ module.exports = new CollegeNamesDB()
 
 
 if (require.main === module) {
-	module.exports.tests();
+	module.exports.go();
 }
