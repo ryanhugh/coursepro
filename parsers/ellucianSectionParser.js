@@ -4,6 +4,8 @@ var fs = require('fs');
 var he = require('he');
 var URI = require('URIjs');
 var _ = require('lodash');
+var assert = require('assert');
+
 
 var sectionDB = require('../databases/sectionsDB');
 var pointer = require('../pointer');
@@ -16,7 +18,7 @@ var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 function EllucianSectionParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 
-  this.name = 'EllucianSectionParser'
+  this.name = 'EllucianSectionParser';
 
 	this.requiredAttrs = [
 	"seatsCapacity",
@@ -34,7 +36,7 @@ EllucianSectionParser.prototype.constructor = EllucianSectionParser;
 
 EllucianSectionParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckschd.p_disp_detail_sched')>-1;
-}
+};
 
 EllucianSectionParser.prototype.getDatabase = function(pageData) {
 	return sectionDB;
@@ -91,7 +93,7 @@ EllucianSectionParser.prototype.simplifyRequirements = function(data) {
 	var retVal = {
 		type:data.type,
 		values:[]
-	}
+	};
 
 	data.values.forEach(function (subData) {
 		if ((typeof subData) == 'string') {
@@ -122,13 +124,11 @@ EllucianSectionParser.prototype.simplifyRequirements = function(data) {
 
 
 //converts the ['','and',''] to {type:and,values:'',''}
-// input:  [["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]
-// output: {"type":"or","values":[{"type":"or","values":["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]},{"type":"or","values":["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]}]}
 EllucianSectionParser.prototype.formatRequirements = function(data) {
 	var retVal = {
 		type:'and',
 		values:[]
-	}
+	};
 
 	data.forEach(function (val,index) {
 		if (Array.isArray(val)) {
@@ -144,9 +144,9 @@ EllucianSectionParser.prototype.formatRequirements = function(data) {
 			}
 		}
 		else if (val=='or' || val=='and'){
-			if (index==0) {
-				console.log('warning, divider found at index 0??',data)
-			};
+			if (index===0) {
+				console.log('warning, divider found at index 0??',data);
+			}
 			retVal.type=val;
 		}
 		else {
@@ -154,32 +154,31 @@ EllucianSectionParser.prototype.formatRequirements = function(data) {
 		}
 	}.bind(this));
 
-	if (retVal.values.length==0) {
+	if (retVal.values.length===0) {
 		return null;
-	};
+	}
 
 	return retVal;
 };
 
 
-// input: '(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'
-// output: [["https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",[" Eng - Place (Test) 03","and","Nelson Denny Total 081","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]
+//splits a string by and/or and to json string (uparsed)
 EllucianSectionParser.prototype.convertStringToJSON = function(text) {
-	var elements = []
+	var elements = [];
 
 	//split the string by dividers " and " and " or "
 	text.split(' or ').forEach(function (splitByOr,index,arr) {
 		splitByOr.split(' and ').forEach(function (splitByAnd,index,arr) {
 			elements.push(splitByAnd);
 			if (index!=arr.length-1) {
-				elements.push('and')
-			};
-		}.bind(this))
+				elements.push('and');
+			}
+		}.bind(this));
 
 		if (index!=arr.length-1) {
-			elements.push('or')
-		};
-	}.bind(this))
+			elements.push('or');
+		}
+	}.bind(this));
 
 
 	var retVal = [];
@@ -190,46 +189,46 @@ EllucianSectionParser.prototype.convertStringToJSON = function(text) {
 		//just put quotes around the dividers
 		if (element=='and' || element=='or') {
 			retVal.push('"'+element+'",');
-			return
-		};
-		element = element.trim()
+			return;
+		}
+		element = element.trim();
 
 		//all of the grouping parens will be at end or start of element string
 		if (_(element).startsWith('(')) {
-			element = element.slice(1)
-			retVal.push('[')
-		};
+			element = element.slice(1);
+			retVal.push('[');
+		}
 
 		//ending bracket needs to be checked here, but inserted after url/text parsed
 		var insertEndBracket = false;
 		if (_(element).endsWith(')')) {
-			element = element.slice(0,element.length-1)
+			element = element.slice(0,element.length-1);
 			insertEndBracket = true;
-		};
+		}
 
 
 		//match the url if it is there
 		var match = element.match(/\@\#\$"(.*?)"/i);
 		if (_(element).includes('@#$') && match) {
-			retVal.push('"'+match[1]+'",')
+			retVal.push('"'+match[1]+'",');
 		}
 		//just add all of the text
 		else {
-			retVal.push('"'+element.trim()+'",')
+			retVal.push('"'+element.trim()+'",');
 		}
 
 		if (insertEndBracket) {
-			retVal.push('],')
-		};
+			retVal.push('],');
+		}
 
 
-	}.bind(this))
+	}.bind(this));
 
 	//clean up invalid syntax
-	var text = '['+retVal.join("")+']'
-	text = text.replace(/,\]/gi,']').replace(/\[,/gi,'[').replace(/",+"/gi,'","').replace(/\n|\r/gi,'')
+	var retValText = '['+retVal.join("")+']';
+	retValText = retValText.replace(/,\]/gi,']').replace(/\[,/gi,'[').replace(/",+"/gi,'","').replace(/\n|\r/gi,'');
 
-	return text;
+	return retValText;
 };
 
 
@@ -254,25 +253,25 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 			else if (classDetails[i].name=='a'){
 
 				var elementText = domutils.getText(classDetails[i]);
-				if (elementText.trim()=='') {
-					console.log('warning, not matching ',sectionName,' with no text in the link',pageData.dbData.url)
+				if (elementText.trim()==='') {
+					console.log('warning, not matching ',sectionName,' with no text in the link',pageData.dbData.url);
 					continue;
-				};
+				}
 
-				var catalogURL = he.decode(classDetails[i].attribs.href)
-				if (!catalogURL || catalogURL=='') {
+				var catalogURL = he.decode(classDetails[i].attribs.href);
+				if (!catalogURL || catalogURL==='') {
 					console.log('error could not get catalogURL',catalogURL,classDetails[i].attribs,pageData.dbData.url);
 					continue;
-				};
+				}
 
 				catalogURL = new URI(catalogURL).absoluteTo(pageData.dbData.url).toString();
 
 
 				var classURL = this.catalogURLtoClassURL(catalogURL);
-				if (!classURL || classURL=='') {
-					console.log('error could not convert req url to class url',catalogURL,classDetails[i].attribs,pageData.dbData.url)
+				if (!classURL || classURL==='') {
+					console.log('error could not convert req url to class url',catalogURL,classDetails[i].attribs,pageData.dbData.url);
 					continue;
-				};
+				}
 
 
 				elements.push('@#$"'+classURL+'"');
@@ -282,34 +281,34 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 			}
 		}
 		else {
-			var text = domutils.getOuterHTML(classDetails[i]);
-			if (text=='') {
+			var urlText = domutils.getOuterHTML(classDetails[i]);
+			if (urlText==='') {
 				continue;
 			}
-			if (_(text).includes('@#$')) {
+			if (_(urlText).includes('@#$')) {
 				console.log('warning @#$ used to designate url was found in string?!?',pageData.dbData.url);
-				text = text.replace(/\@\#\$/gi,'')
-			};
-			elements.push(text);
+				urlText = urlText.replace(/\@\#\$/gi,'');
+			}
+			elements.push(urlText);
 		}
 	}
 
 	//no section given, or invalid section, or page does not list any pre/co reqs
-	if (elements.length==0) {
+	if (elements.length===0) {
 		return;
-	};
+	}
 	
 
 	var text =  elements.join("").trim();
-	if (text=='') {
+	if (text==='') {
 		console.log('warning, found elements, but no links or and or',elements);
 		return;
-	};
+	}
 	text=this.convertStringToJSON(text);
 
 	//parse the new json
 	try{
-		text = JSON.parse(text)
+		text = JSON.parse(text);
 	}
 	catch (err){
 
@@ -321,7 +320,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 		if (openingBrackedCount>closingBrackedCount && _(text).startsWith('[')) {
 			text = text.slice(1);
 			try{
-				text = JSON.parse(text)
+				text = JSON.parse(text);
 			}
 			catch (err){
 				console.log('error, tried to remove [ from beginning, didnt work',text,elements);
@@ -332,7 +331,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 		else if (closingBrackedCount>openingBrackedCount && _(text).endsWith(']')) {
 			text = text.slice(0,text.length-1);
 			try{
-				text = JSON.parse(text)
+				text = JSON.parse(text);
 			}
 			catch (err){
 				console.log('error, tried to remove ] from end, didnt work',text,elements);
@@ -341,24 +340,24 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 		}
 		else {
 
-			console.log('ERROR: unabled to parse formed json string',err,text,elements,pageData.dbData.url)
+			console.log('ERROR: unabled to parse formed json string',err,text,elements,pageData.dbData.url);
 			return;
 		}
 	}
 
 	if (text.length==1 && Array.isArray(text[0])) {
 		text=text[0];
-	};
+	}
 
 
 
-	text = this.groupRequirementsByAnd(text)
+	text = this.groupRequirementsByAnd(text);
 
-	text=this.formatRequirements(text)
+	text=this.formatRequirements(text);
 	if (!text) {
-		console.log('error formatting requirements, ',pageData.dbData.url,elements)
+		console.log('error formatting requirements, ',pageData.dbData.url,elements);
 		return;
-	};
+	}
 	text=this.simplifyRequirements(text);
 
 	return text;
@@ -374,10 +373,10 @@ EllucianSectionParser.prototype.onBeginParsing = function(pageData) {
 	var query = new URI(pageData.dbData.url).query(true);
 
 	if (!query.crn_in) {
-		console.log('could not find crn_in id ellucian class parser!',query,pageData.dbData.url)
+		console.log('could not find crn_in id ellucian class parser!',query,pageData.dbData.url);
 	}
 	else {
-		pageData.setData('crn',query.crn_in)
+		pageData.setData('crn',query.crn_in);
 	}
 };
 
@@ -387,13 +386,13 @@ EllucianSectionParser.prototype.onBeginParsing = function(pageData) {
 EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 	if (element.type!='tag') {
 		return;
-	};
+	}
 
 
 	if (element.name == 'table' && element.attribs.class=='datadisplaytable' && element.parent.name=='td' && _(element.attribs.summary).includes("seating")) {
 		var tableData = this.parseTable(element);
 
-		if (!tableData || tableData._rowCount==0 || !tableData.capacity || !tableData.actual || !tableData.remaining) {
+		if (!tableData || tableData._rowCount===0 || !tableData.capacity || !tableData.actual || !tableData.remaining) {
 			console.log('ERROR: invalid table in section parser',tableData,pageData.dbData.url);
 			return;
 		}
@@ -423,7 +422,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 
 			pageData.setData('waitCapacity',waitCapacity);
 			pageData.setData('waitRemaining',waitRemaining);
-		};
+		}
 
 
 		//third row is cross list seats, rarely listed and not doing anyting with that now
@@ -441,7 +440,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 		var coreqs =this.parseRequirementSection(pageData,element.parent.children,'corequisites');
 		if (coreqs) {
 			pageData.setParentData('coreqs',coreqs);
-		};
+		}
 
 
 
@@ -449,7 +448,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 		var containsCreditsText = domutils.getText(element.parent);
 
 		//should match 3.000 Credits  or 1.000 TO 21.000 Credits
-		var creditsMatch = containsCreditsText.match(/(?:\d(:?.\d*)?\s*to\s*)?(\d+(:?.\d*)?)\s*credits/i)
+		var creditsMatch = containsCreditsText.match(/(?:\d(:?.\d*)?\s*to\s*)?(\d+(:?.\d*)?)\s*credits/i);
 		if (creditsMatch) {
 			var maxCredits = parseFloat(creditsMatch[2]);
 			var minCredits;
@@ -505,12 +504,12 @@ EllucianSectionParser.prototype.getEmailData = function(pageData) {
 	var oldData = pageData.originalData.dbData;
 	if (!oldData) {
 		return;
-	};
+	}
 
-	
+	var newSeatsOpen;
 	// spot opened on wait list
 	if (newData.waitRemaining>oldData.waitRemaining && newData.waitRemaining>0) {
-		var newSeatsOpen = (newData.waitRemaining-oldData.waitRemaining);
+		newSeatsOpen = (newData.waitRemaining-oldData.waitRemaining);
 		return {
 			title:newSeatsOpen + ' seat'+this.getOptionallyPlural(newSeatsOpen)+' opened on wait list for '+newData.name+'!'
 		};
@@ -518,17 +517,117 @@ EllucianSectionParser.prototype.getEmailData = function(pageData) {
 
 	//spot opened on class
 	if (newData.seatsRemaining>oldData.seatsRemaining && newData.seatsRemaining>0) {
-		var newSeatsOpen = (newData.seatsRemaining-oldData.seatsRemaining);
+		newSeatsOpen = (newData.seatsRemaining-oldData.seatsRemaining);
 		return {
 			title:newSeatsOpen + ' seat'+this.getOptionallyPlural(newSeatsOpen)+' opened for '+newData.name+'!'
 		};
-	};
+	}
 };
 
 
 
 
 EllucianSectionParser.prototype.tests = function() {
+  require('../pageDataMgr');
+  
+  
+  function DummyParent (){
+    this.data = {};
+  }
+  
+  DummyParent.prototype.setData = function (name,value) {
+    this.data[name]=value;
+  }
+  
+  //make this pretty too
+  assert.deepEqual(this.convertStringToJSON('(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'),'[["https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",["Eng - Place (Test) 03","and","Nelson Denny Total 081","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]')
+  
+  
+  //make this pretty print
+  assert.deepEqual(this.formatRequirements([["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]),{"type":"or","values":[{"type":"or","values":["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]},{"type":"or","values":["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]}]});
+  
+  
+  
+  
+  
+  
+  //the pre and co requs html here has been modified
+	fs.readFile('../tests/ellucianSectionParser/1.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	  
+		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  var url = 'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633';
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+		  var dummyParent = new DummyParent();
+		  
+      var pageData = pageDataMgr.create({dbData:{url:url},parent:dummyParent});
+      
+      assert.notEqual(null,pageData);
+		  
+		  this.parseDOM(pageData,dom);
+		  
+		  
+		  assert.deepEqual(pageData.dbData,{
+  		    url: url,
+          crn: '15633',
+          seatsCapacity: 32,
+          seatsRemaining: 0,
+          waitCapacity: 0,
+          waitRemaining: 0,
+          minCredits: 3,
+          maxCredits: 3,
+          host: 'neu.edu' });
+          
+          
+      assert.deepEqual(pageData.parent.data.prereqs,{
+        "type": "and",
+        "values": [
+          {
+            "type": "or",
+            "values": [
+              "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=AE&crse_in=1601&schd_in=%25",
+              "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=AE&crse_in=1350&schd_in=%25"
+            ]
+          },
+          {
+            "type": "or",
+            "values": [
+              "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=PHYS&crse_in=2212&schd_in=%25",
+              "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=PHYS&crse_in=2232&schd_in=%25"
+            ]
+          },
+          {
+            "type": "or",
+            "values": [
+              "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=2401&schd_in=%25",
+              "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=2411&schd_in=%25",
+              "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=24X1&schd_in=%25",
+              "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=2551&schd_in=%25",
+              "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=2561&schd_in=%25",
+              "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=2X51&schd_in=%25"
+            ]
+          },
+          "https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=COE&crse_in=2001&schd_in=%25"
+        ]
+      });
+      
+      assert.deepEqual(pageData.parent.data.coreqs,{
+        "type": "and",
+        "values": [
+          "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2161&schd_in=%25"
+        ]
+      });
+      
+		  
+		  
+		  
+		}.bind(this));
+	}.bind(this));
+  return;
 	// var a =this.convertStringToJSON('(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)')
 	// return;
 

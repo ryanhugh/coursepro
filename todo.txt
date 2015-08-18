@@ -7,15 +7,8 @@ parseForm tests assert count?
 base parser find dep with fields()
 
 
-class need to reuse existing deps
 
-make sure getdependencydatabase is not called anywhere
-
-
-storedInArray -> depType
-
-deps:{classes:[],sections:[]}
-
+//pretty sure this is done
 id also say change it back to just deps: and add a loadDependencyChain() and then just search through deps for matching title
 - and add the class data to the other classes
 
@@ -31,8 +24,6 @@ different names:
 if eclass has name, only parse those with name
 pagedatamgr.createFromParser - give desc
 
-
-.dbData when in multi mode reads dbEntries[0] ?
 
 
 

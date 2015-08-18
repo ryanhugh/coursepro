@@ -177,7 +177,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			}
 		}
 		else {
-		  console.log('adding to main!');
 			pageData.parsingData.name = className;
 			pageData.setData('name',className);
 		}
@@ -425,7 +424,6 @@ EllucianClassParser.prototype.tests = function () {
         classId: '013',
         name: 'Thermodynamic/ Mech',
         host: 'swarthmore.edu' });
-        console.log('-----')
         
         //first dep is the section, second dep is the class - Lab (which has 3 deps, each section)
         assert.equal(pageData.deps.length,2);
@@ -469,7 +467,6 @@ EllucianClassParser.prototype.tests = function () {
 		}.bind(this));
 	}.bind(this));
 	
-	return;
   
 	fs.readFile('../tests/ellucianClassParser/1.html','utf8',function (err,body) {
 	  assert.equal(null,err);
@@ -497,8 +494,8 @@ EllucianClassParser.prototype.tests = function () {
            name: 'Embedded Design Enabling Robotics',
            host: 'neu.edu' });
            
-      assert.equal(pageData.depsToProcess.length,6);
-      pageData.depsToProcess.forEach(function (dep) {
+      assert.equal(pageData.deps.length,6);
+      pageData.deps.forEach(function (dep) {
         assert.equal(dep.parent,pageData);
         assert.equal(dep.parser,ellucianSectionParser)
       }.bind(this));
@@ -531,8 +528,8 @@ EllucianClassParser.prototype.tests = function () {
             name: 'Managerial Accounting',
             host: 'temple.edu' });
 		          
-      assert.equal(pageData.depsToProcess.length,17);
-      pageData.depsToProcess.forEach(function (dep) {
+      assert.equal(pageData.deps.length,17);
+      pageData.deps.forEach(function (dep) {
         assert.equal(dep.parent,pageData);
         assert.equal(dep.parser,ellucianSectionParser)
       }.bind(this));
@@ -566,11 +563,11 @@ EllucianClassParser.prototype.tests = function () {
             name: 'The Evolution of U.s. Aerospace Power Ii',
             host: 'temple.edu' });
 		          
-      assert.equal(pageData.depsToProcess.length,1);
-      assert.equal(pageData.depsToProcess[0].parent,pageData);
-      assert.equal(pageData.depsToProcess[0].parser,ellucianSectionParser)
+      assert.equal(pageData.deps.length,1);
+      assert.equal(pageData.deps[0].parent,pageData);
+      assert.equal(pageData.deps[0].parser,ellucianSectionParser)
 		  
-		  assert.deepEqual(pageData.depsToProcess[0].dbData,{
+		  assert.deepEqual(pageData.deps[0].dbData,{
           "url": "https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=12090",
           "meetings": [
             {
@@ -739,8 +736,8 @@ EllucianClassParser.prototype.tests = function () {
           name: 'Cancelled',
           host: 'ccsu.edu' });
 		          
-      assert.equal(pageData.depsToProcess.length,1);
-      pageData.depsToProcess.forEach(function (dep) {
+      assert.equal(pageData.deps.length,1);
+      pageData.deps.forEach(function (dep) {
         assert.equal(dep.parent,pageData);
         assert.equal(dep.parser,ellucianSectionParser);
       }.bind(this));
