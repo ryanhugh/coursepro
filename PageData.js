@@ -178,8 +178,8 @@ PageData.prototype.loadFromDB = function(callback) {
 		if (doc) {
 		  
 		  if (this.dbData.emails || this.dbData.ips || this.dbData.deps) {
-		    console.log('error, loaded from db and there is already data in the pagedata??',this)
-		    console.trace()
+		    console.log('error, loaded from db and there is already data in the pagedata??',this);
+		    console.trace();
 		  }
 		  
 		  
@@ -215,7 +215,7 @@ PageData.prototype.loadFromDB = function(callback) {
 		}.bind(this));
 		
 	}.bind(this));
-}
+};
 
 
 PageData.prototype.isUpdated = function() {

@@ -1,6 +1,9 @@
 !!!!
 
 
+isupdatedByParent -> isStartingPoint (default no, )
+
+
 convert the json tests to html and put the url in the code
 parseForm tests assert count?
 

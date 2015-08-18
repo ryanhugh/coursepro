@@ -63,6 +63,8 @@ PageDataMgr.prototype.go = function(pageData,callback) {
 	if (!pageData.parser && pageData.dbData.url && pageData.findSupportingParser()===false) {
 		return callback("NOSUPPORT");
 	}
+	
+	//settting the parser should set the db
 	if (!pageData.database) {
 		console.log('error dont have a url or a db',pageData);
 		return callback('no db');

@@ -537,21 +537,81 @@ EllucianSectionParser.prototype.tests = function() {
   
   DummyParent.prototype.setData = function (name,value) {
     this.data[name]=value;
-  }
+  };
   
   //make this pretty too
-  assert.deepEqual(this.convertStringToJSON('(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'),'[["https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",["Eng - Place (Test) 03","and","Nelson Denny Total 081","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]')
+  assert.deepEqual(this.convertStringToJSON('(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'),'[["https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",["Eng - Place (Test) 03","and","Nelson Denny Total 081","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]');
   
   
   //make this pretty print
   assert.deepEqual(this.formatRequirements([["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]),{"type":"or","values":[{"type":"or","values":["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]},{"type":"or","values":["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]}]});
   
+  //unmatched paren
+	assert.deepEqual(this.convertStringToJSON('( Eng - Place Test 03 and  Accuplacer (Reading) 071 and Collegiate Credit level'),
+	'[["Eng - Place Test 03","and","Accuplacer (Reading) 071","and","Collegiate Credit level"]');
+
   
+	assert.deepEqual(this.simplifyRequirements({
+		type:'or',
+		values:[
+		{
+			type:'or',
+			values:['1',{
+				type:'or',
+				values:['6']
+			}]
+		},
+		{
+			type:'or',
+			values:['1',{
+				type:'or',
+				values:[{
+					type:'or',
+					values:['1',{
+						type:'or',
+						values:['6']
+					}]
+				},
+				{
+					type:'or',
+					values:['1',{
+						type:'or',
+						values:['6']
+					}]
+				}]
+			}]
+		}
+		]
+	}),{ type: 'or', values: [ '1', '6', '1', '1', '6', '1', '6' ] });
+
+
   
-  
+
+	assert.deepEqual(this.groupRequirementsByAnd(
+	[ 'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1011&schd_in=%25',
+	    'or',
+	    'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCH&crse_in=101&schd_in=%25' ,
+	  'and',
+	   'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25',
+	    'or',
+	    'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25' ,'or','link here']),
+	
+	[ 'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1011&schd_in=%25',
+  'or',
+  [ 'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCH&crse_in=101&schd_in=%25',
+    'and',
+    'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25' ],
+  'or',
+  'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25',
+  'or',
+  'link here' ]);
+     
+
+	
   
   
   //the pre and co requs html here has been modified
+  //this contains the same pre requs as prereqs10
 	fs.readFile('../tests/ellucianSectionParser/1.html','utf8',function (err,body) {
 	  assert.equal(null,err);
 	  
@@ -627,91 +687,138 @@ EllucianSectionParser.prototype.tests = function() {
 		  
 		}.bind(this));
 	}.bind(this));
-  return;
-	// var a =this.convertStringToJSON('(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)')
-	// return;
-
-	// console.log(this.convertParenToBracket('( Eng - Place Test 03 and  Accuplacer (Reading) 071 and Collegiate Credit level'))
-
-	// return;
-
-
-	// var a =this.groupRequirementsByAnd(["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25","and","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"])
-	// console.log(a)
-	// return
-
-
-
-	// var a= this.formatRequirements([ ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]);
-
-	// console.log(JSON.stringify(a))
-	// return;
-
-	// console.log(this.simplifyRequirements({
-	// 	type:'or',
-	// 	values:[
-	// 	{
-	// 		type:'or',
-	// 		values:['1',{
-	// 			type:'or',
-	// 			values:['6']
-	// 		}]
-	// 	},
-	// 	{
-	// 		type:'or',
-	// 		values:['1',{
-	// 			type:'or',
-	// 			values:[{
-	// 				type:'or',
-	// 				values:['1',{
-	// 					type:'or',
-	// 					values:['6']
-	// 				}]
-	// 			},
-	// 			{
-	// 				type:'or',
-	// 				values:['1',{
-	// 					type:'or',
-	// 					values:['6']
-	// 				}]
-	// 			}]
-	// 		}]
-	// 	}
-	// 	]
-	// }))
-
-
-	// this.groupRequirementsByAnd(
-	// [[ 'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1011&schd_in=%25',
-	//     'or',
-	//     'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCH&crse_in=101&schd_in=%25' ],
-	//   'and',
-	//   [ 'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25',
-	//     'or',
-	//     'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25' ],'or','link here']);
- //    return;
-
 	
-
-	fs.readFile('../tests/'+this.constructor.name+'/test.html','utf8',function (err,body) {
-
-
-		// pointer.handleRequestResponce(body,function (err,dom) {
-		// 	console.log(JSON.stringify(this.parseRequirementSection ({dbData:{url:'https://google.com'}},dom,'prerequisites'),null,2))
-		// 	console.log(JSON.stringify(this.parseRequirementSection ({dbData:{url:'https://google.com'}},dom,'corequisites'),null,2))
-		// }.bind(this));
-
+	
+	
+	fs.readFile('../tests/ellucianSectionParser/many non linked.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	  
 		pointer.handleRequestResponce(body,function (err,dom) {
-			// console.log(dom,body)
-
-			this.parseDOM ({dbData:{},parsingData:{},getData:function(){return true}},dom)
-
-
-
+		  assert.equal(null,err);
+		  
+		  var url = 'http://test.hostname.com/PROD/';
+		  
+      var pageData = pageDataMgr.create({dbData:{url:url}});
+		  
+		  var prereqs =this.parseRequirementSection(pageData,dom,'prerequisites');
+		  
+		  
+		  
+		  assert.deepEqual(prereqs,{
+        "type": "or",
+        "values": [
+          {
+            "type": "and",
+            "values": [
+              "http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25",
+              "http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=040&schd_in=%25"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25",
+              "Arith - Place Test 06"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25",
+              "Arith - Quick Screen Place 06"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25",
+              "Accuplacer (AR) 067"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25",
+              "Accuplacer (EA) 040"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "Eng - Place Test 03",
+              "Arith - Place Test 06"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "Eng - Place Test 03",
+              "Arith - Quick Screen Place 06"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "Eng - Place Test 03",
+              "Accuplacer (AR) 067"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "Eng - Place Test 03",
+              "Accuplacer (EA) 040"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "Eng - Place Test 03",
+              "http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=040&schd_in=%25"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "Eng - Quick Screen Place 03",
+              "Arith - Place Test 06"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "Eng - Quick Screen Place 03",
+              "Arith - Quick Screen Place 06"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "Eng - Quick Screen Place 03",
+              "Accuplacer (AR) 067"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "Eng - Quick Screen Place 03",
+              "Accuplacer (EA) 040"
+            ]
+          },
+          {
+            "type": "and",
+            "values": [
+              "Eng - Quick Screen Place 03",
+              "http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=040&schd_in=%25"
+            ]
+          },
+          "http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=100&schd_in=%25"
+        ]
+      });
+		  
 		}.bind(this));
-
 	}.bind(this));
-
+	
 };
 
 
@@ -721,8 +828,6 @@ EllucianSectionParser.prototype.tests = function() {
 //this allows subclassing, http://bites.goodeggs.com/posts/export-this/ (Mongoose section)
 EllucianSectionParser.prototype.EllucianSectionParser=EllucianSectionParser;
 module.exports = new EllucianSectionParser();
-
-// console.log(exports.getFormattableUrl('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633'))
 
 if (require.main === module) {
 	module.exports.tests();
