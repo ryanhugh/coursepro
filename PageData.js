@@ -3,7 +3,13 @@ var async = require('async');
 var URI = require('URIjs');
 var _ = require('lodash');
 var queue = require("queue-async");
+var clone = require('clone');
 
+
+//db loading states
+var NOT_LOADED= 0;
+var LOADING = 1;
+var LOAD_DONE = 2;
 
 //this is called in 3 places
 //server.js
@@ -34,6 +40,9 @@ function PageData (startingData) {
 	this.dbData = {};
 
 	this.database = null;
+	
+	this.dbLoadingStatus = NOT_LOADED;
+	
 
 	//dependencies [instances of pagedata]
 	//note that this.dbData.deps is {parser.name:[_id,_id],...}
@@ -145,6 +154,11 @@ PageData.prototype.loadFromDB = function(callback) {
     console.log('cant lookup, dont have a db',this);
     return callback('cant lookup');
   }
+  
+  if (this.dbLoadingStatus!=NOT_LOADED) {
+    console.log('told to load, but already loaded???')
+    return;
+  }
 
   var lookupValues = {};
 
@@ -162,6 +176,8 @@ PageData.prototype.loadFromDB = function(callback) {
 		console.log('error in base db - cant lookup page data wihout url or _id!',this)
 		return callback('cant lookup');
 	}
+	
+	this.dbLoadingStatus=LOADING;
   
 	this.database.find(lookupValues,{
 	 	shouldBeOnlyOne:true,
@@ -170,8 +186,10 @@ PageData.prototype.loadFromDB = function(callback) {
 		if (err) {
 			return callback(err);
 		}
+		this.dbLoadingStatus=LOAD_DONE;
 
-  	this.originalData.dbData=doc;
+    //original data.dbData and .dbData cant point to the same obj
+  	this.originalData.dbData=clone(doc);
   	
   	var q = queue();
   	
@@ -236,9 +254,6 @@ PageData.prototype.processDeps = function(callback) {
 	if (!this.deps){
 		return callback();
 	}
-	if (this.dbData.deps) {
-	  console.log('error process already ran????',this.deps,this.dbData.deps)
-	}
 
 	this.dbData.deps = {};
 
@@ -269,6 +284,7 @@ PageData.prototype.processDeps = function(callback) {
 			}
 
       //add it to the array if it dosent already exist
+      //if this pagedata was loaded from cache, it will already exist
 			if (this.dbData.deps[newDepData.parser.name].indexOf(newDepData.dbData._id)<0) {
 				this.dbData.deps[newDepData.parser.name].push(newDepData.dbData._id);
 			}
@@ -304,20 +320,15 @@ PageData.prototype.getUrlStart = function() {
 
 //can add by url or _id - one of two is required
 
-PageData.prototype.addDep = function(parser,depData) {
-	if (!depData || !parser) {
-		console.log('Error:Tried to add invalid depdata??',depData,parser);
+PageData.prototype.addDep = function(depData) {
+	if (!depData) {
+		console.log('Error:Tried to add invalid depdata??',depData);
 		if (depData) {
-		  console.log('error, more data for invalid depdata',depData.parser);
+		  console.log('error, more data for invalid depdata',depData);
 		}
 		console.trace()
 		return null;
 	}
-	if  (!parser.name) {
-	  console.log('error given parser does not have a name');
-	  return;
-	}
-	
 
 
 	//check to make sure the dep dosent already exist in deps
@@ -335,8 +346,8 @@ PageData.prototype.addDep = function(parser,depData) {
 			}
 		}
 		else if (depData.url) {
-			if (this.deps[i].dbData.url==depData.url && _.isEqual(this.deps[i].dbData.postData,depData.postData)) {
-			  console.log('error matched by url+pagedata')
+			if (_.isEqual(this.deps[i].dbData,depData)) {
+			  console.log('error matched by _is equal')
 				isMatch=true;
 			}
 		}
@@ -368,7 +379,7 @@ PageData.prototype.addDep = function(parser,depData) {
 		console.log('could not create dep in add dep!')
 		return;
 	}
-	dep.setParser(parser);
+// 	dep.setParser(parser);
 	this.deps.push(dep);
 	return dep;
 }
@@ -400,7 +411,7 @@ PageData.prototype.setData = function(name,value) {
 
 
 	if (this.dbData[name]!==undefined && !_.isEqual(this.dbData[name],value)) {
-		console.log('warning, overriding PageData.dbData.'+name+' with new data',this.dbData[name],value)
+		console.log('warning, overriding pageData.dbData.'+name+' with new data existing:',this.dbData[name],value)
 	}
 
 

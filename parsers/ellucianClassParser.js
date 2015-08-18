@@ -164,10 +164,11 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			if (!dbAltEntry) {
 			  console.log('creating a new dep entry',pageData.deps.length);
   
-  			dbAltEntry = pageData.addDep(this,{
+  			dbAltEntry = pageData.addDep({
   				name:className,
   				updatedByParent:true
   			});
+  			dbAltEntry.setParser(this);
 			  
 			}
 			
@@ -293,11 +294,12 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
   var sectionPageData;
 	if (dbAltEntry) {
-		sectionPageData = dbAltEntry.addDep(ellucianSectionParser,sectionStartingData);
+		sectionPageData = dbAltEntry.addDep(sectionStartingData);
 	}
 	else {
-		sectionPageData = pageData.addDep(ellucianSectionParser,sectionStartingData);
+		sectionPageData = pageData.addDep(sectionStartingData);
 	}
+	sectionPageData.setParser(ellucianSectionParser);
 };
 
 

@@ -32,14 +32,13 @@ BaseDB.prototype.shouldUpdateDB = function(newData,oldData) {
 		return true;
 	};
 
-	var shouldUpdateDB  = false;
 	for (var attrName in newData) {
 
 		//check new values in emails and ips
 		if (attrName == "emails") {
 			newData.emails.forEach(function (newEmail) {
 				if (!oldData.emails || oldData.emails.indexOf(newEmail)<0) {
-					shouldUpdateDB = true;
+					return true;
 				}
 			}.bind(this));
 		}
@@ -47,18 +46,19 @@ BaseDB.prototype.shouldUpdateDB = function(newData,oldData) {
 
 			newData.ips.forEach(function (newIp) {
 				if (!oldData.ips || oldData.ips.indexOf(newIp)<0) {
-					shouldUpdateDB = true;
+					return true;
 				}
 			}.bind(this));
 		}
 
 		//check difference for all other attributes
-		else if (newData[attrName] != oldData[attrName]) {
-			shouldUpdateDB = true;
+		console.log('checking change in ',attrName,newData[attrName] ,oldData[attrName])
+		if (!_.isEqual(newData[attrName], oldData[attrName])) {
+		  console.log('updating db because of change in',attrName)
+			return true;
 		};
 	}
-	return shouldUpdateDB;
-
+	return false;
 };
 
 
@@ -67,6 +67,7 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 	var oldData = pageData.originalData.dbData;
 
 	if (!this.shouldUpdateDB(newData,oldData)) {
+	  console.log('not updating the database for ',pageData.parser.name)
 		return callback(null,newData);
 	};
 

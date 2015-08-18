@@ -17,11 +17,13 @@ for (var parserName in parsersClasses) {
 	parsers.push(parsersClasses[parserName])
 }
 
-
+//db loading states
+var NOT_LOADED= 0;
+var LOADING = 1;
+var LOAD_DONE = 2;
 
 function PageDataMgr () {
 }
-
 
 
 PageDataMgr.prototype.createFromURL = function(url,callback) {
@@ -69,50 +71,69 @@ PageDataMgr.prototype.go = function(pageData,callback) {
 		console.log('error dont have a url or a db',pageData);
 		return callback('no db');
 	}
-
-	//main control flow for processing a url
-	pageData.loadFromDB(function (err) {
-		if (err) {
-		  console.log("error ",err);
-			return callback(err);
-		}
-		if (!pageData.dbData.url) {
-			console.log('started pageData without url and could not find it in db!',pageData);
-			return callback('cant find dep');
-		}
-
-
-		//if haven't found the parser yet, try again
-		//this will happen when parent loaded this from cache with just an _id
-		if (pageData.dbData.url && !pageData.parser) {
-			if (!pageData.findSupportingParser()) {
-			  console.log('error cant find parser after second try');
-				return callback("NOSUPPORT");
-			}
-		}
-
-
-		if (pageData.isUpdated()) {
-			console.log('CACHE HIT!',pageData.dbData.url);
-			this.finish(pageData,callback);
-		}
-		else {
-			pageData.parser.parse(pageData,function (err) {
-				if (err) {
-					console.log('Error, pagedata parse call failed',err)
-					if (pageData.dbData.lastUpdateTime) {
-						console.log('ERROR: url in cache but could not update',pageData.dbData.url,pageData.dbData)
-						return callback("NOUPDATE");
-					}
-					else {
-						return callback("ENOTFOUND");
-					}
-				}
-				this.finish(pageData,callback);
-			}.bind(this));
-		}
-	}.bind(this));
+	
+  //main control flow for processing a url
+  
+  //load, then continue
+	if (pageData.dbLoadingStatus==NOT_LOADED) {
+  	pageData.loadFromDB(function (err) {
+  		if (err) {
+  		  console.log("error ",err);
+  			return callback(err);
+  		}
+  		else {
+  		  return this.processPageAfterDbLoad(pageData,callback);
+  		}
+  	}.bind(this));
+  	return;
+	}
+	else if (pageData.dbLoadingStatus==LOADING) {
+	  console.log('error, wtf db status is loading in pagedatamgr go');
+	  return callback('internal error')
+	}
+	else if (pageData.dbLoadingStatus==LOAD_DONE) {
+	  return this.processPageAfterDbLoad(pageData,callback);
+	}
 };
+
+PageDataMgr.prototype.processPageAfterDbLoad = function (pageData,callback) {
+  if (!pageData.dbData.url) {
+		console.log('started pageData without url and could not find it in db!',pageData);
+		return callback('cant find dep');
+	}
+
+
+	//if haven't found the parser yet, try again
+	//this will happen when parent loaded this from cache with just an _id
+	if (pageData.dbData.url && !pageData.parser) {
+		if (!pageData.findSupportingParser()) {
+		  console.log('error cant find parser after second try');
+			return callback("NOSUPPORT");
+		}
+	}
+
+
+	if (pageData.isUpdated()) {
+		console.log('CACHE HIT!',pageData.dbData.url);
+		this.finish(pageData,callback);
+	}
+	else {
+		pageData.parser.parse(pageData,function (err) {
+			if (err) {
+				console.log('Error, pagedata parse call failed',err)
+				if (pageData.dbData.lastUpdateTime) {
+					console.log('ERROR: url in cache but could not update',pageData.dbData.url,pageData.dbData)
+					return callback("NOUPDATE");
+				}
+				else {
+					return callback("ENOTFOUND");
+				}
+			}
+			this.finish(pageData,callback);
+		}.bind(this));
+	}
+}
+
 
 
 PageDataMgr.prototype.finish = function(pageData,callback) {

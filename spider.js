@@ -155,7 +155,7 @@ Spider.prototype.go = function(url) {
 
 
 
-Spider.prototype.go = function () {
+Spider.prototype.spider = function () {
 	
 
 
@@ -248,6 +248,6 @@ Spider.prototype.Spider=Spider;
 module.exports = new Spider();
 
 if (require.main === module) {
-	module.exports.tests();
+	module.exports.spider();
 }
 

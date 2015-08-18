@@ -70,7 +70,8 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 		return;
 	}
 
-	var dep = pageData.addDep(ellucianClassParser,depData);
+	var dep = pageData.addDep(depData);
+	dep.setParser(ellucianClassParser)
 };
 
 

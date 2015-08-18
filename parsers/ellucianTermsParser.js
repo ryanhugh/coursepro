@@ -75,10 +75,11 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 		}.bind(this));
 
 		//also pass the data to the dependencies
-		var dep = pageData.addDep(ellucianSubjectParser,{
+		var dep = pageData.addDep({
 			url:formData.postURL,
 			postData:pointer.payloadJSONtoString(singleRequestPayload)
 		});
+		dep.setParser(ellucianSubjectParser)
 
 
 	}.bind(this));
