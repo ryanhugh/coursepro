@@ -131,11 +131,6 @@ EllucianCatalogParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianCatalogParser.prototype.tests = function() {
-  
-  // 1
-  // https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=2041&sel_crse_end=2041&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=
-  
-  
   require('../pageDataMgr')
   
 	fs.readFile('../tests/ellucianCatalogParser/1.html','utf8',function (err,body) {
@@ -157,7 +152,10 @@ EllucianCatalogParser.prototype.tests = function() {
       this.parseDOM(pageData,dom);
       
       assert.equal(pageData.depsToProcess.length,1);
-      assert.equal(pageData.depsToProcess[0].dbData.url,classURL);
+      assert.deepEqual(pageData.depsToProcess[0].dbData,{
+        desc: 'Topics in Poetry and Prosody Irregular Prereqs.: None Detailed and systematic study of poetic form, including versification, rhetorical tropes, diction, and tone. May be organized by period, subject matter, genre, or critical method. May be repeated with different topics for up to 6 credits. 3.000 Credit hours 3.000 Lecture hours',
+        url: 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25' });
+      
       }.bind(this));
 	}.bind(this));
 	
@@ -185,7 +183,9 @@ EllucianCatalogParser.prototype.tests = function() {
       this.parseDOM(pageData,dom);
       
       assert.equal(pageData.depsToProcess.length,1);
-      assert.equal(pageData.depsToProcess[0].dbData.url,classURL);
+      assert.deepEqual(pageData.depsToProcess[0].dbData,{
+        desc: 'ELECTIVE DESCRIPTION: Physical exams are provided to newly resettled refugees by care teams comprised of students, residents, and faculty physicians. For many refugees, the care is their first encounter with mainstream medicine. MS-2 coordinators manage clinic operations while MS 1-4 volunteers provide the care service and gain experience in physical exam skills and cross-cultural communication. 0.000 Credit hours 0.000 Lab hours',
+        url: 'https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201580&subj_in=MDCN&crse_in=2064&schd_in=%25' });
       
 		}.bind(this));
 	}.bind(this));
@@ -213,7 +213,9 @@ EllucianCatalogParser.prototype.tests = function() {
       this.parseDOM(pageData,dom);
       
       assert.equal(pageData.depsToProcess.length,1);
-      assert.equal(pageData.depsToProcess[0].dbData.url,classURL);
+      assert.deepEqual(pageData.depsToProcess[0].dbData,{
+        desc: 'Current internet, social media, and mobile media marketing theories , strategies, tools and practices. Includes study of communication methods used by professionals in journalism, film, television, advertising, public relations, and related professions to brand, promote, and distribute products and services. Web-based production lab included. Cross-listed with JRN 507. 3.000 Credit hours',
+        url: 'https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%25' });
       
 		}.bind(this));
 	}.bind(this));

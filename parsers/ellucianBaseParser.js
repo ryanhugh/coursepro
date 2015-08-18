@@ -90,6 +90,10 @@ EllucianBaseParser.prototype.getBaseURL = function(url) {
 
 
 EllucianBaseParser.prototype.tests = function() {
+  
+  //make sure its being overriden
+  assert.equal(this.constructor.name,'EllucianBaseParser');
+  
   var catagoryURL = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=2041&sel_crse_end=2041&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr='
   
   var classURL = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25';

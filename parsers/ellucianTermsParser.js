@@ -179,23 +179,21 @@ EllucianTermsParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianTermsParser.prototype.tests = function() {
-  require('../pageDataMgr')
+  require('../pageDataMgr');
   
-  
-	fs.readFile('../tests/ellucianTermsParser/1.json','utf8',function (err,body) {
+	fs.readFile('../tests/ellucianTermsParser/1.html','utf8',function (err,body) {
 	  assert.equal(null,err);
-	  var fileJSON = JSON.parse(body);
-	  
-		pointer.handleRequestResponce(fileJSON.body,function (err,dom) {
+
+		pointer.handleRequestResponce(body,function (err,dom) {
 		  assert.equal(null,err);
 		  
+		  var url = 'https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched';
 		  
-      var pageData = pageDataMgr.create({dbData:{url:fileJSON.url}});
+      var pageData = pageDataMgr.create({dbData:{url:url}});
       assert.notEqual(null,pageData);
 		  
 		  this.parseDOM(pageData,dom);
 		  
-		  var url = 'https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched';
 		  
 		  assert.equal(true,this.supportsPage(url));
 		  

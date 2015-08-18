@@ -5,7 +5,10 @@ var moment = require('moment');
 var he = require('he');
 var toTitleCase = require('to-title-case');
 var _ = require('lodash');
+var fs = require('fs');
+var assert = require('assert');
 
+var pointer = require('../pointer');
 var classDB = require('../databases/classesDB.js')
 var sectionDB = require('../databases/sectionsDB');
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
@@ -400,7 +403,327 @@ EllucianClassParser.prototype.getEmailData = function(pageData) {
 
 
 
+EllucianClassParser.prototype.tests = function () {
+  require('../pageDataMgr')
+  
+	fs.readFile('../tests/ellucianClassParser/1.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	  
+		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  //set up variables
+		  var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2160&schd_in=LEC';
+      var pageData = pageDataMgr.create({dbData:{url:url}});
+      assert.notEqual(null,pageData);
+		  
+		  //main parse
+		  this.parseDOM(pageData,dom);
+		  
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+		  
+		  assert.deepEqual(pageData.dbData,{
+  		     url: url,
+           termId: '201610',
+           subject: 'EECE',
+           classId: '2160',
+           name: 'Embedded Design Enabling Robotics',
+           host: 'neu.edu' });
+           
+      assert.equal(pageData.depsToProcess.length,6);
+      pageData.depsToProcess.forEach(function (dep) {
+        assert.equal(dep.parent,pageData);
+        assert.equal(dep.parser,ellucianSectionParser)
+      }.bind(this));
+      
+		}.bind(this));
+	}.bind(this));
+	
+  
+	fs.readFile('../tests/ellucianClassParser/3.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	 		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  //set up variables
+		  var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=ACCT&crse_in=2102&schd_in=BAS';
+      var pageData = pageDataMgr.create({dbData:{url:url}});
+      assert.notEqual(null,pageData);
+		  
+		  //main parse
+		  this.parseDOM(pageData,dom);
+		  
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+		  assert.deepEqual(pageData.dbData,{
+		        url: url,
+            termId: '201503',
+            subject: 'ACCT',
+            classId: '2102',
+            name: 'Managerial Accounting',
+            host: 'temple.edu' });
+		          
+      assert.equal(pageData.depsToProcess.length,17);
+      pageData.depsToProcess.forEach(function (dep) {
+        assert.equal(dep.parent,pageData);
+        assert.equal(dep.parser,ellucianSectionParser)
+      }.bind(this));
+		}.bind(this));
+	}.bind(this));
+	
+	//lots of different meetings
+	fs.readFile('../tests/ellucianClassParser/4.html','utf8',function (err,body) {
+	  assert.equal(null,err);
 
+	 		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  //set up variables
+		  var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=BAS';
+      var pageData = pageDataMgr.create({dbData:{url:url}});
+      assert.notEqual(null,pageData);
+		  
+		  //main parse
+		  this.parseDOM(pageData,dom);
+		  
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+		  
+		  assert.deepEqual(pageData.dbData,{
+		        url: url,
+            termId: '201503',
+            subject: 'AIRF',
+            classId: '2041',
+            name: 'The Evolution of U.s. Aerospace Power Ii',
+            host: 'temple.edu' });
+		          
+      assert.equal(pageData.depsToProcess.length,1);
+      assert.equal(pageData.depsToProcess[0].parent,pageData);
+      assert.equal(pageData.depsToProcess[0].parser,ellucianSectionParser)
+		  
+		  assert.deepEqual(pageData.depsToProcess[0].dbData,{
+          "url": "https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=12090",
+          "meetings": [
+            {
+              "startDate": 16457,
+              "endDate": 16457,
+              "profs": [
+                "Nicholas a Vallera"
+              ],
+              "where": "Tba",
+              "times": {
+                "4": [
+                  {
+                    "start": 21600,
+                    "end": 27600
+                  }
+                ]
+              }
+            },
+            {
+              "startDate": 16471,
+              "endDate": 16471,
+              "profs": [
+                "Nicholas a Vallera"
+              ],
+              "where": "Tba",
+              "times": {
+                "4": [
+                  {
+                    "start": 21600,
+                    "end": 27600
+                  }
+                ]
+              }
+            },
+            {
+              "startDate": 16485,
+              "endDate": 16485,
+              "profs": [
+                "Nicholas a Vallera"
+              ],
+              "where": "Tba",
+              "times": {
+                "4": [
+                  {
+                    "start": 21600,
+                    "end": 27600
+                  }
+                ]
+              }
+            },
+            {
+              "startDate": 16499,
+              "endDate": 16499,
+              "profs": [
+                "Nicholas a Vallera"
+              ],
+              "where": "Tba",
+              "times": {
+                "4": [
+                  {
+                    "start": 21600,
+                    "end": 27600
+                  }
+                ]
+              }
+            },
+            {
+              "startDate": 16513,
+              "endDate": 16513,
+              "profs": [
+                "Nicholas a Vallera"
+              ],
+              "where": "Tba",
+              "times": {
+                "4": [
+                  {
+                    "start": 21600,
+                    "end": 27600
+                  }
+                ]
+              }
+            },
+            {
+              "startDate": 16527,
+              "endDate": 16527,
+              "profs": [
+                "Nicholas a Vallera"
+              ],
+              "where": "Tba",
+              "times": {
+                "4": [
+                  {
+                    "start": 21600,
+                    "end": 27600
+                  }
+                ]
+              }
+            },
+            {
+              "startDate": 16541,
+              "endDate": 16541,
+              "profs": [
+                "Nicholas a Vallera"
+              ],
+              "where": "Tba",
+              "times": {
+                "4": [
+                  {
+                    "start": 21600,
+                    "end": 27600
+                  }
+                ]
+              }
+            },
+            {
+              "startDate": 16555,
+              "endDate": 16555,
+              "profs": [
+                "Nicholas a Vallera"
+              ],
+              "where": "Tba",
+              "times": {
+                "4": [
+                  {
+                    "start": 21600,
+                    "end": 27600
+                  }
+                ]
+              }
+            }
+          ],
+          "termId": "201503",
+          "subject": "AIRF",
+          "classId": "2041"
+        })
+		  
+		  
+		  console.log('all tests done bro');
+		  
+		}.bind(this));
+	}.bind(this));
+	
+	
+	//cancelled - something was wierd with this one not sure what it was
+	fs.readFile('../tests/ellucianClassParser/6.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	 		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  //set up variables
+		  var url = 'https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=ANTH&crse_in=245&schd_in=LE';
+      var pageData = pageDataMgr.create({dbData:{url:url}});
+      assert.notEqual(null,pageData);
+		  
+		  //main parse
+		  this.parseDOM(pageData,dom);
+		  
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+		  assert.deepEqual(pageData.dbData,{
+		      url: url,
+          termId: '201610',
+          subject: 'ANTH',
+          classId: '245',
+          name: 'Cancelled',
+          host: 'ccsu.edu' });
+		          
+      assert.equal(pageData.depsToProcess.length,1);
+      pageData.depsToProcess.forEach(function (dep) {
+        assert.equal(dep.parent,pageData);
+        assert.equal(dep.parser,ellucianSectionParser);
+      }.bind(this));
+		}.bind(this));
+	}.bind(this));
+	
+  
+	//sections have different names
+	fs.readFile('../tests/ellucianClassParser/multiname.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	 		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  
+		  //set up variables -- this url might not be correct
+		  var url = 'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=LE';
+      var pageData = pageDataMgr.create({dbData:{url:url}});
+      assert.notEqual(null,pageData);
+		  
+		  //main parse
+		  this.parseDOM(pageData,dom);
+		  
+		  
+		  assert.equal(true,this.supportsPage(url));
+		  
+		  // console.log(pageData.dbData)
+		  assert.deepEqual(pageData.dbData,{
+		    url:url,
+        termId: '201502',
+        subject: 'PHYS',
+        classId: '013',
+        name: 'Thermodynamic/ Mech',
+        host: 'swarthmore.edu' });
+        
+        console.log(pageData.depsToProcess)
+		          
+    //   assert.equal(pageData.depsToProcess.length,1);
+    //   pageData.depsToProcess.forEach(function (dep) {
+    //     assert.equal(dep.parent,pageData);
+    //     assert.equal(dep.parser,ellucianSectionParser);
+    //   }.bind(this));
+		}.bind(this));
+	}.bind(this));
+	
+  
+  
+  
+};
 
 
 
