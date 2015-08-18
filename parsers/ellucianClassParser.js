@@ -106,7 +106,7 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 
 
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
-  console.log('parsing a class');
+  // console.log('parsing a class');
 
 	//if different name than this class, save to new class
 	var dbAltEntry = null;
@@ -146,8 +146,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 		//name was already set to something different, make another db entry for this class
 		if (pageData.parsingData.name && className!=pageData.parsingData.name) {
-			console.log('creating another class from a class!');
-			
 			
 			//search for an existing dep with the matching classname, etc
 			for (var i=0;i<pageData.deps.length;i++) {
@@ -158,7 +156,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			  }
 			  
 			  if (pageData.deps[i].dbData.name == className && pageData.deps[i].dbData.updatedByParent) {
-            console.log('re using existing dep!',pageData.deps.length);
   		      dbAltEntry = pageData.deps[i];
 			  }
 			}
@@ -295,10 +292,8 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	}
 
 
-  console.log('adding dep ',dbAltEntry,' and section',sectionStartingData);
   var sectionPageData;
 	if (dbAltEntry) {
-		console.log('adding section dep to class dep!!!');
 		sectionPageData = dbAltEntry.addDep(ellucianSectionParser,sectionStartingData);
 	}
 	else {
@@ -431,13 +426,46 @@ EllucianClassParser.prototype.tests = function () {
         name: 'Thermodynamic/ Mech',
         host: 'swarthmore.edu' });
         console.log('-----')
-        console.log(pageData.deps);
-		          
-    //   assert.equal(pageData.depsToProcess.length,1);
-    //   pageData.depsToProcess.forEach(function (dep) {
-    //     assert.equal(dep.parent,pageData);
-    //     assert.equal(dep.parser,ellucianSectionParser);
-    //   }.bind(this));
+        
+        //first dep is the section, second dep is the class - Lab (which has 3 deps, each section)
+        assert.equal(pageData.deps.length,2);
+        assert.equal(pageData.deps[0].parent,pageData);
+        assert.equal(pageData.deps[0].parser,ellucianSectionParser);
+        
+        //pageData.deps[1] is the other class
+        assert.equal(pageData.deps[1].parser,this);
+        assert.equal(pageData.deps[1].deps.length,3);
+        assert.equal(pageData.deps[1].deps[0].parser,ellucianSectionParser);
+        assert.equal(pageData.deps[1].deps[1].parser,ellucianSectionParser);
+        assert.equal(pageData.deps[1].deps[2].parser,ellucianSectionParser);
+        
+        assert.deepEqual(pageData.deps[1].deps[0].dbData,{
+            "url": "https://myswat.swarthmore.edu/pls/bwckschd.p_disp_detail_sched?term_in=201502&crn_in=24601",
+            "meetings": [
+              {
+                "startDate": 16454,
+                "endDate": 16500,
+                "profs": [
+                  "Peter J Collings",
+                  "Maryann Hickman Klassen"
+                ],
+                "where": "Science Center L44",
+                "times": {
+                  "1": [
+                    {
+                      "start": 47700,
+                      "end": 58500
+                    }
+                  ]
+                }
+              }
+            ],
+            "termId": "201502",
+            "subject": "PHYS",
+            "classId": "013"
+          });
+        
+        
 		}.bind(this));
 	}.bind(this));
 	
