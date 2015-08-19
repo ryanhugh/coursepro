@@ -17,11 +17,6 @@ for (var parserName in parsersClasses) {
 	parsers.push(parsersClasses[parserName])
 }
 
-//db loading states
-var NOT_LOADED= 0;
-var LOADING = 1;
-var LOAD_DONE = 2;
-
 function PageDataMgr () {
 }
 
@@ -75,7 +70,7 @@ PageDataMgr.prototype.go = function(pageData,callback) {
   //main control flow for processing a url
   
   //load, then continue
-	if (pageData.dbLoadingStatus==NOT_LOADED) {
+	if (pageData.dbLoadingStatus==pageData.DBLOAD_NONE) {
   	pageData.loadFromDB(function (err) {
   		if (err) {
   		  console.log("error ",err);
@@ -87,11 +82,11 @@ PageDataMgr.prototype.go = function(pageData,callback) {
   	}.bind(this));
   	return;
 	}
-	else if (pageData.dbLoadingStatus==LOADING) {
+	else if (pageData.dbLoadingStatus==pageData.DBLOAD_RUNNING) {
 	  console.log('error, wtf db status is loading in pagedatamgr go');
 	  return callback('internal error')
 	}
-	else if (pageData.dbLoadingStatus==LOAD_DONE) {
+	else if (pageData.dbLoadingStatus==pageData.DBLOAD_DONE) {
 	  return this.processPageAfterDbLoad(pageData,callback);
 	}
 };
@@ -162,7 +157,7 @@ PageDataMgr.prototype.finish = function(pageData,callback) {
 
 
 
-PageDataMgr.prototype.tests = function() {
+PageDataMgr.prototype.main = function() {
 	// this.createFromURL('https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched')
 	// this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_display_courses?term_in=201610&one_subj=MUS&sel_crse_strt=147A&sel_crse_end=147A&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_display_courses?term_in=201610&one_subj=VTE&sel_crse_strt=113&sel_crse_end=113&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
@@ -197,7 +192,9 @@ PageDataMgr.prototype.tests = function() {
   // this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched')
   this.createFromURL('https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=%25')
   return;
-  
+};
+
+PageDataMgr.prototype.tests = function() {
 
   //a class with no links to sections
   // https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=AC&crse_in=507&schd_in=HY
@@ -280,7 +277,7 @@ global.pageDataMgr = instance;
 
 
 if (require.main === module) {
-	instance.tests();
+	instance.main();
 }
 
 

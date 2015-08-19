@@ -6,11 +6,6 @@ var queue = require("queue-async");
 var clone = require('clone');
 
 
-//db loading states
-var NOT_LOADED= 0;
-var LOADING = 1;
-var LOAD_DONE = 2;
-
 //this is called in 3 places
 //server.js
 //baseParser.js (for deps)
@@ -41,7 +36,7 @@ function PageData (startingData) {
 
 	this.database = null;
 	
-	this.dbLoadingStatus = NOT_LOADED;
+	this.dbLoadingStatus = this.DBLOAD_NONE;
 	
 
 	//dependencies [instances of pagedata]
@@ -60,8 +55,6 @@ function PageData (startingData) {
 		this.dbData.emails = [startingData.email];
 	}
 
-	// this.storedInArray = startingData.storedInArray;
-	this.database = startingData.database
 	this.parent = startingData.parent;
 
 	if (startingData.dbData) {
@@ -81,6 +74,12 @@ function PageData (startingData) {
 // 1 set parser
 // 2. load data (need to get name data from db so in eclass another entry is not made)
 // 3. continue parsing
+
+
+//db loading states
+PageData.prototype.DBLOAD_NONE= 0;
+PageData.prototype.DBLOAD_RUNNING = 1;
+PageData.prototype.DBLOAD_DONE = 2;
 
 
 
@@ -155,7 +154,7 @@ PageData.prototype.loadFromDB = function(callback) {
     return callback('cant lookup');
   }
   
-  if (this.dbLoadingStatus!=NOT_LOADED) {
+  if (this.dbLoadingStatus!=this.DBLOAD_NONE) {
     console.log('told to load, but already loaded???')
     return;
   }
@@ -177,7 +176,7 @@ PageData.prototype.loadFromDB = function(callback) {
 		return callback('cant lookup');
 	}
 	
-	this.dbLoadingStatus=LOADING;
+	this.dbLoadingStatus=this.DBLOAD_RUNNING;
   
 	this.database.find(lookupValues,{
 	 	shouldBeOnlyOne:true,
@@ -186,7 +185,7 @@ PageData.prototype.loadFromDB = function(callback) {
 		if (err) {
 			return callback(err);
 		}
-		this.dbLoadingStatus=LOAD_DONE;
+		this.dbLoadingStatus=this.DBLOAD_DONE;
 
     //original data.dbData and .dbData cant point to the same obj
   	this.originalData.dbData=clone(doc);

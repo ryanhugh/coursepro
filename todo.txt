@@ -2,32 +2,11 @@
 
 
 
-
-dont duplicate loading states
-
-is any page data starting data set database anymore? if not remove it from pagedata constructor
-
-	if (this.dbData.deps) {
-	  console.log('error process already ran????',this.deps,this.dbData.deps)
-	}
-this runs because dbData is loaded from cache which populates dbData...
-
-
-
-
-error, loaded from db and there is already data in the pagedata?? { originalData:
-
-is happening because everything is loaded reursivly, then processed
-
-
-
 isupdatedByParent -> isStartingPoint (default no, )
 
-
-convert the json tests to html and put the url in the code
 parseForm tests assert count?
 
-base parser find dep with fields()
+base parser find dep with fields() -- find an existing pagedata.deps by a given fields, and if not exist, make one
 
 
 
