@@ -819,6 +819,26 @@ EllucianSectionParser.prototype.tests = function() {
 		}.bind(this));
 	}.bind(this));
 	
+	
+	fs.readFile('../tests/ellucianSectionParser/1.html','utf8',function (err,body) {
+	  assert.equal(null,err);
+	  
+		pointer.handleRequestResponce(body,function (err,dom) {
+		  assert.equal(null,err);
+		  
+		  var url = 'http://test.hostname.com/PROD/';
+		  
+      var pageData = pageDataMgr.create({dbData:{url:url}});
+      
+      this.parseDOM(pageData,dom);
+		  
+		  // var prereqs =this.parseRequirementSection(pageData,dom,'prerequisites');
+		  console.log(JSON.stringify(pageData.dbData,null,2));
+		  
+		  
+		}.bind(this));
+	}.bind(this));
+	
 };
 
 

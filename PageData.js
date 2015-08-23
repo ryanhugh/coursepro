@@ -386,7 +386,7 @@ PageData.prototype.addDep = function(depData) {
 
 PageData.prototype.setParentData = function(name,value) {
 	if (!this.parent) {
-		console.log('error told to add to parent but dont have parent',name,value)
+		console.log('error told to add to parent but dont have parent',name,JSON.stringify(value,null,2));
 		return;
 	}
 
