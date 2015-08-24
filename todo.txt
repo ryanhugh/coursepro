@@ -1,5 +1,9 @@
 !!!!
 
+actully needs to get done:
+- add api tag names to features that are updated by parent
+- 
+
 
 
 isupdatedByParent -> isStartingPoint (default no, )
@@ -48,14 +52,6 @@ birmham limits results to 350, fix this, and dosent have a class page?????
 
 pretty case on where
 https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_detail_sched?term_in=201514&crn_in=10585
-
-
-
-sections with different names?!?!
--- also have different prerequs...
-https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=%
-https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201540&subj_in=LAW&crse_in=575&schd_in=%25
-
 
 
 

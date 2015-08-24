@@ -60,7 +60,7 @@ PageDataMgr.prototype.go = function(pageData,callback) {
   if (!pageData.parser && pageData.dbData.url && pageData.findSupportingParser()===false) {
   	return callback("NOSUPPORT");
   }
-  
+
 	//settting the parser should set the db
 	if (!pageData.database) {
 		console.log('error dont have a url or a db',pageData);
@@ -190,7 +190,8 @@ PageDataMgr.prototype.main = function() {
   // // this.createFromURL('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched')
   // this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched')
   // this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched')
-  this.createFromURL('https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=%25')
+  // this.createFromURL('https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=%25') //sections have diff names
+  this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201540&subj_in=LAW&crse_in=575&schd_in=%25') //sections have diff names
   return;
 };
 
@@ -207,9 +208,9 @@ PageDataMgr.prototype.tests = function() {
   		return;
   	}
 
-  	
+
   	var urls = JSON.parse(body);
-  	
+
   	for (var i=0;i<Math.min(10,urls.length);i++){
   		this.createFromURL(urls[i]);
   	}
@@ -228,7 +229,7 @@ PageDataMgr.prototype.tests = function() {
 	// this.createFromURL('https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=ANTH&sel_crse_strt=2764&sel_crse_end=2764&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckctlg.p_display_courses?term_in=201580&one_subj=ACCT&sel_crse_strt=1010&sel_crse_end=1010&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// return;
-	
+
   // https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=6610
 
 
@@ -238,10 +239,10 @@ PageDataMgr.prototype.tests = function() {
   		return;
   	};
 
-  	
+
   	var urls = JSON.parse(body);
-  	
-  	
+
+
   	for (var i=0;i<Math.min(10000,urls.length);i++){
   		this.createFromURL(urls[i]);
   	}
