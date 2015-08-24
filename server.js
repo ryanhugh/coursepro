@@ -27,15 +27,6 @@ app.use(bodyParser.json()); // to support JSON-encoded bodies
 
 
 
-//todo:
-// unsubscribe
-// save data -- done
-// the actuall push req
-// backend
-
-
-
-
 // http://stackoverflow.com/a/46181/11236
 // this is also done client side
 function validateEmail(email) { 
