@@ -290,59 +290,54 @@ BaseParser.prototype.getOptionallyPlural = function(num) {
 
 BaseParser.prototype.tests = function () {
 
-  
-  //make sure other classes have tests
-  assert.equal(this.constructor.name,'BaseParser');
-  
-  
-	fs.readFile('../tests/baseParser/1.html','utf8',function (err,body) {
-	  assert.equal(null,err);
-	  
-		pointer.handleRequestResponce(body,function (err,dom) {
-		  assert.equal(null,err);
-			
-			assert.deepEqual(this.parseTable(dom[0]),{ _rowCount: 1,
-          type: [ 'Class' ],
-          time: [ '11:00 am - 11:50 am' ],
-          days: [ 'MWF' ],
-          where: [ 'Anderson Hall 00806' ],
-          partofterm: [ '1' ],
-          daterange: [ 'Jan 12, 2015 - May 06, 2015' ],
-          scheduletype: [ 'Base Lecture' ],
-          instructors: [ 'Rujuta P.  Chincholkar-Mandelia (P)' ] });
-    }.bind(this));
-	}.bind(this));
-	
-	
-	
-	
-	
-	
-	fs.readFile('../tests/baseParser/3.html','utf8',function (err,body) {
-	  assert.equal(null,err);
-	  var fileJSON = JSON.parse(body);
-	  
-		pointer.handleRequestResponce(fileJSON.body,function (err,dom) {
-		  assert.equal(null,err);
-			
-			assert.deepEqual(this.parseTable(dom[0]),{ _rowCount: 2,
-          headercontent1: [ 'Footer content 1', 'Body content 1' ],
-          headercontent2: [ 'Footer content 2', 'Body content 2' ] });
-    }.bind(this));
-	}.bind(this));
-	
-	
-	
-	
-	
-	
-  return;
-  
 
-  // tester.runTests(this.constructor.name,{
-  //   '1.html':this.file1.bind(this)
-  // });
-  
+	//make sure other classes have tests
+	assert.equal(this.constructor.name,'BaseParser');
+
+
+	fs.readFile('../tests/baseParser/1.html','utf8',function (err,body) {
+		assert.equal(null,err);
+
+		pointer.handleRequestResponce(body,function (err,dom) {
+			assert.equal(null,err);
+
+			assert.deepEqual(this.parseTable(dom[0]),{ _rowCount: 1,
+				type: [ 'Class' ],
+				time: [ '11:00 am - 11:50 am' ],
+				days: [ 'MWF' ],
+				where: [ 'Anderson Hall 00806' ],
+				partofterm: [ '1' ],
+				daterange: [ 'Jan 12, 2015 - May 06, 2015' ],
+				scheduletype: [ 'Base Lecture' ],
+				instructors: [ 'Rujuta P.  Chincholkar-Mandelia (P)' ] });
+		}.bind(this));
+	}.bind(this));
+
+
+
+
+
+
+	fs.readFile('../tests/baseParser/3.html','utf8',function (err,body) {
+		assert.equal(null,err);
+		var fileJSON = JSON.parse(body);
+
+		pointer.handleRequestResponce(fileJSON.body,function (err,dom) {
+			assert.equal(null,err);
+
+			assert.deepEqual(this.parseTable(dom[0]),{ _rowCount: 2,
+				headercontent1: [ 'Footer content 1', 'Body content 1' ],
+				headercontent2: [ 'Footer content 2', 'Body content 2' ] });
+		}.bind(this));
+	}.bind(this));
+
+
+
+
+
+
+	return;
+
 
 	fs.readFile('../tests/'+this.constructor.name+'/1.html','utf8',function (err,body) {
 		if (err) {
@@ -360,8 +355,8 @@ BaseParser.prototype.tests = function () {
 			}))
 			return;
 		}
-		
-		
+
+
 
 		pointer.handleRequestResponce(fileJSON.body,function (err,dom) {
 			if (err) {
@@ -372,20 +367,14 @@ BaseParser.prototype.tests = function () {
 				console.log(this.parseTable(dom[0]));
 			}
 			else {
-			  
+
 				var pageData = new PageData({dbData:{url:fileJSON.url}});
 				this.parseDOM(pageData,dom);
 				console.log("HERE",JSON.stringify(pageData,null,4));
 
 			}
 
-			
-			// this.parseDOM()
 		}.bind(this));
-
-
-
-
 	}.bind(this));
 
 };
@@ -398,5 +387,5 @@ BaseParser.prototype.BaseParser=BaseParser;
 module.exports = new BaseParser();
 
 if (require.main === module) {
-  module.exports.tests();
+	module.exports.tests();
 }

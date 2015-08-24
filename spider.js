@@ -179,47 +179,44 @@ Spider.prototype.main = function () {
 	// this.go('https://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_dyn_sched')
 	// this.go('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched')
 	this.go('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'); //this is a really good site, small + quick. finished in like 2 min
-	return;
 };
 
 Spider.prototype.tests = function () {
-  
+
+
+	//these tests are old and probably dont work
 	return;
 
 
-	// fs.readFile('./tests/'+this.constructor.name+'/search.json','utf8',function (err,body) {
+	fs.readFile('./tests/'+this.constructor.name+'/search.json','utf8',function (err,body) {
 
 
 		
-	// 	//   url:'https://ssb.cc.binghamton.edu/banner/bwckgens.p_proc_term_date',
+		//   url:'https://ssb.cc.binghamton.edu/banner/bwckgens.p_proc_term_date',
 
-	// 	var jsonBody = JSON.parse(body);
+		var jsonBody = JSON.parse(body);
 
-	// 	var handler = new htmlparser.DomHandler(function (error, dom) {
-	// 		if (error) {
-	// 			console.log('ERROR: college names html parsing error',error);
-	// 			return;
-	// 		}
-	// 		console.log(ellucianCatalogParser.parseForm(jsonBody.url, dom));
-	// 		// console.log(jsonBody)
+		var handler = new htmlparser.DomHandler(function (error, dom) {
+			if (error) {
+				console.log('ERROR: college names html parsing error',error);
+				return;
+			}
+			console.log(ellucianCatalogParser.parseForm(jsonBody.url, dom));
+			// console.log(jsonBody)
 
-	// 		//console.log(ellucianCatalogParser.parseForm(dom)[1])
+			//console.log(ellucianCatalogParser.parseForm(dom)[1])
 
 
-	// 	}.bind(this));
+		}.bind(this));
 
-	// 	var parser = new htmlparser.Parser(handler);
-	// 	parser.write(jsonBody.body);
-	// 	parser.done();
-	// }.bind(this));
+		var parser = new htmlparser.Parser(handler);
+		parser.write(jsonBody.body);
+		parser.done();
+	}.bind(this));
 
 
 
 	fs.readFile('./tests/'+this.constructor.name+'/termselection.json','utf8',function (err,body) {
-		// return;
-
-
-		// var jsonBody = JSON.parse(body);
 
 
 		var handler = new htmlparser.DomHandler(function (error, dom) {

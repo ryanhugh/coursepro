@@ -14,7 +14,7 @@ var ellucianClassParser = require('./ellucianClassParser');
 
 
 function EllucianCatalogParser () {
-  this.name = "EllucianCatalogParser"
+	this.name = "EllucianCatalogParser"
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
 }
 
@@ -131,98 +131,101 @@ EllucianCatalogParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianCatalogParser.prototype.tests = function() {
-  require('../pageDataMgr')
-  
+	require('../pageDataMgr')
+
 	fs.readFile('../tests/ellucianCatalogParser/1.html','utf8',function (err,body) {
-	  assert.equal(null,err);
+		assert.equal(null,err);
 		pointer.handleRequestResponce(body,function (err,dom) {
-		  assert.equal(null,err);
-		  
-		  var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=2041&sel_crse_end=2041&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
-		  
-		  var classURL= "https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25";
-		  
-		  
-		  assert.equal(true,this.supportsPage(url));
-		  
-      var pageData = pageDataMgr.create({dbData:{
-        url:url
-      }});
-      
-      this.parseDOM(pageData,dom);
-      
-      assert.equal(pageData.deps.length,1);
-      assert.deepEqual(pageData.deps[0].dbData,{
-        desc: 'Topics in Poetry and Prosody Irregular Prereqs.: None Detailed and systematic study of poetic form, including versification, rhetorical tropes, diction, and tone. May be organized by period, subject matter, genre, or critical method. May be repeated with different topics for up to 6 credits. 3.000 Credit hours 3.000 Lecture hours',
-        url: 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25' });
-      
-      }.bind(this));
-	}.bind(this));
-	
+			assert.equal(null,err);
+
+			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=2041&sel_crse_end=2041&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+
+			var classURL= "https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25";
+
+
+			assert.equal(true,this.supportsPage(url));
+
+			var pageData = pageDataMgr.create({dbData:{
+				url:url
+			}});
+
+			this.parseDOM(pageData,dom);
+
+			assert.equal(pageData.deps.length,1);
+			assert.deepEqual(pageData.deps[0].dbData,{
+				desc: 'Topics in Poetry and Prosody Irregular Prereqs.: None Detailed and systematic study of poetic form, including versification, rhetorical tropes, diction, and tone. May be organized by period, subject matter, genre, or critical method. May be repeated with different topics for up to 6 credits. 3.000 Credit hours 3.000 Lecture hours',
+				url: 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25'
+			});
+
+		}.bind(this));
+	}.bind(this));//
 
 
 
-  
+
+	//
 	fs.readFile('../tests/ellucianCatalogParser/2.html','utf8',function (err,body) {
-	  assert.equal(null,err);
-	  
+		assert.equal(null,err);
+
 		pointer.handleRequestResponce(body,function (err,dom) {
-		  assert.equal(null,err);
-		  
-		  var url = 'https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
-		  
-		  var classURL= "https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201580&subj_in=MDCN&crse_in=2064&schd_in=%25";
-		  
-		  
-		  assert.equal(true,this.supportsPage(url));
-		  
-      var pageData = pageDataMgr.create({dbData:{
-        url:url
-      }});
-      
-      this.parseDOM(pageData,dom);
-      
-      assert.equal(pageData.deps.length,1);
-      assert.deepEqual(pageData.deps[0].dbData,{
-        desc: 'ELECTIVE DESCRIPTION: Physical exams are provided to newly resettled refugees by care teams comprised of students, residents, and faculty physicians. For many refugees, the care is their first encounter with mainstream medicine. MS-2 coordinators manage clinic operations while MS 1-4 volunteers provide the care service and gain experience in physical exam skills and cross-cultural communication. 0.000 Credit hours 0.000 Lab hours',
-        url: 'https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201580&subj_in=MDCN&crse_in=2064&schd_in=%25' });
-      
+			assert.equal(null,err);
+
+			var url = 'https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+
+			var classURL= "https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201580&subj_in=MDCN&crse_in=2064&schd_in=%25";
+
+
+			assert.equal(true,this.supportsPage(url));
+
+			var pageData = pageDataMgr.create({dbData:{
+				url:url
+			}});
+
+			this.parseDOM(pageData,dom);
+
+			assert.equal(pageData.deps.length,1);
+			assert.deepEqual(pageData.deps[0].dbData,{
+				desc: 'ELECTIVE DESCRIPTION: Physical exams are provided to newly resettled refugees by care teams comprised of students, residents, and faculty physicians. For many refugees, the care is their first encounter with mainstream medicine. MS-2 coordinators manage clinic operations while MS 1-4 volunteers provide the care service and gain experience in physical exam skills and cross-cultural communication. 0.000 Credit hours 0.000 Lab hours',
+				url: 'https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201580&subj_in=MDCN&crse_in=2064&schd_in=%25'
+			});
+
 		}.bind(this));
-	}.bind(this));
-	
-	
-	
-	
+	}.bind(this));//
+
+
+
+	//
 	fs.readFile('../tests/ellucianCatalogParser/3.html','utf8',function (err,body) {
-	  assert.equal(null,err);
-	  
+		assert.equal(null,err);
+
 		pointer.handleRequestResponce(body,function (err,dom) {
-		  assert.equal(null,err);
-		  
-		  var url = 'https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
-		  
-		  var classURL= "https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%25";
-		  
-		  
-		  assert.equal(true,this.supportsPage(url));
-		  
-      var pageData = pageDataMgr.create({dbData:{
-        url:url
-      }});
-      
-      this.parseDOM(pageData,dom);
-      
-      assert.equal(pageData.deps.length,1);
-      assert.deepEqual(pageData.deps[0].dbData,{
-        desc: 'Current internet, social media, and mobile media marketing theories , strategies, tools and practices. Includes study of communication methods used by professionals in journalism, film, television, advertising, public relations, and related professions to brand, promote, and distribute products and services. Web-based production lab included. Cross-listed with JRN 507. 3.000 Credit hours',
-        url: 'https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%25' });
-      
+			assert.equal(null,err);
+
+			var url = 'https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+
+			var classURL= "https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%25";
+
+
+			assert.equal(true,this.supportsPage(url));
+
+			var pageData = pageDataMgr.create({dbData:{
+				url:url
+			}});
+
+			this.parseDOM(pageData,dom);
+
+			assert.equal(pageData.deps.length,1);
+			assert.deepEqual(pageData.deps[0].dbData,{
+				desc: 'Current internet, social media, and mobile media marketing theories , strategies, tools and practices. Includes study of communication methods used by professionals in journalism, film, television, advertising, public relations, and related professions to brand, promote, and distribute products and services. Web-based production lab included. Cross-listed with JRN 507. 3.000 Credit hours',
+				url: 'https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%25' 
+			});
+
 		}.bind(this));
-	}.bind(this));
-	
-	
+	}.bind(this));//
+
+	//
 	console.log('all tests done bro');
-	
+
 };
 
 

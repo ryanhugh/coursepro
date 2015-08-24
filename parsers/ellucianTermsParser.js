@@ -179,51 +179,52 @@ EllucianTermsParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianTermsParser.prototype.tests = function() {
-  require('../pageDataMgr');
-  
+	require('../pageDataMgr');
+	
 	fs.readFile('../tests/ellucianTermsParser/1.html','utf8',function (err,body) {
-	  assert.equal(null,err);
+		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
-		  assert.equal(null,err);
-		  
-		  var url = 'https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched';
-		  
-      var pageData = pageDataMgr.create({dbData:{url:url}});
-      assert.notEqual(null,pageData);
-		  
-		  this.parseDOM(pageData,dom);
-		  
-		  
-		  assert.equal(true,this.supportsPage(url));
-		  
-		  assert.deepEqual(pageData.dbData,{ url: url,
-            terms:
-             [ { id: '201610', text: 'Spring 2016' },
-               { id: '201580', text: 'Fall 2015' },
-               { id: '201550', text: 'Summer 2015' },
-               { id: '201510', text: 'Spring 2015 (View only)' } ],
-            host: 'upstate.edu' });
-            
-            
-      assert.equal(pageData.deps.length,4);
-      pageData.deps.forEach(function (dep) {
-        assert.equal(dep.parent,pageData);
-      }.bind(this));
-      
-      // could add some more stuff
-      // console.log(pageData.deps);
-      
-		  
-		  
-		  console.log('all tests done bro');
-		  
+			assert.equal(null,err);
+
+			var url = 'https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched';
+
+			var pageData = pageDataMgr.create({dbData:{url:url}});
+			assert.notEqual(null,pageData);
+
+			this.parseDOM(pageData,dom);
+			
+			
+			assert.equal(true,this.supportsPage(url));
+			
+			assert.deepEqual(pageData.dbData,{ url: url,
+				terms:
+				[ { id: '201610', text: 'Spring 2016' },
+				{ id: '201580', text: 'Fall 2015' },
+				{ id: '201550', text: 'Summer 2015' },
+				{ id: '201510', text: 'Spring 2015 (View only)' } ],
+				host: 'upstate.edu' });
+			
+			
+			assert.equal(pageData.deps.length,4);
+			pageData.deps.forEach(function (dep) {
+				assert.equal(dep.parent,pageData);
+			}.bind(this));
+			
+			
+			// could add some more stuff
+			// console.log(pageData.deps);
+
+			
+
+			console.log('all tests done bro');
+			
 		}.bind(this));
 	}.bind(this));
-	
-	
+
 	//make sure a name is defined
 	assert(this.name);
+
 	
 };
 

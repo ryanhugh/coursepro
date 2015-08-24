@@ -52,15 +52,15 @@ PageDataMgr.prototype.go = function(pageData,callback) {
 	}
 
 	if (pageData.dbData.updatedByParent) {
-	  console.log('not running on here, because parent updates this');
+		console.log('not running on here, because parent updates this');
 		return this.finish(pageData,callback);
 	}
 
   //unless this is the initial starting point the parser will be set when loading from db or from parent
-	if (!pageData.parser && pageData.dbData.url && pageData.findSupportingParser()===false) {
-		return callback("NOSUPPORT");
-	}
-	
+  if (!pageData.parser && pageData.dbData.url && pageData.findSupportingParser()===false) {
+  	return callback("NOSUPPORT");
+  }
+  
 	//settting the parser should set the db
 	if (!pageData.database) {
 		console.log('error dont have a url or a db',pageData);
@@ -70,29 +70,29 @@ PageDataMgr.prototype.go = function(pageData,callback) {
   //main control flow for processing a url
   
   //load, then continue
-	if (pageData.dbLoadingStatus==pageData.DBLOAD_NONE) {
+  if (pageData.dbLoadingStatus==pageData.DBLOAD_NONE) {
   	pageData.loadFromDB(function (err) {
   		if (err) {
-  		  console.log("error ",err);
+  			console.log("error ",err);
   			return callback(err);
   		}
   		else {
-  		  return this.processPageAfterDbLoad(pageData,callback);
+  			return this.processPageAfterDbLoad(pageData,callback);
   		}
   	}.bind(this));
   	return;
-	}
-	else if (pageData.dbLoadingStatus==pageData.DBLOAD_RUNNING) {
-	  console.log('error, wtf db status is loading in pagedatamgr go');
-	  return callback('internal error')
-	}
-	else if (pageData.dbLoadingStatus==pageData.DBLOAD_DONE) {
-	  return this.processPageAfterDbLoad(pageData,callback);
-	}
+  }
+  else if (pageData.dbLoadingStatus==pageData.DBLOAD_RUNNING) {
+  	console.log('error, wtf db status is loading in pagedatamgr go');
+  	return callback('internal error')
+  }
+  else if (pageData.dbLoadingStatus==pageData.DBLOAD_DONE) {
+  	return this.processPageAfterDbLoad(pageData,callback);
+  }
 };
 
 PageDataMgr.prototype.processPageAfterDbLoad = function (pageData,callback) {
-  if (!pageData.dbData.url) {
+	if (!pageData.dbData.url) {
 		console.log('started pageData without url and could not find it in db!',pageData);
 		return callback('cant find dep');
 	}
@@ -102,7 +102,7 @@ PageDataMgr.prototype.processPageAfterDbLoad = function (pageData,callback) {
 	//this will happen when parent loaded this from cache with just an _id
 	if (pageData.dbData.url && !pageData.parser) {
 		if (!pageData.findSupportingParser()) {
-		  console.log('error cant find parser after second try');
+			console.log('error cant find parser after second try');
 			return callback("NOSUPPORT");
 		}
 	}
@@ -201,21 +201,21 @@ PageDataMgr.prototype.tests = function() {
 
 
 
-	fs.readFile('./tests/differentCollegeUrls.json','utf8',function (err,body) {
-		if (err) {
-			console.trace(err)
-			return;
-		}
+  fs.readFile('./tests/differentCollegeUrls.json','utf8',function (err,body) {
+  	if (err) {
+  		console.trace(err)
+  		return;
+  	}
 
-	  
-		var urls = JSON.parse(body);
-	  
-		 for (var i=0;i<Math.min(10,urls.length);i++){
-		   this.createFromURL(urls[i]);
-		 }
+  	
+  	var urls = JSON.parse(body);
+  	
+  	for (var i=0;i<Math.min(10,urls.length);i++){
+  		this.createFromURL(urls[i]);
+  	}
 
-		}.bind(this));
-	return;
+  }.bind(this));
+  return;
 
 
 
@@ -228,35 +228,35 @@ PageDataMgr.prototype.tests = function() {
 	// this.createFromURL('https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=ANTH&sel_crse_strt=2764&sel_crse_end=2764&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckctlg.p_display_courses?term_in=201580&one_subj=ACCT&sel_crse_strt=1010&sel_crse_end=1010&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// return;
-  
+	
   // https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=6610
 
 
-	fs.readFile('./tests/'+this.constructor.name+'/toparse3.json','utf8',function (err,body) {
-		if (err) {
-			console.trace(err)
-			return;
-		};
+  fs.readFile('./tests/'+this.constructor.name+'/toparse3.json','utf8',function (err,body) {
+  	if (err) {
+  		console.trace(err)
+  		return;
+  	};
 
-	  
-		var urls = JSON.parse(body);
-	  
-	  
-		 for (var i=0;i<Math.min(10000,urls.length);i++){
-		   this.createFromURL(urls[i]);
-		 }
+  	
+  	var urls = JSON.parse(body);
+  	
+  	
+  	for (var i=0;i<Math.min(10000,urls.length);i++){
+  		this.createFromURL(urls[i]);
+  	}
 
 
 		// this.createFromURL(urls[4]);
 
-		}.bind(this));
-	return;
+	}.bind(this));
+  return;
 
 	// this.createFromURL('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=',null,function (err,pageData) {
 	// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%',null,function (err,pageData) {
 	// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=10739',null,function (err,pageData) {
-	console.log("CALLBACK WAS CALLED!!!!!!!",pageData.getClientString());
+		console.log("CALLBACK WAS CALLED!!!!!!!",pageData.getClientString());
 
 	}.bind(this));
 };

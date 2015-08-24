@@ -1,17 +1,17 @@
   'use strict';
-var URI = require('URIjs');
-var fs = require('fs');
-var assert = require('assert');
+  var URI = require('URIjs');
+  var fs = require('fs');
+  var assert = require('assert');
 
-var pointer = require('../pointer');
-var subjectsDB = require('../databases/subjectsDB');
-var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
+  var pointer = require('../pointer');
+  var subjectsDB = require('../databases/subjectsDB');
+  var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
 
-function EllucianSubjectParser () {
-  this.name = "EllucianSubjectParser";
-	EllucianBaseParser.prototype.constructor.apply(this,arguments);
-}
+  function EllucianSubjectParser () {
+  	this.name = "EllucianSubjectParser";
+  	EllucianBaseParser.prototype.constructor.apply(this,arguments);
+  }
 
 
 //prototype constructor
@@ -141,64 +141,64 @@ EllucianSubjectParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianSubjectParser.prototype.tests = function(){
-  require('../pageDataMgr')
-  
+	require('../pageDataMgr')
+
 	fs.readFile('../tests/ellucianSubjectParser/1.html','utf8',function (err,body) {
-	  assert.equal(null,err);
-	  
+		assert.equal(null,err);
+
 		pointer.handleRequestResponce(body,function (err,dom) {
-		  assert.equal(null,err);
-		  
-		  var url = 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date';
-		  
-		  assert.equal(true,this.supportsPage(url));
-		  
-      var pageData = pageDataMgr.create({dbData:{
-        url:url,
-        postData:'p_calling_proc=bwckschd.p_disp_dyn_sched&p_by_date=Y&p_from_date=&p_to_date=&p_term=201510'
-      }});
-      
-      assert.notEqual(null,pageData);
-		  
-		  this.parseDOM(pageData,dom);
-		  
-		  assert.deepEqual(pageData.dbData,{ url: 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date',
-            postData: 'p_calling_proc=bwckschd.p_disp_dyn_sched&p_by_date=Y&p_from_date=&p_to_date=&p_term=201510',
-            subjects:
-             [ { id: 'ANAT', text: 'Anatomy CM' },
-               { id: 'ANES', text: 'Anesthesiology CM' },
-               { id: 'CBHX', text: 'Bioethics and Humanities' },
-               { id: 'CCFM', text: 'Consortium - Culture/Medicine' },
-               { id: 'EMED', text: 'Emergency Medicine CM&HP' },
-               { id: 'FAMP', text: 'Family Medicine CM' },
-               { id: 'GERI', text: 'Geriatrics CM' },
-               { id: 'INTD', text: 'Interdepartmental CM&HP' },
-               { id: 'INTL', text: 'International Experience' },
-               { id: 'MDCN', text: 'Medicine CM' },
-               { id: 'MICB', text: 'Microbiology CM' },
-               { id: 'M', text: 'Microbiology and Immunology GS' }, //this is same as html
-               { id: 'NEUR', text: 'Neurology CM' },
-               { id: 'NSUG', text: 'Neurosurgery CM' },
-               { id: 'OBGY', text: 'Obstetrics and Gynecology CM' },
-               { id: 'OPTH', text: 'Opthalmology CM' },
-               { id: 'ORTH', text: 'Orthopaedic Surgery CM' },
-               { id: 'OTOL', text: 'Otolaryngology CM' },
-               { id: 'PATH', text: 'Pathology CM&HP' },
-               { id: 'PEDS', text: 'Pediatrics CM' },
-               { id: 'RMED', text: 'Physical Med/Rehabilitation CM' },
-               { id: 'PRVM', text: 'Preventive Medicine' },
-               { id: 'PYCH', text: 'Psychiatry CM' },
-               { id: 'RONC', text: 'Radiation Oncology CM' },
-               { id: 'RADL', text: 'Radiology CM' },
-               { id: 'SURG', text: 'Surgery CM' },
-               { id: 'UROL', text: 'Urology CM' } ],
-            termId: '201510',
-            host: 'upstate.edu' });
-		  
-		  console.log('all tests done bro');
-		  
+			assert.equal(null,err);
+
+			var url = 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date';
+
+			assert.equal(true,this.supportsPage(url));
+
+			var pageData = pageDataMgr.create({dbData:{
+				url:url,
+				postData:'p_calling_proc=bwckschd.p_disp_dyn_sched&p_by_date=Y&p_from_date=&p_to_date=&p_term=201510'
+			}});
+
+			assert.notEqual(null,pageData);
+
+			this.parseDOM(pageData,dom);
+
+			assert.deepEqual(pageData.dbData,{ url: 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date',
+				postData: 'p_calling_proc=bwckschd.p_disp_dyn_sched&p_by_date=Y&p_from_date=&p_to_date=&p_term=201510',
+				subjects:
+				[ { id: 'ANAT', text: 'Anatomy CM' },
+				{ id: 'ANES', text: 'Anesthesiology CM' },
+				{ id: 'CBHX', text: 'Bioethics and Humanities' },
+				{ id: 'CCFM', text: 'Consortium - Culture/Medicine' },
+				{ id: 'EMED', text: 'Emergency Medicine CM&HP' },
+				{ id: 'FAMP', text: 'Family Medicine CM' },
+				{ id: 'GERI', text: 'Geriatrics CM' },
+				{ id: 'INTD', text: 'Interdepartmental CM&HP' },
+				{ id: 'INTL', text: 'International Experience' },
+				{ id: 'MDCN', text: 'Medicine CM' },
+				{ id: 'MICB', text: 'Microbiology CM' },
+				{ id: 'M', text: 'Microbiology and Immunology GS' }, //this is same as html
+				{ id: 'NEUR', text: 'Neurology CM' },
+				{ id: 'NSUG', text: 'Neurosurgery CM' },
+				{ id: 'OBGY', text: 'Obstetrics and Gynecology CM' },
+				{ id: 'OPTH', text: 'Opthalmology CM' },
+				{ id: 'ORTH', text: 'Orthopaedic Surgery CM' },
+				{ id: 'OTOL', text: 'Otolaryngology CM' },
+				{ id: 'PATH', text: 'Pathology CM&HP' },
+				{ id: 'PEDS', text: 'Pediatrics CM' },
+				{ id: 'RMED', text: 'Physical Med/Rehabilitation CM' },
+				{ id: 'PRVM', text: 'Preventive Medicine' },
+				{ id: 'PYCH', text: 'Psychiatry CM' },
+				{ id: 'RONC', text: 'Radiation Oncology CM' },
+				{ id: 'RADL', text: 'Radiology CM' },
+				{ id: 'SURG', text: 'Surgery CM' },
+				{ id: 'UROL', text: 'Urology CM' } ],
+				termId: '201510',
+				host: 'upstate.edu' });
+
+		  console.log('all tests done bro');//
+
 		}.bind(this));
-	}.bind(this));
+	}.bind(this));//
 };
 
 

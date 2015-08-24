@@ -52,9 +52,8 @@ BaseDB.prototype.shouldUpdateDB = function(newData,oldData) {
 		}
 
 		//check difference for all other attributes
-		console.log('checking change in ',attrName,newData[attrName] ,oldData[attrName])
 		if (!_.isEqual(newData[attrName], oldData[attrName])) {
-		  console.log('updating db because of change in',attrName)
+			console.log('updating db because of change in',attrName)
 			return true;
 		};
 	}
@@ -67,7 +66,7 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 	var oldData = pageData.originalData.dbData;
 
 	if (!this.shouldUpdateDB(newData,oldData)) {
-	  console.log('not updating the database for ',pageData.parser.name)
+		console.log('not updating the database for ',pageData.parser.name)
 		return callback(null,newData);
 	};
 

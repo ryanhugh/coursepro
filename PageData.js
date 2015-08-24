@@ -91,8 +91,8 @@ PageData.prototype.findSupportingParser = function(parserName) {
 		return true;
 	}
 	if (!this.dbData.url && !parserName) {
-	  console.log('error cant find parser without url and name');
-	  return false;
+		console.log('error cant find parser without url and name');
+		return false;
 	}
 
 
@@ -110,19 +110,19 @@ PageData.prototype.findSupportingParser = function(parserName) {
 
 //returns true if successful, else false
 PageData.prototype.setParser = function (parser) {
-  if (!parser || !parser.name) {
-    console.log('error tried to set to invalid parser',parser);
-    return false;
-  }
-  
-  if (this.parser) {
-    console.log('error, tried to set parser, already have a parser',this.parser.constructor.name,parser.constructor.name);
-    console.trace();
-    return false;
-  }
-  
-  
-  this.parser= parser;
+	if (!parser || !parser.name) {
+		console.log('error tried to set to invalid parser',parser);
+		return false;
+	}
+
+	if (this.parser) {
+		console.log('error, tried to set parser, already have a parser',this.parser.constructor.name,parser.constructor.name);
+		console.trace();
+		return false;
+	}
+
+
+	this.parser= parser;
 	console.log('Using parser:',this.parser.constructor.name,'for url',this.dbData.url,' and name',parser.name);
 
 	var newDatabase = parser.getDatabase(this);
@@ -149,17 +149,17 @@ PageData.prototype.setParser = function (parser) {
 
 
 PageData.prototype.loadFromDB = function(callback) {
-  if  (!this.database) {
-    console.log('cant lookup, dont have a db',this);
-    return callback('cant lookup');
-  }
-  
-  if (this.dbLoadingStatus!=this.DBLOAD_NONE) {
-    console.log('told to load, but already loaded???')
-    return;
-  }
+	if  (!this.database) {
+		console.log('cant lookup, dont have a db',this);
+		return callback('cant lookup');
+	}
 
-  var lookupValues = {};
+	if (this.dbLoadingStatus!=this.DBLOAD_NONE) {
+		console.log('told to load, but already loaded???')
+		return;
+	}
+
+	var lookupValues = {};
 
 	if (this.dbData._id) {
 		lookupValues._id = this.dbData._id;
@@ -177,60 +177,59 @@ PageData.prototype.loadFromDB = function(callback) {
 	}
 	
 	this.dbLoadingStatus=this.DBLOAD_RUNNING;
-  
+
 	this.database.find(lookupValues,{
-	 	shouldBeOnlyOne:true,
-	 	sanatize:false
+		shouldBeOnlyOne:true,
+		sanatize:false
 	},function (err,doc) {
 		if (err) {
 			return callback(err);
 		}
 		this.dbLoadingStatus=this.DBLOAD_DONE;
 
-    //original data.dbData and .dbData cant point to the same obj
-  	this.originalData.dbData=clone(doc);
-  	
-  	var q = queue();
-  	
-		if (doc) {
-		  
-		  if (this.dbData.emails || this.dbData.ips || this.dbData.deps) {
-		    console.log('error, loaded from db and there is already data in the pagedata??',this);
-		    console.trace();
-		  }
-		  
-		  
-		  this.dbData = doc;
-		  
-		  
-		  //load all deps too
+	    //original data.dbData and .dbData cant point to the same obj
+	    this.originalData.dbData=clone(doc);
+
+	    var q = queue();
+
+	    if (doc) {
+
+	    	if (this.dbData.emails || this.dbData.ips || this.dbData.deps) {
+	    		console.log('error, loaded from db and there is already data in the pagedata??',this);
+	    		console.trace();
+	    	}
+
+
+	    	this.dbData = doc;
+
+
+			//load all deps too
 			//iterate over each type of dep
 			for (var parserName in this.dbData.deps) {
-
 				this.dbData.deps[parserName].forEach(function (newDepId) {
 
 					var newDepPageData = this.addDep({_id:newDepId});
 
 					if (!newDepPageData) {
-					  console.log('error!!!!!!, failed to load dep from db');
-					  return;
+						console.log('error!!!!!!, failed to load dep from db');
+						return;
 					}
 
-					
+
 					newDepPageData.findSupportingParser(parserName);
-					
+
 					q.defer(function (callback) {
-  					newDepPageData.loadFromDB(callback);
+						newDepPageData.loadFromDB(callback);
 					}.bind(this));
 				}.bind(this));
 			}
 		}
-		
+
 		q.awaitAll(function(error, results) {
-		  console.log("all deps have been loaded!");
-  		return callback();
+			console.log("all deps have been loaded!");
+			return callback();
 		}.bind(this));
-		
+
 	}.bind(this));
 };
 
@@ -264,26 +263,26 @@ PageData.prototype.processDeps = function(callback) {
 				return callback(err);
 			}
 			if (newDepData!=depPageData) {
-			  console.log('error pagedata was called on is diff than returned??');
-			  return;
+				console.log('error pagedata was called on is diff than returned??');
+				return;
 			}
 
 			if (!newDepData.parser || !newDepData.parser.name) {
 
 				console.log('error, cannot add dep, dont know where to add it',newDepData.parser,newDepData);
 				if (newDepData.parser) {
-				  console.log('error more data on the cannot add dep',newDepData.parser.constructor.name,newDepData.parser.name);
+					console.log('error more data on the cannot add dep',newDepData.parser.constructor.name,newDepData.parser.name);
 				}
 			}
 
 
-      //create the array if it dosent exist
+			//create the array if it dosent exist
 			if (!this.dbData.deps[newDepData.parser.name]) {
 				this.dbData.deps[newDepData.parser.name] = [];
 			}
 
-      //add it to the array if it dosent already exist
-      //if this pagedata was loaded from cache, it will already exist
+			//add it to the array if it dosent already exist
+			//if this pagedata was loaded from cache, it will already exist
 			if (this.dbData.deps[newDepData.parser.name].indexOf(newDepData.dbData._id)<0) {
 				this.dbData.deps[newDepData.parser.name].push(newDepData.dbData._id);
 			}
@@ -292,7 +291,9 @@ PageData.prototype.processDeps = function(callback) {
 			return callback(null,newDepData);
 		}.bind(this));
 
-	}.bind(this),function (err,results) {
+
+	}.bind(this),function (err,results) {//
+
 
 		if (err) {
 			console.log('error found while processing dep of',this.dbData.url,err);
@@ -303,7 +304,6 @@ PageData.prototype.processDeps = function(callback) {
 			return callback();
 		}
 	}.bind(this));
-
 };
 
 
@@ -323,7 +323,7 @@ PageData.prototype.addDep = function(depData) {
 	if (!depData) {
 		console.log('Error:Tried to add invalid depdata??',depData);
 		if (depData) {
-		  console.log('error, more data for invalid depdata',depData);
+			console.log('error, more data for invalid depdata',depData);
 		}
 		console.trace()
 		return null;
@@ -339,14 +339,14 @@ PageData.prototype.addDep = function(depData) {
 		if (depData._id) {
 			if (this.deps[i].dbData._id==depData._id) {
 
-			  console.log('error matched by _id!')
+				console.log('error matched by _id!')
 
 				isMatch=true;
 			}
 		}
 		else if (depData.url) {
 			if (_.isEqual(this.deps[i].dbData,depData)) {
-			  console.log('error matched by _is equal')
+				console.log('error matched by _is equal')
 				isMatch=true;
 			}
 		}
@@ -379,8 +379,8 @@ PageData.prototype.addDep = function(depData) {
 		return;
 	}
 // 	dep.setParser(parser);
-	this.deps.push(dep);
-	return dep;
+this.deps.push(dep);
+return dep;
 }
 
 

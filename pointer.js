@@ -219,7 +219,7 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 
 
 Pointer.prototype.tests = function() {
-  assert.equal(this.payloadJSONtoString([{name:'name',value:'value'},{name:'name2',value:'value2'}]),'name=value&name2=value2');
+	assert.equal(this.payloadJSONtoString([{name:'name',value:'value'},{name:'name2',value:'value2'}]),'name=value&name2=value2');
 
 	console.log('all tests done bro')
 };
