@@ -2,7 +2,7 @@
 
 actully needs to get done:
 - add api tag names to features that are updated by parent
-- 
+- remove duplicates from single list in prereqs (probably not going to happen )
 
 
 

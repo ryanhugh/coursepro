@@ -85,6 +85,7 @@ BaseParser.prototype.onEndParsing = function(pageData) {
 
 BaseParser.prototype.parseDOM = function(pageData,dom){
 
+	pageData.setData('host',pointer.getBaseHostname(pageData.dbData.url));
 
 	this.onBeginParsing(pageData,dom);
 
@@ -98,7 +99,6 @@ BaseParser.prototype.parseDOM = function(pageData,dom){
 		return null;
 	}
 
-	pageData.setData('host',pointer.getBaseHostname(pageData.dbData.url));
 
 }
 

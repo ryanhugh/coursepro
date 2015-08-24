@@ -160,17 +160,21 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			  }
 			}
 
-	    //entry
-	    if (!dbAltEntry) {
-	    	console.log('creating a new dep entry',pageData.deps.length);
+		    //entry
+			if (!dbAltEntry) {
+				console.log('creating a new dep entry',pageData.deps.length);
 
-	    	dbAltEntry = pageData.addDep({
-	    		name:className,
-	    		updatedByParent:true
-	    	});
-	    	dbAltEntry.setParser(this);
+				dbAltEntry = pageData.addDep({
+					name:className,
+					host:pageData.dbData.host,
+					termId:pageData.parsingData.termId,
+					subject:pageData.parsingData.subject,
+					classId:pageData.parsingData.classId,
+					updatedByParent:true
+				});
+				dbAltEntry.setParser(this);
 
-	    }
+			}
 
 			//could not create a dep with this data.. uh oh
 			if (!dbAltEntry) {
@@ -184,10 +188,11 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 	}.bind(this),element.children);
 
-if (!sectionStartingData.url) {
-	console.log('warning, no url found',pageData.dbData.url);
-	return;
-}
+	//
+	if (!sectionStartingData.url) {
+		console.log('warning, no url found',pageData.dbData.url);
+		return;
+	}
 
 
 

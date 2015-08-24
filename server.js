@@ -129,7 +129,12 @@ app.get('/listTerms/*',function (req,res) {
 		};
 
 		res.header('access-control-allow-origin','*')
-		res.send(JSON.stringify(doc.terms));
+		if (doc) {
+			res.send(JSON.stringify(doc.terms));
+		}
+		else {
+			res.send([]);
+		}
 	})
 })
 
@@ -150,7 +155,12 @@ app.get('/listSubjects/*/*',function (req,res) {
 			return;
 		};
 		res.header('access-control-allow-origin','*')
-		res.send(JSON.stringify(doc.subjects));
+		if (doc) {
+			res.send(JSON.stringify(doc.subjects));
+		}
+		else {
+			res.send([])
+		}
 	})
 })
 
@@ -167,7 +177,6 @@ app.get('/listClasses/*/*/*',function (req,res) {
 	 	shouldBeOnlyOne:false,
 	 	sanatize:true
 	 },function (err,classes) {
-
 		if (err) {
 			res.send(err);
 			return;

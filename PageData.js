@@ -226,7 +226,6 @@ PageData.prototype.loadFromDB = function(callback) {
 		}
 
 		q.awaitAll(function(error, results) {
-			console.log("all deps have been loaded!");
 			return callback();
 		}.bind(this));
 

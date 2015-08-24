@@ -66,7 +66,6 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 	var oldData = pageData.originalData.dbData;
 
 	if (!this.shouldUpdateDB(newData,oldData)) {
-		console.log('not updating the database for ',pageData.parser.name)
 		return callback(null,newData);
 	};
 
