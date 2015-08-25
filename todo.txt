@@ -1,6 +1,23 @@
 !!!!
 
 
+BEFORE PUBLIC:
+remove login info from emailmgr.js
+remove res.header('access-control-allow-origin','*')
+remove sending any internal error to client
+
+
+
+
+https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?term_in=201504&one_subj=MATH&sel_crse_strt=028&sel_crse_end=028&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=
+
+needs to get more of desc than just More theoretical, abstract, and rigorous than
+
+make list of where others need to include certian elements and warn if 1<x<50
+dont include credit hours "https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201504&subj_in=MATH&crse_in=056&schd_in=%25"
+
+remove deps:{} from sections if empty
+
 actully needs to get done:
 - use the longer value for pre and co reqs if they are not the same between section and have same name
 - store req classId and subject instead of url... (api lookup possible + easier to tell apart from strings)

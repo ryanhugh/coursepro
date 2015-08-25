@@ -113,11 +113,16 @@ app.get('/listColleges',function (req,res) {
 
 
 
-app.get('/listTerms/*',function (req,res) {
+app.post('/listTerms',function (req,res) {
+	res.header('access-control-allow-origin','*')
 
-	var url = new URI(req.url).segment();
+	if (!req.body.host) {
+		console.log('error, no host given');
+		res.send('{"error":"no host given (expected JSON)"}')
+		return;
+	};
 
-	termsDB.find({host:url[1]},{
+	termsDB.find({host:req.body.host},{
 	 	shouldBeOnlyOne:true,
 	 	sanatize:true
 	 },function (err,doc) {
@@ -128,7 +133,6 @@ app.get('/listTerms/*',function (req,res) {
 			return;
 		};
 
-		res.header('access-control-allow-origin','*')
 		if (doc) {
 			res.send(JSON.stringify(doc.terms));
 		}
@@ -138,13 +142,19 @@ app.get('/listTerms/*',function (req,res) {
 	})
 })
 
-app.get('/listSubjects/*/*',function (req,res) {
+app.post('/listSubjects',function (req,res) {
+	res.header('access-control-allow-origin','*')
 	
-	var url = new URI(req.url).segment();
+	if (!req.body.host || !req.body.termId) {
+		console.log('error, no host or termId given');
+		res.send('{"error":"no host or termId given (expected JSON)"}')
+		return;
+	};
+
 
 	subjectsDB.find({
-		host:url[1],
-		termId:url[2]
+		host:req.body.host,
+		termId:req.body.termId
 	},{
 	 	shouldBeOnlyOne:true,
 	 	sanatize:true
@@ -154,7 +164,6 @@ app.get('/listSubjects/*/*',function (req,res) {
 			res.send(err);
 			return;
 		};
-		res.header('access-control-allow-origin','*')
 		if (doc) {
 			res.send(JSON.stringify(doc.subjects));
 		}
@@ -165,15 +174,28 @@ app.get('/listSubjects/*/*',function (req,res) {
 })
 
 
-app.get('/listClasses/*/*/*',function (req,res) {
+app.post('/listClasses',function (req,res) {
+	res.header('access-control-allow-origin','*')
 	
-	var url = new URI(req.url).segment();
+	if (!req.body.host || !req.body.termId || !req.body.subject) {
+		console.log('error, no host or termId or subject given');
+		res.send('{"error":"no host or termId or subject given (expected JSON)"}')
+		return;
+	};
 
-	classesDB.find({
-		host:url[1],
-		termId:url[2],
-		subject:url[3]
-	},{
+	var lookup = {
+		host:req.body.host,
+		termId:req.body.termId,
+		subject:req.body.subject
+	}
+
+	//add classs id if its given
+	if (req.body.classId) {
+		lookup.classId=req.body.classId;
+	};
+
+
+	classesDB.find(lookup,{
 	 	shouldBeOnlyOne:false,
 	 	sanatize:true
 	 },function (err,classes) {
@@ -181,21 +203,32 @@ app.get('/listClasses/*/*/*',function (req,res) {
 			res.send(err);
 			return;
 		};
-		res.header('access-control-allow-origin','*')
 		res.send(JSON.stringify(classes));
 	})
 })
 
-app.get('/listSections/*/*/*/*',function (req,res) {
+app.post('/listSections',function (req,res) {
+	res.header('access-control-allow-origin','*')
 	
-	var url = new URI(req.url).segment();
+	if (!req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) {
+		console.log('error, no host or termId or subject or classId given');
+		res.send('{"error":"no host or termId or subject or classId given (expected JSON)"}')
+		return;
+	};
 
-	sectionsDB.find({
-		host:url[1],
-		termId:url[2],
-		subject:url[3],
-		classId:url[4]
-	},{
+	var lookup = {
+		host:req.body.host,
+		termId:req.body.termId,
+		subject:req.body.subject,
+		classId:req.body.classId
+	}
+
+	if (req.body.crn) {
+		lookup.crn = req.body.crn;
+	}
+	
+
+	sectionsDB.find(lookup,{
 	 	shouldBeOnlyOne:false,
 	 	sanatize:true
 	 },function (err,classes) {
@@ -204,7 +237,6 @@ app.get('/listSections/*/*/*/*',function (req,res) {
 			res.send(err);
 			return;
 		};
-		res.header('access-control-allow-origin','*')
 		res.send(JSON.stringify(classes));
 	})
 })
