@@ -15,9 +15,7 @@ function EllucianBaseParser () {
 EllucianBaseParser.prototype = Object.create(BaseParser.prototype);
 EllucianBaseParser.prototype.constructor = EllucianBaseParser;
 
-
-
-EllucianBaseParser.prototype.catalogURLtoClassURL = function(catalogURL) {
+EllucianBaseParser.prototype.catalogURLtoClassInfo = function(catalogURL) {
 	var catalogParsed = new URI(catalogURL);
 	if (!catalogParsed || catalogParsed.host()==='') {
 		console.log('error given invalid catalog url?',catalogURL);
@@ -52,6 +50,21 @@ EllucianBaseParser.prototype.catalogURLtoClassURL = function(catalogURL) {
 		console.log('error, startcrse!=endcrse??',catalogURL,startcrse,endcrse);
 		return;
 	}
+	return {
+		classId: startcrse,
+		termId:term_in,
+		subject:subj
+	}
+};
+
+
+EllucianBaseParser.prototype.catalogURLtoClassURL = function(catalogURL) {
+	
+	var classInfo = this.catalogURLtoClassInfo(catalogURL);
+	if (!classInfo) {
+		return;
+	};
+
 	var baseURL = this.getBaseURL(catalogURL);
 	if (!baseURL) {
 		return;
@@ -60,9 +73,9 @@ EllucianBaseParser.prototype.catalogURLtoClassURL = function(catalogURL) {
 	var classURL = new URI(baseURL);
 
 	classURL=classURL.segment('bwckctlg.p_disp_listcrse')
-	classURL.addQuery('term_in',term_in);
-	classURL.addQuery('subj_in',subj);
-	classURL.addQuery('crse_in',startcrse);
+	classURL.addQuery('term_in',classInfo.termId);
+	classURL.addQuery('subj_in',classInfo.subject);
+	classURL.addQuery('crse_in',classInfo.classId);
 	classURL.addQuery('schd_in','%');
 
 	return classURL.toString()

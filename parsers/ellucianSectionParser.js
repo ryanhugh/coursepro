@@ -210,7 +210,7 @@ EllucianSectionParser.prototype.convertStringToJSON = function(text) {
 		//match the url if it is there
 		var match = element.match(/\@\#\$"(.*?)"/i);
 		if (_(element).includes('@#$') && match) {
-			retVal.push('"'+match[1]+'",');
+			retVal.push('"@#$'+match[1]+'",');
 		}
 		//just add all of the text
 		else {
@@ -229,6 +229,37 @@ EllucianSectionParser.prototype.convertStringToJSON = function(text) {
 	retValText = retValText.replace(/,\]/gi,']').replace(/\[,/gi,'[').replace(/",+"/gi,'","').replace(/\n|\r/gi,'');
 
 	return retValText;
+};
+
+EllucianSectionParser.prototype.convertCatalogURLs = function(pageData,data) {
+	if ((typeof data) == 'string') {
+
+		//urls will start with this
+		if (_(data).startsWith('@#$')) {
+			var classInfo = this.catalogURLtoClassInfo(data.slice(3));
+			if (!classInfo) {
+				console.log('error thought was url, but wasent',data);
+				return data;
+			}
+			
+			//don't need to keep termId if its the same as this class
+			if (classInfo.termId===pageData.dbData.termId) {
+				delete classInfo.termId;
+ 			};
+
+
+			return classInfo;
+		}
+		else {
+			return data;
+		}
+	}
+	else {
+		data.values.forEach(function (subData,index) {
+			data.values[index]=this.convertCatalogURLs(pageData,subData);
+		}.bind(this));
+		return data;
+	}
 };
 
 
@@ -265,16 +296,12 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 				}
 
 				catalogURL = new URI(catalogURL).absoluteTo(pageData.dbData.url).toString();
-
-
-				var classURL = this.catalogURLtoClassURL(catalogURL);
-				if (!classURL || classURL==='') {
-					console.log('error could not convert req url to class url',catalogURL,classDetails[i].attribs,pageData.dbData.url);
+				if (!catalogURL) {
+					console.log('error could not find catalog url',catalogURL,classDetails[i],classDetails[i].attribs.href);
 					continue;
-				}
+				};
 
-
-				elements.push('@#$"'+classURL+'"');
+				elements.push('@#$"'+catalogURL+'"');
 			}
 			else {
 				break;
@@ -359,6 +386,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 		return;
 	}
 	text=this.simplifyRequirements(text);
+	text = this.convertCatalogURLs(pageData,text);
 
 	return text;
 };
@@ -539,8 +567,13 @@ EllucianSectionParser.prototype.tests = function() {
 		this.data[name]=value;
 	};
 
+	//this is now just CATAOG URL WITH 234 INFRONT OF IT
 	//make this pretty too
-	assert.deepEqual(this.convertStringToJSON('(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'),'[["https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",["Eng - Place (Test) 03","and","Nelson Denny Total 081","and","https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]');
+	var input = '(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'
+
+	console.log(this.convertStringToJSON(input))
+	assert.deepEqual(this.convertStringToJSON(input),'[["@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",["Eng - Place (Test) 03","and","Nelson Denny Total 081","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]');
+	// return;
 
 
 	//make this pretty print
@@ -649,38 +682,84 @@ EllucianSectionParser.prototype.tests = function() {
 				{
 					"type": "or",
 					"values": [
-					"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=AE&crse_in=1601&schd_in=%25",
-					"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=AE&crse_in=1350&schd_in=%25"
+					{
+						"classId": "1601",
+						"termId": "201508",
+						"subject": "AE"
+					},
+					{
+						"classId": "1350",
+						"termId": "201508",
+						"subject": "AE"
+					}
 					]
 				},
 				{
 					"type": "or",
 					"values": [
-					"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=PHYS&crse_in=2212&schd_in=%25",
-					"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=PHYS&crse_in=2232&schd_in=%25"
+					{
+						"classId": "2212",
+						"termId": "201508",
+						"subject": "PHYS"
+					},
+					{
+						"classId": "2232",
+						"termId": "201508",
+						"subject": "PHYS"
+					}
 					]
 				},
 				{
 					"type": "or",
 					"values": [
-					"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=2401&schd_in=%25",
-					"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=2411&schd_in=%25",
-					"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=24X1&schd_in=%25",
-					"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=2551&schd_in=%25",
-					"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=2561&schd_in=%25",
-					"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=MATH&crse_in=2X51&schd_in=%25"
+					{
+						"classId": "2401",
+						"termId": "201508",
+						"subject": "MATH"
+					},
+					{
+						"classId": "2411",
+						"termId": "201508",
+						"subject": "MATH"
+					},
+					{
+						"classId": "24X1",
+						"termId": "201508",
+						"subject": "MATH"
+					},
+					{
+						"classId": "2551",
+						"termId": "201508",
+						"subject": "MATH"
+					},
+					{
+						"classId": "2561",
+						"termId": "201508",
+						"subject": "MATH"
+					},
+					{
+						"classId": "2X51",
+						"termId": "201508",
+						"subject": "MATH"
+					}
 					]
 				},
-				"https://wl11gp.neu.edu/pls/bprod/bwckctlg.p_disp_listcrse?term_in=201508&subj_in=COE&crse_in=2001&schd_in=%25"
+				{
+					"classId": "2001",
+					"termId": "201508",
+					"subject": "COE"
+				}
 				]
 			});
 
 			//
 			assert.deepEqual(pageData.parent.data.coreqs,{
 				"type": "and",
-				"values": [
-				"https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2161&schd_in=%25"
-				]
+				"values": [{
+					classId: '2161',
+					termId: '201610',
+					subject: 'EECE'
+				}]
 			});
 
 		}.bind(this));
@@ -700,43 +779,65 @@ EllucianSectionParser.prototype.tests = function() {
 
 			var prereqs =this.parseRequirementSection(pageData,dom,'prerequisites');
 
-
-
 			assert.deepEqual(prereqs,{
 				"type": "or",
 				"values": [
 				{
 					"type": "and",
 					"values": [
-					"http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25",
-					"http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=040&schd_in=%25"
+					{
+						"classId": "050",
+						"termId": "201509",
+						"subject": "ENG"
+					},
+					{
+						"classId": "040",
+						"termId": "201509",
+						"subject": "MAT"
+					}
 					]
 				},
 				{
 					"type": "and",
 					"values": [
-					"http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25",
+					{
+						"classId": "050",
+						"termId": "201509",
+						"subject": "ENG"
+					},
 					"Arith - Place Test 06"
 					]
 				},
 				{
 					"type": "and",
 					"values": [
-					"http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25",
+					{
+						"classId": "050",
+						"termId": "201509",
+						"subject": "ENG"
+					},
 					"Arith - Quick Screen Place 06"
 					]
 				},
 				{
 					"type": "and",
 					"values": [
-					"http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25",
+					{
+						"classId": "050",
+						"termId": "201509",
+						"subject": "ENG"
+					},
 					"Accuplacer (AR) 067"
 					]
 				},
 				{
 					"type": "and",
 					"values": [
-					"http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25",
+					{
+						"classId": "050",
+						"termId": "201509",
+						"subject": "ENG"
+					},
 					"Accuplacer (EA) 040"
 					]
 				},
@@ -772,7 +873,11 @@ EllucianSectionParser.prototype.tests = function() {
 					"type": "and",
 					"values": [
 					"Eng - Place Test 03",
-					"http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=040&schd_in=%25"
+					{
+						"classId": "040",
+						"termId": "201509",
+						"subject": "MAT"
+					}
 					]
 				},
 				{
@@ -807,10 +912,18 @@ EllucianSectionParser.prototype.tests = function() {
 					"type": "and",
 					"values": [
 					"Eng - Quick Screen Place 03",
-					"http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=040&schd_in=%25"
+					{
+						"classId": "040",
+						"termId": "201509",
+						"subject": "MAT"
+					}
 					]
 				},
-				"http://test.hostname.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=100&schd_in=%25"
+				{
+					"classId": "100",
+					"termId": "201509",
+					"subject": "ENG"
+				}
 				]
 			});
 

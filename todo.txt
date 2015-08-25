@@ -2,8 +2,8 @@
 
 
 actully needs to get done:
+- use the longer value for pre and co reqs if they are not the same between section and have same name
 - store req classId and subject instead of url... (api lookup possible + easier to tell apart from strings)
-- add host, classId, and other api lookup data to required data
 - remove duplicates from single list in prereqs (probably not going to happen )
 
 
