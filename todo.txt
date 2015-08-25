@@ -1,7 +1,9 @@
 !!!!
 
+
 actully needs to get done:
-- add api tag names to features that are updated by parent
+- store req classId and subject instead of url... (api lookup possible + easier to tell apart from strings)
+- add host, classId, and other api lookup data to required data
 - remove duplicates from single list in prereqs (probably not going to happen )
 
 

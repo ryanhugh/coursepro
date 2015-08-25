@@ -97,7 +97,7 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 BaseDB.prototype.removeInternalFields = function(doc) {
 	var retVal={};
 	for (var attrName in doc) {
-		if (!_(['emails','ips','_id','deps','lastUpdateTime']).includes(attrName)) {
+		if (!_(['emails','ips','_id','deps','lastUpdateTime','updatedByParent']).includes(attrName)) {
 			retVal[attrName]=doc[attrName];
 		}
 	}

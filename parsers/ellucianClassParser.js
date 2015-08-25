@@ -167,6 +167,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 				dbAltEntry = pageData.addDep({
 					name:className,
 					host:pageData.dbData.host,
+					url:pageData.dbData.url,
 					termId:pageData.parsingData.termId,
 					subject:pageData.parsingData.subject,
 					classId:pageData.parsingData.classId,
