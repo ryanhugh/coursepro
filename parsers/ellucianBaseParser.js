@@ -57,6 +57,22 @@ EllucianBaseParser.prototype.catalogURLtoClassInfo = function(catalogURL) {
 	}
 };
 
+EllucianBaseParser.prototype.sectionURLtoInfo = function(sectionURL) {
+	//parse the term from the url
+	var query = new URI(sectionURL).query(true);
+
+	var retVal = {}
+
+	if (!query.crn_in) {
+		console.log('could not find crn_in sectionURL!',sectionURL);
+		return;
+	}
+	else {
+		retVal.crn=query.crn_in
+	}
+	return retVal;
+}
+
 
 EllucianBaseParser.prototype.catalogURLtoClassURL = function(catalogURL) {
 	

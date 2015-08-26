@@ -128,9 +128,20 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			urlParsed = urlParsed.absoluteTo(pageData.getUrlStart()).toString();
 		}
 
-		if (ellucianSectionParser.supportsPage(urlParsed.toString())){
-			sectionStartingData.url = urlParsed.toString();
+		var sectionURL = urlParsed.toString();
+
+		if (ellucianSectionParser.supportsPage(sectionURL)){
+			sectionStartingData.url = sectionURL;
 		}
+
+		//add the crn
+		var sectionURLParsed = this.sectionURLtoInfo(sectionURL);
+		if (!sectionURLParsed) {
+			console.log('error could not parse section url',sectionURL,pageData.dbData.url);
+			return;
+		};
+		sectionStartingData.crn = sectionURLParsed.crn;
+		pageData.parsingData.crns.push(sectionURLParsed.crn);
 
 		//also parse the name from the link
 		var value = domutils.getText(element);
@@ -339,6 +350,8 @@ EllucianClassParser.prototype.onBeginParsing = function(pageData) {
 		pageData.parsingData.classId = query.crse_in;
 		pageData.setData('classId',query.crse_in);
 	}
+
+	pageData.parsingData.crns=[]
 };
 
 
@@ -357,6 +370,9 @@ EllucianClassParser.prototype.parseElement = function(pageData,element) {
 	}
 };
 
+EllucianClassParser.prototype.onEndParsing = function(pageData) {
+	pageData.setData('crns',pageData.parsingData.crns);
+};
 
 
 
@@ -424,14 +440,14 @@ EllucianClassParser.prototype.tests = function () {
 
 			assert.equal(true,this.supportsPage(url));
 
-			// console.log(pageData.dbData)
 			assert.deepEqual(pageData.dbData,{
 				url:url,
 				termId: '201502',
 				subject: 'PHYS',
 				classId: '013',
 				name: 'Thermodynamic/ Mech',
-				host: 'swarthmore.edu' });
+				host: 'swarthmore.edu' ,
+				crns: [ '24600', '24601', '24603', '25363' ]});
 
 	        //first dep is the section, second dep is the class - Lab (which has 3 deps, each section)
 	        assert.equal(pageData.deps.length,2);
@@ -447,6 +463,7 @@ EllucianClassParser.prototype.tests = function () {
 
 	        assert.deepEqual(pageData.deps[1].deps[0].dbData,{
 	        	"url": "https://myswat.swarthmore.edu/pls/bwckschd.p_disp_detail_sched?term_in=201502&crn_in=24601",
+	        	"crn": '24601',
 	        	"meetings": [
 	        	{
 	        		"startDate": 16454,
@@ -493,14 +510,15 @@ EllucianClassParser.prototype.tests = function () {
 
 			assert.equal(true,this.supportsPage(url));
 
-
+			
 			assert.deepEqual(pageData.dbData,{
 				url: url,
 				termId: '201610',
 				subject: 'EECE',
 				classId: '2160',
 				name: 'Embedded Design Enabling Robotics',
-				host: 'neu.edu' });
+				host: 'neu.edu',
+				crns: [ '15633', '15636', '15639', '16102', '17800', '17799' ]  });
 
 			assert.equal(pageData.deps.length,6);
 			pageData.deps.forEach(function (dep) {
@@ -534,7 +552,8 @@ EllucianClassParser.prototype.tests = function () {
 				subject: 'ACCT',
 				classId: '2102',
 				name: 'Managerial Accounting',
-				host: 'temple.edu' });
+				host: 'temple.edu',
+				crns:["11018","11019","8145","6073","11020","6129","20800","6074","23294","23295","6075","6077","6130","11679","22497","19962","24435"] },JSON.stringify(pageData.dbData));
 
 			assert.equal(pageData.deps.length,17);
 			pageData.deps.forEach(function (dep) {
@@ -562,14 +581,14 @@ EllucianClassParser.prototype.tests = function () {
 
 			assert.equal(true,this.supportsPage(url));
 
-
 			assert.deepEqual(pageData.dbData,{
 				url: url,
 				termId: '201503',
 				subject: 'AIRF',
 				classId: '2041',
 				name: 'The Evolution of U.s. Aerospace Power Ii',
-				host: 'temple.edu' });
+				host: 'temple.edu',
+				crns: [ '12090' ] });
 
 			assert.equal(pageData.deps.length,1);
 			assert.equal(pageData.deps[0].parent,pageData);
@@ -577,6 +596,7 @@ EllucianClassParser.prototype.tests = function () {
 
 			assert.deepEqual(pageData.deps[0].dbData,{
 				"url": "https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=12090",
+				"crn":"12090",
 				"meetings": [
 				{
 					"startDate": 16457,
@@ -736,13 +756,15 @@ EllucianClassParser.prototype.tests = function () {
 
 			assert.equal(true,this.supportsPage(url));
 
+			
 			assert.deepEqual(pageData.dbData,{
 				url: url,
 				termId: '201610',
 				subject: 'ANTH',
 				classId: '245',
 				name: 'Cancelled',
-				host: 'ccsu.edu' });
+				host: 'ccsu.edu' ,
+				crns: [ '12291' ] });
 
 			assert.equal(pageData.deps.length,1);
 			pageData.deps.forEach(function (dep) {

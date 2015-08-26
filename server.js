@@ -117,7 +117,8 @@ app.post('/listTerms',function (req,res) {
 	res.header('access-control-allow-origin','*')
 
 	if (!req.body.host) {
-		console.log('error, no host given');
+		console.log('error, no host given body:');
+		console.log(req.body)
 		res.send('{"error":"no host given (expected JSON)"}')
 		return;
 	};
@@ -146,7 +147,8 @@ app.post('/listSubjects',function (req,res) {
 	res.header('access-control-allow-origin','*')
 	
 	if (!req.body.host || !req.body.termId) {
-		console.log('error, no host or termId given');
+		console.log('error, no host or termId given body:');
+		console.log(req.body)
 		res.send('{"error":"no host or termId given (expected JSON)"}')
 		return;
 	};
@@ -178,7 +180,8 @@ app.post('/listClasses',function (req,res) {
 	res.header('access-control-allow-origin','*')
 	
 	if (!req.body.host || !req.body.termId || !req.body.subject) {
-		console.log('error, no host or termId or subject given');
+		console.log('error, no host or termId or subject given body:');
+		console.log(req.body)
 		res.send('{"error":"no host or termId or subject given (expected JSON)"}')
 		return;
 	};
@@ -211,7 +214,8 @@ app.post('/listSections',function (req,res) {
 	res.header('access-control-allow-origin','*')
 	
 	if (!req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) {
-		console.log('error, no host or termId or subject or classId given');
+		console.log('error, no host or termId or subject or classId given body:');
+		console.log(req.body)
 		res.send('{"error":"no host or termId or subject or classId given (expected JSON)"}')
 		return;
 	};

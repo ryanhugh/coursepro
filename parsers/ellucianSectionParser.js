@@ -393,24 +393,6 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 
 
 
-
-EllucianSectionParser.prototype.onBeginParsing = function(pageData) {
-	
-
-	//parse the term from the url
-	var query = new URI(pageData.dbData.url).query(true);
-
-	if (!query.crn_in) {
-		console.log('could not find crn_in id ellucian class parser!',query,pageData.dbData.url);
-	}
-	else {
-		pageData.setData('crn',query.crn_in);
-	}
-};
-
-
-
-
 EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 	if (element.type!='tag') {
 		return;
@@ -664,7 +646,6 @@ EllucianSectionParser.prototype.tests = function() {
 
 			assert.deepEqual(pageData.dbData,{
 				url: url,
-				crn: '15633',
 				seatsCapacity: 32,
 				seatsRemaining: 0,
 				waitCapacity: 0,
