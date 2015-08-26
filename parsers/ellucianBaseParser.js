@@ -57,6 +57,30 @@ EllucianBaseParser.prototype.catalogURLtoClassInfo = function(catalogURL) {
 	}
 };
 
+EllucianBaseParser.prototype.createCatalogSearchURL = function(siteURL,termId,subject) {
+	var baseURL = this.getBaseURL(siteURL);
+	if (!baseURL) {
+		console.log('could not find base url of ',siteURL)
+		return;
+	};
+
+	var retVal = new URI(baseURL);
+	retVal = new URI('bwckctlg.p_display_courses?term_in='+termId+'&one_subj='+subject+'&sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=').absoluteTo(retVal)
+	return retVal.toString();
+};
+
+EllucianBaseParser.prototype.createClassURL = function(siteURL,termId,subject,classId) {
+	var baseURL = this.getBaseURL(siteURL);
+	if (!baseURL) {
+		console.log('could not find base url of ',siteURL)
+		return;
+	};
+
+	var retVal = new URI(baseURL);
+	retVal = new URI('bwckctlg.p_disp_listcrse?term_in='+termId+'&subj_in='+subject+'&crse_in='+classId+'&schd_in=%25').absoluteTo(retVal)
+	return retVal.toString();
+};
+
 EllucianBaseParser.prototype.sectionURLtoInfo = function(sectionURL) {
 	//parse the term from the url
 	var query = new URI(sectionURL).query(true);
@@ -101,7 +125,7 @@ EllucianBaseParser.prototype.catalogURLtoClassURL = function(catalogURL) {
 
 EllucianBaseParser.prototype.getBaseURL = function(url) {
 	
-	var splitAfter = ['bwckctlg.p','bwckschd.p'];
+	var splitAfter = ['bwckctlg.p','bwckschd.p','bwckgens.p'];
 
 	for (var i=0;i<splitAfter.length;i++) {
 
@@ -125,7 +149,10 @@ EllucianBaseParser.prototype.tests = function() {
 
 	var catagoryURL = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=2041&sel_crse_end=2041&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr='
 
+
+
 	var classURL = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25';
+	console.log(this.createCatalogSearchURL(classURL,"201503",'AIRF'))
 
 	assert.equal(this.catalogURLtoClassURL(catagoryURL),classURL);
 	assert.equal(this.getBaseURL(catagoryURL),'https://prd-wlssb.temple.edu/prod8/');

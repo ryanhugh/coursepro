@@ -6,7 +6,10 @@ remove login info from emailmgr.js
 remove res.header('access-control-allow-origin','*')
 remove sending any internal error to client
 
-classes need to store crns of section
+assert subject deps
+
+split up the asserts from deepequal...
+addDep() is called everywhere withough checking to see if the dep exists already?
 
 if no class or sections for a term, store name and description?
 does this come up in search results?

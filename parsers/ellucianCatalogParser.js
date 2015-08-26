@@ -5,6 +5,7 @@ var he = require('he');
 var _ = require('lodash');
 var assert = require('assert');
 var fs = require('fs')
+var toTitleCase = require('to-title-case');
 
 var pointer = require('../pointer');
 var linksDB = require('../databases/linksDB')
@@ -35,14 +36,79 @@ EllucianCatalogParser.prototype.getDatabase = function(pageData) {
 };
 
 
+EllucianCatalogParser.prototype.onBeginParsing = function(pageData) {
+	var catalogURLQuery = new URI(pageData.dbData.url).query(true);
+	if (!catalogURLQuery.term_in) {
+		console.log('error could not find Current term??',catalogURLQuery)
+		return;
+	};
+
+	pageData.parsingData.termId = catalogURLQuery.term_in;
+
+	if (!catalogURLQuery.one_subj) {
+		console.log('error could not find one_subj??',catalogURLQuery)
+		return;
+	};
+
+	pageData.parsingData.subject = catalogURLQuery.one_subj;
+};
+
 
 EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 	
 	var depData = {
-		desc:''
+		desc:'',
+		classId:''
 	};
 
 
+	//get classId
+	var titleLinks = domutils.getElementsByTagName('a',element);
+	if (titleLinks.length!=1) {
+		console.log('titleLinks !=1??',pageData.dbData.url,titleLinks)
+		return;
+	}
+
+	var catalogDetailURL = he.decode(titleLinks[0].attribs.href);
+
+	var catalogDetailQuery = new URI(catalogDetailURL).query(true);
+	if (!catalogDetailQuery.crse_numb_in) {
+		console.log('errr could not find crse_numb_in in ',pageData.dbData.url)
+		return;
+	}
+
+	depData.classId = catalogDetailQuery.crse_numb_in;
+
+	//get the class name
+	var value = domutils.getText(titleLinks[0]);
+
+	var match = value.match(/.+?\s-\s*(.+)/i);
+	if (!match || match.length<2) {
+		console.log('could not find title!',match,titleLinks[0],value);
+		return;
+	}
+	depData.name = toTitleCase(match[1]);
+
+
+
+
+
+	//find the box below this row
+	var descTR = element.parent.next
+	while (descTR.type!='tag') {
+		descTR=descTR.next;
+	}
+	var rows = domutils.getElementsByTagName('td',descTR)
+	if (rows.length!=1) {
+		console.log('td rows !=1??',depData.classId,pageData.dbData.url);
+		return;
+	};
+
+	element = rows[0]
+
+
+
+	//desc
 	//list all texts between this and next element, not including <br> or <i>
 	for (var i = 0; i < element.children.length; i++) {
 		if (element.children[i].type=='tag' && !_(['i','br']).includes(element.children[i].name)) {
@@ -60,13 +126,10 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 		return;
 	}
 
-	depData.url = this.catalogURLtoClassURL(pageData.dbData.url);
-
-	
-	if (depData.url===undefined) {
-		if (depData.desc!=='') {
-			console.log('Warning: dropping',depData);
-		}
+	//url
+	depData.url = this.createClassURL(pageData.dbData.url,pageData.parsingData.termId,pageData.parsingData.subject,depData.classId);
+	if (!depData.url) {
+		console.log('error could not create class url',depData);
 		return;
 	}
 
@@ -76,19 +139,12 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 
 
 EllucianCatalogParser.prototype.parseElement = function(pageData,element) {
-	if (element.type!='tag') {
+	if (element.type!='tag' || !pageData.parsingData.termId) {
 		return;
 	}
 
 
-	if (element.name == 'td' && element.attribs.class == 'ntdefault' && _(element.parent.parent.attribs.summary).includes('term')) {
-		if (pageData.parsingData.foundDesc) {
-			console.log('error, already found desc!?!',pageData.dbData.url);
-			return;
-		};
-
-		pageData.parsingData.foundDesc=true;
-
+	if (element.name == 'td' && element.attribs.class == 'nttitle' && _(element.parent.parent.attribs.summary).includes('term')) {
 		this.parseClass(pageData,element);
 	}
 };
@@ -138,6 +194,7 @@ EllucianCatalogParser.prototype.tests = function() {
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);
 
+			//this is not the url of this page...
 			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=2041&sel_crse_end=2041&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
 
 			var classURL= "https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25";
@@ -152,10 +209,10 @@ EllucianCatalogParser.prototype.tests = function() {
 			this.parseDOM(pageData,dom);
 
 			assert.equal(pageData.deps.length,1);
-			assert.deepEqual(pageData.deps[0].dbData,{
-				desc: 'Topics in Poetry and Prosody Irregular Prereqs.: None Detailed and systematic study of poetic form, including versification, rhetorical tropes, diction, and tone. May be organized by period, subject matter, genre, or critical method. May be repeated with different topics for up to 6 credits. 3.000 Credit hours 3.000 Lecture hours',
-				url: 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25'
-			});
+			assert.equal(pageData.deps[0].dbData.desc, "Topics in Poetry and Prosody Irregular Prereqs.: None Detailed and systematic study of poetic form, including versification, rhetorical tropes, diction, and tone. May be organized by period, subject matter, genre, or critical method. May be repeated with different topics for up to 6 credits. 3.000 Credit hours 3.000 Lecture hours");
+			assert.equal(pageData.deps[0].dbData.url, 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=522&schd_in=%25');
+			assert.equal(pageData.deps[0].dbData.classId, "522");
+
 
 		}.bind(this));
 	}.bind(this));//
@@ -186,6 +243,7 @@ EllucianCatalogParser.prototype.tests = function() {
 			assert.equal(pageData.deps.length,1);
 			assert.deepEqual(pageData.deps[0].dbData,{
 				desc: 'ELECTIVE DESCRIPTION: Physical exams are provided to newly resettled refugees by care teams comprised of students, residents, and faculty physicians. For many refugees, the care is their first encounter with mainstream medicine. MS-2 coordinators manage clinic operations while MS 1-4 volunteers provide the care service and gain experience in physical exam skills and cross-cultural communication. 0.000 Credit hours 0.000 Lab hours',
+				classId:"2064",
 				url: 'https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201580&subj_in=MDCN&crse_in=2064&schd_in=%25'
 			});
 
@@ -217,6 +275,7 @@ EllucianCatalogParser.prototype.tests = function() {
 			assert.equal(pageData.deps.length,1);
 			assert.deepEqual(pageData.deps[0].dbData,{
 				desc: 'Current internet, social media, and mobile media marketing theories , strategies, tools and practices. Includes study of communication methods used by professionals in journalism, film, television, advertising, public relations, and related professions to brand, promote, and distribute products and services. Web-based production lab included. Cross-listed with JRN 507. 3.000 Credit hours',
+				classId:"507",
 				url: 'https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%25' 
 			});
 

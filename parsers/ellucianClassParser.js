@@ -106,7 +106,6 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 
 
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
-  // console.log('parsing a class');
 
 	//if different name than this class, save to new class
 	var dbAltEntry = null;
@@ -179,6 +178,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 					name:className,
 					host:pageData.dbData.host,
 					url:pageData.dbData.url,
+					desc:pageData.dbData.desc,
 					termId:pageData.parsingData.termId,
 					subject:pageData.parsingData.subject,
 					classId:pageData.parsingData.classId,

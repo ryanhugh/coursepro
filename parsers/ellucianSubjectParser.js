@@ -1,17 +1,18 @@
-  'use strict';
-  var URI = require('URIjs');
-  var fs = require('fs');
-  var assert = require('assert');
+'use strict';
+var URI = require('URIjs');
+var fs = require('fs');
+var assert = require('assert');
 
-  var pointer = require('../pointer');
-  var subjectsDB = require('../databases/subjectsDB');
-  var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
+var pointer = require('../pointer');
+var subjectsDB = require('../databases/subjectsDB');
+var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
+var ellucianCatalogParser = require('./ellucianCatalogParser');
 
 
-  function EllucianSubjectParser () {
-  	this.name = "EllucianSubjectParser";
-  	EllucianBaseParser.prototype.constructor.apply(this,arguments);
-  }
+function EllucianSubjectParser () {
+	this.name = "EllucianSubjectParser";
+	EllucianBaseParser.prototype.constructor.apply(this,arguments);
+}
 
 
 //prototype constructor
@@ -29,13 +30,17 @@ EllucianSubjectParser.prototype.getDatabase = function(pageData) {
 
 
 
-EllucianSubjectParser.prototype.parseElement = function(pageData,element) {
-
-};
-
-
 
 EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
+
+	//parse the term from the url
+	var query = new URI('?'+pageData.dbData.postData).query(true);
+	if (!query.p_term) {
+		console.log('could not find p_term id!',query,pageData.dbData.postData);
+	}
+	else {
+		pageData.setData('termId',query.p_term);
+	}
 
 
 	//parse the form data
@@ -61,6 +66,20 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 				id:payloadVar.value,
 				text:payloadVar.text
 			});
+
+			var newDep = pageData.addDep({
+				subject:payloadVar.value,
+				termId:pageData.dbData.termId,
+				url:this.createCatalogSearchURL(pageData.dbData.url,pageData.dbData.termId,payloadVar.value)
+			})
+			if (!newDep) {
+				console.log('unable to create dep...?????',pageData.dbData.url);
+				return;
+			};
+			newDep.setParser(ellucianCatalogParser);
+
+
+
 		}
 	}.bind(this));
 
@@ -74,14 +93,6 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 
 
 
-	//parse the term from the url
-	var query = new URI('?'+pageData.dbData.postData).query(true);
-	if (!query.p_term) {
-		console.log('could not find p_term id!',query,pageData.dbData.postData);
-	}
-	else {
-		pageData.setData('termId',query.p_term);
-	}
 
 };
 
@@ -195,7 +206,12 @@ EllucianSubjectParser.prototype.tests = function(){
 				termId: '201510',
 				host: 'upstate.edu' });
 
-		  console.log('all tests done bro');//
+			//
+
+
+			//also write asserts for the deps!
+
+			console.log('all tests done bro');
 
 		}.bind(this));
 	}.bind(this));//
