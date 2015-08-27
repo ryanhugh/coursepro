@@ -6,8 +6,11 @@ remove login info from emailmgr.js
 remove res.header('access-control-allow-origin','*')
 remove sending any internal error to client
 
-assert subject deps
+should store crns? 
 
+split college names between parsers and main so it can have deps???? future idea
+
+assert subject deps
 split up the asserts from deepequal...
 addDep() is called everywhere withough checking to see if the dep exists already?
 
