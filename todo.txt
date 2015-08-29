@@ -6,6 +6,31 @@ remove login info from emailmgr.js
 remove res.header('access-control-allow-origin','*')
 remove sending any internal error to client
 
+
+TODO AFTER CLASS CALC
+copy desc from other sections and why do some have same name in same term?
+if there are no sections in an entire subject, remove the subject. and if no sections for entire term, remove term and log something
+and if no sections for entire college!?! log big warning
+
+
+
+if selector is hidden, and then comes back, and same option is selected, callback() not called
+
+some classes dont have crns?
+
+
+
+
+terms: remove (view only) and other words like "term", "semester", etc -- view only removed, waiting for law to remove term/semester
+summer ii -> summer 2
+
+
+collegenames: neu.edu should be "host" in db, not homepage
+
+"linear algebra" in swath is there 4 times, but only 1 has desc??
+
+pass catalog url to class.db and also frontend? so can put valid url in when theres no sections
+
 should store crns? 
 
 split college names between parsers and main so it can have deps???? future idea

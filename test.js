@@ -19,19 +19,43 @@ var dns = require('dns');
 var queue = require("queue-async")
 
 var clone = require('clone');
- 
+
+
+
+a = {}
+b = {}
+c = {}
+a.b = b
+b.c = c
+c.b = b
+a.t = 'this is a'
+b.t = 'this is b'
+c.t = 'this is c'
+console.log(a,b,c);
+a.b='hi' 
+console.log(a,b,c);
+
+
+// var a = [];
+// for (var i = 0; i < 10; i++) {
+// 	a.push({a:parseInt(Math.random()*10)});
+// }
+// console.log(a.sort(function (a,b) {
+// 	return a.a>b.a
+// }))
+
 
  
-a = { t:'a' };  // initial value of a
+// a = { t:'a' };  // initial value of a
  
-a.a=a;
+// a.a=a;
 
-b = clone(a);                 // clone a -> b
-b.t='b'
+// b = clone(a);                 // clone a -> b
+// b.t='b'
 
  
-console.log(a);               // show a
-console.log(b.a.a.a);
+// console.log(a);               // show a
+// console.log(b.a.a.a);
 
 
 

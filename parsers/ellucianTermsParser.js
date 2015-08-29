@@ -132,10 +132,12 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL,dom) {
 			console.log('ERROR: entry was alt of term entry but not same name?',entry);
 			return;
 		}
+		entry.text = entry.text.trim()
 
 		if (entry.text.toLowerCase()==='none') {
 			return;
 		}
+		entry.text = entry.text.replace(/\(view only\)/gi,'').trim();
 
 		//dont process this element on error
 		if (entry.text.length<2) {
@@ -202,7 +204,7 @@ EllucianTermsParser.prototype.tests = function() {
 				[ { id: '201610', text: 'Spring 2016' },
 				{ id: '201580', text: 'Fall 2015' },
 				{ id: '201550', text: 'Summer 2015' },
-				{ id: '201510', text: 'Spring 2015 (View only)' } ],
+				{ id: '201510', text: 'Spring 2015' } ],
 				host: 'upstate.edu' });
 			
 			
