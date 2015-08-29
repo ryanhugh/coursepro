@@ -166,10 +166,6 @@ PageData.prototype.loadFromDB = function(callback) {
 	}
 	else if (this.dbData.url) {
 		lookupValues.url = this.dbData.url;
-
-		if (this.dbData.postData) {
-			lookupValues.postData = this.dbData.postData
-		}
 	}
 	else {
 		console.log('error in base db - cant lookup page data wihout url or _id!',this)
@@ -321,12 +317,27 @@ PageData.prototype.getUrlStart = function() {
 PageData.prototype.addDep = function(depData) {
 	if (!depData) {
 		console.log('Error:Tried to add invalid depdata??',depData);
-		if (depData) {
-			console.log('error, more data for invalid depdata',depData);
-		}
 		console.trace()
 		return null;
 	}
+
+	//copy over values from this pageData
+	//this way, parsers dont have to explicitly state these values each time they add a dep
+	var valuesToCopy = ['host','termId','subject','classId','crn'];
+	valuesToCopy.forEach(function (attrName) {
+		if (!this.dbData[attrName]) {
+			return;
+		}
+
+		//don't override given value
+		else if (depData[attrName] && !_.isEqual(this.dbData[attrName],depData[attrName])) {
+			console.log('given ',attrName,' for dep is != than the value in here?',this.dbData[attrName],depData[attrName]);
+			return;
+		}
+
+		depData[attrName]=this.dbData[attrName]
+
+	}.bind(this));
 
 
 	//check to make sure the dep dosent already exist in deps
@@ -397,7 +408,7 @@ PageData.prototype.setParentData = function(name,value) {
 //used in html parser and updateDeps, here
 PageData.prototype.setData = function(name,value) {
 	if (name===undefined || value ===undefined) {
-		console.trace('ERROR:name or value was undefined!');
+		console.trace('ERROR:name or value was undefined!',name,value);
 		return;
 	}
 

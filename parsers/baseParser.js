@@ -17,33 +17,21 @@ BaseParser.prototype.supportsPage = function() {
 	return false;
 };
 
-BaseParser.prototype.getDependancyDatabase = function(pageData) {
-	return null;
+BaseParser.prototype.getPointerConfig = function(pageData) {
+	return {
+		requiredInBody:this.requiredInBody
+	}
 };
 
 //callback here is pageData (stuff to store in db), and metadata (stuff dont store in db)
 BaseParser.prototype.parse = function(pageData,callback) {
 
-	var pointerConfig = {
-		requiredInBody:this.requiredInBody
-	};
 
-	//sending a post, add the data and a content type header
-	if (pageData.dbData.postData) {
-		pointerConfig.payload = pageData.dbData.postData;
-		pointerConfig.headers = {
-			'Content-Type': this.postContentType
-		}
-	};
-
-
-
-	pointer.request(pageData.dbData.url,pointerConfig,function (err,dom) {
+	pointer.request(pageData.dbData.url,this.getPointerConfig(pageData),function (err,dom) {
 		if (err) {
 			return callback(err);
 		};
 		
-		//record the main hostname in the url TODO
 		this.parseDOM(pageData,dom);
 
 		pageData.setData('lastUpdateTime',new Date().getTime());
@@ -85,7 +73,7 @@ BaseParser.prototype.onEndParsing = function(pageData) {
 
 BaseParser.prototype.parseDOM = function(pageData,dom){
 
-	pageData.setData('host',pointer.getBaseHostname(pageData.dbData.url));
+	// pageData.setData('host',pointer.getBaseHostname(pageData.dbData.url));
 
 	this.onBeginParsing(pageData,dom);
 

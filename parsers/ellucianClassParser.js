@@ -16,7 +16,6 @@ var ellucianSectionParser = require('./ellucianSectionParser');
 
 var timeZero = moment('0','h');
 
-
 //700+ college sites use this poor interface for their registration
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
 function EllucianClassParser () {
@@ -39,10 +38,6 @@ EllucianClassParser.prototype.supportsPage = function (url) {
 	return url.indexOf('bwckctlg.p_disp_listcrse')>-1;
 };
 
-
-EllucianClassParser.prototype.getDependancyDatabase = function(pageData) {
-	return sectionDB;
-};
 
 EllucianClassParser.prototype.getDatabase = function(pageData) {
 	return classDB;
@@ -174,13 +169,14 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			if (!dbAltEntry) {
 				console.log('creating a new dep entry',pageData.deps.length);
 
+				if (pageData.dbData.desc===undefined) {
+					console.log('wtf desc is undefined??')
+					console.trace();
+				};
 				dbAltEntry = pageData.addDep({
 					name:className,
-					host:pageData.dbData.host,
 					url:pageData.dbData.url,
 					desc:pageData.dbData.desc,
-					termId:pageData.parsingData.termId,
-					subject:pageData.parsingData.subject,
 					classId:pageData.parsingData.classId,
 					updatedByParent:true
 				});
@@ -297,13 +293,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	
 
 	//add data about the class
-	if (pageData.parsingData.termId) {
-		sectionStartingData.termId = pageData.parsingData.termId;
-	}
-
-	if (pageData.parsingData.subject) {
-		sectionStartingData.subject = pageData.parsingData.subject;
-	}
 	if (pageData.parsingData.classId) {
 		sectionStartingData.classId = pageData.parsingData.classId;
 	}
@@ -326,22 +315,6 @@ EllucianClassParser.prototype.onBeginParsing = function(pageData) {
 
 	//parse the term from the url
 	var query = new URI(pageData.dbData.url).query(true);
-
-	if (!query.term_in) {
-		console.log('could not find term_in id ellucian class parser!',query,pageData.dbData.url);
-	}
-	else {
-		pageData.parsingData.termId = query.term_in;
-		pageData.setData('termId',query.term_in);
-	}
-
-	if (!query.subj_in) {
-		console.log('could not find subj_in id ellucian class parser!',query,pageData.dbData.url);
-	}
-	else {
-		pageData.parsingData.subject = query.subj_in;
-		pageData.setData('subject',query.subj_in);
-	}
 
 	if (!query.crse_in) {
 		console.log('could not find crse_in id ellucian class parser!',query,pageData.dbData.url);
@@ -431,8 +404,9 @@ EllucianClassParser.prototype.tests = function () {
 
 			//set up variables -- this url might not be correct
 			var url = 'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=LE';
-			var pageData = pageDataMgr.create({dbData:{url:url}});
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
 			assert.notEqual(null,pageData);
+
 
 			//main parse
 			this.parseDOM(pageData,dom);
@@ -442,12 +416,10 @@ EllucianClassParser.prototype.tests = function () {
 
 			assert.deepEqual(pageData.dbData,{
 				url:url,
-				termId: '201502',
-				subject: 'PHYS',
+				desc: '',
 				classId: '013',
 				name: 'Thermodynamic/ Mech',
-				host: 'swarthmore.edu' ,
-				crns: [ '24600', '24601', '24603', '25363' ]});
+				crns: [ '24600', '24601', '24603', '25363' ]},JSON.stringify( pageData.dbData));
 
 	        //first dep is the section, second dep is the class - Lab (which has 3 deps, each section)
 	        assert.equal(pageData.deps.length,2);
@@ -483,8 +455,6 @@ EllucianClassParser.prototype.tests = function () {
 	        		}
 	        	}
 	        	],
-	        	"termId": "201502",
-	        	"subject": "PHYS",
 	        	"classId": "013"
 	        });
 	        
@@ -501,7 +471,7 @@ EllucianClassParser.prototype.tests = function () {
 
 			//set up variables
 			var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2160&schd_in=LEC';
-			var pageData = pageDataMgr.create({dbData:{url:url}});
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
 			assert.notEqual(null,pageData);
 
 			//main parse
@@ -513,12 +483,10 @@ EllucianClassParser.prototype.tests = function () {
 			
 			assert.deepEqual(pageData.dbData,{
 				url: url,
-				termId: '201610',
-				subject: 'EECE',
 				classId: '2160',
+				desc: '',
 				name: 'Embedded Design Enabling Robotics',
-				host: 'neu.edu',
-				crns: [ '15633', '15636', '15639', '16102', '17800', '17799' ]  });
+				crns: [ '15633', '15636', '15639', '16102', '17800', '17799' ]  },JSON.stringify(pageData.dbData));
 
 			assert.equal(pageData.deps.length,6);
 			pageData.deps.forEach(function (dep) {
@@ -537,7 +505,7 @@ EllucianClassParser.prototype.tests = function () {
 
 			//set up variables
 			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=ACCT&crse_in=2102&schd_in=BAS';
-			var pageData = pageDataMgr.create({dbData:{url:url}});
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
 			assert.notEqual(null,pageData);
 
 			//main parse
@@ -548,11 +516,9 @@ EllucianClassParser.prototype.tests = function () {
 
 			assert.deepEqual(pageData.dbData,{
 				url: url,
-				termId: '201503',
-				subject: 'ACCT',
 				classId: '2102',
+				desc: '',
 				name: 'Managerial Accounting',
-				host: 'temple.edu',
 				crns:["11018","11019","8145","6073","11020","6129","20800","6074","23294","23295","6075","6077","6130","11679","22497","19962","24435"] },JSON.stringify(pageData.dbData));
 
 			assert.equal(pageData.deps.length,17);
@@ -572,7 +538,7 @@ EllucianClassParser.prototype.tests = function () {
 
 			//set up variables
 			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=BAS';
-			var pageData = pageDataMgr.create({dbData:{url:url}});
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
 			assert.notEqual(null,pageData);
 
 			//main parse
@@ -583,11 +549,9 @@ EllucianClassParser.prototype.tests = function () {
 
 			assert.deepEqual(pageData.dbData,{
 				url: url,
-				termId: '201503',
-				subject: 'AIRF',
+				desc: '',
 				classId: '2041',
 				name: 'The Evolution of U.s. Aerospace Power Ii',
-				host: 'temple.edu',
 				crns: [ '12090' ] });
 
 			assert.equal(pageData.deps.length,1);
@@ -727,8 +691,6 @@ EllucianClassParser.prototype.tests = function () {
 					}
 				}
 				],
-				"termId": "201503",
-				"subject": "AIRF",
 				"classId": "2041"
 			})
 
@@ -747,7 +709,7 @@ EllucianClassParser.prototype.tests = function () {
 
 			//set up variables
 			var url = 'https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=ANTH&crse_in=245&schd_in=LE';
-			var pageData = pageDataMgr.create({dbData:{url:url}});
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
 			assert.notEqual(null,pageData);
 
 			//main parse
@@ -759,11 +721,9 @@ EllucianClassParser.prototype.tests = function () {
 			
 			assert.deepEqual(pageData.dbData,{
 				url: url,
-				termId: '201610',
-				subject: 'ANTH',
 				classId: '245',
+				desc: '',
 				name: 'Cancelled',
-				host: 'ccsu.edu' ,
 				crns: [ '12291' ] });
 
 			assert.equal(pageData.deps.length,1);

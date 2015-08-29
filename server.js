@@ -124,9 +124,9 @@ app.post('/listTerms',function (req,res) {
 	};
 
 	termsDB.find({host:req.body.host},{
-	 	shouldBeOnlyOne:true,
+	 	shouldBeOnlyOne:false,
 	 	sanatize:true
-	 },function (err,doc) {
+	 },function (err,terms) {
 
 		//probably change this later
 		if (err) {
@@ -134,12 +134,7 @@ app.post('/listTerms',function (req,res) {
 			return;
 		};
 
-		if (doc) {
-			res.send(JSON.stringify(doc.terms));
-		}
-		else {
-			res.send([]);
-		}
+		res.send(JSON.stringify(terms));
 	})
 })
 
@@ -158,20 +153,16 @@ app.post('/listSubjects',function (req,res) {
 		host:req.body.host,
 		termId:req.body.termId
 	},{
-	 	shouldBeOnlyOne:true,
+	 	shouldBeOnlyOne:false,
 	 	sanatize:true
-	 },function (err,doc) {
+	 },function (err,subjects) {
 
 		if (err) {
 			res.send(err);
 			return;
 		};
-		if (doc) {
-			res.send(JSON.stringify(doc.subjects));
-		}
-		else {
-			res.send([])
-		}
+
+		res.send(JSON.stringify(subjects));
 	})
 })
 

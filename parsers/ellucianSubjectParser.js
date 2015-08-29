@@ -28,20 +28,24 @@ EllucianSubjectParser.prototype.getDatabase = function(pageData) {
 	return subjectsDB;
 };
 
+EllucianSubjectParser.prototype.getPointerConfig = function(pageData) {
+	var config = EllucianBaseParser.prototype.getPointerConfig.apply(this, arguments);
+	if (!pageData.dbData.termId) {
+		console.log('in pointer config and dont have termId!!!');
+		throw "js error"
+		return;
+	}
+
+	config.payload = 'p_calling_proc=bwckschd.p_disp_dyn_sched&p_term='+pageData.dbData.termId
+	config.headers = {
+		'Content-Type': 'application/x-www-form-urlencoded'
+	}
+	return config;
+};
 
 
 
 EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
-
-	//parse the term from the url
-	var query = new URI('?'+pageData.dbData.postData).query(true);
-	if (!query.p_term) {
-		console.log('could not find p_term id!',query,pageData.dbData.postData);
-	}
-	else {
-		pageData.setData('termId',query.p_term);
-	}
-
 
 	//parse the form data
 	var formData = this.parseSearchPage(pageData.dbData.url,dom);
@@ -66,34 +70,43 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 				id:payloadVar.value,
 				text:payloadVar.text
 			});
-
-			var newDep = pageData.addDep({
-				subject:payloadVar.value,
-				termId:pageData.dbData.termId,
-				url:this.createCatalogSearchURL(pageData.dbData.url,pageData.dbData.termId,payloadVar.value)
-			})
-			if (!newDep) {
-				console.log('unable to create dep...?????',pageData.dbData.url);
-				return;
-			};
-			newDep.setParser(ellucianCatalogParser);
-
-
-
 		}
 	}.bind(this));
 
-	
-	if (subjects.length>0) {
-		pageData.setData('subjects',subjects);
-	}
-	else {
+	if (subjects.length===0) {
 		console.log('ERROR, found 0 subjects??',pageData.dbData.url);
 	}
 
 
 
+	subjects.forEach(function (subject) {
 
+
+		//if it already exists, just update the description
+		for (var i = 0; i < pageData.deps.length; i++) {
+			if (subject.id==pageData.deps[i].dbData.subject) {
+				pageData.deps[i].setData('text',subject.text);
+				console.log('updating text ',pageData.deps[i].dbData.text,subject.text)
+				return;
+			};
+		};
+
+		//if not, add it
+		var subjectPageData = pageData.addDep({
+			updatedByParent:true,
+			subject:subject.id,
+			text:subject.text
+		});
+		subjectPageData.setParser(this)
+
+
+		//and add the subject dependency
+		var catalogPageData = subjectPageData.addDep({
+			url:this.createCatalogSearchURL(pageData.dbData.url,pageData.dbData.termId,subject.id)
+		});
+		catalogPageData.setParser(ellucianCatalogParser)
+
+	}.bind(this))
 };
 
 
@@ -165,48 +178,48 @@ EllucianSubjectParser.prototype.tests = function(){
 			assert.equal(true,this.supportsPage(url));
 
 			var pageData = pageDataMgr.create({dbData:{
-				url:url,
-				postData:'p_calling_proc=bwckschd.p_disp_dyn_sched&p_by_date=Y&p_from_date=&p_to_date=&p_term=201510'
+				url:url
 			}});
 
 			assert.notEqual(null,pageData);
 
 			this.parseDOM(pageData,dom);
 
-			assert.deepEqual(pageData.dbData,{ url: 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date',
-				postData: 'p_calling_proc=bwckschd.p_disp_dyn_sched&p_by_date=Y&p_from_date=&p_to_date=&p_term=201510',
-				subjects:
-				[ { id: 'ANAT', text: 'Anatomy CM' },
-				{ id: 'ANES', text: 'Anesthesiology CM' },
-				{ id: 'CBHX', text: 'Bioethics and Humanities' },
-				{ id: 'CCFM', text: 'Consortium - Culture/Medicine' },
-				{ id: 'EMED', text: 'Emergency Medicine CM&HP' },
-				{ id: 'FAMP', text: 'Family Medicine CM' },
-				{ id: 'GERI', text: 'Geriatrics CM' },
-				{ id: 'INTD', text: 'Interdepartmental CM&HP' },
-				{ id: 'INTL', text: 'International Experience' },
-				{ id: 'MDCN', text: 'Medicine CM' },
-				{ id: 'MICB', text: 'Microbiology CM' },
-				{ id: 'M', text: 'Microbiology and Immunology GS' }, //this is same as html
-				{ id: 'NEUR', text: 'Neurology CM' },
-				{ id: 'NSUG', text: 'Neurosurgery CM' },
-				{ id: 'OBGY', text: 'Obstetrics and Gynecology CM' },
-				{ id: 'OPTH', text: 'Opthalmology CM' },
-				{ id: 'ORTH', text: 'Orthopaedic Surgery CM' },
-				{ id: 'OTOL', text: 'Otolaryngology CM' },
-				{ id: 'PATH', text: 'Pathology CM&HP' },
-				{ id: 'PEDS', text: 'Pediatrics CM' },
-				{ id: 'RMED', text: 'Physical Med/Rehabilitation CM' },
-				{ id: 'PRVM', text: 'Preventive Medicine' },
-				{ id: 'PYCH', text: 'Psychiatry CM' },
-				{ id: 'RONC', text: 'Radiation Oncology CM' },
-				{ id: 'RADL', text: 'Radiology CM' },
-				{ id: 'SURG', text: 'Surgery CM' },
-				{ id: 'UROL', text: 'Urology CM' } ],
-				termId: '201510',
-				host: 'upstate.edu' });
 
-			//
+			console.log(pageData.deps)
+			// assert.deepEqual(pageData.dbData,{ url: 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date',
+			// 	subjects:
+			// 	[ { id: 'ANAT', text: 'Anatomy CM' },
+			// 	{ id: 'ANES', text: 'Anesthesiology CM' },
+			// 	{ id: 'CBHX', text: 'Bioethics and Humanities' },
+			// 	{ id: 'CCFM', text: 'Consortium - Culture/Medicine' },
+			// 	{ id: 'EMED', text: 'Emergency Medicine CM&HP' },
+			// 	{ id: 'FAMP', text: 'Family Medicine CM' },
+			// 	{ id: 'GERI', text: 'Geriatrics CM' },
+			// 	{ id: 'INTD', text: 'Interdepartmental CM&HP' },
+			// 	{ id: 'INTL', text: 'International Experience' },
+			// 	{ id: 'MDCN', text: 'Medicine CM' },
+			// 	{ id: 'MICB', text: 'Microbiology CM' },
+			// 	{ id: 'M', text: 'Microbiology and Immunology GS' }, //this is same as html
+			// 	{ id: 'NEUR', text: 'Neurology CM' },
+			// 	{ id: 'NSUG', text: 'Neurosurgery CM' },
+			// 	{ id: 'OBGY', text: 'Obstetrics and Gynecology CM' },
+			// 	{ id: 'OPTH', text: 'Opthalmology CM' },
+			// 	{ id: 'ORTH', text: 'Orthopaedic Surgery CM' },
+			// 	{ id: 'OTOL', text: 'Otolaryngology CM' },
+			// 	{ id: 'PATH', text: 'Pathology CM&HP' },
+			// 	{ id: 'PEDS', text: 'Pediatrics CM' },
+			// 	{ id: 'RMED', text: 'Physical Med/Rehabilitation CM' },
+			// 	{ id: 'PRVM', text: 'Preventive Medicine' },
+			// 	{ id: 'PYCH', text: 'Psychiatry CM' },
+			// 	{ id: 'RONC', text: 'Radiation Oncology CM' },
+			// 	{ id: 'RADL', text: 'Radiology CM' },
+			// 	{ id: 'SURG', text: 'Surgery CM' },
+			// 	{ id: 'UROL', text: 'Urology CM' } ],
+			// 	termId: '201510',
+			// 	host: 'upstate.edu' });
+
+			// //
 
 
 			//also write asserts for the deps!
