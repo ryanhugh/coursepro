@@ -152,6 +152,9 @@ BaseDB.prototype.isValidLookupValues = function(lookupValues) {
 	return false;
 };
 
+BaseDB.prototype.getStaticValues = function() {
+	return [];
+};
 
 BaseDB.prototype.find = function(lookupValues,config,callback) {
 	if (!this.isValidLookupValues(lookupValues)) {
@@ -159,12 +162,14 @@ BaseDB.prototype.find = function(lookupValues,config,callback) {
 		return callback('invalid search')
 	};
 
-
 	this.db.find(lookupValues,function (err,docs) {
 		if (err) {
 			console.log('NEDB error in section db, ',err,lookupValues);
 			return callback(err);
 		}
+
+		//db can have a couple values static
+		docs = docs.concat(this.getStaticValues(lookupValues,config))
 
 		if (docs.length>1 && config.shouldBeOnlyOne) {
 			console.log('error in '+this.constructor.name+ ' there was '+docs.length+' and was supposed to be just 1!',lookupValues,docs);

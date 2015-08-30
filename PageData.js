@@ -288,8 +288,6 @@ PageData.prototype.processDeps = function(callback) {
 
 
 	}.bind(this),function (err,results) {//
-
-
 		if (err) {
 			console.log('error found while processing dep of',this.dbData.url,err);
 			return callback(err);

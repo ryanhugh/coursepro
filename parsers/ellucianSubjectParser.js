@@ -10,8 +10,8 @@ var ellucianCatalogParser = require('./ellucianCatalogParser');
 
 
 function EllucianSubjectParser () {
-	this.name = "EllucianSubjectParser";
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
+	this.name = "EllucianSubjectParser";
 }
 
 

@@ -2,7 +2,7 @@
 // // console.log('fdas'.indexOf)
 var URI = require('URIjs');
 var async = require('async');
-// var querystring = require('querystring');
+// var querystring = require('querystring');f
 var assert = require('assert');
 var needle = require('needle');
 var fs = require('fs');
@@ -19,21 +19,23 @@ var dns = require('dns');
 var queue = require("queue-async")
 
 var clone = require('clone');
+needle.get('http://www.neu.edu',function () {
+	console.log('hi')
+})
 
 
-
-a = {}
-b = {}
-c = {}
-a.b = b
-b.c = c
-c.b = b
-a.t = 'this is a'
-b.t = 'this is b'
-c.t = 'this is c'
-console.log(a,b,c);
-a.b='hi' 
-console.log(a,b,c);
+// a = {}
+// b = {}
+// c = {}
+// a.b = b
+// b.c = c
+// c.b = b
+// a.t = 'this is a'
+// b.t = 'this is b'
+// c.t = 'this is c'
+// console.log(a,b,c);
+// a.b='hi' 
+// console.log(a,b,c);
 
 
 // var a = [];

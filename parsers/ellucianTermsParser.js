@@ -1,11 +1,13 @@
 'use strict';
 var domutils = require('domutils');
+var _ = require('lodash');
 var assert = require('assert');
 var fs = require('fs');
 
 var pointer = require('../pointer');
 var termsDB = require('../databases/termsDB');
-var subjectsDB = require('../databases/subjectsDB');
+var collegeNamesDB = require('../databases/collegeNamesDB');
+var collegeNamesParser = require('./collegeNamesParser');
 
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 var ellucianSubjectParser = require('./ellucianSubjectParser');
@@ -13,7 +15,6 @@ var ellucianSubjectParser = require('./ellucianSubjectParser');
 
 function EllucianTermsParser () {
 	EllucianBaseParser.prototype.constructor.apply(this,arguments);
-	
 	this.name = "EllucianTermsParser";
 }
 
@@ -55,22 +56,28 @@ EllucianTermsParser.prototype.isValidTerm = function(termId,text) {
 
 };
 
-var staticHosts = [
-{
-	includes:'Law',
-	mainHost:'neu.edu',
-	name:'Northeastern University School of Law'
-},
-{
-	includes:'CPS',
-	mainHost:'neu.edu',
-	name:'Northeastern University College of Professional Studies'
-}]
+EllucianTermsParser.prototype.addCollegeName = function(pageData,host) {
+		
+	//add the college names dep, if it dosent already exist
+	for (var i = 0; i < pageData.deps.length; i++) {
+		var currDep =pageData.deps[i] 
+		if (currDep.parser == collegeNamesParser && currDep.dbData.host == host) {
+			return;
+		}
+	}
+	
+	var newDep = pageData.addDep({
+		url:host,
+		host:host
+	})
+	newDep.setParser(collegeNamesParser)
+};
 
 
 EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 	var formData = this.parseTermsPage(pageData.dbData.url,dom);
 	var terms = [];
+
 
 	formData.requestsData.forEach(function (singleRequestPayload) {
 
@@ -89,6 +96,57 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 		console.log('ERROR, found 0 terms??',pageData.dbData.url);
 	};
 
+	terms.forEach(function (term) {
+
+		//calculate host for each entry
+		var host = pointer.getBaseHost(pageData.dbData.url);
+
+		var newTerm = collegeNamesDB.getStaticHost(host,term.text)
+		if (newTerm) {
+			host = newTerm.host
+			term.text = newTerm.text
+		}
+		else {
+			this.addCollegeName(pageData,host)
+		};
+		term.host = host;
+
+		//add the shorter version of the term string
+		term.shortText = term.text.replace(/Quarter|Semester/gi,'').trim()
+
+	}.bind(this))
+
+
+
+	pageData.parsingData.duplicateTexts = {};
+	
+
+
+	//keep track of texts, and if they are all different with some words removed
+	//keep the words out
+	terms.forEach(function (term) {
+
+		if (!pageData.parsingData.duplicateTexts[term.host]) {
+			pageData.parsingData.duplicateTexts[term.host] = {
+				values:[],
+				areAllDifferent:true
+			}
+		}
+		if (_(pageData.parsingData.duplicateTexts[term.host].values).includes(term.shortText)) {
+			pageData.parsingData.duplicateTexts[term.host].areAllDifferent = false;
+			return;
+		}
+		pageData.parsingData.duplicateTexts[term.host].values.push(term.shortText)
+
+	}.bind(this))
+
+
+	//for each host, change the values if they are different
+	terms.forEach(function (term) {
+		if (pageData.parsingData.duplicateTexts[term.host].areAllDifferent) {
+			term.text = term.shortText
+		}
+	}.bind(this))
 
 
 
@@ -98,11 +156,15 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 
 	terms.forEach(function (term) {
 
+
+
 		//if it already exists, just update the description
 		for (var i = 0; i < pageData.deps.length; i++) {
-			if (term.id==pageData.deps[i].dbData.termId) {
-				pageData.deps[i].setData('text',term.text);
-				console.log('updating text ',pageData.deps[i].dbData.text,term.text)
+			var currDep =pageData.deps[i] 
+			if (currDep.parser==this && term.id==currDep.dbData.termId) {
+				currDep.setData('text',term.text);
+				currDep.setData('host',term.host);
+				console.log('updating text ',currDep.dbData.text,term.text)
 				return;
 			};
 		};
@@ -111,16 +173,17 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 		var termPageData = pageData.addDep({
 			updatedByParent:true,
 			termId:term.id,
-			text:term.text
+			text:term.text,
+			host:term.host
 		});
 		termPageData.setParser(this)
 
 
 		//and add the subject dependency
-		var subjectController = termPageData.addDep({
-			url:formData.postURL
-		});
-		subjectController.setParser(ellucianSubjectParser)
+		// var subjectController = termPageData.addDep({
+		// 	url:formData.postURL
+		// });
+		// subjectController.setParser(ellucianSubjectParser)
 
 	}.bind(this))
 };

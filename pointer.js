@@ -83,10 +83,11 @@ Pointer.prototype.fireRequest = function (url,options,callback) {
 
 
 
-Pointer.prototype.getBaseHostname = function(url) {
+Pointer.prototype.getBaseHost = function(url) {
 	var homepage = new URI(url).hostname();
 	if (!homepage || homepage=='') {
 		console.log('ERROR: could not find homepage of',url);
+		console.trace();
 		return;
 	}
 
@@ -158,7 +159,7 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 
 	for (var siteHostName in throtteling) {
 		if (siteHostName==currentHostname && this.openRequests>throtteling[siteHostName]) {
-			// console.log('warning postponing request to ',this.openRequests,url);
+			console.log('warning postponing request to ',this.openRequests,url);
 			return this.tryAgain(url,options,callback,tryCount-1);
 		}
 	}

@@ -10,6 +10,7 @@ var pointer = require('../pointer');
 
 function BaseParser () {
 	this.requiredAttrs = [];
+	this.name = "BaseParser"
 }
 
 
@@ -73,7 +74,7 @@ BaseParser.prototype.onEndParsing = function(pageData) {
 
 BaseParser.prototype.parseDOM = function(pageData,dom){
 
-	// pageData.setData('host',pointer.getBaseHostname(pageData.dbData.url));
+	// pageData.setData('host',pointer.getBaseHost(pageData.dbData.url));
 
 	this.onBeginParsing(pageData,dom);
 
@@ -115,7 +116,7 @@ BaseParser.prototype.parseTable = function(table) {
 	}
 	var heads = []
 
-	//the heeaders
+	//the headers
 	rows[0].children.forEach(function (element) {
 		if (element.type!='tag' || ['th','td'].indexOf(element.name)===-1) {
 			return;
@@ -280,7 +281,7 @@ BaseParser.prototype.tests = function () {
 
 
 	//make sure other classes have tests
-	assert.equal(this.constructor.name,'BaseParser');
+	assert.equal(this.constructor.name,'BaseParser','you need to ovveride .tests()!');
 
 
 	fs.readFile('../tests/baseParser/1.html','utf8',function (err,body) {
