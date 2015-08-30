@@ -18,10 +18,26 @@ var dns = require('dns');
 // var title = require('to-title-case');
 var queue = require("queue-async")
 
-var clone = require('clone');
-needle.get('http://www.neu.edu',function () {
-	console.log('hi')
-})
+var termsDB = require('./databases/termsDB')
+console.log(termsDB)
+
+// termsDB.db.find({},function (err,docs) {
+// 	console.log(docs[0])
+// 	docs.forEach(function (doc) {
+
+// 		if (!doc.updatedByParent) {
+// 			termsDB.db.update({_id:doc._id},{$set:{updatedByParent:false}})
+// 		};
+
+// 	})
+// })
+termsDB.db.persistence.compactDatafile()
+
+
+// var clone = require('clone');
+// needle.get('http://www.neu.edu',function () {
+// 	console.log('hi')
+// })
 
 
 // a = {}

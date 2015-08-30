@@ -159,7 +159,9 @@ PageData.prototype.loadFromDB = function(callback) {
 		return;
 	}
 
-	var lookupValues = {};
+	var lookupValues = {
+		updatedByParent:false
+	};
 
 	if (this.dbData._id) {
 		lookupValues._id = this.dbData._id;

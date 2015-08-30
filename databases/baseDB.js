@@ -67,8 +67,11 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 
 	if (!this.shouldUpdateDB(newData,oldData)) {
 		return callback(null,newData);
-	};
+	}
 
+	if (!newData.updatedByParent) {
+		newData.updatedByParent=false;
+	};
 
 	if (newData._id) {
 		this.db.update({ _id: newData._id }, {$set:newData}, {}, function (err, numReplaced) {

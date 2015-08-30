@@ -1,8 +1,6 @@
 !!!!
 
 
-when looking up by url internally, dont match ones where updateByParent:true - look at spiderswath 9 .log
-
 
 BEFORE PUBLIC:
 remove login info from emailmgr.js
