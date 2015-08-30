@@ -1,6 +1,9 @@
 !!!!
 
 
+when looking up by url internally, dont match ones where updateByParent:true - look at spiderswath 9 .log
+
+
 BEFORE PUBLIC:
 remove login info from emailmgr.js
 remove res.header('access-control-allow-origin','*')
@@ -37,8 +40,7 @@ remove deps:{} from sections if empty
 
 actully needs to get done:
 - use the longer value for pre and co reqs if they are not the same between section and have same name
-- store req classId and subject instead of url... (api lookup possible + easier to tell apart from strings)
-- remove duplicates from single list in prereqs (probably not going to happen )
+- remove duplicates from single list in prereqs (probably not going to happen ) - add this before simplify
 
 
 
