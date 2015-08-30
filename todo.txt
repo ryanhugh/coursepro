@@ -1,6 +1,9 @@
 !!!!
 
-
+dont send the cntrollers to the client
+host: "swarthmore.edu"
+termId: "201502"
+url: "https://myswat.swarthmore.edu/pls/bwckgens.p_proc_term_date"
 
 BEFORE PUBLIC:
 remove login info from emailmgr.js
