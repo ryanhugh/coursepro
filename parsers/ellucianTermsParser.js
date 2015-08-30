@@ -180,10 +180,10 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 
 
 		//and add the subject dependency
-		// var subjectController = termPageData.addDep({
-		// 	url:formData.postURL
-		// });
-		// subjectController.setParser(ellucianSubjectParser)
+		var subjectController = termPageData.addDep({
+			url:formData.postURL
+		});
+		subjectController.setParser(ellucianSubjectParser)
 
 	}.bind(this))
 };
@@ -233,6 +233,8 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL,dom) {
 			return;
 		}
 		entry.text = entry.text.replace(/\(view only\)/gi,'').trim();
+
+		entry.text = entry.text.replace(/summer i$/gi,'Summer 1').replace(/summer ii$/gi,'Summer 2')
 
 		//dont process this element on error
 		if (entry.text.length<2) {
@@ -295,9 +297,14 @@ EllucianTermsParser.prototype.tests = function() {
 			assert.equal(true,this.supportsPage(url));
 
 			// console.log(pageData)
-			console.log(pageData.deps[0].deps[0])
-			pageData.deps.forEach(function (dep) {
-			})
+			// console.log(pageData.deps[0].deps[0])
+			// pageData.deps.forEach(function (dep) {
+			// 	console.log(dep.dbData)
+			// })
+			assert.equal(pageData.deps[1].dbData.text,'Spring 2017 Summer 2')
+			assert.equal(pageData.deps[1].dbData.host,'upstate.edu')
+			assert.equal(pageData.deps[1].dbData.updatedByParent,true)
+			assert.equal(pageData.deps[1].dbData.termId,'201611')
 			
 			// assert.deepEqual(pageData.dbData,{ url: url,
 			// 	terms:

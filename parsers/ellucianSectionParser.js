@@ -231,6 +231,31 @@ EllucianSectionParser.prototype.convertStringToJSON = function(text) {
 	return retValText;
 };
 
+EllucianSectionParser.prototype.removeBlacklistedStrings = function(data) {
+	if (!data.values) {
+		console.log('js error need values in removeBlacklistedStrings')
+		return data
+	};
+
+	var newValues = [];
+
+	data.values.forEach(function (subData) {
+		if ((typeof subData)=='string') {
+			if (!subData.match(/Pre-req for \w+ \d+ \d+$/gi)) {
+				newValues.push(subData)
+			}
+		}	
+		else {
+			newValues.push(subData)
+		}
+	}.bind(this));
+
+	data.values = newValues;
+
+	return data;
+
+};
+
 EllucianSectionParser.prototype.convertCatalogURLs = function(pageData,data) {
 	if ((typeof data) == 'string') {
 
@@ -385,6 +410,7 @@ EllucianSectionParser.prototype.parseRequirementSection = function(pageData,clas
 		console.log('error formatting requirements, ',pageData.dbData.url,elements);
 		return;
 	}
+	text = this.removeBlacklistedStrings(text);
 	text=this.simplifyRequirements(text);
 	text = this.convertCatalogURLs(pageData,text);
 
@@ -619,6 +645,12 @@ EllucianSectionParser.prototype.tests = function() {
 	'or',
 	'link here' ]);
 
+	assert.deepEqual(this.removeBlacklistedStrings({
+		type:'and',
+		values:[
+		'hi','Pre-req for Math 015 1']
+	}),{ type: 'and', values: [ 'hi' ] })
+
 
 
 
@@ -651,8 +683,7 @@ EllucianSectionParser.prototype.tests = function() {
 				waitCapacity: 0,
 				waitRemaining: 0,
 				minCredits: 3,
-				maxCredits: 3,
-				host: 'neu.edu' });
+				maxCredits: 3,});
 
 
 			assert.deepEqual(pageData.parent.data.prereqs,{

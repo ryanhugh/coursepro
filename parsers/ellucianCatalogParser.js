@@ -110,8 +110,9 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 
 	//desc
 	//list all texts between this and next element, not including <br> or <i>
+	//usally stop at <span> or <p>
 	for (var i = 0; i < element.children.length; i++) {
-		if (element.children[i].type=='tag' && !_(['i','br']).includes(element.children[i].name)) {
+		if (element.children[i].type=='tag' && !_(['i','br','a']).includes(element.children[i].name)) {
 			break;
 		}
 		depData.desc+='  '+domutils.getText(element.children[i]).trim();
@@ -119,10 +120,14 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 
 	depData.desc=depData.desc.trim().replace(/\n|\r/gi,' ').replace(/\s+/gi,' ')
 
+	//remove credit hours
+	// 1.000 Credit hours
+	depData.desc = depData.desc.replace(/\d+(.\d+)?\s+credit hours/gi,'');
+
 
 	var invalidDescriptions = ['xml extract','new search'];
 
-	if (invalidDescriptions.indexOf(depData.desc.trim().toLowerCase())>-1) {
+	if (_(invalidDescriptions).includes(depData.desc.trim().toLowerCase())) {
 		return;
 	}
 

@@ -140,7 +140,8 @@ Pointer.prototype.doAnyStringsInArray = function(array,body) {
 var throtteling = {
 	'genisys.regent.edu':50,
 	'prod-ssb-01.dccc.edu':100,
-	'telaris.wlu.ca':400
+	'telaris.wlu.ca':400,
+	'myswat.swarthmore.edu':1000
 }
 
 

@@ -11,39 +11,22 @@ TODO AFTER CLASS CALC
 copy desc from other sections and why do some have same name in same term?
 if there are no sections in an entire subject, remove the subject. and if no sections for entire term, remove term and log something
 and if no sections for entire college!?! log big warning
+"linear algebra" in swath is there 4 times, but only 1 has desc??
 
 
 
 if selector is hidden, and then comes back, and same option is selected, callback() not called
 
 some classes dont have crns?
-
-
-
-
-terms: remove (view only) and other words like "term", "semester", etc -- view only removed, waiting for law to remove term/semester
-summer ii -> summer 2
-
-
-collegenames: neu.edu should be "host" in db, not homepage
-
-"linear algebra" in swath is there 4 times, but only 1 has desc??
-
-pass catalog url to class.db and also frontend? so can put valid url in when theres no sections
-
 should store crns? 
 
-split college names between parsers and main so it can have deps???? future idea
+
+
+pass catalog url to class.db and also frontend? so can put valid url in when theres no sections
 
 assert subject deps
 split up the asserts from deepequal...
 addDep() is called everywhere withough checking to see if the dep exists already?
-
-if no class or sections for a term, store name and description?
-does this come up in search results?
-https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?term_in=201502&one_subj=MATH&sel_subj=&sel_crse_strt=033&sel_crse_end=033&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=
-
-https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?term_in=201504&one_subj=MATH&sel_crse_strt=028&sel_crse_end=028&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=
 
 needs to get more of desc than just More theoretical, abstract, and rigorous than
 

@@ -23,13 +23,13 @@ var staticHosts = [
 {
 	includes:'Law',
 	mainHost:'neu.edu',
-	title:'Northeastern University School of Law',
+	title:'Northeastern University Law',
 	host:'neu.edu/law'
 },
 {
 	includes:'CPS',
 	mainHost:'neu.edu',
-	title:'Northeastern University College of Professional Studies',
+	title:'Northeastern University CPS',
 	host:'neu.edu/cps'
 }]
 
@@ -64,7 +64,7 @@ CollegeNamesDB.prototype.getStaticValues = function(lookupValues,config) {
 				title:staticHost.title
 			})
 		}
-		else if (!lookupValues.url && !lookupValues.host) {
+		else if (Object.keys(lookupValues).length===0) {
 			retVal.push({
 				host:staticHost.host,
 				title:staticHost.title
