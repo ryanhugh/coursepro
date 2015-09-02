@@ -244,9 +244,9 @@ EllucianSectionParser.prototype.removeBlacklistedStrings = function(data) {
 			if (!subData.match(/\s*Pre-req for \w+ \d+ \d+\s*$/gi)) {
 				newValues.push(subData)
 			}
-		}	
+		}
 		else {
-			newValues.push(subData)
+			newValues.push(this.removeBlacklistedStrings(subData))
 		}
 	}.bind(this));
 
@@ -941,7 +941,7 @@ EllucianSectionParser.prototype.tests = function() {
 	}.bind(this));//
 
 	//
-	fs.readFile('../tests/ellucianSectionParser/1.html','utf8',function (err,body) {
+	fs.readFile('../tests/ellucianSectionParser/blacklistedstring.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -954,7 +954,7 @@ EllucianSectionParser.prototype.tests = function() {
 			this.parseDOM(pageData,dom);
 
 			// var prereqs =this.parseRequirementSection(pageData,dom,'prerequisites');
-			// console.log(JSON.stringify(pageData.dbData,null,2));
+			console.log(JSON.stringify(pageData.dbData,null,2));
 		}.bind(this));
 	}.bind(this));
 

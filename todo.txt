@@ -3,14 +3,10 @@
 
 frontend small things
 DESC!
+CLASS URL for when have sections
 sort by start time
-left to right
 catalog url/ pretty url
 spring 2015 SPAN 003 has no desc?
-make sure box does not go above screen if is really tall
-fall 2015
-GMST 003
-
 
 
 
