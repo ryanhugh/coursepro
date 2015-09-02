@@ -102,7 +102,7 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 
 		//and add the subject dependency
 		var catalogPageData = subjectPageData.addDep({
-			url:this.createCatalogSearchURL(pageData.dbData.url,pageData.dbData.termId,subject.id)
+			url:this.createCatalogUrl(pageData.dbData.url,pageData.dbData.termId,subject.id)
 		});
 		catalogPageData.setParser(ellucianCatalogParser)
 

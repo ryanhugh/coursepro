@@ -56,15 +56,19 @@ EllucianBaseParser.prototype.catalogURLtoClassInfo = function(catalogURL) {
 	}
 };
 
-EllucianBaseParser.prototype.createCatalogSearchURL = function(siteURL,termId,subject) {
+EllucianBaseParser.prototype.createCatalogUrl = function(siteURL,termId,subject,classId) {
 	var baseURL = this.getBaseURL(siteURL);
 	if (!baseURL) {
 		console.log('could not find base url of ',siteURL)
 		return;
 	};
 
+	if (classId===undefined) {
+		classId=''
+	};
+
 	var retVal = new URI(baseURL);
-	retVal = new URI('bwckctlg.p_display_courses?term_in='+termId+'&one_subj='+subject+'&sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=').absoluteTo(retVal)
+	retVal = new URI('bwckctlg.p_display_courses?term_in='+termId+'&one_subj='+subject+'&sel_crse_strt='+classId+'&sel_crse_end='+classId+'&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=').absoluteTo(retVal)
 	return retVal.toString();
 };
 
@@ -151,7 +155,7 @@ EllucianBaseParser.prototype.tests = function() {
 
 
 	var classURL = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25';
-	console.log(this.createCatalogSearchURL(classURL,"201503",'AIRF'))
+	console.log(this.createCatalogUrl(classURL,"201503",'AIRF'))
 
 	assert.equal(this.catalogURLtoClassURL(catagoryURL),classURL);
 	assert.equal(this.getBaseURL(catagoryURL),'https://prd-wlssb.temple.edu/prod8/');

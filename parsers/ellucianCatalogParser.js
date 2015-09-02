@@ -36,25 +36,8 @@ EllucianCatalogParser.prototype.getDatabase = function(pageData) {
 };
 
 
-EllucianCatalogParser.prototype.onBeginParsing = function(pageData) {
-	var catalogURLQuery = new URI(pageData.dbData.url).query(true);
-	if (!catalogURLQuery.term_in) {
-		console.log('error could not find Current term??',catalogURLQuery)
-		return;
-	};
-
-	pageData.parsingData.termId = catalogURLQuery.term_in;
-
-	if (!catalogURLQuery.one_subj) {
-		console.log('error could not find one_subj??',catalogURLQuery)
-		return;
-	};
-
-	pageData.parsingData.subject = catalogURLQuery.one_subj;
-};
-
-
 EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
+	
 	
 	var depData = {
 		desc:'',
@@ -78,6 +61,7 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 	}
 
 	depData.classId = catalogDetailQuery.crse_numb_in;
+	depData.prettyUrl=this.createCatalogUrl(pageData.dbData.url,pageData.dbData.termId,pageData.dbData.subject,depData.classId)
 
 	//get the class name
 	var value = domutils.getText(titleLinks[0]);
@@ -132,11 +116,24 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 	}
 
 	//url
-	depData.url = this.createClassURL(pageData.dbData.url,pageData.parsingData.termId,pageData.parsingData.subject,depData.classId);
+	depData.url = this.createClassURL(pageData.dbData.url,pageData.dbData.termId,pageData.dbData.subject,depData.classId);
 	if (!depData.url) {
 		console.log('error could not create class url',depData);
 		return;
 	}
+
+	//update existing dep
+	for (var i = 0; i < pageData.deps.length; i++) {
+		var currDep = pageData.deps[i]
+		if (currDep.dbData.url == depData.url && currDep.parser == ellucianClassParser) {
+			console.log('using existing dep',depData)
+			for (var attrName in depData) {
+				currDep.setData(attrName,depData[attrName])
+			}
+			return;
+		}
+	};
+
 
 	var dep = pageData.addDep(depData);
 	dep.setParser(ellucianClassParser)
@@ -144,7 +141,12 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 
 
 EllucianCatalogParser.prototype.parseElement = function(pageData,element) {
-	if (element.type!='tag' || !pageData.parsingData.termId) {
+	if (!pageData.dbData.termId) {
+		console.log('error!!! in ellucianCatalogParser but dont have a terid',pageData)
+		return;
+	};
+
+	if (element.type!='tag') {
 		return;
 	}
 
@@ -200,30 +202,40 @@ EllucianCatalogParser.prototype.tests = function() {
 			assert.equal(null,err);
 
 			//this is not the url of this page...
-			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=2041&sel_crse_end=2041&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=522&sel_crse_end=522&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
 
-			var classURL= "https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25";
+			var classURL= "https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=522&schd_in=%25";
 
 
 			assert.equal(true,this.supportsPage(url));
 
 			var pageData = pageDataMgr.create({dbData:{
-				url:url
+				url:url,
+				subject:'AIRF',
+				termId:'201503'
 			}});
 
-			this.parseDOM(pageData,dom);
+			//add a dep to test updating deps
+			pageData.deps = [pageDataMgr.create({dbData:{
+				url:classURL
+			}})];
+			pageData.deps[0].parser = ellucianClassParser
 
+
+			this.parseDOM(pageData,dom);
+			
 			assert.equal(pageData.deps.length,1);
+
+			
 			assert.equal(pageData.deps[0].dbData.desc, "Topics in Poetry and Prosody Irregular Prereqs.: None Detailed and systematic study of poetic form, including versification, rhetorical tropes, diction, and tone. May be organized by period, subject matter, genre, or critical method. May be repeated with different topics for up to 6 credits. 3.000 Lecture hours",pageData.deps[0].dbData.desc);
 			assert.equal(pageData.deps[0].dbData.url, 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=522&schd_in=%25');
 			assert.equal(pageData.deps[0].dbData.classId, "522");
+			console.log(pageData.deps[0].dbData.prettyUrl,'fjsdkfjalb')
+			assert.equal(pageData.deps[0].dbData.prettyUrl, 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=522&sel_crse_end=522&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=');
 
 
 		}.bind(this));
 	}.bind(this));//
-
-
-
 
 	//
 	fs.readFile('../tests/ellucianCatalogParser/2.html','utf8',function (err,body) {
@@ -240,11 +252,13 @@ EllucianCatalogParser.prototype.tests = function() {
 			assert.equal(true,this.supportsPage(url));
 
 			var pageData = pageDataMgr.create({dbData:{
-				url:url
+				url:url,
+				subject:'MDCN',
+				termId:'201580'
 			}});
 
 			this.parseDOM(pageData,dom);
-
+			
 			assert.equal(pageData.deps.length,1);
 			assert.equal(pageData.deps[0].dbData.desc,'ELECTIVE DESCRIPTION: Physical exams are provided to newly resettled refugees by care teams comprised of students, residents, and faculty physicians. For many refugees, the care is their first encounter with mainstream medicine. MS-2 coordinators manage clinic operations while MS 1-4 volunteers provide the care service and gain experience in physical exam skills and cross-cultural communication. 0.000 Lab hours');
 			assert.equal(pageData.deps[0].dbData.classId,"2064");
@@ -271,11 +285,14 @@ EllucianCatalogParser.prototype.tests = function() {
 			assert.equal(true,this.supportsPage(url));
 
 			var pageData = pageDataMgr.create({dbData:{
-				url:url
+				url:url,
+				subject:'COM',
+				termId:'201610'
 			}});
 
 			this.parseDOM(pageData,dom);
 
+						
 			assert.equal(pageData.deps.length,1);
 			assert.equal(pageData.deps[0].dbData.desc,'Current internet, social media, and mobile media marketing theories , strategies, tools and practices. Includes study of communication methods used by professionals in journalism, film, television, advertising, public relations, and related professions to brand, promote, and distribute products and services. Web-based production lab included. Cross-listed with JRN 507.',pageData.deps[0].dbData.desc)
 			assert.equal(pageData.deps[0].dbData.classId,'507');

@@ -155,14 +155,14 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			//search for an existing dep with the matching classname, etc
 			for (var i=0;i<pageData.deps.length;i++) {
 
-			  //we are only looking for classes here
-			  if (pageData.deps[i].parser!=this) {
-			  	continue;
-			  }
-			  
-			  if (pageData.deps[i].dbData.name == className && pageData.deps[i].dbData.updatedByParent) {
-			  	dbAltEntry = pageData.deps[i];
-			  }
+				//we are only looking for classes here
+				if (pageData.deps[i].parser!=this) {
+					continue;
+				}
+				
+				if (pageData.deps[i].dbData.name == className && pageData.deps[i].dbData.updatedByParent) {
+					dbAltEntry = pageData.deps[i];
+				}
 			}
 
 		    //entry
@@ -298,13 +298,27 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 	}
 
 
-	var sectionPageData;
+	var classToAddSectionTo;
 	if (dbAltEntry) {
-		sectionPageData = dbAltEntry.addDep(sectionStartingData);
+		classToAddSectionTo = dbAltEntry;
 	}
 	else {
-		sectionPageData = pageData.addDep(sectionStartingData);
+		classToAddSectionTo = pageData;
 	}
+
+	//if section dependency already exists, just add the data
+	for (var i = 0; i < classToAddSectionTo.deps.length; i++) {
+		var currDep = classToAddSectionTo.deps[i];
+		if (currDep.dbData.url == sectionStartingData.url) {
+			for (var attName in sectionStartingData) {
+				currDep.setData(attName,sectionStartingData[attName])
+			}
+			return;
+		}
+	};
+
+	//else create one
+	var sectionPageData = classToAddSectionTo.addDep(sectionStartingData);
 	sectionPageData.setParser(ellucianSectionParser);
 };
 
@@ -473,6 +487,10 @@ EllucianClassParser.prototype.tests = function () {
 			var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2160&schd_in=LEC';
 			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
 			assert.notEqual(null,pageData);
+
+			pageData.deps = [pageDataMgr.create({dbData:{url:'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633'}})]
+			pageData.deps[0].parser = ellucianSectionParser;
+			pageData.deps[0].parent = pageData;
 
 			//main parse
 			this.parseDOM(pageData,dom);
