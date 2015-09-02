@@ -241,7 +241,7 @@ EllucianSectionParser.prototype.removeBlacklistedStrings = function(data) {
 
 	data.values.forEach(function (subData) {
 		if ((typeof subData)=='string') {
-			if (!subData.match(/Pre-req for \w+ \d+ \d+$/gi)) {
+			if (!subData.match(/\s*Pre-req for \w+ \d+ \d+\s*$/gi)) {
 				newValues.push(subData)
 			}
 		}	

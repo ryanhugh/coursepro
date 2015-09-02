@@ -1,5 +1,36 @@
 !!!!
 
+
+frontend small things
+DESC!
+sort by start time
+left to right
+catalog url/ pretty url
+spring 2015 SPAN 003 has no desc?
+make sure box does not go above screen if is really tall
+fall 2015
+GMST 003
+
+
+
+
+
+
+FUTURE:
+user accounts -> workplace without prereqs
+ - was overridden for class
+ - public reviews?
+ - private notes?
+scrape trace?
+perma cache all old terms in localStorage
+scrape rate my prof
+email sign up when spots open up
+courseoff merge
+far future: dashboard
+
+
+https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201504&subj_in=CPSC&crse_in=081&schd_in=% is not parsed correctly :(
+scrape credits from catalog page so have if no sections
 dont send the cntrollers to the client
 host: "swarthmore.edu"
 termId: "201502"

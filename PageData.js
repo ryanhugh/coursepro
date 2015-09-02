@@ -159,14 +159,13 @@ PageData.prototype.loadFromDB = function(callback) {
 		return;
 	}
 
-	var lookupValues = {
-		updatedByParent:false
-	};
+	var lookupValues = {}
 
 	if (this.dbData._id) {
 		lookupValues._id = this.dbData._id;
 	}
 	else if (this.dbData.url) {
+		lookupValues.updatedByParent = false;
 		lookupValues.url = this.dbData.url;
 	}
 	else {
@@ -187,6 +186,10 @@ PageData.prototype.loadFromDB = function(callback) {
 
 	    //original data.dbData and .dbData cant point to the same obj
 	    this.originalData.dbData=clone(doc);
+
+	    if (!doc && lookupValues._id) {
+	    	console.log('error, looked up by id and didnt find anything???',this,lookupValues,this.parent)
+	    };
 
 	    var q = queue();
 
@@ -224,6 +227,11 @@ PageData.prototype.loadFromDB = function(callback) {
 		}
 
 		q.awaitAll(function(error, results) {
+
+			//log when the main pageData (the top of the tree) is done loading
+			if (!this.parent) {
+				console.log('info pageData with no parent done loading!' , this.parser.name)
+			};
 			return callback();
 		}.bind(this));
 
@@ -388,9 +396,9 @@ PageData.prototype.addDep = function(depData) {
 		console.log('could not create dep in add dep!')
 		return;
 	}
-// 	dep.setParser(parser);
-this.deps.push(dep);
-return dep;
+
+	this.deps.push(dep);
+	return dep;
 }
 
 

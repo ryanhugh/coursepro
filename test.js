@@ -18,20 +18,20 @@ var dns = require('dns');
 // var title = require('to-title-case');
 var queue = require("queue-async")
 
-var termsDB = require('./databases/termsDB')
-console.log(termsDB)
+var classesDB = require('./databases/classesDB')
+console.log(classesDB)
 
-// termsDB.db.find({},function (err,docs) {
+// classesDB.db.find({},function (err,docs) {
 // 	console.log(docs[0])
 // 	docs.forEach(function (doc) {
+// 		classesDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}})
 
-// 		if (!doc.updatedByParent) {
-// 			termsDB.db.update({_id:doc._id},{$set:{updatedByParent:false}})
-// 		};
+// 		// if (!doc.updatedByParent) {
+// 		// };
 
 // 	})
 // })
-termsDB.db.persistence.compactDatafile()
+classesDB.db.persistence.compactDatafile()
 
 
 // var clone = require('clone');
