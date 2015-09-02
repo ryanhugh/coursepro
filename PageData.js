@@ -257,19 +257,24 @@ PageData.prototype.processDeps = function(callback) {
 	if (!this.deps){
 		return callback();
 	}
+	if (this.deps.length>0) {
+		console.log('beginning to processing deps for ',this.dbData.url)
+	};
 
 	this.dbData.deps = {};
 
 	//any dep data will be inserted into main PageData for dep
 	async.map(this.deps, function (depPageData,callback) {
+		console.log('in dep dfs firing request to ',depPageData.dbData.url)
 		pageDataMgr.go(depPageData,function (err,newDepData) {
 			if (err) {
 				console.log('ERROR: processing deps:',err);
 				return callback(err);
 			}
+			console.log('returned from request to dep',newDepData.dbData.url)
 			if (newDepData!=depPageData) {
 				console.log('error pagedata was called on is diff than returned??');
-				return;
+				return callback('internal error');
 			}
 
 			if (!newDepData.parser || !newDepData.parser.name) {
@@ -303,6 +308,7 @@ PageData.prototype.processDeps = function(callback) {
 			return callback(err);
 		}
 		else {
+			console.log('done processing results for ',this.dbData.url)
 			this.deps = results;
 			return callback();
 		}
@@ -428,7 +434,7 @@ PageData.prototype.setData = function(name,value) {
 
 
 	if (this.dbData[name]!==undefined && !_.isEqual(this.dbData[name],value)) {
-		console.log('warning, overriding pageData.dbData.'+name+' with new data existing:',this.dbData[name],value)
+		console.log('warning, overriding pageData.dbData.'+name+' with new data existing:',JSON.stringify(this.dbData[name]),JSON.stringify(value))
 	}
 
 

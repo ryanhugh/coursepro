@@ -78,6 +78,7 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 			if (numReplaced===0) {
 				console.log('ERROR: updated 0?',newData);
 			};
+			callback(null,newData);
 		}.bind(this));
 	}
 	else {
