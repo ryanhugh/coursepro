@@ -5,9 +5,11 @@ frontend small things
 sort by start time
 spring 2015 SPAN 003 has no desc?
 
-
-when classes depend on classes, there are no crns. also need way to disguingish between...
-
+sort class drop down by class
+and sort the others too
+when classes depend on classes, there are no crns. also need way to disguingish between... (SOLVE THIS NEXT)
+final exam - solve this after ^ - when enddate == startdate
+dont add duplicate locations (eece 5698)
 
 
 MEDIUM TERM:

@@ -103,17 +103,94 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 	//if different name than this class, save to new class
-	var dbAltEntry = null;
-
+	var classToAddSectionTo = pageData;
 
 	var sectionStartingData = {};
 
 
-	//find the url
+	//parse name and url
+	//and make a new class if the name is different
 	domutils.findAll(function (element) {
 		if (!element.attribs.href) {
 			return;
 		}
+
+		//also parse the name from the link
+		var value = domutils.getText(element);
+
+		var match = value.match(/(.+?)\s-\s\d{5}/i);
+		if (!match || match.length<2) {
+			console.log('could not find title!',match,element,value);
+			return;
+		}
+
+
+		var className = toTitleCase(match[1]);
+
+		//name was already set to something different, make another db entry for this class
+		if (pageData.parsingData.name && className!=pageData.parsingData.name) {
+			
+
+			var dbAltEntry = null;
+
+			//search for an existing dep with the matching classname, etc
+			for (var i=0;i<pageData.deps.length;i++) {
+
+				//we are only looking for classes here
+				if (pageData.deps[i].parser!=this) {
+					continue;
+				}
+				
+				if (pageData.deps[i].dbData.name == className && pageData.deps[i].dbData.updatedByParent) {
+					dbAltEntry = pageData.deps[i];
+				}
+			}
+
+		    //entry
+			if (!dbAltEntry) {
+				// console.log('creating a new dep entry',pageData.deps.length);
+
+				if (pageData.dbData.desc===undefined) {
+					console.log('wtf desc is undefined??')
+					console.trace();
+				};
+
+				dbAltEntry = pageData.addDep({
+					url:pageData.dbData.url,
+					updatedByParent:true,
+					name:className
+				});
+
+				//copy over attributes from this class
+				for (var attrName in pageData.dbData) {
+
+					//dont copy over some attributes
+					if (_(['name','updatedByParent','url']).includes(attrName)) {
+						continue;
+					}
+					// console.log(attn)
+
+					dbAltEntry.setData(attrName,pageData.dbData[attrName])
+				}
+				dbAltEntry.parsingData.crns = []
+
+				dbAltEntry.setParser(this);
+
+			}
+
+			//could not create a dep with this data.. uh oh
+			if (!dbAltEntry) {
+				return;
+			}
+			classToAddSectionTo = dbAltEntry;
+
+		}
+		else {
+			pageData.parsingData.name = className;
+			pageData.setData('name',className);
+		}
+
+
 
 		var urlParsed = new URI(he.decode(element.attribs.href));
 
@@ -134,69 +211,20 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			console.log('error could not parse section url',sectionURL,pageData.dbData.url);
 			return;
 		};
+
+
 		sectionStartingData.crn = sectionURLParsed.crn;
-		pageData.parsingData.crns.push(sectionURLParsed.crn);
-
-		//also parse the name from the link
-		var value = domutils.getText(element);
-
-		var match = value.match(/(.+?)\s-\s/i);
-		if (!match || match.length<2) {
-			console.log('could not find title!',match,element,value);
-			return;
-		}
-
-
-		var className = toTitleCase(match[1]);
-
-		//name was already set to something different, make another db entry for this class
-		if (pageData.parsingData.name && className!=pageData.parsingData.name) {
-			
-			//search for an existing dep with the matching classname, etc
-			for (var i=0;i<pageData.deps.length;i++) {
-
-				//we are only looking for classes here
-				if (pageData.deps[i].parser!=this) {
-					continue;
-				}
-				
-				if (pageData.deps[i].dbData.name == className && pageData.deps[i].dbData.updatedByParent) {
-					dbAltEntry = pageData.deps[i];
-				}
-			}
-
-		    //entry
-			if (!dbAltEntry) {
-				console.log('creating a new dep entry',pageData.deps.length);
-
-				if (pageData.dbData.desc===undefined) {
-					console.log('wtf desc is undefined??')
-					console.trace();
-				};
-				dbAltEntry = pageData.addDep({
-					name:className,
-					url:pageData.dbData.url,
-					desc:pageData.dbData.desc,
-					classId:pageData.parsingData.classId,
-					updatedByParent:true
-				});
-				dbAltEntry.setParser(this);
-
-			}
-
-			//could not create a dep with this data.. uh oh
-			if (!dbAltEntry) {
-				return;
-			}
-		}
-		else {
-			pageData.parsingData.name = className;
-			pageData.setData('name',className);
-		}
+		classToAddSectionTo.parsingData.crns.push(sectionURLParsed.crn);
 
 	}.bind(this),element.children);
-
 	//
+
+
+
+
+
+
+
 	if (!sectionStartingData.url) {
 		console.log('warning, no url found',pageData.dbData.url);
 		return;
@@ -290,28 +318,14 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			}
 		}
 	}
-	
 
-	//add data about the class
-	if (pageData.parsingData.classId) {
-		sectionStartingData.classId = pageData.parsingData.classId;
-	}
-
-
-	var classToAddSectionTo;
-	if (dbAltEntry) {
-		classToAddSectionTo = dbAltEntry;
-	}
-	else {
-		classToAddSectionTo = pageData;
-	}
 
 	//if section dependency already exists, just add the data
 	for (var i = 0; i < classToAddSectionTo.deps.length; i++) {
 		var currDep = classToAddSectionTo.deps[i];
 		if (currDep.dbData.url == sectionStartingData.url) {
-			for (var attName in sectionStartingData) {
-				currDep.setData(attName,sectionStartingData[attName])
+			for (var attrName in sectionStartingData) {
+				currDep.setData(attrName,sectionStartingData[attrName])
 			}
 			return;
 		}
@@ -325,19 +339,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 
 EllucianClassParser.prototype.onBeginParsing = function(pageData) {
-	
-
-	//parse the term from the url
-	var query = new URI(pageData.dbData.url).query(true);
-
-	if (!query.crse_in) {
-		console.log('could not find crse_in id ellucian class parser!',query,pageData.dbData.url);
-	}
-	else {
-		pageData.parsingData.classId = query.crse_in;
-		pageData.setData('classId',query.crse_in);
-	}
-
 	pageData.parsingData.crns=[]
 };
 
@@ -359,6 +360,21 @@ EllucianClassParser.prototype.parseElement = function(pageData,element) {
 
 EllucianClassParser.prototype.onEndParsing = function(pageData) {
 	pageData.setData('crns',pageData.parsingData.crns);
+
+	//also set the crns of the classes that were created
+	pageData.deps.forEach(function (dep) {
+		if (dep.parser == this) {
+
+			if (!dep.parsingData.crns || dep.parsingData.crns.length===0) {
+				console.log('error wtf, no crns',dep)
+			};
+
+
+			dep.setData('crns',dep.parsingData.crns)
+		}
+	}.bind(this))
+
+
 };
 
 
@@ -418,7 +434,7 @@ EllucianClassParser.prototype.tests = function () {
 
 			//set up variables -- this url might not be correct
 			var url = 'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=LE';
-			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:'',classId: '013'}});
 			assert.notEqual(null,pageData);
 
 
@@ -433,7 +449,7 @@ EllucianClassParser.prototype.tests = function () {
 				desc: '',
 				classId: '013',
 				name: 'Thermodynamic/ Mech',
-				crns: [ '24600', '24601', '24603', '25363' ]},JSON.stringify( pageData.dbData));
+				crns: [ '24600']},JSON.stringify( pageData.dbData));
 
 	        //first dep is the section, second dep is the class - Lab (which has 3 deps, each section)
 	        assert.equal(pageData.deps.length,2);
@@ -442,6 +458,8 @@ EllucianClassParser.prototype.tests = function () {
 
 	        //pageData.deps[1] is the other class
 	        assert.equal(pageData.deps[1].parser,this);
+	        assert.deepEqual(pageData.deps[1].dbData.crns,[ '24601', '24603', '25363' ]);
+	        assert.equal(pageData.deps[1].dbData.name,'Thermodyn/stat Mechanics- Lab');
 	        assert.equal(pageData.deps[1].deps.length,3);
 	        assert.equal(pageData.deps[1].deps[0].parser,ellucianSectionParser);
 	        assert.equal(pageData.deps[1].deps[1].parser,ellucianSectionParser);
@@ -485,7 +503,7 @@ EllucianClassParser.prototype.tests = function () {
 
 			//set up variables
 			var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2160&schd_in=LEC';
-			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:'',classId:'2160'}});
 			assert.notEqual(null,pageData);
 
 			pageData.deps = [pageDataMgr.create({dbData:{url:'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633'}})]
@@ -523,7 +541,7 @@ EllucianClassParser.prototype.tests = function () {
 
 			//set up variables
 			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=ACCT&crse_in=2102&schd_in=BAS';
-			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:'',classId:'2102'}});
 			assert.notEqual(null,pageData);
 
 			//main parse
@@ -556,7 +574,7 @@ EllucianClassParser.prototype.tests = function () {
 
 			//set up variables
 			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=BAS';
-			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:'',classId:'2041'}});
 			assert.notEqual(null,pageData);
 
 			//main parse
@@ -727,7 +745,7 @@ EllucianClassParser.prototype.tests = function () {
 
 			//set up variables
 			var url = 'https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=ANTH&crse_in=245&schd_in=LE';
-			var pageData = pageDataMgr.create({dbData:{url:url,desc:''}});
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:'',classId:'245'}});
 			assert.notEqual(null,pageData);
 
 			//main parse
