@@ -215,8 +215,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			pageData.setData('name',className);
 		}
 
-
-		console.log(classToAddSectionTo)
 		sectionStartingData.crn = sectionURLParsed.crn;
 		classToAddSectionTo.parsingData.crns.push(sectionURLParsed.crn);
 
