@@ -20,6 +20,16 @@ https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201504&subj_i
 host: "swarthmore.edu"
 termId: "201502"
 url: "https://myswat.swarthmore.edu/pls/bwckgens.p_proc_term_date"
+pull req on select2 option = document.createElement('option');
+
+      if (option.textContent !== undefined) {
+        option.innerHTML = data.text;
+      } else {
+        option.innerHTML = data.text;
+      }
+    }
+
+    a="International Study&#8313;argentina"
 
 
 3. copy desc from other sections and why do some have same name in same term?

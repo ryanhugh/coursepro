@@ -51,6 +51,12 @@ function validateEmail(email) {
 }
 
 
+app.use(function (req, res, next) {
+	console.log(req.connection.remoteAddress,req.url,req.body);
+	next();
+});
+
+
 app.post('/urlDetails', function(req, res) {
 
 	if (!req.body || !req.body.url) {
@@ -242,11 +248,6 @@ app.post('/listSections',function (req,res) {
 
 
 // serve the webpage
-app.use(function (req, res, next) {
-	console.log(req.connection.remoteAddress,req.url);
-	next();
-});
-
 app.get('/', function (req, res) {
 	res.sendFile('static/index.html',{"root": __dirname});
 });
