@@ -502,8 +502,8 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 				minCredits=maxCredits;
 			}
 
-			pageData.setData('minCredits',minCredits);
-			pageData.setData('maxCredits',maxCredits);
+			pageData.setParentData('minCredits',minCredits);
+			pageData.setParentData('maxCredits',maxCredits);
 			return;
 		}
 
@@ -513,8 +513,8 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 		if (creditsMatch) {
 
 			var credits = parseFloat(creditsMatch[1]);
-			pageData.setData('minCredits',credits);
-			pageData.setData('maxCredits',credits);
+			pageData.setParentData('minCredits',credits);
+			pageData.setParentData('maxCredits',credits);
 
 			return;
 		}

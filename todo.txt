@@ -2,12 +2,39 @@
 
 
 frontend small things
-DESC!
-CLASS URL for when have sections
 sort by start time
-catalog url/ pretty url
 spring 2015 SPAN 003 has no desc?
 
+MEDIUM TERM:
+
+https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201504&subj_in=CPSC&crse_in=081&schd_in=% is not parsed correctly :(
+1. scrape credits from catalog page so have if no sections
+2. dont send the cntrollers to the client
+host: "swarthmore.edu"
+termId: "201502"
+url: "https://myswat.swarthmore.edu/pls/bwckgens.p_proc_term_date"
+
+
+3. copy desc from other sections and why do some have same name in same term?
+if there are no sections in an entire subject, remove the subject. and if no sections for entire term, remove term and log something
+and if no sections for entire college!?! log big warning
+4. "linear algebra" in swath is there 4 times, but only 1 has desc?? - this is because it has a - in the title, which is interprited as a divider...
+
+5. more asserts
+
+6. - use the longer value for pre and co reqs if they are not the same between section and have same name
+7. - remove duplicates from single list in prereqs (probably not going to happen ) - add this before simplify
+
+8. render the tree and remove duplicates
+
+
+9. base parser find dep with fields() -- find an existing pagedata.deps by a given fields, and if not exist, make one
+
+10. array of user agents for pointer + some random data?
+
+11. fallback to hittitle if dns fails
+
+12. add optional terms for parsers, and if dont have 50%, complain
 
 
 
@@ -25,24 +52,10 @@ courseoff merge
 far future: dashboard
 
 
-https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201504&subj_in=CPSC&crse_in=081&schd_in=% is not parsed correctly :(
-scrape credits from catalog page so have if no sections
-dont send the cntrollers to the client
-host: "swarthmore.edu"
-termId: "201502"
-url: "https://myswat.swarthmore.edu/pls/bwckgens.p_proc_term_date"
-
 BEFORE PUBLIC:
 remove login info from emailmgr.js
 remove res.header('access-control-allow-origin','*')
 remove sending any internal error to client
-
-
-TODO AFTER CLASS CALC
-copy desc from other sections and why do some have same name in same term?
-if there are no sections in an entire subject, remove the subject. and if no sections for entire term, remove term and log something
-and if no sections for entire college!?! log big warning
-"linear algebra" in swath is there 4 times, but only 1 has desc??
 
 
 
@@ -53,7 +66,6 @@ should store crns?
 
 
 
-pass catalog url to class.db and also frontend? so can put valid url in when theres no sections
 
 assert subject deps
 split up the asserts from deepequal...
@@ -64,19 +76,7 @@ needs to get more of desc than just More theoretical, abstract, and rigorous tha
 make list of where others need to include certian elements and warn if 1<x<50
 dont include credit hours "https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201504&subj_in=MATH&crse_in=056&schd_in=%25"
 
-remove deps:{} from sections if empty
 
-actully needs to get done:
-- use the longer value for pre and co reqs if they are not the same between section and have same name
-- remove duplicates from single list in prereqs (probably not going to happen ) - add this before simplify
-
-
-
-isupdatedByParent -> isStartingPoint (default no, )
-
-parseForm tests assert count?
-
-base parser find dep with fields() -- find an existing pagedata.deps by a given fields, and if not exist, make one
 
 
 
@@ -92,11 +92,6 @@ and load classes: somehow -- nope
 
 
 
-different names:
-if eclass has name, only parse those with name
-pagedatamgr.createFromParser - give desc
-
-
 
 
 //convert the uri json to this
@@ -104,20 +99,9 @@ uri.setSearch({ foo: "bar", goodbye : ["world", "mars"] });
 // uri == "?hello=mars&foo=bar&goodbye=world&goodbye=mars"
 
 
-put spider into all separate ellucian files??/
 
 
 
-
-add optional terms for parsers, and if dont have 50%, complain
-
-
-birmham limits results to 350, fix this, and dosent have a class page?????
-
-
-
-pretty case on where
-https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_detail_sched?term_in=201514&crn_in=10585
 
 
 
@@ -127,9 +111,6 @@ have an array of examples on script.js
 
 
 
-POINTER:
-array of user agents for baseParser.js
-sometimes add other headers and pull from array of user agents
 
 
 TODO:
@@ -169,58 +150,4 @@ use eff.org to test
 update: could access localhost on port 8443 which forwarded from eff.org 443 (so non port 443 works, maybe something wierd with this site+nodejs?) (double check this on remote server)
 
 
-
-
-
-// ---- collegenames.js ----
-regex used for main hostname will fail on google.com.uk (in pointer)
-
-titleCase will replace all on \w with a space.... (Texas A&M University -> Texas A M University)
-Saint Joseph S University
-
-fallback to hittitle if dns fails
-
-
-
-DONE
-
-
-
-multiple profs
-https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=FAMP&crse_in=1650&schd_in=9
-
-
-parse EECE abbr from search page
-
-pre and co reqs and restrictions -- test!! --seems to be working test more
-https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201508&crn_in=90660
-https://bannerweb.upstate.edu/isis/bwckschd.p_disp_detail_sched?term_in=201580&crn_in=83848
-
-{type:and,values:[{values:[1,2],type:or}]}
-
-
-log responce code when it fails -- done, test
-
-
-move prerequs to the class and make catalog on depend on all % and have prerequs be classes --done, test
-
-
-
-
-
-https://telaris.wlu.ca/ssb_prod/bwckctlg.p_disp_listcrse?term_in=201601&subj_in=MU&crse_in=296&schd_in=%25
-baseparser.parsetable the body row is 1 less than the main row
-
-
- --- THIS IS NOT A SECTION, not a bug
-https://telaris.wlu.ca/ssb_prod/bwckctlg.p_disp_listcrse?term_in=201505&subj_in=BE&crse_in=100W&schd_in=%25
-class table is outside of details box, but it hit category view and its a differnt ver num at the bottom???
-- should i parse this??, yes, there are ppl signed up here https://telaris.wlu.ca/ssb_prod/bwckschd.p_disp_detail_sched?term_in=201601&crn_in=2900
-
-
-store class name in class, not section
-
-
-almost working, need to parse things that arnt linked
-https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_detail_sched?term_in=201516&crn_in=10483
 
