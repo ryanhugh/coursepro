@@ -202,7 +202,7 @@ BaseParser.prototype.parseForm = function (url,dom) {
 
 		var options = domutils.getElementsByTagName('option',select);
 		if (options.length===0) {
-			console.log('ERROR:no options in form???',select);
+			console.log('warning no options in form???',url);
 			return;
 		}
 		

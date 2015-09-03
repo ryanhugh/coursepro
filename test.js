@@ -21,29 +21,58 @@ var queue = require("queue-async")
 var classesDB = require('./databases/classesDB')
 var sectionsDB = require('./databases/sectionsDB')
 var linksDB = require('./databases/linksDB')
+var termsDB = require('./databases/termsDB')
+var subjectsDB = require('./databases/subjectsDB')
+var collegeNamesDB = require('./databases/collegeNamesDB')
 
-// classesDB.db.find({},function (err,docs) {
-// 	docs.forEach(function (doc) {
-// 		classesDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}})
-// 	})
-// })
+classesDB.db.find({host:'tntech.edu'},function (err,docs) {
+	docs.forEach(function (doc) {
+		classesDB.db.remove({_id:doc._id});
+	})
+})
 
-// sectionsDB.db.find({},function (err,docs) {
-// 	docs.forEach(function (doc) {
-// 		sectionsDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}})
-// 	})
-// })
 
-// linksDB.db.find({},function (err,docs) {
-// 	docs.forEach(function (doc) {
-// 		linksDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}})
-// 	})
-// })
+sectionsDB.db.find({host:'tntech.edu'},function (err,docs) {
+	docs.forEach(function (doc) {
+		sectionsDB.db.remove({_id:doc._id});
+	})
+})
+
+
+linksDB.db.find({host:'tntech.edu'},function (err,docs) {
+	docs.forEach(function (doc) {
+		linksDB.db.remove({_id:doc._id});
+	})
+})
+
+termsDB.db.find({host:'tntech.edu'},function (err,docs) {
+	docs.forEach(function (doc) {
+		termsDB.db.remove({_id:doc._id});
+	})
+})
+
+subjectsDB.db.find({host:'tntech.edu'},function (err,docs) {
+	docs.forEach(function (doc) {
+		subjectsDB.db.remove({_id:doc._id});
+	})
+})
+
+collegeNamesDB.db.find({host:'tntech.edu'},function (err,docs) {
+	docs.forEach(function (doc) {
+		collegeNamesDB.db.remove({_id:doc._id});
+	})
+})
+
+// classesDB.db.remove({host:'tntech.edu'})
+// sectionsDB.db.remove({host:'tntech.edu'})
+// linksDB.db.remove({host:'tntech.edu'})
+
+
 // console.log((new Error).stack.split("\n")[1])
 
-classesDB.db.persistence.compactDatafile()
-sectionsDB.db.persistence.compactDatafile()
-linksDB.db.persistence.compactDatafile()
+// classesDB.db.persistence.compactDatafile()
+// sectionsDB.db.persistence.compactDatafile()
+// linksDB.db.persistence.compactDatafile()
 
 // var clone = require('clone');
 // needle.get('http://www.neu.edu',function () {

@@ -5,6 +5,11 @@ frontend small things
 sort by start time
 spring 2015 SPAN 003 has no desc?
 
+
+when classes depend on classes, there are no crns. also need way to disguingish between...
+
+
+
 MEDIUM TERM:
 
 https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201504&subj_in=CPSC&crse_in=081&schd_in=% is not parsed correctly :(
