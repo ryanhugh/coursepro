@@ -206,7 +206,8 @@ PageDataMgr.prototype.main = function() {
   // this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched',function(){
   // this.createFromURL('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched',function (){
   // this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched',function (){
-  this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched',function () {
+  this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201530&subj_in=MATH&crse_in=1252&schd_in=%25',function () {
+  // this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched',function () {
   
   // this.createFromURL('https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?term_in=201502&one_subj=MATH&sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=',function () {
   	console.log('all done!!')

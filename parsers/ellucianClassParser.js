@@ -115,12 +115,37 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			return;
 		}
 
+
+		//find the crn from the url
+		var urlParsed = new URI(he.decode(element.attribs.href));
+
+		//add hostname + port if path is relative
+		if (urlParsed.is('relative')) {
+			urlParsed = urlParsed.absoluteTo(pageData.getUrlStart()).toString();
+		}
+
+		var sectionURL = urlParsed.toString();
+
+		if (ellucianSectionParser.supportsPage(sectionURL)){
+			sectionStartingData.url = sectionURL;
+		}
+
+		//add the crn
+		var sectionURLParsed = this.sectionURLtoInfo(sectionURL);
+		if (!sectionURLParsed) {
+			console.log('error could not parse section url',sectionURL,pageData.dbData.url);
+			return;
+		};
+
+
+
 		//also parse the name from the link
 		var value = domutils.getText(element);
 
-		var match = value.match(/(.+?)\s-\s\d{5}/i);
+		//match everything before " - [crn]"
+		var match = value.match('(.+?)\\s-\\s'+sectionURLParsed.crn,'i');
 		if (!match || match.length<2) {
-			console.log('could not find title!',match,element,value);
+			console.log('could not find title!',match,value);
 			return;
 		}
 
@@ -172,7 +197,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 					dbAltEntry.setData(attrName,pageData.dbData[attrName])
 				}
-				dbAltEntry.parsingData.crns = []
 
 				dbAltEntry.setParser(this);
 
@@ -182,6 +206,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 			if (!dbAltEntry) {
 				return;
 			}
+			dbAltEntry.parsingData.crns = []
 			classToAddSectionTo = dbAltEntry;
 
 		}
@@ -191,28 +216,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		}
 
 
-
-		var urlParsed = new URI(he.decode(element.attribs.href));
-
-		//add hostname + port if path is relative
-		if (urlParsed.is('relative')) {
-			urlParsed = urlParsed.absoluteTo(pageData.getUrlStart()).toString();
-		}
-
-		var sectionURL = urlParsed.toString();
-
-		if (ellucianSectionParser.supportsPage(sectionURL)){
-			sectionStartingData.url = sectionURL;
-		}
-
-		//add the crn
-		var sectionURLParsed = this.sectionURLtoInfo(sectionURL);
-		if (!sectionURLParsed) {
-			console.log('error could not parse section url',sectionURL,pageData.dbData.url);
-			return;
-		};
-
-
+		console.log(classToAddSectionTo)
 		sectionStartingData.crn = sectionURLParsed.crn;
 		classToAddSectionTo.parsingData.crns.push(sectionURLParsed.crn);
 
@@ -452,6 +456,7 @@ EllucianClassParser.prototype.tests = function () {
 				crns: [ '24600']},JSON.stringify( pageData.dbData));
 
 	        //first dep is the section, second dep is the class - Lab (which has 3 deps, each section)
+	        // console.log(pageData.deps)
 	        assert.equal(pageData.deps.length,2);
 	        assert.equal(pageData.deps[0].parent,pageData);
 	        assert.equal(pageData.deps[0].parser,ellucianSectionParser);
@@ -459,7 +464,7 @@ EllucianClassParser.prototype.tests = function () {
 	        //pageData.deps[1] is the other class
 	        assert.equal(pageData.deps[1].parser,this);
 	        assert.deepEqual(pageData.deps[1].dbData.crns,[ '24601', '24603', '25363' ]);
-	        assert.equal(pageData.deps[1].dbData.name,'Thermodyn/stat Mechanics- Lab');
+	        assert.equal(pageData.deps[1].dbData.name,'Thermodyn/stat Mechanics - Lab');
 	        assert.equal(pageData.deps[1].deps.length,3);
 	        assert.equal(pageData.deps[1].deps[0].parser,ellucianSectionParser);
 	        assert.equal(pageData.deps[1].deps[1].parser,ellucianSectionParser);

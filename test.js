@@ -25,11 +25,15 @@ var termsDB = require('./databases/termsDB')
 var subjectsDB = require('./databases/subjectsDB')
 var collegeNamesDB = require('./databases/collegeNamesDB')
 
-// classesDB.db.find({host:'tntech.edu'},function (err,docs) {
-// 	docs.forEach(function (doc) {
-// 		classesDB.db.remove({_id:doc._id});
-// 	})
-// })
+classesDB.db.find({},function (err,docs) {
+	docs.forEach(function (doc) {
+		// if (!doc.crns) {
+			// classesDB.db.update({_id:doc._id},{$set:{crns:[]}});
+		classesDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+			
+		// };
+	})
+})
 
 
 sectionsDB.db.find({},function (err,docs) {
@@ -38,33 +42,34 @@ sectionsDB.db.find({},function (err,docs) {
 			console.log(doc)
 		};
 		// sectionsDB.db.remove({_id:doc._id});
+		sectionsDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
 	})
 })
 
 
-// linksDB.db.find({host:'tntech.edu'},function (err,docs) {
-// 	docs.forEach(function (doc) {
-// 		linksDB.db.remove({_id:doc._id});
-// 	})
-// })
+linksDB.db.find({},function (err,docs) {
+	docs.forEach(function (doc) {
+		linksDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+	})
+})
 
-// termsDB.db.find({host:'tntech.edu'},function (err,docs) {
-// 	docs.forEach(function (doc) {
-// 		termsDB.db.remove({_id:doc._id});
-// 	})
-// })
+termsDB.db.find({},function (err,docs) {
+	docs.forEach(function (doc) {
+		termsDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+	})
+})
 
-// subjectsDB.db.find({host:'tntech.edu'},function (err,docs) {
-// 	docs.forEach(function (doc) {
-// 		subjectsDB.db.remove({_id:doc._id});
-// 	})
-// })
+subjectsDB.db.find({},function (err,docs) {
+	docs.forEach(function (doc) {
+		subjectsDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+	})
+})
 
-// collegeNamesDB.db.find({host:'tntech.edu'},function (err,docs) {
-// 	docs.forEach(function (doc) {
-// 		collegeNamesDB.db.remove({_id:doc._id});
-// 	})
-// })
+collegeNamesDB.db.find({},function (err,docs) {
+	docs.forEach(function (doc) {
+		collegeNamesDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+	})
+})
 
 // classesDB.db.remove({host:'tntech.edu'})
 // sectionsDB.db.remove({host:'tntech.edu'})
