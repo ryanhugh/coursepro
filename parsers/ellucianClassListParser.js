@@ -2,6 +2,8 @@
 
 var _ = require('lodash');
 var he = require('he');
+var fs = require('fs');
+var assert = require('assert');
 var URI = require('URIjs');
 
 var pointer = require('../pointer');
@@ -24,7 +26,7 @@ EllucianClassListParser.prototype.constructor = EllucianClassListParser;
 
 
 EllucianClassListParser.prototype.supportsPage = function (url) {
-	return url.indexOf('bwckctlg.p_disp_course_detail')>-1;
+	return url.indexOf('bwckctlg.p_display_courses')>-1;
 }
 
 EllucianClassListParser.prototype.getDatabase = function(pageData) {
@@ -64,7 +66,18 @@ EllucianClassListParser.prototype.parseElement = function(pageData,element) {
 	if (element.name == 'a' && element.attribs.href){
 		var url = he.decode(element.attribs.href);
 
-		url = new URI(url).absoluteTo(this.getBaseURL(pageData.dbData.url)).toString()
+
+		var baseURL = this.getBaseURL(pageData.dbData.url);
+		if (!baseURL) {
+			console.log('could not find base url',pageData.dbData.url)
+			return
+		};
+
+		if (_(url).startsWith('javascript')) {
+			return;
+		};
+
+		url = new URI(url).absoluteTo(baseURL).toString()
 		if (!url) {
 			console.log('unable to find url for ',element)
 			return
@@ -96,21 +109,37 @@ EllucianClassListParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianClassListParser.prototype.tests = function() {
-	var a = this.parseElement({
-		dbData:{
-			termId:1,
-			url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?term_in=201504&one_subj=MATH&sel_subj=&sel_crse_strt=025S&sel_crse_end=025S&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr='
-		}
-	},
-	{
-		type:'tag',
-		name:'a',
-		attribs:{
-			href:'url_here'
-		}
-	})
-	console.log(a)
-	
+	require('../pageDataMgr')
+
+
+	//
+	fs.readFile('../tests/ellucianClassListParser/2.html','utf8',function (err,body) {
+		assert.equal(null,err);
+
+		pointer.handleRequestResponce(body,function (err,dom) {
+			assert.equal(null,err);
+
+			var url = 'https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+
+			var catalogURL= "https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_course_detail?cat_term_in=201580&subj_code_in=MDCN&crse_numb_in=2064";
+
+			assert.equal(true,this.supportsPage(url));
+
+			var pageData = pageDataMgr.create({dbData:{
+				url:url,
+				subject:'MATH',
+				termId:'201504'
+			}});
+
+			this.parseDOM(pageData,dom);
+
+			assert.equal(pageData.deps.length,1);
+			assert.equal(pageData.deps[0].dbData.url,catalogURL)
+			
+		}.bind(this));
+	}.bind(this));//
+
+
 };
 
 
