@@ -108,7 +108,7 @@ app.get('/listColleges',function (req,res) {
 	 },function (err,names) {
 	 	if (err) {
 	 		console.log('error college names failed',req.url,err);
-	 		res.send(err);
+	 		res.send('internal server error :/');
 	 		return;
 	 	};
 
@@ -132,10 +132,8 @@ app.post('/listTerms',function (req,res) {
 	 	shouldBeOnlyOne:false,
 	 	sanatize:true
 	 },function (err,terms) {
-
-		//probably change this later
 		if (err) {
-			res.send(err)
+			res.send('internal server error :/')
 			return;
 		};
 
@@ -160,9 +158,8 @@ app.post('/listSubjects',function (req,res) {
 	 	shouldBeOnlyOne:false,
 	 	sanatize:true
 	 },function (err,subjects) {
-
 		if (err) {
-			res.send(err);
+			res.send('internal server error :/')
 			return;
 		};
 
@@ -197,7 +194,7 @@ app.post('/listClasses',function (req,res) {
 	 	sanatize:true
 	 },function (err,classes) {
 		if (err) {
-			res.send(err);
+			res.send('internal server error :/')
 			return;
 		};
 		res.send(JSON.stringify(classes));
@@ -229,9 +226,8 @@ app.post('/listSections',function (req,res) {
 	 	shouldBeOnlyOne:false,
 	 	sanatize:true
 	 },function (err,classes) {
-
 		if (err) {
-			res.send(err);
+			res.send('internal server error :/')
 			return;
 		};
 		res.send(JSON.stringify(classes));
@@ -245,10 +241,10 @@ app.post('/listSections',function (req,res) {
 
 // serve the webpage
 app.get('/', function (req, res) {
-	res.sendFile('static/index.html',{"root": __dirname});
+	res.sendFile('frontend/static/index.html',{"root": __dirname});
 });
 
-app.use(express.static('static'));
+app.use(express.static('frontend/static'));
 
 app.get("/*", function(req, res, next) {
 	next("Could not find page "+req.url);

@@ -160,7 +160,7 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 
 	for (var siteHostName in throtteling) {
 		if (siteHostName==currentHostname && this.openRequests>throtteling[siteHostName]) {
-			console.log('warning postponing request to ',this.openRequests,url);
+			console.log('info postponing request to ',this.openRequests,url);
 			return this.tryAgain(url,options,callback,tryCount-1);
 		}
 	}

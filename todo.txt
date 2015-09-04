@@ -12,6 +12,11 @@ final exam - solve this after ^ - when enddate == startdate
 dont add duplicate locations (eece 5698)
 
 
+does it support multiple )) ? https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201615&subj_code_in=BTC&crse_numb_in=6213
+
+if catalog credits is a range, and the section is in the range, dont override https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201560&crn_in=60983
+
+
 MEDIUM TERM:
 0 - if a page is removed, deps will not update?
 0.5 - make databases optional
