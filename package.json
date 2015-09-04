@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "domutils": "latest",
+    "express": "latest",
+    "nedb": "latest",
+    "request": "latest",
+    "to-title-case": "latest",
+    "async": "latest",
+    "moment": "latest",
+    "URIjs": "latest",
+    "require-dir": "latest",
+    "clone": "latest",
+    "lodash": "latest",
+    "nodemailer": "latest",
+    "needle": "latest",
+    "querystring": "latest",
+    "htmlparser2": "latest",
+    "node-whois": "latest",
+    "queue-async": "latest",
+    "body-parser": "latest",
+    "he": "latest"
+  },
+  "description": "Awesome sauce!"
+}

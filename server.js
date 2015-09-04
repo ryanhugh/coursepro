@@ -52,7 +52,7 @@ function validateEmail(email) {
 
 
 app.use(function (req, res, next) {
-	console.log(req.connection.remoteAddress,req.url,req.body);
+	console.log(req.connection.remoteAddress,new Date().getTime(),req.url,JSON.stringify(req.body));
 	next();
 });
 
@@ -260,4 +260,4 @@ app.get("/*", function(req, res, next) {
 });
 
 
-app.listen(3000);
+app.listen(80);

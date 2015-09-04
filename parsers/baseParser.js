@@ -48,7 +48,9 @@ BaseParser.prototype.parse = function(pageData,callback) {
 BaseParser.prototype.isValidData = function(pageData) {
 	
 	//ensure that data has all of these attributes
-	for (var attrName of this.requiredAttrs) {
+
+	for (var i = 0; i < this.requiredAttrs.length; i++) {
+		var attrName = this.requiredAttrs[i]
 		if (pageData.getData(attrName)===undefined) {
 			console.log('MISSING',attrName)
 			return false;
