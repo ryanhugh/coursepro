@@ -12,6 +12,7 @@ var linksDB = require('../databases/linksDB')
 var classesDB = require('../databases/classesDB')
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 var ellucianClassParser = require('./ellucianClassParser');
+var ellucianRequisitesParser = require('./ellucianRequisitesParser');
 
 
 function EllucianCatalogParser () {
@@ -27,7 +28,7 @@ EllucianCatalogParser.prototype.constructor = EllucianCatalogParser;
 
 
 EllucianCatalogParser.prototype.supportsPage = function (url) {
-	return url.indexOf('bwckctlg.p_display_courses')>-1 || url.indexOf('bwckctlg.p_disp_course_detail')>-1;
+	return url.indexOf('bwckctlg.p_disp_course_detail')>-1;
 }
 
 
@@ -37,37 +38,31 @@ EllucianCatalogParser.prototype.getDatabase = function(pageData) {
 
 
 EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
+
+
+	//get the classId from the url
+	var catalogURLQuery = new URI(pageData.dbData.url).query(true);
+	if (!catalogURLQuery.crse_numb_in) {
+		console.log('error could not find Current courseId??',catalogURLQuery,pageData.dbData.url)
+		return;
+	};
 	
 	
 	var depData = {
 		desc:'',
-		classId:''
+		classId:catalogURLQuery.crse_numb_in
 	};
 
 
-	//get classId
-	var titleLinks = domutils.getElementsByTagName('a',element);
-	if (titleLinks.length!=1) {
-		console.log('titleLinks !=1??',pageData.dbData.url,titleLinks)
-		return;
-	}
 
-	var catalogDetailURL = he.decode(titleLinks[0].attribs.href);
-
-	var catalogDetailQuery = new URI(catalogDetailURL).query(true);
-	if (!catalogDetailQuery.crse_numb_in) {
-		console.log('errr could not find crse_numb_in in ',pageData.dbData.url)
-		return;
-	}
-
-	depData.classId = catalogDetailQuery.crse_numb_in;
+	
 	depData.prettyUrl=this.createCatalogUrl(pageData.dbData.url,pageData.dbData.termId,pageData.dbData.subject,depData.classId)
 
 	//get the class name
-	var value = domutils.getText(titleLinks[0]);
+	var value = domutils.getText(element);
 
 	var match = value.match(/.+?\s-\s*(.+)/i);
-	if (!match || match.length<2) {
+	if (!match || match.length<2 || match[1].length<2) {
 		console.log('could not find title!',match,titleLinks[0],value);
 		return;
 	}
@@ -122,6 +117,19 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 		return;
 	}
 
+	// console.log(element.children)
+	//find co and pre reqs and restrictions
+	var prereqs =ellucianRequisitesParser.parseRequirementSection(pageData,element.children,'prerequisites');
+	if (prereqs) {
+		depData.prereqs = prereqs;
+	}
+
+	var coreqs =ellucianRequisitesParser.parseRequirementSection(pageData,element.children,'corequisites');
+	if (coreqs) {
+		depData.coreqs = coreqs;
+	}
+
+
 	//update existing dep
 	for (var i = 0; i < pageData.deps.length; i++) {
 		var currDep = pageData.deps[i]
@@ -151,6 +159,16 @@ EllucianCatalogParser.prototype.parseElement = function(pageData,element) {
 
 
 	if (element.name == 'td' && element.attribs.class == 'nttitle' && _(element.parent.parent.attribs.summary).includes('term')) {
+
+
+		if (pageData.parsingData.foundClass) {
+			console.log('error found multiple classes ignoring the second one',pageData.dbData.url)
+			return;
+		};
+
+		pageData.parsingData.foundClass=true
+
+
 		this.parseClass(pageData,element);
 	}
 };
@@ -195,15 +213,48 @@ EllucianCatalogParser.prototype.getEmailData = function(pageData) {
 EllucianCatalogParser.prototype.tests = function() {
 	require('../pageDataMgr')
 
+
+	//
+	fs.readFile('../tests/ellucianCatalogParser/5.html','utf8',function (err,body) {
+		assert.equal(null,err);
+
+		pointer.handleRequestResponce(body,function (err,dom) {
+			assert.equal(null,err);
+
+			var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201610&subj_code_in=MATH&crse_numb_in=2331';
+
+			var classURL= "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=MATH&crse_in=2331&schd_in=%25";
+
+
+			assert.equal(true,this.supportsPage(url));
+
+			var pageData = pageDataMgr.create({dbData:{
+				url:url,
+				subject:'MATH',
+				termId:'201610'
+			}});
+
+			this.parseDOM(pageData,dom);
+
+			assert.equal(pageData.deps.length,1);
+			assert.equal(pageData.deps[0].dbData.desc,'Uses the Gauss-Jordan elimination algorithm to analyze and find bases for subspaces such as the image and kernel of a linear transformation. Covers the geometry of linear transformations: orthogonality, the Gram-Schmidt process, rotation matrices, and least squares fit. Examines diagonalization and similarity, and the spectral theorem and the singular value decomposition. Is primarily for math and science majors; applications are drawn from many technical fields. Computation is aided by the use of software such as Maple or MATLAB, and graphing calculators. Prereq. MATH 1242, MATH 1252, MATH 1342, or CS 2800. 4.000 Lecture hours',pageData.deps[0].dbData.desc)
+			assert.equal(pageData.deps[0].dbData.classId,'2331');
+			assert.equal(pageData.deps[0].dbData.url,classURL)
+			// console.log(pageData.deps[0].dbData.prereqs,'HEREEEE')
+			
+		}.bind(this));
+	}.bind(this));//
+	return
+
 	fs.readFile('../tests/ellucianCatalogParser/1.html','utf8',function (err,body) {
 		assert.equal(null,err);
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);
 
-			//this is not the url of this page...
-			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=522&sel_crse_end=522&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+			
+			var url = 'https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_course_detail?cat_term_in=201503&subj_code_in=AIRF&crse_numb_in=522';
 
-			var classURL= "https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=522&schd_in=%25";
+			var classURL= "https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=522&schd_in=%25";
 
 
 			assert.equal(true,this.supportsPage(url));
@@ -227,10 +278,9 @@ EllucianCatalogParser.prototype.tests = function() {
 
 			
 			assert.equal(pageData.deps[0].dbData.desc, "Topics in Poetry and Prosody Irregular Prereqs.: None Detailed and systematic study of poetic form, including versification, rhetorical tropes, diction, and tone. May be organized by period, subject matter, genre, or critical method. May be repeated with different topics for up to 6 credits. 3.000 Lecture hours",pageData.deps[0].dbData.desc);
-			assert.equal(pageData.deps[0].dbData.url, 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=522&schd_in=%25');
+			assert.equal(pageData.deps[0].dbData.url, classURL);
 			assert.equal(pageData.deps[0].dbData.classId, "522");
-			console.log(pageData.deps[0].dbData.prettyUrl,'fjsdkfjalb')
-			assert.equal(pageData.deps[0].dbData.prettyUrl, 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=AIRF&sel_crse_strt=522&sel_crse_end=522&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=');
+			assert.equal(pageData.deps[0].dbData.prettyUrl,url);
 
 
 		}.bind(this));
@@ -243,7 +293,7 @@ EllucianCatalogParser.prototype.tests = function() {
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);
 
-			var url = 'https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+			var url = 'https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_course_detail?cat_term_in=201580&subj_code_in=MDCN&crse_numb_in=2064';
 
 			var classURL= "https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201580&subj_in=MDCN&crse_in=2064&schd_in=%25";
 
@@ -276,7 +326,7 @@ EllucianCatalogParser.prototype.tests = function() {
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);
 
-			var url = 'https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
+			var url = 'https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_course_detail?cat_term_in=201610&subj_code_in=COM&crse_numb_in=507';
 
 			var classURL= "https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%25";
 
@@ -295,10 +345,12 @@ EllucianCatalogParser.prototype.tests = function() {
 			assert.equal(pageData.deps.length,1);
 			assert.equal(pageData.deps[0].dbData.desc,'Current internet, social media, and mobile media marketing theories , strategies, tools and practices. Includes study of communication methods used by professionals in journalism, film, television, advertising, public relations, and related professions to brand, promote, and distribute products and services. Web-based production lab included. Cross-listed with JRN 507.',pageData.deps[0].dbData.desc)
 			assert.equal(pageData.deps[0].dbData.classId,'507');
-			assert.equal(pageData.deps[0].dbData.url,'https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%25' )
+			assert.equal(pageData.deps[0].dbData.url,classURL)
 			
 		}.bind(this));
 	}.bind(this));//
+
+	//
 
 	//
 	console.log('all tests done bro');

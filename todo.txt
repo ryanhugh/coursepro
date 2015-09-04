@@ -13,7 +13,8 @@ dont add duplicate locations (eece 5698)
 
 
 MEDIUM TERM:
-
+0 - if a page is removed, deps will not update?
+0.5 - make databases optional
 https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201504&subj_in=CPSC&crse_in=081&schd_in=% is not parsed correctly :(
 1. scrape credits from catalog page so have if no sections
 2. dont send the cntrollers to the client
@@ -71,7 +72,7 @@ far future: dashboard
 
 BEFORE PUBLIC:
 remove login info from emailmgr.js
-remove res.header('access-control-allow-origin','*')
+minify js
 remove sending any internal error to client
 
 

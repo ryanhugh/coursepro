@@ -76,8 +76,6 @@ BaseParser.prototype.onEndParsing = function(pageData) {
 
 BaseParser.prototype.parseDOM = function(pageData,dom){
 
-	// pageData.setData('host',pointer.getBaseHost(pageData.dbData.url));
-
 	this.onBeginParsing(pageData,dom);
 
 	domutils.findAll(this.parseElement.bind(this,pageData),dom);
@@ -266,11 +264,11 @@ BaseParser.prototype.parseForm = function (url,dom) {
 
 
 BaseParser.prototype.getOptionallyPlural = function(num) {
-	if (num>1) {
-		return 's'
+	if (num===1) {
+		return ''
 	}
 	else {
-		return ''
+		return 's'
 	}
 };
 

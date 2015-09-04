@@ -14,7 +14,7 @@ function EllucianBaseParser () {
 EllucianBaseParser.prototype = Object.create(BaseParser.prototype);
 EllucianBaseParser.prototype.constructor = EllucianBaseParser;
 
-EllucianBaseParser.prototype.catalogURLtoClassInfo = function(catalogURL) {
+EllucianBaseParser.prototype.classListURLtoClassInfo = function(catalogURL) {
 	var catalogParsed = new URI(catalogURL);
 	if (!catalogParsed || catalogParsed.host()==='') {
 		console.log('error given invalid catalog url?',catalogURL);
@@ -56,6 +56,19 @@ EllucianBaseParser.prototype.catalogURLtoClassInfo = function(catalogURL) {
 	}
 };
 
+EllucianBaseParser.prototype.createClassListUrl = function(siteURL,termId,subject) {
+	var baseURL = this.getBaseURL(siteURL);
+	if (!baseURL) {
+		console.log('could not find base url of ',siteURL)
+		return;
+	};
+
+
+	var retVal = new URI(baseURL);
+	retVal = new URI('bwckctlg.p_display_courses?term_in='+termId+'&one_subj='+subject+'&sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=').absoluteTo(retVal)
+	return retVal.toString();
+};
+
 EllucianBaseParser.prototype.createCatalogUrl = function(siteURL,termId,subject,classId) {
 	var baseURL = this.getBaseURL(siteURL);
 	if (!baseURL) {
@@ -64,11 +77,13 @@ EllucianBaseParser.prototype.createCatalogUrl = function(siteURL,termId,subject,
 	};
 
 	if (classId===undefined) {
-		classId=''
+		console.log('error need class id for catalog url')
+		console.trace()
+		return
 	};
 
 	var retVal = new URI(baseURL);
-	retVal = new URI('bwckctlg.p_display_courses?term_in='+termId+'&one_subj='+subject+'&sel_crse_strt='+classId+'&sel_crse_end='+classId+'&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=').absoluteTo(retVal)
+	retVal = new URI('bwckctlg.p_disp_course_detail?cat_term_in='+termId+'&subj_code_in='+subject+'&crse_numb_in='+classId).absoluteTo(retVal)
 	return retVal.toString();
 };
 
@@ -101,31 +116,6 @@ EllucianBaseParser.prototype.sectionURLtoInfo = function(sectionURL) {
 }
 
 
-EllucianBaseParser.prototype.catalogURLtoClassURL = function(catalogURL) {
-	
-	var classInfo = this.catalogURLtoClassInfo(catalogURL);
-	if (!classInfo) {
-		return;
-	};
-
-	var baseURL = this.getBaseURL(catalogURL);
-	if (!baseURL) {
-		return;
-	}
-
-	var classURL = new URI(baseURL);
-
-	classURL=classURL.segment('bwckctlg.p_disp_listcrse')
-	classURL.addQuery('term_in',classInfo.termId);
-	classURL.addQuery('subj_in',classInfo.subject);
-	classURL.addQuery('crse_in',classInfo.classId);
-	classURL.addQuery('schd_in','%');
-
-	return classURL.toString()
-};
-
-
-
 EllucianBaseParser.prototype.getBaseURL = function(url) {
 	
 	var splitAfter = ['bwckctlg.p','bwckschd.p','bwckgens.p'];
@@ -155,9 +145,9 @@ EllucianBaseParser.prototype.tests = function() {
 
 
 	var classURL = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=%25';
-	console.log(this.createCatalogUrl(classURL,"201503",'AIRF'))
+	console.log(this.createCatalogUrl(classURL,"201503",'AIRF','2041'))
 
-	assert.equal(this.catalogURLtoClassURL(catagoryURL),classURL);
+
 	assert.equal(this.getBaseURL(catagoryURL),'https://prd-wlssb.temple.edu/prod8/');
 	assert.equal(this.getBaseURL(classURL),'https://prd-wlssb.temple.edu/prod8/');
 

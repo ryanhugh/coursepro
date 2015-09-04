@@ -120,7 +120,6 @@ app.get('/listColleges',function (req,res) {
 
 
 app.post('/listTerms',function (req,res) {
-	res.header('access-control-allow-origin','*')
 
 	if (!req.body.host) {
 		console.log('error, no host given body:');
@@ -145,7 +144,6 @@ app.post('/listTerms',function (req,res) {
 })
 
 app.post('/listSubjects',function (req,res) {
-	res.header('access-control-allow-origin','*')
 	
 	if (!req.body.host || !req.body.termId) {
 		console.log('error, no host or termId given body:');
@@ -174,7 +172,6 @@ app.post('/listSubjects',function (req,res) {
 
 
 app.post('/listClasses',function (req,res) {
-	res.header('access-control-allow-origin','*')
 	
 	if (!req.body.host || !req.body.termId || !req.body.subject) {
 		console.log('error, no host or termId or subject given body:');
@@ -208,7 +205,6 @@ app.post('/listClasses',function (req,res) {
 })
 
 app.post('/listSections',function (req,res) {
-	res.header('access-control-allow-origin','*')
 	
 	if (!req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) {
 		console.log('error, no host or termId or subject or classId given body:');
