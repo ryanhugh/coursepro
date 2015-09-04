@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var he = require('he');
+var URI = require('URIjs');
 
 var pointer = require('../pointer');
 var linksDB = require('../databases/linksDB')
@@ -62,6 +63,13 @@ EllucianClassListParser.prototype.parseElement = function(pageData,element) {
 
 	if (element.name == 'a' && element.attribs.href){
 		var url = he.decode(element.attribs.href);
+
+		url = new URI(url).absoluteTo(this.getBaseURL(pageData.dbData.url)).toString()
+		if (!url) {
+			console.log('unable to find url for ',element)
+			return
+		};
+
 		if (ellucianCatalogParser.supportsPage(url)) {
 			this.optionallyAddDep(pageData,url);
 		};
@@ -88,7 +96,20 @@ EllucianClassListParser.prototype.getEmailData = function(pageData) {
 
 
 EllucianClassListParser.prototype.tests = function() {
-	
+	var a = this.parseElement({
+		dbData:{
+			termId:1,
+			url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?term_in=201504&one_subj=MATH&sel_subj=&sel_crse_strt=025S&sel_crse_end=025S&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr='
+		}
+	},
+	{
+		type:'tag',
+		name:'a',
+		attribs:{
+			href:'url_here'
+		}
+	})
+	console.log(a)
 	
 };
 
