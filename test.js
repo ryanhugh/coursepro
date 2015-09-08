@@ -18,58 +18,73 @@ var dns = require('dns');
 // var title = require('to-title-case');
 var queue = require("queue-async")
 
-var classesDB = require('./databases/classesDB')
-var sectionsDB = require('./databases/sectionsDB')
-var linksDB = require('./databases/linksDB')
-var termsDB = require('./databases/termsDB')
-var subjectsDB = require('./databases/subjectsDB')
-var collegeNamesDB = require('./databases/collegeNamesDB')
+// var classesDB = require('./databases/classesDB')
+// var sectionsDB = require('./databases/sectionsDB')
+// var linksDB = require('./databases/linksDB')
+// var termsDB = require('./databases/termsDB')
+// var subjectsDB = require('./databases/subjectsDB')
+// var collegeNamesDB = require('./databases/collegeNamesDB')
 
-classesDB.db.find({},function (err,docs) {
-	docs.forEach(function (doc) {
-		// if (!doc.crns) {
-			// classesDB.db.update({_id:doc._id},{$set:{crns:[]}});
-		classesDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+
+function h () {
+	h.t=9	
+}
+
+h.prototype.call = function(first_argument) {
+	// body...
+};
+
+a = new h
+console.log(a())
+
+
+
+
+// classesDB.db.find({},function (err,docs) {
+// 	docs.forEach(function (doc) {
+// 		// if (!doc.crns) {
+// 			// classesDB.db.update({_id:doc._id},{$set:{crns:[]}});
+// 		classesDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
 			
-		// };
-	})
-})
+// 		// };
+// 	})
+// })
 
 
-sectionsDB.db.find({},function (err,docs) {
-	docs.forEach(function (doc) {
-		if (!doc.crn.match(/\d{5}/)) {
-			console.log(doc)
-		};
-		// sectionsDB.db.remove({_id:doc._id});
-		sectionsDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
-	})
-})
+// sectionsDB.db.find({},function (err,docs) {
+// 	docs.forEach(function (doc) {
+// 		if (!doc.crn.match(/\d{5}/)) {
+// 			console.log(doc)
+// 		};
+// 		// sectionsDB.db.remove({_id:doc._id});
+// 		sectionsDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+// 	})
+// })
 
 
-linksDB.db.find({},function (err,docs) {
-	docs.forEach(function (doc) {
-		linksDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
-	})
-})
+// linksDB.db.find({},function (err,docs) {
+// 	docs.forEach(function (doc) {
+// 		linksDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+// 	})
+// })
 
-termsDB.db.find({},function (err,docs) {
-	docs.forEach(function (doc) {
-		termsDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
-	})
-})
+// termsDB.db.find({},function (err,docs) {
+// 	docs.forEach(function (doc) {
+// 		termsDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+// 	})
+// })
 
-subjectsDB.db.find({},function (err,docs) {
-	docs.forEach(function (doc) {
-		subjectsDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
-	})
-})
+// subjectsDB.db.find({},function (err,docs) {
+// 	docs.forEach(function (doc) {
+// 		subjectsDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+// 	})
+// })
 
-collegeNamesDB.db.find({},function (err,docs) {
-	docs.forEach(function (doc) {
-		collegeNamesDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
-	})
-})
+// collegeNamesDB.db.find({},function (err,docs) {
+// 	docs.forEach(function (doc) {
+// 		collegeNamesDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
+// 	})
+// })
 
 // classesDB.db.remove({host:'tntech.edu'})
 // sectionsDB.db.remove({host:'tntech.edu'})
