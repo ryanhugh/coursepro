@@ -18,7 +18,11 @@
     "node-whois": "latest",
     "queue-async": "latest",
     "body-parser": "latest",
+    "gulp": "latest",
+    "gulp-uglify": "latest",
+    "gulp-concat": "latest",
+    "gulp-wrap": "latest",
     "he": "latest"
   },
-  "description": "Awesome sauce!"
+  "description": "Awesome sauce! Yay!"
 }
