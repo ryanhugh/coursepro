@@ -19,7 +19,7 @@ gulp.task('watch', function() {
 
 
 
-gulp.task('server',function () {
+gulp.task('server',['compress'],function () {
 	require('./server.js')
 })
 
