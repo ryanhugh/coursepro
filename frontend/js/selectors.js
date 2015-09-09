@@ -153,8 +153,8 @@ Selectors.prototype.selectTerm = function(callback) {
 		}.bind(this))
 
 		selectValues.sort(function(a, b){
-			if(a.id < b.id) return -1;
-			if(a.id > b.id) return 1;
+			if(a.id > b.id) return -1;
+			if(a.id < b.id) return 1;
 			return 0;
 		}.bind(this))
 		this.setupSelector(this.selectTermElement,selectValues,'termSelectContainer', callback);

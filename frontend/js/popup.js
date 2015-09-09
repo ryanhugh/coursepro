@@ -3,23 +3,8 @@ function Popup () {
 	
 }
 
-
-Popup.prototype.addTimestoGroupedTimes = function(meetingsGrouped,dayIndex,times) {
-	for (var i = 0; i < meetingsGrouped.length; i++) {
-		if (_.isEqual(meetingsGrouped[i].times,times)){
-			meetingsGrouped[i].days.push(dayIndex)
-			meetingsGrouped[i].dayString+=', '+weekDays[dayIndex]
-			return;
-		}
-	}
-
-	meetingsGrouped.push({
-		times:times,
-		days:[dayIndex],
-	})
-}
-
-
+//creates 7:00 - 9:00 am
+// Thursday, Friday string
 var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saterday']
 Popup.prototype.createTimeStrings = function(meetingsGrouped) {
 	
@@ -66,58 +51,97 @@ Popup.prototype.calculateHoursPerWeek = function(meetingsGrouped) {
 		meeting.hoursPerWeek = Math.round(10*meeting.hoursPerWeek)/10
 	}.bind(this))
 }
-Popup.prototype.groupSectionTimes = function(body) {
-	//make a list of all profs
-	body.forEach(function (section) {
-		if (section.meetings) {
 
-			var profs = []
-			var locations = []
-			section.meetings.forEach(function (meeting) {
-
-				meeting.profs.forEach(function (prof) {
-					if (profs.indexOf(prof)<0) {
-						profs.push(prof);
-					};
-				}.bind(this))
-
-				if (locations.indexOf(meeting.where)<0) {
-					if (meeting.where.toLowerCase()==='tba' || meeting.where==='') {
-						if (locations.length===0) {
-							locations.push('location undecided');
-						};
-					}
-					else if (meeting.where.toLowerCase()=='web online') {
-						locations.push('Web online');
-
-					}
-					else {
-						locations.push('<a target="_blank" href="http://maps.google.com/?q='+selectors.selectCollegeElement.select2('data')[0].text+' '+meeting.where.replace(/\d+\s*$/i,'')+'">'+meeting.where+'</a>');
-					}
-
-				};
+Popup.prototype.addTimestoGroupedTimes = function(meetingsGrouped,dayIndex,meeting) {
+	var times = meeting.times[dayIndex]
 
 
-			}.bind(this))
+	for (var i = 0; i < meetingsGrouped.length; i++) {
+		if (_.isEqual(meetingsGrouped[i].times,times)){
+			meetingsGrouped[i].days.push(dayIndex)
+			// meetingsGrouped[i].dayString+=', '+weekDays[dayIndex]
+			return;
+		}
+	}
+	// debugger;
 
-			//group the times by start/end time (so can put days underneath)
-			var meetingsGrouped = []
-			section.meetings.forEach(function (meeting) {
-				for (var dayIndex in meeting.times) {
-					this.addTimestoGroupedTimes(meetingsGrouped,dayIndex,meeting.times[dayIndex])
-				}
-			}.bind(this))
-			this.createTimeStrings(meetingsGrouped)
-			this.calculateHoursPerWeek(meetingsGrouped);
+	var meetingClone = _.cloneDeep(meeting);
+	meetingClone.days = [dayIndex];
 
+	meetingsGrouped.push(meetingClone);
+}
 
-			section.times = meetingsGrouped;
-			section.profs = profs.join(', ');
-			section.locations = locations.join(', ');
-			
-		};
+Popup.prototype.calculateExams = function(meetingsGrouped) {
+	meetingsGrouped.forEach(function (meeting) {
+		// debugger;
+		//if only meets once, show that 
+		//usally exams, but some colleges have like classes every other week which will
+		//proc this too
+		if (meeting.startDate==meeting.endDate) {
+			meeting.isExam = true;
+		}
+		else {
+			meeting.isExam = false;
+		}
+
 	}.bind(this))
-	return body;
+};
+
+Popup.prototype.groupSectionTimes = function(sections) {
+	//make a list of all profs
+	sections.forEach(function (section) {
+		if (!section.meetings) {
+			return;
+		}
+		section.profs = []
+		section.locations = []
+
+		section.meetings.forEach(function (meeting) {
+
+
+			//make a big list of all meetings prof's in the section
+			meeting.profs.forEach(function (prof) {
+				if (section.profs.indexOf(prof)<0) {
+					section.profs.push(prof);
+				};
+			}.bind(this))
+		
+
+			if (section.locations.indexOf(meeting.where)<0) {
+				if (meeting.where.toLowerCase()==='tba' || meeting.where==='') {
+					if (section.locations.length===0) {
+						section.locations.push('location undecided');
+					};
+				}
+				else if (meeting.where.toLowerCase()=='web online') {
+					section.locations.push('Web online');
+				}
+				else {
+					section.locations.push('<a target="_blank" href="http://maps.google.com/?q='+selectors.selectCollegeElement.select2('data')[0].text+' '+meeting.where.replace(/\d+\s*$/i,'')+'">'+meeting.where+'</a>');
+				}
+			};
+
+
+		}.bind(this))
+
+		//group the times by start/end time (so can put days underneath)
+		var meetingsGrouped = []
+		section.meetings.forEach(function (meeting) {
+			for (var dayIndex in meeting.times) {
+				this.addTimestoGroupedTimes(meetingsGrouped,dayIndex,meeting)
+			}
+		}.bind(this))
+
+		this.createTimeStrings(meetingsGrouped)
+		this.calculateHoursPerWeek(meetingsGrouped);
+		this.calculateExams(meetingsGrouped);
+
+
+		section.meetingsGrouped = meetingsGrouped;
+		section.profs = section.profs.join(', ');
+		section.locations = section.locations.join(', ');
+	}.bind(this))
+	return sections;
 }
 Popup.prototype.createViewOnUrl = function(tree,url) {
 	return '<a target="_blank" href="'+url+'">View on <span class="hostName">'+tree.host+'</span></a>'
@@ -149,18 +173,18 @@ Popup.prototype.removeSectionsNotInClass = function(tree,sections) {
 	return retVal;
 }
 
-Popup.prototype.expandPanel = function(item) {
-	if (item.isString) {
+Popup.prototype.expandPanel = function(tree) {
+	if (tree.isString) {
 		return;
 	};
-	if (item.dataStatus!==treeMgr.DATASTATUS_DONE) {
+	if (tree.dataStatus!==treeMgr.DATASTATUS_DONE) {
 		return;
 	};
 
 
-	item.panel.style.zIndex = '999'
-	item.isExpanded=true;
-	var panelBody = item.panel.getElementsByClassName('panelBodyId')[0]
+	tree.panel.style.zIndex = '999'
+	tree.isExpanded=true;
+	var panelBody = tree.panel.getElementsByClassName('panelBodyId')[0]
 
 
 	//overall
@@ -169,31 +193,31 @@ Popup.prototype.expandPanel = function(item) {
 	//update button
 
 	//if not much details don't expand
-	if ((!item.desc || item.desc.length<20) && (!item.crns || item.crns.length===0)) {
+	if ((!tree.desc || tree.desc.length<20) && (!tree.crns || tree.crns.length===0)) {
 		panelBody.style.whiteSpace ='normal'
 		
 		
-		panelBody.innerHTML+=this.createCreditsHTML(item)
+		panelBody.innerHTML+=this.createCreditsHTML(tree)
 
 
 		var classURL ;
-		if (item.prettyUrl) {
-			classURL = item.prettyUrl;
+		if (tree.prettyUrl) {
+			classURL = tree.prettyUrl;
 		}
 		else {
-			classURL = item.url;
+			classURL = tree.url;
 		}
-		panelBody.innerHTML += '<br><a target="_blank" href="'+classURL+'"> view on '+item.host+'</a>'
+		panelBody.innerHTML += '<br><a target="_blank" href="'+classURL+'"> view on '+tree.host+'</a>'
 	}
 	else {
 		request({
 			url:'/listSections',
 			type:'POST',
 			body:JSON.stringify({
-				host:item.host,
-				termId:item.termId,
-				subject:item.subject,
-				classId:item.classId
+				host:tree.host,
+				termId:tree.termId,
+				subject:tree.subject,
+				classId:tree.classId
 			})
 		},function (err,body) {
 			if (err) {
@@ -201,11 +225,11 @@ Popup.prototype.expandPanel = function(item) {
 				return;
 			}
 
-			body = this.removeSectionsNotInClass(item,body)
+			body = this.removeSectionsNotInClass(tree,body)
 
 
-			//item was minimized before server responded...
-			if (!item.isExpanded) {
+			//tree was minimized before server responded...
+			if (!tree.isExpanded) {
 				return;
 			}
 
@@ -213,9 +237,9 @@ Popup.prototype.expandPanel = function(item) {
 			var panelWidth = 0;
 
 			//description box
-			if (item.desc) {
+			if (tree.desc) {
 				newBodyText.push('<div style="white-space: normal;margin-bottom:10px">')
-				newBodyText.push(item.desc)
+				newBodyText.push(tree.desc)
 				newBodyText.push('</div>')
 			};
 
@@ -223,19 +247,19 @@ Popup.prototype.expandPanel = function(item) {
 			newBodyText.push('<div class="classInfoContainer">')
 
 			//add credits to the left
-			if (item.minCredits!==undefined || item.maxCredits!==undefined) {
-				newBodyText.push('<div style="text-align:left;display: inline-block; position: absolute;max-width: 50%;">'+this.createCreditsHTML(item)+'</div>')				
+			if (tree.minCredits!==undefined || tree.maxCredits!==undefined) {
+				newBodyText.push('<div style="text-align:left;display: inline-block; position: absolute;max-width: 50%;">'+this.createCreditsHTML(tree)+'</div>')				
 			}
 
 			var classURL ;
-			if (item.prettyUrl) {
-				classURL = item.prettyUrl;
+			if (tree.prettyUrl) {
+				classURL = tree.prettyUrl;
 			}
 			else {
-				classURL = item.url;
+				classURL = tree.url;
 			}
 
-			newBodyText.push('<div style="text-align: right;display: inline-block;float:right;white-space: normal;max-width: 50%;" class="rightSectionText rightClassText">'+this.createViewOnUrl(item,classURL)+'</div>')
+			newBodyText.push('<div style="text-align: right;display: inline-block;float:right;white-space: normal;max-width: 50%;" class="rightSectionText rightClassText">'+this.createViewOnUrl(tree,classURL)+'</div>')
 
 			newBodyText.push('</div>')
 			newBodyText.push('<div style="text-align:center">')
@@ -247,6 +271,15 @@ Popup.prototype.expandPanel = function(item) {
 				if (section.meetings) {
 					panelWidth += 330
 					newBodyText.push('<div style="width: 260px;" class="classSection">')
+
+					section.meetingsGrouped.forEach(function (meeting) {
+						if (meeting.isExam) {
+							newBodyText.push( '<div style=" text-align: center;margin-bottom: 22px;">Exam<br>'+meeting.timeString+' date here'+'<br> '+meeting.dayString+' <br> '+meeting.hoursPerWeek+' hours </div>')
+						}
+						else {
+							newBodyText.push( '<div style=" text-align: center;margin-bottom: 22px;">'+meeting.timeString+'<br> '+meeting.dayString+' <br> '+meeting.hoursPerWeek+' hours/week </div>')
+						}
+					}.bind(this))
 				}
 				else {
 					panelWidth += 185
@@ -254,11 +287,6 @@ Popup.prototype.expandPanel = function(item) {
 				}
 
 
-				if (section.meetings) {
-					section.times.forEach(function (time) {
-						newBodyText.push( '<div style=" text-align: center;margin-bottom: 22px;">'+time.timeString+'<br> '+time.dayString+' <br> '+time.hoursPerWeek+' hours/week </div>')
-					}.bind(this))
-				}
 				newBodyText.push( '<div class="lowerSectionInfo">')
 
 
@@ -272,9 +300,12 @@ Popup.prototype.expandPanel = function(item) {
 				}
 				newBodyText.push( '<div style="display: inline-block;max-width: 50%;">'+leftBoxText+'</div>')
 
-				newBodyText.push( '<div style="text-align: right;display: inline-block;float:right;white-space: normal;max-width: 50%;" class="rightSectionText"> '+section.seatsRemaining+'/'+section.seatsCapacity+' seats<br>'+this.createViewOnUrl(item,section.url)+'</div></div>')
+				newBodyText.push( '<div style="text-align: right;display: inline-block;float:right;white-space: normal;max-width: 50%;" class="rightSectionText"> '+section.seatsRemaining+'/'+section.seatsCapacity+' seats<br>'+this.createViewOnUrl(tree,section.url)+'</div>')
 
 				newBodyText.push('</div>')
+				newBodyText.push('</div>')
+
+
 			}.bind(this))
 			//
 			newBodyText.push('</div>')
@@ -282,9 +313,9 @@ Popup.prototype.expandPanel = function(item) {
 			panelBody.style.whiteSpace = 'initial'
 			panelBody.innerHTML=newBodyText.join('');
 
-			item.panel.getElementsByClassName('rightSectionText')
+			tree.panel.getElementsByClassName('rightSectionText')
 
-			var elements = [].slice.call(item.panel.getElementsByClassName('rightSectionText'))
+			var elements = [].slice.call(tree.panel.getElementsByClassName('rightSectionText'))
 
 			elements.forEach(function (element) {
 				element.style.minWidth = element.getElementsByClassName('hostName')[0].offsetWidth + 'px'
@@ -293,7 +324,7 @@ Popup.prototype.expandPanel = function(item) {
 
 			panelBody.style.marginBottom = "-10px"
 
-			item.panel.style.height = ''
+			tree.panel.style.height = ''
 
 			if (!panelWidth) {
 				panelWidth = ''
@@ -304,17 +335,17 @@ Popup.prototype.expandPanel = function(item) {
 
 
 			//width + left offset
-			item.panel.style.width = panelWidth
-			item.panel.style.maxWidth = '890px'
-			item.panel.style.left = (item.x - item.panel.offsetWidth/2 ) + 'px'
+			tree.panel.style.width = panelWidth
+			tree.panel.style.maxWidth = '890px'
+			tree.panel.style.left = (tree.x - tree.panel.offsetWidth/2 ) + 'px'
 
 
 			//height + top offset
-			item.panel.style.top = Math.max(item.y - item.panel.offsetHeight/2,$('.navbar')[0].offsetHeight+25 ) + 'px'
+			tree.panel.style.top = Math.max(tree.y - tree.panel.offsetHeight/2,$('.navbar')[0].offsetHeight+25 ) + 'px'
 
 
 			//shadows are cool 
-			item.panel.style.boxShadow = 'gray 0px 0px 9px'
+			tree.panel.style.boxShadow = 'gray 0px 0px 9px'
 
 
 		}.bind(this))
@@ -360,7 +391,9 @@ Popup.prototype.addPopups = function(tree) {
 	};
 }
 
-
+Popup.prototype.go = function(tree) {
+	this.tree = tree;
+};
 
 Popup.prototype.Popup=Popup;
 window.popup = new Popup();

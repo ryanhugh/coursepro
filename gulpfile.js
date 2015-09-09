@@ -3,25 +3,38 @@ var gulp = require('gulp');
 var wrap = require("gulp-wrap");
 var concat = require("gulp-concat");
 
-gulp.task('compress', function() {
+gulp.task('uglify', function() {
 	return gulp.src(['frontend/js/*.js','frontend/js/modules/*.js'])
 	.pipe(wrap('(function(){\n<%= contents %>\n})();'))
 	.pipe(uglify())
 	.pipe(concat("allthejavascript.js"))
-	.pipe(gulp.dest('frontend/static/js'));
+	.pipe(gulp.dest('frontend/static/js/internal'));
 });
 
 
 
-gulp.task('watch', function() {
-  gulp.watch(['js/*.js','js/modules/*.js'], ['compress']);
+gulp.task('prod',['uglify'])
+
+
+
+
+gulp.task('compress',function  () {
+	return gulp.src(['frontend/js/*.js','frontend/js/modules/*.js'])
+	.pipe(wrap('(function(){\n<%= contents %>\n})();'))
+	.pipe(concat("allthejavascript.js"))
+	.pipe(gulp.dest('frontend/static/js/internal'));
+})
+
+gulp.task('watchCompress', function() {
+  gulp.watch(['frontend/js/*.js','frontend/js/modules/*.js'], ['compress']);
 });
 
 
 
-gulp.task('prod',['compress'],function () {
+gulp.task('dev',['compress','watchCompress'],function () {
 	require('./server.js')
 })
 
 
-gulp.task('default',['compress','watch','server']);
+
+// gulp.task('default',['compress','watch','prod']);

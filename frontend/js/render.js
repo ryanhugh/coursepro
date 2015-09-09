@@ -5,8 +5,9 @@ function Render () {
 	
 	this.template = document.getElementsByClassName('templatePanelId')[0];
 	this.container = document.getElementById('containerId');
-	if (!this.template || !this.container) {
-		console.log('error could not find template??',this.template,this.container)
+	this.navBar = document.getElementById('navBar');
+	if (!this.template || !this.container || !this.navBar) {
+		console.log('error could not find template??',this.template,this.container,this.navBar)
 	};
 }
 
@@ -46,27 +47,27 @@ Render.prototype.drawLine =function(x1, y1, x2, y2,color){
 	var div = document.createElementNS(htmlns, "div");
 	div.setAttribute('style','width:'+width+'px;height:0px;-moz-transform:rotate('+deg+'deg);-webkit-transform:rotate('+deg+'deg);position:absolute;top:'+y+'px;left:'+x+'px;');   
 	div.style.zIndex = '-999'
-	div.style.border = '4px solid '+color;
+	div.style.border = '4px solid '+color; 
 	div.style.borderRadius = '99px'
 	this.container.appendChild(div);
 	return div;
 }
+ 
 
+Render.prototype.calculateLine = function(tree) {
 
-Render.prototype.calculateLine = function(item) {
-
-	item.allParents.forEach(function (parent) {
+	tree.allParents.forEach(function (parent) {
 		if (!parent) {
-			console.log('not drawing line from',item.name)
+			console.log('not drawing line from',tree.name)
 			return
 		};
-		if (item.lineToParent) {
-			item.lineToParent.remove();
+		if (tree.lineToParent) {
+			tree.lineToParent.remove();
 		};
 		
-		var subDiv = item.panel;
+		var subDiv = tree.panel;
 		if (!subDiv) {
-			console.log(item,'????????? error')
+			console.log(tree,'????????? error')
 		};
 		
 		var subDivBounds = subDiv.getBoundingClientRect()
@@ -75,7 +76,7 @@ Render.prototype.calculateLine = function(item) {
 		var cloneY = subDivBounds.top+subDivBounds.height/2
 
 		if (!parent.panel) {
-			console.log('no panel on parent???',item)
+			console.log('no panel on parent???',tree)
 			return;
 		};
 		var parentDivBounds = parent.panel.getBoundingClientRect()
@@ -86,10 +87,10 @@ Render.prototype.calculateLine = function(item) {
 		//draw the line
 		var color = this.getColor(parent.type);
 		if (!color) {
-			console.log('error could not get color of ',item)
+			console.log('error could not get color of ',tree)
 			return;
 		};
-		item.lineToParent = this.drawLine(parentX,parentY,cloneX,cloneY,color);
+		tree.lineToParent = this.drawLine(parentX,parentY,cloneX,cloneY,color);
 	}.bind(this))
 
 }
@@ -118,10 +119,10 @@ Render.prototype.getLowestParent = function(parents) {
 	}
 	return lowestParent;
 }
-Render.prototype.addToParentDiv = function(item) {
-	var parent = this.getLowestParent(item.allParents);
+Render.prototype.addToParentDiv = function(tree) {
+	var parent = this.getLowestParent(tree.allParents);
 	if (parent && !parent.panel) {
-		console.log('error parent has no panel item:',item)
+		console.log('error parent has no panel tree:',tree)
 	};
 	
 	if (parent) {
@@ -129,11 +130,11 @@ Render.prototype.addToParentDiv = function(item) {
 			console.log('parent does not have a div!!',parent)
 			return;
 		}
-		parent.div.appendChild(item.div);
+		parent.div.appendChild(tree.div);
 	}
 	else {
-		item.div.style.minWidth="100%"
-		this.container.appendChild(item.div)
+		tree.div.style.minWidth="100%"
+		this.container.appendChild(tree.div)
 	}
 }
 Render.prototype.getOptionalS = function(num) {
@@ -144,56 +145,56 @@ Render.prototype.getOptionalS = function(num) {
 		return 's'
 	}
 }
-Render.prototype.makeCircles = function(item) {
+Render.prototype.addStructure = function(tree) {
 
-	if (!item.div && !item.panel) {
+	if (!tree.div && !tree.panel) {
 
-		item.div = document.createElement('div');
-		item.div.className = 'holderDiv'
-		item.div.style.display="inline-block"
-		item.div.style.margin="0 auto"
-		item.div.style.padding="20px"
+		tree.div = document.createElement('div');
+		tree.div.className = 'holderDiv'
+		tree.div.style.display="inline-block"
+		tree.div.style.margin="0 auto"
+		tree.div.style.padding="20px"
 
-		if (item.isClass) {
-			item.filler = document.createElement('div');
-			item.panel = this.template.cloneNode(true);
-			item.panel.style.display =''
+		if (tree.isClass) {
+			tree.filler = document.createElement('div');
+			tree.panel = this.template.cloneNode(true);
+			tree.panel.style.display =''
 
-			this.resetPanel(item,false);
+			this.resetPanel(tree,false);
 			
 			//position the panel to the absolute position of the div
 			
-			this.addToParentDiv(item);
-			this.container.appendChild(item.panel);
+			this.addToParentDiv(tree);
+			this.container.appendChild(tree.panel);
 			//adds this div to parent div
 
-			console.log('creating filler with,',item.panel.offsetWidth,item.panel.offsetHeight)
-			item.filler.style.width = item.panel.offsetWidth + 'px'
-			item.filler.style.height = item.panel.offsetHeight + 'px'
-			item.filler.style.margin = '0 auto'
-			item.filler.className='filler'
-			item.div.appendChild(item.filler);
+			console.log('creating filler with,',tree.panel.offsetWidth,tree.panel.offsetHeight)
+			tree.filler.style.width = tree.panel.offsetWidth + 'px'
+			tree.filler.style.height = tree.panel.offsetHeight + 'px'
+			tree.filler.style.margin = '0 auto'
+			tree.filler.className='filler'
+			tree.div.appendChild(tree.filler);
 		}
 		else {
 
 			//make a circle
-			item.panel = document.createElement('div');
-			item.panel.style.backgroundColor = this.getColor(item.type);
-			item.panel.style.width = '35px';
-			item.panel.style.height = '35px';
-			item.panel.style.borderRadius = '50%';
-			item.panel.style.margin = '0 auto';
-			item.div.appendChild(item.panel);
-			this.addToParentDiv(item);
+			tree.panel = document.createElement('div');
+			tree.panel.style.backgroundColor = this.getColor(tree.type);
+			tree.panel.style.width = '35px';
+			tree.panel.style.height = '35px';
+			tree.panel.style.borderRadius = '50%';
+			tree.panel.style.margin = '0 auto';
+			tree.div.appendChild(tree.panel);
+			this.addToParentDiv(tree);
 		}
 	}
 	else {
 		console.log('tree has already been rendered')
 	}
 
-	if (item.values) {
-		item.values.forEach(function (subItem) {
-			this.makeCircles(subItem);
+	if (tree.values) {
+		tree.values.forEach(function (subTree) {
+			this.addStructure(subTree);
 		}.bind(this));
 	};
 }
@@ -209,38 +210,38 @@ Render.prototype.addPanels = function(tree) {
 	}
 
 	if (tree.values) {
-		tree.values.forEach(function (subItem) {
-			this.addPanels(subItem);
+		tree.values.forEach(function (subTree) {
+			this.addPanels(subTree);
 		}.bind(this));
 	};
 }
 
 
-Render.prototype.resetPanel = function(item,relocate) {
+Render.prototype.resetPanel = function(tree,relocate) {
 	if (relocate===undefined) {
 		relocate=true;
 	};
 
 
-	item.isExpanded=false;
-	item.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal')
-	var panelBody =item.panel.getElementsByClassName('panelBodyId')[0];
-	if (item.isString) {
-		item.panel.getElementsByClassName('classTitleId')[0].innerHTML = item.desc
+	tree.isExpanded=false;
+	tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal')
+	var panelBody =tree.panel.getElementsByClassName('panelBodyId')[0];
+	if (tree.isString) {
+		tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.desc
 	}
 	else {
-		item.panel.getElementsByClassName('subjClassId')[0].innerHTML = item.subject + ' '+item.classId
+		tree.panel.getElementsByClassName('subjClassId')[0].innerHTML = tree.subject + ' '+tree.classId
 		panelBody.setAttribute('style','line-height: 14px;white-space:nowrap')
-		if (item.dataStatus==treeMgr.DATASTATUS_DONE) {
-			item.panel.getElementsByClassName('classTitleId')[0].innerHTML = item.name
+		if (tree.dataStatus==treeMgr.DATASTATUS_DONE) {
+			tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.name
 
 			//this should never happen - all classes have at least [] for crns
-			if (!item.crns) {
-				console.log('erorr, no crns found!?',item,item.url)
+			if (!tree.crns) {
+				console.log('erorr, no crns found!?',tree,tree.url)
 				panelBody.innerHTML = ''
 			}
 			else {
-				panelBody.innerHTML = item.crns.length + ' section'+this.getOptionalS(item.crns.length)+' this term'
+				panelBody.innerHTML = tree.crns.length + ' section'+this.getOptionalS(tree.crns.length)+' this term'
 			}
 		}
 		else {
@@ -251,9 +252,9 @@ Render.prototype.resetPanel = function(item,relocate) {
 
 	if (relocate) {
 
-		item.panel.style.position = 'absolute';
-		item.panel.style.top =  (item.y - item.panel.offsetHeight/2 ) + 'px';
-		item.panel.style.left = (item.x - item.panel.offsetWidth/2  ) + 'px';
+		tree.panel.style.position = 'absolute';
+		tree.panel.style.top =  (tree.y - tree.panel.offsetHeight/2 ) + 'px';
+		tree.panel.style.left = (tree.x - tree.panel.offsetWidth/2  ) + 'px';
 	};
 }
 
@@ -270,19 +271,37 @@ Render.prototype.addLines = function(tree) {
 
 
 Render.prototype.go = function(tree) {
+	this.tree = tree; 
 
 	//remove everything in the container for a new tree
 	while (this.container.firstChild) {
 	    this.container.removeChild(this.container.firstChild);
 	}
-	this.container.style.paddingTop = ($('.navbar')[0].offsetHeight+75) + 'px'
+	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px'
 
-	this.makeCircles(tree)
-	this.addPanels(tree)
-	popup.addPopups(tree)
-	this.addLines(tree)
+	this.addStructure(this.tree)
+	this.addPanels(this.tree)
+	popup.addPopups(this.tree)
+	this.addLines(this.tree)
+
+	//scroll to the middle of the page, and don't touch the scroll height
+	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop)
 };
 
-Render.prototype.Render=Render;
-window.render = new Render();
 
+var instance = new Render();
+
+Render.prototype.Render=Render;
+window.render = instance;
+
+
+
+window.onresize = function(event) {
+	if (!instance.tree) {
+		return;
+	};
+
+    instance.addPanels(instance.tree);
+	instance.addLines(instance.tree)
+};
+console.log('hiii')

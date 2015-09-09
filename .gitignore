@@ -1,4 +1,4 @@
-frontend/static/js/allthejavascript.js
+frontend/static/js/internal/*
 *.db
 node_modules
 database

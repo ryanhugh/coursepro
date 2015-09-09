@@ -1,13 +1,14 @@
 !!!!
 
-
 frontend small things
 sort by start time
 spring 2015 SPAN 003 has no desc?
 
+center scroll view on load
+redo render on resize
+
 sort class drop down by class
 and sort the others too
-when classes depend on classes, there are no crns. also need way to disguingish between... (SOLVE THIS NEXT)
 final exam - solve this after ^ - when enddate == startdate
 dont add duplicate locations (eece 5698)
 
@@ -59,6 +60,7 @@ and if no sections for entire college!?! log big warning
 
 12. add optional terms for parsers, and if dont have 50%, complain
 
+13. https://github.com/winstonjs/winston#using-the-default-logger
 
 
 

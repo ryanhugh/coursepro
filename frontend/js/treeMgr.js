@@ -372,9 +372,9 @@ TreeMgr.prototype.removeDuplicateDeps = function(tree,classList) {
 	}.bind(this))
 }
 
-TreeMgr.prototype.createTree = function(newHost,newTermId,subject,classId) {
-	this.host = newHost;
-	this.termId  = newTermId;
+TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
+	this.host = host;
+	this.termId  = termId;
 
 
 	var tree = {
