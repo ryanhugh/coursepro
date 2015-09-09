@@ -6,77 +6,76 @@ function Popup () {
 //creates 7:00 - 9:00 am
 // Thursday, Friday string
 var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saterday']
-Popup.prototype.createTimeStrings = function(meetingsGrouped) {
+Popup.prototype.createTimeStrings = function(meetings) {
 	
-	meetingsGrouped.forEach(function (groupedTime) {
-		
+	//{startDate: 16554, endDate: 16554, profs: Array[1], where: "Snell Engineering Center 168", times: Object…}
+	meetings.forEach(function (meeting) {
+
 		var timeText = []
-		groupedTime.times.forEach(function (time,index) {
-			if (index>0) {
-				timeText.push(', ')
-			};
+		// "[{"times":[{"start":46800,"end":54000}],"days":["3"]}]"
+		meeting.groupedTimes.forEach(function (groupedTime) {
+			groupedTime.times.forEach(function (time,index) {
+				if (index>0) {
+					timeText.push(', ')
+				};
 
-			timeText.push(moment.utc(time.start*1000).format('h:mm'))
+				timeText.push(moment.utc(time.start*1000).format('h:mm'))
 
-			timeText.push(' - ')
+				timeText.push(' - ')
 
-			timeText.push(moment.utc(time.end*1000).format('h:mm a'))
+				timeText.push(moment.utc(time.end*1000).format('h:mm a'))
+			}.bind(this))
 			
 		}.bind(this))
-		groupedTime.timeString = timeText.join('')
-		groupedTime.dayString = _.map(groupedTime.days,function (dayIndex) {
+		meeting.timeString = timeText.join('')
+		meeting.dayString = ''
+
+
+		for (var dayIndex in meeting.times) {
 			if (!weekDays[dayIndex]) {
 				console.log('error dayIndex not found?')
-				return 'Someday'
-			};
-
-			return weekDays[dayIndex];
-		}).join(', ');
+				meeting.dayString+='Someday'
+			}
+			else {
+				meeting.dayString+=weekDays[dayIndex]+', '
+			}
+		}
+		meeting.dayString = meeting.dayString.trim().replace(/,$/gi,'')
 	}.bind(this))
 }
-Popup.prototype.calculateHoursPerWeek = function(meetingsGrouped) {
-	meetingsGrouped.forEach(function (meeting) {
-
+Popup.prototype.calculateHoursPerWeek = function(meetings) {
+	meetings.forEach(function (meeting) {
 		meeting.hoursPerWeek = 0;
 
-		//figure out how many hours each day they meet
-		meeting.times.forEach(function (dayTime) {
-
-			//end and start are in seconds so conver them to hours
-			meeting.hoursPerWeek += (dayTime.end - dayTime.start)/(60*60)
-		}.bind(this))
-		//and multiply by number of days that they meet
-		meeting.hoursPerWeek *= meeting.days.length
+		for (var dayIndex in meeting.times) {
+			var dayTimes = meeting.times[dayIndex]
+			dayTimes.forEach(function (time) {
+				//end and start are in seconds so conver them to hours
+				meeting.hoursPerWeek += (time.end - time.start)/(60*60)
+			}.bind(this))
+		}
 
 		meeting.hoursPerWeek = Math.round(10*meeting.hoursPerWeek)/10
 	}.bind(this))
 }
 
-Popup.prototype.addTimestoGroupedTimes = function(meetingsGrouped,dayIndex,meeting) {
+Popup.prototype.addTimestoGroupedTimes = function(meeting,dayIndex) {
 	var times = meeting.times[dayIndex]
 
-
-	for (var i = 0; i < meetingsGrouped.length; i++) {
-		if (_.isEqual(meetingsGrouped[i].times,times)){
-			meetingsGrouped[i].days.push(dayIndex)
-			// meetingsGrouped[i].dayString+=', '+weekDays[dayIndex]
+	for (var i = 0; i < meeting.groupedTimes.length; i++) {
+		if (_.isEqual(meeting.groupedTimes[i].times,times)){
+			meeting.groupedTimes[i].days.push(dayIndex)
 			return;
 		}
 	}
-	// debugger;
-
-	var meetingClone = _.cloneDeep(meeting);
-	meetingClone.days = [dayIndex];
-
-	meetingsGrouped.push(meetingClone);
+	meeting.groupedTimes.push({
+		times:times,
+		days:[dayIndex]
+	})
 }
 
-Popup.prototype.calculateExams = function(meetingsGrouped) {
-	meetingsGrouped.forEach(function (meeting) {
-		// debugger;
-		//if only meets once, show that 
-		//usally exams, but some colleges have like classes every other week which will
-		//proc this too
+Popup.prototype.calculateExams = function(meetings) {
+	meetings.forEach(function (meeting) {
 		if (meeting.startDate==meeting.endDate) {
 			meeting.isExam = true;
 		}
@@ -105,7 +104,7 @@ Popup.prototype.groupSectionTimes = function(sections) {
 					section.profs.push(prof);
 				};
 			}.bind(this))
-		
+
 
 			if (section.locations.indexOf(meeting.where)<0) {
 				if (meeting.where.toLowerCase()==='tba' || meeting.where==='') {
@@ -125,23 +124,23 @@ Popup.prototype.groupSectionTimes = function(sections) {
 		}.bind(this))
 
 		//group the times by start/end time (so can put days underneath)
-		var meetingsGrouped = []
+		// var meetingsGrouped = []
 		section.meetings.forEach(function (meeting) {
+			meeting.groupedTimes = [];
 			for (var dayIndex in meeting.times) {
-				this.addTimestoGroupedTimes(meetingsGrouped,dayIndex,meeting)
+				this.addTimestoGroupedTimes(meeting,dayIndex)
 			}
 		}.bind(this))
 
-		this.createTimeStrings(meetingsGrouped)
-		this.calculateHoursPerWeek(meetingsGrouped);
-		this.calculateExams(meetingsGrouped);
+		this.createTimeStrings(section.meetings)
+		this.calculateHoursPerWeek(section.meetings);
+		this.calculateExams(section.meetings);
 
 
-		section.meetingsGrouped = meetingsGrouped;
 		section.profs = section.profs.join(', ');
 		section.locations = section.locations.join(', ');
 	}.bind(this))
-	return sections;
+return sections;
 }
 Popup.prototype.createViewOnUrl = function(tree,url) {
 	return '<a target="_blank" href="'+url+'">View on <span class="hostName">'+tree.host+'</span></a>'
@@ -272,9 +271,9 @@ Popup.prototype.expandPanel = function(tree) {
 					panelWidth += 330
 					newBodyText.push('<div style="width: 260px;" class="classSection">')
 
-					section.meetingsGrouped.forEach(function (meeting) {
+					section.meetings.forEach(function (meeting) {
 						if (meeting.isExam) {
-							newBodyText.push( '<div style=" text-align: center;margin-bottom: 22px;">Exam<br>'+meeting.timeString+' date here'+'<br> '+meeting.dayString+' <br> '+meeting.hoursPerWeek+' hours </div>')
+							newBodyText.push( '<div style=" text-align: center;margin-bottom: 22px;">Exam<br>'+meeting.timeString+' '+moment((meeting.startDate+1)*24*60*60*1000).format('dddd MMM Do')+'<br>'+meeting.hoursPerWeek+' hours </div>')
 						}
 						else {
 							newBodyText.push( '<div style=" text-align: center;margin-bottom: 22px;">'+meeting.timeString+'<br> '+meeting.dayString+' <br> '+meeting.hoursPerWeek+' hours/week </div>')
