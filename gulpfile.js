@@ -13,7 +13,9 @@ gulp.task('uglify', function() {
 
 
 
-gulp.task('prod',['uglify'])
+gulp.task('prod',['uglify'],function() {
+  require('./server.js')
+})
 
 
 
