@@ -55,7 +55,9 @@ Selectors.prototype.resetElement = function(element) {
 
 Selectors.prototype.resetAllFutureVals = function(element) {
 	//find the element to reset all past
-	for (var i = 0; i < this.selectors.length; i++) {
+	var i =0;
+
+	for (; i < this.selectors.length; i++) {
 		if (this.selectors[i].element == element) {
 			break;
 		}
@@ -72,8 +74,6 @@ Selectors.prototype.setupSelector = function(selectElement,selectValues,classNam
 	
 	this.setCurrentValue(selectElement,selectElement.val());
 	this.resetElement(selectElement);
-	// this.hideAllPast(selectElement);
-	this.resetAllFutureVals(selectElement);
 	
 	if (selectValues.length===0) {
 		console.log('nothing found!')
@@ -101,6 +101,7 @@ Selectors.prototype.setupSelector = function(selectElement,selectValues,classNam
 			return;
 		}
 		this.setCurrentValue(selectElement,selection)
+		this.resetAllFutureVals(selectElement);
 
 		console.log('selected',selection)
 		callback();
