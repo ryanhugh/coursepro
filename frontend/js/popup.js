@@ -85,6 +85,18 @@ Popup.prototype.calculateExams = function(meetings) {
 
 	}.bind(this))
 };
+Popup.prototype.prettyLocation = function(location) {
+	if (location.toLowerCase()==='tba' || location==='') {
+		return 'location undecided'
+	}
+	else if (location.toLowerCase()=='web online') {
+		return 'Web online'
+
+	}
+	else {
+		return '<a target="_blank" href="http://maps.google.com/?q='+selectors.selectCollegeElement.select2('data')[0].text+' '+location.replace(/\d+\s*$/i,'')+'">'+location+'</a>';
+	}
+};
 
 Popup.prototype.groupSectionTimes = function(sections) {
 	//make a list of all profs
@@ -107,17 +119,7 @@ Popup.prototype.groupSectionTimes = function(sections) {
 
 
 			if (section.locations.indexOf(meeting.where)<0) {
-				if (meeting.where.toLowerCase()==='tba' || meeting.where==='') {
-					if (section.locations.length===0) {
-						section.locations.push('location undecided');
-					};
-				}
-				else if (meeting.where.toLowerCase()=='web online') {
-					section.locations.push('Web online');
-				}
-				else {
-					section.locations.push('<a target="_blank" href="http://maps.google.com/?q='+selectors.selectCollegeElement.select2('data')[0].text+' '+meeting.where.replace(/\d+\s*$/i,'')+'">'+meeting.where+'</a>');
-				}
+				section.locations.push(this.prettyLocation(meeting.where));
 			};
 
 
@@ -140,7 +142,8 @@ Popup.prototype.groupSectionTimes = function(sections) {
 		section.profs = section.profs.join(', ');
 		section.locations = section.locations.join(', ');
 	}.bind(this))
-return sections;
+	//
+	return sections;
 }
 Popup.prototype.createViewOnUrl = function(tree,url) {
 	return '<a target="_blank" href="'+url+'">View on <span class="hostName">'+tree.host+'</span></a>'
@@ -272,11 +275,16 @@ Popup.prototype.expandPanel = function(tree) {
 					newBodyText.push('<div style="width: 260px;" class="classSection">')
 
 					section.meetings.forEach(function (meeting) {
+						if (meeting.hoursPerWeek===0) {
+							return;
+						};
+
+
 						if (meeting.isExam) {
-							newBodyText.push( '<div style=" text-align: center;margin-bottom: 22px;">Exam<br>'+meeting.timeString+' '+moment((meeting.startDate+1)*24*60*60*1000).format('dddd MMM Do')+'<br>'+meeting.hoursPerWeek+' hours </div>')
+							newBodyText.push( '<div style=" text-align: center;margin-bottom: 22px;">Exam<br>'+meeting.timeString+' '+moment((meeting.startDate+1)*24*60*60*1000).format('dddd MMM Do')+'<br>'+meeting.hoursPerWeek+' hours <br> '+this.prettyLocation(meeting.where)+' </div>')
 						}
 						else {
-							newBodyText.push( '<div style=" text-align: center;margin-bottom: 22px;">'+meeting.timeString+'<br> '+meeting.dayString+' <br> '+meeting.hoursPerWeek+' hours/week </div>')
+							newBodyText.push( '<div style=" text-align: center;margin-bottom: 22px;">'+meeting.timeString+'<br> '+meeting.dayString+' <br>'+meeting.hoursPerWeek+' hours/week <br> '+this.prettyLocation(meeting.where)+' </div>')
 						}
 					}.bind(this))
 				}
@@ -292,7 +300,7 @@ Popup.prototype.expandPanel = function(tree) {
 				var leftBoxText;
 
 				if (section.meetings) {
-					leftBoxText = section.profs+'<br>'+section.locations+'<br>'+section.crn
+					leftBoxText = section.profs+'<br>'+section.crn
 				}
 				else {
 					leftBoxText = section.crn
