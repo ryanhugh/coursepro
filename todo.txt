@@ -4,14 +4,6 @@ frontend small things
 sort by start time
 spring 2015 SPAN 003 has no desc?
 
-center scroll view on load
-redo render on resize
-
-sort class drop down by class
-and sort the others too
-final exam - solve this after ^ - when enddate == startdate
-dont add duplicate locations (eece 5698)
-
 
 does it support multiple )) ? https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201615&subj_code_in=BTC&crse_numb_in=6213
 
@@ -87,7 +79,7 @@ remove sending any internal error to client
 if selector is hidden, and then comes back, and same option is selected, callback() not called
 
 some classes dont have crns?
-should store crns? 
+should store crns?
 
 
 

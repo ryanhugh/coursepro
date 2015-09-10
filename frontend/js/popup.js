@@ -142,7 +142,47 @@ Popup.prototype.groupSectionTimes = function(sections) {
 		section.profs = section.profs.join(', ');
 		section.locations = section.locations.join(', ');
 	}.bind(this))
+
+	
+	//sort sections by first grouped time start time
+	sections.sort(function(a,b){
+	  if (!a.meetings && !b.meetings) {
+	    return 0;
+	  }
+	  if (!a.meetings || a.meetings.length===0) {
+	    return 1;
+	  }
+	  if (!b.meetings || b.meetings.length===0) {
+	    return -1;
+	  }
+	  
+	  if (a.meetings[0].groupedTimes.length===0) {
+	    return 1;
+	  }
+	  if (b.meetings[0].groupedTimes.length===0) {
+	    return -1;
+	  }
+	  if (a.meetings[0].groupedTimes[0].times.length===0) {
+	    return 1;
+	  }
+	  if (b.meetings[0].groupedTimes[0].times.length===0) {
+	    return -1;
+	  }
+	  if (a.meetings[0].groupedTimes[0].times[0].start>b.meetings[0].groupedTimes[0].times[0].start) {
+	    return 1;
+	  }
+	  else if (a.meetings[0].groupedTimes[0].times[0].start<b.meetings[0].groupedTimes[0].times[0].start) {
+	    return -1;
+	  }
+	  else {
+	    return 0;
+	  }
+	  
+	}.bind(this))
 	//
+	
+	
+	
 	return sections;
 }
 Popup.prototype.createViewOnUrl = function(tree,url) {
@@ -250,7 +290,7 @@ Popup.prototype.expandPanel = function(tree) {
 
 			//add credits to the left
 			if (tree.minCredits!==undefined || tree.maxCredits!==undefined) {
-				newBodyText.push('<div style="text-align:left;display: inline-block; position: absolute;max-width: 50%;">'+this.createCreditsHTML(tree)+'</div>')				
+				newBodyText.push('<div style="text-align:left;display: inline-block; position: absolute;max-width: 50%;">'+this.createCreditsHTML(tree)+'</div>')
 			}
 
 			var classURL ;
@@ -351,7 +391,7 @@ Popup.prototype.expandPanel = function(tree) {
 			tree.panel.style.top = Math.max(tree.y - tree.panel.offsetHeight/2,$('.navbar')[0].offsetHeight+25 ) + 'px'
 
 
-			//shadows are cool 
+			//shadows are cool
 			tree.panel.style.boxShadow = 'gray 0px 0px 9px'
 
 
