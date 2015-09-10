@@ -224,8 +224,6 @@ Popup.prototype.expandPanel = function(tree) {
 	};
 
 
-	var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
-	xButton.style.display = ''
 
 
 	tree.panel.style.zIndex = '999'
@@ -287,10 +285,6 @@ Popup.prototype.expandPanel = function(tree) {
 				newBodyText.push('<div style="white-space: normal;margin-bottom:10px">')
 				newBodyText.push(tree.desc)
 				newBodyText.push('</div>')
-
-				// if (tree.desc.length>100) {
-				// 	panelWidth = tree.desc.length
-				// };
 			};
 
 			//credits and class url
@@ -413,6 +407,10 @@ Popup.prototype.expandPanel = function(tree) {
 
 			//shadows are cool
 			tree.panel.style.boxShadow = 'gray 0px 0px 9px'
+
+			//show the x button
+			var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
+			xButton.style.display = ''
 
 
 		}.bind(this))
