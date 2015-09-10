@@ -387,6 +387,10 @@ Popup.prototype.expandPanel = function(tree) {
 				panelWidth = Math.min(1000,panelWidth) 
 			}
 
+			if (panelWidth<164) {
+				panelWidth=250
+			};
+
 
 			//width + left offset
 			tree.panel.style.width = panelWidth+ 'px'
