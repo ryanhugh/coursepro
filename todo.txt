@@ -1,6 +1,7 @@
 !!!!
 
 ADD CACHE - A LOT TO THE STATIC STUFF
+GOOGLE ANALYTICS
 
 
 frontend small things

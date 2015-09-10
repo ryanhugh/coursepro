@@ -29,7 +29,7 @@ app.use(bodyParser.json()); // to support JSON-encoded bodies
 
 // http://stackoverflow.com/a/46181/11236
 // this is also done client side
-function validateEmail(email) { 
+function validateEmail(email) {
 	if (!email) {
 		return false;
 	};
@@ -113,7 +113,7 @@ app.get('/listColleges',function (req,res) {
 	 	};
 
 
-		res.send(JSON.stringify(names));	
+		res.send(JSON.stringify(names));
 	});
 })
 
@@ -244,9 +244,19 @@ app.get('/', function (req, res) {
 	res.sendFile('frontend/static/index.html',{"root": __dirname});
 });
 
+
+// add cache forever to external js libraries
+app.get('/*', function (req, res,next) {
+  if (_(req.url).startsWith('/js/external')) {
+    res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year
+  }
+  next()
+});
+
 app.use(express.static('frontend/static'));
 
 app.get("/*", function(req, res, next) {
+  
 	next("Could not find page "+req.url);
 
 });
