@@ -100,6 +100,9 @@ Selectors.prototype.setupSelector = function(selectElement,selectValues,classNam
 			console.log('not chaning from ',curr,selection)
 			return;
 		}
+
+		ga('send', 'event', 'category', 'action', {'type':'selector','selector': className,'value': selection});
+
 		this.setCurrentValue(selectElement,selection)
 		this.resetAllFutureVals(selectElement);
 

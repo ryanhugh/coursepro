@@ -422,6 +422,8 @@ Popup.prototype.addPopups = function(tree) {
 	if (tree.isClass) {
 
 		tree.panel.onclick=function (event) {
+
+			ga('send', 'event', 'category', 'action', {'type':'popup','name': tree.name,'classId':tree.classId,'subject':tree.subject});
 			if (tree.isExpanded) {
 				render.resetPanel(tree);
 			}
