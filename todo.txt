@@ -1,6 +1,5 @@
 !!!!
 
-GOOGLE ANALYTICS
 
 
 frontend small things

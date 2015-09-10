@@ -222,6 +222,8 @@ Render.prototype.resetPanel = function(tree,relocate) {
 		relocate=true;
 	};
 
+	var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
+	xButton.style.display = 'none'
 
 	tree.isExpanded=false;
 	tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal')

@@ -224,6 +224,10 @@ Popup.prototype.expandPanel = function(tree) {
 	};
 
 
+	var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
+	xButton.style.display = ''
+
+
 	tree.panel.style.zIndex = '999'
 	tree.isExpanded=true;
 	var panelBody = tree.panel.getElementsByClassName('panelBodyId')[0]
@@ -283,6 +287,10 @@ Popup.prototype.expandPanel = function(tree) {
 				newBodyText.push('<div style="white-space: normal;margin-bottom:10px">')
 				newBodyText.push(tree.desc)
 				newBodyText.push('</div>')
+
+				// if (tree.desc.length>100) {
+				// 	panelWidth = tree.desc.length
+				// };
 			};
 
 			//credits and class url
@@ -374,17 +382,29 @@ Popup.prototype.expandPanel = function(tree) {
 			tree.panel.style.height = ''
 
 			if (!panelWidth) {
-				panelWidth = ''
+				if (tree.desc) {
+					panelWidth = tree.desc.length
+				}
+				else {
+					panelWidth = ''
+				}
 			}
 			else {
-				panelWidth = Math.min(1000,panelWidth) + 'px'
+				panelWidth = Math.min(1000,panelWidth) 
 			}
 
 
 			//width + left offset
-			tree.panel.style.width = panelWidth
+			tree.panel.style.width = panelWidth+ 'px'
 			tree.panel.style.maxWidth = '890px'
-			tree.panel.style.left = (tree.x - tree.panel.offsetWidth/2 ) + 'px'
+
+
+			var left = tree.x - tree.panel.offsetWidth/2 
+			if (left<15) {
+				left = 15
+			};
+
+			tree.panel.style.left = left + 'px'
 
 
 			//height + top offset
@@ -424,6 +444,7 @@ Popup.prototype.addPopups = function(tree) {
 		tree.panel.onclick=function (event) {
 
 			ga('send', 'event', 'category', 'action', {'type':'popup','name': tree.name,'classId':tree.classId,'subject':tree.subject});
+			
 			if (tree.isExpanded) {
 				render.resetPanel(tree);
 			}
