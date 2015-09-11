@@ -155,38 +155,19 @@ Render.prototype.addStructure = function(tree) {
 		tree.div.style.margin="0 auto"
 		tree.div.style.padding="20px"
 
-		if (tree.isClass) {
-			tree.filler = document.createElement('div');
-			tree.panel = this.template.cloneNode(true);
-			tree.panel.style.display =''
+		tree.filler = document.createElement('div');
+		
+		//position the panel to the absolute position of the div
+		this.resetPanel(tree,false);
+		this.addToParentDiv(tree);
+		this.container.appendChild(tree.panel);
 
-			this.resetPanel(tree,false);
-			
-			//position the panel to the absolute position of the div
-			
-			this.addToParentDiv(tree);
-			this.container.appendChild(tree.panel);
-			//adds this div to parent div
-
-			console.log('creating filler with,',tree.panel.offsetWidth,tree.panel.offsetHeight)
-			tree.filler.style.width = tree.panel.offsetWidth + 'px'
-			tree.filler.style.height = tree.panel.offsetHeight + 'px'
-			tree.filler.style.margin = '0 auto'
-			tree.filler.className='filler'
-			tree.div.appendChild(tree.filler);
-		}
-		else {
-
-			//make a circle
-			tree.panel = document.createElement('div');
-			tree.panel.style.backgroundColor = this.getColor(tree.type);
-			tree.panel.style.width = '35px';
-			tree.panel.style.height = '35px';
-			tree.panel.style.borderRadius = '50%';
-			tree.panel.style.margin = '0 auto';
-			tree.div.appendChild(tree.panel);
-			this.addToParentDiv(tree);
-		}
+		//adds this div to parent div
+		tree.filler.style.width = tree.panel.offsetWidth + 'px'
+		tree.filler.style.height = tree.panel.offsetHeight + 'px'
+		tree.filler.style.margin = '0 auto'
+		tree.filler.className='filler'
+		tree.div.appendChild(tree.filler);
 	}
 	else {
 		console.log('tree has already been rendered')
@@ -199,15 +180,12 @@ Render.prototype.addStructure = function(tree) {
 	};
 }
 Render.prototype.addPanels = function(tree) {
-	if (tree.isClass) {
 
-		var coords = tree.filler.getBoundingClientRect();
-		tree.x = coords.left + coords.width/2;
-		tree.y = coords.top + coords.height/2;
-		console.log('rect is ',coords.left,coords.top)
+	var coords = tree.filler.getBoundingClientRect();
+	tree.x = coords.left + coords.width/2;
+	tree.y = coords.top + coords.height/2;
 
-		this.resetPanel(tree);
-	}
+	this.resetPanel(tree);
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
@@ -222,35 +200,57 @@ Render.prototype.resetPanel = function(tree,relocate) {
 		relocate=true;
 	};
 
-	var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
-	xButton.style.display = 'none'
-
 	tree.isExpanded=false;
-	tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal')
-	var panelBody =tree.panel.getElementsByClassName('panelBodyId')[0];
-	if (tree.isString) {
-		tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.desc
-	}
-	else {
-		tree.panel.getElementsByClassName('subjClassId')[0].innerHTML = tree.subject + ' '+tree.classId
-		panelBody.setAttribute('style','line-height: 14px;white-space:nowrap')
-		if (tree.dataStatus==treeMgr.DATASTATUS_DONE) {
-			tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.name
+	if (tree.isClass) {
 
-			//this should never happen - all classes have at least [] for crns
-			if (!tree.crns) {
-				console.log('erorr, no crns found!?',tree,tree.url)
-				panelBody.innerHTML = ''
-			}
-			else {
-				panelBody.innerHTML = tree.crns.length + ' section'+this.getOptionalS(tree.crns.length)+' this term'
-			}
+		if (!tree.panel) {
+			tree.panel = this.template.cloneNode(true);
+			tree.panel.style.display =''
+		}
+
+		var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
+		xButton.style.display = 'none'
+
+		tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal')
+		var panelBody =tree.panel.getElementsByClassName('panelBodyId')[0];
+		if (tree.isString) {
+			tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.desc
 		}
 		else {
-			panelBody.innerHTML = ''
+			tree.panel.getElementsByClassName('subjClassId')[0].innerHTML = tree.subject + ' '+tree.classId
+			panelBody.setAttribute('style','line-height: 14px;white-space:nowrap')
+			if (tree.dataStatus==treeMgr.DATASTATUS_DONE) {
+				tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.name
 
-		}
+				//this should never happen - all classes have at least [] for crns
+				if (!tree.crns) {
+					console.log('erorr, no crns found!?',tree,tree.url)
+					panelBody.innerHTML = ''
+				}
+				else {
+					panelBody.innerHTML = tree.crns.length + ' section'+this.getOptionalS(tree.crns.length)+' this term'
+				}
+			}
+			else {
+				panelBody.innerHTML = ''
+
+			}
+		}		
 	}
+	else {
+
+		if (!tree.panel) {
+			tree.panel = document.createElement('div');
+		};
+
+		//reset the circle
+		tree.panel.style.backgroundColor = this.getColor(tree.type);
+		tree.panel.style.width = '35px';
+		tree.panel.style.height = '35px';
+		tree.panel.style.borderRadius = '50%';
+		tree.panel.style.margin = '0 auto';
+	}
+
 
 	if (relocate) {
 
@@ -270,6 +270,10 @@ Render.prototype.addLines = function(tree) {
 		}.bind(this))
 	}
 }
+
+Render.prototype.addHelpToolips = function(tree) {
+	
+};
 
 
 Render.prototype.go = function(tree) {
