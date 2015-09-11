@@ -161,6 +161,60 @@ TreeMgr.prototype.fetchFullTree = function(tree,count,callback) {
 	}.bind(this), callback)
 }
 
+
+
+TreeMgr.prototype.simplifyTree = function(tree) {
+	if (!tree.values) {
+		return;
+	}
+
+	//remove duplicates
+	var newTreeValues = [];
+	tree.values.forEach(function (subTree) {
+		if (!_.any(newTreeValues, _.matches(subTree))) {
+			newTreeValues.push(subTree)
+		}
+	}.bind(this))
+	tree.values = newTreeValues;
+
+
+	//if values is only 1 long to a circle, delete circle and bring lines straight to parent
+	if (tree.values.length==1 && !tree.values[0].isClass) {
+		tree.type = tree.values[0].type;
+		tree.values = tree.values[0].values;
+	};
+
+
+	//if type of dep is the same, merge cs 2800
+	newTreeValues = [];
+	tree.values.forEach(function (subTree) {
+		
+		if (!subTree.isClass && subTree.type==tree.type) {
+			newTreeValues = newTreeValues.concat(subTree.values);
+		}
+		else {
+			newTreeValues.push(subTree)
+		}
+
+	}.bind(this))
+	tree.values = newTreeValues
+
+
+	//just changes the single red lines to blue
+	//if there is only 1 option it dosent matter if its "or" or "and"
+	if (tree.values.length===1) {
+		tree.type='or'
+	}
+
+
+
+	//recursion
+	tree.values.forEach(function (subTree) {
+		this.simplifyTree(subTree);
+	}.bind(this))
+}
+
+
 TreeMgr.prototype.sortTree = function(tree) {
 	if (!tree.values) {
 		return;
@@ -168,14 +222,58 @@ TreeMgr.prototype.sortTree = function(tree) {
 
 
 	var sizes = [];
+	var subTrees = [];
+
+	//subTrees with no values are sorted by classId
+	var subPanels = [];
+
 	tree.values.forEach(function (subTree) {
-		sizes.push ({
-			tree:subTree,
-			size:JSON.stringify(subTree).length
-		})
+		if (!subTree.values || subTree.values.length===0) {
+			subPanels.push(subTree);
+		}
+		else {
+			subTrees.push(subTree)
+			sizes.push({
+				tree:subTree,
+				size:JSON.stringify(subTree).length
+			})
+		}
 	}.bind(this))
 
-	tree.values.sort(function (a,b) {
+
+	//sort the panels by classId
+	subPanels.sort(function (a,b) {
+		if (a.isString && b.isString) {
+			return 0;
+		}
+
+		if (a.isString) {
+			return -1;
+		}
+		if (b.isString) {
+			return 1;
+		};
+
+		var aId = parseInt(a.classId);
+		var bId = parseInt(b.classId);
+
+		if (aId>bId) {
+			return 1;
+		}
+		if (aId===bId) {
+			return 0;
+		}
+		if (aId<bId) {
+			return -1;
+		};
+		console.log('error ,wtf',a,b,aId,bId)
+		return 0
+
+	})
+
+
+	//sort the trees so the largest ones are on the outside
+	subTrees.sort(function (a,b) {
 		var asize;
 		var bsize;
 
@@ -193,7 +291,7 @@ TreeMgr.prototype.sortTree = function(tree) {
 	var odds=[];
 	var evens=[];
 
-	tree.values.forEach(function (subTree,index) {
+	subTrees.forEach(function (subTree,index) {
 		if (index%2===0) {
 			evens.push(subTree);
 		}
@@ -204,7 +302,7 @@ TreeMgr.prototype.sortTree = function(tree) {
 
 	evens.reverse();
 
-	tree.values = evens.concat(odds)
+	tree.values = evens.concat(subPanels.concat(odds))
 
 	tree.values.forEach(function (subTree) {
 		this.sortTree(subTree);
@@ -386,7 +484,9 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 
 
 	this.fetchFullTree(tree,10,function () {
+		this.simplifyTree(tree)
 		this.sortTree(tree);
+
 
 
 

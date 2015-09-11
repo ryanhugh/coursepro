@@ -295,15 +295,3 @@ var instance = new Render();
 
 Render.prototype.Render=Render;
 window.render = instance;
-
-
-
-window.onresize = function(event) {
-	if (!instance.tree) {
-		return;
-	};
-
-    instance.addPanels(instance.tree);
-	instance.addLines(instance.tree)
-};
-console.log('hiii')
