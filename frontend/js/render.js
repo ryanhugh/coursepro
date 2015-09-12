@@ -304,11 +304,43 @@ Render.prototype.addHelpToolips = function(tree) {
 		tree.lineToParentLink.setAttribute('data-placement','top');
 		tree.lineToParentLink.setAttribute('data-toggle','popover');
 		tree.lineToParentLink.setAttribute('data-trigger','hover');
-		tree.lineToParentLink.setAttribute('title','Prerequisites!');
-		tree.lineToParentLink.setAttribute('data-content','yoofdsaj<br>fosjl');
+
+		var linkElement = $(tree.lineToParentLink)
+
+		linkElement.popover({
+	        html : true, 
+	        content: function() {
+	        	if (tree.allParents[0].type=='or') {
+		        	return 'Take ANY of the connected classes to take this class!';
+	        	}
+	        	else {
+		        	return 'Take ALL of the connected classes to take this class!';
+	        	}
+	        },
+	        title: function() {
+	        	if (tree.allParents[0].type=='or') {
+		        	return 'Blue Lines'
+	        	}
+	        	else {
+		        	return 'Red Lines'
+	        	}
+	        },
+	        placement: function (context, source) {
+		        setTimeout(function () {
+
+		        	var coords = source.getBoundingClientRect();
+
+					$(context).css('top',(coords.top+ coords.height/4 - context.getBoundingClientRect().height - 15) + 'px')
+		        },0)
+		        return "top";
+		    }
+	    })
 
 
-		$(tree.lineToParentLink).popover()
+	 //    linkElement.on('shown.bs.popover', function () {
+	 //    	console.log('hiii')
+		// }.bind(this))
+
 
 		// var coords = tree.lineToParent.getBoundingClientRect();
 
