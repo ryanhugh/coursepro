@@ -13,7 +13,7 @@ function Render () {
 
 
 // http://stackoverflow.com/questions/4270485/drawing-lines-on-html-page
-Render.prototype.drawLine =function(x1, y1, x2, y2,color){
+Render.prototype.drawLine =function(tree,x1, y1, x2, y2,color){
 
 	if(y1 < y2){
 		var pom = y1;
@@ -45,12 +45,31 @@ Render.prototype.drawLine =function(x1, y1, x2, y2,color){
 
 	var htmlns = "http://www.w3.org/1999/xhtml";
 	var div = document.createElementNS(htmlns, "div");
-	div.setAttribute('style','width:'+width+'px;height:0px;-moz-transform:rotate('+deg+'deg);-webkit-transform:rotate('+deg+'deg);position:absolute;top:'+y+'px;left:'+x+'px;');   
-	div.style.zIndex = '-999'
+	div.setAttribute('style','width:'+width+'px;height:0px;');   
 	div.style.border = '4px solid '+color; 
 	div.style.borderRadius = '99px'
-	this.container.appendChild(div);
-	return div;
+
+	var a = document.createElement('a')
+	a.setAttribute('style','width:'+(width+5)+'px;height:0px;-moz-transform:rotate('+deg+'deg);-webkit-transform:rotate('+deg+'deg);top:'+y+'px;left:'+x+'px;');   
+	a.style.position='absolute';
+	a.className = 'lineToParentLink'
+
+
+	a.appendChild(div);
+
+	var mouseOver = document.createElement('div');
+	mouseOver.style.width = '100%'
+	mouseOver.style.padding = '20px'
+	mouseOver.style.marginTop='-20px';
+
+	
+	a.appendChild(mouseOver)
+
+	this.container.appendChild(a);
+
+
+	tree.lineToParent = div;
+	tree.lineToParentLink = a;
 }
  
 
@@ -90,7 +109,7 @@ Render.prototype.calculateLine = function(tree) {
 			console.log('error could not get color of ',tree)
 			return;
 		};
-		tree.lineToParent = this.drawLine(parentX,parentY,cloneX,cloneY,color);
+		this.drawLine(tree,parentX,parentY,cloneX,cloneY,color);
 	}.bind(this))
 
 }
@@ -211,7 +230,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 		var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
 		xButton.style.display = 'none'
 
-		tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal')
+		tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal;z-index:5')
 		var panelBody =tree.panel.getElementsByClassName('panelBodyId')[0];
 		if (tree.isString) {
 			tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.desc
@@ -249,6 +268,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 		tree.panel.style.height = '35px';
 		tree.panel.style.borderRadius = '50%';
 		tree.panel.style.margin = '0 auto';
+		tree.panel.style.zIndex = '5';
 	}
 
 
@@ -272,7 +292,53 @@ Render.prototype.addLines = function(tree) {
 }
 
 Render.prototype.addHelpToolips = function(tree) {
-	
+
+
+
+
+	// return;
+	if (tree.lineToParentLink && tree.lineToParentLink.offsetWidth>200) {
+
+
+		tree.lineToParentLink.setAttribute('tabindex','0');
+		tree.lineToParentLink.setAttribute('data-placement','top');
+		tree.lineToParentLink.setAttribute('data-toggle','popover');
+		tree.lineToParentLink.setAttribute('data-trigger','hover');
+		tree.lineToParentLink.setAttribute('title','Prerequisites!');
+		tree.lineToParentLink.setAttribute('data-content','yoofdsaj<br>fosjl');
+
+
+		$(tree.lineToParentLink).popover()
+
+		// var coords = tree.lineToParent.getBoundingClientRect();
+
+
+		// tree.lineToParent.innerHTML='<a tabindex="0"  data-placement="top" role="button" data-toggle="popover" data-trigger="focus" title="Dismissible popover" data-content="And hereery engaging. Right?">Dismissible popover2222</a>'
+		
+		// tree.lineToParent.setAttribute('data-toggle','tooltip')
+		// tree.lineToParent.setAttribute('data-placement','top')
+		// tree.lineToParent.setAttribute('title','Yooooo')
+
+		// $(tree.lineToParent).tooltip()
+
+
+		// tree.helpCircle = document.createElement('div')
+		// tree.helpCircle.setAttribute('style','width: 14px; height: 14px; border-radius: 50%; margin: 0px auto;  background-color: #dddddd;opacity: 0.7;position:absolute;')
+		// tree.helpCircle.style.top=(coords.top+coords.height/2-tree.helpCircle.offsetHeight/2)+'px'
+		// tree.helpCircle.style.left=(coords.left+coords.width/2-tree.helpCircle.offsetWidth/2)+'px'
+		
+
+
+		// top:'+(coords.top+coords.height/2)+'px;left:'+(coords.left+coords.width/2)+'px'
+		// this.container.appendChild(tree.helpCircle)
+	};
+
+
+	if (tree.values) {
+		tree.values.forEach(function (subTree) {
+			this.addHelpToolips(subTree)
+		}.bind(this))
+	};
 };
 
 
@@ -289,6 +355,22 @@ Render.prototype.go = function(tree) {
 	this.addPanels(this.tree)
 	popup.addPopups(this.tree)
 	this.addLines(this.tree)
+	this.addHelpToolips(this.tree)
+
+	// $('[data-toggle="tooltip"]').tooltip()
+	// $(function () {
+	// 	$('[data-toggle="popover"]').popover()
+	// })
+	 // $("body").tooltip({   
+	 //    selector: "[data-toggle='tooltip']",
+	 //    container: "body"
+	 //  })
+	 //    //Popover, activated by clicking
+	 //    .popover({
+	 //    selector: "[data-toggle='popover']",
+	 //    container: "body",
+	 //    html: true
+	 //  });
 
 	//scroll to the middle of the page, and don't touch the scroll height
 	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop)
