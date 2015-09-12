@@ -8,7 +8,15 @@ function Render () {
 	this.navBar = document.getElementById('navBar');
 	if (!this.template || !this.container || !this.navBar) {
 		console.log('error could not find template??',this.template,this.container,this.navBar)
-	};
+	}
+
+	if (!localStorage.andPopupCount) {
+		localStorage.andPopupCount = 0;
+	}
+	
+	if (!localStorage.orPopupCount) {
+		localStorage.orPopupCount = 0;
+	}
 }
 
 
@@ -292,11 +300,6 @@ Render.prototype.addLines = function(tree) {
 }
 
 Render.prototype.addHelpToolips = function(tree) {
-
-
-
-
-	// return;
 	if (tree.lineToParentLink && tree.lineToParentLink.offsetWidth>200) {
 
 
@@ -316,7 +319,7 @@ Render.prototype.addHelpToolips = function(tree) {
 	        	else {
 		        	return 'Take ALL of the connected classes to take this class!';
 	        	}
-	        },
+	        }.bind(this),
 	        title: function() {
 	        	if (tree.allParents[0].type=='or') {
 		        	return 'Blue Lines'
@@ -324,45 +327,40 @@ Render.prototype.addHelpToolips = function(tree) {
 	        	else {
 		        	return 'Red Lines'
 	        	}
-	        },
+	        }.bind(this),
 	        placement: function (context, source) {
 		        setTimeout(function () {
 
+		        	if (tree.allParents[0].type=='or'){
+		        		if (localStorage.orPopupCount>10) {
+			        		context.style.display = 'none'
+			        		return;
+		        		}
+		        		else {
+		        			localStorage.orPopupCount++;	
+		        		}
+		        	}
+
+		        	if (tree.allParents[0].type=='and'){
+		        		if (localStorage.andPopupCount>10) {
+			        		context.style.display = 'none'
+			        		return;
+		        		}
+		        		else {
+		        			localStorage.andPopupCount++;
+		        		}
+		        	}
+
 		        	var coords = source.getBoundingClientRect();
 
-					$(context).css('top',(coords.top+ coords.height/4 - context.getBoundingClientRect().height - 15) + 'px')
-		        },0)
+					$(context).css('top',(coords.top+ coords.height/4 - context.getBoundingClientRect().height - 15+document.body.scrollTop) + 'px')
+					$(context).css('width','207px')
+					$(context).css('left',(coords.left+ coords.width/2 - context.getBoundingClientRect().width/2+document.body.scrollLeft)+'px')
+
+		        }.bind(this),0)
 		        return "top";
-		    }
+		    }.bind(this)
 	    })
-
-
-	 //    linkElement.on('shown.bs.popover', function () {
-	 //    	console.log('hiii')
-		// }.bind(this))
-
-
-		// var coords = tree.lineToParent.getBoundingClientRect();
-
-
-		// tree.lineToParent.innerHTML='<a tabindex="0"  data-placement="top" role="button" data-toggle="popover" data-trigger="focus" title="Dismissible popover" data-content="And hereery engaging. Right?">Dismissible popover2222</a>'
-		
-		// tree.lineToParent.setAttribute('data-toggle','tooltip')
-		// tree.lineToParent.setAttribute('data-placement','top')
-		// tree.lineToParent.setAttribute('title','Yooooo')
-
-		// $(tree.lineToParent).tooltip()
-
-
-		// tree.helpCircle = document.createElement('div')
-		// tree.helpCircle.setAttribute('style','width: 14px; height: 14px; border-radius: 50%; margin: 0px auto;  background-color: #dddddd;opacity: 0.7;position:absolute;')
-		// tree.helpCircle.style.top=(coords.top+coords.height/2-tree.helpCircle.offsetHeight/2)+'px'
-		// tree.helpCircle.style.left=(coords.left+coords.width/2-tree.helpCircle.offsetWidth/2)+'px'
-		
-
-
-		// top:'+(coords.top+coords.height/2)+'px;left:'+(coords.left+coords.width/2)+'px'
-		// this.container.appendChild(tree.helpCircle)
 	};
 
 
@@ -388,21 +386,6 @@ Render.prototype.go = function(tree) {
 	popup.addPopups(this.tree)
 	this.addLines(this.tree)
 	this.addHelpToolips(this.tree)
-
-	// $('[data-toggle="tooltip"]').tooltip()
-	// $(function () {
-	// 	$('[data-toggle="popover"]').popover()
-	// })
-	 // $("body").tooltip({   
-	 //    selector: "[data-toggle='tooltip']",
-	 //    container: "body"
-	 //  })
-	 //    //Popover, activated by clicking
-	 //    .popover({
-	 //    selector: "[data-toggle='popover']",
-	 //    container: "body",
-	 //    html: true
-	 //  });
 
 	//scroll to the middle of the page, and don't touch the scroll height
 	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop)
