@@ -10,11 +10,11 @@ function Render () {
 		console.log('error could not find template??',this.template,this.container,this.navBar)
 	}
 
-	if (!localStorage.andPopupCount) {
+	if (localStorage.andPopupCount===undefined) {
 		localStorage.andPopupCount = 0;
 	}
 	
-	if (!localStorage.orPopupCount) {
+	if (localStorage.orPopupCount===undefined) {
 		localStorage.orPopupCount = 0;
 	}
 }
