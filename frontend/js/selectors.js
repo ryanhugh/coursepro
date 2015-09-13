@@ -3,62 +3,72 @@
 
 function Selectors () {
 
-	this.selectCollegeElement = $(".selectCollege")
-	this.selectTermElement = $(".selectTerm")
-	this.selectSubjectElement = $(".selectSubject")
-	this.selectClassElement = $(".selectClass")
+	this.college = {
+		element: $(".selectCollege"),
+		value:'',
+		next:this.selectTerm.bind(this),
+		class:'collegeSelectContainer'
+	}
 
-	//order of selectors for hiding all future selectors
-	//etc
-	this.selectors = [{
-		element: this.selectCollegeElement,
-		value:''
-	},{
-		element: this.selectTermElement,
-		value:''
-	},{
-		element: this.selectSubjectElement,
-		value:''
-	},{
-		element: this.selectClassElement,
-		value:''
-	}]
+	this.term = {
+		element: $(".selectTerm"),
+		value:'',
+		next:this.selectSubject.bind(this),
+		class:'termSelectContainer'
+	}
+
+	this.subject = {
+		element: $(".selectSubject"),
+		value:'',
+		next:this.selectClass.bind(this),
+		class:'subjectSelectContainer'
+	}
+	this.class = {
+		element: $(".selectClass"),
+		value:'',
+		next:this.finish.bind(this),
+		class:'classSelectContainer'
+	}
+
+
+	//order of selectors and some other data about them
+	this.selectors = [
+	this.college,
+	this.term,
+	this.subject,
+	this.class
+	]
 }
 
 
-Selectors.prototype.setCurrentValue = function(element,value) {
-	this.selectors.forEach(function (selector) {
-		if (selector.element==element) {
-			selector.value = value;
+Selectors.prototype.updateDeeplink = function() {
+	var url = []
+
+	this.selectors.forEach(function (dropdown) {
+		if (dropdown.value) {
+			url.push(dropdown.value);
 		};
 	}.bind(this))
-}
 
-Selectors.prototype.getCurrentValue = function(element) {
-	for (var i = 0; i < this.selectors.length; i++) {
-		if (this.selectors[i].element===element) {
-			return this.selectors[i].value
-		}
-	}
-	console.log('given selector was not found!?!',element)
-	console.trace();
-}
-Selectors.prototype.resetElement = function(element) {
-	if (element[0].options.length==0) {
+	window.location.hash = url.join('/')
+};
+
+Selectors.prototype.resetDropdown = function(dropdown) {
+	if (dropdown.element[0].options.length==0) {
 		return;
 	}
-	element.select2("destroy").removeClass('select2-offscreen')
-	element.empty()
-	element.off('select2:close');
-	element[0].value=''
+	dropdown.element.select2("destroy").removeClass('select2-offscreen')
+	dropdown.element.empty()
+	dropdown.element.off('select2:close');
+	dropdown.element[0].value=''
 }  
 
-Selectors.prototype.resetAllFutureVals = function(element) {
+Selectors.prototype.resetAllFutureVals = function(dropdown) {
 	//find the element to reset all past
 	var i =0;
 
 	for (; i < this.selectors.length; i++) {
-		if (this.selectors[i].element == element) {
+		if (this.selectors[i] == dropdown) {
 			break;
 		}
 	}
@@ -66,14 +76,15 @@ Selectors.prototype.resetAllFutureVals = function(element) {
 
 	//reset all past here
 	for (; i < this.selectors.length; i++) {
-		this.resetElement(this.selectors[i].element)
+		this.resetDropdown(this.selectors[i])
 		this.selectors[i].element[0].value=''
+		this.selectors[i].value=''
 	};
 }
-Selectors.prototype.setupSelector = function(selectElement,selectValues,className,callback) {
+Selectors.prototype.setupSelector = function(dropdown,selectValues) {
 	
-	this.setCurrentValue(selectElement,selectElement.val());
-	this.resetElement(selectElement);
+	dropdown.value = dropdown.element.val();
+	this.resetDropdown(dropdown);
 	
 	if (selectValues.length===0) {
 		console.log('nothing found!')
@@ -83,40 +94,43 @@ Selectors.prototype.setupSelector = function(selectElement,selectValues,classNam
 	$("#nothingFound").hide();
 
 
-	selectElement.select2({data:selectValues});
-	selectElement.select2({containerCssClass: className })
-	selectElement.select2('open');
+	dropdown.element.select2({data:selectValues});
+	dropdown.element.select2({containerCssClass: dropdown.class })
+	dropdown.element.select2('open');
 
 	//i would use .on('change'), but when setting the default value it dosent fire the 
 	// change event on close. So keep track of the last element, and if 
 	// it is different on close, fire the callback
-	selectElement.on("select2:close",function (event) {
-		var selection = selectElement.val();
+	dropdown.element.on("select2:close",function (event) {
+		var selection = dropdown.element.val();
 		if (!selection) {
 			return;
 		}
-		var curr = this.getCurrentValue(selectElement)
-		if (selection==curr) {
+		
+		if (selection==dropdown.value) {
 			console.log('not chaning from ',curr,selection)
 			return;
 		}
 
-		ga('send', 'event', 'category', 'action', {'type':'selector','selector': className,'value': selection});
+		ga('send', 'event', 'category', 'action', {'type':'selector','selector': dropdown.class,'value': selection});
 
-		this.setCurrentValue(selectElement,selection)
-		this.resetAllFutureVals(selectElement);
+		dropdown.value = selection;
+		this.resetAllFutureVals(dropdown);
+		this.updateDeeplink()
 
 		console.log('selected',selection)
-		callback();
+		
+		dropdown.next()
+
 	}.bind(this))
 }
 
 
-Selectors.prototype.selectCollege = function(callback) {
+Selectors.prototype.selectCollege = function() {
 	request('/listColleges',function (err,body){
 		if (err) {
 			console.log(err);
-			return callback(err)
+			return;
 		}
 
 		var selectValues = [];
@@ -132,20 +146,20 @@ Selectors.prototype.selectCollege = function(callback) {
 			if(a.text > b.text) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.selectCollegeElement,selectValues,'collegeSelectContainer',callback);
+		this.setupSelector(this.college,selectValues);
 	}.bind(this));
 }
-Selectors.prototype.selectTerm = function(callback) {
+Selectors.prototype.selectTerm = function() {
 	request({
 		url:'/listTerms',
 		type:'POST',
 		body:JSON.stringify({
-			host:this.selectCollegeElement.val()
+			host:this.college.value
 		})
 	} ,function (err,body){
 		if (err) {
 			console.log(err);
-			return callback(err)
+			return;
 		}
 
 		var selectValues = [];
@@ -161,22 +175,22 @@ Selectors.prototype.selectTerm = function(callback) {
 			if(a.id < b.id) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.selectTermElement,selectValues,'termSelectContainer', callback);
+		this.setupSelector(this.term,selectValues);
 	}.bind(this));
 }
 
-Selectors.prototype.selectSubject = function(callback) {
+Selectors.prototype.selectSubject = function() {
 	request({
 		url:'/listSubjects',
 		type:'POST',
 		body:JSON.stringify({
-			host:this.selectCollegeElement.val(),
-			termId:this.selectTermElement.val()
+			host:this.college.value,
+			termId:this.term.value
 		})
 	} ,function (err,body){
 		if (err) {
 			console.log(err);
-			return callback(err)
+			return;
 		}
 
 		var selectValues = [];
@@ -196,24 +210,24 @@ Selectors.prototype.selectSubject = function(callback) {
 			if(a.id > b.id) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.selectSubjectElement,selectValues,'subjectSelectContainer', callback);
+		this.setupSelector(this.subject,selectValues);
 	}.bind(this))
 }
 
-Selectors.prototype.selectClass = function(callback) {
+Selectors.prototype.selectClass = function() {
 	
 	request({
 		url:'/listClasses',
 		type:'POST',
 		body:JSON.stringify({
-			host:this.selectCollegeElement.val(),
-			termId:this.selectTermElement.val(),
-			subject:this.selectSubjectElement.val()
+			host:this.college.value,
+			termId:this.term.value,
+			subject:this.subject.value
 		})
 	} ,function (err,body){
 		if (err) {
 			console.log(err);
-			return callback(err)
+			return;
 		}
 
 		var selectValues = [];
@@ -232,41 +246,37 @@ Selectors.prototype.selectClass = function(callback) {
 			if(a.id > b.id) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.selectClassElement,selectValues,'classSelectContainer', callback);
+		this.setupSelector(this.class,selectValues);
 	}.bind(this));
+}
 
+Selectors.prototype.finish = function() {
+	treeMgr.createTree(this.college.value,this.term.value,this.subject.value,this.class.value)
 }
 
 Selectors.prototype.main = function() {
-	this.selectCollege(function (err) {
-		if (err) {
-			console.log(err);
-			return;
-		}
-		this.selectTerm(function (err) {
-			if (err) { 
-				console.log(err);
-				return;
-			}
-			this.selectSubject(function (err) {
-				if (err) {
-					console.log(err);
-					return;
-				}
-				this.selectClass(function (err) {
-					if (err) {
-						console.log(err);
-						return;
-					}
-					treeMgr.createTree(this.selectCollegeElement.val(),this.selectTermElement.val(),this.selectSubjectElement.val(),this.selectClassElement.val())
-				}.bind(this))
-			}.bind(this))
+	if (window.location.hash.length>1) {
+		var values = window.location.hash.slice(1).split('/')
+		values.forEach(function (value,index) {
+
+			this.selectors[index].value = value
+			this.selectors[index].element.select2("val",value);
+
+			// if (index==values.length-1) {
+			// 	this.selectors[index].next()
+			// };
+
 		}.bind(this))
-	}.bind(this))
+	}
+	else {
+		this.selectCollege();
+	}
 }
 
 
 Selectors.prototype.Selectors=Selectors;
 var instance = new Selectors();
 window.selectors = instance;
-instance.main()
+$(function () {
+	instance.main()
+})
