@@ -102,15 +102,15 @@ app.post('/urlDetails', function(req, res) {
 
 
 app.get('/listColleges',function (req,res) {
-	 collegeNamesDB.find({},{
-	 	shouldBeOnlyOne:false,
-	 	sanatize:true
-	 },function (err,names) {
-	 	if (err) {
-	 		console.log('error college names failed',req.url,err);
-	 		res.send('internal server error :/');
-	 		return;
-	 	};
+	collegeNamesDB.find({},{
+		shouldBeOnlyOne:false,
+		sanatize:true
+	},function (err,names) {
+		if (err) {
+			console.log('error college names failed',req.url,err);
+			res.send('internal server error :/');
+			return;
+		};
 
 
 		res.send(JSON.stringify(names));
@@ -129,9 +129,9 @@ app.post('/listTerms',function (req,res) {
 	};
 
 	termsDB.find({host:req.body.host},{
-	 	shouldBeOnlyOne:false,
-	 	sanatize:true
-	 },function (err,terms) {
+		shouldBeOnlyOne:false,
+		sanatize:true
+	},function (err,terms) {
 		if (err) {
 			res.send('internal server error :/')
 			return;
@@ -155,9 +155,9 @@ app.post('/listSubjects',function (req,res) {
 		host:req.body.host,
 		termId:req.body.termId
 	},{
-	 	shouldBeOnlyOne:false,
-	 	sanatize:true
-	 },function (err,subjects) {
+		shouldBeOnlyOne:false,
+		sanatize:true
+	},function (err,subjects) {
 		if (err) {
 			res.send('internal server error :/')
 			return;
@@ -190,9 +190,9 @@ app.post('/listClasses',function (req,res) {
 
 
 	classesDB.find(lookup,{
-	 	shouldBeOnlyOne:false,
-	 	sanatize:true
-	 },function (err,classes) {
+		shouldBeOnlyOne:false,
+		sanatize:true
+	},function (err,classes) {
 		if (err) {
 			res.send('internal server error :/')
 			return;
@@ -223,9 +223,9 @@ app.post('/listSections',function (req,res) {
 	
 
 	sectionsDB.find(lookup,{
-	 	shouldBeOnlyOne:false,
-	 	sanatize:true
-	 },function (err,classes) {
+		shouldBeOnlyOne:false,
+		sanatize:true
+	},function (err,classes) {
 		if (err) {
 			res.send('internal server error :/')
 			return;
@@ -247,16 +247,23 @@ app.get('/', function (req, res) {
 
 // add cache forever to external js libraries
 app.get('/*', function (req, res,next) {
-  if (_(req.url).startsWith('/js/external') || _(req.url).startsWith('/fonts')) {
-    res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year
-  }
-  next()
+	var urlParsed = new URI(req.url);
+	if (!urlParsed) {
+		return next();
+	}
+
+	var path = _(urlParsed.path())
+
+	if (path.startsWith('/js/external') || path.startsWith('/fonts')) {
+	    res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year
+	}
+	next()
 });
 
 app.use(express.static('frontend/static'));
 
 app.get("/*", function(req, res, next) {
-  
+
 	next("Could not find page "+req.url);
 
 });

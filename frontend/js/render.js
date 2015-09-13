@@ -348,8 +348,6 @@ Render.prototype.addHelpToolips = function(tree) {
 				popoverJquery.css('left',( event.x - popover.offsetWidth/2 +document.body.scrollLeft)+'px')
 			},0)
 			//
-
-
 		}.bind(this)
 
 		tree.lineToParentLink.onmouseout = function (event) {
