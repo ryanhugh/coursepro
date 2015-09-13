@@ -359,7 +359,6 @@ Render.prototype.addHelpToolips = function(tree) {
 
 
 		linkElement.popover({
-			html : true, 
 			content: function() {
 				if (tree.allParents[0].type=='or') {
 					return 'Take ANY of the connected classes to take this class!';
