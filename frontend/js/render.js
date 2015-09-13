@@ -73,13 +73,17 @@ Render.prototype.drawLine =function(tree,x1, y1, x2, y2,color){
 	
 	a.appendChild(mouseOver)
 
-	this.container.appendChild(a);
+
+	tree.lineContainer = document.createElement('div');
+	tree.lineContainer.appendChild(a);
+
+	this.container.appendChild(tree.lineContainer);
 
 
 	tree.lineToParent = div;
 	tree.lineToParentLink = a;
 }
- 
+
 
 Render.prototype.calculateLine = function(tree) {
 
@@ -306,61 +310,73 @@ Render.prototype.addHelpToolips = function(tree) {
 		tree.lineToParentLink.setAttribute('tabindex','0');
 		tree.lineToParentLink.setAttribute('data-placement','top');
 		tree.lineToParentLink.setAttribute('data-toggle','popover');
-		tree.lineToParentLink.setAttribute('data-trigger','hover');
+		tree.lineToParentLink.setAttribute('data-trigger','manual');
 
 		var linkElement = $(tree.lineToParentLink)
 
+		tree.lineToParentLink.onmouseover = function (event) {
+			if (tree.allParents[0].type=='or'){
+				if (localStorage.orPopupCount>10) {
+					return;
+				}
+				else {
+					localStorage.orPopupCount++;	
+				}
+			}
+
+			if (tree.allParents[0].type=='and'){
+				if (localStorage.andPopupCount>10) {
+					return;
+				}
+				else {
+					localStorage.andPopupCount++;
+				}
+			}
+			linkElement.popover('show');
+
+			setTimeout(function () {
+				var popover = tree.lineContainer.getElementsByClassName('popover')[0]
+				if (!popover) {
+					return;
+				};
+				var popoverJquery = $(popover)
+
+				var coords = event.target.getBoundingClientRect();
+
+				popoverJquery.css('top',(event.y -popover.offsetHeight- 30+document.body.scrollTop) + 'px')
+				popoverJquery.css('width','207px')
+				popoverJquery.css('left',( event.x - popover.offsetWidth/2 +document.body.scrollLeft)+'px')
+			},0)
+			//
+
+
+		}.bind(this)
+
+		tree.lineToParentLink.onmouseout = function (event) {
+			linkElement.popover('hide');
+		}.bind(this)
+
+
+
 		linkElement.popover({
-	        html : true, 
-	        content: function() {
-	        	if (tree.allParents[0].type=='or') {
-		        	return 'Take ANY of the connected classes to take this class!';
-	        	}
-	        	else {
-		        	return 'Take ALL of the connected classes to take this class!';
-	        	}
-	        }.bind(this),
-	        title: function() {
-	        	if (tree.allParents[0].type=='or') {
-		        	return 'Blue Lines'
-	        	}
-	        	else {
-		        	return 'Red Lines'
-	        	}
-	        }.bind(this),
-	        placement: function (context, source) {
-		        setTimeout(function () {
-
-		        	if (tree.allParents[0].type=='or'){
-		        		if (localStorage.orPopupCount>10) {
-			        		context.style.display = 'none'
-			        		return;
-		        		}
-		        		else {
-		        			localStorage.orPopupCount++;	
-		        		}
-		        	}
-
-		        	if (tree.allParents[0].type=='and'){
-		        		if (localStorage.andPopupCount>10) {
-			        		context.style.display = 'none'
-			        		return;
-		        		}
-		        		else {
-		        			localStorage.andPopupCount++;
-		        		}
-		        	}
-
-		        	var coords = source.getBoundingClientRect();
-
-					$(context).css('top',(coords.top+ coords.height/4 - context.getBoundingClientRect().height - 15+document.body.scrollTop) + 'px')
-					$(context).css('width','207px')
-					$(context).css('left',(coords.left+ coords.width/2 - context.getBoundingClientRect().width/2+document.body.scrollLeft)+'px')
-
-		        }.bind(this),0)
-		        return "top";
-		    }.bind(this)
-	    })
+			html : true, 
+			content: function() {
+				if (tree.allParents[0].type=='or') {
+					return 'Take ANY of the connected classes to take this class!';
+				}
+				else {
+					return 'Take ALL of the connected classes to take this class!';
+				}
+			}.bind(this),
+			title: function() {
+				if (tree.allParents[0].type=='or') {
+					return 'Blue Lines'
+				}
+				else {
+					return 'Red Lines'
+				}
+			}.bind(this)
+		})
 	};
 
 
@@ -377,7 +393,7 @@ Render.prototype.go = function(tree) {
 
 	//remove everything in the container for a new tree
 	while (this.container.firstChild) {
-	    this.container.removeChild(this.container.firstChild);
+		this.container.removeChild(this.container.firstChild);
 	}
 	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px'
 

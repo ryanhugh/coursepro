@@ -42,9 +42,6 @@ and if no sections for entire college!?! log big warning
 6. - use the longer value for pre and co reqs if they are not the same between section and have same name
 7. - remove duplicates from single list in prereqs (probably not going to happen ) - add this before simplify
 
-8. render the tree and remove duplicates
-
-
 9. base parser find dep with fields() -- find an existing pagedata.deps by a given fields, and if not exist, make one
 
 10. array of user agents for pointer + some random data?
