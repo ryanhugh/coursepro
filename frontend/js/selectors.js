@@ -280,6 +280,7 @@ Selectors.prototype.main = function() {
 	if (window.location.hash.length>1) {
 		var values = window.location.hash.slice(1).split('/')
 		values.forEach(function (value,index) {
+			value = value.replace(/[^a-z0-9\/\.]/gi,'')
 			value = decodeURIComponent(value)
 
 
