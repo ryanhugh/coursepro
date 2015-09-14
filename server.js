@@ -52,7 +52,7 @@ function validateEmail(email) {
 
 
 app.use(function (req, res, next) {
-	console.log(req.connection.remoteAddress,new Date().getTime(),req.url,JSON.stringify(req.body));
+	console.log(req.connection.remoteAddress,new Date().getTime(),req.get('Referer'),req.url,JSON.stringify(req.body));
 	next();
 });
 
@@ -247,14 +247,7 @@ app.get('/', function (req, res) {
 
 // add cache forever to external js libraries
 app.get('/*', function (req, res,next) {
-	var urlParsed = new URI(req.url);
-	if (!urlParsed) {
-		return next();
-	}
-
-	var path = _(urlParsed.path())
-
-	if (path.startsWith('/js/external') || path.startsWith('/fonts')) {
+	if (req.path.startsWith('/js/external') || req.path.startsWith('/fonts')) {
 	    res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year
 	}
 	next()

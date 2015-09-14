@@ -68,7 +68,7 @@ Selectors.prototype.resetDropdown = function(dropdown) {
 	dropdown.element.empty()
 	dropdown.element.off('select2:close');
 	dropdown.element[0].value=''
-}  
+}
 
 Selectors.prototype.resetAllFutureVals = function(dropdown) {
 	//find the element to reset all past
@@ -116,8 +116,8 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 		dropdown.element.select2("val",defaultValue);
 	}
 
-	//i would use .on('change'), but when setting the default value it dosent fire the 
-	// change event on close. So keep track of the last element, and if 
+	//i would use .on('change'), but when setting the default value it dosent fire the
+	// change event on close. So keep track of the last element, and if
 	// it is different on close, fire the callback
 	dropdown.element.on("select2:close",function (event) {
 		var selection = dropdown.element.val();
@@ -280,8 +280,8 @@ Selectors.prototype.main = function() {
 	if (window.location.hash.length>1) {
 		var values = window.location.hash.slice(1).split('/')
 		values.forEach(function (value,index) {
-			value = value.replace(/[^a-z0-9\/\.]/gi,'')
 			value = decodeURIComponent(value)
+			value = value.replace(/[^a-z0-9\/\.]/gi,'')
 
 
 			this.selectors[index].setup(value);
