@@ -367,10 +367,10 @@ Render.prototype.addHelpToolips = function(tree) {
 			}.bind(this),
 			title: function() {
 				if (tree.allParents[0].type=='or') {
-					return 'Blue Lines'
+					return 'Prerequisites: Blue Lines'
 				}
 				else {
-					return 'Red Lines'
+					return 'Prerequisites: Red Lines'
 				}
 			}.bind(this)
 		})
