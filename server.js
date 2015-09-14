@@ -247,7 +247,7 @@ app.get('/', function (req, res) {
 
 // add cache forever to external js libraries
 app.get('/*', function (req, res,next) {
-	if (req.path.startsWith('/js/external') || req.path.startsWith('/fonts')) {
+	if (_(req.path).startsWith('/js/external') || _(req.path).startsWith('/fonts')) {
 	    res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year
 	}
 	next()
