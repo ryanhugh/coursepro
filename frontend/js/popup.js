@@ -94,7 +94,7 @@ Popup.prototype.prettyLocation = function(location) {
 
 	}
 	else {
-		return '<a target="_blank" href="http://maps.google.com/?q='+selectors.selectCollegeElement.select2('data')[0].text+' '+location.replace(/\d+\s*$/i,'')+'">'+location+'</a>';
+		return '<a target="_blank" href="http://maps.google.com/?q='+selectors.college.element.select2('data')[0].text+' '+location.replace(/\d+\s*$/i,'')+'">'+location+'</a>';
 	}
 };
 

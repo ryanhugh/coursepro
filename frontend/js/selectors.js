@@ -3,32 +3,39 @@
 
 function Selectors () {
 
-	this.college = {
-		element: $(".selectCollege"),
-		value:'',
-		next:this.selectTerm.bind(this),
-		class:'collegeSelectContainer'
-	}
 
-	this.term = {
-		element: $(".selectTerm"),
+
+	this.class = {
+		element: $(".selectClass"),
 		value:'',
-		next:this.selectSubject.bind(this),
-		class:'termSelectContainer'
+		setup:this.selectClass.bind(this),
+		class:'classSelectContainer'
 	}
 
 	this.subject = {
 		element: $(".selectSubject"),
 		value:'',
-		next:this.selectClass.bind(this),
+		setup:this.selectSubject.bind(this),
+		next:this.class,
 		class:'subjectSelectContainer'
 	}
-	this.class = {
-		element: $(".selectClass"),
+
+	this.term = {
+		element: $(".selectTerm"),
 		value:'',
-		next:this.finish.bind(this),
-		class:'classSelectContainer'
+		setup:this.selectTerm.bind(this),
+		next:this.subject,
+		class:'termSelectContainer'
 	}
+
+	this.college = {
+		element: $(".selectCollege"),
+		value:'',
+		setup:this.selectCollege.bind(this),
+		next:this.term,
+		class:'collegeSelectContainer'
+	}
+
 
 
 	//order of selectors and some other data about them
@@ -46,7 +53,7 @@ Selectors.prototype.updateDeeplink = function() {
 
 	this.selectors.forEach(function (dropdown) {
 		if (dropdown.value) {
-			url.push(dropdown.value);
+			url.push(encodeURIComponent(dropdown.value));
 		};
 	}.bind(this))
 
@@ -81,7 +88,7 @@ Selectors.prototype.resetAllFutureVals = function(dropdown) {
 		this.selectors[i].value=''
 	};
 }
-Selectors.prototype.setupSelector = function(dropdown,selectValues) {
+Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue) {
 	
 	dropdown.value = dropdown.element.val();
 	this.resetDropdown(dropdown);
@@ -96,7 +103,18 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues) {
 
 	dropdown.element.select2({data:selectValues});
 	dropdown.element.select2({containerCssClass: dropdown.class })
-	dropdown.element.select2('open');
+
+	var ids = _.map(selectValues,function (selectValue) {
+		return selectValue.id;
+	}.bind(this));
+
+	if (!defaultValue || !_(ids).includes(defaultValue)) {
+		dropdown.element.select2('open');
+	}
+	else {
+		dropdown.value = defaultValue;
+		dropdown.element.select2("val",defaultValue);
+	}
 
 	//i would use .on('change'), but when setting the default value it dosent fire the 
 	// change event on close. So keep track of the last element, and if 
@@ -108,7 +126,7 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues) {
 		}
 		
 		if (selection==dropdown.value) {
-			console.log('not chaning from ',curr,selection)
+			console.log('not changing from ',curr,selection)
 			return;
 		}
 
@@ -120,13 +138,18 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues) {
 
 		console.log('selected',selection)
 		
-		dropdown.next()
+		if (dropdown.next) {
+			dropdown.next.setup()
+		}
+		else {
+			this.finish()
+		}
 
 	}.bind(this))
 }
 
 
-Selectors.prototype.selectCollege = function() {
+Selectors.prototype.selectCollege = function(defaultValue) {
 	request('/listColleges',function (err,body){
 		if (err) {
 			console.log(err);
@@ -146,10 +169,10 @@ Selectors.prototype.selectCollege = function() {
 			if(a.text > b.text) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.college,selectValues);
+		this.setupSelector(this.college,selectValues,defaultValue);
 	}.bind(this));
 }
-Selectors.prototype.selectTerm = function() {
+Selectors.prototype.selectTerm = function(defaultValue) {
 	request({
 		url:'/listTerms',
 		type:'POST',
@@ -175,11 +198,11 @@ Selectors.prototype.selectTerm = function() {
 			if(a.id < b.id) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.term,selectValues);
+		this.setupSelector(this.term,selectValues,defaultValue);
 	}.bind(this));
 }
 
-Selectors.prototype.selectSubject = function() {
+Selectors.prototype.selectSubject = function(defaultValue) {
 	request({
 		url:'/listSubjects',
 		type:'POST',
@@ -210,12 +233,11 @@ Selectors.prototype.selectSubject = function() {
 			if(a.id > b.id) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.subject,selectValues);
+		this.setupSelector(this.subject,selectValues,defaultValue);
 	}.bind(this))
 }
 
-Selectors.prototype.selectClass = function() {
-	
+Selectors.prototype.selectClass = function(defaultValue) {
 	request({
 		url:'/listClasses',
 		type:'POST',
@@ -246,7 +268,7 @@ Selectors.prototype.selectClass = function() {
 			if(a.id > b.id) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.class,selectValues);
+		this.setupSelector(this.class,selectValues,defaultValue);
 	}.bind(this));
 }
 
@@ -258,13 +280,21 @@ Selectors.prototype.main = function() {
 	if (window.location.hash.length>1) {
 		var values = window.location.hash.slice(1).split('/')
 		values.forEach(function (value,index) {
+			value = decodeURIComponent(value)
 
+
+			this.selectors[index].setup(value);
 			this.selectors[index].value = value
-			this.selectors[index].element.select2("val",value);
 
-			// if (index==values.length-1) {
-			// 	this.selectors[index].next()
-			// };
+			//if at end, open next selector or create tree
+			if (index == values.length-1) {
+				if (this.selectors[index].next) {
+					this.selectors[index].next.setup()
+				}
+				else {
+					this.finish();
+				}
+			};
 
 		}.bind(this))
 	}
