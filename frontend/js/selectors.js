@@ -130,11 +130,16 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 			return;
 		}
 
-		ga('send', 'event', 'category', 'action', {'type':'selector','selector': dropdown.class,'value': selection});
-
 		dropdown.value = selection;
 		this.resetAllFutureVals(dropdown);
 		this.updateDeeplink()
+		
+		ga('send', {
+			'hitType': 'pageview',
+			'page': window.location.href,
+			'title': 'Coursepro.io'
+		});
+
 
 		console.log('selected',selection)
 		
