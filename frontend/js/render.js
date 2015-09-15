@@ -242,7 +242,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 		var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
 		xButton.style.display = 'none'
 
-		tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal;z-index:5')
+		tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal;z-index:5;text-align:initial')
 		var panelBody =tree.panel.getElementsByClassName('panelBodyId')[0];
 		if (tree.isString) {
 			tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.desc
@@ -384,14 +384,18 @@ Render.prototype.addHelpToolips = function(tree) {
 	};
 };
 
-
-Render.prototype.go = function(tree) {
-	this.tree = tree; 
-
+//this is called before the loading starts
+Render.prototype.clearContainer = function() {
+	
 	//remove everything in the container for a new tree
 	while (this.container.firstChild) {
 		this.container.removeChild(this.container.firstChild);
 	}
+}
+
+Render.prototype.go = function(tree) {
+	this.tree = tree; 
+
 	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px'
 
 	this.addStructure(this.tree)

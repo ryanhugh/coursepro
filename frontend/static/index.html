@@ -11,6 +11,7 @@
   <title>Coursepro.io</title>
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/spinner.css" type="text/css">
 
 
   <style type="text/css">
@@ -138,10 +139,10 @@
   </nav>
 
 
-<div class="container" style="padding-top: 125px;width:100%;white-space: nowrap;" id="containerId">
+<div class="container" style="padding-top: 125px;width:100%;white-space: nowrap;text-align:center" id="containerId">
 
   <!-- remove the white-space below and above to wrap the panels -->
-  <div class="panel panel-primary templatePanelId" style="width:165px;display:none;margin: 0 auto;white-space: initial;">
+  <div class="panel panel-primary templatePanelId" style="width:165px;display:none;margin: 0 auto;white-space: initial;text-align:initial">
     <div class="panel-heading classPanelHead">
       <h3 class="panel-title" style="text-align: center;"><span class="subjClassId"></span><br><span class="classTitleId"><span></h3>
       <span class="glyphicon glyphicon-remove" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;display:none;"></span>
@@ -150,7 +151,11 @@
 
     </div>
   </div>
+
 </div><!-- /.container -->
+
+
+    <div class="spinner-loader" style="margin:0 auto;display:none" id="spinner"></div>
 
     <script src="/js/external/queue.v1.min.js"></script>
     <script src="/js/external/jquery.min.js"></script>

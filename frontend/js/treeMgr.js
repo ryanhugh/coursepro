@@ -9,6 +9,9 @@ function TreeMgr () {
 
 	this.host = null;
 	this.termId = null;
+
+	this.spinner = document.getElementById('spinner')
+	this.spinner.remove()
 }
 
 TreeMgr.prototype.convertServerData = function(data) {
@@ -482,11 +485,19 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 		dataStatus:this.DATASTATUS_NOTSTARTED
 	}
 
+	render.clearContainer()
+
+	this.spinner.style.display = ''
+	render.container.appendChild(this.spinner)
+
+
 
 	this.fetchFullTree(tree,10,function () {
 		this.simplifyTree(tree)
 		this.sortTree(tree);
 
+
+		this.spinner.style.display = 'none'
 
 
 
@@ -500,6 +511,8 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 		// this.removeDuplicateDeps(tree,flatClassList);
 		// this.removeDuplicateDeps(tree,flatClassList);
 		this.addAllParentRelations(tree);
+
+		spinner.style.display = 'none'
 
 
 		// var a = findFlattendClassList(tree)
