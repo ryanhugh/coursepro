@@ -25,6 +25,26 @@ sectionsDB.startUpdates();
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 
+function logData (req) {
+	console.log(req.connection.remoteAddress,new Date().getTime(),req.get('User-Agent'),req.get('Referer'),req.method,req.url,JSON.stringify(req.body));
+}
+
+
+
+//catch errors with invalid requests
+app.use(function (err,req, res, next) {
+	if (err) {
+		logData(req);
+		console.log('error: 400: ',err)
+		res.status(400)
+		res.send('ya dun goofed')
+		res.end()
+	}
+	else {
+		next();
+	}
+});
+
 
 
 // http://stackoverflow.com/a/46181/11236
@@ -52,53 +72,54 @@ function validateEmail(email) {
 
 
 app.use(function (req, res, next) {
-	console.log(req.connection.remoteAddress,new Date().getTime(),req.get('Referer'),req.url,JSON.stringify(req.body));
-	next();
+	logData(req);
+	next()
 });
 
 
-app.post('/urlDetails', function(req, res) {
 
-	if (!req.body || !req.body.url) {
-		console.log('invalid req from '+req.ip);
-		return;
-	};
+// app.post('/urlDetails', function(req, res) {
 
-	//dont keep invalid emails
-	if (!validateEmail(req.body.email)) {
-		console.log('Invalid email rejected',req.body.email)
-		req.body.email = null;
-	};
+// 	if (!req.body || !req.body.url) {
+// 		console.log('invalid req from '+req.ip);
+// 		return;
+// 	};
 
-	console.log('inbound data:',req.body)
+// 	//dont keep invalid emails
+// 	if (!validateEmail(req.body.email)) {
+// 		console.log('Invalid email rejected',req.body.email)
+// 		req.body.email = null;
+// 	};
+
+// 	console.log('inbound data:',req.body)
 
 
-	//client sent a (possibly) valid url, check and parse page
+// 	//client sent a (possibly) valid url, check and parse page
 
-	var pageData = pageDataMgr.create({
-		ip:req.connection.remoteAddress,
-		email:req.body.email,
-		dbData:{
-			url:req.body.url
-		}});
+// 	var pageData = pageDataMgr.create({
+// 		ip:req.connection.remoteAddress,
+// 		email:req.body.email,
+// 		dbData:{
+// 			url:req.body.url
+// 		}});
 	
-	pageDataMgr.go(pageData, function (err,pageData) {
+// 	pageDataMgr.go(pageData, function (err,pageData) {
 
-		if (err) {
-			//oh no! no modules support url
-			res.send(JSON.stringify({
-				reason:err
-			}));
-		}
-		else {
+// 		if (err) {
+// 			//oh no! no modules support url
+// 			res.send(JSON.stringify({
+// 				reason:err
+// 			}));
+// 		}
+// 		else {
 
-			res.send(JSON.stringify({
-				reason:"SUCCESS",
-				clientString:pageData.getClientString()
-			}));
-		}
-	});
-});
+// 			res.send(JSON.stringify({
+// 				reason:"SUCCESS",
+// 				clientString:pageData.getClientString()
+// 			}));
+// 		}
+// 	});
+// });
 
 
 app.get('/listColleges',function (req,res) {
@@ -108,6 +129,7 @@ app.get('/listColleges',function (req,res) {
 	},function (err,names) {
 		if (err) {
 			console.log('error college names failed',req.url,err);
+			res.status(500);
 			res.send('internal server error :/');
 			return;
 		};
@@ -133,6 +155,7 @@ app.post('/listTerms',function (req,res) {
 		sanatize:true
 	},function (err,terms) {
 		if (err) {
+			res.status(500);
 			res.send('internal server error :/')
 			return;
 		};
@@ -146,6 +169,7 @@ app.post('/listSubjects',function (req,res) {
 	if (!req.body.host || !req.body.termId) {
 		console.log('error, no host or termId given body:');
 		console.log(req.body)
+		res.status(400);
 		res.send('{"error":"no host or termId given (expected JSON)"}')
 		return;
 	};
@@ -159,6 +183,8 @@ app.post('/listSubjects',function (req,res) {
 		sanatize:true
 	},function (err,subjects) {
 		if (err) {
+			console.log(err)
+			res.status(500);
 			res.send('internal server error :/')
 			return;
 		};
@@ -173,6 +199,7 @@ app.post('/listClasses',function (req,res) {
 	if (!req.body.host || !req.body.termId || !req.body.subject) {
 		console.log('error, no host or termId or subject given body:');
 		console.log(req.body)
+		res.status(400);
 		res.send('{"error":"no host or termId or subject given (expected JSON)"}')
 		return;
 	};
@@ -194,6 +221,8 @@ app.post('/listClasses',function (req,res) {
 		sanatize:true
 	},function (err,classes) {
 		if (err) {
+			console.log(err)
+			res.status(500);
 			res.send('internal server error :/')
 			return;
 		};
@@ -227,6 +256,8 @@ app.post('/listSections',function (req,res) {
 		sanatize:true
 	},function (err,classes) {
 		if (err) {
+			console.log(err)
+			res.status(500);
 			res.send('internal server error :/')
 			return;
 		};
@@ -257,8 +288,9 @@ app.use(express.static('frontend/static'));
 
 app.get("/*", function(req, res, next) {
 
-	next("Could not find page "+req.url);
-
+	console.log('error: 404: '+req.url)
+	res.status(404);
+	res.send('404, yo')
 });
 
 
