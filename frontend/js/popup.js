@@ -5,7 +5,7 @@ function Popup () {
 
 //creates 7:00 - 9:00 am
 // Thursday, Friday string
-var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saterday']
+var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 Popup.prototype.createTimeStrings = function(meetings) {
 	
 	//{startDate: 16554, endDate: 16554, profs: Array[1], where: "Snell Engineering Center 168", times: Object…}
