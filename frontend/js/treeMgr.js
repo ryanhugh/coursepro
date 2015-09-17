@@ -128,6 +128,25 @@ TreeMgr.prototype.fetchFullTreeOnce = function(item,queue) {
 			}.bind(this));
 		}.bind(this))
 	}
+	
+	
+	//fetch coreqs
+	queue.defer(function(callback){
+	  request({
+				url:'/listClasses',
+				type:'POST',
+				body:{
+					classId:item.classId,
+					subject:item.subject,
+					host:this.host,
+					termId:this.termId
+				}
+	  },function(err,body){
+	    
+	  }.bind(this))
+	})
+	
+	
 
 	//fetch its values too
 	if (item.values) {

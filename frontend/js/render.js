@@ -53,12 +53,12 @@ Render.prototype.drawLine =function(tree,x1, y1, x2, y2,color){
 
 	var htmlns = "http://www.w3.org/1999/xhtml";
 	var div = document.createElementNS(htmlns, "div");
-	div.setAttribute('style','width:'+width+'px;height:0px;');   
-	div.style.border = '4px solid '+color; 
+	div.setAttribute('style','width:'+width+'px;height:0px;');
+	div.style.border = '4px solid '+color;
 	div.style.borderRadius = '99px'
 
 	var a = document.createElement('a')
-	a.setAttribute('style','width:'+(width+5)+'px;height:0px;-moz-transform:rotate('+deg+'deg);-webkit-transform:rotate('+deg+'deg);top:'+y+'px;left:'+x+'px;');   
+	a.setAttribute('style','width:'+(width+5)+'px;height:0px;-moz-transform:rotate('+deg+'deg);-webkit-transform:rotate('+deg+'deg);top:'+y+'px;left:'+x+'px;');
 	a.style.position='absolute';
 	a.className = 'lineToParentLink'
 
@@ -137,7 +137,7 @@ Render.prototype.getColor = function(type) {
 		console.trace()
 	}
 }
-Render.prototype.getLowestParent = function(parents) {	
+Render.prototype.getLowestParent = function(parents) {
 	if (parents.length==0) {
 		return
 	};
@@ -165,7 +165,7 @@ Render.prototype.addToParentDiv = function(tree) {
 	}
 	else {
 		tree.div.style.minWidth="100%"
-		this.container.appendChild(tree.div)
+		this.container.insertBefore(tree.div,this.container.firstChild)
 	}
 }
 Render.prototype.getOptionalS = function(num) {
@@ -176,9 +176,21 @@ Render.prototype.getOptionalS = function(num) {
 		return 's'
 	}
 }
+Render.prototype.calcPanelSize = function(tree) {
+  
+		//position the panel to the absolute position of the div
+		this.resetPanel(tree,false);
+		this.container.appendChild(tree.panel);
+		
+		if (tree.values) {
+		  tree.values.forEach(function(subTree) {
+		      this.calcPanelSize(subTree);
+		  }.bind(this))
+		}
+}
 Render.prototype.addStructure = function(tree) {
 
-	if (!tree.div && !tree.panel) {
+	if (!tree.div) {
 
 		tree.div = document.createElement('div');
 		tree.div.className = 'holderDiv'
@@ -188,10 +200,7 @@ Render.prototype.addStructure = function(tree) {
 
 		tree.filler = document.createElement('div');
 		
-		//position the panel to the absolute position of the div
-		this.resetPanel(tree,false);
 		this.addToParentDiv(tree);
-		this.container.appendChild(tree.panel);
 
 		//adds this div to parent div
 		tree.filler.style.width = tree.panel.offsetWidth + 'px'
@@ -210,7 +219,7 @@ Render.prototype.addStructure = function(tree) {
 		}.bind(this));
 	};
 }
-Render.prototype.addPanels = function(tree) {
+Render.prototype.calcPanelPos = function(tree) {
 
 	var coords = tree.filler.getBoundingClientRect();
 	tree.x = coords.left + coords.width/2;
@@ -220,7 +229,7 @@ Render.prototype.addPanels = function(tree) {
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
-			this.addPanels(subTree);
+			this.calcPanelPos(subTree);
 		}.bind(this));
 	};
 }
@@ -266,7 +275,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 				panelBody.innerHTML = ''
 
 			}
-		}		
+		}
 	}
 	else {
 
@@ -320,7 +329,7 @@ Render.prototype.addHelpToolips = function(tree) {
 					return;
 				}
 				else {
-					localStorage.orPopupCount++;	
+					localStorage.orPopupCount++;
 				}
 			}
 
@@ -394,12 +403,13 @@ Render.prototype.clearContainer = function() {
 }
 
 Render.prototype.go = function(tree) {
-	this.tree = tree; 
+	this.tree = tree;
 
 	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px'
 
+	this.calcPanelSize(this.tree)
 	this.addStructure(this.tree)
-	this.addPanels(this.tree)
+	this.calcPanelPos(this.tree)
 	popup.addPopups(this.tree)
 	this.addLines(this.tree)
 	this.addHelpToolips(this.tree)
