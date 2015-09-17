@@ -80,15 +80,15 @@ TreeMgr.prototype.convertServerData = function(data) {
 	return retVal;
 }
 
-TreeMgr.prototype.fetchFullTreeOnce = function(item,queue,ignoreClasses) {
+TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
   if (ignoreClasses===undefined) {
     ignoreClasses = [];
   }
   
   //dont load classes that are on ignore list
   var compareObject = {
-    classId:item.classId,
-    subject:item.subject
+    classId:tree.classId,
+    subject:tree.subject
   }
   
   //pass down all processed classes
@@ -180,8 +180,8 @@ TreeMgr.prototype.fetchFullTreeOnce = function(item,queue,ignoreClasses) {
 	
 	
 	//load coreqs
-	if (item.coreqs) {
-	  item.coreqs.values.forEach(function(subTree) {
+	if (tree.coreqs) {
+	  tree.coreqs.values.forEach(function(subTree) {
 	    this.fetchFullTreeOnce(subTree,queue,ignoreClasses);
 	  }.bind(this));
 	}
@@ -190,7 +190,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(item,queue,ignoreClasses) {
 	//fetch its values too
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
-			this.fetchFullTreeOnce(subTree,queue)
+			this.fetchFullTreeOnce(subTree,queue,ignoreClasses)
 		}.bind(this))
 	}
 }
