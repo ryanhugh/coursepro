@@ -48,8 +48,8 @@ TreeMgr.prototype.convertServerData = function(data) {
 		
 		
 		if (data.coreqs) {
-		  var convertedCoreqs = [];
-		  data.coreqs.values.forEach(function (subTree){
+			var convertedCoreqs = [];
+			data.coreqs.values.forEach(function (subTree){
 				convertedCoreqs.push(this.convertServerData(subTree));
 			}.bind(this));
 			data.coreqs.values = convertedCoreqs;
@@ -81,25 +81,25 @@ TreeMgr.prototype.convertServerData = function(data) {
 }
 
 TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
-  if (ignoreClasses===undefined) {
-    ignoreClasses = [];
-  }
-  
-  //dont load classes that are on ignore list
-  var compareObject = {
-    classId:tree.classId,
-    subject:tree.subject
-  }
-  
-  //pass down all processed classes
-  //so if the class has itself as a prereq, or a class that is above it,
-  //there is no infinate recursion
-  //common for coreqs that require each other
-  if (_.any(ignoreClasses, _.matches(compareObject))) {
-    return;
-  }
-  ignoreClasses.push(compareObject)
-  	
+	if (ignoreClasses===undefined) {
+		ignoreClasses = [];
+	}
+
+	//dont load classes that are on ignore list
+	var compareObject = {
+		classId:tree.classId,
+		subject:tree.subject
+	}
+
+	//pass down all processed classes
+	//so if the class has itself as a prereq, or a class that is above it,
+	//there is no infinate recursion
+	//common for coreqs that require each other
+	if (_.any(ignoreClasses, _.matches(compareObject))) {
+		return;
+	}
+	ignoreClasses.push(compareObject)
+	
 
 	//fire off ajax and add it to queue
 	if (tree.isClass && tree.dataStatus===this.DATASTATUS_NOTSTARTED) {
@@ -157,33 +157,13 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 				callback();
 			}.bind(this));
 		}.bind(this))
-	}
-	
-	// if (tree.coreqs && tree.coreqs.values.length>0) {
-	// 	//fetch coreqs
-	// 	queue.defer(function(callback){
-	// 	  request({
-	// 				url:'/listClasses',
-	// 				type:'POST',
-	// 				body:{
-	// 					classId:tree.classId,
-	// 					subject:tree.subject,
-	// 					host:this.host,
-	// 					termId:this.termId
-	// 				}
-	// 	  },function(err,body){
-		    
-	// 	  }.bind(this))
-	// 	})
-	// };
-	
-	
-	
+}
+
 	//load coreqs
 	if (tree.coreqs) {
-	  tree.coreqs.values.forEach(function(subTree) {
-	    this.fetchFullTreeOnce(subTree,queue,ignoreClasses);
-	  }.bind(this));
+		tree.coreqs.values.forEach(function(subTree) {
+			this.fetchFullTreeOnce(subTree,queue,ignoreClasses);
+		}.bind(this));
 	}
 	
 
