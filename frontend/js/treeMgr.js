@@ -68,49 +68,49 @@ TreeMgr.prototype.convertServerData = function(data) {
 	return retVal;
 }
 
-TreeMgr.prototype.fetchFullTreeOnce = function(item,queue) {
+TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue) {
 	
 
 	//fire off ajax and add it to queue
-	if (item.isClass && item.dataStatus===this.DATASTATUS_NOTSTARTED) {
+	if (tree.isClass && tree.dataStatus===this.DATASTATUS_NOTSTARTED) {
 
-		if (!item.classId || !item.subject) {
+		if (!tree.classId || !tree.subject) {
 			console.log('class must have class id and subject')
 			return;
 		};
-		item.dataStatus = this.DATASTATUS_LOADING;
+		tree.dataStatus = this.DATASTATUS_LOADING;
 
 		queue.defer(function (callback) {
 			request({
 				url:'/listClasses',
 				type:'POST',
 				body:{
-					classId:item.classId,
-					subject:item.subject,
+					classId:tree.classId,
+					subject:tree.subject,
 					host:this.host,
 					termId:this.termId
 				}
 			},function (err,body) {
-				item.dataStatus= this.DATASTATUS_DONE;
+				tree.dataStatus= this.DATASTATUS_DONE;
 				if (err) {
 					console.log('http error...',err);
 					return callback(err)
 				}
 
 				if (body.length==0) {
-					console.log('unable to find class even though its a prereq of another class????',item)
-					item.dataStatus = this.DATASTATUS_FAIL;
+					console.log('unable to find class even though its a prereq of another class????',tree)
+					tree.dataStatus = this.DATASTATUS_FAIL;
 					return callback()
 				};
 
 				//setup an or tree
 				if (body.length > 1) {
-					item.type = 'or';
-					item.isClass = false;
-					item.values = [];
+					tree.type = 'or';
+					tree.isClass = false;
+					tree.values = [];
 
 					body.forEach(function (classData) {
-						item.values.push(this.convertServerData(classData))
+						tree.values.push(this.convertServerData(classData))
 					}.bind(this))
 				}
 
@@ -119,7 +119,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(item,queue) {
 					var classData = this.convertServerData(body[0])
 
 					for (var attrName in classData) {
-						item[attrName] = classData[attrName]
+						tree[attrName] = classData[attrName]
 					}
 				}
 
@@ -129,31 +129,39 @@ TreeMgr.prototype.fetchFullTreeOnce = function(item,queue) {
 		}.bind(this))
 	}
 	
-	
-// 	//fetch coreqs
-// 	queue.defer(function(callback){
-// 	  request({
-// 				url:'/listClasses',
-// 				type:'POST',
-// 				body:{
-// 					classId:item.classId,
-// 					subject:item.subject,
-// 					host:this.host,
-// 					termId:this.termId
-// 				}
-// 	  },function(err,body){
-	    
-// 	  }.bind(this))
-// 	})
+	// if (tree.coreqs && tree.coreqs.values.length>0) {
+	// 	//fetch coreqs
+	// 	queue.defer(function(callback){
+	// 	  request({
+	// 				url:'/listClasses',
+	// 				type:'POST',
+	// 				body:{
+	// 					classId:tree.classId,
+	// 					subject:tree.subject,
+	// 					host:this.host,
+	// 					termId:this.termId
+	// 				}
+	// 	  },function(err,body){
+		    
+	// 	  }.bind(this))
+	// 	})
+	// };
 	
 	
 
 	//fetch its values too
-	if (item.values) {
-		item.values.forEach(function (subItem) {
-			this.fetchFullTreeOnce(subItem,queue)
+	if (tree.values) {
+		tree.values.forEach(function (subTree) {
+			this.fetchFullTreeOnce(subTree,queue)
 		}.bind(this))
-	};
+	}
+
+
+	if (tree.coreqs) {
+		
+	}
+
+
 }
 TreeMgr.prototype.fetchFullTree = function(tree,count,callback) {
 	if (!count) {
