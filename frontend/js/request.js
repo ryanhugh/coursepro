@@ -134,7 +134,7 @@ Request.prototype.go = function(config,callback) {
 
 	xmlhttp.open(config.type,config.url,true);
 	xmlhttp.setRequestHeader("Content-type","application/json");
-	xmlhttp.send(JSON.stringify(config.body));
+	xmlhttp.send(JSON.stringify(body));
 }
 
 var instance = new Request();

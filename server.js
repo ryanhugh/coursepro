@@ -26,7 +26,15 @@ var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 
 function logData (req) {
-	console.log(req.connection.remoteAddress,new Date().getTime(),req.get('User-Agent'),req.get('Referer'),req.method,req.url,JSON.stringify(req.body));
+	console.log(JSON.stringify({
+	  'ip':req.connection.remoteAddress,
+	  'time':new Date().getTime(),
+	  'userAgent':req.get('User-Agent'),
+	  'referer':req.get('Referer'),
+	  'method':req.method,
+	  'url':req.url,
+	  'body':req.body
+	}));
 }
 
 
