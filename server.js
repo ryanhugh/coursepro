@@ -122,7 +122,7 @@ app.use(function (req, res, next) {
 // });
 
 
-app.get('/listColleges',function (req,res) {
+app.post('/listColleges',function (req,res) {
 	collegeNamesDB.find({},{
 		shouldBeOnlyOne:false,
 		sanatize:true

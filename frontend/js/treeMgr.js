@@ -57,7 +57,7 @@ TreeMgr.prototype.convertServerData = function(data) {
 		}.bind(this))
 	}
 
-	//basic string 
+	//basic string
 	else if ((typeof data) == 'string'){
 		retVal.dataStatus = this.DATASTATUS_DONE;
 		retVal.isClass = true;
@@ -84,12 +84,12 @@ TreeMgr.prototype.fetchFullTreeOnce = function(item,queue) {
 			request({
 				url:'/listClasses',
 				type:'POST',
-				body:JSON.stringify({
+				body:{
 					classId:item.classId,
 					subject:item.subject,
 					host:this.host,
 					termId:this.termId
-				})
+				}
 			},function (err,body) {
 				item.dataStatus= this.DATASTATUS_DONE;
 				if (err) {

@@ -10,6 +10,32 @@ function Request (config,callback) {
 	this.cache = [];
 }
 
+Request.prototype.randomString = function () {
+    var mask = '';
+    var length = 200;
+    mask += 'abcdefghijklmnopqrstuvwxyz';
+    mask += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    mask += '0123456789';
+    mask += '~`!@#$%^&*()_+-={}[]:";\'<>?,./|\\';
+    
+    var result = '';
+    for (var i = length; i > 0; --i) result += mask[Math.round(Math.random() * (mask.length - 1))];
+    return result;
+}
+
+Request.prototype.isIncognito = function () {
+    var fs = window.RequestFileSystem || window.webkitRequestFileSystem;
+  if (!fs) {
+    console.log("check failed?");
+  } else {
+    fs(window.TEMPORARY,
+       100,
+       console.log.bind(console, "not in incognito mode"),
+       console.log.bind(console, "incognito mode"));
+  }
+}
+
+
 
 Request.prototype.go = function(config,callback) {
 	if (!callback) {
@@ -54,6 +80,22 @@ Request.prototype.go = function(config,callback) {
 	}
 
 	this.cache.push(cacheItem)
+	
+	var body = _.cloneDeep(config.body)
+	
+	//add the userid
+	if (config.type==='POST') {
+	  if (config.body.userId) {
+	    console.log('error config.body had a userId??')
+	  }
+	  
+	  if (!localStorage.userId) {
+	      //new user, yay!
+	      localStorage.userId = this.randomString();
+	  }
+	  
+	  body.userId = localStorage.userId;
+	}
 
 
 	var xmlhttp=new XMLHttpRequest();
@@ -92,7 +134,7 @@ Request.prototype.go = function(config,callback) {
 
 	xmlhttp.open(config.type,config.url,true);
 	xmlhttp.setRequestHeader("Content-type","application/json");
-	xmlhttp.send(config.body);
+	xmlhttp.send(JSON.stringify(config.body));
 }
 
 var instance = new Request();

@@ -257,12 +257,12 @@ Popup.prototype.expandPanel = function(tree) {
 		request({
 			url:'/listSections',
 			type:'POST',
-			body:JSON.stringify({
+			body:{
 				host:tree.host,
 				termId:tree.termId,
 				subject:tree.subject,
 				classId:tree.classId
-			})
+			}
 		},function (err,body) {
 			if (err) {
 				console.log(err);
@@ -384,7 +384,7 @@ Popup.prototype.expandPanel = function(tree) {
 				}
 			}
 			else {
-				panelWidth = Math.min(1000,panelWidth) 
+				panelWidth = Math.min(1000,panelWidth)
 			}
 
 			if (panelWidth<164) {
@@ -397,7 +397,7 @@ Popup.prototype.expandPanel = function(tree) {
 			tree.panel.style.maxWidth = '890px'
 
 
-			var left = tree.x - tree.panel.offsetWidth/2 
+			var left = tree.x - tree.panel.offsetWidth/2
 			if (left<15) {
 				left = 15
 			};

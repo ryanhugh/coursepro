@@ -155,7 +155,11 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 
 
 Selectors.prototype.selectCollege = function(defaultValue) {
-	request('/listColleges',function (err,body){
+	request({
+	  type:'POST',
+	  url:'/listColleges',
+	  body:{}
+	  },function (err,body){
 		if (err) {
 			console.log(err);
 			return;
@@ -181,9 +185,9 @@ Selectors.prototype.selectTerm = function(defaultValue) {
 	request({
 		url:'/listTerms',
 		type:'POST',
-		body:JSON.stringify({
+		body:{
 			host:this.college.value
-		})
+		}
 	} ,function (err,body){
 		if (err) {
 			console.log(err);
@@ -211,10 +215,10 @@ Selectors.prototype.selectSubject = function(defaultValue) {
 	request({
 		url:'/listSubjects',
 		type:'POST',
-		body:JSON.stringify({
+		body:{
 			host:this.college.value,
 			termId:this.term.value
-		})
+		}
 	} ,function (err,body){
 		if (err) {
 			console.log(err);
@@ -246,11 +250,11 @@ Selectors.prototype.selectClass = function(defaultValue) {
 	request({
 		url:'/listClasses',
 		type:'POST',
-		body:JSON.stringify({
+		body:{
 			host:this.college.value,
 			termId:this.term.value,
 			subject:this.subject.value
-		})
+		}
 	} ,function (err,body){
 		if (err) {
 			console.log(err);
