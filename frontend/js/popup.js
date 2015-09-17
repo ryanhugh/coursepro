@@ -439,7 +439,7 @@ Popup.prototype.expandPanel = function(tree) {
 
 
 
-Popup.prototype.addPopups = function(tree) {
+Popup.prototype.go = function(tree) {
 	
 	if (tree.isClass) {
 
@@ -470,14 +470,12 @@ Popup.prototype.addPopups = function(tree) {
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
-			this.addPopups(subTree);
+			this.go(subTree);
 		}.bind(this));
 	};
 }
 
-Popup.prototype.go = function(tree) {
-	this.tree = tree;
-};
+
 
 Popup.prototype.Popup=Popup;
 window.popup = new Popup();
