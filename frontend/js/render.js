@@ -410,7 +410,6 @@ Render.prototype.go = function(tree) {
 	this.calcPanelSize(this.tree)
 	this.addStructure(this.tree)
 	this.calcPanelPos(this.tree)
-	popup.addPopups(this.tree)
 	this.addLines(this.tree)
 	this.addHelpToolips(this.tree)
 

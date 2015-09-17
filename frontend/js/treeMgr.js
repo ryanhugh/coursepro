@@ -45,6 +45,18 @@ TreeMgr.prototype.convertServerData = function(data) {
 			retVal.type = "and";
 			retVal.values = [];
 		}
+		
+		
+		if (data.coreqs) {
+		  var convertedCoreqs = [];
+		  data.coreqs.values.forEach(function (subTree){
+				convertedCoreqs.push(this.convertServerData(subTree));
+			}.bind(this));
+			data.coreqs.values = convertedCoreqs;
+		}
+		
+		
+		
 	}
 
 	//given a branch in the prereqs
@@ -68,8 +80,26 @@ TreeMgr.prototype.convertServerData = function(data) {
 	return retVal;
 }
 
-TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue) {
-	
+TreeMgr.prototype.fetchFullTreeOnce = function(item,queue,ignoreClasses) {
+  if (ignoreClasses===undefined) {
+    ignoreClasses = [];
+  }
+  
+  //dont load classes that are on ignore list
+  var compareObject = {
+    classId:item.classId,
+    subject:item.subject
+  }
+  
+  //pass down all processed classes
+  //so if the class has itself as a prereq, or a class that is above it,
+  //there is no infinate recursion
+  //common for coreqs that require each other
+  if (_.any(ignoreClasses, _.matches(compareObject))) {
+    return;
+  }
+  ignoreClasses.push(compareObject)
+  	
 
 	//fire off ajax and add it to queue
 	if (tree.isClass && tree.dataStatus===this.DATASTATUS_NOTSTARTED) {
@@ -148,6 +178,14 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue) {
 	// };
 	
 	
+	
+	//load coreqs
+	if (item.coreqs) {
+	  item.coreqs.values.forEach(function(subTree) {
+	    this.fetchFullTreeOnce(subTree,queue,ignoreClasses);
+	  }.bind(this));
+	}
+	
 
 	//fetch its values too
 	if (tree.values) {
@@ -155,13 +193,6 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue) {
 			this.fetchFullTreeOnce(subTree,queue)
 		}.bind(this))
 	}
-
-
-	if (tree.coreqs) {
-		
-	}
-
-
 }
 TreeMgr.prototype.fetchFullTree = function(tree,count,callback) {
 	if (!count) {
@@ -553,9 +584,8 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 		// return;
 
 
-
-		//everything below here is in render.js
 		render.go(tree);
+		popup.go(tree)
 	}.bind(this));
 }
 
