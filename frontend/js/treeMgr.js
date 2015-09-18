@@ -54,9 +54,6 @@ TreeMgr.prototype.convertServerData = function(data) {
 			}.bind(this));
 			data.coreqs.values = convertedCoreqs;
 		}
-		
-		
-		
 	}
 
 	//given a branch in the prereqs
@@ -99,7 +96,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 		return;
 	}
 	ignoreClasses.push(compareObject)
-	
+
 
 	//fire off ajax and add it to queue
 	if (tree.isClass && tree.dataStatus===this.DATASTATUS_NOTSTARTED) {

@@ -181,6 +181,8 @@ Render.prototype.calcPanelSize = function(tree) {
 		//position the panel to the absolute position of the div
 		this.resetPanel(tree,false);
 		this.container.appendChild(tree.panel);
+
+		// add a tree.coreqPanels and add all of them + panel to a div and take the offsetWidth + offsetHeight of that div
 		
 		if (tree.values) {
 		  tree.values.forEach(function(subTree) {
