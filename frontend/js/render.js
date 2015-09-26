@@ -183,27 +183,27 @@ Render.prototype.calcPanelSize = function(tree) {
 		this.container.appendChild(tree.panel);
 
 		// add a tree.coreqPanels and add all of them + panel to a div and take the offsetWidth + offsetHeight of that div
-		tree.panelContainer = document.createElement('div');
-		tree.coreqs.values.forEach(function(subTree){
+		// tree.panelContainer = document.createElement('div');
+		// tree.coreqs.values.forEach(function(subTree){
 		  
-		    if ((subTree.isClass && subTree.coreqs && subTree.coreqs.values.length>0) || (!subTree.isClass && subTree.values && subTree.values.length>0)) {
-		      console.log('error uhhhh coreq has choices???');
-		    }
+		//     if ((subTree.isClass && subTree.coreqs && subTree.coreqs.values.length>0) || (!subTree.isClass && subTree.values && subTree.values.length>0)) {
+		//       console.log('error uhhhh coreq has choices???');
+		//     }
 		    
-		    if (!subTree.isClass) {
-		      console.log('error uhh also wtf');
-		      return;
-		    }
+		//     if (!subTree.isClass) {
+		//       console.log('error uhh also wtf');
+		//       return;
+		//     }
 		    
-		    var panel = this.template.cloneNode(true);
-  			panel.style.display =''
+		//     var panel = this.template.cloneNode(true);
+  // 			panel.style.display =''
   			
   			
 		    
 		    
 		    
 		    
-		}.bind(this))
+		// }.bind(this))
 		
 		if (tree.values) {
 		  tree.values.forEach(function(subTree) {
