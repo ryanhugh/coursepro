@@ -54,6 +54,12 @@ app.use(function (err,req, res, next) {
 });
 
 
+//change the url to lowercase
+app.use(function (req,res,next) {
+  req.url = req.url.toLowerCase();
+  next();
+})
+
 
 // http://stackoverflow.com/a/46181/11236
 // this is also done client side

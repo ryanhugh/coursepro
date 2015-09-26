@@ -159,7 +159,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 	//load coreqs
 	if (tree.coreqs) {
 		tree.coreqs.values.forEach(function(subTree) {
-			this.fetchFullTreeOnce(subTree,queue,ignoreClasses);
+			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses));
 		}.bind(this));
 	}
 	
@@ -167,7 +167,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 	//fetch its values too
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
-			this.fetchFullTreeOnce(subTree,queue,ignoreClasses)
+			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses))
 		}.bind(this))
 	}
 }
