@@ -1,7 +1,7 @@
 !!!!
 
 
-
+make the help popup appear on first load in one location on the screen for 5 sec
 
 
 
