@@ -152,14 +152,19 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 					}
 				}
 
+				this.fetchSubTrees(tree,queue,ignoreClasses)
 
 				callback();
 			}.bind(this));
 		}.bind(this))
   }
+  this.fetchSubTrees(tree,queue,ignoreClasses);
   
-  console.log('ignoring ',ignoreClasses,'below ',tree)
+}
 
+//this is called on a subtree when it responds
+TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
+	
 	//load coreqs
 	if (tree.coreqs) {
 		tree.coreqs.values.forEach(function(subTree) {
@@ -174,33 +179,15 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses))
 		}.bind(this))
 	}
-}
-TreeMgr.prototype.fetchFullTree = function(tree,count,callback) {
-	if (!count) {
-		console.log('error count undefined not supported yet')
-		return;
-	};
+};
 
 
-	async.whilst(function () {
-		if (count===undefined) {
-			return true;//how is this going to break??
-		}
 
-		if (count>0) {
-			return true;
-		}
-		else {
-			return false;
-		};
-	}.bind(this),
-	function (callback) {
-		count--;
 
-		var q = queue()
-		this.fetchFullTreeOnce(tree,q);
-		q.awaitAll(callback);
-	}.bind(this), callback)
+TreeMgr.prototype.fetchFullTree = function(tree,callback) {
+	var q = queue()
+	this.fetchFullTreeOnce(tree,q);
+	q.awaitAll(callback);
 }
 
 
@@ -531,7 +518,7 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 
 
 
-	this.fetchFullTree(tree,10,function () {
+	this.fetchFullTree(tree,function () {
 	  
 	  
 	  //remove non hon matching coreqs here
