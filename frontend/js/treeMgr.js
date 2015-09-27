@@ -162,7 +162,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
   
 }
 
-//this is called on a subtree when it responds
+//this is called on a subtree when it responds from the server and when recursing down a tree
 TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 	
 	//load coreqs
