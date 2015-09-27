@@ -1,6 +1,18 @@
 !!!!
 
 
+
+
+some classes have (hon) labs and normal labs.
+--is (hon) the case for all of neu or just cs?
+
+--if class is hon and hon coreqs exist, only match those
+--else match all
+
+--if class is not hon only match non hon
+
+
+
 make the help popup appear on first load in one location on the screen for 5 sec
 
 

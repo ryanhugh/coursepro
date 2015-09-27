@@ -89,39 +89,28 @@ Render.prototype.calculateLine = function(tree) {
 
 	tree.allParents.forEach(function (parent) {
 		if (!parent) {
-			console.log('not drawing line from',tree.name)
+			console.log('error wtf there is an undefined parent added to tree ',tree)
 			return
 		};
 		if (tree.lineToParent) {
 			tree.lineToParent.remove();
 		};
 		
-		var subDiv = tree.panel;
-		if (!subDiv) {
+		
+		if (!tree.panel) {
 			console.log(tree,'????????? error')
 		};
-		
-		var subDivBounds = subDiv.getBoundingClientRect()
-
-		var cloneX = subDivBounds.left+subDiv.offsetWidth/2-this.container.getBoundingClientRect().left
-		var cloneY = subDivBounds.top+subDivBounds.height/2
-
 		if (!parent.panel) {
 			console.log('no panel on parent???',tree)
 			return;
 		};
-		var parentDivBounds = parent.panel.getBoundingClientRect()
-
-		var parentX = parentDivBounds.left+parent.panel.offsetWidth/2-this.container.getBoundingClientRect().left
-		var parentY = parentDivBounds.top+parentDivBounds.height/2
-
 		//draw the line
 		var color = this.getColor(parent.type);
 		if (!color) {
 			console.log('error could not get color of ',tree)
 			return;
 		};
-		this.drawLine(tree,parentX,parentY,cloneX,cloneY,color);
+		this.drawLine(tree,parent.x,parent.y,tree.x,tree.y,color);
 	}.bind(this))
 
 }
@@ -180,30 +169,32 @@ Render.prototype.calcPanelSize = function(tree) {
   
 		//position the panel to the absolute position of the div
 		this.resetPanel(tree,false);
-		this.container.appendChild(tree.panel);
-
+		
 		// add a tree.coreqPanels and add all of them + panel to a div and take the offsetWidth + offsetHeight of that div
-		// tree.panelContainer = document.createElement('div');
-		// tree.coreqs.values.forEach(function(subTree){
-		  
-		//     if ((subTree.isClass && subTree.coreqs && subTree.coreqs.values.length>0) || (!subTree.isClass && subTree.values && subTree.values.length>0)) {
-		//       console.log('error uhhhh coreq has choices???');
-		//     }
-		    
-		//     if (!subTree.isClass) {
-		//       console.log('error uhh also wtf');
-		//       return;
-		//     }
-		    
-		//     var panel = this.template.cloneNode(true);
-  // 			panel.style.display =''
-  			
-  			
-		    
-		    
-		    
-		    
-		// }.bind(this))
+		tree.panelContainer = document.createElement('div');
+		
+    if (tree.coreqs && tree.isClass) {
+  		tree.coreqs.values.forEach(function(subTree){
+  		  return;
+  		  
+  		    if ((subTree.isClass && subTree.coreqs && subTree.coreqs.values.length>0) || (!subTree.isClass && subTree.values && subTree.values.length>0)) {
+  		      console.log('error uhhhh coreq has choices???');
+  		    }
+  		    
+  		    if (!subTree.isClass) {
+  		      console.log('error uhh also wtf');
+  		      return;
+  		    }
+  		    
+    			this.resetPanel(subTree,false);
+    		
+    		  tree.panelContainer.appendChild(subTree.panel);
+    			
+  		}.bind(this));
+    }
+		
+		tree.width = tree.panel.offsetWidth;
+		tree.height = tree.panel.offsetHeight;
 		
 		if (tree.values) {
 		  tree.values.forEach(function(subTree) {
@@ -226,8 +217,8 @@ Render.prototype.addStructure = function(tree) {
 		this.addToParentDiv(tree);
 
 		//adds this div to parent div
-		tree.filler.style.width = tree.panel.offsetWidth + 'px'
-		tree.filler.style.height = tree.panel.offsetHeight + 'px'
+		tree.filler.style.width = tree.width + 'px'
+		tree.filler.style.height = tree.height + 'px'
 		tree.filler.style.margin = '0 auto'
 		tree.filler.className='filler'
 		tree.div.appendChild(tree.filler);
@@ -257,7 +248,7 @@ Render.prototype.calcPanelPos = function(tree) {
 	};
 }
 
-
+//only requires .width and .height if resizing
 Render.prototype.resetPanel = function(tree,relocate) {
 	if (relocate===undefined) {
 		relocate=true;
@@ -269,6 +260,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 		if (!tree.panel) {
 			tree.panel = this.template.cloneNode(true);
 			tree.panel.style.display =''
+			this.container.appendChild(tree.panel);
 		}
 
 		var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
@@ -304,6 +296,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 
 		if (!tree.panel) {
 			tree.panel = document.createElement('div');
+			this.container.appendChild(tree.panel);
 		};
 
 		//reset the circle
@@ -319,8 +312,8 @@ Render.prototype.resetPanel = function(tree,relocate) {
 	if (relocate) {
 
 		tree.panel.style.position = 'absolute';
-		tree.panel.style.top =  (tree.y - tree.panel.offsetHeight/2 ) + 'px';
-		tree.panel.style.left = (tree.x - tree.panel.offsetWidth/2  ) + 'px';
+		tree.panel.style.top =  (tree.y - tree.height/2 ) + 'px';
+		tree.panel.style.left = (tree.x - tree.width/2  ) + 'px';
 	};
 }
 

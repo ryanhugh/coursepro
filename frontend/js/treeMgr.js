@@ -81,21 +81,23 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 	if (ignoreClasses===undefined) {
 		ignoreClasses = [];
 	}
-
-	//dont load classes that are on ignore list
-	var compareObject = {
-		classId:tree.classId,
-		subject:tree.subject
-	}
-
-	//pass down all processed classes
-	//so if the class has itself as a prereq, or a class that is above it,
-	//there is no infinate recursion
-	//common for coreqs that require each other
-	if (_.any(ignoreClasses, _.matches(compareObject))) {
-		return;
-	}
-	ignoreClasses.push(compareObject)
+  
+  if (tree.isClass) {
+  	//dont load classes that are on ignore list
+  	var compareObject = {
+  		classId:tree.classId,
+  		subject:tree.subject
+  	}
+  
+  	//pass down all processed classes
+  	//so if the class has itself as a prereq, or a class that is above it,
+  	//there is no infinate recursion
+  	//common for coreqs that require each other
+  	if (_.any(ignoreClasses, _.matches(compareObject))) {
+  		return;
+  	}
+  	ignoreClasses.push(compareObject)
+  }
 
 
 	//fire off ajax and add it to queue
@@ -154,7 +156,9 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 				callback();
 			}.bind(this));
 		}.bind(this))
-}
+  }
+  
+  console.log('ignoring ',ignoreClasses,'below ',tree)
 
 	//load coreqs
 	if (tree.coreqs) {
@@ -528,6 +532,12 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 
 
 	this.fetchFullTree(tree,10,function () {
+	  
+	  
+	  //remove non hon matching coreqs here
+	  
+	  
+	 // this.matchCoreqsByHonors(tree);
 		this.simplifyTree(tree)
 		this.sortTree(tree);
 
