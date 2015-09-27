@@ -5,6 +5,7 @@
 
 some classes have (hon) labs and normal labs.
 --is (hon) the case for all of neu or just cs?
+--scrape the attribute....
 
 --if class is hon and hon coreqs exist, only match those
 --else match all

@@ -126,7 +126,7 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 		}
 		
 		if (selection==dropdown.value) {
-			console.log('not changing from ',curr,selection)
+			console.log('not changing from ',dropdown.value,selection)
 			return;
 		}
 

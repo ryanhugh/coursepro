@@ -178,7 +178,7 @@ Pointer.prototype.request = function(url,options,callback,tryCount) {
 				return this.tryAgain(url,options,callback,tryCount);
 			}
 			else {
-				console.log('ERROR: needle error',url,this.openRequests,error);
+				console.log('ERROR: needle error',tryCount,url,this.openRequests,error);
 				return callback(error);
 			}
 		};
