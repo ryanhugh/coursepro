@@ -91,6 +91,21 @@ app.use(function (req, res, next) {
 });
 
 
+//if no user agent present, drop request
+app.use(function (req, res, next) {
+	
+	var ua = req.get('User-Agent');
+	if (!ua) {
+		console.log('info: dropping request without ua')
+		res.status(418)
+		res.send('trolololololol');
+	}
+	else {
+		next()
+	}
+});
+
+
 
 // app.post('/urlDetails', function(req, res) {
 
