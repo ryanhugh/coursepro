@@ -317,6 +317,4 @@ Selectors.prototype.main = function() {
 Selectors.prototype.Selectors=Selectors;
 var instance = new Selectors();
 window.selectors = instance;
-$(function () {
-	instance.main()
-})
+
