@@ -227,6 +227,8 @@ Popup.prototype.expandPanel = function(tree) {
 
 
 	tree.panel.style.zIndex = '999'
+	tree.panelContainer.style.zIndex = '999'
+
 	tree.isExpanded=true;
 	var panelBody = tree.panel.getElementsByClassName('panelBodyId')[0]
 

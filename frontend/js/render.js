@@ -165,42 +165,48 @@ Render.prototype.getOptionalS = function(num) {
 		return 's'
 	}
 }
+
+
 Render.prototype.calcPanelSize = function(tree) {
-  
-		//position the panel to the absolute position of the div
-		this.resetPanel(tree,false);
-		
-		// add a tree.coreqPanels and add all of them + panel to a div and take the offsetWidth + offsetHeight of that div
-		tree.panelContainer = document.createElement('div');
-		
-    if (tree.coreqs && tree.isClass) {
-  		tree.coreqs.values.forEach(function(subTree){
-  		  return;
-  		  
-  		    if ((subTree.isClass && subTree.coreqs && subTree.coreqs.values.length>0) || (!subTree.isClass && subTree.values && subTree.values.length>0)) {
-  		      console.log('error uhhhh coreq has choices???');
-  		    }
-  		    
-  		    if (!subTree.isClass) {
-  		      console.log('error uhh also wtf');
-  		      return;
-  		    }
-  		    
-    			this.resetPanel(subTree,false);
-    		
-    		  tree.panelContainer.appendChild(subTree.panel);
-    			
-  		}.bind(this));
-    }
-		
-		tree.width = tree.panel.offsetWidth;
-		tree.height = tree.panel.offsetHeight;
-		
-		if (tree.values) {
-		  tree.values.forEach(function(subTree) {
-		      this.calcPanelSize(subTree);
-		  }.bind(this))
-		}
+
+	//position the panel to the absolute position of the div
+	this.resetPanel(tree,false);
+	
+	// add a tree.coreqPanels and add all of them + panel to a div and take the offsetWidth + offsetHeight of that div
+	tree.panelContainer = document.createElement('div');
+
+	tree.panelContainer.appendChild(tree.panel);
+
+	if (tree.coreqs && tree.isClass) {
+		tree.coreqs.values.forEach(function(subTree){
+			// return;
+
+			if (!subTree.isClass && subTree.values && subTree.values.length>0) {
+				console.log('error uhhhh coreq has choices???');
+			}
+
+			if (!subTree.isClass) {
+				console.log('error uhh also wtf');
+				return;
+			}
+
+			this.resetPanel(subTree,false);
+
+			tree.panelContainer.appendChild(subTree.panel);
+
+		}.bind(this));
+	}
+
+	this.container.appendChild(tree.panelContainer);
+
+	tree.width = tree.panel.offsetWidth;
+	tree.height = tree.panel.offsetHeight;
+
+	if (tree.values) {
+		tree.values.forEach(function(subTree) {
+			this.calcPanelSize(subTree);
+		}.bind(this))
+	}
 }
 Render.prototype.addStructure = function(tree) {
 
@@ -260,7 +266,6 @@ Render.prototype.resetPanel = function(tree,relocate) {
 		if (!tree.panel) {
 			tree.panel = this.template.cloneNode(true);
 			tree.panel.style.display =''
-			this.container.appendChild(tree.panel);
 		}
 
 		var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
@@ -311,10 +316,13 @@ Render.prototype.resetPanel = function(tree,relocate) {
 
 	if (relocate) {
 
-		tree.panel.style.position = 'absolute';
-		tree.panel.style.top =  (tree.y - tree.height/2 ) + 'px';
-		tree.panel.style.left = (tree.x - tree.width/2  ) + 'px';
+		tree.panelContainer.style.position = 'absolute';
+		tree.panelContainer.style.top =  (tree.y - tree.height/2 ) + 'px';
+		tree.panelContainer.style.left = (tree.x - tree.width/2  ) + 'px';
+		tree.panelContainer.style.zIndex = '1'
 	};
+
+	
 }
 
 
