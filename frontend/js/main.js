@@ -33,21 +33,36 @@ function search() {
   
 }
 
+window.search = {}
+
+search.isOpen = false;
+
 
 
 $(function () {
   
   //focus the box when the search button is clicked
-  document.getElementById("searchIcon").onclick = function(){
-    
-    //close all the selectors
-    selectors.closeAllSelectors();
-    
+  document.getElementById("searchIcon").onclick = function(event){
+    console.log('opening dropdown')
+    search.isOpen = true;
     
     setTimeout(function(){
+      //close all the selectors
+      selectors.closeAllSelectors();
       searchBox.focus();
-    },0)
+    },0);
+    // event.stopPropagation();
   }.bind(this);
+  
+  
+  document.onclick = function (event) {
+    console.log('closing dropdwon')
+    search.isOpen = false;
+  }
+  
+  $('.stopPropagation')[0].onclick = function (event) {
+    event.stopPropagation();
+  }
   
   
   document.getElementById('searchBox').onkeypress = function(e){
