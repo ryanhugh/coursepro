@@ -295,6 +295,30 @@ app.post('/listSections',function (req,res) {
 })
 
 
+app.post('/search',function(req,res) {
+  if (!req.body.value) {
+    console.log('no search term given');
+    console.log(req.body);
+    res.send('no search term given lol');
+    return;
+  }
+  
+  
+  
+  
+  //add all of these attributes together and make sure each element of search.split(' ') is in the sum of strings
+  
+  //search through class descrption, classId, name subject
+  
+  //search through section crn, meetings(profs, where)
+  
+  
+  
+  
+  
+  
+})
+
 
 
 

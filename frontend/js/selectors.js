@@ -1,5 +1,8 @@
 'use strict';
 
+// if (0) {
+//   var $;
+// }
 
 function Selectors () {
 
@@ -61,7 +64,7 @@ Selectors.prototype.updateDeeplink = function() {
 };
 
 Selectors.prototype.resetDropdown = function(dropdown) {
-	if (dropdown.element[0].options.length==0) {
+	if (dropdown.element[0].options.length===0) {
 		return;
 	}
 	dropdown.element.select2("destroy").removeClass('select2-offscreen')
@@ -88,6 +91,21 @@ Selectors.prototype.resetAllFutureVals = function(dropdown) {
 		this.selectors[i].value=''
 	};
 }
+
+function isElementInViewport (el) {
+
+
+    var rect = el.getBoundingClientRect();
+
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+    );
+}
+
+
 Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue) {
 	
 	dropdown.value = dropdown.element.val();
@@ -129,10 +147,32 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 			console.log('not changing from ',dropdown.value,selection)
 			return;
 		}
+		
+		var searchIsOpen = isElementInViewport(document.getElementById('searchBox'));
+		
+		if (searchIsOpen) {
+		  if (!dropdown.value) {
+		    // dont update dropdown.value
+        this.resetAllFutureVals(dropdown);
+		    this.resetDropdown(dropdown);
+		    // reset this + all future elements
+		    return;
+		  }
+		  
+		  
+		  
+		}
+		
 
 		dropdown.value = selection;
 		this.resetAllFutureVals(dropdown);
 		this.updateDeeplink()
+		
+		
+		if (searchIsOpen) {
+		  return;
+		}
+		
 		
 		ga('send', {
 			'hitType': 'pageview',
@@ -279,6 +319,16 @@ Selectors.prototype.selectClass = function(defaultValue) {
 		}.bind(this))
 		this.setupSelector(this.class,selectValues,defaultValue);
 	}.bind(this));
+}
+
+Selectors.prototype.closeAllSelectors = function () {
+  this.selectors.forEach(function(selector){
+    if (selector.element.data('select2')) {
+      console.log('closing', selector);
+      selector.value =selector.element.val();
+      selector.element.select2('close');
+    }
+  }.bind(this))
 }
 
 Selectors.prototype.finish = function() {
