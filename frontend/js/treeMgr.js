@@ -81,23 +81,23 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 	if (ignoreClasses===undefined) {
 		ignoreClasses = [];
 	}
-  
-  if (tree.isClass) {
-  	//dont load classes that are on ignore list
-  	var compareObject = {
-  		classId:tree.classId,
-  		subject:tree.subject
-  	}
-  
-  	//pass down all processed classes
-  	//so if the class has itself as a prereq, or a class that is above it,
-  	//there is no infinate recursion
-  	//common for coreqs that require each other
-  	if (_.any(ignoreClasses, _.matches(compareObject))) {
-  		return;
-  	}
-  	ignoreClasses.push(compareObject)
-  }
+	
+	if (tree.isClass) {
+	  	//dont load classes that are on ignore list
+	  	var compareObject = {
+	  		classId:tree.classId,
+	  		subject:tree.subject
+	  	}
+	  	
+		//pass down all processed classes
+		//so if the class has itself as a prereq, or a class that is above it,
+		//there is no infinate recursion
+		//common for coreqs that require each other
+		if (_.any(ignoreClasses, _.matches(compareObject))) {
+			return;
+		}
+		ignoreClasses.push(compareObject)
+	}
 
 
 	//fire off ajax and add it to queue
@@ -156,10 +156,10 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 
 				callback();
 			}.bind(this));
-		}.bind(this))
-  }
-  this.fetchSubTrees(tree,queue,ignoreClasses);
-  
+}.bind(this))
+}
+this.fetchSubTrees(tree,queue,ignoreClasses);
+
 }
 
 //this is called on a subtree when it responds from the server and when recursing down a tree
@@ -519,32 +519,28 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 
 
 	this.fetchFullTree(tree,function () {
-	  
-	  
-	  //remove non hon matching coreqs here
-	  
-	  
-	 // this.matchCoreqsByHonors(tree);
+
+
+		//remove non hon matching coreqs here
+
+
+		// this.matchCoreqsByHonors(tree);
 		this.simplifyTree(tree)
 		this.sortTree(tree);
-
-
 		this.spinner.style.display = 'none'
-
-
-
 		this.addDepthLevel(tree);
-		var flatClassList = this.findFlattendClassList(tree).sort(function (a,b) {
-			return a.depth>b.depth;
-		}.bind(this));
-		console.log(flatClassList)
+
+		// var flatClassList = this.findFlattendClassList(tree).sort(function (a,b) {
+		// 	return a.depth>b.depth;
+		// }.bind(this));
+		// console.log(flatClassList)
 		// addMainParentRelations(tree);
 		// this.removeDuplicateDeps(tree,flatClassList);
 		// this.removeDuplicateDeps(tree,flatClassList);
 		// this.removeDuplicateDeps(tree,flatClassList);
 		this.addAllParentRelations(tree);
 
-		spinner.style.display = 'none'
+		// spinner.style.display = 'none'
 
 
 		// var a = findFlattendClassList(tree)
@@ -562,6 +558,35 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 		popup.go(tree)
 	}.bind(this));
 }
+TreeMgr.prototype.showClasses = function(classList) {
+	
+	var tree = {};
+
+	tree.isClass = false;
+	tree.type='or'
+	tree.values = classList
+	render.clearContainer()
+
+	this.convertServerData(tree);
+
+	//this is ghetto
+	tree.values.forEach(function (subTree) {
+		subTree.values = []
+	})
+
+
+	this.sortTree(tree);
+	this.spinner.style.display = 'none'
+	this.addDepthLevel(tree);
+	this.addAllParentRelations(tree);
+	render.go(tree,false);
+	popup.go(tree)
+
+	tree.panelContainer.style.display='none'
+	tree.panel.style.display='none'
+
+	
+};
 
 
 

@@ -166,55 +166,55 @@ Render.prototype.getOptionalS = function(num) {
 	}
 }
 Render.prototype.calcPanelSize = function(tree) {
-  
+
 		//position the panel to the absolute position of the div
 		this.resetPanel(tree,false);
 		
 		// add a tree.coreqPanels and add all of them + panel to a div and take the offsetWidth + offsetHeight of that div
 		tree.panelContainer = document.createElement('div');
 		
-    if (tree.coreqs && tree.isClass) {
-  		tree.coreqs.values.forEach(function(subTree){
-  		  return;
-  		  
-  		    if ((subTree.isClass && subTree.coreqs && subTree.coreqs.values.length>0) || (!subTree.isClass && subTree.values && subTree.values.length>0)) {
-  		      console.log('error uhhhh coreq has choices???');
-  		    }
-  		    
-  		    if (!subTree.isClass) {
-  		      console.log('error uhh also wtf');
-  		      return;
-  		    }
-  		    
-    			this.resetPanel(subTree,false);
-    		
-    		  tree.panelContainer.appendChild(subTree.panel);
-    			
-  		}.bind(this));
-    }
+		if (tree.coreqs && tree.isClass) {
+			tree.coreqs.values.forEach(function(subTree){
+				return;
+
+				if ((subTree.isClass && subTree.coreqs && subTree.coreqs.values.length>0) || (!subTree.isClass && subTree.values && subTree.values.length>0)) {
+					console.log('error uhhhh coreq has choices???');
+				}
+
+				if (!subTree.isClass) {
+					console.log('error uhh also wtf');
+					return;
+				}
+
+				this.resetPanel(subTree,false);
+
+				tree.panelContainer.appendChild(subTree.panel);
+
+			}.bind(this));
+		}
 		
 		tree.width = tree.panel.offsetWidth;
 		tree.height = tree.panel.offsetHeight;
 		
 		if (tree.values) {
-		  tree.values.forEach(function(subTree) {
-		      this.calcPanelSize(subTree);
-		  }.bind(this))
+			tree.values.forEach(function(subTree) {
+				this.calcPanelSize(subTree);
+			}.bind(this))
 		}
-}
-Render.prototype.addStructure = function(tree) {
+	}
+	Render.prototype.addStructure = function(tree) {
 
-	if (!tree.div) {
+		if (!tree.div) {
 
-		tree.div = document.createElement('div');
-		tree.div.className = 'holderDiv'
-		tree.div.style.display="inline-block"
-		tree.div.style.margin="0 auto"
-		tree.div.style.padding="20px"
+			tree.div = document.createElement('div');
+			tree.div.className = 'holderDiv'
+			tree.div.style.display="inline-block"
+			tree.div.style.margin="0 auto"
+			tree.div.style.padding="20px"
 
-		tree.filler = document.createElement('div');
-		
-		this.addToParentDiv(tree);
+			tree.filler = document.createElement('div');
+
+			this.addToParentDiv(tree);
 
 		//adds this div to parent div
 		tree.filler.style.width = tree.width + 'px'
@@ -418,16 +418,23 @@ Render.prototype.clearContainer = function() {
 	}
 }
 
-Render.prototype.go = function(tree) {
+Render.prototype.go = function(tree,showBranches) {
+	if (showBranches===undefined) {
+		showBranches=true;
+	}
+
 	this.tree = tree;
 
 	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px'
 
-	this.calcPanelSize(this.tree)
-	this.addStructure(this.tree)
-	this.calcPanelPos(this.tree)
-	this.addLines(this.tree)
-	this.addHelpToolips(this.tree)
+	this.calcPanelSize(this.tree);
+	this.addStructure(this.tree);
+	this.calcPanelPos(this.tree);
+
+	if (showBranches) {	
+		this.addLines(this.tree)
+		this.addHelpToolips(this.tree)
+	};
 
 	//scroll to the middle of the page, and don't touch the scroll height
 	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop)

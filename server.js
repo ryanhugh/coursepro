@@ -15,6 +15,8 @@ var subjectsDB = require('./databases/subjectsDB');
 var classesDB = require('./databases/classesDB');
 var sectionsDB = require('./databases/sectionsDB');
 
+var search = require('./search');
+
 //tell all the db's to update every 15 min
 collegeNamesDB.startUpdates();
 termsDB.startUpdates();
@@ -296,12 +298,26 @@ app.post('/listSections',function (req,res) {
 
 
 app.post('/search',function(req,res) {
-  if (!req.body.value) {
-    console.log('no search term given');
+  if (!req.body.value || !req.body.host || !req.body.termId || !req.body.subject) {
+    console.log('error:no search value,host,termid, or subject given');
     console.log(req.body);
-    res.send('no search term given lol');
+    res.send('ya dun goofed lol');
     return;
   }
+
+  search.search(req.body,function (err,results) {
+  	if (err) {
+  		console.log(err);
+  		res.send('{"error":"uh oh"}');
+  		return;
+  	}
+
+  	console.log('found ',results.length,' results for ',req.body.value)
+
+  	res.send(results);
+  }.bind(this));
+
+  // console.log('searching for ')
   
   
   
@@ -340,6 +356,13 @@ app.get('/*', function (req, res,next) {
 app.use(express.static('frontend/static'));
 
 app.get("/*", function(req, res, next) {
+
+	console.log('error: 404: '+req.url)
+	res.status(404);
+	res.send('404, yo')
+});
+
+app.post("/*", function(req, res, next) {
 
 	console.log('error: 404: '+req.url)
 	res.status(404);
