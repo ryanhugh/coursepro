@@ -161,7 +161,13 @@ BaseDB.prototype.getStaticValues = function() {
 };
 
 BaseDB.prototype.find = function(lookupValues,config,callback) {
-	if (!this.isValidLookupValues(lookupValues)) {
+	if (!config.shouldBeOnlyOne) {
+		config.shouldBeOnlyOne=false;
+	};
+
+
+
+	if (!config.skipValidation && !this.isValidLookupValues(lookupValues)) {
 		console.log('invalid terms in '+this.constructor.name+' ',lookupValues);
 		return callback('invalid search')
 	};

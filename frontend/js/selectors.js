@@ -1,12 +1,6 @@
 'use strict';
 
-// if (0) {
-//   var $;
-// }
-
 function Selectors () {
-
-
 
 	this.class = {
 		element: $(".selectClass"),
@@ -92,25 +86,9 @@ Selectors.prototype.resetAllFutureVals = function(dropdown) {
 	};
 }
 
-function isElementInViewport (el) {
-
-
-	var rect = el.getBoundingClientRect();
-
-	return (
-		rect.top > 0 &&
-		rect.left > 0 &&
-		rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-		rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
-		);
-}
 
 
 Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue) {
-	if (search.isOpen) {
-		return;
-	};
-	
 	dropdown.value = dropdown.element.val();
 	this.resetDropdown(dropdown);
 	
@@ -129,7 +107,7 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 		return selectValue.id;
 	}.bind(this));
 
-	if (!defaultValue || !_(ids).includes(defaultValue)) {
+	if (!search.isOpen && (!defaultValue || !_(ids).includes(defaultValue))) {
 		dropdown.element.select2('open');
 	}
 	else {
@@ -324,11 +302,46 @@ Selectors.prototype.selectClass = function(defaultValue) {
 		this.setupSelector(this.class,selectValues,defaultValue);
 	}.bind(this));
 }
+Selectors.prototype.getCollegeText = function() {
+	if (this.college.element.data('select2')) {
+		return this.college.element.select2('data')[0].text;
+	}
+	else {
+		return ''
+	}
+};
+
+Selectors.prototype.getTermText = function() {
+	if (this.term.element.data('select2')) {
+		return this.term.element.select2('data')[0].text;
+	}
+	else {
+		return ''
+	}
+};
+
+Selectors.prototype.getSubjectText = function() {
+	if (this.subject.element.data('select2')) {
+		return this.subject.element.select2('data')[0].text;
+	}
+	else {
+		return ''
+	}
+};
+
+Selectors.prototype.getClassText = function() {
+	if (this.class.element.data('select2')) {
+		return this.class.element.select2('data')[0].text;
+	}
+	else {
+		return ''
+	}
+};
+
 
 Selectors.prototype.closeAllSelectors = function () {
 	this.selectors.forEach(function(selector){
 		if (selector.element.data('select2')) {
-			console.log('closing', selector);
 			selector.value =selector.element.val();
 			selector.element.select2('close');
 		}
@@ -339,28 +352,45 @@ Selectors.prototype.finish = function() {
 	treeMgr.createTree(this.college.value,this.term.value,this.subject.value,this.class.value)
 }
 
+//
+Selectors.prototype.setSelectors = function(values,doOpenNext) {
+	values.forEach(function (value,index) {
+
+
+		value = decodeURIComponent(value)
+		value = value.replace(/[^a-z0-9\/\.]/gi,'')
+
+
+		this.selectors[index].setup(value);
+		this.selectors[index].value = value
+
+		//if at end, open next selector or create tree
+		if (index == values.length-1 && doOpenNext) {
+			if (this.selectors[index].next) {
+				this.selectors[index].next.setup()
+			}
+			else {
+				this.finish();
+			}
+		};
+
+	}.bind(this))
+};
+
+
+
 Selectors.prototype.main = function() {
 	if (window.location.hash.length>1) {
 		var values = window.location.hash.slice(1).split('/')
-		values.forEach(function (value,index) {
-			value = decodeURIComponent(value)
-			value = value.replace(/[^a-z0-9\/\.]/gi,'')
 
-
-			this.selectors[index].setup(value);
-			this.selectors[index].value = value
-
-			//if at end, open next selector or create tree
-			if (index == values.length-1) {
-				if (this.selectors[index].next) {
-					this.selectors[index].next.setup()
-				}
-				else {
-					this.finish();
-				}
-			};
-
-		}.bind(this))
+		//first term is search, last is the search term
+		if (values[0]=='search') {
+			this.setSelectors(values.slice(1,values.length-1),false);
+			search.searchFromString(values[1],values[2],values[3],values[4])
+		}
+		else {
+			this.setSelectors(values,true);
+		}
 	}
 	else {
 		this.selectCollege();

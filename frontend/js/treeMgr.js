@@ -9,9 +9,6 @@ function TreeMgr () {
 
 	this.host = null;
 	this.termId = null;
-
-	this.spinner = document.getElementById('spinner')
-	this.spinner.remove()
 }
 
 TreeMgr.prototype.convertServerData = function(data) {
@@ -512,10 +509,7 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 	}
 
 	render.clearContainer()
-
-	this.spinner.style.display = ''
-	render.container.appendChild(this.spinner)
-
+	render.showSpinner()
 
 
 	this.fetchFullTree(tree,function () {
@@ -527,7 +521,7 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 		// this.matchCoreqsByHonors(tree);
 		this.simplifyTree(tree)
 		this.sortTree(tree);
-		this.spinner.style.display = 'none'
+		
 		this.addDepthLevel(tree);
 
 		// var flatClassList = this.findFlattendClassList(tree).sort(function (a,b) {
@@ -554,6 +548,7 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 		// return;
 
 
+		render.hideSpinner();
 		render.go(tree);
 		popup.go(tree)
 	}.bind(this));
@@ -565,18 +560,18 @@ TreeMgr.prototype.showClasses = function(classList) {
 	tree.isClass = false;
 	tree.type='or'
 	tree.values = classList
-	render.clearContainer()
+	
+	render.hideSpinner();
 
 	this.convertServerData(tree);
 
 	//this is ghetto
 	tree.values.forEach(function (subTree) {
 		subTree.values = []
-	})
+	}.bind(this))
 
 
 	this.sortTree(tree);
-	this.spinner.style.display = 'none'
 	this.addDepthLevel(tree);
 	this.addAllParentRelations(tree);
 	render.go(tree,false);

@@ -6,6 +6,11 @@ function Render () {
 	this.template = document.getElementsByClassName('templatePanelId')[0];
 	this.container = document.getElementById('containerId');
 	this.navBar = document.getElementById('navBar');
+
+	this.spinner = document.getElementById('spinner')
+	this.spinner.remove()
+
+
 	if (!this.template || !this.container || !this.navBar) {
 		console.log('error could not find template??',this.template,this.container,this.navBar)
 	}
@@ -417,6 +422,13 @@ Render.prototype.clearContainer = function() {
 		this.container.removeChild(this.container.firstChild);
 	}
 }
+Render.prototype.showSpinner = function() {
+	this.spinner.style.display = ''
+	this.container.appendChild(this.spinner)
+};
+Render.prototype.hideSpinner = function() {
+	this.spinner.style.display = 'none'
+};
 
 Render.prototype.go = function(tree,showBranches) {
 	if (showBranches===undefined) {
