@@ -56,6 +56,18 @@ app.use(function (err,req, res, next) {
 });
 
 
+//if you didnt go to courespro.io, redirect to coursepro.io (going direcly to ip, etc)
+app.use(function (req,res,next) {
+	//send redirect request
+	if (req.hostname!='coursepro.io' && req.hostname!='localhost') {
+		console.log('Info: not on coursepro, on',req.hostname,'redirecting to coursepro.io')
+		res.redirect('http://coursepro.io');
+	}
+	else {
+	  next();
+	}
+})
+
 //change the url to lowercase
 app.use(function (req,res,next) {
   req.url = req.url.toLowerCase();
