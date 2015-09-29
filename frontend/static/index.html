@@ -37,7 +37,7 @@
     width: 140px !important;
   }
   .subjectSelectContainer {
-    width: 260px !important;
+    width: 240px !important;
   }
   .classSelectContainer {
     width: 280px !important;
@@ -177,9 +177,10 @@
         <div class="input-group" id="adv-search" style="display: inline-block;float: right;width: 32px;padding-top: 10px;">
                 <div class="input-group-btn">
                     <div class="btn-group" role="group">
-                        <div class="dropdown dropdown-lg stopPropagation">
-                            <button type="button" class="btn btn-default dropdown-toggle" id="searchIcon" data-toggle="dropdown" aria-expanded="false" style="background-color: transparent;border: transparent;"><span class="glyphicon glyphicon-search searchIcon"></span></button>
-                            <div class="dropdown-menu dropdown-menu-right" role="menu" style="width: 250px;padding-right: 48px;padding-left: 10px;">
+                        <div class="dropdown dropdown-lg">
+                            <button type="button" class="btn btn-default" id="searchIcon" aria-expanded="false" style="background-color: transparent;border: transparent;"><span class="glyphicon glyphicon-search searchIcon"></span></button>
+
+                            <div class="dropdown-menu dropdown-menu-right" role="menu" style="width: 250px;padding-right: 48px;padding-left: 10px;" id="searchDropdown">
                                   <input class="form-control" type="text" id="searchBox"/>
                                   <button type="submit" class="btn btn-primary" id="searchSubmitButton"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                             </div>

@@ -95,18 +95,21 @@ Selectors.prototype.resetAllFutureVals = function(dropdown) {
 function isElementInViewport (el) {
 
 
-    var rect = el.getBoundingClientRect();
+	var rect = el.getBoundingClientRect();
 
-    return (
-        rect.top > 0 &&
-        rect.left > 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
-    );
+	return (
+		rect.top > 0 &&
+		rect.left > 0 &&
+		rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
+		rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+		);
 }
 
 
 Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue) {
+	if (search.isOpen) {
+		return;
+	};
 	
 	dropdown.value = dropdown.element.val();
 	this.resetDropdown(dropdown);
@@ -138,6 +141,9 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 	// change event on close. So keep track of the last element, and if
 	// it is different on close, fire the callback
 	dropdown.element.on("select2:close",function (event) {
+		if (search.isOpen) {
+			return;
+		};
 		var selection = dropdown.element.val();
 		if (!selection) {
 			return;
@@ -148,32 +154,30 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 			return;
 		}
 		
-		var searchIsOpen = isElementInViewport(document.getElementById('searchBox'));
+
+		console.log('search is open:',search.isOpen)
 		
-		if (searchIsOpen) {
-		  if (!dropdown.value) {
-		    // dont update dropdown.value
-        this.resetAllFutureVals(dropdown);
-		    this.resetDropdown(dropdown);
-		    // reset this + all future elements
-		    return;
-		  }
-		  
-		  
-		  
+		if (search.isOpen) {
+			if (!dropdown.value) {
+			    // dont update dropdown.value
+			    this.resetAllFutureVals(dropdown);
+			    this.resetDropdown(dropdown);
+				// reset this + all future elements
+				return;
+			}
 		}
-		
+
 
 		dropdown.value = selection;
 		this.resetAllFutureVals(dropdown);
 		this.updateDeeplink()
-		
-		
-		if (searchIsOpen) {
-		  return;
+
+
+		if (search.isOpen) {
+			return;
 		}
-		
-		
+
+
 		ga('send', {
 			'hitType': 'pageview',
 			'page': window.location.href,
@@ -182,7 +186,7 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 
 
 		console.log('selected',selection)
-		
+
 		if (dropdown.next) {
 			dropdown.next.setup()
 		}
@@ -196,10 +200,10 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 
 Selectors.prototype.selectCollege = function(defaultValue) {
 	request({
-	  type:'POST',
-	  url:'/listColleges',
-	  body:{}
-	  },function (err,body){
+		type:'POST',
+		url:'/listColleges',
+		body:{}
+	},function (err,body){
 		if (err) {
 			console.log(err);
 			return;
@@ -322,13 +326,13 @@ Selectors.prototype.selectClass = function(defaultValue) {
 }
 
 Selectors.prototype.closeAllSelectors = function () {
-  this.selectors.forEach(function(selector){
-    if (selector.element.data('select2')) {
-      console.log('closing', selector);
-      selector.value =selector.element.val();
-      selector.element.select2('close');
-    }
-  }.bind(this))
+	this.selectors.forEach(function(selector){
+		if (selector.element.data('select2')) {
+			console.log('closing', selector);
+			selector.value =selector.element.val();
+			selector.element.select2('close');
+		}
+	}.bind(this))
 }
 
 Selectors.prototype.finish = function() {
