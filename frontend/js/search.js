@@ -66,7 +66,6 @@ Search.prototype.openSearchBox = function(event) {
 
 Search.prototype.searchFromString = function(host,termId,subject,string) {
 	this.searchBox.value = string;
-	// this.openSearchBox();
 	this.go(host,termId,subject,string);
 };
 
@@ -101,7 +100,13 @@ Search.prototype.searchFromEntry = function() {
 
 Search.prototype.go = function(host,termId,subject,value) {
 	
-	window.location.hash = 'search/'+host+'/'+termId+'/'+subject+'/'+searchBox.value
+	window.location.hash = 'search/'+encodeURIComponent(host)+'/'+encodeURIComponent(termId)+'/'+encodeURIComponent(subject)+'/'+encodeURIComponent(searchBox.value)
+
+	ga('send', {
+		'hitType': 'pageview',
+		'page': window.location.href,
+		'title': 'Coursepro.io'
+	});
 
 	console.log('searching for ',searchBox.value)
 

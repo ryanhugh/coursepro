@@ -312,7 +312,7 @@ app.post('/search',function(req,res) {
   		return;
   	}
 
-  	console.log('found ',results.length,' results for ',req.body.value)
+  	console.log(JSON.stringify({count:results.length,searchTerm:req.body.value}));
 
   	res.send(results);
   }.bind(this));

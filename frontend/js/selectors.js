@@ -357,7 +357,6 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 	values.forEach(function (value,index) {
 
 
-		value = decodeURIComponent(value)
 		value = value.replace(/[^a-z0-9\/\.]/gi,'')
 
 
@@ -382,6 +381,12 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 Selectors.prototype.main = function() {
 	if (window.location.hash.length>1) {
 		var values = window.location.hash.slice(1).split('/')
+
+		values.forEach(function (value,index) {
+			values[index]= decodeURIComponent(value)
+		}.bind(this))
+
+
 
 		//first term is search, last is the search term
 		if (values[0]=='search') {
