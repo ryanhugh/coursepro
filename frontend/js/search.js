@@ -55,6 +55,7 @@ Search.prototype.openSearchBox = function(event) {
 		//close all the selectors
 		selectors.closeAllSelectors();
 		searchBox.focus();
+		searchBox.select();
 	}.bind(this),0);
 	//
 

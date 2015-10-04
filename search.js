@@ -144,7 +144,7 @@ Search.prototype.tests = function() {
 	this.search({
 		host:'neu.edu',
 		termId:'201610',
-		value:'eece2160',
+		value:'cs4800',
 		subject:'CS'
 	},function (err,results) {
 		console.log('test returnd with:',err,results);

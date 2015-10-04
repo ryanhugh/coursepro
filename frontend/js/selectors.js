@@ -92,7 +92,14 @@ Selectors.prototype.resetAllFutureVals = function(dropdown) {
 
 
 
-Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue) {
+Selectors.prototype.setupSelector = function(dropdown,selectValues,config) {
+	if (config===undefined) {
+		config={}
+	}
+	if (config.shouldOpen===undefined) {
+		config.shouldOpen=true;
+	};
+
 	dropdown.value = dropdown.element.val();
 	dropdown.values = selectValues;
 	this.resetDropdown(dropdown);
@@ -112,12 +119,12 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 		return selectValue.id;
 	}.bind(this));
 
-	if (!search.isOpen && (!defaultValue || !_(ids).includes(defaultValue))) {
+	if (config.shouldOpen && !search.isOpen && (!config.defaultValue || !_(ids).includes(config.defaultValue))) {
 		dropdown.element.select2('open');
 	}
 	else {
-		dropdown.value = defaultValue;
-		dropdown.element.select2("val",defaultValue);
+		dropdown.value = config.defaultValue;
+		dropdown.element.select2("val",config.defaultValue);
 	}
 
 	//i would use .on('change'), but when setting the default value it dosent fire the
@@ -181,7 +188,7 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue)
 }
 
 
-Selectors.prototype.selectCollege = function(defaultValue) {
+Selectors.prototype.selectCollege = function(config) {
 	request({
 		type:'POST',
 		url:'/listColleges',
@@ -205,10 +212,10 @@ Selectors.prototype.selectCollege = function(defaultValue) {
 			if(a.text > b.text) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.college,selectValues,defaultValue);
+		this.setupSelector(this.college,selectValues,config);
 	}.bind(this));
 }
-Selectors.prototype.selectTerm = function(defaultValue) {
+Selectors.prototype.selectTerm = function(config) {
 	request({
 		url:'/listTerms',
 		type:'POST',
@@ -234,11 +241,11 @@ Selectors.prototype.selectTerm = function(defaultValue) {
 			if(a.id < b.id) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.term,selectValues,defaultValue);
+		this.setupSelector(this.term,selectValues,config);
 	}.bind(this));
 }
 
-Selectors.prototype.selectSubject = function(defaultValue) {
+Selectors.prototype.selectSubject = function(config) {
 	request({
 		url:'/listSubjects',
 		type:'POST',
@@ -269,11 +276,11 @@ Selectors.prototype.selectSubject = function(defaultValue) {
 			if(a.id > b.id) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.subject,selectValues,defaultValue);
+		this.setupSelector(this.subject,selectValues,config);
 	}.bind(this))
 }
 
-Selectors.prototype.selectClass = function(defaultValue) {
+Selectors.prototype.selectClass = function(config) {
 	request({
 		url:'/listClasses',
 		type:'POST',
@@ -304,7 +311,7 @@ Selectors.prototype.selectClass = function(defaultValue) {
 			if(a.id > b.id) return 1;
 			return 0;
 		}.bind(this))
-		this.setupSelector(this.class,selectValues,defaultValue);
+		this.setupSelector(this.class,selectValues,config);
 	}.bind(this));
 }
 Selectors.prototype.getCollegeText = function() {
@@ -365,15 +372,15 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 		value = value.replace(/[^a-z0-9\/\.]/gi,'')
 
 
-		this.selectors[index].setup(value);
+		this.selectors[index].setup({defaultValue:value,shouldOpen:false});
 		this.selectors[index].value = value
 
 		//if at end, open next selector or create tree
-		if (index == values.length-1 && doOpenNext) {
+		if (index == values.length-1) {
 			if (this.selectors[index].next) {
-				this.selectors[index].next.setup()
+				this.selectors[index].next.setup({shouldOpen:doOpenNext})
 			}
-			else {
+			else if (doOpenNext) {
 				this.finish();
 			}
 		};
