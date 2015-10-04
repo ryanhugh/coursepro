@@ -1,6 +1,8 @@
 !!!!
 
 
+requs not loading http://localhost/#neu.edu/201610/ECON/4640
+
 some classes have (hon) labs and normal labs.
 --is (hon) the case for all of neu or just cs?
 --scrape the attribute....

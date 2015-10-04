@@ -90,9 +90,10 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 		//so if the class has itself as a prereq, or a class that is above it,
 		//there is no infinate recursion
 		//common for coreqs that require each other
-		if (_.any(ignoreClasses, _.matches(compareObject))) {
-			return;
-		}
+		// if (_.any(ignoreClasses, _.matches(compareObject))) {
+		// 	console.log('ignoreing',tree.subject,tree.classId,ignoreClasses,tree)
+		// 	return;
+		// }
 		ignoreClasses.push(compareObject)
 	}
 
@@ -153,10 +154,14 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 
 				callback();
 			}.bind(this));
-}.bind(this))
-}
-this.fetchSubTrees(tree,queue,ignoreClasses);
+			//
+		}.bind(this))
+		//
+	}//
 
+	// else if (!tree.isClass) {
+		this.fetchSubTrees(tree,queue,ignoreClasses);
+	// }
 }
 
 //this is called on a subtree when it responds from the server and when recursing down a tree
