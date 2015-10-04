@@ -45,11 +45,12 @@ TreeMgr.prototype.convertServerData = function(data) {
 		
 		
 		if (data.coreqs) {
-			var convertedCoreqs = [];
-			data.coreqs.values.forEach(function (subTree){
-				convertedCoreqs.push(this.convertServerData(subTree));
-			}.bind(this));
-			data.coreqs.values = convertedCoreqs;
+			data.coreqs.values=[]
+			// var convertedCoreqs = [];
+			// data.coreqs.values.forEach(function (subTree){
+			// 	convertedCoreqs.push(this.convertServerData(subTree));
+			// }.bind(this));
+			// data.coreqs.values = convertedCoreqs;
 		}
 	}
 
