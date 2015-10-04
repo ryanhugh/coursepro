@@ -5,6 +5,7 @@ function Selectors () {
 	this.class = {
 		element: $(".selectClass"),
 		value:'',
+		values:[],
 		setup:this.selectClass.bind(this),
 		class:'classSelectContainer'
 	}
@@ -12,6 +13,7 @@ function Selectors () {
 	this.subject = {
 		element: $(".selectSubject"),
 		value:'',
+		values:[],
 		setup:this.selectSubject.bind(this),
 		next:this.class,
 		class:'subjectSelectContainer'
@@ -20,6 +22,7 @@ function Selectors () {
 	this.term = {
 		element: $(".selectTerm"),
 		value:'',
+		values:[],
 		setup:this.selectTerm.bind(this),
 		next:this.subject,
 		class:'termSelectContainer'
@@ -28,6 +31,7 @@ function Selectors () {
 	this.college = {
 		element: $(".selectCollege"),
 		value:'',
+		values:[],
 		setup:this.selectCollege.bind(this),
 		next:this.term,
 		class:'collegeSelectContainer'
@@ -90,6 +94,7 @@ Selectors.prototype.resetAllFutureVals = function(dropdown) {
 
 Selectors.prototype.setupSelector = function(dropdown,selectValues,defaultValue) {
 	dropdown.value = dropdown.element.val();
+	dropdown.values = selectValues;
 	this.resetDropdown(dropdown);
 	
 	if (selectValues.length===0) {
@@ -374,6 +379,31 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 		};
 
 	}.bind(this))
+};
+
+//you can search for cs4800 if cs is open, 
+// but network connections would be required to search eece2222 when cs is open, so add that later
+Selectors.prototype.searchClasses = function(value) {
+
+	// remove subject from beginning of search, but this only works if search for same subject that is loaded
+	if (_(value.toLowerCase()).startsWith(this.subject.value.toLowerCase())) {
+		value=value.slice(this.subject.value.length).trim()
+	}
+
+	for (var i = 0; i < this.class.values.length; i++) {
+		var currClass = this.class.values[i];
+
+		//yay found match, open the class
+		if (currClass.id.toLowerCase()===value.toLowerCase()) {
+
+			//open 
+			search.closeSearchBox();
+			selectors.class.element.select2('val',value);
+			selectors.class.element.trigger('select2:close')
+			return true;
+		};
+	};
+	return false;
 };
 
 

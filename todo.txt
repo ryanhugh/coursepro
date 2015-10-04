@@ -1,8 +1,6 @@
 !!!!
 
 
-
-
 some classes have (hon) labs and normal labs.
 --is (hon) the case for all of neu or just cs?
 --scrape the attribute....
@@ -11,9 +9,6 @@ some classes have (hon) labs and normal labs.
 --else match all
 
 --if class is not hon only match non hon
-
---increase vertical height of dropdown
-
 
 
 make the help popup appear on first load in one location on the screen for 5 sec

@@ -4,7 +4,6 @@ function Search () {
 	
 
 	this.isOpen = false;
-	this.searchBox = document.getElementById("searchBox");
 	this.searchHelp = document.getElementById('searchHelp')
 	this.container = document.getElementById('containerId')
 	this.searchSubmitButton = document.getElementById('searchSubmitButton')
@@ -16,10 +15,7 @@ function Search () {
 	this.searchIcon.onclick = this.openSearchBox.bind(this)
 
 
-	document.onclick = function (event) {
-		search.isOpen = false;
-		$("#searchDropdown").parent().removeClass('open');
-	}.bind(this)
+	document.onclick = this.closeSearchBox.bind(this);
 
 
 	this.searchBox.onkeypress = function(e){
@@ -32,6 +28,10 @@ function Search () {
 
 	this.searchSubmitButton.onclick = this.searchFromEntry.bind(this);
 }
+Search.prototype.closeSearchBox = function(event) {
+	this.isOpen = false;
+	$("#searchDropdown").parent().removeClass('open');
+};
 
 
 Search.prototype.openSearchBox = function(event) {
@@ -65,6 +65,9 @@ Search.prototype.openSearchBox = function(event) {
 };
 
 Search.prototype.searchFromString = function(host,termId,subject,string) {
+	if (!string) {
+		return
+	};
 	this.searchBox.value = string;
 	this.go(host,termId,subject,string);
 };
@@ -99,8 +102,21 @@ Search.prototype.searchFromEntry = function() {
 
 
 Search.prototype.go = function(host,termId,subject,value) {
+	value=value.trim()
+	if (!value) {
+		return;
+	};
+
+	value=value.replace(/\s+/g,'').toLowerCase()
 	
-	window.location.hash = 'search/'+encodeURIComponent(host)+'/'+encodeURIComponent(termId)+'/'+encodeURIComponent(subject)+'/'+encodeURIComponent(searchBox.value)
+	window.location.hash = 'search/'+encodeURIComponent(host)+'/'+encodeURIComponent(termId)+'/'+encodeURIComponent(subject)+'/'+encodeURIComponent(value)
+
+	//if found a class, open the class tree with the selectors and dont search for anything
+	if (selectors.searchClasses(value)) {
+		return;
+	};
+
+
 
 	ga('send', {
 		'hitType': 'pageview',
@@ -108,7 +124,7 @@ Search.prototype.go = function(host,termId,subject,value) {
 		'title': 'Coursepro.io'
 	});
 
-	console.log('searching for ',searchBox.value)
+	console.log('searching for ',value)
 
 	render.clearContainer()
 	render.showSpinner()
@@ -120,7 +136,7 @@ Search.prototype.go = function(host,termId,subject,value) {
 			host:host,
 			termId:termId,
 			subject:selectors.subject.value,
-			value:searchBox.value
+			value:value
 		}
 	},function (err,results) {
 		console.log('found ',results.length,' classes!');

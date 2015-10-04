@@ -12,12 +12,6 @@ function Search() {
 }
 
 
-
-Search.prototype.searchClasses = function(text,callback) {
-
-}
-
-
 Search.prototype.search = function(body,callback) {
 
 	body.value = body.value.toLowerCase()
@@ -59,10 +53,10 @@ Search.prototype.search = function(body,callback) {
 
 
 				//search the classes details
+				var stringToSearch = (classData.desc + classData.name +classData.classId + classData.subject)
+				stringToSearch = stringToSearch.replace(/\s+/gi,'').toLowerCase();
 
-				//split body.value by space!!
-				// console.log()
-				if (_((classData.desc + classData.name +classData.classId + ' '+ classData.subject).toLowerCase()).includes(body.value)) {
+				if (_(stringToSearch).includes(body.value)) {
 					results.push(classData);
 				}
 
@@ -105,8 +99,10 @@ Search.prototype.search = function(body,callback) {
 						}.bind(this));
 					}.bind(this));
 				};
-				
-				if (_(stringToSearch.join('').toLowerCase()).includes(body.value)) {
+
+				stringToSearch=stringToSearch.join('').replace(/\s+/gi,'').toLowerCase()
+
+				if (_(stringToSearch).includes(body.value)) {
 					//yay found it
 					matchingSections.push(section);
 				}
@@ -148,7 +144,7 @@ Search.prototype.tests = function() {
 	this.search({
 		host:'neu.edu',
 		termId:'201610',
-		value:'Brown',
+		value:'eece2160',
 		subject:'CS'
 	},function (err,results) {
 		console.log('test returnd with:',err,results);
