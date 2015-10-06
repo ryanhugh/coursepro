@@ -45,12 +45,11 @@ TreeMgr.prototype.convertServerData = function(data) {
 		
 		
 		if (data.coreqs) {
-			data.coreqs.values=[]
-			// var convertedCoreqs = [];
-			// data.coreqs.values.forEach(function (subTree){
-			// 	convertedCoreqs.push(this.convertServerData(subTree));
-			// }.bind(this));
-			// data.coreqs.values = convertedCoreqs;
+			var convertedCoreqs = [];
+			data.coreqs.values.forEach(function (subTree){
+				convertedCoreqs.push(this.convertServerData(subTree));
+			}.bind(this));
+			data.coreqs.values = convertedCoreqs;
 		}
 	}
 
@@ -79,8 +78,10 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 	if (ignoreClasses===undefined) {
 		ignoreClasses = [];
 	}
+
 	
 	if (tree.isClass) {
+		
 	  	//dont load classes that are on ignore list
 	  	var compareObject = {
 	  		classId:tree.classId,
@@ -91,78 +92,79 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 		//so if the class has itself as a prereq, or a class that is above it,
 		//there is no infinate recursion
 		//common for coreqs that require each other
-		// if (_.any(ignoreClasses, _.matches(compareObject))) {
-		// 	console.log('ignoreing',tree.subject,tree.classId,ignoreClasses,tree)
-		// 	return;
-		// }
+		var hasAlreadyLoaded = _.any(ignoreClasses, _.matches(compareObject))
+
+		if (hasAlreadyLoaded) {
+			console.log('ignoring',tree.subject,tree.classId,ignoreClasses,tree)
+		}
+
 		ignoreClasses.push(compareObject)
-	}
 
+		//fire off ajax and add it to queue
+		if (!hasAlreadyLoaded && tree.dataStatus===this.DATASTATUS_NOTSTARTED) {
 
-	//fire off ajax and add it to queue
-	if (tree.isClass && tree.dataStatus===this.DATASTATUS_NOTSTARTED) {
+			if (!tree.classId || !tree.subject) {
+				console.log('class must have class id and subject')
+				return;
+			};
+			tree.dataStatus = this.DATASTATUS_LOADING;
 
-		if (!tree.classId || !tree.subject) {
-			console.log('class must have class id and subject')
-			return;
-		};
-		tree.dataStatus = this.DATASTATUS_LOADING;
-
-		queue.defer(function (callback) {
-			request({
-				url:'/listClasses',
-				type:'POST',
-				body:{
-					classId:tree.classId,
-					subject:tree.subject,
-					host:this.host,
-					termId:this.termId
-				}
-			},function (err,body) {
-				tree.dataStatus= this.DATASTATUS_DONE;
-				if (err) {
-					console.log('http error...',err);
-					return callback(err)
-				}
-
-				if (body.length==0) {
-					console.log('unable to find class even though its a prereq of another class????',tree)
-					tree.dataStatus = this.DATASTATUS_FAIL;
-					return callback()
-				};
-
-				//setup an or tree
-				if (body.length > 1) {
-					tree.type = 'or';
-					tree.isClass = false;
-					tree.values = [];
-
-					body.forEach(function (classData) {
-						tree.values.push(this.convertServerData(classData))
-					}.bind(this))
-				}
-
-				//else just add more data to the class
-				else {
-					var classData = this.convertServerData(body[0])
-
-					for (var attrName in classData) {
-						tree[attrName] = classData[attrName]
+			queue.defer(function (callback) {
+				request({
+					url:'/listClasses',
+					type:'POST',
+					body:{
+						classId:tree.classId,
+						subject:tree.subject,
+						host:this.host,
+						termId:this.termId
 					}
-				}
+				},function (err,body) {
+					tree.dataStatus= this.DATASTATUS_DONE;
+					if (err) {
+						console.log('http error...',err);
+						return callback(err)
+					}
 
-				this.fetchSubTrees(tree,queue,ignoreClasses)
+					if (body.length==0) {
+						console.log('unable to find class even though its a prereq of another class????',tree)
+						tree.dataStatus = this.DATASTATUS_FAIL;
+						return callback()
+					};
 
-				callback();
-			}.bind(this));
+					//setup an or tree
+					if (body.length > 1) {
+						tree.type = 'or';
+						tree.isClass = false;
+						tree.values = [];
+
+						body.forEach(function (classData) {
+							tree.values.push(this.convertServerData(classData))
+						}.bind(this))
+					}
+
+					//else just add more data to the class
+					else {
+						var classData = this.convertServerData(body[0])
+
+						for (var attrName in classData) {
+							tree[attrName] = classData[attrName]
+						}
+					}
+
+					this.fetchSubTrees(tree,queue,ignoreClasses)
+
+					callback();
+				}.bind(this));
+				//
+			}.bind(this))
 			//
-		}.bind(this))
-		//
+		}
 	}//
 
-	// else if (!tree.isClass) {
-		this.fetchSubTrees(tree,queue,ignoreClasses);
-	// }
+
+
+	this.fetchSubTrees(tree,queue,ignoreClasses)
 }
 
 //this is called on a subtree when it responds from the server and when recursing down a tree
@@ -237,8 +239,6 @@ TreeMgr.prototype.simplifyTree = function(tree) {
 	if (tree.values.length===1) {
 		tree.type='or'
 	}
-
-
 
 	//recursion
 	tree.values.forEach(function (subTree) {

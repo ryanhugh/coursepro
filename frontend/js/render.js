@@ -172,54 +172,54 @@ Render.prototype.getOptionalS = function(num) {
 }
 Render.prototype.calcPanelSize = function(tree) {
 
-		//position the panel to the absolute position of the div
-		this.resetPanel(tree,false);
-		
-		// add a tree.coreqPanels and add all of them + panel to a div and take the offsetWidth + offsetHeight of that div
-		tree.panelContainer = document.createElement('div');
-		
-		if (tree.coreqs && tree.isClass) {
-			tree.coreqs.values.forEach(function(subTree){
+	//position the panel to the absolute position of the div
+	this.resetPanel(tree,false);
+	
+	// add a tree.coreqPanels and add all of them + panel to a div and take the offsetWidth + offsetHeight of that div
+	tree.panelContainer = document.createElement('div');
+	
+	if (tree.coreqs && tree.isClass) {
+		tree.coreqs.values.forEach(function(subTree){
+			// return;
+
+			if ((subTree.isClass && subTree.coreqs && subTree.coreqs.values.length>0) || (!subTree.isClass && subTree.values && subTree.values.length>0)) {
+				console.log('error uhhhh coreq has choices???');
+			}
+
+			if (!subTree.isClass) {
+				console.log('error uhh also wtf');
 				return;
+			}
 
-				if ((subTree.isClass && subTree.coreqs && subTree.coreqs.values.length>0) || (!subTree.isClass && subTree.values && subTree.values.length>0)) {
-					console.log('error uhhhh coreq has choices???');
-				}
+			this.resetPanel(subTree,false);
 
-				if (!subTree.isClass) {
-					console.log('error uhh also wtf');
-					return;
-				}
+			tree.panelContainer.appendChild(subTree.panel);
 
-				this.resetPanel(subTree,false);
-
-				tree.panelContainer.appendChild(subTree.panel);
-
-			}.bind(this));
-		}
-		
-		tree.width = tree.panel.offsetWidth;
-		tree.height = tree.panel.offsetHeight;
-		
-		if (tree.values) {
-			tree.values.forEach(function(subTree) {
-				this.calcPanelSize(subTree);
-			}.bind(this))
-		}
+		}.bind(this));
 	}
-	Render.prototype.addStructure = function(tree) {
+	
+	tree.width = tree.panel.offsetWidth;
+	tree.height = tree.panel.offsetHeight;
+	
+	if (tree.values) {
+		tree.values.forEach(function(subTree) {
+			this.calcPanelSize(subTree);
+		}.bind(this))
+	}
+}
+Render.prototype.addStructure = function(tree) {
 
-		if (!tree.div) {
+	if (!tree.div) {
 
-			tree.div = document.createElement('div');
-			tree.div.className = 'holderDiv'
-			tree.div.style.display="inline-block"
-			tree.div.style.margin="0 auto"
-			tree.div.style.padding="20px"
+		tree.div = document.createElement('div');
+		tree.div.className = 'holderDiv'
+		tree.div.style.display="inline-block"
+		tree.div.style.margin="0 auto"
+		tree.div.style.padding="20px"
 
-			tree.filler = document.createElement('div');
+		tree.filler = document.createElement('div');
 
-			this.addToParentDiv(tree);
+		this.addToParentDiv(tree);
 
 		//adds this div to parent div
 		tree.filler.style.width = tree.width + 'px'
