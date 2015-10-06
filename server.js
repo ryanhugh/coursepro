@@ -56,24 +56,6 @@ app.use(function (err,req, res, next) {
 });
 
 
-//if you didnt go to courespro.io, redirect to coursepro.io (going direcly to ip, etc)
-app.use(function (req,res,next) {
-	//send redirect request
-	if (req.hostname!='coursepro.io' && req.hostname!='localhost') {
-		console.log('Info: not on coursepro, on',req.hostname,'redirecting to coursepro.io')
-		res.redirect('http://coursepro.io');
-	}
-	else {
-	  next();
-	}
-})
-
-//change the url to lowercase
-app.use(function (req,res,next) {
-  req.url = req.url.toLowerCase();
-  next();
-})
-
 
 // http://stackoverflow.com/a/46181/11236
 // this is also done client side
@@ -98,6 +80,12 @@ function validateEmail(email) {
 	return true;
 }
 
+//change the url to lowercase
+app.use(function (req,res,next) {
+  req.url = req.url.toLowerCase();
+  next();
+})
+
 
 app.use(function (req, res, next) {
 	logData(req);
@@ -118,6 +106,20 @@ app.use(function (req, res, next) {
 		next()
 	}
 });
+
+
+//if you didnt go to courespro.io, redirect to coursepro.io (going direcly to ip, etc)
+app.use(function (req,res,next) {
+	//send redirect request
+	if (req.hostname!='coursepro.io' && req.hostname!='localhost') {
+		console.log('Info: not on coursepro, on',req.hostname,'redirecting to coursepro.io')
+		res.redirect('http://coursepro.io');
+	}
+	else {
+	  next();
+	}
+})
+
 
 
 
