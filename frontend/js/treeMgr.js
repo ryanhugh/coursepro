@@ -79,6 +79,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 		ignoreClasses = [];
 	}
 
+
 	
 	if (tree.isClass) {
 		
@@ -165,6 +166,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 
 
 	this.fetchSubTrees(tree,queue,ignoreClasses)
+
 }
 
 //this is called on a subtree when it responds from the server and when recursing down a tree
@@ -358,6 +360,29 @@ TreeMgr.prototype.addAllParentRelations = function(tree,parent) {
 	};
 }
 
+
+//currenly used to flatten coreq trees (which are usally flat anyway)
+TreeMgr.prototype.getFirstLayer = function(tree) {
+	if (!tree.values) {
+		return [];
+	};
+
+
+	if (tree.isClass) {
+		return tree.values;
+	}
+	else {
+		var values = [];
+		tree.values.forEach(function (subTree) {
+			values=values.concat(this.getFirstLayer(subTree));
+
+		}.bind(this));
+		return values;
+	}
+};
+
+
+
 TreeMgr.prototype.addDepthLevel = function(tree,depth) {
 	if (depth===undefined) {
 		depth=0
@@ -371,6 +396,7 @@ TreeMgr.prototype.addDepthLevel = function(tree,depth) {
 	};
 }
 
+// only recurses on nodes and not classes - finds a list of classes
 TreeMgr.prototype.findFlattendClassList = function(tree) {
 	var retVal = [];
 	if (tree.isClass) {
@@ -384,6 +410,29 @@ TreeMgr.prototype.findFlattendClassList = function(tree) {
 	};
 	return retVal;
 }
+
+
+TreeMgr.prototype.flattenCoreqs = function(tree) {
+
+	if (tree.coreqs) {
+		var flatCoreqs = [];
+
+		tree.coreqs.values.forEach(function (subTree) {
+			flatCoreqs=flatCoreqs.concat(this.findFlattendClassList(subTree));
+		}.bind(this));
+
+		tree.coreqs.values = flatCoreqs;
+	}
+
+
+	if (tree.values) {
+		tree.values.forEach(function (subTree) {
+			this.flattenCoreqs(subTree)
+		}.bind(this));
+	};
+};
+
+
 TreeMgr.prototype.removeDuplicateDeps = function(tree,classList) {
 	if (!tree.values) {
 		return
@@ -521,10 +570,12 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 	this.fetchFullTree(tree,function () {
 
 
+
 		//remove non hon matching coreqs here
 
 
 		// this.matchCoreqsByHonors(tree);
+		this.flattenCoreqs(tree);
 		this.simplifyTree(tree)
 		this.sortTree(tree);
 		
