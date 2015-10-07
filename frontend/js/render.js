@@ -62,13 +62,13 @@ Render.prototype.drawLine =function(tree,x1, y1, x2, y2,color){
 	div.style.border = '4px solid '+color;
 	div.style.borderRadius = '99px'
 
-	var a = document.createElement('a')
-	a.setAttribute('style','width:'+(width+5)+'px;height:0px;-moz-transform:rotate('+deg+'deg);-webkit-transform:rotate('+deg+'deg);top:'+y+'px;left:'+x+'px;');
-	a.style.position='absolute';
-	a.className = 'lineToParentLink'
+	var aElement = document.createElement('a')
+	aElement.setAttribute('style','width:'+(width+5)+'px;height:0px;-moz-transform:rotate('+deg+'deg);-webkit-transform:rotate('+deg+'deg);top:'+y+'px;left:'+x+'px;');
+	aElement.style.position='absolute';
+	aElement.className = 'lineToParentLink'
 
 
-	a.appendChild(div);
+	aElement.appendChild(div);
 
 	var mouseOver = document.createElement('div');
 	mouseOver.style.width = '100%'
@@ -76,17 +76,17 @@ Render.prototype.drawLine =function(tree,x1, y1, x2, y2,color){
 	mouseOver.style.marginTop='-20px';
 
 	
-	a.appendChild(mouseOver)
+	aElement.appendChild(mouseOver)
 
 
 	tree.lineContainer = document.createElement('div');
-	tree.lineContainer.appendChild(a);
+	tree.lineContainer.appendChild(aElement);
 
 	this.container.appendChild(tree.lineContainer);
 
 
 	tree.lineToParent = div;
-	tree.lineToParentLink = a;
+	tree.lineToParentLink = aElement;
 }
 
 
@@ -132,7 +132,7 @@ Render.prototype.getColor = function(type) {
 	}
 }
 Render.prototype.getLowestParent = function(tree) {
-	if (tree.allParents.length==0) {
+	if (tree.allParents.length===0) {
 		return
 	};
 
@@ -242,9 +242,7 @@ Render.prototype.addStructure = function(tree) {
 Render.prototype.calcPanelPos = function(tree) {
 
 	if (tree.coreqIndex===undefined) {
-		if (!tree.filler) {
-			debugger
-		};
+		
 		var coords = tree.filler.getBoundingClientRect();
 		tree.x = coords.left + tree.panel.offsetWidth/2;
 		tree.y = coords.bottom - tree.panel.offsetHeight/2;
@@ -255,7 +253,6 @@ Render.prototype.calcPanelPos = function(tree) {
 		tree.x = parent.x + 20*(tree.coreqIndex+1);
 		tree.y = parent.y - 20*(tree.coreqIndex+1)-20;
 	}
-
 
 	this.resetPanel(tree);
 
@@ -481,22 +478,22 @@ Render.prototype.go = function(tree,showBranches) {
 
 	this.tree = tree;
 
-	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px'
+	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px';
 
 	this.calcPanelSize(this.tree);
 	this.addStructure(this.tree);
 	this.calcPanelPos(this.tree);
 
 	if (showBranches) {
-		this.addLines(this.tree)
-		this.addHelpToolips(this.tree)
-	};
+		this.addLines(this.tree);
+		this.addHelpToolips(this.tree);
+	}
 
 	//scroll to the middle of the page, and don't touch the scroll height
-	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop)
+	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop);
 
 	//remove the structure
-	$('.holderDiv').remove()
+	$('.holderDiv').remove();
 };
 
 
