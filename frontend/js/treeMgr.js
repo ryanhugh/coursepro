@@ -468,6 +468,47 @@ TreeMgr.prototype.removeCoreqsCoreqs = function(tree,isACoreq) {
 	};
 };
 
+
+//remove (hon) labs on non hon classes, and remove non (hon) labs on non hon classes
+//the proper way to do this is scrape the honors attribute from banner, and group by that, but for now just match title
+TreeMgr.prototype.groupByHonors = function(tree) {
+
+
+	if (tree.isClass && tree.coreqs) {
+
+		if (!_(tree.host).startsWith('neu.edu')) {
+			return;
+		};
+
+		var thisClassIsHon = _(tree.name).includes('(hon)')
+
+		var filteredCoreqs = [];
+		tree.coreqs.values.forEach(function (subTree) {
+			if (_(subTree.name).includes('(hon)') && thisClassIsHon) {
+				filteredCoreqs.push(subTree);
+			}
+			else if (!_(subTree.name).includes('(hon)') && !thisClassIsHon) {
+				filteredCoreqs.push(subTree);
+			}
+		}.bind(this));
+
+		//update the coreq index
+		filteredCoreqs.forEach(function (subTree,index) {
+			subTree.coreqIndex = index;
+		}.bind(this))
+
+		tree.coreqs.values=filteredCoreqs;
+	}
+
+
+
+	if (tree.values) {
+		tree.values.forEach(function (subTree) {
+			this.groupByHonors(subTree);
+		}.bind(this));
+	};
+};
+
 TreeMgr.prototype.removeDuplicateDeps = function(tree,classList) {
 	if (!tree.values) {
 		return
@@ -612,6 +653,11 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 		// this.matchCoreqsByHonors(tree);
 		this.flattenCoreqs(tree);
 		this.removeCoreqsCoreqs(tree);
+
+		//this is ghetto atm... TODO FIX
+		this.groupByHonors(tree);
+
+
 		this.simplifyTree(tree)
 		this.sortTree(tree);
 		
