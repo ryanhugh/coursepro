@@ -486,6 +486,9 @@ Render.prototype.go = function(tree,showBranches) {
 
 	//scroll to the middle of the page, and don't touch the scroll height
 	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop)
+
+	//remove the structure
+	$('.holderDiv').remove()
 };
 
 
