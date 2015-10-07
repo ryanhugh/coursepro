@@ -171,6 +171,10 @@ Render.prototype.getOptionalS = function(num) {
 	}
 }
 
+//each tree panel only contains that tree's panel
+//if a tree has coreqs, the tree.filler width and height is increased to account for these
+//and then the coreqs are put on an offset in the top right direction
+
 
 Render.prototype.calcPanelSize = function(tree) {
 
@@ -188,14 +192,7 @@ Render.prototype.calcPanelSize = function(tree) {
 		}.bind(this))
 	}
 
-
 	if (tree.coreqs) {
-
-		//make this one wider
-		tree.width+=tree.coreqs.values.length*20;
-		tree.height+=tree.coreqs.values.length*20+50;
-
-
 		tree.coreqs.values.forEach(function (subTree) {
 			this.calcPanelSize(subTree);
 		}.bind(this));
@@ -216,8 +213,18 @@ Render.prototype.addStructure = function(tree) {
 		this.addToParentDiv(tree);
 
 		//adds this div to parent div
-		tree.filler.style.width = tree.width + 'px'
-		tree.filler.style.height = tree.height + 'px'
+		var fillerWidth = tree.width;
+		var fillerHeight = tree.height;
+		
+		
+		if (tree.coreqs) {
+			fillerWidth += tree.coreqs.values.length*20;
+			fillerHeight += tree.coreqs.values.length*20;
+		}
+		
+		
+		tree.filler.style.width = fillerWidth + 'px'
+		tree.filler.style.height = fillerHeight + 'px'
 		tree.filler.style.margin = '0 auto'
 		tree.filler.className='filler'
 		tree.div.appendChild(tree.filler);
@@ -239,14 +246,14 @@ Render.prototype.calcPanelPos = function(tree) {
 			debugger
 		};
 		var coords = tree.filler.getBoundingClientRect();
-		tree.x = coords.left + coords.width/2;
-		tree.y = coords.top + coords.height/2;
+		tree.x = coords.left + tree.panel.offsetWidth/2;
+		tree.y = coords.bottom - tree.panel.offsetHeight/2;
 	}
 	else {
 
 		var parent = this.getLowestParent(tree);
 		tree.x = parent.x + 20*(tree.coreqIndex+1);
-		tree.y = parent.y - 20*(tree.coreqIndex+1)-40;
+		tree.y = parent.y - 20*(tree.coreqIndex+1)-20;
 	}
 
 
@@ -335,7 +342,8 @@ Render.prototype.resetPanel = function(tree,relocate) {
 	};
 
 
-	//z index is 999 if mouse if over element, else calculate 
+	//calculate the z Index
+	//z index is 999 if mouse if over element, else calculate
 	tree.panel.onmouseover = function (event) {
 		tree.panel.style.zIndex = '999';
 	}.bind(this);
@@ -479,7 +487,7 @@ Render.prototype.go = function(tree,showBranches) {
 	this.addStructure(this.tree);
 	this.calcPanelPos(this.tree);
 
-	if (showBranches) {	
+	if (showBranches) {
 		this.addLines(this.tree)
 		this.addHelpToolips(this.tree)
 	};
