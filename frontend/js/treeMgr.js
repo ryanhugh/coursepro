@@ -358,6 +358,12 @@ TreeMgr.prototype.addAllParentRelations = function(tree,parent) {
 			this.addAllParentRelations(subTree,tree);
 		}.bind(this))
 	};
+
+	if (tree.coreqs) {
+		tree.coreqs.values.forEach(function (subTree) {
+			this.addAllParentRelations(subTree,tree);
+		}.bind(this))
+	};
 }
 
 
@@ -403,7 +409,7 @@ TreeMgr.prototype.findFlattendClassList = function(tree) {
 		retVal.push(tree);
 	}
 
-	if (tree.values) {
+	if (tree.values && !tree.isClass) {
 		tree.values.forEach(function (subTree) {
 			retVal=retVal.concat(this.findFlattendClassList(subTree));
 		}.bind(this))
@@ -421,6 +427,14 @@ TreeMgr.prototype.flattenCoreqs = function(tree) {
 			flatCoreqs=flatCoreqs.concat(this.findFlattendClassList(subTree));
 		}.bind(this));
 
+		flatCoreqs.forEach(function (subTree,index) {
+			subTree.coreqIndex = index;
+			subTree.isCoreq = true;
+
+			//delete the coreq's prereq's, for now
+			subTree.values = undefined;
+		}.bind(this))
+
 		tree.coreqs.values = flatCoreqs;
 	}
 
@@ -432,6 +446,27 @@ TreeMgr.prototype.flattenCoreqs = function(tree) {
 	};
 };
 
+
+TreeMgr.prototype.removeCoreqsCoreqs = function(tree,isACoreq) {
+
+	//if this class is a coreq to another class, remove its coreqs	
+	if (isACoreq) {
+		tree.coreqs = undefined;
+	}
+
+
+	if (tree.coreqs) {
+		tree.coreqs.values.forEach(function (subTree) {
+			this.removeCoreqsCoreqs(subTree,true);
+		}.bind(this))
+	}
+
+	if (tree.values) {
+		tree.values.forEach(function (subTree) {
+			this.removeCoreqsCoreqs(subTree);
+		}.bind(this));
+	};
+};
 
 TreeMgr.prototype.removeDuplicateDeps = function(tree,classList) {
 	if (!tree.values) {
@@ -576,6 +611,7 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 
 		// this.matchCoreqsByHonors(tree);
 		this.flattenCoreqs(tree);
+		this.removeCoreqsCoreqs(tree);
 		this.simplifyTree(tree)
 		this.sortTree(tree);
 		
@@ -634,7 +670,6 @@ TreeMgr.prototype.showClasses = function(classList) {
 	render.go(tree,false);
 	popup.go(tree)
 
-	tree.panelContainer.style.display='none'
 	tree.panel.style.display='none'
 
 	

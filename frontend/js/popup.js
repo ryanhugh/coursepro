@@ -227,7 +227,6 @@ Popup.prototype.expandPanel = function(tree) {
 
 
 	tree.panel.style.zIndex = '999'
-	tree.panelContainer.style.zIndex = '999'
 
 	tree.isExpanded=true;
 	var panelBody = tree.panel.getElementsByClassName('panelBodyId')[0]
@@ -472,6 +471,12 @@ Popup.prototype.go = function(tree) {
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
+			this.go(subTree);
+		}.bind(this));
+	};
+
+	if (tree.coreqs) {
+		tree.coreqs.values.forEach(function (subTree) {
 			this.go(subTree);
 		}.bind(this));
 	};

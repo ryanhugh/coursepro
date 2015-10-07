@@ -131,21 +131,21 @@ Render.prototype.getColor = function(type) {
 		console.trace()
 	}
 }
-Render.prototype.getLowestParent = function(parents) {
-	if (parents.length==0) {
+Render.prototype.getLowestParent = function(tree) {
+	if (tree.allParents.length==0) {
 		return
 	};
 
-	var lowestParent = parents[0];
-	for (var i = 0; i < parents.length; i++) {
-		if (parents[i].depth>lowestParent) {
-			lowestParent = parents[i];
+	var lowestParent = tree.allParents[0];
+	for (var i = 0; i < tree.allParents.length; i++) {
+		if (tree.allParents[i].depth>lowestParent) {
+			lowestParent = tree.allParents[i];
 		}
 	}
 	return lowestParent;
 }
 Render.prototype.addToParentDiv = function(tree) {
-	var parent = this.getLowestParent(tree.allParents);
+	var parent = this.getLowestParent(tree);
 	if (parent && !parent.panel) {
 		console.log('error parent has no panel tree:',tree)
 	};
@@ -176,35 +176,9 @@ Render.prototype.calcPanelSize = function(tree) {
 
 	//position the panel to the absolute position of the div
 	this.resetPanel(tree,false);
+
+	this.container.appendChild(tree.panel);
 	
-	// add a tree.coreqPanels and add all of them + panel to a div and take the offsetWidth + offsetHeight of that div
-	tree.panelContainer = document.createElement('div');
-
-	tree.panelContainer.appendChild(tree.panel);
-
-	if (tree.coreqs && tree.isClass) {
-		tree.coreqs.values.forEach(function(subTree){
-			// return;
-
-			if ((subTree.isClass && subTree.coreqs && subTree.coreqs.values.length>0) || (!subTree.isClass && subTree.values && subTree.values.length>0)) {
-
-				console.log('error uhhhh coreq has choices???');
-			}
-
-			if (!subTree.isClass) {
-				console.log('error uhh also wtf');
-				return;
-			}
-
-			this.resetPanel(subTree,false);
-
-			tree.panelContainer.appendChild(subTree.panel);
-
-		}.bind(this));
-	}
-
-	this.container.appendChild(tree.panelContainer);
-
 	tree.width = tree.panel.offsetWidth;
 	tree.height = tree.panel.offsetHeight;
 
@@ -213,6 +187,19 @@ Render.prototype.calcPanelSize = function(tree) {
 			this.calcPanelSize(subTree);
 		}.bind(this))
 	}
+
+
+	if (tree.coreqs) {
+
+		//make this one wider
+		tree.width+=tree.coreqs.values.length*20;
+		tree.height+=tree.coreqs.values.length*20+50;
+
+
+		tree.coreqs.values.forEach(function (subTree) {
+			this.calcPanelSize(subTree);
+		}.bind(this));
+	};
 }
 Render.prototype.addStructure = function(tree) {
 
@@ -247,9 +234,21 @@ Render.prototype.addStructure = function(tree) {
 }
 Render.prototype.calcPanelPos = function(tree) {
 
-	var coords = tree.filler.getBoundingClientRect();
-	tree.x = coords.left + coords.width/2;
-	tree.y = coords.top + coords.height/2;
+	if (tree.coreqIndex===undefined) {
+		if (!tree.filler) {
+			debugger
+		};
+		var coords = tree.filler.getBoundingClientRect();
+		tree.x = coords.left + coords.width/2;
+		tree.y = coords.top + coords.height/2;
+	}
+	else {
+
+		var parent = this.getLowestParent(tree);
+		tree.x = parent.x + 20*(tree.coreqIndex+1);
+		tree.y = parent.y - 20*(tree.coreqIndex+1)-40;
+	}
+
 
 	this.resetPanel(tree);
 
@@ -258,7 +257,14 @@ Render.prototype.calcPanelPos = function(tree) {
 			this.calcPanelPos(subTree);
 		}.bind(this));
 	};
+
+	if (tree.coreqs) {
+		tree.coreqs.values.forEach(function (subTree) {
+			this.calcPanelPos(subTree);
+		}.bind(this));
+	};
 }
+
 
 //only requires .width and .height if resizing
 Render.prototype.resetPanel = function(tree,relocate) {
@@ -268,6 +274,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 
 	tree.isExpanded=false;
 	if (tree.isClass) {
+
 
 		if (!tree.panel) {
 			tree.panel = this.template.cloneNode(true);
@@ -322,13 +329,33 @@ Render.prototype.resetPanel = function(tree,relocate) {
 
 	if (relocate) {
 
-		tree.panelContainer.style.position = 'absolute';
-		tree.panelContainer.style.top =  (tree.y - tree.height/2 ) + 'px';
-		tree.panelContainer.style.left = (tree.x - tree.width/2  ) + 'px';
-		tree.panelContainer.style.zIndex = '1'
+		tree.panel.style.position = 'absolute';
+		tree.panel.style.top =  (tree.y - tree.height/2 ) + 'px';
+		tree.panel.style.left = (tree.x - tree.width/2  ) + 'px';
 	};
 
-	
+
+	//z index is 999 if mouse if over element, else calculate 
+	tree.panel.onmouseover = function (event) {
+		tree.panel.style.zIndex = '999';
+	}.bind(this);
+
+	tree.panel.onmouseout = function () {
+		if (tree.isExpanded) {
+			return;
+		};
+
+
+		if (tree.coreqIndex===undefined) {
+			tree.panel.style.zIndex = '100'
+		}
+		else {
+			var parent = this.getLowestParent(tree);
+			tree.panel.style.zIndex = parseInt(parent.panel.style.zIndex)-tree.coreqIndex-1;
+		}
+	}.bind(this)
+
+	tree.panel.onmouseout();
 }
 
 
