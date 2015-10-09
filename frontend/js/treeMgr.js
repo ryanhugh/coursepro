@@ -449,7 +449,7 @@ TreeMgr.prototype.flattenCoreqs = function(tree) {
 
 TreeMgr.prototype.removeCoreqsCoreqs = function(tree,isACoreq) {
 
-	//if this class is a coreq to another class, remove its coreqs	
+	//if this class is a coreq to another class, remove its coreqs
 	if (isACoreq) {
 		tree.coreqs = undefined;
 	}
@@ -627,6 +627,53 @@ TreeMgr.prototype.removeDuplicateDeps = function(tree,classList) {
 	}.bind(this))
 }
 
+
+TreeMgr.prototype.removeInvalidSubTrees = function(tree) {
+
+	if (tree.coreqs) {
+		debugger
+		
+		var newCoreqs = [];
+		
+		tree.coreqs.values.forEach(function (subTree) {
+			
+			if (subTree.dataStatus===this.DATASTATUS_DONE) {
+				newCoreqs.push(subTree)
+				this.removeInvalidSubTrees(subTree);
+			}
+			else {
+				console.log('removing because not loaded!',subTree);
+			}
+		}.bind(this));
+		
+		// if (tree.coreqs.values.length!==newCoreqs.length) {
+		// 	console.log('removing ')
+		// }
+		
+		tree.coreqs.values = newCoreqs;
+	}
+
+	if (tree.values) {
+		
+		
+		var newPrereqs = [];
+		
+		tree.values.forEach(function (subTree) {
+			
+			if (subTree.dataStatus===this.DATASTATUS_DONE) {
+				newPrereqs.push(subTree);
+				this.removeInvalidSubTrees(subTree);
+			}
+			else {
+				console.log('removing because not loaded!',subTree);
+			}
+		}.bind(this));
+		
+		tree.values = newPrereqs;
+		
+	};
+};
+
 TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 	this.host = host;
 	this.termId  = termId;
@@ -653,15 +700,23 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 		// this.matchCoreqsByHonors(tree);
 		this.flattenCoreqs(tree);
 		this.removeCoreqsCoreqs(tree);
+		
+		//at this point, there should not be any with data status = not started, so if find any remove them
+		this.removeInvalidSubTrees(tree);
 
 		//this is ghetto atm... TODO FIX
 		this.groupByHonors(tree);
 
 
 		this.simplifyTree(tree)
+		
+		
+		
 		this.sortTree(tree);
 		
 		this.addDepthLevel(tree);
+		
+		
 
 		// var flatClassList = this.findFlattendClassList(tree).sort(function (a,b) {
 		// 	return a.depth>b.depth;
@@ -672,6 +727,9 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 		// this.removeDuplicateDeps(tree,flatClassList);
 		// this.removeDuplicateDeps(tree,flatClassList);
 		this.addAllParentRelations(tree);
+		
+		
+		
 
 		// spinner.style.display = 'none'
 
@@ -700,7 +758,6 @@ TreeMgr.prototype.showClasses = function(classList) {
 	tree.type='or'
 	tree.values = classList
 	
-	render.hideSpinner();
 
 	this.convertServerData(tree);
 
@@ -709,6 +766,15 @@ TreeMgr.prototype.showClasses = function(classList) {
 		subTree.values = []
 	}.bind(this))
 
+	
+	this.processTree(tree);
+	
+	tree.panel.style.display='none'
+};
+
+TreeMgr.prototype.processTree = function(tree) {
+	
+	render.hideSpinner();
 
 	this.sortTree(tree);
 	this.addDepthLevel(tree);
@@ -716,11 +782,7 @@ TreeMgr.prototype.showClasses = function(classList) {
 	render.go(tree,false);
 	popup.go(tree)
 
-	tree.panel.style.display='none'
-
-	
-};
-
+}
 
 
 
