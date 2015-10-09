@@ -735,20 +735,8 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		callback=function(){};
 	};
 
-	
-	// render.hideSpinner();
-
-	// this.sortTree(tree);
-	// this.addDepthLevel(tree);
-	// this.addAllParentRelations(tree);
-	// render.go(tree,false);
-	// popup.go(tree)
-
-
 	render.clearContainer()
 	render.showSpinner()
-
-
 	this.fetchFullTree(tree,function () {
 
 
