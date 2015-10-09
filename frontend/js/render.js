@@ -243,9 +243,9 @@ Render.prototype.calcPanelPos = function(tree) {
 
 	if (tree.coreqIndex===undefined) {
 		
-		if (!tree.filler) {
-			debugger
-		}
+		// if (!tree.filler) {
+		// 	debugger
+		// }
 		
 		var coords = tree.filler.getBoundingClientRect();
 		

@@ -631,7 +631,7 @@ TreeMgr.prototype.removeDuplicateDeps = function(tree,classList) {
 TreeMgr.prototype.removeInvalidSubTrees = function(tree) {
 
 	if (tree.coreqs) {
-		debugger
+		// debugger
 		
 		var newCoreqs = [];
 		
@@ -675,16 +675,75 @@ TreeMgr.prototype.removeInvalidSubTrees = function(tree) {
 };
 
 TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
-	this.host = host;
-	this.termId  = termId;
-
-
+	
 	var tree = {
+		host:host,
+		termId:termId,
 		subject:subject,
 		classId:classId,
 		isClass:true,
 		dataStatus:this.DATASTATUS_NOTSTARTED
 	}
+
+	//process tree takes in a callback
+	this.processTree(tree);
+
+}
+TreeMgr.prototype.showClasses = function(classList) {
+	if (classList.length<1) {
+		console.log('error show classes was called with 0 classes!')
+		return;
+	};
+
+	
+	var tree = {};
+
+	tree.isClass = false;
+	tree.type='or'
+	tree.values = classList
+	tree.host = classList[0].host
+	tree.termId = classList[0].termId
+	
+
+	this.convertServerData(tree);
+
+	//this is ghetto
+	tree.values.forEach(function (subTree) {
+		subTree.values = []
+	}.bind(this))
+
+	
+	this.processTree(tree,function () {
+
+		//hide the node at the top and the lines to it
+		tree.panel.style.display='none'
+
+		tree.values.forEach(function (subTree) {
+			subTree.lineToParent.style.display='none';
+		}.bind(this))
+		
+	}.bind(this));
+
+
+};
+
+TreeMgr.prototype.processTree = function(tree,callback) {
+	this.host = tree.host;
+	this.termId  = tree.termId;
+
+	if (!callback) {
+		callback=function(){};
+	};
+
+	
+	// render.hideSpinner();
+
+	// this.sortTree(tree);
+	// this.addDepthLevel(tree);
+	// this.addAllParentRelations(tree);
+	// render.go(tree,false);
+	// popup.go(tree)
+
 
 	render.clearContainer()
 	render.showSpinner()
@@ -747,40 +806,9 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 
 		render.hideSpinner();
 		render.go(tree);
-		popup.go(tree)
+		popup.go(tree);
+		callback();
 	}.bind(this));
-}
-TreeMgr.prototype.showClasses = function(classList) {
-	
-	var tree = {};
-
-	tree.isClass = false;
-	tree.type='or'
-	tree.values = classList
-	
-
-	this.convertServerData(tree);
-
-	//this is ghetto
-	tree.values.forEach(function (subTree) {
-		subTree.values = []
-	}.bind(this))
-
-	
-	this.processTree(tree);
-	
-	tree.panel.style.display='none'
-};
-
-TreeMgr.prototype.processTree = function(tree) {
-	
-	render.hideSpinner();
-
-	this.sortTree(tree);
-	this.addDepthLevel(tree);
-	this.addAllParentRelations(tree);
-	render.go(tree,false);
-	popup.go(tree)
 
 }
 
