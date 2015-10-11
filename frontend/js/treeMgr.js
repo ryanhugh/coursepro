@@ -637,7 +637,7 @@ TreeMgr.prototype.removeInvalidSubTrees = function(tree) {
 		
 		tree.coreqs.values.forEach(function (subTree) {
 			
-			if (subTree.dataStatus===this.DATASTATUS_DONE) {
+			if (!subTree.isClass || subTree.dataStatus===this.DATASTATUS_DONE) {
 				newCoreqs.push(subTree)
 				this.removeInvalidSubTrees(subTree);
 			}
@@ -660,7 +660,7 @@ TreeMgr.prototype.removeInvalidSubTrees = function(tree) {
 		
 		tree.values.forEach(function (subTree) {
 			
-			if (subTree.dataStatus===this.DATASTATUS_DONE) {
+			if (!subTree.isClass || subTree.dataStatus===this.DATASTATUS_DONE) {
 				newPrereqs.push(subTree);
 				this.removeInvalidSubTrees(subTree);
 			}
