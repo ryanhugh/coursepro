@@ -1,5 +1,11 @@
 !!!!
 
+todo next:
+open up last viewed page when opening site
+prefetch
+help for each college, default to neu
+
+
 
 merge coreq prereqs with class prereqs
 
