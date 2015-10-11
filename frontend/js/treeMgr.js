@@ -95,9 +95,9 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 		//common for coreqs that require each other
 		var hasAlreadyLoaded = _.any(ignoreClasses, _.matches(compareObject))
 
-		if (hasAlreadyLoaded) {
-			console.log('ignoring',tree.subject,tree.classId,ignoreClasses,tree)
-		}
+		// if (hasAlreadyLoaded) {
+		// 	console.log('ignoring',tree.subject,tree.classId,ignoreClasses,tree)
+		// }
 
 		ignoreClasses.push(compareObject)
 
@@ -637,7 +637,7 @@ TreeMgr.prototype.removeInvalidSubTrees = function(tree) {
 		
 		tree.coreqs.values.forEach(function (subTree) {
 			
-			if (subTree.dataStatus===this.DATASTATUS_DONE) {
+			if (!subTree.isClass || subTree.dataStatus===this.DATASTATUS_DONE) {
 				newCoreqs.push(subTree)
 				this.removeInvalidSubTrees(subTree);
 			}
@@ -660,7 +660,7 @@ TreeMgr.prototype.removeInvalidSubTrees = function(tree) {
 		
 		tree.values.forEach(function (subTree) {
 			
-			if (subTree.dataStatus===this.DATASTATUS_DONE) {
+			if (!subTree.isClass || subTree.dataStatus===this.DATASTATUS_DONE) {
 				newPrereqs.push(subTree);
 				this.removeInvalidSubTrees(subTree);
 			}
@@ -739,11 +739,6 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 	render.showSpinner()
 	this.fetchFullTree(tree,function () {
 
-
-
-		//remove non hon matching coreqs here
-
-
 		// this.matchCoreqsByHonors(tree);
 		this.flattenCoreqs(tree);
 		this.removeCoreqsCoreqs(tree);
@@ -751,19 +746,21 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		//at this point, there should not be any with data status = not started, so if find any remove them
 		this.removeInvalidSubTrees(tree);
 
+		//remove non hon matching coreqs here
 		//this is ghetto atm... TODO FIX
 		this.groupByHonors(tree);
 
 
 		this.simplifyTree(tree)
 		
-		
-		
 		this.sortTree(tree);
 		
 		this.addDepthLevel(tree);
 		
-		
+		this.addAllParentRelations(tree);
+
+		//this code was to avoid duplicate classes if a given class is low on a big tree
+		//it dosent work
 
 		// var flatClassList = this.findFlattendClassList(tree).sort(function (a,b) {
 		// 	return a.depth>b.depth;
@@ -773,13 +770,6 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		// this.removeDuplicateDeps(tree,flatClassList);
 		// this.removeDuplicateDeps(tree,flatClassList);
 		// this.removeDuplicateDeps(tree,flatClassList);
-		this.addAllParentRelations(tree);
-		
-		
-		
-
-		// spinner.style.display = 'none'
-
 
 		// var a = findFlattendClassList(tree)
 		// var uniqueArray = a.filter(function(item, pos) {
@@ -787,9 +777,6 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		// })
 
 		// console.log(uniqueArray,'fd')
-
-
-		// return;
 
 
 		render.hideSpinner();

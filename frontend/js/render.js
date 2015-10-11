@@ -243,10 +243,6 @@ Render.prototype.calcPanelPos = function(tree) {
 
 	if (tree.coreqIndex===undefined) {
 		
-		// if (!tree.filler) {
-		// 	debugger
-		// }
-		
 		var coords = tree.filler.getBoundingClientRect();
 		
 		tree.x = coords.left + tree.panel.offsetWidth/2;

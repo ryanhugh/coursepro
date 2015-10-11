@@ -23,18 +23,118 @@ Request.prototype.randomString = function () {
     return result;
 }
 
-Request.prototype.isIncognito = function () {
-    var fs = window.RequestFileSystem || window.webkitRequestFileSystem;
-  if (!fs) {
-    console.log("check failed?");
-  } else {
-    fs(window.TEMPORARY,
-       100,
-       console.log.bind(console, "not in incognito mode"),
-       console.log.bind(console, "incognito mode"));
-  }
+
+
+Request.prototype.findDiff = function (compareSrc,compareTo) {
+	
+	var retVal = {
+		missing:[],
+		different:[],
+		same:[]
+	}
+	
+	
+	for (var attrName in compareSrc) {
+		if (compareTo[attrName]===undefined) {
+			retVal.missing.push(attrName);
+		}
+		else if (compareTo[attrName]!==compareSrc[attrName]) {
+			retVal.different.push(attrName);
+		}
+		//must be same
+		else {
+			retVal.same.push(attrName);
+		}
+	}
+	return retVal;
 }
 
+// Request.prototype.findMatching = function ()
+
+
+
+//if config matches, return the body
+//if the config.body is fully contained within the body of any cache item, return the body
+//else return no
+Request.prototype.searchCache = function(config) {
+	for (var i=0;i<this.cache.length;i++) {
+		var cacheItem = this.cache[i];
+		
+		
+		if (config.url !== cacheItem.config.url) {
+			continue;
+		}
+		
+		//this cache item was more specific than what we are looking for, cant possibly have everything we need
+		if (_.keys(cacheItem.config.body).length>_.keys(config.body).length) {
+			continue;
+		}
+		
+		
+		
+		var diff = this.findDiff(config.body,cacheItem.config.body);
+		
+		//they had different query attributes
+		if (diff.different.length>0) {
+			continue;
+		}
+		
+		//everything was the same
+		if (diff.missing.length === 0){
+			
+			//clone return object
+			return _.cloneDeep(cacheItem.body);
+		}
+		//it is ok for cacheItem to be missing 1 of the attributes - eg all cs classes
+		// looked up for the selectors, and then a specific class looked up for the tree
+		if (diff.missing.length!==1) {
+			console.log('warning: cachItem.config is missing more than 1 attr?',diff,config,cacheItem.config);
+		}
+		
+		
+		//TODO http://localhost/#neu.edu/201610/NRSG/4995
+		//if the item in the cache is still loading, add a callback to fire and then process when its done
+		if (cacheItem.loadingStatus===this.LOADINGSTATUS_LOADING) {
+			continue;
+		}
+		
+		
+		
+		
+		//nothing found last time, no need to continue
+		if (cacheItem.body.length===0) {
+			continue;
+		}
+		
+		
+		
+		//ok, loop through the cache body and puck the ones that match the missing attributes
+		var attrToCheck = _.pick(config.body,diff.missing);
+		
+		
+		
+		var matches = _.where(cacheItem.body,attrToCheck)
+		// var matches
+		if (matches.length>0) {
+			console.log('found ',matches.length,' matches in cache!!')
+			return _.cloneDeep(matches);
+		}
+		
+		
+		
+		// if (config.url === cacheItem.config.url && cacheItem.body.length>0) {
+			
+		// 	//make sure that the only thing different is the classId
+		// 	// if (config.body.host != cacheItem.body[0].host || config.body.termId != cacheItem.body.termId || config.body.subject !=)
+			
+			
+		// 	console.log('url matched, checking body')
+			
+			
+		// }
+	}
+	return null;
+}
 
 
 Request.prototype.go = function(config,callback) {
@@ -54,25 +154,12 @@ Request.prototype.go = function(config,callback) {
 		console.trace()
 		return;
 	};
-
-
-	//loop through cache to see if we actually need to make the request
-	for (var i = 0; i < this.cache.length; i++) {
-		var cacheItem = this.cache[i]
-		if (_.isEqual(cacheItem.config,config)) {
-			if (cacheItem.loadingStatus == this.LOADINGSTATUS_DONE) {
-				//match found
-				console.log('cache hit',config.url);
-
-				//clone return object
-				return callback(null,_.cloneDeep(cacheItem.body))
-			}
-			else if (cacheItem.loadingStatus == this.LOADINGSTATUS_LOADING) {
-				cacheItem.callbacks.push(callback)
-				return;
-			}
-		};
+	
+	var cacheHit = this.searchCache(config);
+	if (cacheHit) {
+		return callback(null,cacheHit);
 	}
+	
 	var cacheItem = {
 		loadingStatus:this.LOADINGSTATUS_LOADING,
 		config:config,
@@ -81,7 +168,7 @@ Request.prototype.go = function(config,callback) {
 
 	this.cache.push(cacheItem)
 	
-	var body = _.cloneDeep(config.body)
+	var body = _.cloneDeep(config.body);
 	
 	//add the userid
 	if (config.type==='POST') {

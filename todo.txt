@@ -4,6 +4,8 @@
 merge coreq prereqs with class prereqs
 
 
+when doing star, need some way to differentiate between hon and non hon for same host/termId/subject/classId
+
 requs not loading http://localhost/#neu.edu/201610/ECON/4640
 
 some classes have (hon) labs and normal labs.
