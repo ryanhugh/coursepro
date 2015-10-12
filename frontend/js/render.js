@@ -10,6 +10,8 @@ function Render () {
 	this.spinner = document.getElementById('spinner')
 	this.spinner.remove()
 
+	this.COREQ_OFFSET = 20;
+
 
 	if (!this.template || !this.container || !this.navBar) {
 		console.log('error could not find template??',this.template,this.container,this.navBar)
@@ -207,6 +209,7 @@ Render.prototype.addStructure = function(tree) {
 		tree.div.style.display="inline-block"
 		tree.div.style.margin="0 auto"
 		tree.div.style.padding="20px"
+		tree.div.style.paddingBottom="0px"
 
 		tree.filler = document.createElement('div');
 
@@ -218,8 +221,8 @@ Render.prototype.addStructure = function(tree) {
 		
 		
 		if (tree.coreqs) {
-			fillerWidth += tree.coreqs.values.length*20;
-			fillerHeight += tree.coreqs.values.length*20;
+			fillerWidth += tree.coreqs.values.length*this.COREQ_OFFSET;
+			fillerHeight += tree.coreqs.values.length*this.COREQ_OFFSET;
 		}
 		
 		
@@ -243,10 +246,6 @@ Render.prototype.calcPanelPos = function(tree) {
 
 	if (tree.coreqIndex===undefined) {
 		
-		// if (!tree.filler) {
-		// 	debugger
-		// }
-		
 		var coords = tree.filler.getBoundingClientRect();
 		
 		tree.x = coords.left + tree.panel.offsetWidth/2;
@@ -255,8 +254,8 @@ Render.prototype.calcPanelPos = function(tree) {
 	else {
 
 		var parent = this.getLowestParent(tree);
-		tree.x = parent.x + 20*(tree.coreqIndex+1);
-		tree.y = parent.y - 20*(tree.coreqIndex+1)-20;
+		tree.x = parent.x + this.COREQ_OFFSET*(tree.coreqIndex+1);
+		tree.y = parent.y - this.COREQ_OFFSET*(tree.coreqIndex+1)-this.COREQ_OFFSET;
 	}
 
 	this.resetPanel(tree);
@@ -480,6 +479,7 @@ Render.prototype.go = function(tree,showBranches) {
 	if (showBranches===undefined) {
 		showBranches=true;
 	}
+	document.body.style.height = '';
 
 	this.tree = tree;
 
@@ -498,8 +498,8 @@ Render.prototype.go = function(tree,showBranches) {
 	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop);
 
 	//remove the structure
+	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
 	$('.holderDiv').remove();
-	document.body.style.height = (document.body.scrollHeight + 50) + 'px'
 };
 
 
