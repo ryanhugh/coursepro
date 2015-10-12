@@ -49,8 +49,11 @@ Request.prototype.findDiff = function (compareSrc,compareTo) {
 	return retVal;
 }
 
-// Request.prototype.findMatching = function ()
+Request.prototype.searchForSubsetOfData = function(cacheItem,config) {
+	
 
+
+};
 
 
 //if config matches, return the body
@@ -95,6 +98,7 @@ Request.prototype.searchCache = function(config) {
 		//TODO http://localhost/#neu.edu/201610/NRSG/4995
 		//if the item in the cache is still loading, add a callback to fire and then process when its done
 		if (cacheItem.loadingStatus===this.LOADINGSTATUS_LOADING) {
+
 			continue;
 		}
 		
@@ -110,28 +114,13 @@ Request.prototype.searchCache = function(config) {
 		
 		//ok, loop through the cache body and puck the ones that match the missing attributes
 		var attrToCheck = _.pick(config.body,diff.missing);
-		
-		
-		
 		var matches = _.where(cacheItem.body,attrToCheck)
+
 		// var matches
 		if (matches.length>0) {
 			console.log('found ',matches.length,' matches in cache!!')
 			return _.cloneDeep(matches);
 		}
-		
-		
-		
-		// if (config.url === cacheItem.config.url && cacheItem.body.length>0) {
-			
-		// 	//make sure that the only thing different is the classId
-		// 	// if (config.body.host != cacheItem.body[0].host || config.body.termId != cacheItem.body.termId || config.body.subject !=)
-			
-			
-		// 	console.log('url matched, checking body')
-			
-			
-		// }
 	}
 	return null;
 }
