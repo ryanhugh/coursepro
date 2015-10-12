@@ -23,19 +23,6 @@ Request.prototype.randomString = function () {
     return result;
 }
 
-Request.prototype.isIncognito = function () {
-    var fs = window.RequestFileSystem || window.webkitRequestFileSystem;
-  if (!fs) {
-    console.log("check failed?");
-  } else {
-    fs(window.TEMPORARY,
-       100,
-       console.log.bind(console, "not in incognito mode"),
-       console.log.bind(console, "incognito mode"));
-  }
-}
-
-
 
 Request.prototype.go = function(config,callback) {
 	if (!callback) {
