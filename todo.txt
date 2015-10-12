@@ -1,5 +1,11 @@
 !!!!
 
+todo next:
+open up last viewed page when opening site
+prefetch
+help for each college, default to neu
+
+
 
 merge coreq prereqs with class prereqs
 
@@ -7,6 +13,12 @@ merge coreq prereqs with class prereqs
 when doing star, need some way to differentiate between hon and non hon for same host/termId/subject/classId
 
 requs not loading http://localhost/#neu.edu/201610/ECON/4640
+
+
+figure out why there is node above class here
+https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201610&subj_code_in=NRSG&crse_numb_in=3320
+http://localhost/#neu.edu/201610/NRSG/3320
+
 
 some classes have (hon) labs and normal labs.
 --is (hon) the case for all of neu or just cs?

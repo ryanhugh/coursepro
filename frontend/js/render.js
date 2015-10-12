@@ -495,6 +495,7 @@ Render.prototype.go = function(tree,showBranches) {
 
 	//remove the structure
 	$('.holderDiv').remove();
+	document.body.style.height = (document.body.scrollHeight + 50) + 'px'
 };
 
 
