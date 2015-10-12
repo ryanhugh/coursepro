@@ -116,11 +116,8 @@ Request.prototype.searchCache = function(config) {
 		var attrToCheck = _.pick(config.body,diff.missing);
 		var matches = _.where(cacheItem.body,attrToCheck)
 
-		// var matches
-		if (matches.length>0) {
-			console.log('found ',matches.length,' matches in cache!!')
-			return _.cloneDeep(matches);
-		}
+		console.log('found ',matches.length,' matches in cache!!')
+		return _.cloneDeep(matches);
 	}
 	return null;
 }
