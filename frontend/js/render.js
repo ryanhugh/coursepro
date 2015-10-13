@@ -378,6 +378,88 @@ Render.prototype.addLines = function(tree) {
 	}
 }
 
+
+Render.prototype.addHelpIfExistsAtLevel = function(tree) {
+	if (!tree.values) {
+		return false;
+	}
+	
+	for (var i =0;i<tree.values.length;i++) {
+		if (tree.values[i].lineToParentLink.offsetWidth>200) {
+			
+			//get midpoint of line
+			var coords = tree.values[i].lineToParent.getBoundingClientRect();
+			
+			this.activateHelpPopup(tree.values[i],coords.left+coords.width/2,coords.top+coords.height/2);
+			
+			return true;
+		}
+		
+	}
+	return false;
+	
+	
+}
+
+
+//find a line close to the starting tree that is > min length, and add the popover to it
+Render.prototype.addInitialHelp = function(tree) {
+	
+	//return true to break out of recursion
+	if (this.addHelpIfExistsAtLevel(tree)) {
+		return true;
+	}
+	else if (tree.values) {
+		
+		for (var i=0;i<tree.values.length;i++) {
+			var subTree = tree.values[i];
+			if (this.addInitialHelp(subTree)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+Render.prototype.activateHelpPopup = function(tree,x,y) {
+	
+	//hide any other showing helps
+	$('.lineToParentLink').not(tree.lineToParentLink).popover('hide')
+	
+	if (tree.allParents[0].type=='or'){
+		if (localStorage.orPopupCount>10) {
+			return;
+		}
+		else {
+			localStorage.orPopupCount++;
+		}
+	}
+
+	if (tree.allParents[0].type=='and'){
+		if (localStorage.andPopupCount>10) {
+			return;
+		}
+		else {
+			localStorage.andPopupCount++;
+		}
+	}
+	
+	var linkElement = $(tree.lineToParentLink)
+	linkElement.popover('show');
+
+	setTimeout(function () {
+		var popover = tree.lineContainer.getElementsByClassName('popover')[0]
+		if (!popover) {
+			return;
+		};
+		var popoverJquery = $(popover)
+
+		popoverJquery.css('top',(y -popover.offsetHeight- 30+document.body.scrollTop) + 'px')
+		popoverJquery.css('width','207px')
+		popoverJquery.css('left',( x - popover.offsetWidth/2 +document.body.scrollLeft)+'px')
+	},0)
+}
+
+
 Render.prototype.addHelpToolips = function(tree) {
 	if (tree.lineToParentLink && tree.lineToParentLink.offsetWidth>200) {
 
@@ -390,38 +472,9 @@ Render.prototype.addHelpToolips = function(tree) {
 		var linkElement = $(tree.lineToParentLink)
 
 		tree.lineToParentLink.onmouseover = function (event) {
-			if (tree.allParents[0].type=='or'){
-				if (localStorage.orPopupCount>10) {
-					return;
-				}
-				else {
-					localStorage.orPopupCount++;
-				}
-			}
-
-			if (tree.allParents[0].type=='and'){
-				if (localStorage.andPopupCount>10) {
-					return;
-				}
-				else {
-					localStorage.andPopupCount++;
-				}
-			}
-			linkElement.popover('show');
-
-			setTimeout(function () {
-				var popover = tree.lineContainer.getElementsByClassName('popover')[0]
-				if (!popover) {
-					return;
-				};
-				var popoverJquery = $(popover)
-
-				var coords = event.target.getBoundingClientRect();
-
-				popoverJquery.css('top',(event.y -popover.offsetHeight- 30+document.body.scrollTop) + 'px')
-				popoverJquery.css('width','207px')
-				popoverJquery.css('left',( event.x - popover.offsetWidth/2 +document.body.scrollLeft)+'px')
-			},0)
+			
+			this.activateHelpPopup(tree,event.x,event.y)
+			
 			//
 		}.bind(this)
 
@@ -492,6 +545,7 @@ Render.prototype.go = function(tree,showBranches) {
 	if (showBranches) {
 		this.addLines(this.tree);
 		this.addHelpToolips(this.tree);
+		this.addInitialHelp(this.tree);
 	}
 
 	//scroll to the middle of the page, and don't touch the scroll height
