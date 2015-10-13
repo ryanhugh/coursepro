@@ -26,4 +26,9 @@ while 1:
                 ref = ''
                 if 'referer' in b and 'coursepro.io' not in b['referer']:
                                 print b['referer'],
-                print b['ip'],datetime.datetime.fromtimestamp(int(b['time'])/1000).strftime('%b %d %I:%M:%S %p'),' ',b['url'],b['body']
+                print b['ip'],datetime.datetime.fromtimestamp(int(b['time'])/1000).strftime('%b %d %I:%M:%S %p'),' ',b['url'],
+
+		if b['body']!={}:
+			print b['body']
+		else:
+			print
