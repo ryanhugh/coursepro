@@ -5,6 +5,8 @@ open up last viewed page when opening site
 prefetch
 help for each college, default to neu
 
+when refactor frontend, switch to stack instead of recursion?
+use breath first fifo stack for the one function
 
 
 merge coreq prereqs with class prereqs
