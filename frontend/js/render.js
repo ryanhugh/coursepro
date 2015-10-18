@@ -11,6 +11,7 @@ function Render () {
 	this.spinner.remove()
 
 	this.COREQ_OFFSET = 20;
+	this.HELP_POPUP_COUNT = 5
 
 
 	if (!this.template || !this.container || !this.navBar) {
@@ -380,8 +381,12 @@ Render.prototype.addLines = function(tree) {
 
 
 //find a line close to the starting tree that is > min length, and add the popover to it
+//for both red and blue
 // breath first search using stack
 Render.prototype.addInitialHelp = function(tree) {
+
+	var foundRed=false;
+	var foundBlue=false;
 
 	var stack = [tree];
 	while (stack.length>0) {
@@ -393,27 +398,94 @@ Render.prototype.addInitialHelp = function(tree) {
 		if (currTree.values) {
 			stack = stack.concat(currTree.values)
 		}
+		var parent = this.getLowestParent(currTree)
 
-		if (this.getLowestParent(currTree) && currTree.lineToParentLink.offsetWidth>200) {
+		//the top most panel has no parent
+		if (!parent) {
+			continue
+		};
+
+
+		if (currTree.lineToParent.offsetWidth>250) {
 			
+
+			//show max 1 of each type		
+			if (parent.type=='or') {
+				if (foundBlue) {
+					continue;
+				}
+				else {
+					foundBlue = true;
+				}
+			}
+
+			if (parent.type == 'and') {
+				if (foundRed) {
+					continue;
+				}
+				else {
+					foundRed = true;
+				}
+			};
+
+
+
 			//get midpoint of line
-			var coords = currTree.lineToParent.getBoundingClientRect();
+			var lineCoords = currTree.lineToParent.getBoundingClientRect();
 			
-			console.log('here:',document.body.scrollLeft);
-			// debugger;
-			this.activateHelpPopup(currTree,coords.left+coords.width/2,coords.top+coords.height/2);
-			
-			return;
+			var panelCoords = currTree.panel.getBoundingClientRect();
+
+			//put the help 200px away from the panel
+			if (lineCoords.width>400) {
+
+				//need to figure out if line goes up/right or up/left
+				var lineCenter = lineCoords.left+lineCoords.width/2;
+				var panelCenter = panelCoords.left + lineCoords.width/2;
+
+
+				var x;
+				var y;
+				var percent;
+				//line goes up/right
+				if (lineCenter>panelCenter) {
+					x = lineCoords.right - 200;
+					percent = 1-(x-lineCoords.left)/lineCoords.width;
+					console.log('line was up/right')
+				}
+
+				//line goes up/left, get offset left+200
+				else {
+					x = lineCoords.left + 200;
+					percent = (x-lineCoords.left)/lineCoords.width;
+					console.log('line was up/left')
+				}
+
+				// percent=percent*2-.2;
+				y = percent*lineCoords.height+lineCoords.top;
+
+				//move the panel down a little
+				// y+=100;
+
+				console.log('setting to ',x,y,percent)
+				this.activateHelpPopup(currTree,x,y);
+
+			}
+			else {
+				//put the help in the middle of the line
+				this.activateHelpPopup(currTree,lineCoords.left+lineCoords.width/2,lineCoords.top+lineCoords.height/2);
+				
+			}
 		}
+
+		if (foundRed && foundBlue) {
+			return;
+		};
 	}
 }
 Render.prototype.activateHelpPopup = function(tree,x,y) {
 	
-	//hide any other showing helps
-	$('.lineToParentLink').not(tree.lineToParentLink).popover('hide')
-	
 	if (tree.allParents[0].type=='or'){
-		if (localStorage.orPopupCount>10) {
+		if (localStorage.orPopupCount>this.HELP_POPUP_COUNT) {
 			return;
 		}
 		else {
@@ -422,7 +494,7 @@ Render.prototype.activateHelpPopup = function(tree,x,y) {
 	}
 
 	if (tree.allParents[0].type=='and'){
-		if (localStorage.andPopupCount>10) {
+		if (localStorage.andPopupCount>this.HELP_POPUP_COUNT) {
 			return;
 		}
 		else {
@@ -440,8 +512,8 @@ Render.prototype.activateHelpPopup = function(tree,x,y) {
 		};
 		var popoverJquery = $(popover)
 
-		popoverJquery.css('top',(y -popover.offsetHeight- 30) + 'px')
 		popoverJquery.css('width','207px')
+		popoverJquery.css('top',(y -popover.offsetHeight/2-50) + 'px')
 		popoverJquery.css('left',( x - popover.offsetWidth/2 )+'px')
 	},0)
 }
@@ -459,6 +531,10 @@ Render.prototype.addHelpToolips = function(tree) {
 		var linkElement = $(tree.lineToParentLink)
 
 		tree.lineToParentLink.onmouseover = function (event) {
+			
+
+			//hide any other showing helps
+			$('.lineToParentLink').not(tree.lineToParentLink).popover('hide')
 			
 			this.activateHelpPopup(tree,event.x+document.body.scrollLeft,event.y+document.body.scrollTop)
 			
