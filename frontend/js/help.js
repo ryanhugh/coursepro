@@ -136,6 +136,11 @@ Help.prototype.activateHelpPopup = function(tree,x,y) {
 		var popoverJquery = $(popover)
 
 		popoverJquery.css('width','207px')
+
+
+		//because this is in a setTimeout, it will allways run after render changes the scroll positon, 
+		// - which messes things up
+
 		popoverJquery.css('top',(y -popover.offsetHeight/2-50+document.body.scrollTop) + 'px')
 		popoverJquery.css('left',( x - popover.offsetWidth/2 +document.body.scrollLeft)+'px')
 	},0)
