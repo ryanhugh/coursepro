@@ -135,7 +135,7 @@ Render.prototype.getColor = function(type) {
 }
 Render.prototype.getLowestParent = function(tree) {
 	if (tree.allParents.length===0) {
-		return
+		return null;
 	};
 
 	var lowestParent = tree.allParents[0];
@@ -379,46 +379,33 @@ Render.prototype.addLines = function(tree) {
 }
 
 
-Render.prototype.addHelpIfExistsAtLevel = function(tree) {
-	if (!tree.values) {
-		return false;
-	}
-	
-	for (var i =0;i<tree.values.length;i++) {
-		if (tree.values[i].lineToParentLink.offsetWidth>200) {
+//find a line close to the starting tree that is > min length, and add the popover to it
+// breath first search using stack
+Render.prototype.addInitialHelp = function(tree) {
+
+	var stack = [tree];
+	while (stack.length>0) {
+
+
+		// remove the first element
+		var currTree = stack.shift();
+
+		if (currTree.values) {
+			stack = stack.concat(currTree.values)
+		}
+
+		if (this.getLowestParent(currTree) && currTree.lineToParentLink.offsetWidth>200) {
 			
 			//get midpoint of line
-			var coords = tree.values[i].lineToParent.getBoundingClientRect();
+			var coords = currTree.lineToParent.getBoundingClientRect();
 			
-			this.activateHelpPopup(tree.values[i],coords.left+coords.width/2,coords.top+coords.height/2);
+			console.log('here:',document.body.scrollLeft);
+			// debugger;
+			this.activateHelpPopup(currTree,coords.left+coords.width/2,coords.top+coords.height/2);
 			
-			return true;
-		}
-		
-	}
-	return false;
-	
-	
-}
-
-
-//find a line close to the starting tree that is > min length, and add the popover to it
-Render.prototype.addInitialHelp = function(tree) {
-	
-	//return true to break out of recursion
-	if (this.addHelpIfExistsAtLevel(tree)) {
-		return true;
-	}
-	else if (tree.values) {
-		
-		for (var i=0;i<tree.values.length;i++) {
-			var subTree = tree.values[i];
-			if (this.addInitialHelp(subTree)) {
-				return true;
-			}
+			return;
 		}
 	}
-	return false;
 }
 Render.prototype.activateHelpPopup = function(tree,x,y) {
 	
@@ -453,9 +440,9 @@ Render.prototype.activateHelpPopup = function(tree,x,y) {
 		};
 		var popoverJquery = $(popover)
 
-		popoverJquery.css('top',(y -popover.offsetHeight- 30+document.body.scrollTop) + 'px')
+		popoverJquery.css('top',(y -popover.offsetHeight- 30) + 'px')
 		popoverJquery.css('width','207px')
-		popoverJquery.css('left',( x - popover.offsetWidth/2 +document.body.scrollLeft)+'px')
+		popoverJquery.css('left',( x - popover.offsetWidth/2 )+'px')
 	},0)
 }
 
@@ -473,7 +460,7 @@ Render.prototype.addHelpToolips = function(tree) {
 
 		tree.lineToParentLink.onmouseover = function (event) {
 			
-			this.activateHelpPopup(tree,event.x,event.y)
+			this.activateHelpPopup(tree,event.x+document.body.scrollLeft,event.y+document.body.scrollTop)
 			
 			//
 		}.bind(this)

@@ -37,8 +37,7 @@ while 1:
 	print b['ip'],
 	
         
-	utcnow = datetime.utcnow()
-	midnight_utc = datetime.combine(utcnow.date(), time(0))
+	midnight_utc = datetime.combine(datetime.now(),time(0))
 	
 	reqTime = datetime.fromtimestamp(int(b['time'])/1000)
 	if reqTime>midnight_utc :

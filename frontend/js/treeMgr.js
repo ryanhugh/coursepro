@@ -627,53 +627,6 @@ TreeMgr.prototype.removeDuplicateDeps = function(tree,classList) {
 	}.bind(this))
 }
 
-
-TreeMgr.prototype.removeInvalidSubTrees = function(tree) {
-
-	if (tree.coreqs) {
-		// debugger
-		
-		var newCoreqs = [];
-		
-		tree.coreqs.values.forEach(function (subTree) {
-			
-			if (!subTree.isClass || subTree.dataStatus===this.DATASTATUS_DONE) {
-				newCoreqs.push(subTree)
-				this.removeInvalidSubTrees(subTree);
-			}
-			else {
-				console.log('removing because not loaded!',subTree);
-			}
-		}.bind(this));
-		
-		// if (tree.coreqs.values.length!==newCoreqs.length) {
-		// 	console.log('removing ')
-		// }
-		
-		tree.coreqs.values = newCoreqs;
-	}
-
-	if (tree.values) {
-		
-		
-		var newPrereqs = [];
-		
-		tree.values.forEach(function (subTree) {
-			
-			if (!subTree.isClass || subTree.dataStatus===this.DATASTATUS_DONE) {
-				newPrereqs.push(subTree);
-				this.removeInvalidSubTrees(subTree);
-			}
-			else {
-				console.log('removing because not loaded!',subTree);
-			}
-		}.bind(this));
-		
-		tree.values = newPrereqs;
-		
-	};
-};
-
 TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 	
 	var tree = {
@@ -749,7 +702,8 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		this.removeCoreqsCoreqs(tree);
 		
 		//at this point, there should not be any with data status = not started, so if find any remove them
-		this.removeInvalidSubTrees(tree);
+		//actually, dont do this because somtimes classes can error
+		// this.removeInvalidSubTrees(tree);
 
 		//this is ghetto atm... TODO FIX
 		this.groupByHonors(tree);
