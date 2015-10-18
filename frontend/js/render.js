@@ -134,31 +134,18 @@ Render.prototype.getColor = function(type) {
 		console.trace()
 	}
 }
-Render.prototype.getLowestParent = function(tree) {
-	if (tree.allParents.length===0) {
-		return null;
-	};
-
-	var lowestParent = tree.allParents[0];
-	for (var i = 0; i < tree.allParents.length; i++) {
-		if (tree.allParents[i].depth>lowestParent) {
-			lowestParent = tree.allParents[i];
-		}
-	}
-	return lowestParent;
-}
 Render.prototype.addToParentDiv = function(tree) {
-	var parent = this.getLowestParent(tree);
-	if (parent && !parent.panel) {
-		console.log('error parent has no panel tree:',tree)
+	
+	if (tree.lowestParent && !tree.lowestParent.panel) {
+		console.log('error tree.lowestParent has no panel tree:',tree)
 	};
 	
-	if (parent) {
-		if (!parent.div) {
-			console.log('parent does not have a div!!',parent)
+	if (tree.lowestParent) {
+		if (!tree.lowestParent.div) {
+			console.log('tree.lowestParent does not have a div!!',tree.lowestParent)
 			return;
 		}
-		parent.div.appendChild(tree.div);
+		tree.lowestParent.div.appendChild(tree.div);
 	}
 	else {
 		tree.div.style.minWidth="100%"
@@ -253,10 +240,8 @@ Render.prototype.calcPanelPos = function(tree) {
 		tree.y = coords.bottom - tree.panel.offsetHeight/2;
 	}
 	else {
-
-		var parent = this.getLowestParent(tree);
-		tree.x = parent.x + this.COREQ_OFFSET*(tree.coreqIndex+1);
-		tree.y = parent.y - this.COREQ_OFFSET*(tree.coreqIndex+1)-this.COREQ_OFFSET;
+		tree.x = tree.lowestParent.x + this.COREQ_OFFSET*(tree.coreqIndex+1);
+		tree.y = tree.lowestParent.y - this.COREQ_OFFSET*(tree.coreqIndex+1)-this.COREQ_OFFSET;
 	}
 
 	this.resetPanel(tree);
@@ -360,8 +345,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 			tree.panel.style.zIndex = '100'
 		}
 		else {
-			var parent = this.getLowestParent(tree);
-			tree.panel.style.zIndex = parseInt(parent.panel.style.zIndex)-tree.coreqIndex-1;
+			tree.panel.style.zIndex = parseInt(tree.lowestParent.panel.style.zIndex)-tree.coreqIndex-1;
 		}
 	}.bind(this)
 
@@ -379,202 +363,6 @@ Render.prototype.addLines = function(tree) {
 	}
 }
 
-
-//find a line close to the starting tree that is > min length, and add the popover to it
-//for both red and blue
-// breath first search using stack
-Render.prototype.addInitialHelp = function(tree) {
-
-	var foundRed=false;
-	var foundBlue=false;
-
-	var stack = [tree];
-	while (stack.length>0) {
-
-
-		// remove the first element
-		var currTree = stack.shift();
-
-		if (currTree.values) {
-			stack = stack.concat(currTree.values)
-		}
-		var parent = this.getLowestParent(currTree)
-
-		//the top most panel has no parent
-		if (!parent) {
-			continue
-		};
-
-
-		if (currTree.lineToParent.offsetWidth>250) {
-			
-
-			//show max 1 of each type		
-			if (parent.type=='or') {
-				if (foundBlue) {
-					continue;
-				}
-				else {
-					foundBlue = true;
-				}
-			}
-
-			if (parent.type == 'and') {
-				if (foundRed) {
-					continue;
-				}
-				else {
-					foundRed = true;
-				}
-			};
-
-
-
-			//get midpoint of line
-			var lineCoords = currTree.lineToParent.getBoundingClientRect();
-			
-			var panelCoords = currTree.panel.getBoundingClientRect();
-
-			//put the help 200px away from the panel
-			if (lineCoords.width>400) {
-
-				//need to figure out if line goes up/right or up/left
-				var lineCenter = lineCoords.left+lineCoords.width/2;
-				var panelCenter = panelCoords.left + lineCoords.width/2;
-
-
-				var x;
-				var y;
-				var percent;
-				//line goes up/right
-				if (lineCenter>panelCenter) {
-					x = lineCoords.right - 200;
-					percent = 1-(x-lineCoords.left)/lineCoords.width;
-					console.log('line was up/right')
-				}
-
-				//line goes up/left, get offset left+200
-				else {
-					x = lineCoords.left + 200;
-					percent = (x-lineCoords.left)/lineCoords.width;
-					console.log('line was up/left')
-				}
-
-				// percent=percent*2-.2;
-				y = percent*lineCoords.height+lineCoords.top;
-
-				//move the panel down a little
-				// y+=100;
-
-				console.log('setting to ',x,y,percent)
-				this.activateHelpPopup(currTree,x,y);
-
-			}
-			else {
-				//put the help in the middle of the line
-				this.activateHelpPopup(currTree,lineCoords.left+lineCoords.width/2,lineCoords.top+lineCoords.height/2);
-				
-			}
-		}
-
-		if (foundRed && foundBlue) {
-			return;
-		};
-	}
-}
-Render.prototype.activateHelpPopup = function(tree,x,y) {
-	
-	if (tree.allParents[0].type=='or'){
-		if (localStorage.orPopupCount>this.HELP_POPUP_COUNT) {
-			return;
-		}
-		else {
-			localStorage.orPopupCount++;
-		}
-	}
-
-	if (tree.allParents[0].type=='and'){
-		if (localStorage.andPopupCount>this.HELP_POPUP_COUNT) {
-			return;
-		}
-		else {
-			localStorage.andPopupCount++;
-		}
-	}
-	
-	var linkElement = $(tree.lineToParentLink)
-	linkElement.popover('show');
-
-	setTimeout(function () {
-		var popover = tree.lineContainer.getElementsByClassName('popover')[0]
-		if (!popover) {
-			return;
-		};
-		var popoverJquery = $(popover)
-
-		popoverJquery.css('width','207px')
-		popoverJquery.css('top',(y -popover.offsetHeight/2-50) + 'px')
-		popoverJquery.css('left',( x - popover.offsetWidth/2 )+'px')
-	},0)
-}
-
-
-Render.prototype.addHelpToolips = function(tree) {
-	if (tree.lineToParentLink && tree.lineToParentLink.offsetWidth>200) {
-
-
-		tree.lineToParentLink.setAttribute('tabindex','0');
-		tree.lineToParentLink.setAttribute('data-placement','top');
-		tree.lineToParentLink.setAttribute('data-toggle','popover');
-		tree.lineToParentLink.setAttribute('data-trigger','manual');
-
-		var linkElement = $(tree.lineToParentLink)
-
-		tree.lineToParentLink.onmouseover = function (event) {
-			
-
-			//hide any other showing helps
-			$('.lineToParentLink').not(tree.lineToParentLink).popover('hide')
-			
-			this.activateHelpPopup(tree,event.x+document.body.scrollLeft,event.y+document.body.scrollTop)
-			
-			//
-		}.bind(this)
-
-		tree.lineToParentLink.onmouseout = function (event) {
-			linkElement.popover('hide');
-		}.bind(this)
-
-
-
-		linkElement.popover({
-			content: function() {
-				if (tree.allParents[0].type=='or') {
-					return 'Take ANY of the connected classes to take this class!';
-				}
-				else {
-					return 'Take ALL of the connected classes to take this class!';
-				}
-			}.bind(this),
-			title: function() {
-				if (tree.allParents[0].type=='or') {
-					return 'Prerequisites: Blue Lines'
-				}
-				else {
-					return 'Prerequisites: Red Lines'
-				}
-			}.bind(this)
-		})
-	};
-
-
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.addHelpToolips(subTree)
-		}.bind(this))
-	};
-};
-
 //this is called before the loading starts
 Render.prototype.clearContainer = function() {
 	
@@ -591,10 +379,7 @@ Render.prototype.hideSpinner = function() {
 	this.spinner.style.display = 'none'
 };
 
-Render.prototype.go = function(tree,showBranches) {
-	if (showBranches===undefined) {
-		showBranches=true;
-	}
+Render.prototype.go = function(tree) {
 	document.body.style.height = '';
 
 	this.tree = tree;
@@ -605,11 +390,7 @@ Render.prototype.go = function(tree,showBranches) {
 	this.addStructure(this.tree);
 	this.calcPanelPos(this.tree);
 
-	if (showBranches) {
-		this.addLines(this.tree);
-		this.addHelpToolips(this.tree);
-		this.addInitialHelp(this.tree);
-	}
+	this.addLines(this.tree);
 
 	//scroll to the middle of the page, and don't touch the scroll height
 	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop);
