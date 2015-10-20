@@ -444,7 +444,7 @@ Popup.prototype.go = function(tree) {
 	
 	if (tree.isClass) {
 
-		tree.panel.onclick=function (event) {
+		$(tree.panel).on('click.popup',function (event) {
 
 			if (tree.isExpanded) {
 
@@ -466,7 +466,7 @@ Popup.prototype.go = function(tree) {
 
 				this.expandPanel(tree);
 			}
-		}.bind(this)
+		}.bind(this))
 	}
 
 	if (tree.values) {

@@ -205,10 +205,70 @@ Help.prototype.addHelpToolips = function(tree) {
 	};
 };
 
+Help.prototype.removeTooltips = function(tree) {
+	
+	$(tree.panel).tooltip('destroy');
+	$(tree.panel).off('click.help');
+
+
+
+	if (tree.values) {
+		tree.values.forEach(function (subTree) {
+			this.removeTooltips(subTree);
+		}.bind(this))
+	};
+
+};
+
+
+
+Help.prototype.addPanelHelp = function(tree) {
+	if (localStorage.clickPopupHelpClicked) {
+		return;
+	};
+	
+	tree.panel.setAttribute('data-toggle','tooltip');
+
+	$(tree.panel).tooltip({
+		title:'Click to expand!',
+		placement:function () {
+
+			setTimeout(function () {
+				this.$tip[0].style.left = tree.panel.offsetLeft + 'px'
+				this.$arrow[0].style.left = ''
+				
+			}.bind(this),0);
+
+
+			return 'auto';
+		}
+	})//left off .bind(this) so this.$tip will work
+
+
+	$(tree.panel).on('click.help',function () {
+		localStorage.clickPopupHelpClicked = true;
+
+		//remove all the popups from all the panels
+		this.removeTooltips(this.tree);
+
+	}.bind(this))
+
+
+	if (tree.values) {
+		tree.values.forEach(function (subTree) {
+			this.addPanelHelp(subTree);
+		}.bind(this))
+	};
+
+
+};
+
 Help.prototype.go = function(tree) {
+	this.tree=tree;
 	
 	this.addHelpToolips(tree);
 	this.addInitialHelp(tree);
+	this.addPanelHelp(tree);
 
 };
 
