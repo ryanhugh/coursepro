@@ -11,8 +11,6 @@ function Render () {
 	this.spinner.remove()
 
 	this.COREQ_OFFSET = 20;
-	this.HELP_POPUP_COUNT = 5
-
 
 	if (!this.template || !this.container || !this.navBar) {
 		console.log('error could not find template??',this.template,this.container,this.navBar)

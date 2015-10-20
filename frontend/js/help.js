@@ -1,6 +1,8 @@
 
 function Help () {
 	
+	this.HELP_POPUP_COUNT = 5
+
 }
 
 
