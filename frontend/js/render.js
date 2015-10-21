@@ -168,6 +168,7 @@ Render.prototype.calcPanelSize = function(tree) {
 
 	//position the panel to the absolute position of the div
 	this.resetPanel(tree,false);
+	
 
 	this.container.appendChild(tree.panel);
 	
@@ -243,6 +244,7 @@ Render.prototype.calcPanelPos = function(tree) {
 	}
 
 	this.resetPanel(tree);
+	
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
@@ -270,7 +272,6 @@ Render.prototype.resetPanel = function(tree,relocate) {
 
 		if (!tree.panel) {
 			tree.panel = this.template.cloneNode(true);
-			tree.panel.style.display =''
 		}
 
 		var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
@@ -377,6 +378,8 @@ Render.prototype.hideSpinner = function() {
 	this.spinner.style.display = 'none'
 };
 
+
+
 Render.prototype.go = function(tree) {
 	document.body.style.height = '';
 
@@ -396,6 +399,9 @@ Render.prototype.go = function(tree) {
 	//remove the structure
 	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
 	$('.holderDiv').remove();
+	
+	
+	
 };
 
 

@@ -34,7 +34,7 @@ Help.prototype.addInitialHelp = function(tree) {
 		if (currTree.lineToParent.offsetWidth>250) {
 			
 
-			//show max 1 of each type		
+			//show max 1 of each type
 			if (currTree.lowestParent.type=='or') {
 				if (foundBlue) {
 					continue;
@@ -140,7 +140,7 @@ Help.prototype.activateHelpPopup = function(tree,x,y) {
 		popoverJquery.css('width','207px')
 
 
-		//because this is in a setTimeout, it will allways run after render changes the scroll positon, 
+		//because this is in a setTimeout, it will allways run after render changes the scroll positon,
 		// - which messes things up
 
 		popoverJquery.css('top',(y -popover.offsetHeight/2-50+document.body.scrollTop) + 'px')
@@ -227,31 +227,35 @@ Help.prototype.addPanelHelp = function(tree) {
 		return;
 	};
 	
-	tree.panel.setAttribute('data-toggle','tooltip');
 
-	$(tree.panel).tooltip({
-		title:'Click to expand!',
-		placement:function () {
-
-			setTimeout(function () {
-				this.$tip[0].style.left = tree.panel.offsetLeft + 'px'
-				this.$arrow[0].style.left = ''
-				
-			}.bind(this),0);
-
-
-			return 'auto';
-		}
-	})//left off .bind(this) so this.$tip will work
-
-
-	$(tree.panel).on('click.help',function () {
-		localStorage.clickPopupHelpClicked = true;
-
-		//remove all the popups from all the panels
-		this.removeTooltips(this.tree);
-
-	}.bind(this))
+	if (tree.isClass && !tree.isExpanded) {
+			
+	 	tree.panel.setAttribute('data-toggle','tooltip');
+		
+		$(tree.panel).tooltip({
+			title:'Click to expand!',
+			placement:function () {
+	
+				setTimeout(function () {
+					this.$tip[0].style.left = tree.panel.offsetLeft + 'px'
+					this.$arrow[0].style.left = ''
+					
+				}.bind(this),0);
+	
+	
+				return 'auto';
+			}
+		})//left off .bind(this) so this.$tip will work
+	
+	
+		$(tree.panel).on('click.help',function () {
+			localStorage.clickPopupHelpClicked = true;
+	
+			//remove all the popups from all the panels
+			this.removeTooltips(this.tree);
+	
+		}.bind(this))
+	}
 
 
 	if (tree.values) {
@@ -264,6 +268,9 @@ Help.prototype.addPanelHelp = function(tree) {
 };
 
 Help.prototype.go = function(tree) {
+	
+	//clicking on any of the panels removes the help from all of the panels
+	//which needs a way to get back to the main tree
 	this.tree=tree;
 	
 	this.addHelpToolips(tree);

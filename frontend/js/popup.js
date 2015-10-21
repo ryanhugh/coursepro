@@ -227,6 +227,8 @@ Popup.prototype.expandPanel = function(tree) {
 
 
 	tree.panel.style.zIndex = '999'
+	
+
 
 	tree.isExpanded=true;
 	var panelBody = tree.panel.getElementsByClassName('panelBodyId')[0]
@@ -277,6 +279,8 @@ Popup.prototype.expandPanel = function(tree) {
 			if (!tree.isExpanded) {
 				return;
 			}
+			
+			tree.panel.style.visibility = '';
 
 			var newBodyText = []
 			var panelWidth = 0;
@@ -439,8 +443,7 @@ Popup.prototype.expandPanel = function(tree) {
 
 
 
-
-Popup.prototype.go = function(tree) {
+Popup.prototype.addPopups = function(tree) {
 	
 	if (tree.isClass) {
 
@@ -471,16 +474,32 @@ Popup.prototype.go = function(tree) {
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
-			this.go(subTree);
+			this.addPopups(subTree);
 		}.bind(this));
 	};
 
 	if (tree.coreqs) {
 		tree.coreqs.values.forEach(function (subTree) {
-			this.go(subTree);
+			this.addPopups(subTree);
 		}.bind(this));
 	};
 }
+
+
+Popup.prototype.go = function(tree) {
+	
+	
+	//if there is only one panel, open it
+	if ((!tree.values || tree.values.length==0) && (!tree.coreqs || tree.coreqs.values.length==0)) {
+		tree.panel.style.visibility = 'hidden'
+		this.expandPanel(tree);
+		console.log('opening ',tree.classId);
+	}
+	
+	
+	this.addPopups(tree);
+}
+
 
 
 
