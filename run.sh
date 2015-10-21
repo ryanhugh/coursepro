@@ -1,1 +1,1 @@
-gulp prod >> log.log 2>>error.log
+forever -l forever.log -o log.log -e error.log start gulp prod
