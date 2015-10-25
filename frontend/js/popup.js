@@ -390,6 +390,9 @@ Popup.prototype.expandPanel = function(tree) {
 			}
 			else {
 				panelWidth = Math.min(1000,panelWidth)
+				if (sections.length<5) {
+					panelWidth = 610;
+				};
 			}
 
 			if (panelWidth<164) {
