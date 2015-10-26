@@ -8,7 +8,7 @@ var assert = require('assert');
 
 
 function Pointer () {
-	this.maxRetryCount = 10;
+	this.maxRetryCount = 35;
 	this.openRequests = 0;
 }
 
@@ -141,7 +141,8 @@ var throtteling = {
 	'genisys.regent.edu':50,
 	'prod-ssb-01.dccc.edu':100,
 	'telaris.wlu.ca':400,
-	'myswat.swarthmore.edu':1000
+	'myswat.swarthmore.edu':1000,
+	'wl11gp.neu.edu':2000
 }
 
 

@@ -204,11 +204,12 @@ PageDataMgr.prototype.main = function() {
   // this.createFromURL('https://prod-ssb-01.dccc.edu/PROD/bwckctlg.p_display_courses?term_in=201509&one_subj=ESS&sel_crse_strt=102&sel_crse_end=102&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
   // this.createFromURL('https://prod-ssb-01.dccc.edu/PROD/bwckschd.p_disp_dyn_sched',function(){
   // this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched',function(){
+  this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched',function(){
   // this.createFromURL('https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched',function(){
   // this.createFromURL('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched',function (){
   // this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched',function (){
   // this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201530&subj_in=MATH&crse_in=1252&schd_in=%25',function () {
-  this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched',function () {
+  // this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched',function () {
   // this.createFromURL('https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_course_detail?cat_term_in=201504&subj_code_in=MATH&crse_numb_in=027',function () {
 	// var pageData = this.create({dbData:{url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_course_detail?cat_term_in=201504&subj_code_in=MATH&crse_numb_in=027',termId:'201504',subject:'MATH'}});
 	// pageDataMgr.go(pageData,function () {
