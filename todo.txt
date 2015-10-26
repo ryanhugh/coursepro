@@ -1,6 +1,16 @@
 !!!!
 
 
+quick fixes: add padding on the right, add error msg when there is no data and some padding between panels when only 1 prereq and prereq has coreq, eg the 
+pic ng sent
+
+
+for tree render thing, make a list of all panels at that level
+for each one:
+	1. find avg of parent panel's indexes
+	2. sort list by the avg index
+
+
 talk to register or not
 schedual builder - wake up at 10, etc
 make it pretty!! for newbs
@@ -9,8 +19,6 @@ make it pretty!! for newbs
 ask for ppl taking classes, then who didnt get perfect
 
 
-
-FILL OUT THE DEMO THING DUE THIS MONDAY
 CONSISE PITCH TO PEOPLE WITH LITTLE KNOWEDGE OF HOW COURSES WORK AT NEU
 
 
