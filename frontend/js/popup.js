@@ -255,6 +255,8 @@ Popup.prototype.expandPanel = function(tree) {
 			classURL = tree.url;
 		}
 		panelBody.innerHTML += '<br><a target="_blank" href="'+classURL+'"> view on '+tree.host+'</a>'
+
+		tree.panel.style.visibility = '';
 	}
 	else {
 		request({
@@ -390,6 +392,9 @@ Popup.prototype.expandPanel = function(tree) {
 			}
 			else {
 				panelWidth = Math.min(1000,panelWidth)
+				if (sections.length<5) {
+					panelWidth = 610;
+				};
 			}
 
 			if (panelWidth<164) {

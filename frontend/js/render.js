@@ -297,6 +297,9 @@ Render.prototype.resetPanel = function(tree,relocate) {
 					panelBody.innerHTML = tree.crns.length + ' section'+this.getOptionalS(tree.crns.length)+' this term'
 				}
 			}
+			else if (tree.dataStatus === treeMgr.DATASTATUS_FAIL) {
+				panelBody.innerHTML = "0 sections this term"
+			}
 			else {
 				panelBody.innerHTML = ''
 
