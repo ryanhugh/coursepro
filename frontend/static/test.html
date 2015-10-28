@@ -3,6 +3,12 @@
 		<script>
 		
 		
+		var box;
+		window.onload = function(){
+			box=document.getElementById('emailBoxId');
+		}
+		
+		
 		//this function is already in the code, dont change it
 		function request(config,callback) {
 			
@@ -45,6 +51,7 @@
 			xmlhttp.open('POST',config.url,true);
 			xmlhttp.setRequestHeader("Content-type","application/json");
 			xmlhttp.send(JSON.stringify(config.body));
+			// return callback(null)
 		}
 		
 		// http://stackoverflow.com/a/46181/11236
@@ -66,8 +73,7 @@
 		
 		
 		function onEmailSubmit (email) {
-			var box = document.getElementById('emailBoxId');
-			
+
 			
 			var email = box.value.trim();
 			
@@ -107,6 +113,56 @@
 				
 				else {
 					console.log('it worked!')
+					document.body.innerHTML+='<br>subscribe successful!'
+				}
+				
+				
+			})
+		}
+		
+		
+		function onEmailUnsubscribe (email) {
+			
+			
+			var email = box.value.trim();
+			
+			if (!validateEmail(email)) {
+				console.log(email,'is not an email address!');
+				
+				
+				//show some warning in the html
+				
+				return;
+			}
+		
+			
+			console.log('email submitted:',email);
+			request({
+				url:'/unsubscribe',
+				body:{
+					email:email
+				}
+			},function (err,responce) {
+				if (err) {
+					
+					//server error, probably will not happen but can be a bunch of different stuff
+					console.log(err);
+					
+					//display some warning in the html
+					// sometimes the returned err is not pretty, so just say "A server error occured :/" or something
+					return;
+				}
+				
+				else if (responce.error) {
+					
+					//some other errors are possible - same thing as above
+					console.log(responce.error)
+					return;
+				}
+				
+				else {
+					console.log('it worked!')
+					document.body.innerHTML+='<br>unsubscribe successful!'
 				}
 				
 				
@@ -125,7 +181,8 @@
 		  Submit your email!:<br>
 		  <input type="text" name="email" id="emailBoxId">
 		  <br>
-		  <input type="submit" onclick="onEmailSubmit()">
+		  <input type="submit" value="Subscribe!" onclick="onEmailSubmit()">
+		  <input type="submit" value="Unsubscribe" onclick="onEmailUnsubscribe()">
 		<!--</form>-->
 	</body>
 </html>

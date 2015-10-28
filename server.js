@@ -379,7 +379,29 @@ app.post('/registerForEmails',function(req,res){
 	})
 })
 
-
+app.post('/unsubscribe',function(req,res){
+	if (!req.body.userId || !req.body.email || req.body.userId.length<10) {
+		res.send(JSON.stringify({error:'need userId and email'}))
+		return;
+	}
+	
+	var userData = {
+		userId:req.body.userId,
+		email:req.body.email
+	}
+	
+	
+	usersDB.unsubscribe(userData,function(err){
+		if (err) {
+			console.log('couldn"t unsubscribe... ',userData.userId,userData.email,err);
+			res.send(JSON.stringify({error:'internal error'}));
+			return;
+		}
+		else {
+			return res.end(JSON.stringify({status:'success'}));
+		}
+	}.bind(this))
+})
 
 
 

@@ -1,5 +1,6 @@
 !!!!
 
+remove the email stuff in the classes like shuldupdatedb, alsp it would work because it has a return true in a foreach function
 
 rename node-whois to whois
 and URIjs to urijs

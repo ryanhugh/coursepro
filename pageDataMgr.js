@@ -149,7 +149,7 @@ PageDataMgr.prototype.processPageAfterDbLoad = function (pageData,callback) {
 
 PageDataMgr.prototype.finish = function(pageData,callback) {
 	pageData.processDeps(function () {
-		pageData.database.updateDatabase(pageData,function (err,newdbData) {
+		pageData.database.updateDatabaseFromPageData(pageData,function (err,newdbData) {
 			if (err) {
 				console.log('error adding to db?',err);
 				return callback(err);

@@ -48,23 +48,22 @@ UsersDB.prototype.subscribeForEverything = function(userData,callback) {
 		console.log('given invalid userData ',userData);
 		return callback('invalid user data');
 	}
-	
-	
-	this.db.find({ userId: userData.userId },function(err,docs) {
+	this.find({
+		userId: userData.userId
+	},{
+		shouldBeOnlyOne:true,
+		sanatize:false
+	},function(err,userDBData) {
 		if (err) {
 			console.log('nedb error couldnt find user with id ',userData.userId,err);
 			return callback(err);
 		}
-	
-		if (docs.length>1) {
-			console.log('ERROR >1 docs that have the userId ',userData.userId);
-		}
+		
+		var originalUserDBData = _.cloneDeep(userDBData);
 		
 		//didnt find anything, insert new user!
-		if (docs.length==0) {
-			
-			
-			var userDBData = {
+		if (!userDBData) {
+			userDBData = {
 				userId:userData.userId,
 				ips:[userData.ip],
 				emails:[userData.email],
@@ -72,25 +71,11 @@ UsersDB.prototype.subscribeForEverything = function(userData,callback) {
 			}
 			
 			emailMgr.sendThanksForRegistering(userData.email);
-			
-			this.db.insert(userDBData,function(err,newDoc) {
-				if (err) {
-					console.log('couldnt insert new user :( nedb error',err);
-					return callback(err)
-				}
-				
-				console.log(JSON.stringify({type:'newUser',data:newDoc}));
-				return callback();
-
-			}.bind(this))
 		}
 		else {
-			
-			var userDBData = docs[0];
-			
 			//no new data lol
 			if (_(userDBData.emails).includes(userData.email) && _(userDBData.ips).includes(userData.ip))  {
-				console.log(JSON.stringify({type:'updatingUser',warning:'no new data',data:docs[0],userData:userData}));
+				console.log(JSON.stringify({type:'updatingUser',warning:'no new data',data:userDBData,userData:userData}));
 				return callback();
 			}
 			
@@ -104,21 +89,61 @@ UsersDB.prototype.subscribeForEverything = function(userData,callback) {
 			}
 			
 			userDBData.subscriptions.allColleges = true;
-			
-			
-			this.db.update({ _id: userDBData._id }, {$set:userDBData}, {}, function (err, numReplaced) {
-				if (numReplaced!==1) {
-					console.log('wtf updated ',numReplaced,'instead of 1 with id ',userDBData._id,userData.userId);
-				}
-				
-				return callback();
-				
-				
-			}.bind(this))
 		}
+		
+		
+		this.updateDatabase(userDBData,originalUserDBData,function(err,newDoc){
+			if (err) {
+				console.log('wtf error',err);
+				return callback(err);
+			}
+				
+			return callback();
+				
+		}.bind(this))
+		
+		
 	}.bind(this))
 }
 
+
+UsersDB.prototype.unsubscribe = function(userData,callback){
+	if (!userData.userId || !userData.email) {
+		return callback('invalid userData');
+	}
+	
+	this.find({
+		userId: userData.userId
+	},{
+		shouldBeOnlyOne:true,
+		sanatize:false
+	},function(err,userDBData) {
+		if (err) {
+			console.log('nedb error couldnt find user with id ',userData.userId,err);
+			return callback(err);
+		}
+		
+		var originalUserDBData = _.cloneDeep(userDBData);
+		
+		if (!userDBData) {
+			console.log('tried to unsubscribe user that didn\'t exist ...',userData);
+			return callback(JSON.stringify({error:'user not found'}));
+		}
+		
+		//remove the given email, if it exists
+		_.pull(userDBData.emails,userData.email);
+		
+		this.updateDatabase(userDBData,originalUserDBData,function(err,newDoc){
+			if (err) {
+				console.log('update db error',err);
+				return callback(err);
+			}
+			
+			return callback();
+			
+		}.bind(this))
+	}.bind(this))
+}
 
 // // interval
 // UsersDB.prototype.onInterval = function() {

@@ -36,23 +36,6 @@ BaseDB.prototype.shouldUpdateDB = function(newData,oldData) {
 
 	for (var attrName in newData) {
 
-		//check new values in emails and ips
-		if (attrName == "emails") {
-			newData.emails.forEach(function (newEmail) {
-				if (!oldData.emails || oldData.emails.indexOf(newEmail)<0) {
-					return true;
-				}
-			}.bind(this));
-		}
-		else if (attrName == 'ips'){
-
-			newData.ips.forEach(function (newIp) {
-				if (!oldData.ips || oldData.ips.indexOf(newIp)<0) {
-					return true;
-				}
-			}.bind(this));
-		}
-
 		//check difference for all other attributes
 		if (!_.isEqual(newData[attrName], oldData[attrName])) {
 			console.log('updating db because of change in',attrName)
@@ -63,9 +46,14 @@ BaseDB.prototype.shouldUpdateDB = function(newData,oldData) {
 };
 
 
-BaseDB.prototype.updateDatabase = function(pageData,callback) {
+
+BaseDB.prototype.updateDatabaseFromPageData = function(pageData,callback) {
 	var newData = pageData.dbData;
 	var oldData = pageData.originalData.dbData;
+	this.updateDatabase(newData,oldData,callback);
+}
+
+BaseDB.prototype.updateDatabase = function(newData,oldData,callback) {
 
 	if (!this.shouldUpdateDB(newData,oldData)) {
 		return callback(null,newData);
@@ -77,8 +65,8 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 
 	if (newData._id) {
 		this.db.update({ _id: newData._id }, {$set:newData}, {}, function (err, numReplaced) {
-			if (numReplaced===0) {
-				console.log('ERROR: updated 0?',newData);
+			if (numReplaced!==1) {
+				console.log('ERROR: updated !==0?',numReplaced,newData);
 			};
 			callback(null,newData);
 		}.bind(this));
