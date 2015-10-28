@@ -14,6 +14,7 @@ var termsDB = require('./databases/termsDB');
 var subjectsDB = require('./databases/subjectsDB');
 var classesDB = require('./databases/classesDB');
 var sectionsDB = require('./databases/sectionsDB');
+var usersDB = require('./databases/usersDB');
 
 var search = require('./search');
 
@@ -347,6 +348,35 @@ app.post('/search',function(req,res) {
   
   
   
+})
+
+app.post('/registerForEmails',function(req,res){
+	if (!req.body.email || !req.body.userId || req.body.userId.length<10) {
+		console.log('ERROR invalid user data given ',req.body);
+		return res.send(JSON.stringify({error:'not given email or user id'}))
+	}
+	
+	if (!validateEmail(req.body.email)) {
+		console.log('INFO dropping invalid email ',req.body.email);
+		return res.send(JSON.stringify({error:'invalid email'}))
+	}
+	
+	var userData = {
+		userId:req.body.userId,
+		email:req.body.email,
+		ip:req.connection.remoteAddress
+	}
+	
+	usersDB.subscribeForEverything(userData,function(err) {
+		if (err) {
+			console.log('ERROR couldnt subscribe for everthing',err);
+			return res.send(JSON.stringify({status:'error',error:'internal error'}));
+		}
+		else {
+			return res.end(JSON.stringify({status:'success'}));
+		}
+		
+	})
 })
 
 

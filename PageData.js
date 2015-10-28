@@ -241,8 +241,8 @@ PageData.prototype.loadFromDB = function(callback) {
 
 PageData.prototype.isUpdated = function() {
 	
-	var fifteeenMinAgo = new Date().getTime()-900000;
-	if (this.dbData.lastUpdateTime!==undefined && this.dbData.lastUpdateTime>fifteeenMinAgo) {
+	var twoWeeksAgo = new Date().getTime()-1209600000;
+	if (this.dbData.lastUpdateTime!==undefined && this.dbData.lastUpdateTime>twoWeeksAgo) {
 		return true;
 	}
 	else {

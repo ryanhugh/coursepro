@@ -13,6 +13,8 @@ function BaseDB () {
 
 	if (this.filename) {
 
+		//if the cwd is a folder in the root of the project, move it up to the root of the prject
+		//can be removed once migrate to mongo or somthing
 		var filePath = process.cwd();
 		if (_(filePath).endsWith('parsers') || _(filePath).endsWith('databases')) {
 			filePath = path.join(filePath,'..')
@@ -101,7 +103,7 @@ BaseDB.prototype.updateDatabase = function(pageData,callback) {
 BaseDB.prototype.removeInternalFields = function(doc) {
 	var retVal={};
 	for (var attrName in doc) {
-		if (!_(['emails','ips','_id','deps','lastUpdateTime','updatedByParent']).includes(attrName)) {
+		if (!_(['emails','ips','deps','lastUpdateTime','updatedByParent']).includes(attrName)) {
 			retVal[attrName]=doc[attrName];
 		}
 	}

@@ -25,17 +25,42 @@ var queue = require("queue-async")
 // var subjectsDB = require('./databases/subjectsDB')
 // var collegeNamesDB = require('./databases/collegeNamesDB')
 
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
 
-function h () {
-	h.t=9	
-}
 
-h.prototype.call = function(first_argument) {
-	// body...
-};
+var password = fs.readFileSync('/etc/coursepro/passwd').toString().trim();
+// console.log(password);
 
-a = new h
-console.log(a())
+
+var transporter = nodemailer.createTransport(smtpTransport({
+    host: 'mail.gandi.net',
+    port: 25,
+    auth: {
+        user: 'ryan@coursepro.io',
+        pass: password
+    }
+}));
+console.log(transporter)
+
+// send mail
+transporter.sendMail({
+    from: 'ryan@coursepro.io',
+    to: 'rysquash@gmail.com',
+    subject: 'hello world! 2',
+    text: 'YOOOOOOOO'
+});
+
+// function h () {
+// 	h.t=9
+// }
+
+// h.prototype.call = function(first_argument) {
+// 	// body...
+// };
+
+// a = new h
+// console.log(a())
 
 
 
@@ -113,7 +138,7 @@ console.log(a())
 // b.t = 'this is b'
 // c.t = 'this is c'
 // console.log(a,b,c);
-// a.b='hi' 
+// a.b='hi'
 // console.log(a,b,c);
 
 

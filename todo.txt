@@ -1,6 +1,9 @@
 !!!!
 
 
+rename node-whois to whois
+and URIjs to urijs
+
 launchrock
 #3939BF
 

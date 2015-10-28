@@ -22,6 +22,7 @@
     "gulp-uglify": "latest",
     "gulp-concat": "latest",
     "gulp-wrap": "latest",
+    "nodemailer-smtp-transport":"latest",
     "he": "latest"
   },
   "description": "Awesome sauce! Yay!"
