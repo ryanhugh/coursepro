@@ -367,6 +367,35 @@ TreeMgr.prototype.addAllParentRelations = function(tree,parent) {
 }
 
 
+TreeMgr.prototype.addLowestParent = function(tree) {
+	if (tree.allParents.length===0) {
+		tree.lowestParent = null;
+	}
+	else {
+
+		tree.lowestParent = tree.allParents[0];
+		for (var i = 0; i < tree.allParents.length; i++) {
+			if (tree.allParents[i].depth>tree.lowestParent) {
+				tree.lowestParent = tree.allParents[i];
+			}
+		}
+	}
+
+
+	if (tree.values) {
+		tree.values.forEach(function (subTree) {
+			this.addLowestParent(subTree);
+		}.bind(this))
+	};
+
+	if (tree.coreqs) {
+		tree.coreqs.values.forEach(function (subTree) {
+			this.addLowestParent(subTree);
+		}.bind(this))
+	};
+}
+
+
 //currenly used to flatten coreq trees (which are usally flat anyway)
 TreeMgr.prototype.getFirstLayer = function(tree) {
 	if (!tree.values) {
@@ -627,53 +656,6 @@ TreeMgr.prototype.removeDuplicateDeps = function(tree,classList) {
 	}.bind(this))
 }
 
-
-TreeMgr.prototype.removeInvalidSubTrees = function(tree) {
-
-	if (tree.coreqs) {
-		// debugger
-		
-		var newCoreqs = [];
-		
-		tree.coreqs.values.forEach(function (subTree) {
-			
-			if (!subTree.isClass || subTree.dataStatus===this.DATASTATUS_DONE) {
-				newCoreqs.push(subTree)
-				this.removeInvalidSubTrees(subTree);
-			}
-			else {
-				console.log('removing because not loaded!',subTree);
-			}
-		}.bind(this));
-		
-		// if (tree.coreqs.values.length!==newCoreqs.length) {
-		// 	console.log('removing ')
-		// }
-		
-		tree.coreqs.values = newCoreqs;
-	}
-
-	if (tree.values) {
-		
-		
-		var newPrereqs = [];
-		
-		tree.values.forEach(function (subTree) {
-			
-			if (!subTree.isClass || subTree.dataStatus===this.DATASTATUS_DONE) {
-				newPrereqs.push(subTree);
-				this.removeInvalidSubTrees(subTree);
-			}
-			else {
-				console.log('removing because not loaded!',subTree);
-			}
-		}.bind(this));
-		
-		tree.values = newPrereqs;
-		
-	};
-};
-
 TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 	
 	var tree = {
@@ -744,7 +726,8 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		this.removeCoreqsCoreqs(tree);
 		
 		//at this point, there should not be any with data status = not started, so if find any remove them
-		this.removeInvalidSubTrees(tree);
+		//actually, dont do this because somtimes classes can error
+		// this.removeInvalidSubTrees(tree);
 
 		//remove non hon matching coreqs here
 		//this is ghetto atm... TODO FIX
@@ -770,6 +753,8 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		// this.removeDuplicateDeps(tree,flatClassList);
 		// this.removeDuplicateDeps(tree,flatClassList);
 		// this.removeDuplicateDeps(tree,flatClassList);
+		// this.addAllParentRelations(tree);
+		this.addLowestParent(tree);
 
 		// var a = findFlattendClassList(tree)
 		// var uniqueArray = a.filter(function(item, pos) {
@@ -782,6 +767,7 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		render.hideSpinner();
 		render.go(tree);
 		popup.go(tree);
+		help.go(tree);
 		callback();
 	}.bind(this));
 

@@ -24,7 +24,6 @@ Request.prototype.randomString = function () {
 }
 
 
-
 Request.prototype.findDiff = function (compareSrc,compareTo) {
 	
 	var retVal = {

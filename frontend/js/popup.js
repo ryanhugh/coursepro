@@ -227,6 +227,8 @@ Popup.prototype.expandPanel = function(tree) {
 
 
 	tree.panel.style.zIndex = '999'
+	
+
 
 	tree.isExpanded=true;
 	var panelBody = tree.panel.getElementsByClassName('panelBodyId')[0]
@@ -253,6 +255,8 @@ Popup.prototype.expandPanel = function(tree) {
 			classURL = tree.url;
 		}
 		panelBody.innerHTML += '<br><a target="_blank" href="'+classURL+'"> view on '+tree.host+'</a>'
+
+		tree.panel.style.visibility = '';
 	}
 	else {
 		request({
@@ -277,6 +281,8 @@ Popup.prototype.expandPanel = function(tree) {
 			if (!tree.isExpanded) {
 				return;
 			}
+			
+			tree.panel.style.visibility = '';
 
 			var newBodyText = []
 			var panelWidth = 0;
@@ -386,6 +392,9 @@ Popup.prototype.expandPanel = function(tree) {
 			}
 			else {
 				panelWidth = Math.min(1000,panelWidth)
+				if (sections.length<5) {
+					panelWidth = 610;
+				};
 			}
 
 			if (panelWidth<164) {
@@ -439,12 +448,11 @@ Popup.prototype.expandPanel = function(tree) {
 
 
 
-
-Popup.prototype.go = function(tree) {
+Popup.prototype.addPopups = function(tree) {
 	
 	if (tree.isClass) {
 
-		tree.panel.onclick=function (event) {
+		$(tree.panel).on('click.popup',function (event) {
 
 			if (tree.isExpanded) {
 
@@ -466,21 +474,37 @@ Popup.prototype.go = function(tree) {
 
 				this.expandPanel(tree);
 			}
-		}.bind(this)
+		}.bind(this))
 	}
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
-			this.go(subTree);
+			this.addPopups(subTree);
 		}.bind(this));
 	};
 
 	if (tree.coreqs) {
 		tree.coreqs.values.forEach(function (subTree) {
-			this.go(subTree);
+			this.addPopups(subTree);
 		}.bind(this));
 	};
 }
+
+
+Popup.prototype.go = function(tree) {
+	
+	
+	//if there is only one panel, open it
+	if ((!tree.values || tree.values.length==0) && (!tree.coreqs || tree.coreqs.values.length==0)) {
+		tree.panel.style.visibility = 'hidden'
+		this.expandPanel(tree);
+		console.log('opening ',tree.classId);
+	}
+	
+	
+	this.addPopups(tree);
+}
+
 
 
 

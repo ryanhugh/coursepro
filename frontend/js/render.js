@@ -12,7 +12,6 @@ function Render () {
 
 	this.COREQ_OFFSET = 20;
 
-
 	if (!this.template || !this.container || !this.navBar) {
 		console.log('error could not find template??',this.template,this.container,this.navBar)
 	}
@@ -133,31 +132,18 @@ Render.prototype.getColor = function(type) {
 		console.trace()
 	}
 }
-Render.prototype.getLowestParent = function(tree) {
-	if (tree.allParents.length===0) {
-		return
-	};
-
-	var lowestParent = tree.allParents[0];
-	for (var i = 0; i < tree.allParents.length; i++) {
-		if (tree.allParents[i].depth>lowestParent) {
-			lowestParent = tree.allParents[i];
-		}
-	}
-	return lowestParent;
-}
 Render.prototype.addToParentDiv = function(tree) {
-	var parent = this.getLowestParent(tree);
-	if (parent && !parent.panel) {
-		console.log('error parent has no panel tree:',tree)
+	
+	if (tree.lowestParent && !tree.lowestParent.panel) {
+		console.log('error tree.lowestParent has no panel tree:',tree)
 	};
 	
-	if (parent) {
-		if (!parent.div) {
-			console.log('parent does not have a div!!',parent)
+	if (tree.lowestParent) {
+		if (!tree.lowestParent.div) {
+			console.log('tree.lowestParent does not have a div!!',tree.lowestParent)
 			return;
 		}
-		parent.div.appendChild(tree.div);
+		tree.lowestParent.div.appendChild(tree.div);
 	}
 	else {
 		tree.div.style.minWidth="100%"
@@ -182,6 +168,7 @@ Render.prototype.calcPanelSize = function(tree) {
 
 	//position the panel to the absolute position of the div
 	this.resetPanel(tree,false);
+	
 
 	this.container.appendChild(tree.panel);
 	
@@ -252,13 +239,12 @@ Render.prototype.calcPanelPos = function(tree) {
 		tree.y = coords.bottom - tree.panel.offsetHeight/2;
 	}
 	else {
-
-		var parent = this.getLowestParent(tree);
-		tree.x = parent.x + this.COREQ_OFFSET*(tree.coreqIndex+1);
-		tree.y = parent.y - this.COREQ_OFFSET*(tree.coreqIndex+1)-this.COREQ_OFFSET;
+		tree.x = tree.lowestParent.x + this.COREQ_OFFSET*(tree.coreqIndex+1);
+		tree.y = tree.lowestParent.y - this.COREQ_OFFSET*(tree.coreqIndex+1)-this.COREQ_OFFSET;
 	}
 
 	this.resetPanel(tree);
+	
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
@@ -286,7 +272,6 @@ Render.prototype.resetPanel = function(tree,relocate) {
 
 		if (!tree.panel) {
 			tree.panel = this.template.cloneNode(true);
-			tree.panel.style.display =''
 		}
 
 		var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
@@ -311,6 +296,9 @@ Render.prototype.resetPanel = function(tree,relocate) {
 				else {
 					panelBody.innerHTML = tree.crns.length + ' section'+this.getOptionalS(tree.crns.length)+' this term'
 				}
+			}
+			else if (tree.dataStatus === treeMgr.DATASTATUS_FAIL) {
+				panelBody.innerHTML = "0 sections this term"
 			}
 			else {
 				panelBody.innerHTML = ''
@@ -359,8 +347,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 			tree.panel.style.zIndex = '100'
 		}
 		else {
-			var parent = this.getLowestParent(tree);
-			tree.panel.style.zIndex = parseInt(parent.panel.style.zIndex)-tree.coreqIndex-1;
+			tree.panel.style.zIndex = parseInt(tree.lowestParent.panel.style.zIndex)-tree.coreqIndex-1;
 		}
 	}.bind(this)
 
@@ -378,87 +365,6 @@ Render.prototype.addLines = function(tree) {
 	}
 }
 
-Render.prototype.addHelpToolips = function(tree) {
-	if (tree.lineToParentLink && tree.lineToParentLink.offsetWidth>200) {
-
-
-		tree.lineToParentLink.setAttribute('tabindex','0');
-		tree.lineToParentLink.setAttribute('data-placement','top');
-		tree.lineToParentLink.setAttribute('data-toggle','popover');
-		tree.lineToParentLink.setAttribute('data-trigger','manual');
-
-		var linkElement = $(tree.lineToParentLink)
-
-		tree.lineToParentLink.onmouseover = function (event) {
-			if (tree.allParents[0].type=='or'){
-				if (localStorage.orPopupCount>10) {
-					return;
-				}
-				else {
-					localStorage.orPopupCount++;
-				}
-			}
-
-			if (tree.allParents[0].type=='and'){
-				if (localStorage.andPopupCount>10) {
-					return;
-				}
-				else {
-					localStorage.andPopupCount++;
-				}
-			}
-			linkElement.popover('show');
-
-			setTimeout(function () {
-				var popover = tree.lineContainer.getElementsByClassName('popover')[0]
-				if (!popover) {
-					return;
-				};
-				var popoverJquery = $(popover)
-
-				var coords = event.target.getBoundingClientRect();
-
-				popoverJquery.css('top',(event.y -popover.offsetHeight- 30+document.body.scrollTop) + 'px')
-				popoverJquery.css('width','207px')
-				popoverJquery.css('left',( event.x - popover.offsetWidth/2 +document.body.scrollLeft)+'px')
-			},0)
-			//
-		}.bind(this)
-
-		tree.lineToParentLink.onmouseout = function (event) {
-			linkElement.popover('hide');
-		}.bind(this)
-
-
-
-		linkElement.popover({
-			content: function() {
-				if (tree.allParents[0].type=='or') {
-					return 'Take ANY of the connected classes to take this class!';
-				}
-				else {
-					return 'Take ALL of the connected classes to take this class!';
-				}
-			}.bind(this),
-			title: function() {
-				if (tree.allParents[0].type=='or') {
-					return 'Prerequisites: Blue Lines'
-				}
-				else {
-					return 'Prerequisites: Red Lines'
-				}
-			}.bind(this)
-		})
-	};
-
-
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.addHelpToolips(subTree)
-		}.bind(this))
-	};
-};
-
 //this is called before the loading starts
 Render.prototype.clearContainer = function() {
 	
@@ -475,10 +381,9 @@ Render.prototype.hideSpinner = function() {
 	this.spinner.style.display = 'none'
 };
 
-Render.prototype.go = function(tree,showBranches) {
-	if (showBranches===undefined) {
-		showBranches=true;
-	}
+
+
+Render.prototype.go = function(tree) {
 	document.body.style.height = '';
 
 	this.tree = tree;
@@ -489,10 +394,7 @@ Render.prototype.go = function(tree,showBranches) {
 	this.addStructure(this.tree);
 	this.calcPanelPos(this.tree);
 
-	if (showBranches) {
-		this.addLines(this.tree);
-		this.addHelpToolips(this.tree);
-	}
+	this.addLines(this.tree);
 
 	//scroll to the middle of the page, and don't touch the scroll height
 	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop);
@@ -500,6 +402,9 @@ Render.prototype.go = function(tree,showBranches) {
 	//remove the structure
 	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
 	$('.holderDiv').remove();
+	
+	
+	
 };
 
 
