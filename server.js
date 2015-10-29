@@ -121,53 +121,6 @@ app.use(function (req,res,next) {
 	}
 })
 
-
-
-
-// app.post('/urlDetails', function(req, res) {
-
-// 	if (!req.body || !req.body.url) {
-// 		console.log('invalid req from '+req.ip);
-// 		return;
-// 	};
-
-// 	//dont keep invalid emails
-// 	if (!validateEmail(req.body.email)) {
-// 		console.log('Invalid email rejected',req.body.email)
-// 		req.body.email = null;
-// 	};
-
-// 	console.log('inbound data:',req.body)
-
-
-// 	//client sent a (possibly) valid url, check and parse page
-
-// 	var pageData = pageDataMgr.create({
-// 		ip:req.connection.remoteAddress,
-// 		email:req.body.email,
-// 		dbData:{
-// 			url:req.body.url
-// 		}});
-	
-// 	pageDataMgr.go(pageData, function (err,pageData) {
-
-// 		if (err) {
-// 			//oh no! no modules support url
-// 			res.send(JSON.stringify({
-// 				reason:err
-// 			}));
-// 		}
-// 		else {
-
-// 			res.send(JSON.stringify({
-// 				reason:"SUCCESS",
-// 				clientString:pageData.getClientString()
-// 			}));
-// 		}
-// 	});
-// });
-
-
 app.post('/listColleges',function (req,res) {
 	collegeNamesDB.find({},{
 		shouldBeOnlyOne:false,

@@ -39,15 +39,6 @@ EmailMgr.prototype.sendEmails = function(pageData,emailData) {
 		return;
 	};
 	console.log('ERROR send email was called??/')
-	
-	// console.log('Sending email to ',pageData.dbData.emails)
-
-	// transporter.sendMail({
-	//     from: 'coursenotifyer@gmail.com',
-	//     to: pageData.dbData.emails,
-	//     subject: emailData.title,
-	//     html: '<a href="'+pageData.dbData.url+'"><div style="font-size:100px">Link!</div></a>'
-	// });
 
 };
 
