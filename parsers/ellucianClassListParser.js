@@ -4,7 +4,7 @@ var _ = require('lodash');
 var he = require('he');
 var fs = require('fs');
 var assert = require('assert');
-var URI = require('URIjs');
+var URI = require('urijs');
 
 var pointer = require('../pointer');
 var linksDB = require('../databases/linksDB')
@@ -44,7 +44,7 @@ EllucianClassListParser.prototype.optionallyAddDep = function(pageData,catalogUr
 	}
 
 
-	//not found, add one 
+	//not found, add one
 	var dep = pageData.addDep({
 		url:catalogUrl
 	})

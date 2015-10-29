@@ -5,7 +5,7 @@ var pageDataMgr = require('./pageDataMgr');
 var request = require('request');
 var fs = require('fs');
 var _ = require('lodash');
-var URI = require('URIjs');
+var URI = require('urijs');
 
 var blacklistedEmails = require('./blacklistedEmails.json')
 
@@ -80,12 +80,6 @@ function validateEmail(email) {
 	}
 	return true;
 }
-
-//change the url to lowercase
-// app.use(function (req,res,next) {
-//   req.url = req.url.toLowerCase();
-//   next();
-// })
 
 
 app.use(function (req, res, next) {

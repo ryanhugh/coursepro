@@ -4,7 +4,7 @@ var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var fs = require('fs');
 var he = require('he');
-var URI = require('URIjs');
+var URI = require('urijs');
 var pointer = require('./pointer');
 
 var ellucianCatalogParser = require('./parsers/ellucianCatalogParser');

@@ -3,7 +3,7 @@ var needle = require('needle');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var _ = require('lodash');
-var URI = require('URIjs');
+var URI = require('urijs');
 var assert = require('assert');
 
 

@@ -170,8 +170,9 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 					dbAltEntry = pageData.deps[i];
 				}
 			}
-
-		    //entry
+			
+		    //if there exist no entry in the pageData.deps with that matches (same name + updated by parent)
+		    //create a new class
 			if (!dbAltEntry) {
 				// console.log('creating a new dep entry',pageData.deps.length);
 
@@ -185,6 +186,13 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 					updatedByParent:true,
 					name:className
 				});
+				
+				//could not create a dep with this data.. uh oh
+				if (!dbAltEntry) {
+					return;
+				}
+				
+				dbAltEntry.parsingData.crns = []
 
 				//copy over attributes from this class
 				for (var attrName in pageData.dbData) {
@@ -193,8 +201,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 					if (_(['name','updatedByParent','url']).includes(attrName)) {
 						continue;
 					}
-					// console.log(attn)
-
+					
 					dbAltEntry.setData(attrName,pageData.dbData[attrName])
 				}
 
@@ -202,11 +209,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 			}
 
-			//could not create a dep with this data.. uh oh
-			if (!dbAltEntry) {
-				return;
-			}
-			dbAltEntry.parsingData.crns = []
 			classToAddSectionTo = dbAltEntry;
 
 		}
@@ -461,7 +463,8 @@ EllucianClassParser.prototype.tests = function () {
 
 	        //pageData.deps[1] is the other class
 	        assert.equal(pageData.deps[1].parser,this);
-	        assert.deepEqual(pageData.deps[1].dbData.crns,[ '24601', '24603', '25363' ]);
+	        // console.log(pageData.deps[0].dbData)
+	        assert.deepEqual(pageData.deps[1].dbData.crns,[ '24601', '24603', '25363' ],JSON.stringify(pageData.deps[1].dbData));
 	        assert.equal(pageData.deps[1].dbData.name,'Thermodyn/stat Mechanics - Lab');
 	        assert.equal(pageData.deps[1].deps.length,3);
 	        assert.equal(pageData.deps[1].deps[0].parser,ellucianSectionParser);

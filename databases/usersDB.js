@@ -2,6 +2,7 @@
 var BaseDB = require('./baseDB').BaseDB;
 var emailMgr = require('../emailMgr');
 var _ = require('lodash')
+var assert = require('assert');
 
 
 function UsersDB () {
@@ -74,11 +75,6 @@ UsersDB.prototype.subscribeForEverything = function(userData,callback) {
 		}
 		else {
 			//no new data is handeled by the updateDatabase call below
-			// if (_(userDBData.emails).includes(userData.email) && _(userDBData.ips).includes(userData.ip))  {
-			// 	console.log(JSON.stringify({type:'updatingUser',warning:'no new data',data:userDBData,userData:userData}));
-			// 	return callback();
-			// }
-			
 			if (!_(userDBData.ips).includes(userData.ip)) {
 				userDBData.ips.push(userData.ip);
 			}
@@ -154,6 +150,9 @@ UsersDB.prototype.unsubscribe = function(userData,callback){
 // 	}.bind(this));
 // };
 
+UsersDB.prototype.tests = function() {
+	
+}
 
 
 

@@ -1,5 +1,5 @@
 'use strict';
-var URI = require('URIjs');
+var URI = require('urijs');
 var domutils = require('domutils');
 var he = require('he');
 var _ = require('lodash');

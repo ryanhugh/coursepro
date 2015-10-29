@@ -186,7 +186,7 @@ EllucianSubjectParser.prototype.tests = function(){
 			this.parseDOM(pageData,dom);
 
 
-			console.log(pageData.deps)
+			// console.log(pageData.deps)
 			// assert.deepEqual(pageData.dbData,{ url: 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date',
 			// 	subjects:
 			// 	[ { id: 'ANAT', text: 'Anatomy CM' },

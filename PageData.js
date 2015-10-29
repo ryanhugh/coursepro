@@ -1,6 +1,6 @@
 'use strict';
 var async = require('async');
-var URI = require('URIjs');
+var URI = require('urijs');
 var _ = require('lodash');
 var queue = require("queue-async");
 var clone = require('clone');

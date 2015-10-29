@@ -1,6 +1,6 @@
 'use strict';
 
-var whois = require('node-whois')
+var whois = require('whois')
 var toTitleCase = require('to-title-case');
 var he = require('he');
 var _ = require('lodash');
@@ -267,6 +267,11 @@ CollegeNamesParser.prototype.go = function() {
 		console.log(err,title);
 	});
 };
+
+
+CollegeNamesParser.prototype.tests = function(){
+	
+}
 
 
 

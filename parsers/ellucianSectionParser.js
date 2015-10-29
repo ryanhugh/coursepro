@@ -2,7 +2,7 @@
 var domutils = require('domutils');
 var fs = require('fs');
 var he = require('he');
-var URI = require('URIjs');
+var URI = require('urijs');
 var _ = require('lodash');
 var assert = require('assert');
 

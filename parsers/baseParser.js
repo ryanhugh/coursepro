@@ -1,7 +1,7 @@
 'use strict';
 var request = require('request');
 var assert = require('assert');
-var URI = require('URIjs');
+var URI = require('urijs');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var fs = require('fs');

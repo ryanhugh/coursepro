@@ -6,12 +6,13 @@ var pointer = require('./pointer');
 var spider = require('./spider');
 
 
-
 // //how do i cd into another dir???
-// for (var parserName in parsers) {
-//   parsers[parserName].tests();
-// }
+process.chdir('databases');
+for (var parserName in parsers) {
+  parsers[parserName].tests();
+}
 
+// process.chdir('..');
 
 
 //how do i cd into another dir???

@@ -1,6 +1,6 @@
 // // var a = require('./parsers/BaseParser')
 // // console.log('fdas'.indexOf)
-var URI = require('URIjs');
+var URI = require('urijs');
 var async = require('async');
 // var querystring = require('querystring');f
 var assert = require('assert');
@@ -296,7 +296,7 @@ transporter.sendMail({
 //   });
 // });
 
-// var whois = require('node-whois')
+// var whois = require('whois')
 // whois.lookup('uillinois.edu', function(err, data) {
 //     // console.log(data)
     
