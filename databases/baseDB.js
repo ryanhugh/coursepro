@@ -77,7 +77,6 @@ BaseDB.prototype.updateDatabase = function(newData,oldData,callback) {
 				console.log('error, nedb inserting error',err);
 				return callback(err);
 			}
-			pageData.dbData = newDoc;
 
 			return callback(null,newDoc);
 

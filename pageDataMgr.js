@@ -154,6 +154,7 @@ PageDataMgr.prototype.finish = function(pageData,callback) {
 				console.log('error adding to db?',err);
 				return callback(err);
 			}
+			pageData.dbData = newdbData;
 
 
 			if (pageData.database.peopleCanRegister) {

@@ -5,7 +5,7 @@
 		
 		var box;
 		window.onload = function(){
-			box=document.getElementById('emailBoxId');
+
 		}
 		
 		
@@ -73,7 +73,7 @@
 		
 		function onEmailSubmit (email) {
 
-			
+			var box=document.getElementById('emailBoxId');
 			var email = box.value.trim();
 			
 			if (!validateEmail(email)) {
@@ -122,7 +122,7 @@
 		
 		function onEmailUnsubscribe (email) {
 			
-			
+			var box=document.getElementById('emailBoxId');
 			var email = box.value.trim();
 			
 			if (!validateEmail(email)) {

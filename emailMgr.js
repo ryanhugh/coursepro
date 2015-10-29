@@ -23,6 +23,7 @@ EmailMgr.prototype.sendThanksForRegistering = function (toEmail) {
 	toEmail = toEmail.trim();
 	
 	console.log('Sending email to ',toEmail);
+	return;
 	
 	// send mail
 	this.transporter.sendMail({

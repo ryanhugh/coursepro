@@ -82,10 +82,10 @@ function validateEmail(email) {
 }
 
 //change the url to lowercase
-app.use(function (req,res,next) {
-  req.url = req.url.toLowerCase();
-  next();
-})
+// app.use(function (req,res,next) {
+//   req.url = req.url.toLowerCase();
+//   next();
+// })
 
 
 app.use(function (req, res, next) {
@@ -383,7 +383,7 @@ app.post('/registerForEmails',function(req,res){
 function unsubscribe(body,callback) {
 	if (!body.userId || body.userId.length<10) {
 		console.log(body)
-		callback(JSON.stringify({error:'need userId and email'}));
+		callback(JSON.stringify({error:'need userId'}));
 		return;
 	}
 	
@@ -414,7 +414,6 @@ app.post('/unsubscribe',function(req,res){
 
 app.get('/unsubscribe',function(req,res){
 	var body = new URI(req.url).query(true);
-	body.userId = body.userid
 	unsubscribe(body,function(response){
 		res.send(response);
 	})

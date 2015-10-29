@@ -73,11 +73,11 @@ UsersDB.prototype.subscribeForEverything = function(userData,callback) {
 			emailMgr.sendThanksForRegistering(userData.email);
 		}
 		else {
-			//no new data lol
-			if (_(userDBData.emails).includes(userData.email) && _(userDBData.ips).includes(userData.ip))  {
-				console.log(JSON.stringify({type:'updatingUser',warning:'no new data',data:userDBData,userData:userData}));
-				return callback();
-			}
+			//no new data is handeled by the updateDatabase call below
+			// if (_(userDBData.emails).includes(userData.email) && _(userDBData.ips).includes(userData.ip))  {
+			// 	console.log(JSON.stringify({type:'updatingUser',warning:'no new data',data:userDBData,userData:userData}));
+			// 	return callback();
+			// }
 			
 			if (!_(userDBData.ips).includes(userData.ip)) {
 				userDBData.ips.push(userData.ip);
