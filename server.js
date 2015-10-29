@@ -379,28 +379,45 @@ app.post('/registerForEmails',function(req,res){
 	})
 })
 
-app.post('/unsubscribe',function(req,res){
-	if (!req.body.userId || !req.body.email || req.body.userId.length<10) {
-		res.send(JSON.stringify({error:'need userId and email'}))
+
+function unsubscribe(body,callback) {
+	if (!body.userId || body.userId.length<10) {
+		console.log(body)
+		callback(JSON.stringify({error:'need userId and email'}));
 		return;
 	}
 	
 	var userData = {
-		userId:req.body.userId,
-		email:req.body.email
+		userId:body.userId
 	}
 	
 	
 	usersDB.unsubscribe(userData,function(err){
 		if (err) {
-			console.log('couldn"t unsubscribe... ',userData.userId,userData.email,err);
-			res.send(JSON.stringify({error:'internal error'}));
-			return;
+			console.log('couldn"t unsubscribe... ',userData.userId,err);
+			return callback(JSON.stringify({error:'internal error'}));
 		}
 		else {
-			return res.end(JSON.stringify({status:'success'}));
+			return callback(JSON.stringify({status:'success'}));
 		}
-	}.bind(this))
+	}.bind(this));
+}
+
+
+//unsubscribe can be either post or get so it works in emails and in other pages
+//in boh cases need email and userId
+app.post('/unsubscribe',function(req,res){
+	unsubscribe(req.body,function(response){
+		res.send(response);
+	})
+})
+
+app.get('/unsubscribe',function(req,res){
+	var body = new URI(req.url).query(true);
+	body.userId = body.userid
+	unsubscribe(body,function(response){
+		res.send(response);
+	})
 })
 
 

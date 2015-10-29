@@ -150,12 +150,17 @@ BaseDB.prototype.getStaticValues = function() {
 	return [];
 };
 
+// config:
+// shouldBeOnlyOne: true/false (default false) returns a doc or null, logs warning if multiple found
+// skipValidation: true/false (default false) skips the query validation, eg with this on you can dump the enitre db instead of being limited to listing only subjects of a term and classes of a subject
+	//used for search
+// sanitize: true/false (default false) removes internal fields that the front end shouldn't see
+
+
 BaseDB.prototype.find = function(lookupValues,config,callback) {
 	if (!config.shouldBeOnlyOne) {
 		config.shouldBeOnlyOne=false;
 	};
-
-
 
 	if (!config.skipValidation && !this.isValidLookupValues(lookupValues)) {
 		console.log('invalid terms in '+this.constructor.name+' ',lookupValues);

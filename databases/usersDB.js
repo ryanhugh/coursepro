@@ -16,7 +16,8 @@ function UsersDB () {
 // userId (the long client generated string)
 // ips = [] #going to be used for neat location graphs and automatically determining which college people go to
 // emails (if they registered for updates)
-// subscriptions = {allColleges:true,specificColleges:['neu.edu','neu.edu/cps','sju.edu'],somethingelse:true}
+// subscriptions = {everything:true,specificColleges:['neu.edu','neu.edu/cps','sju.edu'],somethingelse:true}
+	//right now the only one that is used is [everything]
 
 //later when we have account management we can have option to manage/delete/add emails
 
@@ -51,8 +52,7 @@ UsersDB.prototype.subscribeForEverything = function(userData,callback) {
 	this.find({
 		userId: userData.userId
 	},{
-		shouldBeOnlyOne:true,
-		sanatize:false
+		shouldBeOnlyOne:true
 	},function(err,userDBData) {
 		if (err) {
 			console.log('nedb error couldnt find user with id ',userData.userId,err);
@@ -67,7 +67,7 @@ UsersDB.prototype.subscribeForEverything = function(userData,callback) {
 				userId:userData.userId,
 				ips:[userData.ip],
 				emails:[userData.email],
-				subscriptions:{allColleges:true}
+				subscriptions:{everything:true}
 			}
 			
 			emailMgr.sendThanksForRegistering(userData.email);
@@ -88,7 +88,7 @@ UsersDB.prototype.subscribeForEverything = function(userData,callback) {
 				userDBData.emails.push(userData.email);
 			}
 			
-			userDBData.subscriptions.allColleges = true;
+			userDBData.subscriptions.everything = true;
 		}
 		
 		
@@ -108,15 +108,14 @@ UsersDB.prototype.subscribeForEverything = function(userData,callback) {
 
 
 UsersDB.prototype.unsubscribe = function(userData,callback){
-	if (!userData.userId || !userData.email) {
-		return callback('invalid userData');
+	if (!userData.userId) {
+		return callback('invalid userData, dont have userId');
 	}
 	
 	this.find({
 		userId: userData.userId
 	},{
-		shouldBeOnlyOne:true,
-		sanatize:false
+		shouldBeOnlyOne:true
 	},function(err,userDBData) {
 		if (err) {
 			console.log('nedb error couldnt find user with id ',userData.userId,err);
@@ -130,8 +129,8 @@ UsersDB.prototype.unsubscribe = function(userData,callback){
 			return callback(JSON.stringify({error:'user not found'}));
 		}
 		
-		//remove the given email, if it exists
-		_.pull(userDBData.emails,userData.email);
+		//turn off the subscriptions, but don't remove the email
+		userDBData.subscriptions.everything = false;
 		
 		this.updateDatabase(userDBData,originalUserDBData,function(err,newDoc){
 			if (err) {
