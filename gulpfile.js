@@ -41,9 +41,9 @@ gulp.task('dev',['compress','watchCompress'],function () {
 
 
 // when frontend tests work, add them here
-gulp.tasks('tests',function(){
-	require('./')
-})
+// gulp.tasks('tests',function(){
+// 	require('./')
+// })
 
 
 // gulp.task('default',['compress','watch','prod']);
