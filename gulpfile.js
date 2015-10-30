@@ -14,7 +14,7 @@ gulp.task('uglify', function() {
 
 
 gulp.task('prod',['uglify'],function() {
-  require('./server.js')
+  require('./server')
 })
 
 
@@ -34,9 +34,14 @@ gulp.task('watchCompress', function() {
 
 
 gulp.task('dev',['compress','watchCompress'],function () {
-	require('./server.js')
+	require('./server')
 })
 
+
+// when frontend tests work, add them here
+gulp.tasks('tests',function(){
+	require('./')
+})
 
 
 // gulp.task('default',['compress','watch','prod']);
