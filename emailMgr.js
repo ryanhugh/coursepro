@@ -4,8 +4,25 @@ var smtpTransport = require('nodemailer-smtp-transport');
 var fs = require('fs')
 
 function EmailMgr () {
+
 	
-	var password = fs.readFileSync('/etc/coursepro/passwd').toString().trim();
+	var password;
+
+    try {
+        password = fs.readFileSync('/etc/coursepro/passwd');
+    }
+    catch (e) {
+    	if (e.code='ENOENT') {
+    		console.log("WARNING: can't find password file, disabling email mgr");
+    	}
+    	else {
+    		console.log('ERROR',e);
+    	}
+        return;
+    }
+
+
+	password = password.toString().trim();
 	
 	this.transporter = nodemailer.createTransport(smtpTransport({
 	    host: 'mail.gandi.net',
@@ -22,7 +39,14 @@ EmailMgr.prototype.sendThanksForRegistering = function (toEmail) {
 	
 	toEmail = toEmail.trim();
 	
-	console.log('Sending email to ',toEmail);
+
+	if (this.transporter) {
+		console.log('Sending email to ',toEmail);
+	}
+	else {
+		console.log("WARNING: not sending email because don't have email password",toEmail);
+		return;
+	}
 	
 	// send mail
 	this.transporter.sendMail({
