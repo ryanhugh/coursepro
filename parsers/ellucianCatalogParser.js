@@ -244,7 +244,7 @@ EllucianCatalogParser.prototype.tests = function() {
 			
 		}.bind(this));
 	}.bind(this));//
-	return
+	// return
 
 	fs.readFile('../tests/ellucianCatalogParser/1.html','utf8',function (err,body) {
 		assert.equal(null,err);

@@ -150,9 +150,9 @@ UsersDB.prototype.unsubscribe = function(userData,callback){
 // 	}.bind(this));
 // };
 
-UsersDB.prototype.tests = function() {
+// UsersDB.prototype.tests = function() {
 	
-}
+// }
 
 
 

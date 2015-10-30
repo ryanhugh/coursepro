@@ -16,9 +16,9 @@ for (var parserName in parsers) {
 
 
 //how do i cd into another dir???
-for (var databaseName in databases) {
-  databases[databaseName].tests();
-}
+	// for (var databaseName in databases) {
+	//   databases[databaseName].tests();
+	// }
 
 
 

@@ -25,31 +25,43 @@ var queue = require("queue-async")
 // var subjectsDB = require('./databases/subjectsDB')
 // var collegeNamesDB = require('./databases/collegeNamesDB')
 
-var nodemailer = require('nodemailer');
-var smtpTransport = require('nodemailer-smtp-transport');
-
-
-var password = fs.readFileSync('/etc/coursepro/passwd').toString().trim();
-// console.log(password);
-
-
-var transporter = nodemailer.createTransport(smtpTransport({
-    host: 'mail.gandi.net',
-    port: 25,
-    auth: {
-        user: 'ryan@coursepro.io',
-        pass: password
+function hi () {
+    try {
+        console.log(fs.statSync('/test.js'))
     }
-}));
-console.log(transporter)
+    catch (e) {
+        console.log('nope',e,e.code=='ENOENT');
+        return;
+    }
+    console.log('yep')
+}
+hi();
 
-// send mail
-transporter.sendMail({
-    from: 'ryan@coursepro.io',
-    to: 'rysquash@gmail.com',
-    subject: 'hello world! 2',
-    text: 'YOOOOOOOO'
-});
+// var nodemailer = require('nodemailer');
+// var smtpTransport = require('nodemailer-smtp-transport');
+
+
+// var password = fs.readFileSync('/etc/coursepro/passwd').toString().trim();
+// // console.log(password);
+
+
+// var transporter = nodemailer.createTransport(smtpTransport({
+//     host: 'mail.gandi.net',
+//     port: 25,
+//     auth: {
+//         user: 'ryan@coursepro.io',
+//         pass: password
+//     }
+// }));
+// console.log(transporter)
+
+// // send mail
+// transporter.sendMail({
+//     from: 'ryan@coursepro.io',
+//     to: 'rysquash@gmail.com',
+//     subject: 'hello world! 2',
+//     text: 'YOOOOOOOO'
+// });
 
 // function h () {
 // 	h.t=9
