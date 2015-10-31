@@ -2,7 +2,6 @@
 var Datastore = require('nedb');
 var _ = require('lodash');
 var path = require("path");
-var macros = require('../macros')
 
 //if getting this.db undefined its BaseDB trying to run something...
 function BaseDB () {

@@ -5,7 +5,6 @@ var wrap = require("gulp-wrap");
 var concat = require("gulp-concat");
 var requireDir = require('require-dir');
 
-// var macros = require('./backend/macros')
 var parsers = requireDir('./backend/parsers');
 var databases = requireDir('./backend/databases');
 var pointer = require('./backend/pointer');

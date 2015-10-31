@@ -6,7 +6,6 @@ var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var fs = require('fs');
 
-var macros = require('../macros')
 var pointer = require('../pointer');
 
 function BaseParser () {
