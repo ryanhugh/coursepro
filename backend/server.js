@@ -370,7 +370,8 @@ app.get('/unsubscribe',function(req,res){
 
 // serve the webpage
 app.get('/', function (req, res) {
-	res.sendFile('frontend/static/index.html',{"root": __dirname});
+	// console.log('yoooooo:',process.cwd())
+	res.sendFile('frontend/static/index.html',{"root": process.cwd()});
 });
 
 

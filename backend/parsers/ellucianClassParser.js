@@ -430,7 +430,7 @@ EllucianClassParser.prototype.tests = function () {
 
 
 	//sections have different names
-	fs.readFile('../tests/ellucianClassParser/multiname.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassParser/multiname.html','utf8',function (err,body) {
 		assert.equal(null,err);
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);
@@ -501,7 +501,7 @@ EllucianClassParser.prototype.tests = function () {
 	}.bind(this));//
 
 	//
-	fs.readFile('../tests/ellucianClassParser/1.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassParser/1.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -540,7 +540,7 @@ EllucianClassParser.prototype.tests = function () {
 	}.bind(this));
 
 
-	fs.readFile('../tests/ellucianClassParser/3.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassParser/3.html','utf8',function (err,body) {
 		assert.equal(null,err);
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);
@@ -572,7 +572,7 @@ EllucianClassParser.prototype.tests = function () {
 	}.bind(this));
 
 	//lots of different meetings
-	fs.readFile('../tests/ellucianClassParser/4.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassParser/4.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -744,7 +744,7 @@ EllucianClassParser.prototype.tests = function () {
 
 
 	//cancelled - something was wierd with this one not sure what it was
-	fs.readFile('../tests/ellucianClassParser/6.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassParser/6.html','utf8',function (err,body) {
 		assert.equal(null,err);
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);

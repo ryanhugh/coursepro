@@ -60,7 +60,7 @@ EllucianTermsParser.prototype.addCollegeName = function(pageData,host) {
 		
 	//add the college names dep, if it dosent already exist
 	for (var i = 0; i < pageData.deps.length; i++) {
-		var currDep =pageData.deps[i] 
+		var currDep =pageData.deps[i]
 		if (currDep.parser == collegeNamesParser && currDep.dbData.host == host) {
 			return;
 		}
@@ -151,7 +151,7 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 
 
 	//the given page data is the controller
-	//give the first term to it, 
+	//give the first term to it,
 	//and pass the others in as deps + noupdate
 
 	terms.forEach(function (term) {
@@ -160,7 +160,7 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 
 		//if it already exists, just update the description
 		for (var i = 0; i < pageData.deps.length; i++) {
-			var currDep =pageData.deps[i] 
+			var currDep =pageData.deps[i]
 			if (currDep.parser==this && term.id==currDep.dbData.termId) {
 				currDep.setData('text',term.text);
 				currDep.setData('host',term.host);
@@ -280,7 +280,7 @@ EllucianTermsParser.prototype.getEmailData = function(pageData) {
 EllucianTermsParser.prototype.tests = function() {
 	require('../pageDataMgr');
 	
-	fs.readFile('../tests/ellucianTermsParser/1.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianTermsParser/1.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {

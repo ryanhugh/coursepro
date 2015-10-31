@@ -6,6 +6,7 @@ var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var fs = require('fs');
 
+var macros = require('../macros')
 var pointer = require('../pointer');
 
 function BaseParser () {
@@ -284,7 +285,8 @@ BaseParser.prototype.tests = function () {
 	assert.equal(this.constructor.name,'BaseParser','you need to ovveride .tests()!');
 
 
-	fs.readFile('../tests/baseParser/1.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/baseParser/1.html','utf8',function (err,body) {
+		console.log(process.cwd())
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -307,7 +309,7 @@ BaseParser.prototype.tests = function () {
 
 
 
-	fs.readFile('../tests/baseParser/3.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/baseParser/3.html','utf8',function (err,body) {
 		assert.equal(null,err);
 		var fileJSON = JSON.parse(body);
 
@@ -328,9 +330,9 @@ BaseParser.prototype.tests = function () {
 	return;
 
 
-	fs.readFile('../tests/'+this.constructor.name+'/1.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/'+this.constructor.name+'/1.html','utf8',function (err,body) {
 		if (err) {
-			console.log(err);
+			console.log(err,process.cwd());
 			return;
 		}
 

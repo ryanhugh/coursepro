@@ -1,7 +1,16 @@
+'use strict';
 var uglify = require('gulp-uglify');
 var gulp = require('gulp');
 var wrap = require("gulp-wrap");
 var concat = require("gulp-concat");
+var requireDir = require('require-dir');
+
+// var macros = require('./backend/macros')
+var parsers = requireDir('./backend/parsers');
+var databases = requireDir('./backend/databases');
+var pointer = require('./backend/pointer');
+
+
 
 gulp.task('uglify', function() {
 	return gulp.src(['frontend/js/*.js','frontend/js/modules/*.js'])
@@ -14,7 +23,7 @@ gulp.task('uglify', function() {
 
 
 gulp.task('prod',['uglify'],function() {
-  require('./server')
+  require('./backend/server')
 })
 
 
@@ -34,16 +43,31 @@ gulp.task('watchCompress', function() {
 
 
 gulp.task('dev',['compress','watchCompress'],function () {
-	require('./server')
+	require('./backend/server')
 })
-
-// gulp
 
 
 // when frontend tests work, add them here
-// gulp.tasks('tests',function(){
-// 	require('./')
-// })
+gulp.task('tests',function(){
+	
+	
+	// //how do i cd into another dir???
+	// process.chdir('backend/parsers');
+	for (var parserName in parsers) {
+	  parsers[parserName].tests();
+	}
+	
+	// process.chdir('..');
+	
+	
+	//how do i cd into another dir???
+	// for (var databaseName in databases) {
+	//   databases[databaseName].tests();
+	// }
+
+
+	pointer.tests();
+})
 
 
 // gulp.task('default',['compress','watch','prod']);

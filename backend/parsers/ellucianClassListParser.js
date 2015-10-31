@@ -113,7 +113,7 @@ EllucianClassListParser.prototype.tests = function() {
 
 
 	//
-	fs.readFile('../tests/ellucianClassListParser/2.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassListParser/2.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {

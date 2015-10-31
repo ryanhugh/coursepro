@@ -167,7 +167,7 @@ EllucianSubjectParser.prototype.getEmailData = function(pageData) {
 EllucianSubjectParser.prototype.tests = function(){
 	require('../pageDataMgr')
 
-	fs.readFile('../tests/ellucianSubjectParser/1.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianSubjectParser/1.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {

@@ -204,7 +204,7 @@ EllucianSectionParser.prototype.tests = function() {
 
 	//the pre and co requs html here has been modified
 	//this contains the same pre requs as prereqs10
-	fs.readFile('../tests/ellucianSectionParser/1.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianSectionParser/1.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -325,7 +325,7 @@ EllucianSectionParser.prototype.tests = function() {
 
 
 	//
-	fs.readFile('../tests/ellucianSectionParser/many non linked.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianSectionParser/many non linked.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -489,7 +489,7 @@ EllucianSectionParser.prototype.tests = function() {
 	}.bind(this));//
 
 	//
-	fs.readFile('../tests/ellucianSectionParser/blacklistedstring.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianSectionParser/blacklistedstring.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {

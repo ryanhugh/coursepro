@@ -2,7 +2,7 @@
 var Datastore = require('nedb');
 var _ = require('lodash');
 var path = require("path");
-
+var macros = require('../macros')
 
 //if getting this.db undefined its BaseDB trying to run something...
 function BaseDB () {
@@ -15,12 +15,12 @@ function BaseDB () {
 
 		//if the cwd is a folder in the root of the project, move it up to the root of the prject
 		//can be removed once migrate to mongo or somthing
-		var filePath = process.cwd();
-		if (_(filePath).endsWith('parsers') || _(filePath).endsWith('databases')) {
-			filePath = path.join(filePath,'..')
-		}
+		// var filePath =
+		// if (_(filePath).endsWith('parsers') || _(filePath).endsWith('databases')) {
+		// 	filePath = path.join(filePath,'..')
+		// }
 
-		filePath = path.join(filePath,'databases',this.filename)
+		var filePath = path.join(process.cwd(),'backend','databases',this.filename)
 
 		this.db = new Datastore({ filename:filePath , autoload: true });
 
