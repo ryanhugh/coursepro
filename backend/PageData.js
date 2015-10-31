@@ -18,10 +18,7 @@ function PageData (startingData) {
 	}
 
 	//dbData is added after db search returns
-	this.originalData = {
-		ip:startingData.ip,
-		email:startingData.email
-	};
+	this.originalData = {};
 
 	this.parser = null;
 
@@ -47,13 +44,6 @@ function PageData (startingData) {
 
 	//add the starting data
 
-	//add the email and ip, if given
-	if (startingData.ip) {
-		this.dbData.ips = [startingData.ip];
-	}
-	if (startingData.email) {
-		this.dbData.emails = [startingData.email];
-	}
 
 	this.parent = startingData.parent;
 
@@ -137,12 +127,7 @@ PageData.prototype.setParser = function (parser) {
 
 	if (this.database.peopleCanRegister) {
 
-		if (this.dbData.emails === undefined) {
-			this.dbData.emails=[];
-		}
-		if (this.dbData.ips === undefined) {
-			this.dbData.ips = [];
-		}
+		//insert _id of user here
 	}
 	return true;
 }
@@ -184,18 +169,18 @@ PageData.prototype.loadFromDB = function(callback) {
 		}
 		this.dbLoadingStatus=this.DBLOAD_DONE;
 
-	    //original data.dbData and .dbData cant point to the same obj
-	    this.originalData.dbData=clone(doc);
+		//original data.dbData and .dbData cant point to the same obj
+		this.originalData.dbData=clone(doc);
 
-	    if (!doc && lookupValues._id) {
-	    	console.log('error, looked up by id and didnt find anything???',this,lookupValues,this.parent)
-	    };
+		if (!doc && lookupValues._id) {
+			console.log('error, looked up by id and didnt find anything???',this,lookupValues,this.parent)
+		};
 
-	    var q = queue();
+		var q = queue();
 
-	    if (doc) {
+		if (doc) {
 
-	    	if (this.dbData.emails || this.dbData.ips || this.dbData.deps) {
+	    	if (this.dbData.deps) {
 	    		console.log('error, loaded from db and there is already data in the pagedata??',this);
 	    		console.trace();
 	    	}
@@ -387,7 +372,7 @@ PageData.prototype.addDep = function(depData) {
 		email:this.originalData.email,
 		dbData:depData,
 		parent:this,
-	}
+   }
 
 
 	//create the dep, add it to the array and return it
@@ -421,8 +406,8 @@ PageData.prototype.setData = function(name,value) {
 	}
 
 
-	if (['emails','ips','deps'].indexOf(name)>-1) {
-		console.log('ERROR: html set tried to override emails ips or deps');
+	if (['deps'].indexOf(name)>-1) {
+		console.log('ERROR: html set tried to override deps');
 		return;
 	}
 

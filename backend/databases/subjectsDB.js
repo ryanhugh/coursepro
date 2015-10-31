@@ -4,8 +4,6 @@ var BaseDB = require('./baseDB').BaseDB;
 
 function SubjectsDB () {
 	this.filename = 'subjects.db'
-	this.shouldAutoUpdate = false;
-	this.peopleCanRegister = false;
 	BaseDB.prototype.constructor.apply(this,arguments);
 }
 

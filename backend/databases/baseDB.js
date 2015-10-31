@@ -8,18 +8,11 @@ var macros = require('../macros')
 function BaseDB () {
 
 	this.updateTimer = null;
-	this.shouldAutoUpdate = false;
-	this.peopleCanRegister = false;
 
 	if (this.filename) {
 
 		//if the cwd is a folder in the root of the project, move it up to the root of the prject
-		//can be removed once migrate to mongo or somthing
-		// var filePath =
-		// if (_(filePath).endsWith('parsers') || _(filePath).endsWith('databases')) {
-		// 	filePath = path.join(filePath,'..')
-		// }
-
+		//cwd management moved into macros.js
 		var filePath = path.join(process.cwd(),'backend','databases',this.filename)
 
 		this.db = new Datastore({ filename:filePath , autoload: true });
@@ -104,14 +97,13 @@ BaseDB.prototype.removeInternalFields = function(doc) {
 BaseDB.prototype.onInterval = function() {
 	console.log('UPDATING ALL DATA FOR '+this.constructor.name)
 	this.db.find({}, function (err,docs) {
-		for (var i = 0; i < docs.length; i++) {
-			if (docs[i].emails.length>0) {
-
-				var pageData = pageDataMgr.create({url:docs[i].url});
-				pageDataMgr.go(pageData);
-
-			}
-		};
+		docs.forEach(function(doc){
+			
+			// THIS WILL NOT WORK, SOME DOCS DONT HAVE URLS
+			// var pageData = pageDataMgr.create({url:doc.url});
+			// pageDataMgr.go(pageData);
+			
+		}.bind(this))
 	}.bind(this));
 };
 
@@ -121,6 +113,9 @@ BaseDB.prototype.onInterval = function() {
 
 // auto update the db
 BaseDB.prototype.startUpdates = function() {
+	return;
+	
+	//this will edventually run in classes, classes to have [users _ids] and users  [classes _ids] - easy now that ids sent to client
 	if (!this.shouldAutoUpdate) {
 		return;
 	};
