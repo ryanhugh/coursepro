@@ -66,5 +66,11 @@ EmailMgr.prototype.sendEmails = function(pageData,emailData) {
 
 };
 
+
+EmailMgr.prototype.tests = function() {
+	
+}
+
+
 EmailMgr.prototype.EmailMgr=EmailMgr;
 module.exports = new EmailMgr();

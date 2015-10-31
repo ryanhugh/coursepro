@@ -8,6 +8,9 @@ var requireDir = require('require-dir');
 var parsers = requireDir('./backend/parsers');
 var databases = requireDir('./backend/databases');
 var pointer = require('./backend/pointer');
+var emailMgr = require('./backend/emailMgr')
+var pageDataMgr = require('./backend/pageDataMgr')
+var search = require('./backend/search')
 
 
 
@@ -49,24 +52,25 @@ gulp.task('dev',['compress','watchCompress'],function () {
 // when frontend tests work, add them here
 gulp.task('tests',function(){
 	
-	
-	// //how do i cd into another dir???
-	// process.chdir('backend/parsers');
+	//run all of the parser tests
 	for (var parserName in parsers) {
 	  parsers[parserName].tests();
 	}
 	
-	// process.chdir('..');
-	
-	
-	//how do i cd into another dir???
-	// for (var databaseName in databases) {
-	//   databases[databaseName].tests();
-	// }
-
+	//run all of the db tests
+	for (var databaseName in databases) {
+	  databases[databaseName].tests();
+	}
 
 	pointer.tests();
-})
+	emailMgr.tests();
+	pageDataMgr.tests();
+	search.tests();
+});
+
+gulp.task('spider',function(){
+	pageDataMgr.main()
+});
 
 
 // gulp.task('default',['compress','watch','prod']);

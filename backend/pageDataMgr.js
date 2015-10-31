@@ -235,12 +235,13 @@ PageDataMgr.prototype.main = function() {
 
 PageDataMgr.prototype.tests = function() {
 
-  //a class with no links to sections
-  // https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=AC&crse_in=507&schd_in=HY
+	//a class with no links to sections
+	// https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=AC&crse_in=507&schd_in=HY
 
+	return;
 
-
-  fs.readFile('./tests/differentCollegeUrls.json','utf8',function (err,body) {
+	//THIS WILL RUN FULL COLLEGE PARSRS IT LOOKS LIKE
+  fs.readFile('backend/tests/differentCollegeUrls.json','utf8',function (err,body) {
   	if (err) {
   		console.trace(err)
   		return;
@@ -271,7 +272,7 @@ PageDataMgr.prototype.tests = function() {
   // https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=6610
 
 
-  fs.readFile('./tests/'+this.constructor.name+'/toparse3.json','utf8',function (err,body) {
+  fs.readFile('backend/tests/'+this.constructor.name+'/toparse3.json','utf8',function (err,body) {
   	if (err) {
   		console.trace(err)
   		return;
@@ -311,12 +312,12 @@ var instance = new PageDataMgr();
 
 PageDataMgr.prototype.PageDataMgr=PageDataMgr;
 global.pageDataMgr = instance;
-// module.exports = instance
+module.exports = instance
 
 
 
 if (require.main === module) {
-	instance.main();
+	instance.tests();
 }
 
 
