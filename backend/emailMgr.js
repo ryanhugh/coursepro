@@ -59,11 +59,11 @@ EmailMgr.prototype.sendThanksForRegistering = function (toEmail) {
 }
 
 EmailMgr.prototype.sendEmails = function(pageData,emailData) {
-	if (!emailData) {
-		return;
-	};
+	// if (!emailData) {
+	// 	return;
+	// };
 	console.log('ERROR send email was called??/')
-
+	console.trace();
 };
 
 
