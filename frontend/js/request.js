@@ -48,17 +48,23 @@ Request.prototype.findDiff = function (compareSrc,compareTo) {
 	return retVal;
 }
 
-Request.prototype.searchForSubsetOfData = function(cacheItem,config) {
+Request.prototype.searchForSubsetOfData = function(cacheItem,config,diff,callback) {
 	
 
+	//ok, loop through the cache body and puck the ones that match the missing attributes
+	var attrToCheck = _.pick(config.body,diff.missing);
+	var matches = _.where(cacheItem.body,attrToCheck)
 
+	console.log('found ',matches.length,' matches in cache!!')
+	return callback(null,_.cloneDeep(matches));
+	
 };
 
 
 //if config matches, return the body
 //if the config.body is fully contained within the body of any cache item, return the body
 //else return no
-Request.prototype.searchCache = function(config) {
+Request.prototype.searchCache = function(config,callback) {
 	for (var i=0;i<this.cache.length;i++) {
 		var cacheItem = this.cache[i];
 		
@@ -85,20 +91,27 @@ Request.prototype.searchCache = function(config) {
 		if (diff.missing.length === 0){
 			
 			//clone return object
-			return _.cloneDeep(cacheItem.body);
+			callback(_.cloneDeep(cacheItem.body));
+			return true;
 		}
 		//it is ok for cacheItem to be missing 1 of the attributes - eg all cs classes
 		// looked up for the selectors, and then a specific class looked up for the tree
 		if (diff.missing.length!==1) {
-			console.log('warning: cachItem.config is missing more than 1 attr?',diff,config,cacheItem.config);
+			console.log('warning: cacheItem.config is missing more than 1 attr?',diff,config,cacheItem.config);
 		}
 		
 		
 		//TODO http://localhost/#neu.edu/201610/NRSG/4995
 		//if the item in the cache is still loading, add a callback to fire and then process when its done
 		if (cacheItem.loadingStatus===this.LOADINGSTATUS_LOADING) {
-
-			continue;
+			
+			cacheItem.callbacks.push(function(err,values){
+				
+				this.searchForSubsetOfData(cacheItem,config,diff,callback);
+		
+			}.bind(this));
+			return true;
+			// continue;
 		}
 		
 		
@@ -110,17 +123,14 @@ Request.prototype.searchCache = function(config) {
 		}
 		
 		
-		
-		//ok, loop through the cache body and puck the ones that match the missing attributes
-		var attrToCheck = _.pick(config.body,diff.missing);
-		var matches = _.where(cacheItem.body,attrToCheck)
+		this.searchForSubsetOfData(cacheItem,config,diff,callback);
+		return true;
 
-		console.log('found ',matches.length,' matches in cache!!')
-		return _.cloneDeep(matches);
 	}
-	return null;
+	return false;
 }
 
+// http://localhost/#neu.edu/201610/ANTH/2312 wtf
 
 Request.prototype.go = function(config,callback) {
 	if (!callback) {
@@ -140,10 +150,15 @@ Request.prototype.go = function(config,callback) {
 		return;
 	};
 	
-	var cacheHit = this.searchCache(config);
+	var cacheHit = this.searchCache(config,callback);
 	if (cacheHit) {
-		return callback(null,cacheHit);
+		return;
 	}
+	
+	
+	// if (cacheHit) {
+	// 	return callback(null,cacheHit);
+	// }
 	
 	var cacheItem = {
 		loadingStatus:this.LOADINGSTATUS_LOADING,
@@ -218,3 +233,50 @@ window.request = function (config,callback) {
 
 
 
+request({
+	url:'/listClasses',
+	type:'POST',
+	body:{
+		'host':'neu.edu',
+		'termId':'201610',
+		'subject':'CS'
+	}
+},function(err,body){
+	
+	console.log(err,body)
+	
+
+
+request({
+	url:'/listClasses',
+	type:'POST',
+	body:{
+		'host':'neu.edu',
+		'termId':'201610',
+		'subject':'CS',
+		'classId':'4400'
+	}
+},function(err,body){
+	
+	console.log(err,body,'HERE2!')
+	
+})
+	
+})
+
+
+
+request({
+	url:'/listClasses',
+	type:'POST',
+	body:{
+		'host':'neu.edu',
+		'termId':'201610',
+		'subject':'CS',
+		'classId':'2500'
+	}
+},function(err,body){
+	
+	console.log(err,body,'HERE!')
+	
+})
