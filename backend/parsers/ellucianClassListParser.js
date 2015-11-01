@@ -4,7 +4,7 @@ var _ = require('lodash');
 var he = require('he');
 var fs = require('fs');
 var assert = require('assert');
-var URI = require('URIjs');
+var URI = require('urijs');
 
 var pointer = require('../pointer');
 var linksDB = require('../databases/linksDB')
@@ -44,7 +44,7 @@ EllucianClassListParser.prototype.optionallyAddDep = function(pageData,catalogUr
 	}
 
 
-	//not found, add one 
+	//not found, add one
 	var dep = pageData.addDep({
 		url:catalogUrl
 	})
@@ -113,7 +113,7 @@ EllucianClassListParser.prototype.tests = function() {
 
 
 	//
-	fs.readFile('../tests/ellucianClassListParser/2.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassListParser/2.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {

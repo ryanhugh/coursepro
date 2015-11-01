@@ -5,7 +5,7 @@ var pageDataMgr = require('./pageDataMgr');
 var request = require('request');
 var fs = require('fs');
 var _ = require('lodash');
-var URI = require('URIjs');
+var URI = require('urijs');
 
 var blacklistedEmails = require('./blacklistedEmails.json')
 
@@ -14,6 +14,7 @@ var termsDB = require('./databases/termsDB');
 var subjectsDB = require('./databases/subjectsDB');
 var classesDB = require('./databases/classesDB');
 var sectionsDB = require('./databases/sectionsDB');
+var usersDB = require('./databases/usersDB');
 
 var search = require('./search');
 
@@ -80,12 +81,6 @@ function validateEmail(email) {
 	return true;
 }
 
-//change the url to lowercase
-app.use(function (req,res,next) {
-  req.url = req.url.toLowerCase();
-  next();
-})
-
 
 app.use(function (req, res, next) {
 	logData(req);
@@ -119,53 +114,6 @@ app.use(function (req,res,next) {
 	  next();
 	}
 })
-
-
-
-
-// app.post('/urlDetails', function(req, res) {
-
-// 	if (!req.body || !req.body.url) {
-// 		console.log('invalid req from '+req.ip);
-// 		return;
-// 	};
-
-// 	//dont keep invalid emails
-// 	if (!validateEmail(req.body.email)) {
-// 		console.log('Invalid email rejected',req.body.email)
-// 		req.body.email = null;
-// 	};
-
-// 	console.log('inbound data:',req.body)
-
-
-// 	//client sent a (possibly) valid url, check and parse page
-
-// 	var pageData = pageDataMgr.create({
-// 		ip:req.connection.remoteAddress,
-// 		email:req.body.email,
-// 		dbData:{
-// 			url:req.body.url
-// 		}});
-	
-// 	pageDataMgr.go(pageData, function (err,pageData) {
-
-// 		if (err) {
-// 			//oh no! no modules support url
-// 			res.send(JSON.stringify({
-// 				reason:err
-// 			}));
-// 		}
-// 		else {
-
-// 			res.send(JSON.stringify({
-// 				reason:"SUCCESS",
-// 				clientString:pageData.getClientString()
-// 			}));
-// 		}
-// 	});
-// });
-
 
 app.post('/listColleges',function (req,res) {
 	collegeNamesDB.find({},{
@@ -349,13 +297,81 @@ app.post('/search',function(req,res) {
   
 })
 
+app.post('/registerForEmails',function(req,res){
+	if (!req.body.email || !req.body.userId || req.body.userId.length<10) {
+		console.log('ERROR invalid user data given ',req.body);
+		return res.send(JSON.stringify({error:'not given email or user id'}))
+	}
+	
+	if (!validateEmail(req.body.email)) {
+		console.log('INFO dropping invalid email ',req.body.email);
+		return res.send(JSON.stringify({error:'invalid email'}))
+	}
+	
+	var userData = {
+		userId:req.body.userId,
+		email:req.body.email,
+		ip:req.connection.remoteAddress
+	}
+	
+	usersDB.subscribeForEverything(userData,function(err) {
+		if (err) {
+			console.log('ERROR couldnt subscribe for everthing',err);
+			return res.send(JSON.stringify({status:'error',error:'internal error'}));
+		}
+		else {
+			return res.end(JSON.stringify({status:'success'}));
+		}
+		
+	})
+})
 
+
+function unsubscribe(body,callback) {
+	if (!body.userId || body.userId.length<10) {
+		console.log(body)
+		callback(JSON.stringify({error:'need userId'}));
+		return;
+	}
+	
+	var userData = {
+		userId:body.userId
+	}
+	
+	
+	usersDB.unsubscribe(userData,function(err){
+		if (err) {
+			console.log('couldn"t unsubscribe... ',userData.userId,err);
+			return callback(JSON.stringify({error:'internal error'}));
+		}
+		else {
+			return callback(JSON.stringify({status:'success'}));
+		}
+	}.bind(this));
+}
+
+
+//unsubscribe can be either post or get so it works in emails and in other pages
+//in boh cases need email and userId
+app.post('/unsubscribe',function(req,res){
+	unsubscribe(req.body,function(response){
+		res.send(response);
+	})
+})
+
+app.get('/unsubscribe',function(req,res){
+	var body = new URI(req.url).query(true);
+	unsubscribe(body,function(response){
+		res.send(response);
+	})
+})
 
 
 
 // serve the webpage
 app.get('/', function (req, res) {
-	res.sendFile('frontend/static/index.html',{"root": __dirname});
+	// console.log('yoooooo:',process.cwd())
+	res.sendFile('frontend/static/index.html',{"root": process.cwd()});
 });
 
 

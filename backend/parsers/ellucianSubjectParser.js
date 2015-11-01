@@ -1,5 +1,5 @@
 'use strict';
-var URI = require('URIjs');
+var URI = require('urijs');
 var fs = require('fs');
 var assert = require('assert');
 
@@ -167,7 +167,7 @@ EllucianSubjectParser.prototype.getEmailData = function(pageData) {
 EllucianSubjectParser.prototype.tests = function(){
 	require('../pageDataMgr')
 
-	fs.readFile('../tests/ellucianSubjectParser/1.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianSubjectParser/1.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -186,7 +186,7 @@ EllucianSubjectParser.prototype.tests = function(){
 			this.parseDOM(pageData,dom);
 
 
-			console.log(pageData.deps)
+			// console.log(pageData.deps)
 			// assert.deepEqual(pageData.dbData,{ url: 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date',
 			// 	subjects:
 			// 	[ { id: 'ANAT', text: 'Anatomy CM' },

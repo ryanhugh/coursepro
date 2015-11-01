@@ -1,5 +1,5 @@
 'use strict';
-var URI = require('URIjs');
+var URI = require('urijs');
 var domutils = require('domutils');
 var he = require('he');
 var _ = require('lodash');
@@ -215,7 +215,7 @@ EllucianCatalogParser.prototype.tests = function() {
 
 
 	//
-	fs.readFile('../tests/ellucianCatalogParser/5.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianCatalogParser/5.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -244,9 +244,9 @@ EllucianCatalogParser.prototype.tests = function() {
 			
 		}.bind(this));
 	}.bind(this));//
-	return
+	// return
 
-	fs.readFile('../tests/ellucianCatalogParser/1.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianCatalogParser/1.html','utf8',function (err,body) {
 		assert.equal(null,err);
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);
@@ -287,7 +287,7 @@ EllucianCatalogParser.prototype.tests = function() {
 	}.bind(this));//
 
 	//
-	fs.readFile('../tests/ellucianCatalogParser/2.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianCatalogParser/2.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -320,7 +320,7 @@ EllucianCatalogParser.prototype.tests = function() {
 
 
 	//
-	fs.readFile('../tests/ellucianCatalogParser/3.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianCatalogParser/3.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {

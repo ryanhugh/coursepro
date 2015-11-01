@@ -1,6 +1,6 @@
 // // var a = require('./parsers/BaseParser')
 // // console.log('fdas'.indexOf)
-var URI = require('URIjs');
+var URI = require('urijs');
 var async = require('async');
 // var querystring = require('querystring');f
 var assert = require('assert');
@@ -25,17 +25,54 @@ var queue = require("queue-async")
 // var subjectsDB = require('./databases/subjectsDB')
 // var collegeNamesDB = require('./databases/collegeNamesDB')
 
-
-function h () {
-	h.t=9	
+function hi () {
+    try {
+        console.log(fs.statSync('/test.js'))
+    }
+    catch (e) {
+        console.log('nope',e,e.code=='ENOENT');
+        return;
+    }
+    console.log('yep')
 }
+hi();
 
-h.prototype.call = function(first_argument) {
-	// body...
-};
+// var nodemailer = require('nodemailer');
+// var smtpTransport = require('nodemailer-smtp-transport');
 
-a = new h
-console.log(a())
+
+// var password = fs.readFileSync('/etc/coursepro/passwd').toString().trim();
+// // console.log(password);
+
+
+// var transporter = nodemailer.createTransport(smtpTransport({
+//     host: 'mail.gandi.net',
+//     port: 25,
+//     auth: {
+//         user: 'ryan@coursepro.io',
+//         pass: password
+//     }
+// }));
+// console.log(transporter)
+
+// // send mail
+// transporter.sendMail({
+//     from: 'ryan@coursepro.io',
+//     to: 'rysquash@gmail.com',
+//     subject: 'hello world! 2',
+//     text: 'YOOOOOOOO'
+// });
+
+// function h () {
+// 	h.t=9
+// }
+
+// h.prototype.call = function(first_argument) {
+// 	// body...
+// };
+
+// a = new h
+// console.log(a())
 
 
 
@@ -113,7 +150,7 @@ console.log(a())
 // b.t = 'this is b'
 // c.t = 'this is c'
 // console.log(a,b,c);
-// a.b='hi' 
+// a.b='hi'
 // console.log(a,b,c);
 
 
@@ -271,7 +308,7 @@ console.log(a())
 //   });
 // });
 
-// var whois = require('node-whois')
+// var whois = require('whois')
 // whois.lookup('uillinois.edu', function(err, data) {
 //     // console.log(data)
     

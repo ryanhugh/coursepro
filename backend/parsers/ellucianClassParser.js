@@ -1,5 +1,5 @@
 'use strict';
-var URI = require('URIjs');
+var URI = require('urijs');
 var domutils = require('domutils');
 var moment = require('moment');
 var he = require('he');
@@ -170,8 +170,9 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 					dbAltEntry = pageData.deps[i];
 				}
 			}
-
-		    //entry
+			
+		    //if there exist no entry in the pageData.deps with that matches (same name + updated by parent)
+		    //create a new class
 			if (!dbAltEntry) {
 				// console.log('creating a new dep entry',pageData.deps.length);
 
@@ -185,6 +186,13 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 					updatedByParent:true,
 					name:className
 				});
+				
+				//could not create a dep with this data.. uh oh
+				if (!dbAltEntry) {
+					return;
+				}
+				
+				dbAltEntry.parsingData.crns = []
 
 				//copy over attributes from this class
 				for (var attrName in pageData.dbData) {
@@ -193,8 +201,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 					if (_(['name','updatedByParent','url']).includes(attrName)) {
 						continue;
 					}
-					// console.log(attn)
-
+					
 					dbAltEntry.setData(attrName,pageData.dbData[attrName])
 				}
 
@@ -202,11 +209,6 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 			}
 
-			//could not create a dep with this data.. uh oh
-			if (!dbAltEntry) {
-				return;
-			}
-			dbAltEntry.parsingData.crns = []
 			classToAddSectionTo = dbAltEntry;
 
 		}
@@ -428,7 +430,7 @@ EllucianClassParser.prototype.tests = function () {
 
 
 	//sections have different names
-	fs.readFile('../tests/ellucianClassParser/multiname.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassParser/multiname.html','utf8',function (err,body) {
 		assert.equal(null,err);
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);
@@ -461,7 +463,8 @@ EllucianClassParser.prototype.tests = function () {
 
 	        //pageData.deps[1] is the other class
 	        assert.equal(pageData.deps[1].parser,this);
-	        assert.deepEqual(pageData.deps[1].dbData.crns,[ '24601', '24603', '25363' ]);
+	        // console.log(pageData.deps[0].dbData)
+	        assert.deepEqual(pageData.deps[1].dbData.crns,[ '24601', '24603', '25363' ],JSON.stringify(pageData.deps[1].dbData));
 	        assert.equal(pageData.deps[1].dbData.name,'Thermodyn/stat Mechanics - Lab');
 	        assert.equal(pageData.deps[1].deps.length,3);
 	        assert.equal(pageData.deps[1].deps[0].parser,ellucianSectionParser);
@@ -498,7 +501,7 @@ EllucianClassParser.prototype.tests = function () {
 	}.bind(this));//
 
 	//
-	fs.readFile('../tests/ellucianClassParser/1.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassParser/1.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -537,7 +540,7 @@ EllucianClassParser.prototype.tests = function () {
 	}.bind(this));
 
 
-	fs.readFile('../tests/ellucianClassParser/3.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassParser/3.html','utf8',function (err,body) {
 		assert.equal(null,err);
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);
@@ -569,7 +572,7 @@ EllucianClassParser.prototype.tests = function () {
 	}.bind(this));
 
 	//lots of different meetings
-	fs.readFile('../tests/ellucianClassParser/4.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassParser/4.html','utf8',function (err,body) {
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -741,7 +744,7 @@ EllucianClassParser.prototype.tests = function () {
 
 
 	//cancelled - something was wierd with this one not sure what it was
-	fs.readFile('../tests/ellucianClassParser/6.html','utf8',function (err,body) {
+	fs.readFile('backend/tests/ellucianClassParser/6.html','utf8',function (err,body) {
 		assert.equal(null,err);
 		pointer.handleRequestResponce(body,function (err,dom) {
 			assert.equal(null,err);

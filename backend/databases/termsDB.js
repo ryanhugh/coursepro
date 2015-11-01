@@ -4,8 +4,6 @@ var BaseDB = require('./baseDB').BaseDB;
 
 function TermsDB () {
 	this.filename = 'terms.db'
-	this.shouldAutoUpdate = false;
-	this.peopleCanRegister = false;
 	BaseDB.prototype.constructor.apply(this,arguments);
 }
 

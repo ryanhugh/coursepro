@@ -2,14 +2,13 @@
 var Datastore = require('nedb');
 var fs = require('fs');
 var _ = require('lodash');
+var assert = require('assert')
 
 var BaseDB = require('./baseDB').BaseDB;
 
 
 function CollegeNamesDB () {
 	this.filename = 'collegeNames.db'
-	this.shouldAutoUpdate = false;
-	this.peopleCanRegister = false;
 	BaseDB.prototype.constructor.apply(this,arguments);
 }
 
@@ -112,9 +111,9 @@ CollegeNamesDB.prototype.isValidLookupValues = function(lookupValues) {
 
 
 CollegeNamesDB.prototype.tests = function() {
-	var a = this.getStaticHost('neu.edu','Law')
-	console.log(a)
-
+	var a = this.getStaticHost('neu.edu','Law othertext')
+	assert.equal(a.host,'neu.edu/law')
+	assert.equal(a.text,'othertext')
 };
 
 
