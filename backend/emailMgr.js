@@ -2,6 +2,7 @@
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 var fs = require('fs')
+var macros = require('./macros')
 
 function EmailMgr () {
 
@@ -39,14 +40,18 @@ EmailMgr.prototype.sendThanksForRegistering = function (toEmail) {
 	
 	toEmail = toEmail.trim();
 	
-
-	if (this.transporter) {
-		console.log('Sending email to ',toEmail);
-	}
-	else {
+	
+	if (!this.transporter) {
 		console.log("WARNING: not sending email because don't have email password",toEmail);
 		return;
 	}
+	
+	if (!macros.SEND_EMAILS) {
+		console.log('Not sending email to ',toEmail,' because in test mode');
+		return;
+	}
+
+	console.log('Sending email to ',toEmail);
 	
 	// send mail
 	this.transporter.sendMail({

@@ -20,3 +20,12 @@ function fixCWD () {
    }
 }
 fixCWD();
+
+
+
+module.exports = {
+	SEND_EMAILS:false
+	
+	
+	
+}

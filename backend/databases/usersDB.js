@@ -79,9 +79,19 @@ UsersDB.prototype.subscribeForEverything = function(userData,callback) {
 				userDBData.ips.push(userData.ip);
 			}
 			
+			var sendThanksEmail = false;
+			
 			if (!_(userDBData.emails).includes(userData.email)) {
-				emailMgr.sendThanksForRegistering(userData.email);
+				sendThanksEmail = true;
 				userDBData.emails.push(userData.email);
+			}
+			
+			if (!userDBData.subscriptions.everything) {
+				sendThanksEmail = true;
+			}
+			
+			if (sendThanksEmail) {
+				emailMgr.sendThanksForRegistering(userData.email);
 			}
 			
 			userDBData.subscriptions.everything = true;

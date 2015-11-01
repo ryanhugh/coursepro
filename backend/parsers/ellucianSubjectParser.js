@@ -1,5 +1,5 @@
 'use strict';
-var URI = require('URIjs');
+var URI = require('urijs');
 var fs = require('fs');
 var assert = require('assert');
 

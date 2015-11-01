@@ -11,6 +11,7 @@ var pointer = require('./backend/pointer');
 var emailMgr = require('./backend/emailMgr')
 var pageDataMgr = require('./backend/pageDataMgr')
 var search = require('./backend/search')
+var macros = require('./backend/macros')
 
 
 
@@ -25,7 +26,8 @@ gulp.task('uglify', function() {
 
 
 gulp.task('prod',['uglify'],function() {
-  require('./backend/server')
+	macros.SEND_EMAILS = true;
+	require('./backend/server')
 })
 
 
@@ -39,7 +41,7 @@ gulp.task('compress',function  () {
 })
 
 gulp.task('watchCompress', function() {
-  gulp.watch(['frontend/js/*.js','frontend/js/modules/*.js'], ['compress']);
+	gulp.watch(['frontend/js/*.js','frontend/js/modules/*.js'], ['compress']);
 });
 
 
