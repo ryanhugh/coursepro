@@ -76,7 +76,7 @@ def main():
 	
 	
 	#print ip
-	print line['ip'],
+	print '%15s' % line['ip'],
 	
 	if 'userId' in line['body']:
 		print line['body']['userId'],
