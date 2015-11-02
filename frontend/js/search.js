@@ -118,7 +118,6 @@ Search.prototype.go = function(host,termId,subject,value) {
 	};
 
 
-
 	ga('send', {
 		'hitType': 'pageview',
 		'page': window.location.href,
@@ -136,19 +135,41 @@ Search.prototype.go = function(host,termId,subject,value) {
 		body:{
 			host:host,
 			termId:termId,
-			subject:selectors.subject.value,
+			subject:subject,
 			value:value
 		}
 	},function (err,results) {
 		console.log('found ',results.length,' classes!');
-
-
+		
+		
 		//update the deeplink here
 		if (results.length>0) {
-			treeMgr.showClasses(results);
+			treeMgr.showClasses(results,function(err,tree){
+				if (err) {
+					console.log('ERROR rendering tree...?',err,tree);
+					return;
+				}
+				
+				treeMgr.logTree(tree,{
+					type:'search',
+					host:host,
+					termId:termId,
+					subject:subject,
+					searchQuery:value
+				})
+			});
 		}
 		else {
 			this.container.innerHTML = '<div style="font-size: 26px;">Nothing Found!</div>'
+			
+			treeMgr.logTree({},{
+				type:'search',
+				host:host,
+				termId:termId,
+				subject:subject,
+				searchQuery:value
+				
+			})
 		}
 
 	}.bind(this))

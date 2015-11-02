@@ -305,10 +305,11 @@ TreeMgr.prototype.sortTree = function(tree) {
 		else if (a.subject<b.subject) {
 			return -1;
 		}
-		console.log('error ,wtf',a,b,aId,bId)
+		
+		//this is possible if there are (hon) and non hon classes of same subject classId
 		return 0
 
-	})
+	}.bind(this))
 
 
 	//sort the trees so the largest ones are on the outside
@@ -347,6 +348,39 @@ TreeMgr.prototype.sortTree = function(tree) {
 		this.sortTree(subTree);
 	}.bind(this))
 }
+
+
+//counts all classes, coreqs and prereqs
+TreeMgr.prototype.countClassesInTree = function(tree) {
+	
+	var retVal;
+	
+	if (tree.isClass) {
+		retVal=1;
+	}
+	else {
+		retVal =0;
+	}
+
+	
+	if (tree.values) {
+		tree.values.forEach(function(subTree) {
+			retVal+=this.countClassesInTree(subTree);
+		}.bind(this))
+	}
+	
+	if (tree.coreqs) {
+		tree.coreqs.values.forEach(function(subTree){
+			retVal+=this.countClassesInTree(subTree);
+		}.bind(this))
+	}
+	
+	return retVal;
+}
+
+
+
+
 TreeMgr.prototype.addAllParentRelations = function(tree,parent) {
 	if (!tree.allParents) {
 		tree.allParents = [];
@@ -661,6 +695,51 @@ TreeMgr.prototype.removeDuplicateDeps = function(tree,classList) {
 	}.bind(this))
 }
 
+
+TreeMgr.prototype.logTree = function(tree,body){
+	
+	//tell the server how big this tree is
+	var classCount = this.countClassesInTree(tree);
+	
+	if (!body.type) {
+		console.log('ERROR not given a tree type',body);
+		console.trace();
+	}
+	
+	body.classCount = classCount;
+	
+	//copy data from the tree
+	if (tree.isClass) {
+		body.classId = tree.classId;
+		body.subject = tree.subject;
+		body.termId = tree.termId;
+		body.host = tree.host;
+	}
+	else {
+		if (tree.termId!==undefined) {
+			body.termId = tree.termId;
+		}
+		if (tree.host!==undefined){
+			body.host = tree.host;
+		}
+	}
+	
+	
+	console.log('The tree is ',classCount,' big');
+	request({
+		url:'/log',
+		body:body,
+		useCache:false
+	},function(err,response){
+		if (err) {
+			console.log("ERROR: couldn't log tree size :(",err,response,body);
+		}
+	}.bind(this))
+	
+	
+}
+
+
 TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 	
 	var tree = {
@@ -673,10 +752,20 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 	}
 
 	//process tree takes in a callback
-	this.processTree(tree);
+	this.processTree(tree,function(err,tree){
+		if (err) {
+			console.log('error processing tree',err,tree);
+			return;
+		}
+		
+		this.logTree(tree,{
+			type:'createTree'
+		})
+	}.bind(this));
+	
 
 }
-TreeMgr.prototype.showClasses = function(classList) {
+TreeMgr.prototype.showClasses = function(classList,callback) {
 	if (classList.length<1) {
 		console.log('error show classes was called with 0 classes!')
 		return;
@@ -700,7 +789,11 @@ TreeMgr.prototype.showClasses = function(classList) {
 	}.bind(this))
 
 	
-	this.processTree(tree,function () {
+	this.processTree(tree,function (err,tree) {
+		if (err) {
+			console.log('error processing tree???',err,tree);
+			return callback(err);
+		}
 
 		//hide the node at the top and the lines to it
 		tree.panel.style.display='none'
@@ -708,6 +801,8 @@ TreeMgr.prototype.showClasses = function(classList) {
 		tree.values.forEach(function (subTree) {
 			subTree.lineToParent.style.display='none';
 		}.bind(this))
+		
+		callback(null,tree);
 		
 	}.bind(this));
 
@@ -768,13 +863,16 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		// })
 
 		// console.log(uniqueArray,'fd')
+		
+		
+		
 
 
 		render.hideSpinner();
 		render.go(tree);
 		popup.go(tree);
 		help.go(tree);
-		callback();
+		callback(null,tree);
 	}.bind(this));
 
 }

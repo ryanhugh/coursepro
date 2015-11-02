@@ -368,6 +368,13 @@ app.get('/unsubscribe',function(req,res){
 
 
 
+app.post('/log',function(req,res){
+	res.send(JSON.stringify({status:'success'}));
+})
+
+
+
+
 // serve the webpage
 app.get('/', function (req, res) {
 	// console.log('yoooooo:',process.cwd())

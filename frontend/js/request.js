@@ -160,9 +160,16 @@ Request.prototype.go = function(config,callback) {
 		return;
 	};
 	
-	var cacheHit = this.searchCache(config,callback);
-	if (cacheHit) {
-		return;
+	if (config.useCache===undefined) {
+		config.useCache=true;
+	}
+	
+	
+	if (config.useCache) {
+		var cacheHit = this.searchCache(config,callback);
+		if (cacheHit) {
+			return;
+		}
 	}
 	
 	var cacheItem = {
