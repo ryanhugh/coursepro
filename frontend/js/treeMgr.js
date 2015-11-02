@@ -294,12 +294,17 @@ TreeMgr.prototype.sortTree = function(tree) {
 		if (aId>bId) {
 			return 1;
 		}
-		if (aId===bId) {
-			return 0;
-		}
-		if (aId<bId) {
+		else if (aId<bId) {
 			return -1;
-		};
+		}
+		
+		//if ids are the same, sort by subject
+		else if (a.subject>b.subject) {
+			return 1;
+		}
+		else if (a.subject<b.subject) {
+			return -1;
+		}
 		console.log('error ,wtf',a,b,aId,bId)
 		return 0
 
@@ -719,6 +724,7 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 
 	render.clearContainer()
 	render.showSpinner()
+	document.body.style.height = '';
 	this.fetchFullTree(tree,function () {
 
 		// this.matchCoreqsByHonors(tree);

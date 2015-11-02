@@ -1,6 +1,10 @@
 !!!!
 
-remove the email stuff in the classes like shuldupdatedb, alsp it would work because it has a return true in a foreach function
+http://localhost/#neu.edu/201610/NRSG/4995
+has some trees that are not fully simplified
+
+supercache to load all CS classes when asked to load all CS4400
+
 
 launchrock
 #3939BF

@@ -75,14 +75,14 @@ Help.prototype.addInitialHelp = function(tree) {
 				if (lineCenter>panelCenter) {
 					x = lineCoords.right - 200;
 					percent = 1-(x-lineCoords.left)/lineCoords.width;
-					console.log('line was up/right')
+					// console.log('line was up/right')
 				}
 
 				//line goes up/left, get offset left+200
 				else {
 					x = lineCoords.left + 200;
 					percent = (x-lineCoords.left)/lineCoords.width;
-					console.log('line was up/left')
+					// console.log('line was up/left')
 				}
 
 				// percent=percent*2-.2;
@@ -91,7 +91,7 @@ Help.prototype.addInitialHelp = function(tree) {
 				//move the panel down a little
 				// y+=100;
 
-				console.log('setting to ',x,y,percent)
+				// console.log('setting to ',x,y,percent)
 				this.activateHelpPopup(currTree,x,y);
 
 			}

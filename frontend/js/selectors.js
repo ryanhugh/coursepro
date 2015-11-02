@@ -181,7 +181,9 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,config) {
 			dropdown.next.setup()
 		}
 		else {
-			this.finish()
+			setTimeout(function(){
+				this.finish()
+			}.bind(this),0);
 		}
 
 	}.bind(this))
@@ -388,7 +390,7 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 	}.bind(this))
 };
 
-//you can search for cs4800 if cs is open, 
+//you can search for cs4800 if cs is open,
 // but network connections would be required to search eece2222 when cs is open, so add that later
 Selectors.prototype.searchClasses = function(value) {
 
@@ -403,7 +405,7 @@ Selectors.prototype.searchClasses = function(value) {
 		//yay found match, open the class
 		if (currClass.id.toLowerCase()===value.toLowerCase()) {
 
-			//open 
+			//open
 			search.closeSearchBox();
 			selectors.class.element.select2('val',value);
 			selectors.class.element.trigger('select2:close')

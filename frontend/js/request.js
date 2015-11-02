@@ -23,7 +23,10 @@ Request.prototype.randomString = function () {
     return result;
 }
 
-
+//finds the difference between two query configs
+//if they share a key:value, the key goes in same
+//if compareTo is missing key in Src, goes in missing
+//if compareTo has different value, goes in different
 Request.prototype.findDiff = function (compareSrc,compareTo) {
 	
 	var retVal = {
@@ -55,7 +58,7 @@ Request.prototype.searchForSubsetOfData = function(cacheItem,config,diff,callbac
 	var attrToCheck = _.pick(config.body,diff.missing);
 	var matches = _.where(cacheItem.body,attrToCheck)
 
-	console.log('found ',matches.length,' matches in cache!!')
+	// console.log('found ',matches.length,' matches in cache!!')
 	return callback(null,_.cloneDeep(matches));
 	
 };
@@ -91,7 +94,15 @@ Request.prototype.searchCache = function(config,callback) {
 		if (diff.missing.length === 0){
 			
 			//clone return object
-			callback(_.cloneDeep(cacheItem.body));
+			if (cacheItem.loadingStatus===this.LOADINGSTATUS_LOADING) {
+				cacheItem.callbacks.push(callback);
+			}
+			else if (cacheItem.loadingStatus===this.LOADINGSTATUS_DONE) {
+				callback(null,_.cloneDeep(cacheItem.body));
+			}
+			else {
+				console.log("ERROR what is this ",cacheItem.loadingStatus);
+			}
 			return true;
 		}
 		//it is ok for cacheItem to be missing 1 of the attributes - eg all cs classes
@@ -101,7 +112,6 @@ Request.prototype.searchCache = function(config,callback) {
 		}
 		
 		
-		//TODO http://localhost/#neu.edu/201610/NRSG/4995
 		//if the item in the cache is still loading, add a callback to fire and then process when its done
 		if (cacheItem.loadingStatus===this.LOADINGSTATUS_LOADING) {
 			
@@ -111,10 +121,7 @@ Request.prototype.searchCache = function(config,callback) {
 		
 			}.bind(this));
 			return true;
-			// continue;
 		}
-		
-		
 		
 		
 		//nothing found last time, no need to continue
@@ -130,8 +137,6 @@ Request.prototype.searchCache = function(config,callback) {
 	return false;
 }
 
-// http://localhost/#neu.edu/201610/ANTH/2312 wtf
-
 Request.prototype.go = function(config,callback) {
 	if (!callback) {
 		console.log('no callback given??',config,callback)
@@ -142,7 +147,12 @@ Request.prototype.go = function(config,callback) {
 		config = {url:config}
 	}
 	if (!config.type) {
-		config.type = 'GET'
+		if (config.body) {
+			config.type = 'POST'
+		}
+		else {
+			config.type = 'GET'
+		}
 	}
 	if (['POST','GET'].indexOf(config.type)<0) {
 		console.log('dropping request unknown method type',config.type);
@@ -154,11 +164,6 @@ Request.prototype.go = function(config,callback) {
 	if (cacheHit) {
 		return;
 	}
-	
-	
-	// if (cacheHit) {
-	// 	return callback(null,cacheHit);
-	// }
 	
 	var cacheItem = {
 		loadingStatus:this.LOADINGSTATUS_LOADING,
@@ -172,16 +177,16 @@ Request.prototype.go = function(config,callback) {
 	
 	//add the userid
 	if (config.type==='POST') {
-	  if (config.body.userId) {
-	    console.log('error config.body had a userId??')
-	  }
+		if (config.body.userId) {
+			console.log('error config.body had a userId??')
+		}
 	  
-	  if (!localStorage.userId) {
-	      //new user, yay!
-	      localStorage.userId = this.randomString();
-	  }
+		if (!localStorage.userId) {
+			//new user, yay!
+			localStorage.userId = this.randomString();
+		}
 	  
-	  body.userId = localStorage.userId;
+		body.userId = localStorage.userId;
 	}
 
 
@@ -230,53 +235,3 @@ Request.prototype.Request=Request;
 window.request = function (config,callback) {
 	instance.go(config,callback);
 };
-
-
-
-request({
-	url:'/listClasses',
-	type:'POST',
-	body:{
-		'host':'neu.edu',
-		'termId':'201610',
-		'subject':'CS'
-	}
-},function(err,body){
-	
-	console.log(err,body)
-	
-
-
-request({
-	url:'/listClasses',
-	type:'POST',
-	body:{
-		'host':'neu.edu',
-		'termId':'201610',
-		'subject':'CS',
-		'classId':'4400'
-	}
-},function(err,body){
-	
-	console.log(err,body,'HERE2!')
-	
-})
-	
-})
-
-
-
-request({
-	url:'/listClasses',
-	type:'POST',
-	body:{
-		'host':'neu.edu',
-		'termId':'201610',
-		'subject':'CS',
-		'classId':'2500'
-	}
-},function(err,body){
-	
-	console.log(err,body,'HERE!')
-	
-})
