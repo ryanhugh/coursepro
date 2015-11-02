@@ -51,11 +51,9 @@ Request.prototype.findDiff = function (compareSrc,compareTo) {
 	return retVal;
 }
 
-Request.prototype.searchForSubsetOfData = function(cacheItem,config,diff,callback) {
+Request.prototype.searchForSubsetOfData = function(cacheItem,attrToCheck,callback) {
 	
 
-	//ok, loop through the cache body and puck the ones that match the missing attributes
-	var attrToCheck = _.pick(config.body,diff.missing);
 	var matches = _.where(cacheItem.body,attrToCheck)
 
 	// console.log('found ',matches.length,' matches in cache!!')
@@ -112,12 +110,16 @@ Request.prototype.searchCache = function(config,callback) {
 		}
 		
 		
+		//ok, loop through the cache body and puck the ones that match the missing attributes
+		var attrToCheck = _.pick(config.body,diff.missing);
+		
+		
 		//if the item in the cache is still loading, add a callback to fire and then process when its done
 		if (cacheItem.loadingStatus===this.LOADINGSTATUS_LOADING) {
 			
 			cacheItem.callbacks.push(function(err,values){
 				
-				this.searchForSubsetOfData(cacheItem,config,diff,callback);
+				this.searchForSubsetOfData(cacheItem,attrToCheck,callback);
 		
 			}.bind(this));
 			return true;
@@ -130,7 +132,7 @@ Request.prototype.searchCache = function(config,callback) {
 		}
 		
 		
-		this.searchForSubsetOfData(cacheItem,config,diff,callback);
+		this.searchForSubsetOfData(cacheItem,attrToCheck,callback);
 		return true;
 
 	}
@@ -138,14 +140,20 @@ Request.prototype.searchCache = function(config,callback) {
 }
 
 Request.prototype.go = function(config,callback) {
+	
+	
+	//default values
 	if (!callback) {
 		console.log('no callback given??',config,callback)
 		return;
 	}
 
+	//if given string, convert it to config object
 	if (typeof config == 'string') {
 		config = {url:config}
 	}
+	
+	//default is post if body is given else get
 	if (!config.type) {
 		if (config.body) {
 			config.type = 'POST'
@@ -163,6 +171,13 @@ Request.prototype.go = function(config,callback) {
 	if (config.useCache===undefined) {
 		config.useCache=true;
 	}
+	
+	
+	if (config.resultsQuery) {
+		
+	}
+	
+	
 	
 	
 	if (config.useCache) {
