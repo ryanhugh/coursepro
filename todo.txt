@@ -5,6 +5,9 @@ has some trees that are not fully simplified
 
 supercache to load all CS classes when asked to load all CS4400
 
+treeMgr.js tell server how many nodes loaded when requested a tree
+
+-------
 
 launchrock
 #3939BF
