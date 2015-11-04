@@ -51,16 +51,6 @@ Request.prototype.findDiff = function (compareSrc,compareTo) {
 	return retVal;
 }
 
-Request.prototype.searchForSubsetOfData = function(body,attrToCheck,callback) {
-	
-
-	var matches = _.where(body,attrToCheck)
-
-	// console.log('found ',matches.length,' matches in cache!!')
-	return callback(null,_.cloneDeep(matches));
-	
-};
-
 
 //if config matches, return the body
 //if the config.body is fully contained within the body of any cache item, return the body
@@ -110,94 +100,51 @@ Request.prototype.searchCache = function(config,callback) {
 		}
 		
 		
-		//ok, loop through the cache body and puck the ones that match the missing attributes
-		var attrToCheck = _.pick(config.body,diff.missing);
-		
-		
-		//if the item in the cache is still loading, add a callback to fire and then process when its done
-		if (cacheItem.loadingStatus===this.LOADINGSTATUS_LOADING) {
-			
-			cacheItem.callbacks.push(function(err,values){
+		async.waterfall([
+			function(callback) {
 				
-				this.searchForSubsetOfData(cacheItem.body,attrToCheck,callback);
-		
-			}.bind(this));
-			return true;
-		}
-		
-		
-		//nothing found last time, no need to continue
-		if (cacheItem.body.length===0) {
-			continue;
-		}
-		
-		
-		this.searchForSubsetOfData(cacheItem.body,attrToCheck,callback);
-		return true;
+				
+				//if the item in the cache is still loading, add a callback to fire and then process when its done
+				if (cacheItem.loadingStatus===this.LOADINGSTATUS_LOADING) {
+					cacheItem.callbacks.push(callback);
+				}
+				
+				else if (cacheItem.loadingStatus===this.LOADINGSTATUS_DONE) {
+					return callback(null,cacheItem.body);
+				}
+				else {
+					console.log("ERROR wtf is cacheitem loading status",cacheItem.loadingStatus);
+					return callback('internal error');
+				}
+			}.bind(this)
+		],function(err,supersetResults) {
+			if (err) {
+				return callback(err);
+			}
+			
 
+			//nothing found last time, no need to continue
+			if (cacheItem.body.length===0) {
+				callback(null,[]);
+			}
+			else {
+				
+				//ok, loop through the cache body and puck the ones that match the missing attributes
+				var attrToCheck = _.pick(config.body,diff.missing);
+				var matches = _.where(cacheItem.body,attrToCheck)
+			
+				callback(null,_.cloneDeep(matches));
+			}
+			
+		}.bind(this))
+		return true;
+		
 	}
 	return false;
 }
 
-Request.prototype.go = function(config,_callback) {
-	var callback;
-	
-	
-	//default values
-	if (!_callback) {
-		console.log('no callback given??',config,_callback)
-		_callback = function(){}
-	}
 
-	//if given string, convert it to config object
-	if (typeof config == 'string') {
-		config = {url:config}
-	}
-	
-	//default is post if body is given else get
-	if (!config.type) {
-		if (config.body) {
-			config.type = 'POST'
-		}
-		else {
-			config.type = 'GET'
-		}
-	}
-	if (['POST','GET'].indexOf(config.type)<0) {
-		console.log('dropping request unknown method type',config.type);
-		console.trace()
-		return _callback('internal error');
-	};
-	
-	if (config.useCache===undefined) {
-		config.useCache=true;
-	}
-	
-	
-	if (config.resultsQuery) {
-		
-		callback = function(err,results) {
-			if (err){
-				return _callback(err);
-			}
-			
-			this.searchForSubsetOfData(results,config.resultsQuery,_callback);
-					
-		}.bind(this);
-	}
-	else {
-		callback = _callback
-	}
-	
-	
-	
-	
-	if (config.useCache) {
-		var cacheHit = this.searchCache(config,callback);
-		if (cacheHit) {
-			return;
-		}
-	}
+Request.prototype.fireRequest = function(config,callback) {
 	
 	var cacheItem = {
 		loadingStatus:this.LOADINGSTATUS_LOADING,
@@ -252,7 +199,7 @@ Request.prototype.go = function(config,_callback) {
 
 		callback(null,_.cloneDeep(response));
 		cacheItem.callbacks.forEach(function (callback,index) {
-			callback(null,_.cloneDeep(response))
+			callback(null,_.cloneDeep(response));
 		}.bind(this))
 		
 	}.bind(this);
@@ -261,6 +208,78 @@ Request.prototype.go = function(config,_callback) {
 	xmlhttp.open(config.type,config.url,true);
 	xmlhttp.setRequestHeader("Content-type","application/json");
 	xmlhttp.send(JSON.stringify(body));
+}
+
+
+
+Request.prototype.go = function(config,callback) {
+	
+	//default values
+	if (!callback) {
+		console.log('no callback given??',config,callback)
+		callback = function(){}
+	}
+
+	//if given string, convert it to config object
+	if (typeof config == 'string') {
+		config = {url:config}
+	}
+	
+	//default is post if body is given else get
+	if (!config.type) {
+		if (config.body) {
+			config.type = 'POST'
+		}
+		else {
+			config.type = 'GET'
+		}
+	}
+	if (['POST','GET'].indexOf(config.type)<0) {
+		console.log('dropping request unknown method type',config.type);
+		console.trace()
+		return callback('internal error');
+	};
+	
+	if (config.useCache===undefined) {
+		config.useCache=true;
+	}
+	
+	
+	
+	async.waterfall([
+		function(callback) {
+			
+			//if use cache, search cache
+			//if cache it, return
+			if (config.useCache && this.searchCache(config,callback)) {
+				
+				//the cache calls the callback
+				return;
+			}
+			
+			//else fire request (which adds to cache)
+			else {
+				this.fireRequest(config,callback);
+			}
+		}.bind(this)
+		
+	],function(err,results){
+		if (err) {
+			return callback(err);
+		}
+		
+		if (config.resultsQuery) {
+			
+			var matches = _.where(results,config.resultsQuery);
+			return callback(null,_.cloneDeep(matches));
+			
+		}
+		else {
+			return callback(null,results);
+		}
+		
+		
+	}.bind(this))
 }
 
 var instance = new Request();
@@ -274,20 +293,20 @@ window.request = function (config,callback) {
 
 
 
-// request({
-//       url:'/listClasses',
-//       body:{
-//               'host':'neu.edu',
-//               'termId':'201610',
-//               'subject':'CS'
-//       },
-//       resultsQuery: {
-//       		'classId':"4400"
-//       }
-// },function(err,body){
+request({
+      url:'/listClasses',
+      body:{
+              'host':'neu.edu',
+              'termId':'201610',
+              'subject':'CS'
+      },
+      resultsQuery: {
+      		'classId':"4400"
+      }
+},function(err,body){
        
-//       console.log(err,body)
-// })
+      console.log(err,body)
+})
        
 
 

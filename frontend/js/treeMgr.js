@@ -114,8 +114,10 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 				request({
 					url:'/listClasses',
 					type:'POST',
+					resultsQuery:{
+						classId:tree.classId
+					},
 					body:{
-						classId:tree.classId,
 						subject:tree.subject,
 						host:this.host,
 						termId:this.termId
