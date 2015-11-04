@@ -1,1 +1,1 @@
-tail -f log.log -n 400 | python tail.py
+tail -f log.log -n 200 | python tail.py

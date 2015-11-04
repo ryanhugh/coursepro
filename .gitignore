@@ -1,7 +1,5 @@
 frontend/static/js/internal/*
 *.db
 node_modules
-database
-todo.txt
-scrapeme.html
 *.log
+gulp
