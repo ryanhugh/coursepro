@@ -51,10 +51,10 @@ Request.prototype.findDiff = function (compareSrc,compareTo) {
 	return retVal;
 }
 
-Request.prototype.searchForSubsetOfData = function(cacheItem,attrToCheck,callback) {
+Request.prototype.searchForSubsetOfData = function(body,attrToCheck,callback) {
 	
 
-	var matches = _.where(cacheItem.body,attrToCheck)
+	var matches = _.where(body,attrToCheck)
 
 	// console.log('found ',matches.length,' matches in cache!!')
 	return callback(null,_.cloneDeep(matches));
@@ -119,7 +119,7 @@ Request.prototype.searchCache = function(config,callback) {
 			
 			cacheItem.callbacks.push(function(err,values){
 				
-				this.searchForSubsetOfData(cacheItem,attrToCheck,callback);
+				this.searchForSubsetOfData(cacheItem.body,attrToCheck,callback);
 		
 			}.bind(this));
 			return true;
@@ -132,20 +132,21 @@ Request.prototype.searchCache = function(config,callback) {
 		}
 		
 		
-		this.searchForSubsetOfData(cacheItem,attrToCheck,callback);
+		this.searchForSubsetOfData(cacheItem.body,attrToCheck,callback);
 		return true;
 
 	}
 	return false;
 }
 
-Request.prototype.go = function(config,callback) {
+Request.prototype.go = function(config,_callback) {
+	var callback;
 	
 	
 	//default values
-	if (!callback) {
-		console.log('no callback given??',config,callback)
-		return;
+	if (!_callback) {
+		console.log('no callback given??',config,_callback)
+		_callback = function(){}
 	}
 
 	//if given string, convert it to config object
@@ -165,7 +166,7 @@ Request.prototype.go = function(config,callback) {
 	if (['POST','GET'].indexOf(config.type)<0) {
 		console.log('dropping request unknown method type',config.type);
 		console.trace()
-		return;
+		return _callback('internal error');
 	};
 	
 	if (config.useCache===undefined) {
@@ -175,6 +176,17 @@ Request.prototype.go = function(config,callback) {
 	
 	if (config.resultsQuery) {
 		
+		callback = function(err,results) {
+			if (err){
+				return _callback(err);
+			}
+			
+			this.searchForSubsetOfData(results,config.resultsQuery,_callback);
+					
+		}.bind(this);
+	}
+	else {
+		callback = _callback
 	}
 	
 	
@@ -257,3 +269,40 @@ Request.prototype.Request=Request;
 window.request = function (config,callback) {
 	instance.go(config,callback);
 };
+
+
+
+
+
+// request({
+//       url:'/listClasses',
+//       body:{
+//               'host':'neu.edu',
+//               'termId':'201610',
+//               'subject':'CS'
+//       },
+//       resultsQuery: {
+//       		'classId':"4400"
+//       }
+// },function(err,body){
+       
+//       console.log(err,body)
+// })
+       
+
+
+// request({
+//       url:'/listClasses',
+//       type:'POST',
+//       body:{
+//               'host':'neu.edu',
+//               'termId':'201610',
+//               'subject':'CS',
+//               'classId':'4400'
+//       }
+// },function(err,body){
+       
+//       console.log(err,body,'HERE2!')
+       
+// })
+       
