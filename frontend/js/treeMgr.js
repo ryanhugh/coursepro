@@ -95,10 +95,6 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 		//common for coreqs that require each other
 		var hasAlreadyLoaded = _.any(ignoreClasses, _.matches(compareObject))
 
-		// if (hasAlreadyLoaded) {
-		// 	console.log('ignoring',tree.subject,tree.classId,ignoreClasses,tree)
-		// }
-
 		ignoreClasses.push(compareObject)
 
 		//fire off ajax and add it to queue
@@ -271,7 +267,7 @@ TreeMgr.prototype.sortTree = function(tree) {
 			subTrees.push(subTree)
 			sizes.push({
 				tree:subTree,
-				size:JSON.stringify(subTree).length
+				size:this.countClassesInTree(subTree)
 			})
 		}
 	}.bind(this))
