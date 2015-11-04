@@ -190,7 +190,13 @@ Request.prototype.fireRequest = function(config,callback) {
 			}
 
 			console.log('error, bad code recievied',xmlhttp.status,err)
-			return callback(err)
+			
+			//also need to call all the other callbacks
+			cacheItem.callbacks.forEach(function (callback) {
+				callback(err);
+			}.bind(this))
+
+			return callback(err);
 		}
 
 		var response = JSON.parse(xmlhttp.response)
@@ -198,7 +204,7 @@ Request.prototype.fireRequest = function(config,callback) {
 		cacheItem.loadingStatus = this.LOADINGSTATUS_DONE;
 
 		callback(null,_.cloneDeep(response));
-		cacheItem.callbacks.forEach(function (callback,index) {
+		cacheItem.callbacks.forEach(function (callback) {
 			callback(null,_.cloneDeep(response));
 		}.bind(this))
 		
@@ -289,39 +295,3 @@ window.request = function (config,callback) {
 	instance.go(config,callback);
 };
 
-
-
-
-
-request({
-      url:'/listClasses',
-      body:{
-              'host':'neu.edu',
-              'termId':'201610',
-              'subject':'CS'
-      },
-      resultsQuery: {
-      		'classId':"4400"
-      }
-},function(err,body){
-       
-      console.log(err,body)
-})
-       
-
-
-// request({
-//       url:'/listClasses',
-//       type:'POST',
-//       body:{
-//               'host':'neu.edu',
-//               'termId':'201610',
-//               'subject':'CS',
-//               'classId':'4400'
-//       }
-// },function(err,body){
-       
-//       console.log(err,body,'HERE2!')
-       
-// })
-       
