@@ -1,6 +1,15 @@
 !!!!
 
-Registering for classes in the spring? Want to know when your exams are this fall? Check out
+Registering for classes in the spring? Want to know when your exams are this fall? Check out CoursePro.io!
+
+http://coursepro.io
+
+It's a site I made over the last 2 months! It shows class prerequisites, corequisites, class description, section data, and more!
+Let me know whatcha think!! Totally open to ideas/tweaks/etc
+
+
+It shows almost all of the data avalible in MyNEU including class description
+ 
 
 
 Once you get that landing page done post the site on
