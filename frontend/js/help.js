@@ -263,9 +263,19 @@ Help.prototype.addPanelHelp = function(tree) {
 			this.addPanelHelp(subTree);
 		}.bind(this))
 	};
-
-
 };
+
+Help.prototype.showPanelHelpStart = function (tree) {
+	if (localStorage.clickPopupHelpClicked) {
+		return;
+	};
+	
+	this.addPanelHelp(tree);
+	$(tree.panel).tooltip('show')
+
+
+}
+
 
 Help.prototype.go = function(tree) {
 	
@@ -275,8 +285,7 @@ Help.prototype.go = function(tree) {
 	
 	this.addHelpToolips(tree);
 	this.addInitialHelp(tree);
-	this.addPanelHelp(tree);
-
+	this.showPanelHelpStart(tree);
 };
 
 
