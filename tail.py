@@ -74,6 +74,9 @@ def main():
 	line['time'] = getTimeString(line['time'])
 	
 	
+	if 'referer' in line and line['referer']!='http://coursepro.io/':
+		print line['referer']
+
 	
 	#print ip
 	print '%15s' % line['ip'],
