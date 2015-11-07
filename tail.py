@@ -63,7 +63,7 @@ def main():
 			print
 			print
 			print
-			continue
+			return
 			
 			
 		line['body']['userId']=re.sub(r'[\W_]', '',line['body']['userId'])[0:5]
@@ -81,7 +81,7 @@ def main():
 		print
 		print
 		print
-		continue
+		return
 	
 	line['time'] = getTimeString(line['time'])
 	
