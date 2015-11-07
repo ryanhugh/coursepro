@@ -56,8 +56,14 @@ def main():
 		#shorten the userId
 		
 		if 'userId' not in line['body']:
-			print 'ERROR post had no user id??',line
-			exit()
+			print
+			print
+			print
+			print 'ERROR in tail.py post had no user id??',line
+			print
+			print
+			print
+			continue
 			
 			
 		line['body']['userId']=re.sub(r'[\W_]', '',line['body']['userId'])[0:5]
@@ -68,8 +74,14 @@ def main():
 		
 	else:
 		print
-		print 'ERROR line != get and != post??',line
-		exit()
+		print
+		print
+		print
+		print 'ERROR in tail.py line != get and != post??',line
+		print
+		print
+		print
+		continue
 	
 	line['time'] = getTimeString(line['time'])
 	
