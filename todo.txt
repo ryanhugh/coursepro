@@ -1,5 +1,8 @@
 !!!!
 
+make the popups show above the tooltips
+
+
 Registering for classes in the spring? Want to know when your exams are this fall? Check out CoursePro.io!
 
 http://coursepro.io
