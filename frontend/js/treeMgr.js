@@ -805,17 +805,6 @@ TreeMgr.prototype.showClasses = function(classList,callback) {
 	}.bind(this));
 };
 
-TreeMgr.prototype.onHashChange = function() {
-		
-	$(window).on('hashchange', function() {
-		
-
-
-	  
-	});
-
-};
-
 
 
 TreeMgr.prototype.processTree = function(tree,callback) {

@@ -226,7 +226,7 @@ Popup.prototype.expandPanel = function(tree) {
 
 
 
-	tree.panel.style.zIndex = '9999'
+	tree.panel.style.zIndex = '1000'
 	
 
 

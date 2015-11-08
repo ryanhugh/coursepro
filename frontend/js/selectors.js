@@ -57,8 +57,18 @@ Selectors.prototype.updateDeeplink = function() {
 			url.push(encodeURIComponent(dropdown.value));
 		};
 	}.bind(this))
+	
+	
+	var hash = url.join('/')
+	
+	//only add trees to history, not selecting selectors
+	if (history.pushState) {
+		history.pushState(null, null, "#"+hash);
+	}
+	else {
+		window.location.hash = hash
+	}
 
-	window.location.hash = url.join('/')
 };
 
 Selectors.prototype.resetDropdown = function(dropdown) {
@@ -145,7 +155,7 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,config) {
 		}
 		
 
-		console.log('search is open:',search.isOpen)
+		// console.log('search is open:',search.isOpen)
 		
 		if (search.isOpen) {
 			if (!dropdown.value) {
@@ -368,6 +378,10 @@ Selectors.prototype.finish = function() {
 
 //
 Selectors.prototype.setSelectors = function(values,doOpenNext) {
+	
+	//close all selectors, then open the ones told to
+	this.closeAllSelectors()
+	
 	values.forEach(function (value,index) {
 
 
@@ -415,30 +429,55 @@ Selectors.prototype.searchClasses = function(value) {
 	return false;
 };
 
+Selectors.prototype.updateFromHash = function(mustHaveAllSelectors) {
+	var values = window.location.hash.slice(1).split('/')
 
-
-Selectors.prototype.main = function() {
-	if (window.location.hash.length>1) {
-		var values = window.location.hash.slice(1).split('/')
-
-		values.forEach(function (value,index) {
-			values[index]= decodeURIComponent(value)
-		}.bind(this))
+	values.forEach(function (value,index) {
+		values[index]= decodeURIComponent(value)
+	}.bind(this))
 
 
 
-		//first term is search, last is the search term
-		if (values[0]=='search') {
-			this.setSelectors(values.slice(1,values.length-1),false);
-			search.searchFromString(values[1],values[2],values[3],values[4])
+	//first term is search, last is the search term
+	if (values[0]=='search') {
+		this.setSelectors(values.slice(1,values.length-1),false);
+		search.searchFromString(values[1],values[2],values[3],values[4])
+	}
+	else {
+		
+		//only activate things if hash all values
+		//this prevents back button to going to when selected a non-class dropdown
+		if (mustHaveAllSelectors && values.length<4) {
+			return;
 		}
 		else {
 			this.setSelectors(values,true);
 		}
 	}
+}
+
+
+
+Selectors.prototype.main = function() {
+	if (window.location.hash.length>1) {
+		this.updateFromHash(false);
+	}
 	else {
 		this.selectCollege();
 	}
+	
+	
+	
+	// //setup the back button history
+	window.onpopstate = function(event) {
+		this.updateFromHash(false);
+		// console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
+		
+        // history.pushState("newjibberish", null, null);
+	}.bind(this)
+	
+	
+	
 }
 
 

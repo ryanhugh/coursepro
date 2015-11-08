@@ -36,7 +36,7 @@ Search.prototype.closeSearchBox = function(event) {
 
 Search.prototype.openSearchBox = function(event) {
 	
-	search.isOpen = true;
+	this.isOpen = true;
 	$("#searchDropdown").dropdown('toggle');//toggle only opens it and does not close it...
 
 
@@ -45,17 +45,17 @@ Search.prototype.openSearchBox = function(event) {
 
 
 	if (!termText || !subjectText) {
-		searchHelp.innerHTML = 'Select a term and subject <br> before searching!'
+		this.searchHelp.innerHTML = 'Select a term and subject <br> before searching!'
 	}
 	else {
-		searchHelp.innerHTML = 'Search in '+selectors.getTermText() + '<br>'+selectors.getSubjectText()+'!'
+		this.searchHelp.innerHTML = 'Search in '+selectors.getTermText() + '<br>'+selectors.getSubjectText()+'!'
 	}
 
 	setTimeout(function(){
 		//close all the selectors
 		selectors.closeAllSelectors();
-		searchBox.focus();
-		searchBox.select();
+		this.searchBox.focus();
+		this.searchBox.select();
 	}.bind(this),0);
 	//
 
@@ -64,6 +64,18 @@ Search.prototype.openSearchBox = function(event) {
 		event.stopPropagation();
 	};
 };
+
+Search.prototype.updateHash = function(host,termId,subject,value) {
+	
+	var hash = 'search/'+encodeURIComponent(host)+'/'+encodeURIComponent(termId)+'/'+encodeURIComponent(subject)+'/'+encodeURIComponent(value)
+	
+	if (history.pushState) {
+		history.pushState(null, null, "#"+hash);
+	}
+	else {
+		window.location.hash = hash
+	}
+}
 
 Search.prototype.searchFromString = function(host,termId,subject,string) {
 	if (!string) {
@@ -92,12 +104,14 @@ Search.prototype.searchFromEntry = function() {
 		return;
 	};
 
-	if (!searchBox.value) {
+	if (!this.searchBox.value) {
 		console.log('error: empty box')
 		return;
 	};
+	
+	this.updateHash(host,termId,subject,this.searchBox.value);
 
-	this.go(host,termId,subject,searchBox.value);
+	this.go(host,termId,subject,this.searchBox.value);
 };
 
 
@@ -110,7 +124,6 @@ Search.prototype.go = function(host,termId,subject,value) {
 
 	value=value.replace(/\s+/g,'').toLowerCase()
 	
-	window.location.hash = 'search/'+encodeURIComponent(host)+'/'+encodeURIComponent(termId)+'/'+encodeURIComponent(subject)+'/'+encodeURIComponent(value)
 
 	//if found a class, open the class tree with the selectors and dont search for anything
 	if (selectors.searchClasses(value)) {
