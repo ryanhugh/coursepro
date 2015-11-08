@@ -810,6 +810,7 @@ TreeMgr.prototype.showClasses = function(classList,callback) {
 TreeMgr.prototype.processTree = function(tree,callback) {
 	this.host = tree.host;
 	this.termId  = tree.termId;
+	this.tree = tree;
 
 	if (!callback) {
 		callback=function(){};
@@ -819,6 +820,12 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 	render.showSpinner()
 	document.body.style.height = '';
 	this.fetchFullTree(tree,function () {
+		
+		
+		//another tree was began before this one finished
+		if (this.tree!=tree) {
+			return;
+		}
 
 		// this.matchCoreqsByHonors(tree);
 		this.flattenCoreqs(tree);
