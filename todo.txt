@@ -1,10 +1,5 @@
 !!!!
 
-make the popups show above the tooltips
-
-
-ge1110 hon
-
 make the back button work...?
 http://stackoverflow.com/questions/172957/detecting-back-button-hash-change-in-url
 

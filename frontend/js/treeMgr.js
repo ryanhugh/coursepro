@@ -803,9 +803,20 @@ TreeMgr.prototype.showClasses = function(classList,callback) {
 		callback(null,tree);
 		
 	}.bind(this));
+};
 
+TreeMgr.prototype.onHashChange = function() {
+		
+	$(window).on('hashchange', function() {
+		
+
+
+	  
+	});
 
 };
+
+
 
 TreeMgr.prototype.processTree = function(tree,callback) {
 	this.host = tree.host;
@@ -874,6 +885,8 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 	}.bind(this));
 
 }
+
+
 
 
 
