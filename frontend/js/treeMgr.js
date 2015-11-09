@@ -591,124 +591,6 @@ TreeMgr.prototype.groupByHonors = function(tree) {
 	};
 };
 
-TreeMgr.prototype.removeDuplicateDeps = function(tree,classList) {
-	if (!tree.values) {
-		return
-	}
-	var valuesToRemove = [];
-
-	var newTreeValues = []
-
-	tree.values.forEach(function (subTree,index) {
-		if (!subTree.isClass) {
-			newTreeValues.push(subTree)
-			return;
-		}
-
-		var found = false;
-		for (var i = 0; i < classList.length; i++) {
-			var replacement = classList[i]
-			if (subTree.isString!==replacement.isString) {
-				continue;
-			};
-			if (replacement.depth<=subTree.depth) {
-				continue;
-			};
-			if (replacement===subTree) {
-				continue;
-			};
-
-
-
-			//need to match on subject and classId or _equal (_equal will get both nodes and strings)
-
-			if ((subTree.subject==replacement.subject && subTree.classId==replacement.classId && !subTree.isString) || (subTree.isString && subTree.desc===replacement.desc)) {
-				// valuesToRemove.push(subTree);
-
-				// if (!replacement.allParents) {
-				// 	replacement.allParents = [replacement.parent];
-				// }
-
-				// if (replacement.allParents.indexOf(subTree.parent)<0) {
-				// 	replacement.allParents.push(subTree.parent);
-				// 	if (replacement.allParents.length>1) {
-				// 		console.log('added a second parent on ',replacement.subject,replacement.classId)
-				// 	};
-				// }
-
-
-
-				// also need to copy values
-				if (subTree.dataStatus === this.DATASTATUS_DONE && replacement.dataStatus !== this.DATASTATUS_DONE) {
-					console.log('copying data')
-					for (var attrName in subTree) {
-						if (attrName == "parent") {
-							console.log("wtf ERROR !!!!!!!!!!!!!!!!!1")
-							continue;
-						}
-						replacement[attrName] = subTree[attrName]
-					}
-				}
-
-
-				// just for sanity
-				// if (subTree.values) {
-				// 	subTree.values.forEach(function (item) {
-				// 		item.parent = 'uh oh';
-				// 	})
-				// };
-				// if (replacement.parent=='uh oh') {
-				// 	console.log('!!!!!!!!!!!!!!!!!!')
-				// };
-				found = true;
-				newTreeValues.push(replacement);
-
-
-				// tree.values[index]=replacement;
-				// console.log('replacing tree at indx ',index,replacement.parent)
-				break;
-			}
-		}
-		if (!found) {
-			// subTree.parent = tree;
-			// if (subTree.parent=='uh oh') {
-			// 	console.log('found!!!')
-			// };
-			newTreeValues.push(subTree);
-		};
-	})
-	//
-
-	if (newTreeValues.length !== tree.values.length) {
-		console.log("error!!! length is different")
-		throw new Error("Something went badly wrong!");
-	};
-
-
-	tree.values = newTreeValues;
-
-	// tree.values.forEach(function (subTree,index) {
-	// 	if (subTree.parent=='uh oh') {
-	// 		console.log('error parent is uh oh',subTree,tree.subject,tree.classId,index)
-	// 		throw new Error("Something went badly wrong!");
-	// 	};
-	// })
-
-	//remove the values to remove
-	
-	//NEED TO COPY VALUES TO REPLACEMENT
-	valuesToRemove.forEach(function (subTree) {
-		var index = tree.values.indexOf(subTree);
-		tree.values.splice(index,1)
-		console.log('removing',subTree.subject,subTree.classId)
-	}.bind(this))
-
-
-	tree.values.forEach(function (subTree) {
-		this.removeDuplicateDeps(subTree,classList)
-	}.bind(this))
-}
-
 
 TreeMgr.prototype.logTree = function(tree,body){
 	
@@ -794,32 +676,22 @@ TreeMgr.prototype.showClasses = function(classList,callback) {
 	tree.host = classList[0].host
 	tree.termId = classList[0].termId
 	
+	//hide the node for search
+	tree.hidden = true;
+	
 
 	this.convertServerData(tree);
 
 	//this is ghetto
+	//remove the prereqs of the class given so they dont have trees coming down from them
 	tree.values.forEach(function (subTree) {
 		subTree.values = []
 	}.bind(this))
 
+
 	
-	this.processTree(tree,function (err,tree) {
-		if (err) {
-			console.log('error processing tree???',err,tree);
-			return callback(err);
-		}
-
-		//hide the node at the top and the lines to it
-		tree.panel.style.display='none'
-
-		tree.values.forEach(function (subTree) {
-			subTree.lineToParent.style.display='none';
-		}.bind(this))
-		
-		callback(null,tree);
-		
-	}.bind(this));
-};
+	this.processTree(tree,callback);
+}
 
 
 
@@ -864,29 +736,8 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		
 		this.addAllParentRelations(tree);
 
-		//this code was to avoid duplicate classes if a given class is low on a big tree
-		//it dosent work
-
-		// var flatClassList = this.findFlattendClassList(tree).sort(function (a,b) {
-		// 	return a.depth>b.depth;
-		// }.bind(this));
-		// console.log(flatClassList)
-		// addMainParentRelations(tree);
-		// this.removeDuplicateDeps(tree,flatClassList);
-		// this.removeDuplicateDeps(tree,flatClassList);
-		// this.removeDuplicateDeps(tree,flatClassList);
-		// this.addAllParentRelations(tree);
+		
 		this.addLowestParent(tree);
-
-		// var a = findFlattendClassList(tree)
-		// var uniqueArray = a.filter(function(item, pos) {
-		//     return a.indexOf(item) == pos;
-		// })
-
-		// console.log(uniqueArray,'fd')
-		
-		
-		
 
 
 		render.hideSpinner();

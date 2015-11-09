@@ -1,5 +1,6 @@
 !!!!
 
+how much work would it take to make .hidden not need a dummy div?
 
 help should not show on invisible lines, such as search
 

@@ -92,12 +92,22 @@ Render.prototype.drawLine =function(tree,x1, y1, x2, y2,color){
 
 
 Render.prototype.calculateLine = function(tree) {
+	if (tree.hidden) {
+		return;
+	}
 
 	tree.allParents.forEach(function (parent) {
 		if (!parent) {
 			console.log('error wtf there is an undefined parent added to tree ',tree)
 			return
 		};
+		
+		if (parent.hidden) {
+			return;
+		}
+		
+		
+		
 		if (tree.lineToParent) {
 			tree.lineToParent.remove();
 		};
@@ -267,59 +277,75 @@ Render.prototype.resetPanel = function(tree,relocate) {
 	};
 
 	tree.isExpanded=false;
-	if (tree.isClass) {
-
-
-		if (!tree.panel) {
-			tree.panel = this.template.cloneNode(true);
-		}
-
-		var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
-		xButton.style.display = 'none'
-
-		tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal;z-index:5;text-align:initial')
-		var panelBody =tree.panel.getElementsByClassName('panelBodyId')[0];
-		if (tree.isString) {
-			tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.desc
-		}
-		else {
-			tree.panel.getElementsByClassName('subjClassId')[0].innerHTML = tree.subject + ' '+tree.classId
-			panelBody.setAttribute('style','line-height: 14px;white-space:nowrap')
-			if (tree.dataStatus==treeMgr.DATASTATUS_DONE) {
-				tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.name
-
-				//this should never happen - all classes have at least [] for crns
-				if (!tree.crns) {
-					console.log('error, no crns found!?',tree,tree.url)
-					panelBody.innerHTML = ''
-				}
-				else {
-					panelBody.innerHTML = tree.crns.length + ' section'+this.getOptionalS(tree.crns.length)+' this term'
-				}
-			}
-			else if (tree.dataStatus === treeMgr.DATASTATUS_FAIL) {
-				panelBody.innerHTML = "0 sections this term"
-			}
-			else {
-				panelBody.innerHTML = ''
-
-			}
-		}
-	}
-	else {
+	
+	
+	if (tree.hidden) {
 
 		if (!tree.panel) {
 			tree.panel = document.createElement('div');
 			this.container.appendChild(tree.panel);
 		};
 
-		//reset the circle
-		tree.panel.style.backgroundColor = this.getColor(tree.type);
+		//reset the hidden div
 		tree.panel.style.width = '35px';
 		tree.panel.style.height = '35px';
-		tree.panel.style.borderRadius = '50%';
-		tree.panel.style.margin = '0 auto';
-		tree.panel.style.zIndex = '5';
+	}
+	else {
+		
+		if (tree.isClass) {
+	
+	
+			if (!tree.panel) {
+				tree.panel = this.template.cloneNode(true);
+			}
+	
+			var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
+			xButton.style.display = 'none'
+	
+			tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal;z-index:5;text-align:initial')
+			var panelBody =tree.panel.getElementsByClassName('panelBodyId')[0];
+			if (tree.isString) {
+				tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.desc
+			}
+			else {
+				tree.panel.getElementsByClassName('subjClassId')[0].innerHTML = tree.subject + ' '+tree.classId
+				panelBody.setAttribute('style','line-height: 14px;white-space:nowrap')
+				if (tree.dataStatus==treeMgr.DATASTATUS_DONE) {
+					tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.name
+	
+					//this should never happen - all classes have at least [] for crns
+					if (!tree.crns) {
+						console.log('error, no crns found!?',tree,tree.url)
+						panelBody.innerHTML = ''
+					}
+					else {
+						panelBody.innerHTML = tree.crns.length + ' section'+this.getOptionalS(tree.crns.length)+' this term'
+					}
+				}
+				else if (tree.dataStatus === treeMgr.DATASTATUS_FAIL) {
+					panelBody.innerHTML = "0 sections this term"
+				}
+				else {
+					panelBody.innerHTML = ''
+	
+				}
+			}
+		}
+		else {
+	
+			if (!tree.panel) {
+				tree.panel = document.createElement('div');
+				this.container.appendChild(tree.panel);
+			};
+	
+			//reset the circle
+			tree.panel.style.backgroundColor = this.getColor(tree.type);
+			tree.panel.style.width = '35px';
+			tree.panel.style.height = '35px';
+			tree.panel.style.borderRadius = '50%';
+			tree.panel.style.margin = '0 auto';
+			tree.panel.style.zIndex = '5';
+		}
 	}
 
 
@@ -356,7 +382,9 @@ Render.prototype.resetPanel = function(tree,relocate) {
 
 
 Render.prototype.addLines = function(tree) {
-	this.calculateLine(tree);
+	if (!tree.hidden) {
+		this.calculateLine(tree);
+	}
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
@@ -384,12 +412,14 @@ Render.prototype.hideSpinner = function() {
 
 
 Render.prototype.go = function(tree) {
-	this.container.style.height = '';
-	this.container.style.width = '';
+	
+	//use document.body instead of this.container because this.container will add double padding to the left...
+	document.body.style.height = '';
+	document.body.style.width = '';
 
 	this.tree = tree;
 
-	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px';
+	document.body.style.paddingTop = (this.navBar.offsetHeight+75) + 'px';
 
 	this.calcPanelSize(this.tree);
 	this.addStructure(this.tree);
@@ -398,11 +428,11 @@ Render.prototype.go = function(tree) {
 	this.addLines(this.tree);
 
 	//scroll to the middle of the page, and don't touch the scroll height
-	window.scrollTo(this.container.scrollWidth/2-this.container.offsetWidth/2 ,this.container.scrollTop);
+	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop);
 
 	//remove the structure
-	this.container.style.height = (this.container.scrollHeight + 50) + 'px'
-	this.container.style.width = (this.container.scrollWidth + 50) + 'px'
+	document.body.style.height = (document.body.scrollHeight + 50) + 'px'
+	document.body.style.width = (document.body.scrollWidth + 50) + 'px'
 	$('.holderDiv').remove();
 	
 	
