@@ -1,5 +1,7 @@
 !!!!
 
+if a panel has a lot of coreqs, does it overlapp with the above panel? rn its just a static padding
+test - do any panels overlap that are not coreqs of the same class, or with coreqs class of a given class
 
 is it safe to remove all loading status ==0? how many trees does this affect? how many trees produce erros atm?
 tree.allParents.forEach(function(parentTree){
