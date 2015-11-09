@@ -86,7 +86,7 @@ def main():
 	line['time'] = getTimeString(line['time'])
 	
 	
-	if 'referer' in line and not line['referer'].startswith('http://coursepro.io/') not line['referer'].startswith('http://www.coursepro.io/') :
+	if 'referer' in line and not line['referer'].startswith('http://coursepro.io/') and not line['referer'].startswith('http://www.coursepro.io/'):
 		print line['referer']
 
 	
