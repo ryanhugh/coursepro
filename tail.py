@@ -72,7 +72,7 @@ def main():
 		
 		line['body']['userId']=' '*5
 		
-	elif line['method']!='HEAD':
+	elif line['method'] not in ['HEAD','OPTIONS']:
 		print
 		print
 		print
@@ -131,8 +131,11 @@ def main():
 		print ' -> ',line['body']['classCount'],
 		
 		
-	if line['method']=='HEAD':
-		print ' HEAD Request',
+	if line['method'] in ['HEAD','OPTIONS']:
+		print '',line['method'],'Request',
+		
+		if 'userAgent' in line and line['userAgent']:
+			print ' -> ',line['userAgent'][:70],
 		
 
 	print
