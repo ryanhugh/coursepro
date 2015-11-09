@@ -473,12 +473,9 @@ Selectors.prototype.main = function() {
 	
 	
 	
-	// //setup the back button history
+	//setup the back button history
 	window.onpopstate = function(event) {
 		this.updateFromHash();
-		// console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
-		
-        // history.pushState("newjibberish", null, null);
 	}.bind(this)
 	
 	

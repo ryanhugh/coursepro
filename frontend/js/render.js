@@ -386,6 +386,7 @@ Render.prototype.hideSpinner = function() {
 Render.prototype.go = function(tree) {
 	document.body.style.height = '';
 	document.body.style.width = '';
+	document.body.style.minWidth = '1000px'
 
 	this.tree = tree;
 

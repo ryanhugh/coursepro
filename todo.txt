@@ -1,5 +1,9 @@
 !!!!
 
+mobile version, can choose % on the left and right instead of px? this would make resize work
+
+
+-----------tests:
 if a panel has a lot of coreqs, does it overlapp with the above panel? rn its just a static padding
 test - do any panels overlap that are not coreqs of the same class, or with coreqs class of a given class
 
