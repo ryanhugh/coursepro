@@ -1,0 +1,37 @@
+<public:component>
+<public:attach event="onpropertychange" onevent="oldieIcons()" />
+<script type="text/javascript">
+	function oldieIcons() {
+		var icon, iconElement;
+
+		if (!element.getAttribute('icons-htc')) {
+			element.setAttribute('icons-htc', true);
+
+			if ('documentMode' in window.document && window.document.documentMode > 7) {
+				element.innerHTML = '<span class="icon-ie-link">' + element.innerHTML + '</span>';
+			} else {
+				iconElement = document.createElement('span');
+				iconElement.className = 'icon-htc';
+
+				if (element.className.match('-before') && element.firstChild) {
+					element.insertBefore(iconElement, element.firstChild);
+				} else {
+					element.appendChild(iconElement);
+				}
+
+				element.document; // force currentStyle to populate
+
+				icon = iconElement.currentStyle['x-content'];
+
+				if (icon) {
+					icon = icon.replace(/"/g, '');
+					iconElement.innerHTML = icon;
+				}
+			}
+
+			element.className += ' icon-ie-parent';
+		}
+	}
+	oldieIcons();
+</script>
+</public:component>

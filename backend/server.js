@@ -376,8 +376,7 @@ app.post('/log',function(req,res){
 
 // serve the webpage
 app.get('/', function (req, res) {
-	// console.log('yoooooo:',process.cwd())
-	res.sendFile('frontend/static/index.html',{"root": process.cwd()});
+	res.sendFile('homepage/coursepro/coursepro.html',{"root": process.cwd()});
 });
 
 
@@ -389,7 +388,7 @@ app.get('/*', function (req, res,next) {
 	next()
 });
 
-app.use(express.static('frontend/static'));
+app.use(express.static('homepage/coursepro'));
 
 app.get("/*", function(req, res, next) {
 
