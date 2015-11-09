@@ -11,6 +11,12 @@ function Help () {
 // breath first search using stack
 Help.prototype.showInitialPrereqHelp = function(tree) {
 
+	//if visit the site a lot, dont compute where we need to put the popups
+	if (localStorage.orPopupCount>this.HELP_POPUP_COUNT && localStorage.andPopupCount>this.HELP_POPUP_COUNT) {
+		return;
+	};
+	
+
 	var foundRed=false;
 	var foundBlue=false;
 
@@ -75,23 +81,15 @@ Help.prototype.showInitialPrereqHelp = function(tree) {
 				if (lineCenter>panelCenter) {
 					x = lineCoords.right - 200;
 					percent = 1-(x-lineCoords.left)/lineCoords.width;
-					// console.log('line was up/right')
 				}
 
 				//line goes up/left, get offset left+200
 				else {
 					x = lineCoords.left + 200;
 					percent = (x-lineCoords.left)/lineCoords.width;
-					// console.log('line was up/left')
 				}
 
-				// percent=percent*2-.2;
 				y = percent*lineCoords.height+lineCoords.top;
-
-				//move the panel down a little
-				// y+=100;
-
-				// console.log('setting to ',x,y,percent)
 				this.activateHelpPopup(currTree,x,y);
 
 			}
@@ -108,6 +106,10 @@ Help.prototype.showInitialPrereqHelp = function(tree) {
 	}
 }
 Help.prototype.activateHelpPopup = function(tree,x,y) {
+
+	if (tree.lineToParentLink.style.display=='none') {
+		return
+	}
 	
 	if (tree.allParents[0].type=='or'){
 		if (localStorage.orPopupCount>this.HELP_POPUP_COUNT) {
