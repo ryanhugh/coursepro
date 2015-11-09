@@ -3,7 +3,7 @@
 
 can choose % on the left and right instead of px? this would make resize work
 merge seans
-help tooltips need to be below select.js dropdown
+
 
 mobile version
 only mobile bug now is when render big page, select.js dropdown is set distance from right of page...(when scrolling stays off right side of page)
