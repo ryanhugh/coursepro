@@ -2,8 +2,9 @@
 
 //z index list:
 
-//1051 the selectors dropdown
-//1000 the expanded popup panels
+//2000 the expanded popup panels
+//1500 panel with the mouse over it
+//1051 the prereq help
 // 999 the tooltips
 // panel: 100, and then coreqs are decreasing 99,98,97 etc
 // panel (or node) with corsor over it is 999

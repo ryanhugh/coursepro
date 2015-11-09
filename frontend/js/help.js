@@ -35,6 +35,10 @@ Help.prototype.showInitialPrereqHelp = function(tree) {
 		if (!currTree.lowestParent) {
 			continue
 		};
+		
+		if (currTree.hidden || currTree.lowestParent.hidden) {
+			continue;
+		}
 
 
 		if (currTree.lineToParent.offsetWidth>250) {

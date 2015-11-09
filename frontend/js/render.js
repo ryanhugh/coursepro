@@ -360,7 +360,12 @@ Render.prototype.resetPanel = function(tree,relocate) {
 	//calculate the z Index
 	//z index is 999 if mouse if over element, else calculate
 	tree.panel.onmouseover = function (event) {
-		tree.panel.style.zIndex = '999';
+		if (tree.isExpanded) {
+			tree.panel.style.zIndex = '1500';
+		}
+		else {
+			tree.panel.style.zIndex = '999';
+		}
 	}.bind(this);
 
 	tree.panel.onmouseout = function () {

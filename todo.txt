@@ -1,18 +1,17 @@
 !!!!
 
-how much work would it take to make .hidden not need a dummy div?
-
-help should not show on invisible lines, such as search
 
 can choose % on the left and right instead of px? this would make resize work
 merge seans
-click to expand on the labs too
 help tooltips need to be below select.js dropdown
 
 mobile version
 only mobile bug now is when render big page, select.js dropdown is set distance from right of page...(when scrolling stays off right side of page)
 
 
+
+
+how much work would it take to make .hidden not need a dummy div?
 -----------tests:
 if a panel has a lot of coreqs, does it overlapp with the above panel? rn its just a static padding
 test - do any panels overlap that are not coreqs of the same class, or with coreqs class of a given class
