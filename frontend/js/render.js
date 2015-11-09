@@ -384,9 +384,8 @@ Render.prototype.hideSpinner = function() {
 
 
 Render.prototype.go = function(tree) {
-	document.body.style.height = '';
-	document.body.style.width = '';
-	document.body.style.minWidth = '1000px'
+	this.container.style.height = '';
+	this.container.style.width = '';
 
 	this.tree = tree;
 
@@ -399,11 +398,11 @@ Render.prototype.go = function(tree) {
 	this.addLines(this.tree);
 
 	//scroll to the middle of the page, and don't touch the scroll height
-	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop);
+	window.scrollTo(this.container.scrollWidth/2-this.container.offsetWidth/2 ,this.container.scrollTop);
 
 	//remove the structure
-	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
-	document.body.style.width = (this.container.scrollWidth + 50) + 'px'
+	this.container.style.height = (this.container.scrollHeight + 50) + 'px'
+	this.container.style.width = (this.container.scrollWidth + 50) + 'px'
 	$('.holderDiv').remove();
 	
 	
