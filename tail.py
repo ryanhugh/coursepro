@@ -72,7 +72,7 @@ def main():
 		
 		line['body']['userId']=' '*5
 		
-	else:
+	elif line['method']!='HEAD':
 		print
 		print
 		print
@@ -129,6 +129,13 @@ def main():
 	
 	if 'classCount' in line['body']:
 		print ' -> ',line['body']['classCount'],
+		
+		
+	if line['method']=='HEAD':
+		print ' HEAD Request',
+		
+		if 'userAgent' in line and line['userAgent']:
+			print ' -> ',line['userAgent'][:70],
 		
 
 	print
