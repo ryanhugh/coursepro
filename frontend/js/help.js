@@ -9,7 +9,7 @@ function Help () {
 //find a line close to the starting tree that is > min length, and add the popover to it
 //for both red and blue
 // breath first search using stack
-Help.prototype.addInitialHelp = function(tree) {
+Help.prototype.showInitialPrereqHelp = function(tree) {
 
 	var foundRed=false;
 	var foundBlue=false;
@@ -149,7 +149,7 @@ Help.prototype.activateHelpPopup = function(tree,x,y) {
 }
 
 
-Help.prototype.addHelpToolips = function(tree) {
+Help.prototype.addPrereqHelpToolips = function(tree) {
 	if (tree.lineToParentLink && tree.lineToParentLink.offsetWidth>200) {
 
 
@@ -200,7 +200,7 @@ Help.prototype.addHelpToolips = function(tree) {
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
-			this.addHelpToolips(subTree)
+			this.addPrereqHelpToolips(subTree)
 		}.bind(this))
 	};
 };
@@ -218,11 +218,17 @@ Help.prototype.removeTooltips = function(tree) {
 		}.bind(this))
 	};
 
+	if (tree.coreqs) {
+		tree.coreqs.values.forEach(function (subTree) {
+			this.removeTooltips(subTree);
+		}.bind(this))
+	};
+
 };
 
 
 
-Help.prototype.addPanelHelp = function(tree) {
+Help.prototype.addPanelClickToExpand = function(tree) {
 	if (localStorage.clickPopupHelpClicked) {
 		return;
 	};
@@ -260,17 +266,23 @@ Help.prototype.addPanelHelp = function(tree) {
 
 	if (tree.values) {
 		tree.values.forEach(function (subTree) {
-			this.addPanelHelp(subTree);
+			this.addPanelClickToExpand(subTree);
 		}.bind(this))
 	};
+
+	if (tree.coreqs){
+		tree.coreqs.values.forEach(function (subTree) {
+			this.addPanelClickToExpand(subTree);
+		}.bind(this));
+	}
 };
 
-Help.prototype.showPanelHelpStart = function (tree) {
+Help.prototype.addClickToExpand = function (tree) {
 	if (localStorage.clickPopupHelpClicked) {
 		return;
 	};
 	
-	this.addPanelHelp(tree);
+	this.addPanelClickToExpand(tree);
 	$(tree.panel).tooltip('show')
 
 
@@ -283,9 +295,9 @@ Help.prototype.go = function(tree) {
 	//which needs a way to get back to the main tree
 	this.tree=tree;
 	
-	this.addHelpToolips(tree);
-	this.addInitialHelp(tree);
-	this.showPanelHelpStart(tree);
+	this.addPrereqHelpToolips(tree);
+	this.showInitialPrereqHelp(tree);
+	this.addClickToExpand(tree);
 };
 
 
