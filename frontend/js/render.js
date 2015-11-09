@@ -214,7 +214,7 @@ Render.prototype.addStructure = function(tree) {
 		
 		
 		tree.filler.style.width = fillerWidth + 'px'
-		tree.filler.style.height = fillerHeight + 'px'
+		tree.filler.style.height = (fillerHeight+10) + 'px'
 		tree.filler.style.margin = '0 auto'
 		tree.filler.className='filler'
 		tree.div.appendChild(tree.filler);
@@ -401,7 +401,8 @@ Render.prototype.go = function(tree) {
 
 	//remove the structure
 	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
-	$('.holderDiv').remove();
+	document.body.style.width = (this.container.scrollWidth + 50) + 'px'
+	// $('.holderDiv').remove();
 	
 	
 	

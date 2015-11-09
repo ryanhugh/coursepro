@@ -1,64 +1,21 @@
 !!!!
 
-make the back button work...?
-http://stackoverflow.com/questions/172957/detecting-back-button-hash-change-in-url
 
+is it safe to remove all loading status ==0? how many trees does this affect? how many trees produce erros atm?
+tree.allParents.forEach(function(parentTree){
+				
+				
+				if (parentTree.values) {
+					_.pull(parentTree.values,tree)
+				}
+				if (parentTree.coreqs) {
+					_.pull(parentTree.coreqs.values,tree)
+				}
+				
+			}.bind(this))
+			return;
+		}
 
-Registering for classes in the spring? Want to know when your exams are this fall? Check out CoursePro.io!
-
-http://coursepro.io
-
-It's a site I made over the last 2 months! It shows class prerequisites, corequisites, class description, section data, and more!
-Let me know whatcha think!! Totally open to ideas/tweaks/etc
-
-
-It shows almost all of the data avalible in MyNEU including class description
- 
-
-
-Once you get that landing page done post the site on
-1. Northeastern University class of 2019/2018/2017, etc
-2. Send it to your counselor
-3. Send it to Scudder, Caitlyn <c.scudder@neu.edu> (she's the person that sends out mass email newsletter to every business student )
-4. Put up a few posters in dorms and elevators
-
-
-Yo!!! Planning out what too take in the spring 2016?
-I made a site to easily see class data and prerequisites!
-
-http://coursepro.io/#neu.edu/201630
-
-Adding tons of awesome stuff soon!
-Let me know whatcha think!! Totally open to ideas/tweaks/etc
-
-
-https://www.facebook.com/
-https://www.facebook.com/northeastern2017/
-https://www.facebook.com/groups/northeasternclassof2018/
-https://www.facebook.com/groups/710145885731811/
-https://www.reddit.com/r/neu
-
-posters? this?
-Send it to Scudder, Caitlyn <c.scudder@neu.edu> (she's the person that sends out mass email newsletter to every business student )
-
-
-
-http://localhost/#neu.edu/201610/NRSG/4995
-has some trees that are not fully simplified
-
-supercache to load all CS classes when asked to load all CS4400
-
-treeMgr.js tell server how many nodes loaded when requested a tree
-
--------
-
-launchrock
-#3939BF
-
-
-for the boxes below:
-Don't know what to take? no problem
-Visualized the Heiarchy
 
 quick fixes: add padding on the right, add error msg when there is no data and some padding between panels when only 1 prereq and prereq has coreq, eg the
 pic ng sent
@@ -79,44 +36,22 @@ make it pretty!! for newbs
 ask for ppl taking classes, then who didnt get perfect
 
 
-CONSISE PITCH TO PEOPLE WITH LITTLE KNOWEDGE OF HOW COURSES WORK AT NEU
-
-
 todo next:
 explination on landing page
 open up last viewed page when opening site
-prefetch
-help for each college, default to neu
 
 when refactor frontend, switch to stack instead of recursion?
-use breath first fifo stack for the one function
-
 
 merge coreq prereqs with class prereqs
 
 
 when doing star, need some way to differentiate between hon and non hon for same host/termId/subject/classId
 
-requs not loading http://localhost/#neu.edu/201610/ECON/4640
 
-
-figure out why there is node above class here
-https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201610&subj_code_in=NRSG&crse_numb_in=3320
-http://localhost/#neu.edu/201610/NRSG/3320
-
-
-some classes have (hon) labs and normal labs.
---is (hon) the case for all of neu or just cs?
---scrape the attribute....
-
+--scrape the hon attribute for hon classes
 --if class is hon and hon coreqs exist, only match those
 --else match all
-
 --if class is not hon only match non hon
-
-
-make the help popup appear on first load in one location on the screen for 5 sec
-
 
 
 frontend small things

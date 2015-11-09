@@ -96,7 +96,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 		var hasAlreadyLoaded = _.any(ignoreClasses, _.matches(compareObject))
 
 		ignoreClasses.push(compareObject)
-
+		
 		//fire off ajax and add it to queue
 		if (!hasAlreadyLoaded && tree.dataStatus===this.DATASTATUS_NOTSTARTED) {
 
@@ -213,10 +213,26 @@ TreeMgr.prototype.simplifyTree = function(tree) {
 
 
 	//if values is only 1 long to a circle, delete circle and bring lines straight to parent
-	if (tree.values.length==1 && !tree.values[0].isClass) {
-		tree.type = tree.values[0].type;
-		tree.values = tree.values[0].values;
+	//if values is only 1 long from panel to circle, same as above
+	if (tree.values.length==1) {
+		if (!tree.values[0].isClass) {
+			tree.type = tree.values[0].type;
+			tree.values = tree.values[0].values;
+		}
+		
+		if (!tree.isClass) {
+			
+			//if node -> panel, copy panel attrs to node
+			var subTree = tree.values[0];
+			for (var attrName in subTree) {
+				tree[attrName] = subTree[attrName]
+			}
+		}
+		
 	};
+	
+	
+	
 
 
 	//if type of dep is the same, merge cs 2800
