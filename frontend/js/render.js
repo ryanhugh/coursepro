@@ -385,6 +385,7 @@ Render.prototype.hideSpinner = function() {
 
 Render.prototype.go = function(tree) {
 	document.body.style.height = '';
+	document.body.style.width = '';
 
 	this.tree = tree;
 
@@ -402,7 +403,7 @@ Render.prototype.go = function(tree) {
 	//remove the structure
 	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
 	document.body.style.width = (this.container.scrollWidth + 50) + 'px'
-	// $('.holderDiv').remove();
+	$('.holderDiv').remove();
 	
 	
 	

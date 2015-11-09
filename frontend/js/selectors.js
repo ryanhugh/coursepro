@@ -402,6 +402,11 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 		};
 
 	}.bind(this))
+	
+	
+	if (values.length==0) {
+		this.selectCollege();
+	}
 };
 
 //you can search for cs4800 if cs is open,
@@ -429,8 +434,12 @@ Selectors.prototype.searchClasses = function(value) {
 	return false;
 };
 
-Selectors.prototype.updateFromHash = function(mustHaveAllSelectors) {
+Selectors.prototype.updateFromHash = function() {
 	var values = window.location.hash.slice(1).split('/')
+	
+	
+	//remove empty strings
+	_.pull(values,"");
 
 	values.forEach(function (value,index) {
 		values[index]= decodeURIComponent(value)
@@ -447,20 +456,16 @@ Selectors.prototype.updateFromHash = function(mustHaveAllSelectors) {
 		
 		//only activate things if hash all values
 		//this prevents back button to going to when selected a non-class dropdown
-		if (mustHaveAllSelectors && values.length<4) {
-			return;
-		}
-		else {
-			this.setSelectors(values,true);
-		}
+		this.setSelectors(values,true);
 	}
+	
 }
 
 
 
 Selectors.prototype.main = function() {
 	if (window.location.hash.length>1) {
-		this.updateFromHash(false);
+		this.updateFromHash();
 	}
 	else {
 		this.selectCollege();
@@ -470,7 +475,7 @@ Selectors.prototype.main = function() {
 	
 	// //setup the back button history
 	window.onpopstate = function(event) {
-		this.updateFromHash(false);
+		this.updateFromHash();
 		// console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
 		
         // history.pushState("newjibberish", null, null);
