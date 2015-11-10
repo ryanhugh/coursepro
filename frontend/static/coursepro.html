@@ -10,168 +10,30 @@
 <meta name="keywords" content="HTML, CSS, JS, JavaScript, framework, bootstrap, front-end, frontend, web development">
 <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
 <meta name="google-site-verification" content="h9NYnax1vhzr5lO7ZBWCJyA-oyqTN69HrF1bO2K5cJs" />
-<title> CoursePro &middot; Plan for Success </title>
+<title>CoursePro &middot; Plan for Success</title>
 
-<!-- CSS -->
+<!-- Bootstrap core CSS -->
 
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="css/docs.min.css" rel="stylesheet">
-<link rel="stylesheet" href="/css/home.built.css">
+<link href="coursepro/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="/css/select2.css">
+<link rel="stylesheet" href="/css/home.built.css" type="text/css">
+<link href="coursepro/docs.min.css" rel="stylesheet">
 
 
-<!-- JS -->
-<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>-->
+
+<!-- Documentation extras -->
+<!--this cannot be the jquery on the rest of the site!-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="coursepro/bootstrap.min.js"></script>
+<script src="coursepro/docs.min.js"></script>
+
 
 <!-- Favicons -->
 <!--<link rel="apple-touch-icon" href="/apple-touch-icon.png">-->
 <!--<link rel="icon" href="/favicon.ico">-->
-<script src="/js/external/jquery.min.js"></script>
-<script src="/js/external/bootstrap.min.js"></script>
-<!--<script src="/js/external/select2.js"></script>-->
+<!--<link rel="stylesheet" href="./coursepro/fonts">-->
 
-<script src="/js/external/queue.v1.min.js"></script>
-<script src="/js/external/async.min.js"></script>
-<script src="/js/external/lodash.min.js"></script>
-<script src="/js/external/moment.min.js"></script>
-<script src="/js/internal/allthejavascript.js"></script>
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-67419497-1', 'auto');
-ga('send', 'pageview');
-
-</script>
-
-<script>
-  
-  var box;
-    
-    // http://stackoverflow.com/a/46181/11236
-    // this is also done client side
-    function validateEmail(email) {
-      if (!email) {
-        return false;
-      };
-    
-      var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (!re.test(email)) {
-        console.log('email failed regex',email)
-        return false;
-      }
-      
-      return true;
-    }
-
-    
-    
-    function onEmailSubmit (email) {
-
-      var box=document.getElementById('emailBoxId');
-      var email = box.value.trim();
-      
-      if (!validateEmail(email)) {
-        console.log(email,'is not an email address!');
-        
-        
-        //show some warning in the html
-        
-        return;
-      }
-    
-      
-      console.log('email submitted:',email);
-      request({
-        url:'/registerForEmails',
-        body:{
-          email:email
-        }
-      },function (err,responce) {
-        if (err) {
-          
-          //server error, probably will not happen but can be a bunch of different stuff
-          console.log(err);
-          
-          //display some warning in the html
-          // sometimes the returned err is not pretty, so just say "A server error occured :/" or something
-          return;
-        }
-        
-        else if (responce.error) {
-          
-          //some other errors are possible - same thing as above
-          console.log(responce.error)
-          return;
-        }
-        
-        else {
-          console.log('it worked!')
-          document.body.innerHTML+='<br>subscribe successful!'
-        }
-        
-        
-      })
-    }
-    
-    
-    function onEmailUnsubscribe (email) {
-      
-      var box=document.getElementById('emailBoxId');
-      var email = box.value.trim();
-      
-      if (!validateEmail(email)) {
-        console.log(email,'is not an email address!');
-        
-        
-        //show some warning in the html
-        
-        return;
-      }
-    
-      
-      console.log('email submitted:',email);
-      request({
-        url:'/unsubscribe',
-        body:{
-          email:email
-        }
-      },function (err,responce) {
-        if (err) {
-          
-          //server error, probably will not happen but can be a bunch of different stuff
-          console.log(err);
-          
-          //display some warning in the html
-          // sometimes the returned err is not pretty, so just say "A server error occured :/" or something
-          return;
-        }
-        
-        else if (responce.error) {
-          
-          //some other errors are possible - same thing as above
-          console.log(responce.error)
-          return;
-        }
-        
-        else {
-          console.log('it worked!')
-          document.body.innerHTML+='<br>unsubscribe successful!'
-        }
-        
-        
-      })
-    }
-</script>
-
-
-
-<!-- Select2 Stuff -->
-  
-  
-  
+  <script src="select2.js"></script>
   <script>
     $(function(){
       // turn the element to select2 select style
@@ -189,6 +51,9 @@ ga('send', 'pageview');
   </head>
 <body class="bs-docs-home">
 
+
+    
+
     <!-- Docs master nav -->
 <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner" style="min-width:100%; background: rgba(0,0,0,0.8);">
   <div class="container">
@@ -202,7 +67,8 @@ ga('send', 'pageview');
 
       <!-- <a href="../" class="navbar-brand">CoursePro</a> -->
       <a class="navbar-brand" rel="home" href="#">
-        <img style="max-width:100px; margin-top: -7px; max-height:160%;" src="images/whiteicon.png">
+        <img style="max-width:100px; margin-top: -7px; max-height:160%;"
+             src="images/whiteicon.png">
     </a>
     </div>
     <nav id="bs-navbar" class="collapse navbar-collapse">
@@ -221,19 +87,15 @@ ga('send', 'pageview');
   </div>
 </header>
 
-    <!-- Page content of course! -->
-
-
-
   <section class="fp-billboard fp-billboard-center fp-billboard-inline-small fp-education section" data-analytics-section-engagement="name:education">
       <figure class="fp-billboard-image image-macforeducation" style="background-image: url(&quot;images/background1.jpg&quot;);background-position: 60% 50%;"></figure>
       <div class="fp-billboard-wrapper">
         <div class="fp-section-content" data-analytics-region="learn more">
           <div class="fp-billboard-content large-6 large-offset-1 small-12 small-offset-0">
             <img src="images/whitelogo.png" style="width:350px;position: relative;left: -10px;">
-            
+            <!--<h2 class="fp-product-headline">CoursePro</h2>-->
             <p class="fp-billboard-copy" style="font-size: 28px;">Plan For Success</p>
-            
+            <!--<span class="fp-moreblock fp-moreblock-left fp-billboard-moreblock"> -->
             <div>
                 <p>
                   <select id="select2" style="width:300px" multiple="multiple">
@@ -325,6 +187,8 @@ ga('send', 'pageview');
       <div class="fp-billboard-wrapper">
         <div class="fp-section-content" data-analytics-region="learn more">
           <div class="fp-billboard-content large-6 large-offset-1 small-12 small-offset-0">
+            <!--<h2 class="fp-product-headline">CoursePro</h2>-->
+            <!--<span class="fp-moreblock fp-moreblock-left fp-billboard-moreblock"> -->
             <a href="http://www.coursepro.io" class="btn btn-primary" role="button" style="font-size: 30px;">Search for Your College</a>
           </div>
         </div>
@@ -335,20 +199,18 @@ ga('send', 'pageview');
 
 
 
-<!-- Footer ================================================== -->
+    <!-- Footer
+================================================== -->
 <footer class="bs-docs-footer" role="contentinfo" style="margin-top:0px;">
-
 <div class="row">
   <div class="span6">
         <p>Designed and built with by Sean and Ryan Hughes</p>
   </div>
   <div class="span6">
-    <p>Email Us: coursepro@coursepro.io</p></div>
+    <p>Email Us: admin@coursepro.io</p></div>
 </div>
 
 </footer>
-
-
 
   </body>
 </html>

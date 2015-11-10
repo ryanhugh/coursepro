@@ -377,6 +377,7 @@ app.post('/log',function(req,res){
 // serve the webpage
 app.get('/', function (req, res) {
 	res.sendFile('frontend/static/coursepro.html',{"root": process.cwd()});
+	// res.sendFile('homepage/backup/coursepro/coursepro.html',{"root": process.cwd()});
 });
 
 
@@ -389,6 +390,8 @@ app.get('/*', function (req, res,next) {
 });
 
 app.use(express.static('frontend/static'));
+// app.use(express.static('homepage/coursepro'));
+// app.use(express.static('homepage/backup/coursepro'));
 
 app.get("/*", function(req, res, next) {
 
