@@ -1,6 +1,8 @@
 !!!!
 
 
+college saved in localstorage 
+
 can choose % on the left and right instead of px? this would make resize work
 merge seans
 
