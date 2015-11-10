@@ -424,7 +424,7 @@ Render.prototype.go = function(tree) {
 
 	this.tree = tree;
 
-	document.body.style.paddingTop = (this.navBar.offsetHeight+75) + 'px';
+	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px';
 
 	this.calcPanelSize(this.tree);
 	this.addStructure(this.tree);
@@ -436,9 +436,9 @@ Render.prototype.go = function(tree) {
 	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop);
 
 	//remove the structure
-	document.body.style.height = (document.body.scrollHeight + 50) + 'px'
-	document.body.style.width = (document.body.scrollWidth + 50) + 'px'
-	$('.holderDiv').remove();
+	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
+	document.body.style.width = (this.container.scrollWidth) + 'px'
+	// $('.holderDiv').remove();
 	
 	
 	

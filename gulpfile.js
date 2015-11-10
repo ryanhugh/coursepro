@@ -14,7 +14,7 @@ var search = require('./backend/search')
 var macros = require('./backend/macros')
 
 
-
+//production
 gulp.task('uglify', function() {
 	return gulp.src(['frontend/js/*.js','frontend/js/modules/*.js'])
 	.pipe(wrap('(function(){\n<%= contents %>\n})();'))
@@ -23,9 +23,13 @@ gulp.task('uglify', function() {
 	.pipe(gulp.dest('frontend/static/js/internal'));
 });
 
+gulp.task('watchUglify', function() {
+	gulp.watch(['frontend/js/*.js','frontend/js/modules/*.js'], ['uglify']);
+});
 
 
-gulp.task('prod',['uglify'],function() {
+
+gulp.task('prod',['uglify','watchUglify'],function() {
 	macros.SEND_EMAILS = true;
 	require('./backend/server')
 })
@@ -33,6 +37,8 @@ gulp.task('prod',['uglify'],function() {
 
 
 
+
+//development 
 gulp.task('compress',function  () {
 	return gulp.src(['frontend/js/*.js','frontend/js/modules/*.js'])
 	.pipe(wrap('(function(){\n<%= contents %>\n})();'))
@@ -50,6 +56,8 @@ gulp.task('dev',['compress','watchCompress'],function () {
 	require('./backend/server')
 })
 
+
+//other
 
 // when frontend tests work, add them here
 gulp.task('tests',function(){
@@ -69,6 +77,8 @@ gulp.task('tests',function(){
 	pageDataMgr.tests();
 	search.tests();
 });
+
+
 
 gulp.task('spider',function(){
 	pageDataMgr.main()

@@ -1,5 +1,8 @@
 !!!!
 
+save ip addr range in collegeNames.db, and get that from whois 155.33.x.x
+
+college saved in localstorage 
 
 can choose % on the left and right instead of px? this would make resize work
 merge seans
