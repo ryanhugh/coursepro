@@ -424,7 +424,7 @@ Render.prototype.go = function(tree) {
 
 	this.tree = tree;
 
-	document.body.style.paddingTop = (this.navBar.offsetHeight+75) + 'px';
+	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px';
 
 	this.calcPanelSize(this.tree);
 	this.addStructure(this.tree);
