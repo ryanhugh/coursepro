@@ -438,7 +438,7 @@ Render.prototype.go = function(tree) {
 	//remove the structure
 	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
 	document.body.style.width = (this.container.scrollWidth) + 'px'
-	// $('.holderDiv').remove();
+	$('.holderDiv').remove();
 	
 	
 	

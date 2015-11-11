@@ -1,4 +1,4 @@
-cd ~/courseproio
+cd ~/coursepro
 
 export lines=$1
 if [ -z "$lines" ]; then
