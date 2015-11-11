@@ -17,7 +17,7 @@ bunch of stuff still need todo with merge:
 
 
 todo homepage:
-- remove the sideways scrollbar
+- remove the sideways scrollbar (so you cant scroll left and right)
 - thers a shadow around the expanded panel, can we put that on the homepage too?
 go to
 http://coursepro.io/#neu.edu/201610/CS/2500
