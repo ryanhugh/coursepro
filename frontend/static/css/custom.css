@@ -5,14 +5,32 @@ margin: 11px !important;
 }
 
 .select2-selection {
-border: #222222 !important;
+border: transparent !important;
+background-color: transparent !important;
+font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+font-size: 14px !important;
 }
 .select2-selection__rendered {
-background-color: #222222 !important;
+background-color: transparent !important;
 border-color: #222222 !important;
 color: #fff !important;
 font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
 }
+
+
+
+.normalFont {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+	font-size: 14px !important;
+}
+
+.select2-container {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+	font-size: 14px !important;
+}
+
+
+
 .collegeSelectContainer {
 width: 210px !important;
 }
