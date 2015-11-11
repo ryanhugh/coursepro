@@ -26,7 +26,7 @@ $('.panel').not(render.tree.values[0].panel).remove();$('.lineToParentLink').rem
 you can also make the shadow bigger too
 
 - shrink the images
-
+- change the "select your college >"  to the screenshot
 
 
 
