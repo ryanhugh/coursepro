@@ -9,6 +9,9 @@ function Render () {
 
 	this.spinner = document.getElementById('spinner')
 	this.spinner.remove()
+	
+	this.padding = document.getElementById('paddingId')
+	this.padding.remove()
 
 	this.COREQ_OFFSET = 20;
 
@@ -157,7 +160,11 @@ Render.prototype.addToParentDiv = function(tree) {
 	}
 	else {
 		tree.div.style.minWidth="100%"
-		this.container.insertBefore(tree.div,this.container.firstChild)
+		
+		//the panels are added to the container div before this,
+		// so we need to insert this first -- need to insert padding,
+		$(tree.div).insertAfter(this.padding)
+		// $(this.container).insertAfter(tree.div,this.container.firstChild)
 	}
 }
 Render.prototype.getOptionalS = function(num) {
@@ -423,8 +430,12 @@ Render.prototype.go = function(tree) {
 	document.body.style.width = '';
 
 	this.tree = tree;
+	
+	this.padding.style.height = (this.navBar.offsetHeight+75) + 'px';
+	
+	this.container.appendChild(this.padding)
 
-	this.container.style.paddingTop = (this.navBar.offsetHeight+75) + 'px';
+	// this.container.style.paddingTop =
 
 	this.calcPanelSize(this.tree);
 	this.addStructure(this.tree);

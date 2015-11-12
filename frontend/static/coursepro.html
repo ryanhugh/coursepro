@@ -13,12 +13,11 @@
 
 <!-- CSS -->
 <link rel="stylesheet" href="/css/bootstrap.min.css">
-<!--<link rel="stylesheet" href="/css/select2.css" >-->
 <link rel="stylesheet" href="/css/home.built.css" >
 <link rel="stylesheet" href="/css/docs.min.css">
 <link rel="stylesheet" href="/css/custom.css">
-<link href="/css/select2.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="/css/spinner.css" type="text/css">
+<link rel="stylesheet" href="/css/select2.min.css">
+<link rel="stylesheet" href="/css/spinner.css">
 
 
 
@@ -40,8 +39,8 @@
 
   <nav class="navbar navbar-inverse navbar-fixed-top" id="navBar" style="min-width: 100%;background: rgba(0,0,0,0.8);max-height: 21px;">
     <div class="container">
-		<a class="navbar-brand" rel="home" href="#">
-	        <img style="max-width:100px; margin-top: -7px; max-height:160%;" src="images/whiteicon.png">
+		<a class="navbar-brand" rel="home">
+	        <img src="images/whiteicon.png" onclick="homepage.show()" id="navbarIconId">
 	    </a>
       
 		<div id="navbar" class="collapse navbar-collapse">
@@ -86,6 +85,7 @@
 
 <div id="containerId" class="normalFont" >
 	
+	<!--template panel, used for trees-->
     <!-- remove the white-space below and above to wrap the panels -->
     <div class="panel panel-primary templatePanelId" style="width:165px;display:none;margin: 0 auto;white-space: initial;text-align:initial">
       <div class="panel-heading classPanelHead">
@@ -97,6 +97,10 @@
       </div>
     </div>
 
+
+<div id="homepageId">
+	
+
   <section class="fp-billboard fp-billboard-center fp-billboard-inline-small fp-education section" data-analytics-section-engagement="name:education">
       <figure class="fp-billboard-image image-macforeducation" style="background-image: url(&quot;images/background1.jpg&quot;);background-position: 60% 50%;"></figure>
       <div class="fp-billboard-wrapper">
@@ -104,7 +108,7 @@
           <div class="fp-billboard-content large-6 large-offset-1 small-12 small-offset-0">
             <img src="images/whitelogo.png" style="width:350px;position: relative;left: -10px;">
             <p class="fp-billboard-copy" style="font-size: 28px;">Plan For Success</p>
-            <p class="fp-billboard-copy" style="font-size: 20px;padding-top: 13px;" onclick = "window.selectors.main();"><a href="#">Select your College ></a></p>
+            <p class="fp-billboard-copy" style="font-size: 20px;padding-top: 13px;" onclick = "window.selectors.main();"><a id="selectYourCollegeId">Select your College ></a></p>
             
           </div>
         </div>
@@ -207,33 +211,22 @@
 	</div>
 	
 	</footer>
+	</div>
 </div>
 
   <div class="spinner-loader" style="margin:0 auto;display:none" id="spinner"></div>
+  <div id="paddingId"></div>
 
 
 
-<!-- JS -->
-<script src="/js/external/jquery.min.js"></script>
-<script src="/js/external/bootstrap.min.js"></script>
-  <script src="/js/external/queue.v1.min.js"></script>
-  <script src="/js/external/async.min.js"></script>
-  <script src="/js/external/lodash.min.js"></script>
-  <script src="/js/external/moment.min.js"></script>
-  <script src="/js/internal/allthejavascript.js"></script>
-
-  
-  <script>
-   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  
-  ga('create', 'UA-67419497-1', 'auto');
-  ga('send', 'pageview');
-  
-  
-  </script>
+	<!-- JS -->
+	<script src="/js/external/jquery.min.js"></script>
+	<script src="/js/external/bootstrap.min.js"></script>
+	<script src="/js/external/queue.v1.min.js"></script>
+	<script src="/js/external/async.min.js"></script>
+	<script src="/js/external/lodash.min.js"></script>
+	<script src="/js/external/moment.min.js"></script>
+	<script src="/js/internal/allthejavascript.js"></script>
 
   </body>
 </html>
