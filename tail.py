@@ -115,21 +115,11 @@ def main():
 			print ' -> ',line['userAgent'][:70],
 			
 	if line['method']=='POST' and 'userId' not in line['body']:
-		# print 'fdasfdasfas',
-		# print 'fdasfdasfas',
-		# print 'fdasfdasfas',
-		# print 'fdasfdasfas',
 		print 'no userId!',
 		
 		if 'userAgent' in line and line['userAgent']:
 			print ' -> ',line['userAgent'][:70],
-	# else:
-		# print line['method']=='POST' , 'userId' not in line['body']
-			
-			
-	# elif line['method'] not in ['HEAD','OPTIONS','GET','POST']:
-		# print '',line['method'],'Request',
-		# print line,
+	
 
 	print
 
