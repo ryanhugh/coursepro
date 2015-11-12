@@ -12,7 +12,7 @@ bunch of stuff still need todo with merge:
 - search icon is moving down for some reason
 - icon in top right needs to bring back homepage when click - make sure this works
 - spinner is on left side of page
-- email
+- email - text box works, show something on the page
 - make sure back works, and that deeplinks work too (currently dont)
 
 
