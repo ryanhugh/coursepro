@@ -7,6 +7,7 @@ bunch of stuff still need todo with merge:
 - remove all  apple/mac references in code
 - email - text box works, show something on the page
 - make sure back works, and that deeplinks work too (currently dont)
+- make the buttons on the homepage work
 
 
 todo homepage:
@@ -19,4 +20,4 @@ you can also make the shadow bigger too
 
 - shrink the images
 - change the "select your college >"  to the screenshot
-
+- make an email that is automatically sent to people
