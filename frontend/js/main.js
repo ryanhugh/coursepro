@@ -1,4 +1,4 @@
-
+'use strict';
 
 //z index list:
 
