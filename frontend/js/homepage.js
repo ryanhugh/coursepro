@@ -15,14 +15,16 @@ function Homepage () {
 	
 	
 	this.homepageElement = document.getElementById('homepageId');
-	this.container = document.getElementById('containerId');
-	
+	this.masterContainer = document.getElementById('masterContainerId');
 	
 	this.isOnHomepage = true;
 	
 
 }
 
+Homepage.prototype.removeHomepage = function() {
+	this.homepageElement.remove()
+};
 
 
 Homepage.prototype.show = function () {
@@ -31,13 +33,16 @@ Homepage.prototype.show = function () {
 		return;
 	}
 	else {
+
+
+		document.body.style.height = '';
+		document.body.style.width = '';
+
+
 		history.pushState(null, null, "#");
 		render.clearContainer();
-		this.container.appendChild(this.homepageElement);
+		this.masterContainer.appendChild(this.homepageElement);
 	}
-	
-	
-	
 }
 
 

@@ -230,3 +230,8 @@ min-width: 165px;
 	cursor:pointer;
 }
 
+
+#homepageId {
+	white-space: initial;
+	display: initial;
+}

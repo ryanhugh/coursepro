@@ -408,10 +408,13 @@ Render.prototype.addLines = function(tree) {
 //this is called before the loading starts
 Render.prototype.clearContainer = function() {
 	
+	homepage.removeHomepage()
+
 	//remove everything in the container for a new tree
 	while (this.container.firstChild) {
 		this.container.removeChild(this.container.firstChild);
 	}
+
 }
 Render.prototype.showSpinner = function() {
 	this.spinner.style.display = ''
@@ -449,7 +452,7 @@ Render.prototype.go = function(tree) {
 	//remove the structure
 	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
 	document.body.style.width = (this.container.scrollWidth) + 'px'
-	$('.holderDiv').remove();
+	// $('.holderDiv').remove();
 	
 	
 	
