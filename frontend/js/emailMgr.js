@@ -83,7 +83,7 @@ EmailMgr.prototype.onEmailSubmit = function(email) {
 				//do something
 		}
 		else {
-			document.body.innerHTML+='<br>subscribe successful!'
+			// document.body.innerHTML+='<br>subscribe successful!'
 		}
 		
 	}.bind(this))
