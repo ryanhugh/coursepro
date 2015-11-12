@@ -5,10 +5,10 @@
     <!-- Meta, title, CSS, favicons, etc. -->
     <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
-<meta name="description" content="Bootstrap, a sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.">
-<meta name="keywords" content="HTML, CSS, JS, JavaScript, framework, bootstrap, front-end, frontend, web development">
-<meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="keywords" content="College Classes Courses CoursePro.io Planning Schedule prerequsites corequsites">
+<meta name="description" content="Easily see class data and prerequsites of any class at your school!">
+<meta name="author" content="Ryan and Sean Hughes">
 <title>CoursePro &middot; Plan for Success</title>
 
 <!-- CSS -->
@@ -39,8 +39,8 @@
 
   <nav class="navbar navbar-inverse navbar-fixed-top" id="navBar" style="min-width: 100%;background: rgba(0,0,0,0.8);max-height: 21px;">
     <div class="container" style="position: relative;">
-		<a class="navbar-brand" rel="home">
-	        <img src="images/whiteicon.png" onclick="homepage.show()" id="navbarIconId">
+		<a class="navbar-brand" onclick="homepage.show()"  id="navbarIconAId">
+	        <img src="images/whiteicon.png"  id="navbarIconId">
 	    </a>
       
 		<div id="navbar" class="collapse navbar-collapse">
@@ -171,7 +171,7 @@
 	      <div class="fp-section-content row">
 	        <div class="fp-product-content large-8 medium-8 small-12 large-centered small-centered column" data-analytics-region="learn more">
 	          <h2 class="fp-product-headline">Stay up to Date!</h2>
-	          <p class="fp-product-subheadline" style="font-size:30px; margin-top:10px;">Enter your Email to Recieve Updates on our newest&nbsp;products:</p>
+	          <p class="fp-product-subheadline" style="font-size:30px; margin-top:10px;">Enter your Email to Recieve Updates on our newest&nbsp;features:</p>
 	          <span class="fp-moreblock fp-product-moreblock">
 	            <input type="text" name="email" id="emailBoxId" style="text-align: center; width: 400px;">
 	            <input type="submit" value="Subscribe" onclick="emailMgr.onEmailSubmit()" class = "btn btn-primary" style="font-size:24px;position: absolute;right: -10px;top:74%;">
@@ -190,7 +190,7 @@
 	      <div class="fp-billboard-wrapper">
 	        <div class="fp-section-content" data-analytics-region="learn more">
 	          <div class="fp-billboard-content large-6 large-offset-1 small-12 small-offset-0">
-	            <a href="http://www.coursepro.io" class="btn btn-primary" role="button" style="font-size: 30px;">Search for Your College</a>
+	            <a onclick="window.selectors.main();" class="btn btn-primary" role="button" style="font-size: 30px;">Search for Your College</a>
 	          </div>
 	        </div>
 	      </div>
@@ -199,11 +199,9 @@
 	
 	
 	
-	
-	    <!-- Footer
-	================================================== -->
+
 	<footer class="bs-docs-footer" role="contentinfo" style="margin-top:0px;">
-	<div class="row">
+	<div class="row" style="max-width: 500px;margin: 0 auto;">
 	  <div class="span6">
 	        <p>Designed and built with by Sean and Ryan Hughes</p>
 	  </div>
@@ -215,7 +213,7 @@
 	</div>
 </div>
 
-  <div class="spinner-loader" style="margin:0 auto;display:none" id="spinner"></div>
+  <div class="spinner-loader" style="margin:0 auto;display:none;margin-left: 50%;margin-top: 150px;" id="spinner"></div>
   <div id="paddingId"></div>
 
 

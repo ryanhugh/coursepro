@@ -36,7 +36,8 @@
 	margin-top: -7px;
 	max-height:160%;
 }
-#navbarIconId:hover{
+#navbarIconId:hover,
+#navbarIconAId:hover{
 	cursor: pointer;
 }
 
