@@ -5,7 +5,6 @@ dont change minified css, if you want to add some css do one of these:
 
 bunch of stuff still need todo with merge:
 - remove all  apple/mac references in code
-- email - text box works, show something on the page
 - make the buttons on the homepage work
 - make sure back works, and that deeplinks work too (currently dont)
 -- if #: homepage

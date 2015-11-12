@@ -707,6 +707,7 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 	render.clearContainer()
 	render.showSpinner()
 	document.body.style.height = '';
+	document.body.style.width = '';
 	this.fetchFullTree(tree,function () {
 		
 		

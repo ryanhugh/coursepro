@@ -360,7 +360,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 
 		tree.panel.style.position = 'absolute';
 		tree.panel.style.top =  (tree.y - tree.height/2 ) + 'px';
-		tree.panel.style.left = (tree.x - tree.width/2  ) + 'px';
+		tree.panel.style.left = (tree.x - tree.width/2 + this.container.scrollLeft ) + 'px';
 	};
 
 
@@ -431,6 +431,7 @@ Render.prototype.go = function(tree) {
 	//use document.body instead of this.container because this.container will add double padding to the left...
 	document.body.style.height = '';
 	document.body.style.width = '';
+	this.container.scrollLeft=0
 
 	this.tree = tree;
 	
@@ -447,12 +448,12 @@ Render.prototype.go = function(tree) {
 	this.addLines(this.tree);
 
 	//scroll to the middle of the page, and don't touch the scroll height
-	window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop);
+	// window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop);
 
 	//remove the structure
 	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
 	document.body.style.width = (this.container.scrollWidth) + 'px'
-	// $('.holderDiv').remove();
+	$('.holderDiv').remove();
 	
 	
 	

@@ -12,30 +12,5 @@
 
 
 $(function () {
-  
-  
-  
-  	
- //   history.pushState("jibberish", null, "#yay");
-	// window.onpopstate = function(event) {
-	// 	console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
-		
- //       // history.pushState("newjibberish", null, null);
-	// };
-	
-
-  
-// TreeMgr.prototype.onHashChange = function() {
-		
-	// $(window).on('hashchange', function() {
-	// 	console.log('hash changed!!')
-	// 	// debugger;
-
-	  
-	// });
-
-// };
-
-  
-	// window.selectors.main();
+	window.selectors.main();
 })

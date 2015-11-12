@@ -1,6 +1,10 @@
 
 function EmailMgr () {
 
+
+	this.emailError = document.getElementById('emailErrorId')
+	this.emailSuccess = document.getElementById('emailSuccessId')
+
 }
 
 
@@ -32,10 +36,8 @@ EmailMgr.prototype.submitTo = function(url,callback) {
 	if (!this.validateEmail(email)) {
 		console.log(email,'is not an email address!');
 		
-		
 		//show some warning in the html
-		
-		return;
+		return callback('invalid email');
 	}
 
 	
@@ -46,21 +48,18 @@ EmailMgr.prototype.submitTo = function(url,callback) {
 		body:{
 			email:email
 		}
-	},function (err,responce) {
+	},function (err,response) {
 		if (err) {
 			
 			//server error, probably will not happen but can be a bunch of different stuff
 			console.log(err);
-			
-			//display some warning in the html
-			// sometimes the returned err is not pretty, so just say "A server error occured :/" or something
 			return callback('error');
 		}
 		
-		else if (responce.error) {
+		else if (response.error) {
 			
 			//some other errors are possible - same thing as above
-			console.log(responce.error)
+			console.log(response.error)
 			return callback('error');
 		}
 		
@@ -79,33 +78,23 @@ EmailMgr.prototype.onEmailSubmit = function(email) {
 
 	this.submitTo('/registerForEmails',function (err) {
 
-		if (err) {
-				//do something
+		if (err=='invalid email') {
+			this.emailError.style.display = '';
+			this.emailError.innerHTML = 'Invalid email, try again';
+			this.emailSuccess.style.display = 'none';
+		}
+		else if (err) {
+			this.emailError.innerHTML = 'Error :/';
+			this.emailError.style.display = '';
+			this.emailSuccess.style.display = 'none';
 		}
 		else {
-			// document.body.innerHTML+='<br>subscribe successful!'
+			this.emailSuccess.style.display = '';
+			this.emailError.style.display = 'none';
 		}
-		
 	}.bind(this))
 
 }
-
-
-EmailMgr.prototype.onEmailUnsubscribe = function(email) {
-
-	this.submitTo('/unsubscribe',function (err) {
-
-		if (err) {
-				//do something
-		}
-		else {
-			// document.body.innerHTML+='<br>unsubscribe successful!'
-		}
-		
-	}.bind(this))
-}
-
-
 
 
 EmailMgr.prototype.EmailMgr=EmailMgr;

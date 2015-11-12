@@ -27,6 +27,12 @@ Homepage.prototype.removeHomepage = function() {
 };
 
 
+Homepage.prototype.clickHomeButton = function() {
+	history.pushState(null, null, "#");// only do this if icon clicked, not if back used to show
+	this.show();
+};
+
+
 Homepage.prototype.show = function () {
 	
 	if (this.isOnHomepage && 0) {
@@ -39,7 +45,6 @@ Homepage.prototype.show = function () {
 		document.body.style.width = '';
 
 
-		history.pushState(null, null, "#");
 		render.clearContainer();
 		this.masterContainer.appendChild(this.homepageElement);
 	}

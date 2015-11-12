@@ -403,9 +403,9 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 
 	}.bind(this))
 	
-	
+	// show the homepage if nothing selected
 	if (values.length==0) {
-		this.selectCollege();
+		homepage.show();
 	}
 };
 
@@ -467,10 +467,6 @@ Selectors.prototype.main = function() {
 	if (window.location.hash.length>1) {
 		this.updateFromHash();
 	}
-	else {
-		this.selectCollege();
-	}
-	
 	
 	
 	//setup the back button history
