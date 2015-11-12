@@ -51,37 +51,11 @@ def main():
 	if not line:
 		return
 	
-	if line['method'] =='POST':
-		
-		#shorten the userId
-		
-		if 'userId' not in line['body']:
-			print
-			print
-			print
-			print 'ERROR in tail.py post had no user id??',line
-			print
-			print
-			print
-			return
-			
-			
+	if line['method'] =='POST' and 'userId' in line['body']:
+	
 		line['body']['userId']=re.sub(r'[\W_]', '',line['body']['userId'])[0:5]
-			
-	elif line['method'] == 'GET':
 		
-		line['body']['userId']=' '*5
 		
-	elif line['method'] not in ['HEAD','OPTIONS']:
-		print
-		print
-		print
-		print
-		print 'ERROR in tail.py line != get and != post??',line
-		print
-		print
-		print
-		return
 	
 	line['time'] = getTimeString(line['time'])
 	
@@ -89,12 +63,16 @@ def main():
 	if 'referer' in line and not line['referer'].startswith('http://coursepro.io/') and not line['referer'].startswith('http://www.coursepro.io/'):
 		print line['referer']
 
+	line['ip'] = line['ip'].replace('::ffff:','')
 	
 	#print ip
 	print '%15s' % line['ip'],
 	
 	if 'userId' in line['body']:
-		print line['body']['userId'],
+		print '%05s' % line['body']['userId'],
+	else :
+		print ' '*5,
+		
 	
 	print line['time'],
 	
@@ -131,12 +109,27 @@ def main():
 		print ' -> ',line['body']['classCount'],
 		
 		
-	if line['method'] in ['HEAD','OPTIONS']:
+	if line['method'] not in ['GET','POST']:
 		print '',line['method'],'Request',
+		if 'userAgent' in line and line['userAgent']:
+			print ' -> ',line['userAgent'][:70],
+			
+	if line['method']=='POST' and 'userId' not in line['body']:
+		# print 'fdasfdasfas',
+		# print 'fdasfdasfas',
+		# print 'fdasfdasfas',
+		# print 'fdasfdasfas',
+		print 'no userId!',
 		
 		if 'userAgent' in line and line['userAgent']:
 			print ' -> ',line['userAgent'][:70],
-		
+	# else:
+		# print line['method']=='POST' , 'userId' not in line['body']
+			
+			
+	# elif line['method'] not in ['HEAD','OPTIONS','GET','POST']:
+		# print '',line['method'],'Request',
+		# print line,
 
 	print
 
