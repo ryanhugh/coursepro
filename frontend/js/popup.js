@@ -429,6 +429,9 @@ Popup.prototype.expandPanel = function(tree) {
 			var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
 			xButton.style.display = ''
 
+
+			//for some reason after you go back in history to a big tree (wider than page) chrome will change scroll position when expanding a panel
+			//this just scrolls back instantly
 			document.body.scrollLeft = currScrollLeft;
 			document.body.scrollTop = currScrollTop
 
