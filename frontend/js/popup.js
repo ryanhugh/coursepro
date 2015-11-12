@@ -274,6 +274,9 @@ Popup.prototype.expandPanel = function(tree) {
 				return;
 			}
 
+			var currScrollLeft = document.body.scrollLeft;
+			var currScrollTop = document.body.scrollTop;
+
 			body = this.removeSectionsNotInClass(tree,body)
 
 
@@ -426,6 +429,8 @@ Popup.prototype.expandPanel = function(tree) {
 			var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
 			xButton.style.display = ''
 
+			document.body.scrollLeft = currScrollLeft;
+			document.body.scrollTop = currScrollTop
 
 		}.bind(this))
 

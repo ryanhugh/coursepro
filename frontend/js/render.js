@@ -252,13 +252,17 @@ Render.prototype.calcPanelPos = function(tree) {
 		
 		var coords = tree.filler.getBoundingClientRect();
 		
-		tree.x = coords.left + tree.panel.offsetWidth/2;
-		tree.y = coords.bottom - tree.panel.offsetHeight/2;
+		tree.x = coords.left + tree.panel.offsetWidth/2+document.body.scrollLeft;
+		tree.y = coords.bottom - tree.panel.offsetHeight/2+document.body.scrollTop;
+		if (tree.x<0) {
+			console.log('erjdlfjls',document.body.scrollLeft)
+		};
 	}
 	else {
 		tree.x = tree.lowestParent.x + this.COREQ_OFFSET*(tree.coreqIndex+1);
 		tree.y = tree.lowestParent.y - this.COREQ_OFFSET*(tree.coreqIndex+1)-this.COREQ_OFFSET;
 	}
+
 
 	this.resetPanel(tree);
 	
@@ -360,7 +364,11 @@ Render.prototype.resetPanel = function(tree,relocate) {
 
 		tree.panel.style.position = 'absolute';
 		tree.panel.style.top =  (tree.y - tree.height/2 ) + 'px';
-		tree.panel.style.left = (tree.x - tree.width/2 + this.container.scrollLeft ) + 'px';
+		var left = tree.x - tree.width/2 + this.container.scrollLeft ;
+		tree.panel.style.left = left + 'px';
+		if (left<0) {
+			console.log('errer yo')
+		};
 	};
 
 
@@ -431,7 +439,12 @@ Render.prototype.go = function(tree) {
 	//use document.body instead of this.container because this.container will add double padding to the left...
 	document.body.style.height = '';
 	document.body.style.width = '';
+
+	//attempt to reset the scroll still need to add the offset when calculating the panel positon from the filler
+	document.body.scrollTop = 0
+	document.body.scrollLeft = 0
 	this.container.scrollLeft=0
+	this.container.scrollTop=0
 
 	this.tree = tree;
 	
@@ -439,22 +452,20 @@ Render.prototype.go = function(tree) {
 	
 	this.container.appendChild(this.padding)
 
-	// this.container.style.paddingTop =
-
 	this.calcPanelSize(this.tree);
 	this.addStructure(this.tree);
 	this.calcPanelPos(this.tree);
 
 	this.addLines(this.tree);
 
-	//scroll to the middle of the page, and don't touch the scroll height
-	// window.scrollTo(document.body.scrollWidth/2-document.body.offsetWidth/2 ,document.body.scrollTop);
-
 	//remove the structure
 	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
 	document.body.style.width = (this.container.scrollWidth) + 'px'
-	$('.holderDiv').remove();
+
+	//scroll to the middle of the page, and don't touch the scroll height
+	window.scrollTo(document.body.scrollWidth/2-$(window).width()/2 ,document.body.scrollTop);
 	
+	$('.holderDiv').remove();
 	
 	
 };

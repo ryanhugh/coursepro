@@ -5,8 +5,7 @@ function Homepage () {
 	
 	this.homepageElement = document.getElementById('homepageId');
 	this.masterContainer = document.getElementById('masterContainerId');
-	
-	this.isOnHomepage = true;
+
 	
 
 }
