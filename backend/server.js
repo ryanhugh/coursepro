@@ -104,9 +104,10 @@ app.use(function (req, res, next) {
 
 
 //if you didnt go to courespro.io, redirect to coursepro.io (going direcly to ip, etc)
+//this catches lots of robots scanning all ip addresses
 app.use(function (req,res,next) {
 	//send redirect request
-	if (req.hostname!='coursepro.io' && req.hostname!='localhost' && req.hostname!='www.coursepro.io') {
+	if (!_(['coursepro.io','www.coursepro.io','beta.coursepro.io,','localhost']).includes(req.hostname)) {
 		console.log('Info: not on coursepro, on',req.hostname,'redirecting to coursepro.io')
 		res.redirect('http://coursepro.io');
 	}
