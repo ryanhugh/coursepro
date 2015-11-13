@@ -712,7 +712,7 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		
 		
 		//another tree was began before this one finished
-		if (this.tree!=tree) {
+		if (this.tree!=tree || homepage.isOnHomepage()) {
 			return;
 		}
 
