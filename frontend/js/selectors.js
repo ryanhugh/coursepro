@@ -61,7 +61,7 @@ Selectors.prototype.updateDeeplink = function() {
 	
 	var hash = url.join('/')
 	
-	//only add trees to history, not selecting selectors
+	//add both trees and selectors to history
 	if (history.pushState) {
 		history.pushState(null, null, "#"+hash);
 	}
