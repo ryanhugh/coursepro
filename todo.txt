@@ -1,9 +1,6 @@
 !!!!
 
 homepage:
-- add client cacheing to all the static files
-- homepage should not load if already one homepage
-- search is not in navbar
 - add a css minifyer to gulp
 
 
