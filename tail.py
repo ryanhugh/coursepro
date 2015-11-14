@@ -45,6 +45,13 @@ def getTimeString(timeStamp):
 	return retVal
 	
 
+def shouldIgnoreReferrer(currRef):
+	refs = ['http://coursepro.io/','http://www.coursepro.io/','http://beta.coursepro.io/']
+	for ref in refs:
+		if currRef.startswith(ref):
+			return True
+	return False
+
 
 def main():
 	line = getInput()
@@ -60,7 +67,7 @@ def main():
 	line['time'] = getTimeString(line['time'])
 	
 	
-	if 'referer' in line and not line['referer'].startswith('http://coursepro.io/') and not line['referer'].startswith('http://www.coursepro.io/'):
+	if 'referer' in line and not shouldIgnoreReferrer(line['referer']):
 		print line['referer']
 
 	line['ip'] = line['ip'].replace('::ffff:','')
