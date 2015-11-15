@@ -4091,7 +4091,7 @@ S2.define('select2/dropdown/attachBody',[
         .removeClass('select2-container--below select2-container--above')
         .addClass('select2-container--' + newDirection);
     }
-
+    css.left = a=this.$container[0].getBoundingClientRect().left//-document.body.scrollLeft/2
     this.$dropdownContainer.css(css);
   };
 
