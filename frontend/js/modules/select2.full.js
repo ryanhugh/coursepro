@@ -4111,6 +4111,8 @@ S2.define('select2/dropdown/attachBody',[
   };
 
   AttachBody.prototype._showDropdown = function (decorated) {
+    // this.$dropdownContainer.parentElement.remove()
+    this.$dropdownParent=$('#navbarContainerid')//[0].appendChild(this.$dropdownContainer.parentElement)
     this.$dropdownContainer.appendTo(this.$dropdownParent);
 
     this._positionDropdown();
