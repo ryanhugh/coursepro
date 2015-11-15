@@ -57,8 +57,8 @@ EmailMgr.prototype.sendThanksForRegistering = function (toEmail) {
 	this.transporter.sendMail({
 	    from: 'ryan@coursepro.io',
 	    to: toEmail,
-	    subject: 'Thanks for registering!',
-	    text: 'YOOOOOOOO'
+	    subject: 'CoursePro.io - Thanks for registering!',
+	    html: 'We\'ll keep you updated on all the new awesome features! Check out the site <a href="http://coursepro.io">here!</a>'
 	});
 
 }
