@@ -47,5 +47,6 @@
   "https://telaris.wlu.ca/ssb_prod/bwckschd.p_disp_dyn_sched",
   "https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_dyn_sched",
   "https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched",
-  "https://banner.drexel.edu/pls/duprod/bwckctlg.p_disp_dyn_ctlg"
+  "https://banner.drexel.edu/pls/duprod/bwckctlg.p_disp_dyn_ctlg",
+  "https://infobear.bridgew.edu/BANP/bwckschd.p_disp_dyn_sched"
   ]

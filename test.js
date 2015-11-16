@@ -25,17 +25,30 @@ var queue = require("queue-async")
 // var subjectsDB = require('./databases/subjectsDB')
 // var collegeNamesDB = require('./databases/collegeNamesDB')
 
-function hi () {
-    try {
-        console.log(fs.statSync('/test.js'))
-    }
-    catch (e) {
-        console.log('nope',e,e.code=='ENOENT');
-        return;
-    }
-    console.log('yep')
-}
-hi();
+
+var https = require('https');
+var options = {
+    host: 'wl11gp.neu.edu',
+    port: 443,
+    method: 'GET'
+};
+
+var req = https.request(options, function(res) {
+    console.log(res.connection.getPeerCertificate().subject.O);
+});
+
+req.end();
+// function hi () {
+//     try {
+//         console.log(fs.statSync('/test.js'))
+//     }
+//     catch (e) {
+//         console.log('nope',e,e.code=='ENOENT');
+//         return;
+//     }
+//     console.log('yep')
+// }
+// hi();
 
 // var nodemailer = require('nodemailer');
 // var smtpTransport = require('nodemailer-smtp-transport');
