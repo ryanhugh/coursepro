@@ -90,13 +90,13 @@ def main():
 
 	print ' ',
 	if 'host' in line['body']:
-		sys.stdout.write(line['body']['host']+'/')
+		sys.stdout.write(str(line['body']['host'])+'/')
 	if 'termId' in line['body']:
-		sys.stdout.write(line['body']['termId']+'/')
+		sys.stdout.write(str(line['body']['termId'])+'/')
 	if 'subject' in line['body']:
-		sys.stdout.write(line['body']['subject']+'/')
+		sys.stdout.write(str(line['body']['subject'])+'/')
 	if 'classId' in line['body']:
-		sys.stdout.write(line['body']['classId']+'/')
+		sys.stdout.write(str(line['body']['classId'])+'/')
 		
 		
 	print ' ',
