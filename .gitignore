@@ -3,3 +3,5 @@ frontend/static/js/internal/*
 node_modules
 *.log
 gulp
+frontend/logs
+backedn/logs
