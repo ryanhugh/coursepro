@@ -23,7 +23,9 @@
     "gulp-concat": "latest",
     "gulp-wrap": "latest",
     "nodemailer-smtp-transport":"latest",
-    "he": "latest"
+    "he": "latest",
+    "gulp-add-src":"latest",
+    "gulp-uncss":"latest"
   },
   "description": "Awesome sauce! Yay!"
 }
