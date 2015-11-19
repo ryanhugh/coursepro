@@ -12,3 +12,8 @@ bunch of stuff still need todo with merge:
 - shrink the images
 - change the "select your college >"  to the screenshot
 - make an email that is automatically sent to people
+
+
+
+
+when do they
