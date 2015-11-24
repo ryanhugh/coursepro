@@ -1,10 +1,180 @@
 'use strict';
 
+function Selector() {
+	
+	//values the selector currently has (eg CS,EECE,...)
+	this.values = []
+}
+
+Selector.prototype.reset = function (){
+	if (this.element[0].options.length===0) {
+		return;
+	}
+	this.element.select2("destroy").removeClass('select2-offscreen')
+	this.element.empty()
+	this.element.off('select2:select');
+	this.element[0].value=''
+	
+	//the .val() of the Select Your College!, Select Term!, option
+	this.dropDownInfoId = 'null'
+}
+
+Selector.prototype.getExists = function () {
+	if (this.element.data('select2')) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+
+Selector.prototype.close = function () {
+	if (this.getExists()) {
+		this.element.select2('close');
+	}
+}
+
+
+Selector.prototype.getValue = function() {
+	var elementValue = this.element.val();
+	if (!elementValue || elementValue==this.dropDownInfoId) {
+		return null;
+	}
+	else {
+		return elementValue;
+	}
+}
+
+Selector.prototype.getText = function (){
+	if (this.getExists()) {
+		return this.element.select2('data')[0].text;
+	}
+	else {
+		return ''
+	}
+}
+
+
+Selector.prototype.resetAllFutureVals = function() {
+
+	var currSelector = this;
+	
+	//loop through the linked list
+	while (this.next) {
+		
+		// start with the selector after this one
+		// (usally this is at the end of the loop)
+		currSelector = this.next;
+		
+		currSelector.reset()
+		currSelector.element[0].value=''
+		currSelector.value=''
+	}
+}
+
+
+Selector.prototype.setup = function(values,config) {
+	if (config===undefined) {
+		config={}
+	}
+	if (config.shouldOpen===undefined) {
+		config.shouldOpen=true;
+	}
+
+	// this.value = this.element.val();
+	this.values = values;
+	this.reset();
+	
+	if (values.length===0) {
+		console.log('nothing found!')
+		$("#nothingFound").show();
+		return;
+	}
+	$("#nothingFound").hide();
+
+
+	this.element.select2({data:values});
+	this.element.select2({containerCssClass: this.class })
+
+	var ids = _.map(values,function (selectValue) {
+		return selectValue.id;
+	}.bind(this));
+
+	//open if told to open, and there is a default value and default value in list given
+	if (config.shouldOpen && config.defaultValue && _(ids).includes(config.defaultValue)) {
+		this.element.select2('open');
+	}
+	else {
+		this.value = config.defaultValue;
+		this.element.select2("val",config.defaultValue);
+	}
+
+
+	//the main on select callback
+	this.element.on("select2:select",function (event) {
+		
+		// var selection = this.element.val();
+		// if (!selection) {
+		// 	return;
+		// }
+		
+		// if (selection && selection!=this.thisInfoId) {
+		// 	this.value = selection;
+		// }
+		// else {
+		// 	this.value = null;
+		// }
+		
+
+		this.resetAllFutureVals();
+		selectors.updateDeeplink()
+		
+		
+		if (!this.value()) {
+			return;
+		}
+		
+
+		ga('send', {
+			'hitType': 'pageview',
+			'page': window.location.href,
+			'title': 'Coursepro.io'
+		});
+
+
+		console.log('selected',selection)
+
+		if (this.next) {
+			this.next.setup()
+		}
+		else {
+			setTimeout(function(){
+				selectors.finish()
+			}.bind(this),0);
+		}
+
+	}.bind(this))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Selectors () {
 
 	this.class = {
 		element: $(".selectClass"),
-		value:'',
+		value:this.value,
 		values:[],
 		setup:this.selectClass.bind(this),
 		class:'classSelectContainer'
@@ -38,8 +208,6 @@ function Selectors () {
 	}
 	
 	
-	//the .val() of the Select Your College!, Select Term!, option
-	this.dropDownInfoId = 'null'
 
 
 
@@ -53,11 +221,12 @@ function Selectors () {
 }
 
 
+
 Selectors.prototype.updateDeeplink = function() {
 	var url = []
 
 	this.selectors.forEach(function (dropdown) {
-		if (dropdown.value) {
+		if (dropdown.element.val()) {
 			url.push(encodeURIComponent(dropdown.value));
 		};
 	}.bind(this))
@@ -75,140 +244,6 @@ Selectors.prototype.updateDeeplink = function() {
 
 };
 
-Selectors.prototype.resetDropdown = function(dropdown) {
-	if (dropdown.element[0].options.length===0) {
-		return;
-	}
-	dropdown.element.select2("destroy").removeClass('select2-offscreen')
-	dropdown.element.empty()
-	dropdown.element.off('select2:select');
-	dropdown.element[0].value=''
-}
-
-Selectors.prototype.resetAllFutureVals = function(dropdown) {
-	//find the element to reset all past
-	var i =0;
-
-	for (; i < this.selectors.length; i++) {
-		if (this.selectors[i] == dropdown) {
-			break;
-		}
-	}
-	i++;
-
-	//reset all past here
-	for (; i < this.selectors.length; i++) {
-		this.resetDropdown(this.selectors[i])
-		this.selectors[i].element[0].value=''
-		this.selectors[i].value=''
-	};
-}
-
-
-
-Selectors.prototype.setupSelector = function(dropdown,selectValues,config) {
-	if (config===undefined) {
-		config={}
-	}
-	if (config.shouldOpen===undefined) {
-		config.shouldOpen=true;
-	}
-
-	dropdown.value = dropdown.element.val();
-	dropdown.values = selectValues;
-	this.resetDropdown(dropdown);
-	
-	if (selectValues.length===0) {
-		console.log('nothing found!')
-		$("#nothingFound").show();
-		return;
-	}
-	$("#nothingFound").hide();
-
-
-	dropdown.element.select2({data:selectValues});
-	dropdown.element.select2({containerCssClass: dropdown.class })
-
-	var ids = _.map(selectValues,function (selectValue) {
-		return selectValue.id;
-	}.bind(this));
-
-	if (config.shouldOpen && !search.isOpen && (!config.defaultValue || !_(ids).includes(config.defaultValue))) {
-		dropdown.element.select2('open');
-	}
-	else {
-		dropdown.value = config.defaultValue;
-		dropdown.element.select2("val",config.defaultValue);
-	}
-
-	//i would use .on('change'), but when setting the default value it dosent fire the
-	// change event on close. So keep track of the last element, and if
-	// it is different on close, fire the callback
-	dropdown.element.on("select2:select",function (event) {
-		if (search.isOpen) {
-			return;
-		}
-		var selection = dropdown.element.val();
-		if (!selection) {
-			return;
-		}
-		
-		if (selection==dropdown.value) {
-			console.log('not changing from ',dropdown.value,selection)
-			return;
-		}
-
-
-	
-		//ug what causes this to run?? is it when you open search when dropdown is open?
-		    // dont update dropdown.value
-			// reset this + all future elements
-		// if (search.isOpen && !dropdown.value) {
-				// run reset all and update deeplink, return;
-		
-		if (selection && selection!=this.dropDownInfoId) {
-			dropdown.value = selection;
-		}
-		else {
-			dropdown.value = null;
-		}
-		
-
-		this.resetAllFutureVals(dropdown);
-		this.updateDeeplink()
-		
-		
-		if (!selection || selection==this.dropDownInfoId) {
-			return;
-		}
-		
-
-
-		if (search.isOpen) {
-			return;
-		}
-
-
-		ga('send', {
-			'hitType': 'pageview',
-			'page': window.location.href,
-			'title': 'Coursepro.io'
-		});
-
-
-		console.log('selected',selection)
-
-		if (dropdown.next) {
-			dropdown.next.setup()
-		}
-		else {
-			setTimeout(function(){
-				this.finish()
-			}.bind(this),0);
-		}
-
-	}.bind(this))
-}
 
 
 Selectors.prototype.selectCollege = function(config) {
@@ -343,49 +378,11 @@ Selectors.prototype.selectClass = function(config) {
 		this.setupSelector(this.class,selectValues,config);
 	}.bind(this));
 }
-Selectors.prototype.getCollegeText = function() {
-	if (this.college.element.data('select2')) {
-		return this.college.element.select2('data')[0].text;
-	}
-	else {
-		return ''
-	}
-};
-
-Selectors.prototype.getTermText = function() {
-	if (this.term.element.data('select2')) {
-		return this.term.element.select2('data')[0].text;
-	}
-	else {
-		return ''
-	}
-};
-
-Selectors.prototype.getSubjectText = function() {
-	if (this.subject.element.data('select2')) {
-		return this.subject.element.select2('data')[0].text;
-	}
-	else {
-		return ''
-	}
-};
-
-Selectors.prototype.getClassText = function() {
-	if (this.class.element.data('select2')) {
-		return this.class.element.select2('data')[0].text;
-	}
-	else {
-		return ''
-	}
-};
 
 
 Selectors.prototype.closeAllSelectors = function () {
 	this.selectors.forEach(function(selector){
-		if (selector.element.data('select2')) {
-			selector.value =selector.element.val();
-			selector.element.select2('close');
-		}
+		selector.close();
 	}.bind(this))
 }
 
@@ -401,12 +398,11 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 	
 	values.forEach(function (value,index) {
 
-
+		//remove anything that isnt a letter, a "/" or a . 
 		value = value.replace(/[^a-z0-9\/\.]/gi,'')
 
 
 		this.selectors[index].setup({defaultValue:value,shouldOpen:false});
-		this.selectors[index].value = value
 
 		//if at end, open next selector or create tree
 		if (index == values.length-1) {
