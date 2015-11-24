@@ -36,10 +36,14 @@ function Selectors () {
 		next:this.term,
 		class:'collegeSelectContainer'
 	}
+	
+	
+	//the .val() of the Select Your College!, Select Term!, option
+	this.dropDownInfoId = 'null'
 
 
 
-	//order of selectors and some other data about them
+	//order of selectors
 	this.selectors = [
 	this.college,
 	this.term,
@@ -77,7 +81,7 @@ Selectors.prototype.resetDropdown = function(dropdown) {
 	}
 	dropdown.element.select2("destroy").removeClass('select2-offscreen')
 	dropdown.element.empty()
-	dropdown.element.off('select2:close');
+	dropdown.element.off('select2:select');
 	dropdown.element[0].value=''
 }
 
@@ -108,7 +112,7 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,config) {
 	}
 	if (config.shouldOpen===undefined) {
 		config.shouldOpen=true;
-	};
+	}
 
 	dropdown.value = dropdown.element.val();
 	dropdown.values = selectValues;
@@ -140,10 +144,10 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,config) {
 	//i would use .on('change'), but when setting the default value it dosent fire the
 	// change event on close. So keep track of the last element, and if
 	// it is different on close, fire the callback
-	dropdown.element.on("select2:close",function (event) {
+	dropdown.element.on("select2:select",function (event) {
 		if (search.isOpen) {
 			return;
-		};
+		}
 		var selection = dropdown.element.val();
 		if (!selection) {
 			return;
@@ -153,24 +157,31 @@ Selectors.prototype.setupSelector = function(dropdown,selectValues,config) {
 			console.log('not changing from ',dropdown.value,selection)
 			return;
 		}
-		
 
-		// console.log('search is open:',search.isOpen)
+
+	
+		//ug what causes this to run?? is it when you open search when dropdown is open?
+		    // dont update dropdown.value
+			// reset this + all future elements
+		// if (search.isOpen && !dropdown.value) {
+				// run reset all and update deeplink, return;
 		
-		if (search.isOpen) {
-			if (!dropdown.value) {
-			    // dont update dropdown.value
-			    this.resetAllFutureVals(dropdown);
-			    this.resetDropdown(dropdown);
-				// reset this + all future elements
-				return;
-			}
+		if (selection && selection!=this.dropDownInfoId) {
+			dropdown.value = selection;
 		}
+		else {
+			dropdown.value = null;
+		}
+		
 
-
-		dropdown.value = selection;
 		this.resetAllFutureVals(dropdown);
 		this.updateDeeplink()
+		
+		
+		if (!selection || selection==this.dropDownInfoId) {
+			return;
+		}
+		
 
 
 		if (search.isOpen) {
@@ -224,6 +235,9 @@ Selectors.prototype.selectCollege = function(config) {
 			if(a.text > b.text) return 1;
 			return 0;
 		}.bind(this))
+		
+		selectValues= [{id:this.dropDownInfoId,text:'Select Your College!'}].concat(selectValues)
+		
 		this.setupSelector(this.college,selectValues,config);
 	}.bind(this));
 }
@@ -253,6 +267,7 @@ Selectors.prototype.selectTerm = function(config) {
 			if(a.id < b.id) return 1;
 			return 0;
 		}.bind(this))
+		selectValues= [{id:this.dropDownInfoId,text:'Select Term!'}].concat(selectValues)
 		this.setupSelector(this.term,selectValues,config);
 	}.bind(this));
 }
@@ -288,6 +303,7 @@ Selectors.prototype.selectSubject = function(config) {
 			if(a.id > b.id) return 1;
 			return 0;
 		}.bind(this))
+		selectValues= [{id:this.dropDownInfoId,text:'Select Subject!'}].concat(selectValues)
 		this.setupSelector(this.subject,selectValues,config);
 	}.bind(this))
 }
@@ -323,6 +339,7 @@ Selectors.prototype.selectClass = function(config) {
 			if(a.id > b.id) return 1;
 			return 0;
 		}.bind(this))
+		selectValues= [{id:this.dropDownInfoId,text:'Select Class!'}].concat(selectValues)
 		this.setupSelector(this.class,selectValues,config);
 	}.bind(this));
 }
@@ -393,6 +410,13 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 
 		//if at end, open next selector or create tree
 		if (index == values.length-1) {
+			
+			//destroy all the selectors after this one
+			this.selectors.slice(index+1).forEach(function(selector) {
+				this.resetDropdown(selector);
+			}.bind(this))
+			
+			
 			if (this.selectors[index].next) {
 				this.selectors[index].next.setup({shouldOpen:doOpenNext})
 			}
@@ -444,6 +468,21 @@ Selectors.prototype.updateFromHash = function() {
 	values.forEach(function (value,index) {
 		values[index]= decodeURIComponent(value)
 	}.bind(this))
+	
+	
+	//if no hash, destory all dropdowns and show (but don't open) the first one
+	if (values.length==0) {
+		
+		this.selectors.forEach(function(selector){
+			this.resetDropdown(selector);
+		}.bind(this))
+		
+		
+		this.college.setup({defaultValue:this.dropDownInfoId,shouldOpen:false});
+		this.college.value = this.dropDownInfoId;
+		homepage.show();
+		return;
+	}
 
 
 
@@ -458,7 +497,6 @@ Selectors.prototype.updateFromHash = function() {
 		//this prevents back button to going to when selected a non-class dropdown
 		this.setSelectors(values,true);
 	}
-	
 }
 
 
@@ -467,6 +505,7 @@ Selectors.prototype.main = function() {
 	if (window.location.hash.length>1) {
 		this.updateFromHash();
 	}
+	
 	
 	
 	//setup the back button history
@@ -480,6 +519,6 @@ Selectors.prototype.main = function() {
 
 
 Selectors.prototype.Selectors=Selectors;
-var instance = new Selectors();
-window.selectors = instance;
+window.selectors = new Selectors();
+
 

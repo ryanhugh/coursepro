@@ -1,5 +1,57 @@
 !!!!
 
+
+overall todo:
+refactor frontend
+angular?
+payments
+
+
+names to fix:
+Calc for Business/econ (hon)
+Calculus 2 for Sci/engr (hon)
+Calc & Diff Eq - Biol 1(hon)
+Principles of Microecon (hon)
+Calculus 1 for Sci/engr (hon)
+Calculus 1for Sci/engr (hon)
+ -- > Calculus 1 for Science and Engineering
+	-(but with hon)
+
+Fundamental of Com Sci1 -> Fundamentals of Computer Science 1
+
+Fundamentals of Com Sci1 (hon)
+
+
+etc maybe \w+\d
+
+
+get list of nodes sorted by allParents.length
+also, below vv solve
+would mg=mg work?
+
+remove the node (branch) if it is on the top - both stuff like fundies and search --- 
+there could be cases where:
+a -> b or c
+d -> (b or c) and (i or p)
+so now there is two nodes beneth d, and need to bring a to that
+ex: http://localhost/#neu.edu/201610/EECE/4792
+
+
+add cache control to the js and index, and on error do window.location.reload(), which loads everything again
+
+
+http://localhost/#neu.edu/201610/EEMB/2616
+crashes things in multi-parent
+
+
+
+http://localhost/#neu.edu/201610/NRSG/4995
+has some trees that are not fully simplified
+
+supercache to load all CS classes when asked to load all CS4400
+
+treeMgr.js tell server how many nodes loaded when requested a tree
+
 homepage:
 - add a css minifyer to gulp
 
