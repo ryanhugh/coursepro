@@ -65,7 +65,7 @@ gulp.task('compressJS',function  () {
 })
 
 gulp.task('watchCompressJS', function() {
-	gulp.watch(['frontend/js/*.js','frontend/js/modules/*.js'], ['compress']);
+	gulp.watch(['frontend/js/*.js','frontend/js/modules/*.js'], ['compressJS']);
 });
 
 

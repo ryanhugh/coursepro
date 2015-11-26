@@ -4,6 +4,14 @@ function Selector() {
 	
 	//values the selector currently has (eg CS,EECE,...)
 	this.values = []
+
+
+	//the .val() of the Select Your College!, Select Term!, option
+	this.dropDownInfoId = 'null'
+
+	//set in .setup, used after the callback returns
+	//if element does not exist, and this is set, return this
+	this.defaultValue = null
 }
 
 Selector.prototype.reset = function (){
@@ -14,9 +22,6 @@ Selector.prototype.reset = function (){
 	this.element.empty()
 	this.element.off('select2:select');
 	this.element[0].value=''
-	
-	//the .val() of the Select Your College!, Select Term!, option
-	this.dropDownInfoId = 'null'
 }
 
 Selector.prototype.getExists = function () {
@@ -37,13 +42,23 @@ Selector.prototype.close = function () {
 
 
 Selector.prototype.getValue = function() {
-	var elementValue = this.element.val();
-	if (!elementValue || elementValue==this.dropDownInfoId) {
+
+	// check the stored value
+	var value = this.defaultValue;
+	if (value && value!=this.dropDownInfoId) {
+		return value;
+	}
+
+	//then check the element value
+	if (this.getExists()) {
+		value = this.element.val();
+	}
+
+	
+	if (!value || value==this.dropDownInfoId) {
 		return null;
 	}
-	else {
-		return elementValue;
-	}
+	return value;
 }
 
 Selector.prototype.getText = function (){
@@ -61,15 +76,14 @@ Selector.prototype.resetAllFutureVals = function() {
 	var currSelector = this;
 	
 	//loop through the linked list
-	while (this.next) {
+	while (currSelector.next) {
 		
 		// start with the selector after this one
 		// (usally this is at the end of the loop)
-		currSelector = this.next;
+		currSelector = currSelector.next;
 		
 		currSelector.reset()
 		currSelector.element[0].value=''
-		currSelector.value=''
 	}
 }
 
@@ -82,11 +96,11 @@ Selector.prototype.setup = function(values,config) {
 		config.shouldOpen=true;
 	}
 
-	// this.value = this.element.val();
 	this.values = values;
 	this.reset();
 	
-	if (values.length===0) {
+	// we know that it is at leat 1 because the Select Term! item
+	if (values.length===1) {
 		console.log('nothing found!')
 		$("#nothingFound").show();
 		return;
@@ -102,36 +116,24 @@ Selector.prototype.setup = function(values,config) {
 	}.bind(this));
 
 	//open if told to open, and there is a default value and default value in list given
-	if (config.shouldOpen && config.defaultValue && _(ids).includes(config.defaultValue)) {
+	if (config.shouldOpen && !(this.defaultValue && _(ids).includes(this.defaultValue))) {
 		this.element.select2('open');
 	}
 	else {
-		this.value = config.defaultValue;
-		this.element.select2("val",config.defaultValue);
+		this.element.select2("val",this.defaultValue);
 	}
+	this.defaultValue = null
 
 
 	//the main on select callback
 	this.element.on("select2:select",function (event) {
-		
-		// var selection = this.element.val();
-		// if (!selection) {
-		// 	return;
-		// }
-		
-		// if (selection && selection!=this.thisInfoId) {
-		// 	this.value = selection;
-		// }
-		// else {
-		// 	this.value = null;
-		// }
-		
+
 
 		this.resetAllFutureVals();
 		selectors.updateDeeplink()
 		
 		
-		if (!this.value()) {
+		if (!this.getValue()) {
 			return;
 		}
 		
@@ -143,7 +145,7 @@ Selector.prototype.setup = function(values,config) {
 		});
 
 
-		console.log('selected',selection)
+		// console.log('selected',selection)
 
 		if (this.next) {
 			this.next.setup()
@@ -166,122 +168,32 @@ Selector.prototype.setup = function(values,config) {
 
 
 
-
-
-
-
-function Selectors () {
-
-	this.class = {
-		element: $(".selectClass"),
-		value:this.value,
-		values:[],
-		setup:this.selectClass.bind(this),
-		class:'classSelectContainer'
-	}
-
-	this.subject = {
-		element: $(".selectSubject"),
-		value:'',
-		values:[],
-		setup:this.selectSubject.bind(this),
-		next:this.class,
-		class:'subjectSelectContainer'
-	}
-
-	this.term = {
-		element: $(".selectTerm"),
-		value:'',
-		values:[],
-		setup:this.selectTerm.bind(this),
-		next:this.subject,
-		class:'termSelectContainer'
-	}
-
-	this.college = {
-		element: $(".selectCollege"),
-		value:'',
-		values:[],
-		setup:this.selectCollege.bind(this),
-		next:this.term,
-		class:'collegeSelectContainer'
-	}
+function Class () {
 	
-	
+	Selector.prototype.constructor.apply(this,arguments);
 
-
-
-	//order of selectors
-	this.selectors = [
-	this.college,
-	this.term,
-	this.subject,
-	this.class
-	]
+	this.class='classSelectContainer'
+	this.element=$(".selectClass")
 }
 
 
-
-Selectors.prototype.updateDeeplink = function() {
-	var url = []
-
-	this.selectors.forEach(function (dropdown) {
-		if (dropdown.element.val()) {
-			url.push(encodeURIComponent(dropdown.value));
-		};
-	}.bind(this))
-	
-	
-	var hash = url.join('/')
-	
-	//add both trees and selectors to history
-	if (history.pushState) {
-		history.pushState(null, null, "#"+hash);
-	}
-	else {
-		window.location.hash = hash
-	}
-
-};
+//prototype constructor
+Class.prototype = Object.create(Selector.prototype);
+Class.prototype.constructor = Class;
 
 
 
-Selectors.prototype.selectCollege = function(config) {
+Class.prototype.setup = function(config) {
+	if (config) {
+		this.defaultValue = config.defaultValue
+	};
 	request({
-		type:'POST',
-		url:'/listColleges',
-		body:{}
-	},function (err,body){
-		if (err) {
-			console.log(err);
-			return;
-		}
-
-		var selectValues = [];
-		body.forEach(function (college) {
-			selectValues.push({
-				id:college.host,
-				text:college.title
-			});
-		}.bind(this));
-
-		selectValues.sort(function(a, b){
-			if(a.text < b.text) return -1;
-			if(a.text > b.text) return 1;
-			return 0;
-		}.bind(this))
-		
-		selectValues= [{id:this.dropDownInfoId,text:'Select Your College!'}].concat(selectValues)
-		
-		this.setupSelector(this.college,selectValues,config);
-	}.bind(this));
-}
-Selectors.prototype.selectTerm = function(config) {
-	request({
-		url:'/listTerms',
+		url:'/listClasses',
 		type:'POST',
 		body:{
-			host:this.college.value
+			host:selectors.college.getValue(),
+			termId:selectors.term.getValue(),
+			subject:selectors.subject.getValue()
 		}
 	} ,function (err,body){
 		if (err) {
@@ -291,29 +203,60 @@ Selectors.prototype.selectTerm = function(config) {
 
 		var selectValues = [];
 		body.forEach(function (item) {
+			if (!item.classId || !item.name) {
+				return;
+			};
 			selectValues.push({
-				text:item.text,
-				id:item.termId
+				text:item.classId+' - '+item.name,
+				id:item.classId
 			})
 		}.bind(this))
 
 		selectValues.sort(function(a, b){
-			if(a.id > b.id) return -1;
-			if(a.id < b.id) return 1;
+			if(a.id < b.id) return -1;
+			if(a.id > b.id) return 1;
 			return 0;
 		}.bind(this))
-		selectValues= [{id:this.dropDownInfoId,text:'Select Term!'}].concat(selectValues)
-		this.setupSelector(this.term,selectValues,config);
+		selectValues= [{id:this.dropDownInfoId,text:'Select Class!'}].concat(selectValues)
+
+		//call the parent class to do the rest of the setup
+		Selector.prototype.setup.call(this,selectValues,config)
 	}.bind(this));
 }
 
-Selectors.prototype.selectSubject = function(config) {
+
+var classInstance = new Class();
+
+
+
+
+
+
+
+function Subject () {
+	Selector.prototype.constructor.apply(this,arguments);
+
+	this.element = $(".selectSubject")
+	this.class ='subjectSelectContainer'
+	this.next = classInstance;
+}
+
+
+//prototype constructor
+Subject.prototype = Object.create(Selector.prototype);
+Subject.prototype.constructor = Subject;
+
+
+Subject.prototype.setup = function(config) {
+	if (config) {
+		this.defaultValue = config.defaultValue
+	};
 	request({
 		url:'/listSubjects',
 		type:'POST',
 		body:{
-			host:this.college.value,
-			termId:this.term.value
+			host:selectors.college.getValue(),
+			termId:selectors.term.getValue()
 		}
 	} ,function (err,body){
 		if (err) {
@@ -339,18 +282,40 @@ Selectors.prototype.selectSubject = function(config) {
 			return 0;
 		}.bind(this))
 		selectValues= [{id:this.dropDownInfoId,text:'Select Subject!'}].concat(selectValues)
-		this.setupSelector(this.subject,selectValues,config);
+
+		//call the parent class to do the rest of the setup
+		Selector.prototype.setup.call(this,selectValues,config)
 	}.bind(this))
 }
 
-Selectors.prototype.selectClass = function(config) {
+
+var subjectInstance = new Subject();
+
+
+
+
+function Term () {
+	Selector.prototype.constructor.apply(this,arguments);
+	this.element= $(".selectTerm");
+	this.class='termSelectContainer';
+	this.next = subjectInstance;
+}
+
+
+//prototype constructor
+Term.prototype = Object.create(Selector.prototype);
+Term.prototype.constructor = Term;
+
+
+Term.prototype.setup = function(config) {
+	if (config) {
+		this.defaultValue = config.defaultValue
+	};
 	request({
-		url:'/listClasses',
+		url:'/listTerms',
 		type:'POST',
 		body:{
-			host:this.college.value,
-			termId:this.term.value,
-			subject:this.subject.value
+			host:selectors.college.getValue()
 		}
 	} ,function (err,body){
 		if (err) {
@@ -360,24 +325,134 @@ Selectors.prototype.selectClass = function(config) {
 
 		var selectValues = [];
 		body.forEach(function (item) {
-			if (!item.classId || !item.name) {
-				return;
-			};
 			selectValues.push({
-				text:item.classId+' - '+item.name,
-				id:item.classId
+				text:item.text,
+				id:item.termId
 			})
 		}.bind(this))
 
 		selectValues.sort(function(a, b){
-			if(a.id < b.id) return -1;
-			if(a.id > b.id) return 1;
+			if(a.id > b.id) return -1;
+			if(a.id < b.id) return 1;
 			return 0;
 		}.bind(this))
-		selectValues= [{id:this.dropDownInfoId,text:'Select Class!'}].concat(selectValues)
-		this.setupSelector(this.class,selectValues,config);
+		selectValues= [{id:this.dropDownInfoId,text:'Select Term!'}].concat(selectValues)
+
+		//call the parent class to do the rest of the setup
+		Selector.prototype.setup.call(this,selectValues,config)
 	}.bind(this));
 }
+
+var termInstance = new Term();
+
+
+function College () {
+	Selector.prototype.constructor.apply(this,arguments);
+
+	this.element = $(".selectCollege");
+	this.class ='collegeSelectContainer';
+	this.next = termInstance;
+}
+
+
+//prototype constructor
+College.prototype = Object.create(Selector.prototype);
+College.prototype.constructor = College;
+
+College.prototype.setup = function(config) {
+	if (config) {
+		this.defaultValue = config.defaultValue
+	};
+	request({
+		type:'POST',
+		url:'/listColleges',
+		body:{}
+	},function (err,body){
+		if (err) {
+			console.log(err);
+			return;
+		}
+
+		var selectValues = [];
+		body.forEach(function (college) {
+			selectValues.push({
+				id:college.host,
+				text:college.title
+			});
+		}.bind(this));
+
+		selectValues.sort(function(a, b){
+			if(a.text < b.text) return -1;
+			if(a.text > b.text) return 1;
+			return 0;
+		}.bind(this))
+		
+		selectValues= [{id:this.dropDownInfoId,text:'Select Your College!'}].concat(selectValues)
+
+		//call the parent class to do the rest of the setup
+		Selector.prototype.setup.call(this,selectValues,config)
+	}.bind(this));
+}
+
+var collegeInstance = new College();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Selectors () {
+
+
+	this.class = classInstance;
+	this.subject = subjectInstance;
+	this.term = termInstance;
+	this.college = collegeInstance;
+
+	//order of selectors
+	this.selectors = [
+	this.college,
+	this.term,
+	this.subject,
+	this.class
+	]
+}
+
+
+
+Selectors.prototype.updateDeeplink = function() {
+	var url = []
+
+	this.selectors.forEach(function (dropdown) {
+		if (dropdown.getValue()) {
+			url.push(encodeURIComponent(dropdown.getValue()));
+		};
+	}.bind(this))
+	
+	
+	var hash = url.join('/')
+	
+	//add both trees and selectors to history
+	if (history.pushState) {
+		history.pushState(null, null, "#"+hash);
+	}
+	else {
+		window.location.hash = hash
+	}
+
+};
 
 
 Selectors.prototype.closeAllSelectors = function () {
@@ -387,7 +462,7 @@ Selectors.prototype.closeAllSelectors = function () {
 }
 
 Selectors.prototype.finish = function() {
-	treeMgr.createTree(this.college.value,this.term.value,this.subject.value,this.class.value)
+	treeMgr.createTree(this.college.getValue(),this.term.getValue(),this.subject.getValue(),this.class.getValue())
 }
 
 //
@@ -409,7 +484,8 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 			
 			//destroy all the selectors after this one
 			this.selectors.slice(index+1).forEach(function(selector) {
-				this.resetDropdown(selector);
+				selector.reset()
+				// this.resetDropdown(selector);
 			}.bind(this))
 			
 			
@@ -434,12 +510,12 @@ Selectors.prototype.setSelectors = function(values,doOpenNext) {
 Selectors.prototype.searchClasses = function(value) {
 
 	// remove subject from beginning of search, but this only works if search for same subject that is loaded
-	if (_(value.toLowerCase()).startsWith(this.subject.value.toLowerCase())) {
-		value=value.slice(this.subject.value.length).trim()
+	if (_(value.toLowerCase()).startsWith(this.subject.getValue().toLowerCase())) {
+		value=value.slice(this.subject.getValue().length).trim()
 	}
 
-	for (var i = 0; i < this.class.values.length; i++) {
-		var currClass = this.class.values[i];
+	for (var i = 0; i < this.class.values().length; i++) {
+		var currClass = this.class.values()[i];
 
 		//yay found match, open the class
 		if (currClass.id.toLowerCase()===value.toLowerCase()) {
@@ -447,7 +523,7 @@ Selectors.prototype.searchClasses = function(value) {
 			//open
 			search.closeSearchBox();
 			selectors.class.element.select2('val',value);
-			selectors.class.element.trigger('select2:close')
+			selectors.class.element.trigger('select2:select')
 			return true;
 		};
 	};
@@ -470,12 +546,11 @@ Selectors.prototype.updateFromHash = function() {
 	if (values.length==0) {
 		
 		this.selectors.forEach(function(selector){
-			this.resetDropdown(selector);
+			selector.reset();
 		}.bind(this))
 		
 		
 		this.college.setup({defaultValue:this.dropDownInfoId,shouldOpen:false});
-		this.college.value = this.dropDownInfoId;
 		homepage.show();
 		return;
 	}
