@@ -8,18 +8,7 @@ payments
 
 
 names to fix:
-Calc for Business/econ (hon)
-Calculus 2 for Sci/engr (hon)
-Calc & Diff Eq - Biol 1(hon)
-Principles of Microecon (hon)
-Calculus 1 for Sci/engr (hon)
-Calculus 1for Sci/engr (hon)
- -- > Calculus 1 for Science and Engineering
-	-(but with hon)
 
-Fundamental of Com Sci1 -> Fundamentals of Computer Science 1
-
-Fundamentals of Com Sci1 (hon)
 
 for unit test:
 etc maybe \w+\d
