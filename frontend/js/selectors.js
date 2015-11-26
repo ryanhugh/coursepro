@@ -7,7 +7,7 @@ function Selector() {
 
 
 	//the .val() of the Select Your College!, Select Term!, option
-	this.dropDownInfoId = 'null'
+	this.helpId = 'help_id'
 
 	//set in .setup, used after the callback returns
 	//if element does not exist, and this is set, return this
@@ -45,7 +45,7 @@ Selector.prototype.getValue = function() {
 
 	// check the stored value
 	var value = this.defaultValue;
-	if (value && value!=this.dropDownInfoId) {
+	if (value && value!=this.helpId) {
 		return value;
 	}
 
@@ -55,7 +55,7 @@ Selector.prototype.getValue = function() {
 	}
 
 	
-	if (!value || value==this.dropDownInfoId) {
+	if (!value || value==this.helpId) {
 		return null;
 	}
 	return value;
@@ -83,12 +83,31 @@ Selector.prototype.resetAllFutureVals = function() {
 		currSelector = currSelector.next;
 		
 		currSelector.reset()
-		currSelector.element[0].value=''
 	}
 }
 
+Selector.prototype.setup = function(config) {
+	if (config) {
+		this.defaultValue = config.defaultValue
+	};
+	request( this.getRequestBody() ,function (err,selectValues){
+		if (err) {
+			console.log(err);
+			return;
+		}
 
-Selector.prototype.setup = function(values,config) {
+		selectValues = this.processValues(selectValues);
+
+		selectValues= [{id:this.helpId,text:this.helpText}].concat(selectValues)
+
+		//setup the selector with this data
+		this.setupSelector(selectValues,config)
+
+	}.bind(this));
+}
+
+
+Selector.prototype.setupSelector = function(values,config) {
 	if (config===undefined) {
 		config={}
 	}
@@ -144,9 +163,6 @@ Selector.prototype.setup = function(values,config) {
 			'title': 'Coursepro.io'
 		});
 
-
-		// console.log('selected',selection)
-
 		if (this.next) {
 			this.next.setup()
 		}
@@ -174,6 +190,7 @@ function Class () {
 
 	this.class='classSelectContainer'
 	this.element=$(".selectClass")
+	this.helpText = 'Select Class!'
 }
 
 
@@ -182,12 +199,8 @@ Class.prototype = Object.create(Selector.prototype);
 Class.prototype.constructor = Class;
 
 
-
-Class.prototype.setup = function(config) {
-	if (config) {
-		this.defaultValue = config.defaultValue
-	};
-	request({
+Class.prototype.getRequestBody = function() {
+	return {
 		url:'/listClasses',
 		type:'POST',
 		body:{
@@ -195,34 +208,30 @@ Class.prototype.setup = function(config) {
 			termId:selectors.term.getValue(),
 			subject:selectors.subject.getValue()
 		}
-	} ,function (err,body){
-		if (err) {
-			console.log(err);
+	}
+};
+
+//convert the server data to the input format select2 needs
+Class.prototype.processValues = function(values) {
+	
+	var retVal = [];
+	values.forEach(function (item) {
+		if (!item.classId || !item.name) {
 			return;
-		}
+		};
+		retVal.push({
+			text:item.classId+' - '+item.name,
+			id:item.classId
+		})
+	}.bind(this))
 
-		var selectValues = [];
-		body.forEach(function (item) {
-			if (!item.classId || !item.name) {
-				return;
-			};
-			selectValues.push({
-				text:item.classId+' - '+item.name,
-				id:item.classId
-			})
-		}.bind(this))
-
-		selectValues.sort(function(a, b){
-			if(a.id < b.id) return -1;
-			if(a.id > b.id) return 1;
-			return 0;
-		}.bind(this))
-		selectValues= [{id:this.dropDownInfoId,text:'Select Class!'}].concat(selectValues)
-
-		//call the parent class to do the rest of the setup
-		Selector.prototype.setup.call(this,selectValues,config)
-	}.bind(this));
-}
+	retVal.sort(function(a, b){
+		if(a.id < b.id) return -1;
+		if(a.id > b.id) return 1;
+		return 0;
+	}.bind(this))
+	return retVal;
+};
 
 
 var classInstance = new Class();
@@ -239,6 +248,7 @@ function Subject () {
 	this.element = $(".selectSubject")
 	this.class ='subjectSelectContainer'
 	this.next = classInstance;
+	this.helpText = 'Select Subject!'
 }
 
 
@@ -247,49 +257,43 @@ Subject.prototype = Object.create(Selector.prototype);
 Subject.prototype.constructor = Subject;
 
 
-Subject.prototype.setup = function(config) {
-	if (config) {
-		this.defaultValue = config.defaultValue
-	};
-	request({
+Subject.prototype.getRequestBody = function() {
+	return {
 		url:'/listSubjects',
 		type:'POST',
 		body:{
 			host:selectors.college.getValue(),
 			termId:selectors.term.getValue()
 		}
-	} ,function (err,body){
-		if (err) {
-			console.log(err);
+	}
+};
+
+Subject.prototype.processValues = function(values) {
+	
+	var retVal = [];
+	values.forEach(function (item) {
+		if (!item.subject || !item.text) {
 			return;
 		}
 
-		var selectValues = [];
-		body.forEach(function (item) {
-			if (!item.subject || !item.text) {
-				return;
-			}
-
-			selectValues.push({
-				text:item.subject+' - '+item.text,
-				id:item.subject
-			})
-		}.bind(this))
-
-		selectValues.sort(function(a, b){
-			if(a.id < b.id) return -1;
-			if(a.id > b.id) return 1;
-			return 0;
-		}.bind(this))
-		selectValues= [{id:this.dropDownInfoId,text:'Select Subject!'}].concat(selectValues)
-
-		//call the parent class to do the rest of the setup
-		Selector.prototype.setup.call(this,selectValues,config)
+		retVal.push({
+			text:item.subject+' - '+item.text,
+			id:item.subject
+		})
 	}.bind(this))
+
+	retVal.sort(function(a, b){
+		if(a.id < b.id) return -1;
+		if(a.id > b.id) return 1;
+		return 0;
+	}.bind(this))
+	return retVal;
 }
 
 
 var subjectInstance = new Subject();
+
+
 
 
 
@@ -299,6 +303,7 @@ function Term () {
 	this.element= $(".selectTerm");
 	this.class='termSelectContainer';
 	this.next = subjectInstance;
+	this.helpText = 'Select Term!'
 }
 
 
@@ -306,44 +311,40 @@ function Term () {
 Term.prototype = Object.create(Selector.prototype);
 Term.prototype.constructor = Term;
 
-
-Term.prototype.setup = function(config) {
-	if (config) {
-		this.defaultValue = config.defaultValue
-	};
-	request({
+Term.prototype.getRequestBody = function() {
+	return {
 		url:'/listTerms',
 		type:'POST',
 		body:{
 			host:selectors.college.getValue()
 		}
-	} ,function (err,body){
-		if (err) {
-			console.log(err);
-			return;
-		}
+	}
+};
 
-		var selectValues = [];
-		body.forEach(function (item) {
-			selectValues.push({
-				text:item.text,
-				id:item.termId
-			})
-		}.bind(this))
+Term.prototype.processValues = function(values) {
 
-		selectValues.sort(function(a, b){
-			if(a.id > b.id) return -1;
-			if(a.id < b.id) return 1;
-			return 0;
-		}.bind(this))
-		selectValues= [{id:this.dropDownInfoId,text:'Select Term!'}].concat(selectValues)
+	var retVal = [];
+	values.forEach(function (item) {
+		retVal.push({
+			text:item.text,
+			id:item.termId
+		})
+	}.bind(this))
 
-		//call the parent class to do the rest of the setup
-		Selector.prototype.setup.call(this,selectValues,config)
-	}.bind(this));
-}
+	retVal.sort(function(a, b){
+		if(a.id > b.id) return -1;
+		if(a.id < b.id) return 1;
+		return 0;
+	}.bind(this))
+	return retVal;
+};
+
 
 var termInstance = new Term();
+
+
+
+
 
 
 function College () {
@@ -352,6 +353,7 @@ function College () {
 	this.element = $(".selectCollege");
 	this.class ='collegeSelectContainer';
 	this.next = termInstance;
+	this.helpText = 'Select Your College!'
 }
 
 
@@ -359,40 +361,31 @@ function College () {
 College.prototype = Object.create(Selector.prototype);
 College.prototype.constructor = College;
 
-College.prototype.setup = function(config) {
-	if (config) {
-		this.defaultValue = config.defaultValue
-	};
-	request({
+College.prototype.getRequestBody = function() {
+	return {
 		type:'POST',
 		url:'/listColleges',
 		body:{}
-	},function (err,body){
-		if (err) {
-			console.log(err);
-			return;
-		}
+	}
+};
+College.prototype.processValues = function(values) {
 
-		var selectValues = [];
-		body.forEach(function (college) {
-			selectValues.push({
-				id:college.host,
-				text:college.title
-			});
-		}.bind(this));
-
-		selectValues.sort(function(a, b){
-			if(a.text < b.text) return -1;
-			if(a.text > b.text) return 1;
-			return 0;
-		}.bind(this))
-		
-		selectValues= [{id:this.dropDownInfoId,text:'Select Your College!'}].concat(selectValues)
-
-		//call the parent class to do the rest of the setup
-		Selector.prototype.setup.call(this,selectValues,config)
+	var retVal = [];
+	values.forEach(function (college) {
+		retVal.push({
+			id:college.host,
+			text:college.title
+		});
 	}.bind(this));
-}
+
+	retVal.sort(function(a, b){
+		if(a.text < b.text) return -1;
+		if(a.text > b.text) return 1;
+		return 0;
+	}.bind(this))
+	return retVal;
+};
+
 
 var collegeInstance = new College();
 
@@ -514,8 +507,8 @@ Selectors.prototype.searchClasses = function(value) {
 		value=value.slice(this.subject.getValue().length).trim()
 	}
 
-	for (var i = 0; i < this.class.values().length; i++) {
-		var currClass = this.class.values()[i];
+	for (var i = 0; i < this.class.values.length; i++) {
+		var currClass = this.class.values[i];
 
 		//yay found match, open the class
 		if (currClass.id.toLowerCase()===value.toLowerCase()) {
@@ -581,13 +574,13 @@ Selectors.prototype.main = function() {
 	window.onpopstate = function(event) {
 		this.updateFromHash();
 	}.bind(this)
-	
-	
-	
 }
 
 
 Selectors.prototype.Selectors=Selectors;
 window.selectors = new Selectors();
 
+$(function () {
+	window.selectors.main();
+})
 

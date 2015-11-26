@@ -10,7 +10,3 @@
 // panel (or node) with corsor over it is 999
 
 
-
-$(function () {
-	window.selectors.main();
-})

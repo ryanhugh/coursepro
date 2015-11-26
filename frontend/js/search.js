@@ -82,19 +82,19 @@ Search.prototype.searchFromString = function(host,termId,subject,string) {
 };
 
 Search.prototype.searchFromEntry = function() {
-	var host = selectors.college.value;
+	var host = selectors.college.getValue();
 	if (!host) {
 		console.log('error: need to select college first');
 		return
 	}
 
-	var termId = selectors.term.value;
+	var termId = selectors.term.getValue();
 	if (!termId) {
 		console.log('error: need to selecte term first');
 		return;
 	}
 
-	var subject = selectors.subject.value;
+	var subject = selectors.subject.getValue();
 	if (!subject) {
 		console.log('error: need to select subject first');
 		return;
