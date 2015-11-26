@@ -768,7 +768,7 @@ EllucianClassParser.prototype.tests = function () {
 	}.bind(this));//
 
 
-	//cancelled - something was wierd with this one not sure what it was
+	//cancelled - something was weird with this one not sure what it was
 	fs.readFile('backend/tests/ellucianClassParser/6.html','utf8',function (err,body) {
 		assert.equal(null,err);
 		pointer.handleRequestResponce(body,function (err,dom) {
@@ -798,6 +798,31 @@ EllucianClassParser.prototype.tests = function () {
 				assert.equal(dep.parent,pageData);
 				assert.equal(dep.parser,ellucianSectionParser);
 			}.bind(this));
+		}.bind(this));
+	}.bind(this));
+
+
+
+
+	//make sure this.classNameTranslation works
+	fs.readFile('backend/tests/ellucianClassParser/rename.html','utf8',function (err,body) {
+		assert.equal(null,err);
+		pointer.handleRequestResponce(body,function (err,dom) {
+			assert.equal(null,err);
+
+			//set up variables
+			var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=CS&crse_in=2500&schd_in=LEC';
+			var pageData = pageDataMgr.create({dbData:{url:url,desc:'',classId:'2500'}});
+			assert.notEqual(null,pageData);
+
+			//main parse
+			this.parseDOM(pageData,dom);
+
+
+			assert.equal(true,this.supportsPage(url));
+
+			// five sections of fundies, and 1 alt class (hon, which has 1 section)
+			assert.equal(pageData.deps.length,6);
 		}.bind(this));
 	}.bind(this));
 
