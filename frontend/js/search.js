@@ -40,24 +40,20 @@ Search.prototype.openSearchBox = function(event) {
 	$("#searchDropdown").dropdown('toggle');//toggle only opens it and does not close it...
 
 
-	var termText = selectors.getTermText();
-	var subjectText = selectors.getSubjectText();
+	var termText = selectors.term.getText();
+	var subjectText = selectors.subject.getText();
 
 
 	if (!termText || !subjectText) {
 		this.searchHelp.innerHTML = 'Select a term and subject <br> before searching!'
 	}
 	else {
-		this.searchHelp.innerHTML = 'Search in '+selectors.getTermText() + '<br>'+selectors.getSubjectText()+'!'
+		this.searchHelp.innerHTML = 'Search in '+termText + '<br>'+subjectText+'!'
 	}
 
-	setTimeout(function(){
-		//close all the selectors
-		selectors.closeAllSelectors();
-		this.searchBox.focus();
-		this.searchBox.select();
-	}.bind(this),0);
-	//
+
+	this.searchBox.focus();
+	this.searchBox.select();
 
 
 	if (event) {
