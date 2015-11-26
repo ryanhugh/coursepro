@@ -290,12 +290,29 @@ app.post('/search',function(req,res) {
   //search through class descrption, classId, name subject
   
   //search through section crn, meetings(profs, where)
-  
-  
-  
-  
-  
-  
+ 
+})
+
+
+app.post('/spider',function (req,res) {
+	if (!_(req.connection.remoteAddress).includes('127.0.0.1') && req.connection.remoteAddress!='::1') {
+		return res.send('404, yo'); // ;)
+	}
+
+	console.log('Spidering ',req.body.url);
+
+	return res.send('running!');
+
+
+	this.createFromURL(req.body.url,function(){
+		console.log('all done!! sju')
+	}.bind(this))
+
+	//else start the spidering
+	pageDataMgr.go();
+	
+	return res.send('running!');
+
 })
 
 app.post('/registerForEmails',function(req,res){
