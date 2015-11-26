@@ -452,6 +452,10 @@ Render.prototype.go = function(tree) {
 	
 	this.container.appendChild(this.padding)
 
+	if (!tree.isClass) {
+		tree.hidden = true;
+	};
+
 	this.calcPanelSize(this.tree);
 	this.addStructure(this.tree);
 	this.calcPanelPos(this.tree);
