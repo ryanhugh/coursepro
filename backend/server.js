@@ -301,16 +301,11 @@ app.post('/spider',function (req,res) {
 
 	console.log('Spidering ',req.body.url);
 
-	return res.send('running!');
 
-
-	this.createFromURL(req.body.url,function(){
+	pageDataMgr.createFromURL(req.body.url,function(){
 		console.log('all done!! sju')
 	}.bind(this))
 
-	//else start the spidering
-	pageDataMgr.go();
-	
 	return res.send('running!');
 
 })
