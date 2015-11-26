@@ -549,8 +549,6 @@ Selectors.prototype.updateFromHash = function() {
 			selector.reset();
 		}.bind(this))
 		
-		
-		this.college.setup({defaultValue:this.dropDownInfoId,shouldOpen:false});
 		homepage.show();
 		return;
 	}
