@@ -553,6 +553,16 @@ Selectors.prototype.updateFromHash = function() {
 		this.setSelectors(values.slice(1,values.length-1),false);
 		search.searchFromString(values[1],values[2],values[3],values[4])
 	}
+	else if (values[0] =='tests') {
+
+		//if minified with testing
+		if (window.tests) {
+			test.go(values.slice(1));
+		}
+		else {
+			console.log('not running tests')
+		}
+	}
 	else {
 		
 		//only activate things if hash all values
