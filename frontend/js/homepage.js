@@ -61,10 +61,12 @@ Homepage.prototype.show = function () {
 
 
 
-var instance = new Homepage();
+
 
 Homepage.prototype.Homepage=Homepage;
-window.homepage = instance;
+module.exports = new Homepage();
+
+
 
 
 //google analytics

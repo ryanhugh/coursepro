@@ -1,5 +1,5 @@
 'use strict';
-
+var homepage = require('./homepage')
 
 function Render () {
 	
@@ -475,7 +475,6 @@ Render.prototype.go = function(tree) {
 };
 
 
-var instance = new Render();
-
 Render.prototype.Render=Render;
-window.render = instance;
+module.exports = new Render();
+

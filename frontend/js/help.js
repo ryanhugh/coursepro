@@ -1,4 +1,4 @@
-
+'use strict';
 function Help () {
 	
 	this.HELP_POPUP_COUNT = 5
@@ -309,7 +309,6 @@ Help.prototype.go = function(tree) {
 
 
 
-var instance = new Help();
-
 Help.prototype.Help=Help;
-window.help = instance;
+module.exports = new Help();
+

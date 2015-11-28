@@ -1,4 +1,7 @@
 'use strict';
+var render = require('./render')
+var request = require('./request')
+var homepage = require('./homepage')
 
 function TreeMgr () {
 	this.DATASTATUS_NOTSTARTED = 0;
@@ -13,7 +16,7 @@ function TreeMgr () {
 
 TreeMgr.prototype.convertServerData = function(data) {
 	var retVal={};
-
+ 
 
 	//given a class, process the prereqs
 	//squish the class details and the first row of the prereqs
@@ -755,4 +758,6 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 
 
 TreeMgr.prototype.TreeMgr=TreeMgr;
-window.treeMgr = new TreeMgr();
+module.exports = new TreeMgr();
+
+

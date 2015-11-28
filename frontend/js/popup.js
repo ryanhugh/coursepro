@@ -517,4 +517,4 @@ Popup.prototype.go = function(tree) {
 
 
 Popup.prototype.Popup=Popup;
-window.popup = new Popup();
+module.exports = new Popup();

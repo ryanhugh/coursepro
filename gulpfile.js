@@ -1,4 +1,5 @@
 'use strict';
+// gulp stuff
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
 var wrap = require("gulp-wrap");
@@ -7,35 +8,40 @@ var uncss = require('gulp-uncss');
 var addsrc = require('gulp-add-src');
 var streamify = require('gulp-streamify');
 
-var requireDir = require('require-dir');
-
+// browsify stuff
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var reactify = require('reactify');
 var watchify = require('watchify')
 var glob = require('glob')
 
+// custom stuff
 var macros = require('./backend/macros')
-var parsers = requireDir('./backend/parsers');
-var databases = requireDir('./backend/databases');
 var pointer = require('./backend/pointer');
 var emailMgr = require('./backend/emailMgr')
 var pageDataMgr = require('./backend/pageDataMgr')
 var search = require('./backend/search')
 
+// parsers and databases
+var requireDir = require('require-dir');
+var parsers = requireDir('./backend/parsers');
+var databases = requireDir('./backend/databases');
 
 
 //watch is allways on, to turn off (or add the option back) 
 // turn fullPaths back to shouldWatch and only run bundler = watchify(bundler) is shouldWatch is true
 // http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
+
+//another note, if you include a module that dosent exist, it will hang forever(?) eg (require('jdklfjdasjfkl'))
 function compileJS(shouldUglify) {
-	var files = glob.sync('frontend/js/*.js');
+	var files = glob.sync('frontend/js/*.js').concat(glob.sync('frontend/js/**/*.js'));
+
 	var bundler = browserify({entries:files}, {
 		basedir: __dirname, 
 		debug: false, 
 		cache: {}, // required for watchify
 		packageCache: {}, // required for watchify
-		fullPaths: true // required to be true only for watchify
+		fullPaths: false // required to be true only for watchify
 	});
 
 	bundler = watchify(bundler) 
@@ -54,7 +60,9 @@ function compileJS(shouldUglify) {
 			})));
 		};
 
-		return stream.pipe(gulp.dest('./frontend/static/js/internal'));
+		var output = stream.pipe(gulp.dest('./frontend/static/js/internal'));
+		console.log("----Done Rebundling custom JS!----")
+		return output;
 	};
 
 	bundler.on('update', rebundle);
@@ -95,7 +103,7 @@ gulp.task('watchUglifyCSS', function() {
 
 
 //main prod starting point
-gulp.task('prod',['uglifyJS','watchUglifyJS'],function() {
+gulp.task('prod',['uglifyJS'],function() {
 	macros.SEND_EMAILS = true;
 	require('./backend/server')
 })

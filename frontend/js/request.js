@@ -291,7 +291,7 @@ Request.prototype.go = function(config,callback) {
 var instance = new Request();
 
 Request.prototype.Request=Request;
-window.request = function (config,callback) {
+module.exports = function (config,callback) {
 	instance.go(config,callback);
 };
 

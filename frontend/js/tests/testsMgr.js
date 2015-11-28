@@ -1,12 +1,15 @@
 'use strict';
+
+var a =require('./emailMgrTests')
+
 function TestsMgr () {
 	
 }
-
+ 
 //values is list of module's tests to run
 TestsMgr.prototype.go = function(values) {
 	if (!values) {
-		values=[];
+		values=[]; 
 	};
 
 	globalTestsArray.forEach(function(testModule){
@@ -21,6 +24,9 @@ TestsMgr.prototype.go = function(values) {
 };
 
 
+if (require.main === module) {
+	module.exports.tests();
+}
 
-
-window.testsMtr = new TestsMgr()
+TestsMgr.prototype.TestsMgr=TestsMgr;
+module.exports = new TestsMgr();

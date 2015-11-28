@@ -23,10 +23,6 @@ EmailMgrTests.prototype.go = function() {
 
 
 
+EmailMgrTests.prototype.EmailMgrTests=EmailMgrTests;
+module.exports = new EmailMgrTests();
 
-
-
-if (!window.globalTestsArray) {
-	window.globalTestsArray=[]
-}
-window.globalTestsArray.push(new EmailMgrTests())

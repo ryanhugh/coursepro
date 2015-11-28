@@ -1,4 +1,4 @@
-
+'use strict';
 function EmailMgr () {
 
 
@@ -98,4 +98,5 @@ EmailMgr.prototype.onEmailSubmit = function(email) {
 
 
 EmailMgr.prototype.EmailMgr=EmailMgr;
-window.emailMgr = new EmailMgr();
+module.exports = new EmailMgr();
+

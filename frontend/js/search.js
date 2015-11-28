@@ -187,6 +187,4 @@ Search.prototype.go = function(host,termId,subject,value) {
 
 
 Search.prototype.Search=Search;
-var instance = new Search();
-window.search = instance;
-
+module.exports = new Search();
