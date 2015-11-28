@@ -55,7 +55,7 @@ function compileJS(shouldUglify) {
 
 
 
-	var bundler = browserify({entries:files}, {
+	var bundler = browserify({entries:filesToProccess}, {
 		basedir: __dirname, 
 		debug: false, 
 		cache: {}, // required for watchify
@@ -65,6 +65,12 @@ function compileJS(shouldUglify) {
 		//dont show C:/ryan/google drive etc in the uglified source code
 		fullPaths: false 
 	});
+
+	if (shouldUglify) {
+		 bundler.ignore('./testsMgr');
+		 bundler.ignore('./tests/testsMgr');
+		 bundler.ignore('../tests/testsMgr');
+	};
 
 	bundler = watchify(bundler) 
 

@@ -159,8 +159,7 @@ Manager.prototype.updateFromHash = function() {
 
 		//if minified with testing
 		if (window.compiledWithUnitTests) {
-			var tests = require('../tests/testsMgr')
-			tests.go(values.slice(1));
+			window.unitTestsMgr.go(values.slice(1));
 		}
 		else {
 			console.log('not running tests')

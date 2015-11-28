@@ -3,6 +3,7 @@
 var emailMgrTests =require('./emailMgrTests')
 var helpTests = require('./helpTests')
 var popupTests = require('./popupTests')
+var _ = require('lodash')
 
 function TestsMgr () {
 	this.tests = [
@@ -17,25 +18,28 @@ TestsMgr.prototype.go = function(values) {
 	if (!values) {
 		values=[]; 
 	};
-	console.log('running tests!')
 
-	this.tests.forEach(function(testModule){
+	if (_(values).includes('tree')) {
+		console.log('loading all trees...')
+	}
+	else {
+		console.log('running tests!')
 
-		//run any test that matches if tests specified, if not run them all
-		if (_(values).includes(testModule.name) || values.length==0) {
-			testModule.go();
-		};
-	}.bind(this))
+		this.tests.forEach(function(testModule){
 
-
+			//run any test that matches if tests specified, if not run them all
+			if (_(values).includes(testModule.name) || values.length==0) {
+				testModule.go();
+			};
+		}.bind(this))
+	}
 };
 
 
-if (require.main === module) {
-	module.exports.tests();
-}
-
-window.compiledWithUnitTests = true
 
 TestsMgr.prototype.TestsMgr=TestsMgr;
-module.exports = new TestsMgr();
+
+window.compiledWithUnitTests = true
+window.unitTestsMgr = new TestsMgr();
+
+
