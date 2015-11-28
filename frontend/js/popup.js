@@ -1,11 +1,15 @@
 'use strict';
+var macros = require('./macros')
+var request = require('./request')
+var render = require('./render')
+
+
 function Popup () {
-	
+	this.weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 }
 
 //creates 7:00 - 9:00 am
 // Thursday, Friday string
-var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 Popup.prototype.createTimeStrings = function(meetings) {
 	
 	//{startDate: 16554, endDate: 16554, profs: Array[1], where: "Snell Engineering Center 168", times: Object…}
@@ -32,12 +36,12 @@ Popup.prototype.createTimeStrings = function(meetings) {
 
 
 		for (var dayIndex in meeting.times) {
-			if (!weekDays[dayIndex]) {
+			if (!this.weekDays[dayIndex]) {
 				console.log('error dayIndex not found?')
 				meeting.dayString+='Someday'
 			}
 			else {
-				meeting.dayString+=weekDays[dayIndex]+', '
+				meeting.dayString+=this.weekDays[dayIndex]+', '
 			}
 		}
 		meeting.dayString = meeting.dayString.trim().replace(/,$/gi,'')
@@ -94,7 +98,7 @@ Popup.prototype.prettyLocation = function(location) {
 
 	}
 	else {
-		return '<a target="_blank" href="http://maps.google.com/?q='+selectors.college.getText()+' '+location.replace(/\d+\s*$/i,'')+'">'+location+'</a>';
+		return '<a target="_blank" href="http://maps.google.com/?q='+selectorsMgr.college.getText()+' '+location.replace(/\d+\s*$/i,'')+'">'+location+'</a>';
 	}
 };
 
@@ -219,7 +223,7 @@ Popup.prototype.expandPanel = function(tree) {
 	if (tree.isString) {
 		return;
 	};
-	if (tree.dataStatus!==treeMgr.DATASTATUS_DONE) {
+	if (tree.dataStatus!==macros.DATASTATUS_DONE) {
 		return;
 	};
 

@@ -1,5 +1,6 @@
 'use strict';
 var homepage = require('./homepage')
+var macros = require('./macros')
 
 function Render () {
 	
@@ -321,7 +322,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 			else {
 				tree.panel.getElementsByClassName('subjClassId')[0].innerHTML = tree.subject + ' '+tree.classId
 				panelBody.setAttribute('style','line-height: 14px;white-space:nowrap')
-				if (tree.dataStatus==treeMgr.DATASTATUS_DONE) {
+				if (tree.dataStatus==macros.DATASTATUS_DONE) {
 					tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.name
 	
 					//this should never happen - all classes have at least [] for crns
@@ -333,7 +334,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 						panelBody.innerHTML = tree.crns.length + ' section'+this.getOptionalS(tree.crns.length)+' this term'
 					}
 				}
-				else if (tree.dataStatus === treeMgr.DATASTATUS_FAIL) {
+				else if (tree.dataStatus === macros.DATASTATUS_FAIL) {
 					panelBody.innerHTML = "0 sections this term"
 				}
 				else {

@@ -1,9 +1,13 @@
 'use strict';
+var request = require('./request')
+
 function EmailMgr () {
-
-
 	this.emailError = document.getElementById('emailErrorId')
 	this.emailSuccess = document.getElementById('emailSuccessId')
+
+	this.submitButton = document.getElementById('emailSubmitButtonId')
+
+	this.submitButton.onclick = this.onEmailSubmit.bind(this);
 
 }
 

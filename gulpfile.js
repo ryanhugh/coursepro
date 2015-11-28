@@ -15,6 +15,9 @@ var reactify = require('reactify');
 var watchify = require('watchify')
 var glob = require('glob')
 
+//other stuff
+var _ = require('lodash')
+
 // custom stuff
 var macros = require('./backend/macros')
 var pointer = require('./backend/pointer');
@@ -32,16 +35,35 @@ var databases = requireDir('./backend/databases');
 // turn fullPaths back to shouldWatch and only run bundler = watchify(bundler) is shouldWatch is true
 // http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
 
-//another note, if you include a module that dosent exist, it will hang forever(?) eg (require('jdklfjdasjfkl'))
+//another note, if you include a module that dosent exist, it will silently hang forever(?) eg (require('jdklfjdasjfkl'))
 function compileJS(shouldUglify) {
 	var files = glob.sync('frontend/js/*.js').concat(glob.sync('frontend/js/**/*.js'));
+
+
+	var filesToProccess = [];
+	if (shouldUglify) {
+		files.forEach(function (file) {
+			if (!_(file).includes('tests')) {
+				filesToProccess.push(file)
+			};
+		})
+	}
+	else {
+		filesToProccess = files;
+	}
+	console.log('Processing:',filesToProccess)
+
+
 
 	var bundler = browserify({entries:files}, {
 		basedir: __dirname, 
 		debug: false, 
 		cache: {}, // required for watchify
 		packageCache: {}, // required for watchify
-		fullPaths: false // required to be true only for watchify
+
+		// required to be true only for watchify (?) but watchify works when it is off.
+		//dont show C:/ryan/google drive etc in the uglified source code
+		fullPaths: false 
 	});
 
 	bundler = watchify(bundler) 

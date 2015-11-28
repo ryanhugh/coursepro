@@ -2,13 +2,12 @@
 var render = require('./render')
 var request = require('./request')
 var homepage = require('./homepage')
+var macros = require('./macros')
+var popup = require('./popup')
+var help = require('./help')
+
 
 function TreeMgr () {
-	this.DATASTATUS_NOTSTARTED = 0;
-	this.DATASTATUS_LOADING = 1;
-	this.DATASTATUS_DONE = 2;
-	this.DATASTATUS_FAIL = 3;
-
 
 	this.host = null;
 	this.termId = null;
@@ -25,10 +24,10 @@ TreeMgr.prototype.convertServerData = function(data) {
 		retVal.isClass = true;
 		retVal.isString = false;
 		if (data.name!==undefined || data.prereqs!==undefined || data.url!==undefined) {
-			retVal.dataStatus = this.DATASTATUS_DONE;
+			retVal.dataStatus = macros.DATASTATUS_DONE;
 		}
 		else {
-			retVal.dataStatus = this.DATASTATUS_NOTSTARTED;
+			retVal.dataStatus = macros.DATASTATUS_NOTSTARTED;
 		}
 		if (data.type!==undefined || data.values!==undefined) {
 			console.log('error type or values in data???',data)
@@ -68,7 +67,7 @@ TreeMgr.prototype.convertServerData = function(data) {
 
 	//basic string
 	else if ((typeof data) == 'string'){
-		retVal.dataStatus = this.DATASTATUS_DONE;
+		retVal.dataStatus = macros.DATASTATUS_DONE;
 		retVal.isClass = true;
 		retVal.isString = true;
 		retVal.desc = data;
@@ -101,13 +100,13 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 		ignoreClasses.push(compareObject)
 		
 		//fire off ajax and add it to queue
-		if (!hasAlreadyLoaded && tree.dataStatus===this.DATASTATUS_NOTSTARTED) {
+		if (!hasAlreadyLoaded && tree.dataStatus===macros.DATASTATUS_NOTSTARTED) {
 
 			if (!tree.classId || !tree.subject) {
 				console.log('class must have class id and subject')
 				return;
 			};
-			tree.dataStatus = this.DATASTATUS_LOADING;
+			tree.dataStatus = macros.DATASTATUS_LOADING;
 
 			queue.defer(function (callback) {
 				request({
@@ -122,7 +121,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 						termId:this.termId
 					}
 				},function (err,body) {
-					tree.dataStatus= this.DATASTATUS_DONE;
+					tree.dataStatus= macros.DATASTATUS_DONE;
 					if (err) {
 						console.log('http error...',err);
 						return callback(err)
@@ -130,7 +129,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 
 					if (body.length==0) {
 						console.log('unable to find class even though its a prereq of another class????',tree)
-						tree.dataStatus = this.DATASTATUS_FAIL;
+						tree.dataStatus = macros.DATASTATUS_FAIL;
 						return callback()
 					};
 
@@ -647,7 +646,7 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 		subject:subject,
 		classId:classId,
 		isClass:true,
-		dataStatus:this.DATASTATUS_NOTSTARTED
+		dataStatus:macros.DATASTATUS_NOTSTARTED
 	}
 
 	//process tree takes in a callback
