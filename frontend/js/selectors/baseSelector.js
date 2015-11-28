@@ -2,12 +2,6 @@
 var _ = require('lodash')
 var request = require('../request')
 
-
-// if (!window.selectorsMgr) {
-// 	require('./manager')
-// }
-
-
 function BaseSelector() {
 	
 	//values the selector currently has (eg CS,EECE,...)
@@ -94,10 +88,13 @@ BaseSelector.prototype.resetAllFutureVals = function() {
 	}
 }
 
-BaseSelector.prototype.setup = function(config) {
+BaseSelector.prototype.setup = function(config,callback) {
 	if (config) {
 		this.defaultValue = config.defaultValue
 	};
+	if (!callback) {
+		callback = function (){}
+	}
 	request( this.getRequestBody() ,function (err,selectValues){
 		if (err) {
 			console.log(err);
@@ -110,6 +107,8 @@ BaseSelector.prototype.setup = function(config) {
 
 		//setup the selector with this data
 		this.setupSelector(selectValues,config)
+
+		callback();
 
 	}.bind(this));
 }
