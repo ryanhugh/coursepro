@@ -6,7 +6,6 @@ function Homepage () {
 	this.homepageElement = document.getElementById('homepageId');
 	this.masterContainer = document.getElementById('masterContainerId');
 
-	
 
 }
 
@@ -28,24 +27,10 @@ Homepage.prototype.isOnHomepage = function() {
 
 
 
-Homepage.prototype.clickHomeButton = function() {
-	
-	// if the element has a parent, it is in the container, if not it needs to be added
-	if (this.isOnHomepage()) {
-		return;
-	}
-	
-	
-	
-	history.pushState(null, null, "#");// only do this if icon clicked, not if back used to show
-	this.show();
-};
-
 
 Homepage.prototype.show = function () {
 	
 	
-	// if the element has a parent, it is in the container, if not it needs to be added
 	if (this.isOnHomepage()) {
 		return;
 	}
@@ -54,7 +39,6 @@ Homepage.prototype.show = function () {
 	document.body.style.width = '';
 
 
-	render.clearContainer();
 	this.masterContainer.appendChild(this.homepageElement);
 
 }

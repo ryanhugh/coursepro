@@ -101,10 +101,6 @@ SelectorsMgr.prototype.setSelectors = function(values,doOpenNext) {
 
 	}.bind(this))
 	
-	// show the homepage if nothing selected
-	if (values.length==0) {
-		homepage.show();
-	}
 };
 
 //you can search for cs4800 if cs is open,

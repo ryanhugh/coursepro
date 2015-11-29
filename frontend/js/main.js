@@ -1,5 +1,7 @@
 'use strict';
 var search = require('./search')
+var render = require('./render')
+var homepage = require('./homepage')
 
 function Main () {
 
@@ -9,8 +11,26 @@ function Main () {
 	window.onpopstate = function(event) {
 		this.updateFromHash();
 	}.bind(this)
-	
+
+
+	$(".showHomepage").on('click',function () {
+		this.clickHomeButton();
+	}.bind(this))
 }
+
+
+Main.prototype.clickHomeButton = function() {
+	
+	if (homepage.isOnHomepage()) {
+		return;
+	};
+
+	
+	history.pushState(null, null, "#");// only do this if icon clicked, not if back used to show
+
+	render.clearContainer();
+	homepage.show();
+};
 
 
 
@@ -30,6 +50,7 @@ Main.prototype.updateFromHash = function() {
 	//if no hash, destory all dropdowns and show (but don't open) the first one
 	if (values.length==0) {
 		selectorsMgr.resetAllSelectors()
+		render.clearContainer()
 		homepage.show();
 		return;
 	}
@@ -52,6 +73,7 @@ Main.prototype.updateFromHash = function() {
 		}
 	}
 	else {
+
 		
 		//only activate things if hash all values
 		//this prevents back button to going to when selected a non-class dropdown
