@@ -37,7 +37,7 @@ var databases = requireDir('./backend/databases');
 
 //another note, if you include a module that dosent exist, it will silently hang forever(?) eg (require('jdklfjdasjfkl'))
 function compileJS(shouldUglify) {
-	var files = glob.sync('frontend/js/*.js').concat(glob.sync('frontend/js/**/*.js'));
+	var files = glob.sync('frontend/js/**/*.js');
 
 
 	var filesToProccess = [];

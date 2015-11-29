@@ -19,12 +19,6 @@ function Main () {
 }
 
 
-Main.prototype.loadTree = function(first_argument) {
-	// body...
-};
-
-
-
 Main.prototype.clickHomeButton = function() {
 	
 	if (homepage.isOnHomepage()) {
