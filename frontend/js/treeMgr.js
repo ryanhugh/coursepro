@@ -226,6 +226,13 @@ TreeMgr.prototype.simplifyTree = function(tree) {
 			
 			//if node -> panel, copy panel attrs to node
 			var subTree = tree.values[0];
+
+			//clear all the values in the tree
+			for (var attrName in tree) {
+				tree[attrName] = undefined;
+			}
+
+			//then copy up all the subtree values
 			for (var attrName in subTree) {
 				tree[attrName] = subTree[attrName]
 			}
@@ -679,6 +686,7 @@ TreeMgr.prototype.showClasses = function(classList,callback) {
 	tree.termId = classList[0].termId
 	
 	//hide the node for search
+	// this must be false - 
 	tree.hidden = true;
 	
 

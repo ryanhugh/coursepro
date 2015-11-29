@@ -8,7 +8,7 @@ var subjectInstance = require('./subject')
 var classInstance = require('./class')
 
 
-function Manager () {
+function SelectorsMgr () {
 
 
 	this.class = classInstance;
@@ -23,11 +23,18 @@ function Manager () {
 	this.subject,
 	this.class
 	]
+
+
+	$('.openCollegeSelector').on('click',function() {
+		this.college.setup();
+	}.bind(this));
+
+
 }
 
 
 
-Manager.prototype.updateDeeplink = function() {
+SelectorsMgr.prototype.updateDeeplink = function() {
 	var url = []
 
 	this.selectors.forEach(function (dropdown) {
@@ -50,18 +57,18 @@ Manager.prototype.updateDeeplink = function() {
 };
 
 
-Manager.prototype.closeAllSelectors = function () {
+SelectorsMgr.prototype.closeAllSelectors = function () {
 	this.selectors.forEach(function(selector){
 		selector.close();
 	}.bind(this))
 }
 
-Manager.prototype.finish = function() {
+SelectorsMgr.prototype.finish = function() {
 	treeMgr.createTree(this.college.getValue(),this.term.getValue(),this.subject.getValue(),this.class.getValue())
 }
 
 //
-Manager.prototype.setSelectors = function(values,doOpenNext) {
+SelectorsMgr.prototype.setSelectors = function(values,doOpenNext) {
 	
 	//close all selectors, then open the ones told to
 	this.closeAllSelectors()
@@ -102,7 +109,7 @@ Manager.prototype.setSelectors = function(values,doOpenNext) {
 
 //you can search for cs4800 if cs is open,
 // but network connections would be required to search eece2222 when cs is open, so add that later
-Manager.prototype.searchClasses = function(value) {
+SelectorsMgr.prototype.searchClasses = function(value) {
 
 	// remove subject from beginning of search, but this only works if search for same subject that is loaded
 	if (_(value.toLowerCase()).startsWith(this.subject.getValue().toLowerCase())) {
@@ -125,86 +132,17 @@ Manager.prototype.searchClasses = function(value) {
 	return false;
 };
 
-Manager.prototype.updateFromHash = function() {
-	var values = window.location.hash.slice(1).split('/')
+SelectorsMgr.prototype.resetAllSelectors = function() {
 	
-	
-	//remove empty strings
-	_.pull(values,"");
-
-	values.forEach(function (value,index) {
-		values[index]= decodeURIComponent(value)
+	this.selectors.forEach(function(selector){
+		selector.reset();
 	}.bind(this))
 	
-	
-	//if no hash, destory all dropdowns and show (but don't open) the first one
-	if (values.length==0) {
-		
-		this.selectors.forEach(function(selector){
-			selector.reset();
-		}.bind(this))
-		
-		homepage.show();
-		return;
-	}
+};
 
 
 
-	//first term is search, last is the search term
-	if (values[0]=='search') {
-		this.setSelectors(values.slice(1,values.length-1),false);
-		search.searchFromString(values[1],values[2],values[3],values[4])
-	}
-	else if (values[0] =='tests') {
-
-		//if minified with testing
-		if (window.compiledWithUnitTests) {
-			window.unitTestsMgr.go(values.slice(1));
-		}
-		else {
-			console.log('not running tests')
-		}
-	}
-	else {
-		
-		//only activate things if hash all values
-		//this prevents back button to going to when selected a non-class dropdown
-		this.setSelectors(values,true);
-	}
-}
-
-
-
-Manager.prototype.main = function() {
-	if (window.location.hash.length>1) {
-		this.updateFromHash();
-	}
-	
-	
-	
-	//setup the back button history
-	window.onpopstate = function(event) {
-		this.updateFromHash();
-	}.bind(this)
-
-	$('.openCollegeSelector').on('click',function() {
-		this.college.setup();
-	}.bind(this));
-
-
-}
-
-
-
-
-Manager.prototype.Manager=Manager;
-
-var instance = new Manager();
+SelectorsMgr.prototype.SelectorsMgr=SelectorsMgr;
 
 //allow circular dependencies
-window.selectorsMgr = instance;
-
-$(function () {
-	instance.main();
-})
-
+window.selectorsMgr = new SelectorsMgr();

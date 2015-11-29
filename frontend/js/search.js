@@ -1,4 +1,8 @@
 'use strict';
+var request = require('./request')
+var render = require('./render')
+var treeMgr = require('./treeMgr')
+
 
 function Search () {
 	
@@ -40,8 +44,8 @@ Search.prototype.openSearchBox = function(event) {
 	$("#searchDropdown").dropdown('toggle');//toggle only opens it and does not close it...
 
 
-	var termText = selectors.term.getText();
-	var subjectText = selectors.subject.getText();
+	var termText = selectorsMgr.term.getText();
+	var subjectText = selectorsMgr.subject.getText();
 
 
 	if (!termText || !subjectText) {
@@ -82,19 +86,19 @@ Search.prototype.searchFromString = function(host,termId,subject,string) {
 };
 
 Search.prototype.searchFromEntry = function() {
-	var host = selectors.college.getValue();
+	var host = selectorsMgr.college.getValue();
 	if (!host) {
 		console.log('error: need to select college first');
 		return
 	}
 
-	var termId = selectors.term.getValue();
+	var termId = selectorsMgr.term.getValue();
 	if (!termId) {
 		console.log('error: need to selecte term first');
 		return;
 	}
 
-	var subject = selectors.subject.getValue();
+	var subject = selectorsMgr.subject.getValue();
 	if (!subject) {
 		console.log('error: need to select subject first');
 		return;
@@ -121,8 +125,8 @@ Search.prototype.go = function(host,termId,subject,value) {
 	value=value.replace(/\s+/g,'').toLowerCase()
 	
 
-	//if found a class, open the class tree with the selectors and dont search for anything
-	if (selectors.searchClasses(value)) {
+	//if found a class, open the class tree with the selectorsMgr and dont search for anything
+	if (selectorsMgr.searchClasses(value)) {
 		return;
 	};
 

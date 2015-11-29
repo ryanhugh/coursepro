@@ -21,9 +21,9 @@ TestsMgr.prototype.alltrees = function() {
 	console.log('loading all trees...')
 
 
-	window.selectorsMgr.college.setup({shouldOpen:false},function () {
+	selectorsMgr.college.setup({shouldOpen:false},function () {
 		
-		var colleges = _.cloneDeep(window.selectorsMgr.college.values)
+		var colleges = _.cloneDeep(selectorsMgr.college.values)
 
 
 		
@@ -34,13 +34,34 @@ TestsMgr.prototype.alltrees = function() {
 
 		async.eachSeries(colleges,function (college,callback) {
 
-			window.selectorsMgr.college.setup({defaultValue:college.id,shouldOpen:false},function() {
+			selectorsMgr.college.setup({defaultValue:college.id,shouldOpen:false},function() {
 
-				console.log(selectorsMgr.college.getValue())
-				callback()
-			})
+				selectorsMgr.college.setup({shouldOpen:false},function () {
+
+
+					var terms = _.cloneDeep(selectorsMgr.term.values)
+
+					//remove the help id
+					terms = _.filter(terms,function (term) {
+						return term.id!=baseSelector.helpId;
+					}.bind(this))
+
+					async.eachSeries(terms,function (term,callback) {
+						
+					}.bind(this),
+
+					function (callback) {
+
+						console.log(selectorsMgr.college.getValue())
+						callback()
+					}.bind(this))
+
+
+
+				}.bind(this))
+			}.bind(this)) 
 		}.bind(this))
-	})
+	}.bind(this))
 };
 
  
