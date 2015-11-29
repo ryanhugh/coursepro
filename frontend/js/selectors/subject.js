@@ -1,5 +1,5 @@
 'use strict';
-var BaseSelector = require('./BaseSelector').BaseSelector;
+var BaseSelector = require('./baseSelector').BaseSelector;
 var classInstance = require('./class')
 
 
