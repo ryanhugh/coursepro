@@ -119,9 +119,9 @@ SelectorsMgr.prototype.searchClasses = function(value) {
 		if (currClass.id.toLowerCase()===value.toLowerCase()) {
 
 			//open
-			search.closeSearchBox();
-			selectors.class.element.select2('val',value);
-			selectors.class.element.trigger('select2:select')
+			
+			this.class.element.select2('val',value);
+			this.class.element.trigger('select2:select')
 			return true;
 		};
 	};

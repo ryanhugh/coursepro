@@ -437,6 +437,8 @@ Render.prototype.hideSpinner = function() {
 
 Render.prototype.go = function(tree) {
 	
+	this.hideSpinner();
+	
 	//use document.body instead of this.container because this.container will add double padding to the left...
 	document.body.style.height = '';
 	document.body.style.width = '';
@@ -467,8 +469,20 @@ Render.prototype.go = function(tree) {
 	document.body.style.height = (this.container.scrollHeight + 50) + 'px'
 	document.body.style.width = (this.container.scrollWidth) + 'px'
 
-	//scroll to the middle of the page, and don't touch the scroll height
-	window.scrollTo(document.body.scrollWidth/2-$(window).width()/2 ,document.body.scrollTop);
+
+	// if two giant trees are off screen, pick one and scroll to it
+	// so something is on the screen when the loading finishes
+	// http://localhost/#neu.edu/201630/EECE/4792
+	if (tree.hidden && tree.values && (tree.values.length%2)==0) {
+
+		//scroll to one of sub trees
+		var x = tree.values[parseInt(tree.values.length/2)].x
+		window.scrollTo(x-$(window).width()/2 ,document.body.scrollTop);	
+	}
+	else {
+		//scroll to the middle of the page, and don't touch the scroll height
+		window.scrollTo(document.body.scrollWidth/2-$(window).width()/2 ,document.body.scrollTop);
+	}
 	
 	$('.holderDiv').remove();
 	

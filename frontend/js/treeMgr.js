@@ -645,65 +645,6 @@ TreeMgr.prototype.logTree = function(tree,body){
 }
 
 
-TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
-	
-	var tree = {
-		host:host,
-		termId:termId,
-		subject:subject,
-		classId:classId,
-		isClass:true,
-		dataStatus:macros.DATASTATUS_NOTSTARTED
-	}
-
-	//process tree takes in a callback
-	this.processTree(tree,function(err,tree){
-		if (err) {
-			console.log('error processing tree',err,tree);
-			return;
-		}
-		
-		this.logTree(tree,{
-			type:'createTree'
-		})
-	}.bind(this));
-	
-
-}
-TreeMgr.prototype.showClasses = function(classList,callback) {
-	if (classList.length<1) {
-		console.log('error show classes was called with 0 classes!')
-		return;
-	};
-
-	
-	var tree = {};
-
-	tree.isClass = false;
-	tree.type='or'
-	tree.values = classList
-	tree.host = classList[0].host
-	tree.termId = classList[0].termId
-	
-	//hide the node for search
-	// this must be false - 
-	tree.hidden = true;
-	
-
-	this.convertServerData(tree);
-
-	//this is ghetto
-	//remove the prereqs of the class given so they dont have trees coming down from them
-	tree.values.forEach(function (subTree) {
-		subTree.values = []
-	}.bind(this))
-
-
-	
-	this.processTree(tree,callback);
-}
-
-
 
 TreeMgr.prototype.processTree = function(tree,callback) {
 	this.host = tree.host;
@@ -714,8 +655,6 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		callback=function(){};
 	};
 
-	render.clearContainer()
-	render.showSpinner()
 	document.body.style.height = '';
 	document.body.style.width = '';
 	this.fetchFullTree(tree,function () {
@@ -750,16 +689,90 @@ TreeMgr.prototype.processTree = function(tree,callback) {
 		
 		this.addLowestParent(tree);
 
-
-		render.hideSpinner();
-		render.go(tree);
-		popup.go(tree);
-		help.go(tree);
 		callback(null,tree);
 	}.bind(this));
 
 }
 
+TreeMgr.prototype.go = function(tree,callback) {
+	
+	render.clearContainer()
+	render.showSpinner()
+	this.processTree(tree,function  (err,tree) {
+		if (err) {
+			return callback(err);
+		};
+
+		render.go(tree);
+		popup.go(tree);
+		help.go(tree);
+		callback(null,tree)
+	}.bind(this))
+
+};
+
+
+
+
+
+
+TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
+	
+	var tree = {
+		host:host,
+		termId:termId,
+		subject:subject,
+		classId:classId,
+		isClass:true,
+		dataStatus:macros.DATASTATUS_NOTSTARTED
+	}
+
+	//process tree takes in a callback
+	this.go(tree,function(err,tree){
+		if (err) {
+			console.log('error processing tree',err,tree);
+			return;
+		}
+		
+		this.logTree(tree,{
+			type:'createTree'
+		})
+	}.bind(this));
+}
+
+
+TreeMgr.prototype.showClasses = function(classList,callback) {
+	if (classList.length<1) {
+		console.log('error show classes was called with 0 classes!')
+		return;
+	};
+
+	
+	var tree = {};
+
+	tree.isClass = false;
+	tree.type='or'
+	tree.values = classList
+	tree.host = classList[0].host
+	tree.termId = classList[0].termId
+	
+	//hide the node for search
+	// this must be false - 
+	tree.hidden = true;
+	
+
+	this.convertServerData(tree);
+
+	//this is ghetto
+	//remove the prereqs of the class given so they dont have trees coming down from them
+	tree.values.forEach(function (subTree) {
+		subTree.values = []
+	}.bind(this))
+
+
+	
+	this.go(tree,callback);
+}
 
 
 

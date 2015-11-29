@@ -127,6 +127,7 @@ Search.prototype.go = function(host,termId,subject,value) {
 
 	//if found a class, open the class tree with the selectorsMgr and dont search for anything
 	if (selectorsMgr.searchClasses(value)) {
+		this.closeSearchBox();
 		return;
 	};
 
@@ -173,7 +174,7 @@ Search.prototype.go = function(host,termId,subject,value) {
 			});
 		}
 		else {
-			this.container.innerHTML = '<div style="font-size: 26px;">Nothing Found!</div>'
+			this.container.innerHTML = '<div style="font-size: 28px;text-align: center;padding-top: 200px;font-weight: 600;">Nothing Found!</div>'
 			
 			treeMgr.logTree({},{
 				type:'search',
