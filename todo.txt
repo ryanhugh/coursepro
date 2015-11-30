@@ -1,6 +1,10 @@
 !!!!
 
 
+bugged - shouldnt show fundies 2
+http://localhost/#sju.edu/201540/CSC/680
+
+
 overall todo:
 refactor frontend
 angular?

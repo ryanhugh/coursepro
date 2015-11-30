@@ -716,7 +716,10 @@ TreeMgr.prototype.go = function(tree,callback) {
 
 
 
-TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
+TreeMgr.prototype.createTree = function(host,termId,subject,classId,callback) {
+	if (!callback) {
+		callback = function(){}
+	}
 	
 	var tree = {
 		host:host,
@@ -731,12 +734,13 @@ TreeMgr.prototype.createTree = function(host,termId,subject,classId) {
 	this.go(tree,function(err,tree){
 		if (err) {
 			console.log('error processing tree',err,tree);
-			return;
+			return callback(err);
 		}
 		
 		this.logTree(tree,{
 			type:'createTree'
 		})
+		callback(null,tree);
 	}.bind(this));
 }
 

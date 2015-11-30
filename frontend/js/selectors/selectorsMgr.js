@@ -63,8 +63,8 @@ SelectorsMgr.prototype.closeAllSelectors = function () {
 	}.bind(this))
 }
 
-SelectorsMgr.prototype.finish = function() {
-	treeMgr.createTree(this.college.getValue(),this.term.getValue(),this.subject.getValue(),this.class.getValue())
+SelectorsMgr.prototype.finish = function(callback) {
+	treeMgr.createTree(this.college.getValue(),this.term.getValue(),this.subject.getValue(),this.class.getValue(),callback);
 }
 
 //

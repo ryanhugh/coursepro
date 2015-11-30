@@ -26,18 +26,30 @@ var queue = require("queue-async")
 // var collegeNamesDB = require('./databases/collegeNamesDB')
 
 
-var https = require('https');
-var options = {
-    host: 'wl11gp.neu.edu',
-    port: 443,
-    method: 'GET'
-};
+async.waterfall([
+	function(callback){
+		console.log('in 1',callback);
+		callback()
+		callback()
+	},
+	function(callback){
+		console.log('in 2')
+		callback();
+	}])
 
-var req = https.request(options, function(res) {
-    console.log(res.connection.getPeerCertificate().subject.O);
-});
 
-req.end();
+// var https = require('https');
+// var options = {
+//     host: 'wl11gp.neu.edu',
+//     port: 443,
+//     method: 'GET'
+// };
+
+// var req = https.request(options, function(res) {
+//     console.log(res.connection.getPeerCertificate().subject.O);
+// });
+
+// req.end();
 // function hi () {
 //     try {
 //         console.log(fs.statSync('/test.js'))

@@ -17,16 +17,72 @@ function TestsMgr () {
 	]
 }
 
-TestsMgr.prototype.alltrees = function() {
-	console.log('loading all trees...')
 
+TestsMgr.prototype.allSubjects = function(callback) { 
+	
+	selectorsMgr.subject.setup({shouldOpen:false},function () {
+	
+		var subjects = _.cloneDeep(selectorsMgr.subject.values)
+	
+		//remove the help id
+		subjects = _.filter(subjects,function (subject) {
+			return subject.id!=baseSelector.helpId;
+		}.bind(this))
+	
+		async.eachSeries(subjects,function (subject,callback) {
+				selectorsMgr.subject.setup({defaultValue:subject.id,shouldOpen:false},function() {
+					console.log(subject.id)
+					callback()
+				}.bind(this))
+		}.bind(this),
+	
+		function (err) {
+	
+			callback(err)
+		}.bind(this))
+	})
+}
+
+TestsMgr.prototype.allTerms = function(callback){
+	
+	selectorsMgr.term.setup({shouldOpen:false},function () {
+	
+		var terms = _.cloneDeep(selectorsMgr.term.values)
+	
+		//remove the help id
+		terms = _.filter(terms,function (term) {
+			return term.id!=baseSelector.helpId;
+		}.bind(this))
+	
+		async.eachSeries(terms,function (term,callback) {
+			
+				selectorsMgr.term.setup({defaultValue:term.id,shouldOpen:false},function() {
+					console.log(term.id)
+					this.allSubjects(function(){
+						callback()
+					}.bind(this))
+				}.bind(this))
+				
+		}.bind(this),
+	
+		function (err) {
+	
+			callback(err)
+		}.bind(this))
+		
+	}.bind(this))
+}
+
+
+
+TestsMgr.prototype.allColleges = function(callback) {
+	
 
 	selectorsMgr.college.setup({shouldOpen:false},function () {
 		
 		var colleges = _.cloneDeep(selectorsMgr.college.values)
 
 
-		
 		//remove the help id
 		colleges = _.filter(colleges,function (college) {
 			return college.id!=baseSelector.helpId;
@@ -35,38 +91,39 @@ TestsMgr.prototype.alltrees = function() {
 		async.eachSeries(colleges,function (college,callback) {
 
 			selectorsMgr.college.setup({defaultValue:college.id,shouldOpen:false},function() {
-
-				selectorsMgr.college.setup({shouldOpen:false},function () {
-
-
-					var terms = _.cloneDeep(selectorsMgr.term.values)
-
-					//remove the help id
-					terms = _.filter(terms,function (term) {
-						return term.id!=baseSelector.helpId;
-					}.bind(this))
-
-					async.eachSeries(terms,function (term,callback) {
-						
-					}.bind(this),
-
-					function (callback) {
-
-						console.log(selectorsMgr.college.getValue())
-						callback()
-					}.bind(this))
-
-
-
-				}.bind(this))
+				this.allTerms(function(err){
+					console.log(college.id)
+					return callback(err);
+				})
 			}.bind(this)) 
-		}.bind(this))
+		}.bind(this),
+		
+		function(err) {
+			callback(err)	
+		})
 	}.bind(this))
+}
+
+
+
+TestsMgr.prototype.alltrees = function() {
+	console.log('loading all trees...')
+	this.allColleges(function(err){
+		console.log('done!')
+	})
+
 };
 
  
 //values is list of module's tests to run
 TestsMgr.prototype.go = function(values) {
+	if (this.ran) {
+		return;
+	}
+	this.ran = true;
+	
+	
+	
 	if (!values) {
 		values=[]; 
 	};
