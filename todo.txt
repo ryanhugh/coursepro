@@ -4,6 +4,9 @@
 bugged - shouldnt show fundies 2
 http://localhost/#sju.edu/201540/CSC/680
 
+tree is 419 big
+http://localhost/#neu.edu/201630/CHEM/5622
+
 
 overall todo:
 refactor frontend
