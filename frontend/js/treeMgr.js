@@ -85,22 +85,9 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 	
 	if (tree.isClass) {
 		
-	  	//dont load classes that are on ignore list
-	  	var compareObject = {
-	  		classId:tree.classId,
-	  		subject:tree.subject
-	  	}
-	  	
-		//pass down all processed classes
-		//so if the class has itself as a prereq, or a class that is above it,
-		//there is no infinate recursion
-		//common for coreqs that require each other
-		var hasAlreadyLoaded = _.any(ignoreClasses, _.matches(compareObject))
-
-		ignoreClasses.push(compareObject)
 		
 		//fire off ajax and add it to queue
-		if (!hasAlreadyLoaded && tree.dataStatus===macros.DATASTATUS_NOTSTARTED) {
+		if (tree.dataStatus===macros.DATASTATUS_NOTSTARTED) {
 
 			if (!tree.classId || !tree.subject) {
 				console.log('class must have class id and subject')
@@ -161,31 +148,77 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 			}.bind(this))
 			//
 		}
-	}//
-
-
-
-	this.fetchSubTrees(tree,queue,ignoreClasses)
-
+		else {
+			console.log('skipping tree because data status is already started?')
+		}
+	}
+	else {
+		this.fetchSubTrees(tree,queue,ignoreClasses)
+	}
 }
 
 //this is called on a subtree when it responds from the server and when recursing down a tree
 TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
-	
-	//load coreqs
+
+	var toProcess = [];
 	if (tree.coreqs) {
-		tree.coreqs.values.forEach(function(subTree) {
-			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses));
-		}.bind(this));
+		toProcess = toProcess.concat(tree.coreqs.values)
 	}
+
+	if (tree.values) {
+		toProcess = toProcess.concat(tree.values)
+	}
+
+
+
+
+
+
+	toProcess.forEach(function (subTree) {
+		
+
+		if (!subTree.isClass || subTree.isString) {
+
+			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses));
+			return;
+		};
+		
+
+		//dont load classes that are on ignore list
+		var compareObject = {
+			classId:subTree.classId,
+			subject:subTree.subject,
+			isClass:subTree.isClass
+		}
+
+		//pass down all processed classes
+		//so if the class has itself as a prereq, or a class that is above it,
+		//there is no infinate recursion
+		//common for coreqs that require each other
+		var hasAlreadyLoaded = _.any(ignoreClasses, _.matches(compareObject));
+		if (!hasAlreadyLoaded) {
+			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses).concat(compareObject));
+		}
+		else {
+			console.log('skipping ',tree.classId,'because already loaded it',ignoreClasses,compareObject)
+		}
+
+	}.bind(this))
+
+	// 	ignoreClasses.push(compareObject)
+
+
+	// tree.coreqs.values.forEach(function(subTree) {
+	// }.bind(this));
+	// // }
 	
 
-	//fetch its values too
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses))
-		}.bind(this))
-	}
+	// //fetch its values too
+	// if (tree.values) {
+	// 	tree.values.forEach(function (subTree) {
+	// 		this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses))
+	// 	}.bind(this))
+	// }
 };
 
 
