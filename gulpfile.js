@@ -80,6 +80,13 @@ function compileJS(shouldUglify) {
 		console.log("----Rebundling custom JS!----")
 		var stream = bundler.bundle();
 
+		stream.on('error', function(err){
+			// print the error (can replace with gulp-util)
+			console.log(err.message);
+			// end this stream
+			this.emit('end');
+		})
+
 		stream = stream.pipe(source('allthejavascript.js'));
 
 		if (shouldUglify) {

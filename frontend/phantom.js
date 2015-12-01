@@ -5,8 +5,8 @@ page.onConsoleMessage = function(msg, lineNum, sourceId) {
 };
 
 
-// page.open('http://localhost/#tests/tree', function (status) {
-page.open('http://phaser.io/#tests/tree', function (status) {
+page.open('http://localhost/#tests/tree', function (status) {
+// page.open('http://phaser.io/#tests/tree', function (status) {
     if (status !== 'success') {
         console.log('Unable to access network');
     }

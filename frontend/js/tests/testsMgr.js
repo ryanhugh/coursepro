@@ -16,7 +16,33 @@ function TestsMgr () {
 	popupTests
 	]
 }
-
+ 
+TestsMgr.prototype.allClasses = function(callback) { 
+	
+	selectorsMgr.class.setup({shouldOpen:false},function () {
+	
+		var classes = _.cloneDeep(selectorsMgr.class.values)
+	
+		//remove the help id
+		classes = _.filter(classes,function (theclass) {
+			return theclass.id!=baseSelector.helpId;
+		}.bind(this))
+	
+		async.eachSeries(classes,function (theclass,callback) {
+				selectorsMgr.class.setup({defaultValue:theclass.id,shouldOpen:false},function() {
+					console.log(theclass.id)
+					selectorsMgr.finish(function () {
+						callback()
+					}.bind(this))
+				}.bind(this))
+		}.bind(this),
+	
+		function (err) {
+	
+			callback(err)
+		}.bind(this))
+	})
+}
 
 TestsMgr.prototype.allSubjects = function(callback) { 
 	
@@ -31,8 +57,11 @@ TestsMgr.prototype.allSubjects = function(callback) {
 	
 		async.eachSeries(subjects,function (subject,callback) {
 				selectorsMgr.subject.setup({defaultValue:subject.id,shouldOpen:false},function() {
-					console.log(subject.id)
-					callback()
+					this.allClasses(function () {
+						// this.allClasses()
+						console.log(subject.id)
+						callback()
+					}.bind(this))
 				}.bind(this))
 		}.bind(this),
 	
@@ -40,7 +69,7 @@ TestsMgr.prototype.allSubjects = function(callback) {
 	
 			callback(err)
 		}.bind(this))
-	})
+	}.bind(this))
 }
 
 TestsMgr.prototype.allTerms = function(callback){
