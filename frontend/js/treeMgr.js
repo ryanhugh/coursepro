@@ -129,6 +129,12 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 						body.forEach(function (classData) {
 							tree.values.push(this.convertServerData(classData))
 						}.bind(this))
+						
+						tree.values.forEach(function(subTree){
+							this.fetchSubTrees(subTree,queue,ignoreClasses)
+						}.bind(this))
+						
+						
 					}
 
 					//else just add more data to the class
@@ -138,9 +144,9 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 						for (var attrName in classData) {
 							tree[attrName] = classData[attrName]
 						}
+						this.fetchSubTrees(tree,queue,ignoreClasses)
 					}
 
-					this.fetchSubTrees(tree,queue,ignoreClasses)
 
 					callback();
 				}.bind(this));
@@ -162,6 +168,12 @@ TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 
 	var toProcess = [];
 	if (tree.coreqs) {
+		
+		//mark all the coreqs as coreqs
+		tree.coreqs.values.forEach(function(subTree){
+			subTree.isCoreq = true;
+		}.bind(this))
+		
 		toProcess = toProcess.concat(tree.coreqs.values)
 	}
 
@@ -183,6 +195,11 @@ TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 			return;
 		};
 		
+		if (subTree.dataStatus !=macros.DATASTATUS_NOTSTARTED) {
+			console.log('how is it already loaded??',subTree);
+			return;
+		}
+		
 
 		//dont load classes that are on ignore list
 		var compareObject = {
@@ -196,11 +213,12 @@ TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 		//there is no infinate recursion
 		//common for coreqs that require each other
 		var hasAlreadyLoaded = _.any(ignoreClasses, _.matches(compareObject));
+		// compareObject._id = subTree._id;
 		if (!hasAlreadyLoaded) {
 			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses).concat(compareObject));
 		}
 		else {
-			console.log('skipping ',tree.classId,'because already loaded it',ignoreClasses,compareObject)
+			console.log(tree.isCoreq,'skipping ',tree.classId,'because already loaded it',ignoreClasses,compareObject)
 		}
 
 	}.bind(this))
