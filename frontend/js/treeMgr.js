@@ -131,6 +131,8 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 						}.bind(this))
 
 						//load the nodes, skip tree and go right to the bottom edge of the loaded nodes
+						//if we just do fetch this tree, it will hit nodes it has already loaded (in the ignoreClasses list)
+						 //and stop processing
 						tree.values.forEach(function(subTree) {
 							this.fetchSubTrees(subTree,queue,ignoreClasses)
 						}.bind(this));
@@ -166,22 +168,41 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 	}
 }
 
+TreeMgr.prototype.setNodesAttrs = function(tree,attrs) {
+	
+	for (var attrName in attrs) {
+		tree[attrName] = attrs[attrName]
+	}
+	
+	
+	if (tree.values) {
+		tree.values.forEach(function(subTree) {
+			this.setNodesAttrs(subTree);
+		}.bind(this))
+	}
+	
+	if (tree.coreqs) {
+		tree.coreqs.values.forEach(function(subTree){
+			this.setNodesAttrs(subTree);
+		}.bind(this))
+	}
+}
+
 //this is called on a subtree when it responds from the server and when recursing down a tree
 TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
-	console.log('here',ignoreClasses)
+	// console.log('here',ignoreClasses)
 
 	var toProcess = [];
 	if (tree.coreqs) {
 		
 		//mark all the coreqs as coreqs
-		tree.coreqs.values.forEach(function(subTree){
-			subTree.isCoreq = true;
-		}.bind(this))
+		this.setNodesAttrs(tree,{isCoreq:true});
 		
 		toProcess = toProcess.concat(tree.coreqs.values)
 	}
 
 	if (tree.values) {
+		
 		toProcess = toProcess.concat(tree.values)
 	}
 
@@ -197,7 +218,7 @@ TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 
 			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses));
 			return;
-		};
+		}
 		
 		if (subTree.dataStatus !=macros.DATASTATUS_NOTSTARTED) {
 			console.log('how is it already loaded??',subTree);
@@ -220,29 +241,17 @@ TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 
 
 		if (!hasAlreadyLoaded) {
-			console.log('added',compareObject)
 			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses).concat(compareObject));
 		}
 		else {
-			console.log(tree.isCoreq,'skipping ',tree.classId,'because already loaded it',ignoreClasses,compareObject)
+			if (!tree.isCoreq) {
+				console.log('WARNING skipping ',tree.classId,'because already loaded it',ignoreClasses,compareObject)
+				
+			}
 		}
 
 	}.bind(this))
 
-	// 	ignoreClasses.push(compareObject)
-
-
-	// tree.coreqs.values.forEach(function(subTree) {
-	// }.bind(this));
-	// // }
-	
-
-	// //fetch its values too
-	// if (tree.values) {
-	// 	tree.values.forEach(function (subTree) {
-	// 		this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses))
-	// 	}.bind(this))
-	// }
 };
 
 
