@@ -129,6 +129,11 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 						body.forEach(function (classData) {
 							tree.values.push(this.convertServerData(classData))
 						}.bind(this))
+
+						//load the nodes, skip tree and go right to the bottom edge of the loaded nodes
+						tree.values.forEach(function(subTree) {
+							this.fetchSubTrees(subTree,queue,ignoreClasses)
+						}.bind(this));
 					}
 
 					//else just add more data to the class
@@ -138,15 +143,17 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 						for (var attrName in classData) {
 							tree[attrName] = classData[attrName]
 						}
+
+						//process this nodes values, already at bottom edge of loaded nodes
+						this.fetchSubTrees(tree,queue,ignoreClasses)
 					}
 
-					this.fetchSubTrees(tree,queue,ignoreClasses)
 
 					callback();
 				}.bind(this));
 				//
 			}.bind(this))
-			//
+			// 
 		}
 		else {
 			console.log('skipping tree because data status is already started?')
@@ -159,6 +166,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 
 //this is called on a subtree when it responds from the server and when recursing down a tree
 TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
+	console.log('here',ignoreClasses)
 
 	var toProcess = [];
 	if (tree.coreqs) {
@@ -196,7 +204,9 @@ TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 		//there is no infinate recursion
 		//common for coreqs that require each other
 		var hasAlreadyLoaded = _.any(ignoreClasses, _.matches(compareObject));
+
 		if (!hasAlreadyLoaded) {
+			console.log('added',compareObject)
 			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses).concat(compareObject));
 		}
 		else {
