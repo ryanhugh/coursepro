@@ -15,6 +15,12 @@ function TestsMgr () {
 	helpTests,
 	popupTests
 	]
+
+	this.host = null;
+	this.termId = null;
+	this.subject = null;
+	// this.classId = null;
+
 }
  
 TestsMgr.prototype.allClasses = function(callback) { 
@@ -30,7 +36,7 @@ TestsMgr.prototype.allClasses = function(callback) {
 	
 		async.eachSeries(classes,function (theclass,callback) {
 				selectorsMgr.class.setup({defaultValue:theclass.id,shouldOpen:false},function() {
-					console.log(theclass.id)
+					console.log(this.host,this.termId,this.subject,theclass.id)
 					selectorsMgr.finish(function () {
 						callback()
 					}.bind(this))
@@ -41,7 +47,7 @@ TestsMgr.prototype.allClasses = function(callback) {
 	
 			callback(err)
 		}.bind(this))
-	})
+	}.bind(this))
 }
 
 TestsMgr.prototype.allSubjects = function(callback) { 
@@ -57,9 +63,10 @@ TestsMgr.prototype.allSubjects = function(callback) {
 	
 		async.eachSeries(subjects,function (subject,callback) {
 				selectorsMgr.subject.setup({defaultValue:subject.id,shouldOpen:false},function() {
+					this.subject = subject.id;
 					this.allClasses(function () {
 						// this.allClasses()
-						console.log(subject.id)
+						// console.log(subject.id)
 						callback()
 					}.bind(this))
 				}.bind(this))
@@ -86,7 +93,8 @@ TestsMgr.prototype.allTerms = function(callback){
 		async.eachSeries(terms,function (term,callback) {
 			
 				selectorsMgr.term.setup({defaultValue:term.id,shouldOpen:false},function() {
-					console.log(term.id)
+					// console.log(term.id)
+					this.termId = term.id;
 					this.allSubjects(function(){
 						callback()
 					}.bind(this))
@@ -120,8 +128,9 @@ TestsMgr.prototype.allColleges = function(callback) {
 		async.eachSeries(colleges,function (college,callback) {
 
 			selectorsMgr.college.setup({defaultValue:college.id,shouldOpen:false},function() {
+				this.host = college.id;
 				this.allTerms(function(err){
-					console.log(college.id)
+					// console.log(college.id)
 					return callback(err);
 				})
 			}.bind(this)) 
@@ -129,7 +138,7 @@ TestsMgr.prototype.allColleges = function(callback) {
 		
 		function(err) {
 			callback(err)	
-		})
+		}.bind(this))
 	}.bind(this))
 }
 
