@@ -1,5 +1,6 @@
 !!!!
 
+IDEA - localhost#/neu.edu/latest/CS/4800
 
 bugged - shouldnt show fundies 2
 http://localhost/#sju.edu/201540/CSC/680

@@ -83,7 +83,7 @@ TreeMgr.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 
 
 	
-	if (tree.isClass) {
+	if (tree.isClass && !tree.isString) {
 		
 		
 		//fire off ajax and add it to queue
@@ -196,7 +196,9 @@ TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 	if (tree.coreqs) {
 		
 		//mark all the coreqs as coreqs
-		this.setNodesAttrs(tree,{isCoreq:true});
+		tree.coreqs.values.forEach(function (subTree) {
+			this.setNodesAttrs(subTree,{isCoreq:true});
+		}.bind(this))
 		
 		toProcess = toProcess.concat(tree.coreqs.values)
 	}
@@ -245,7 +247,14 @@ TreeMgr.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 		}
 		else {
 			if (!tree.isCoreq) {
-				console.log('WARNING skipping ',tree.classId,'because already loaded it',ignoreClasses,compareObject)
+				console.log('WARNING removing ',tree.classId,'because already loaded it',ignoreClasses,compareObject)
+
+				if (tree.values) {
+					_.pull(tree.values,subTree);
+				}
+				if (tree.coreqs) {
+					_.pull(tree.coreqs.values,subTree);
+				}
 				
 			}
 		}
