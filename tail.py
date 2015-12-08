@@ -100,10 +100,13 @@ def main():
 		
 		
 	print ' ',
+	
+	if 'msg' in line:
+		
+		print line['msg']['summary'],
 		
 	if 'email' in line['body']:
 		sys.stdout.write(line['body']['email'])
-			
 	
 			
 	if 'searchQuery' in line['body']:
