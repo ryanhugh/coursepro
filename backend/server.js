@@ -28,8 +28,13 @@ sectionsDB.startUpdates();
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 
-function logData (req) {
-	console.log(JSON.stringify({
+function logData (req,info) {
+	if (!info) {
+		info = {};
+	}
+	
+	
+	var logObject = {
 	  'ip':req.connection.remoteAddress,
 	  'time':new Date().getTime(),
 	  'userAgent':req.get('User-Agent'),
@@ -37,7 +42,10 @@ function logData (req) {
 	  'method':req.method,
 	  'url':req.url,
 	  'body':req.body
-	}));
+	};
+	
+	
+	console.log(JSON.stringify(_.assign(info,logObject)));
 }
 
 
@@ -45,11 +53,10 @@ function logData (req) {
 //catch errors with invalid requests
 app.use(function (err,req, res, next) {
 	if (err) {
-		logData(req);
-		console.log('error: 400: ',err)
-		res.status(400)
-		res.send('ya dun goofed')
-		res.end()
+		logData(req,{msg:{summary:'bad request, error 400',err:err}});
+		res.status(400);
+		res.send('ya dun goofed');
+		res.end();
 	}
 	else {
 		next();
@@ -58,42 +65,13 @@ app.use(function (err,req, res, next) {
 
 
 
-// http://stackoverflow.com/a/46181/11236
-// this is also done client side
-function validateEmail(email) {
-	if (!email) {
-		return false;
-	};
-
-	var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	if (!re.test(email)) {
-		console.log('email failed regex',email)
-		return false;
-	}
-	
-
-	for (var i = 0; i < blacklistedEmails.length; i++) {
-		if (_(email).endsWith(blacklistedEmails[i])) {
-			console.log('email is blacklisted',email);
-			return false;
-		}
-	}
-	return true;
-}
-
-
-app.use(function (req, res, next) {
-	logData(req);
-	next()
-});
-
 
 //if no user agent present, drop request
 app.use(function (req, res, next) {
 	
 	var ua = req.get('User-Agent');
 	if (!ua) {
-		console.log('info: dropping request without ua')
+		logData(req,{msg:{summary:'info: dropping request without ua'}})
 		res.status(418)
 		res.send('trolololololol');
 	}
@@ -108,13 +86,22 @@ app.use(function (req, res, next) {
 app.use(function (req,res,next) {
 	//send redirect request
 	if (!_(['coursepro.io','www.coursepro.io','beta.coursepro.io','api.coursepro.io','localhost']).includes(req.hostname)) {
-		console.log('Info: not on coursepro, on "' + req.hostname+'" redirecting to coursepro.io')
+		
+		logData(req,{msg:{summary:'Redirect from '+req.hostname+' to coursepro.io'}})
 		res.redirect('http://coursepro.io');
 	}
 	else {
 	  next();
 	}
 })
+
+
+
+app.use(function (req, res, next) {
+	logData(req);
+	next()
+});
+
 
 app.post('/listColleges',function (req,res) {
 	collegeNamesDB.find({},{
@@ -309,6 +296,35 @@ app.post('/spider',function (req,res) {
 	return res.send('running!');
 
 })
+
+
+
+// http://stackoverflow.com/a/46181/11236
+// this is also done client side
+function validateEmail(email) {
+	if (!email) {
+		return false;
+	}
+
+	var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	if (!re.test(email)) {
+		console.log('email failed regex',email)
+		return false;
+	}
+	
+
+	for (var i = 0; i < blacklistedEmails.length; i++) {
+		if (_(email).endsWith(blacklistedEmails[i])) {
+			console.log('email is blacklisted',email);
+			return false;
+		}
+	}
+	return true;
+}
+
+
+
+
 
 app.post('/registerForEmails',function(req,res){
 	if (!req.body.email || !req.body.userId || req.body.userId.length<10) {
