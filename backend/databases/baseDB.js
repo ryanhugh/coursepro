@@ -79,11 +79,11 @@ BaseDB.prototype.updateDatabase = function(newData,oldData,callback) {
 
 
 
-// dont return a couple fields (emails, ips, _id, deps, etc)
+// dont return a couple fields (emails, ips, deps, etc)
 BaseDB.prototype.removeInternalFields = function(doc) {
 	var retVal={};
 	for (var attrName in doc) {
-		if (!_(['emails','ips','deps','lastUpdateTime','updatedByParent']).includes(attrName)) {
+		if (!_(['emails','ips','deps','updatedByParent']).includes(attrName)) {
 			retVal[attrName]=doc[attrName];
 		}
 	}
