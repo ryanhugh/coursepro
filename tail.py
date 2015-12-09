@@ -83,7 +83,8 @@ def main():
 	
 	print line['time'],
 	
-	
+	if 'msg' in line:
+		line['url'] = line['url'][:15]
 	print '%-15s' % line['url'],
 
 
