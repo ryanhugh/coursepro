@@ -67,7 +67,7 @@ def main():
 	line['time'] = getTimeString(line['time'])
 	
 	
-	if 'referer' in line and not shouldIgnoreReferrer(line['referer']):
+	if 'referer' in line and not shouldIgnoreReferrer(line['referer']) and not 'msg' in line:
 		print line['referer']
 
 	line['ip'] = line['ip'].replace('::ffff:','')
