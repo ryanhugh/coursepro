@@ -1,5 +1,11 @@
 !!!!
 
+add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
+and add it to collegeNames somehow (and add the ids for the neu.edu/law)
+
+
+
+
 IDEA - localhost#/neu.edu/latest/CS/4800
 
 bugged - shouldnt show fundies 2

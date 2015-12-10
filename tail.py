@@ -103,33 +103,34 @@ def main():
 	print ' ',
 	
 	if 'msg' in line:
-		
 		print line['msg']['summary'],
 		
-	if 'email' in line['body']:
-		sys.stdout.write(line['body']['email'])
-	
+	else:
 			
-	if 'searchQuery' in line['body']:
-		print 'search for "'+line['body']['searchQuery']+'"',
-	
-	if 'type' in line['body'] and line['body']['type']=='createTree':
-		print 'render tree',
-	
-	if 'classCount' in line['body']:
-		print ' -> ',line['body']['classCount'],
+		if 'email' in line['body']:
+			sys.stdout.write(line['body']['email'])
 		
+				
+		if 'searchQuery' in line['body']:
+			print 'search for "'+line['body']['searchQuery']+'"',
 		
-	if line['method'] not in ['GET','POST']:
-		print '',line['method'],'Request',
-		if 'userAgent' in line and line['userAgent']:
-			print ' -> ',line['userAgent'][:70],
+		if 'type' in line['body'] and line['body']['type']=='createTree':
+			print 'render tree',
+		
+		if 'classCount' in line['body']:
+			print ' -> ',line['body']['classCount'],
 			
-	if line['method']=='POST' and 'userId' not in line['body']:
-		print 'no userId!',
-		
-		if 'userAgent' in line and line['userAgent']:
-			print ' -> ',line['userAgent'][:70],
+			
+		if line['method'] not in ['GET','POST']:
+			print '',line['method'],'Request',
+			if 'userAgent' in line and line['userAgent']:
+				print ' -> ',line['userAgent'][:70],
+				
+		if line['method']=='POST' and 'userId' not in line['body']:
+			print 'no userId!',
+			
+			if 'userAgent' in line and line['userAgent']:
+				print ' -> ',line['userAgent'][:70],
 	
 
 	print
