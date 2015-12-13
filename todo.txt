@@ -3,7 +3,26 @@
 add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
 and add it to collegeNames somehow (and add the ids for the neu.edu/law)
 
+any bugs in safari or firefox?
+in firefox the tree if offset sideways, and there is padding between Northeastern and the icon
+http://coursepro.io/#neu.edu/201630/IS/4200
 
+a 2500 (hon) should just bring up the (hon) and non hon should just bring up non-hon
+
+
+does it work in firefox? 
+- stiky note for classes could take
+- odd that tooltips went away, then confused what lines meant
+ -- help icon in top right?
+- ignore all graduate classes?
+- hide broken classes (like all the classes that make that warning appear)
+-- gear icon with options for ^
+
+
+remove classes that dont have any sections from the dropdown menu
+make it so just the x closes the box
+
+idea for future - browse classes (someone type in what they are intrested in and show big list of descriptions, but only if they are sections)
 
 
 IDEA - localhost#/neu.edu/latest/CS/4800
