@@ -27,9 +27,7 @@ Help.prototype.showInitialPrereqHelp = function(tree) {
 		// remove the first element
 		var currTree = stack.shift();
 
-		if (currTree.values) {
-			stack = stack.concat(currTree.values)
-		}
+		stack = stack.concat(currTree.prereqs.values)
 
 		//the top most panel has no parent
 		if (!currTree.lowestParent) {
@@ -45,7 +43,7 @@ Help.prototype.showInitialPrereqHelp = function(tree) {
 			
 
 			//show max 1 of each type
-			if (currTree.lowestParent.type=='or') {
+			if (currTree.lowestParent.prereqs.type=='or') {
 				if (foundBlue) {
 					continue;
 				}
@@ -54,7 +52,7 @@ Help.prototype.showInitialPrereqHelp = function(tree) {
 				}
 			}
 
-			if (currTree.lowestParent.type == 'and') {
+			if (currTree.lowestParent.prereqs.type == 'and') {
 				if (foundRed) {
 					continue;
 				}
@@ -115,7 +113,7 @@ Help.prototype.activateHelpPopup = function(tree,x,y) {
 		return
 	}
 	
-	if (tree.allParents[0].type=='or'){
+	if (tree.allParents[0].prereqs.type=='or'){
 		if (localStorage.orPopupCount>this.HELP_POPUP_COUNT) {
 			return;
 		}
@@ -124,7 +122,7 @@ Help.prototype.activateHelpPopup = function(tree,x,y) {
 		}
 	}
 
-	if (tree.allParents[0].type=='and'){
+	if (tree.allParents[0].prereqs.type=='and'){
 		if (localStorage.andPopupCount>this.HELP_POPUP_COUNT) {
 			return;
 		}
@@ -185,7 +183,7 @@ Help.prototype.addPrereqHelpToolips = function(tree) {
 
 		linkElement.popover({
 			content: function() {
-				if (tree.allParents[0].type=='or') {
+				if (tree.allParents[0].prereqs.type=='or') {
 					return 'Take ANY of the connected classes to take this class!';
 				}
 				else {
@@ -193,7 +191,7 @@ Help.prototype.addPrereqHelpToolips = function(tree) {
 				}
 			}.bind(this),
 			title: function() {
-				if (tree.allParents[0].type=='or') {
+				if (tree.allParents[0].prereqs.type=='or') {
 					return 'Prerequisites: Blue Lines'
 				}
 				else {
@@ -204,11 +202,9 @@ Help.prototype.addPrereqHelpToolips = function(tree) {
 	};
 
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.addPrereqHelpToolips(subTree)
-		}.bind(this))
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.addPrereqHelpToolips(subTree)
+	}.bind(this))
 };
 
 Help.prototype.removeTooltips = function(tree) {
@@ -218,17 +214,13 @@ Help.prototype.removeTooltips = function(tree) {
 
 
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.removeTooltips(subTree);
-		}.bind(this))
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.removeTooltips(subTree);
+	}.bind(this))
 
-	if (tree.coreqs) {
-		tree.coreqs.values.forEach(function (subTree) {
-			this.removeTooltips(subTree);
-		}.bind(this))
-	};
+	tree.coreqs.values.forEach(function (subTree) {
+		this.removeTooltips(subTree);
+	}.bind(this))
 
 };
 
@@ -270,17 +262,13 @@ Help.prototype.addPanelClickToExpand = function(tree) {
 	}
 
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.addPanelClickToExpand(subTree);
-		}.bind(this))
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.addPanelClickToExpand(subTree);
+	}.bind(this))
 
-	if (tree.coreqs){
-		tree.coreqs.values.forEach(function (subTree) {
-			this.addPanelClickToExpand(subTree);
-		}.bind(this));
-	}
+	tree.coreqs.values.forEach(function (subTree) {
+		this.addPanelClickToExpand(subTree);
+	}.bind(this));
 };
 
 Help.prototype.addClickToExpand = function (tree) {

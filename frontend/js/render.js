@@ -125,7 +125,7 @@ Render.prototype.calculateLine = function(tree) {
 			return;
 		};
 		//draw the line
-		var color = this.getColor(parent.type);
+		var color = this.getColor(parent.prereqs.type);
 		if (!color) {
 			console.log('error could not get color of ',tree)
 			return;
@@ -165,7 +165,6 @@ Render.prototype.addToParentDiv = function(tree) {
 		//the panels are added to the container div before this,
 		// so we need to insert this first -- need to insert padding,
 		$(tree.div).insertAfter(this.padding)
-		// $(this.container).insertAfter(tree.div,this.container.firstChild)
 	}
 }
 Render.prototype.getOptionalS = function(num) {
@@ -193,17 +192,13 @@ Render.prototype.calcPanelSize = function(tree) {
 	tree.width = tree.panel.offsetWidth;
 	tree.height = tree.panel.offsetHeight;
 
-	if (tree.values) {
-		tree.values.forEach(function(subTree) {
-			this.calcPanelSize(subTree);
-		}.bind(this))
-	}
+	tree.prereqs.values.forEach(function(subTree) {
+		this.calcPanelSize(subTree);
+	}.bind(this))
 
-	if (tree.coreqs) {
-		tree.coreqs.values.forEach(function (subTree) {
-			this.calcPanelSize(subTree);
-		}.bind(this));
-	};
+	tree.coreqs.values.forEach(function (subTree) {
+		this.calcPanelSize(subTree);
+	}.bind(this));
 }
 Render.prototype.addStructure = function(tree) {
 
@@ -224,12 +219,9 @@ Render.prototype.addStructure = function(tree) {
 		var fillerWidth = tree.width;
 		var fillerHeight = tree.height;
 		
-		
-		if (tree.coreqs) {
-			fillerWidth += tree.coreqs.values.length*this.COREQ_OFFSET;
-			fillerHeight += tree.coreqs.values.length*this.COREQ_OFFSET;
-		}
-		
+		//add the offset for the coreqs
+		fillerWidth += tree.coreqs.values.length*this.COREQ_OFFSET;
+		fillerHeight += tree.coreqs.values.length*this.COREQ_OFFSET;
 		
 		tree.filler.style.width = fillerWidth + 'px'
 		tree.filler.style.height = (fillerHeight+10) + 'px'
@@ -241,11 +233,9 @@ Render.prototype.addStructure = function(tree) {
 		console.log('tree has already been rendered')
 	}
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.addStructure(subTree);
-		}.bind(this));
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.addStructure(subTree);
+	}.bind(this));
 }
 Render.prototype.calcPanelPos = function(tree) {
 
@@ -268,17 +258,13 @@ Render.prototype.calcPanelPos = function(tree) {
 	this.resetPanel(tree);
 	
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.calcPanelPos(subTree);
-		}.bind(this));
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.calcPanelPos(subTree);
+	}.bind(this));
 
-	if (tree.coreqs) {
-		tree.coreqs.values.forEach(function (subTree) {
-			this.calcPanelPos(subTree);
-		}.bind(this));
-	};
+	tree.coreqs.values.forEach(function (subTree) {
+		this.calcPanelPos(subTree);
+	}.bind(this));
 }
 
 
@@ -351,7 +337,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 			};
 	
 			//reset the circle
-			tree.panel.style.backgroundColor = this.getColor(tree.type);
+			tree.panel.style.backgroundColor = this.getColor(tree.prereqs.type);
 			tree.panel.style.width = '35px';
 			tree.panel.style.height = '35px';
 			tree.panel.style.borderRadius = '50%';
@@ -407,11 +393,9 @@ Render.prototype.addLines = function(tree) {
 		this.calculateLine(tree);
 	}
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.addLines(subTree);
-		}.bind(this))
-	}
+	tree.prereqs.values.forEach(function (subTree) {
+		this.addLines(subTree);
+	}.bind(this))
 }
 
 //this is called before the loading starts
@@ -473,10 +457,10 @@ Render.prototype.go = function(tree) {
 	// if two giant trees are off screen, pick one and scroll to it
 	// so something is on the screen when the loading finishes
 	// http://localhost/#neu.edu/201630/EECE/4792
-	if (tree.hidden && tree.values && (tree.values.length%2)==0) {
+	if (tree.hidden && tree.prereqs.values && (tree.prereqs.values.length%2)==0) {
 
 		//scroll to one of sub trees
-		var x = tree.values[parseInt(tree.values.length/2)].x
+		var x = tree.prereqs.values[parseInt(tree.prereqs.values.length/2)].x
 		window.scrollTo(x-$(window).width()/2 ,document.body.scrollTop);	
 	}
 	else {

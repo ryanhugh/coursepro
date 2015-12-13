@@ -489,17 +489,13 @@ Popup.prototype.addPopups = function(tree) {
 		}.bind(this))
 	}
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.addPopups(subTree);
-		}.bind(this));
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.addPopups(subTree);
+	}.bind(this));
 
-	if (tree.coreqs) {
-		tree.coreqs.values.forEach(function (subTree) {
-			this.addPopups(subTree);
-		}.bind(this));
-	};
+	tree.coreqs.values.forEach(function (subTree) {
+		this.addPopups(subTree);
+	}.bind(this));
 }
 
 
@@ -507,7 +503,7 @@ Popup.prototype.go = function(tree) {
 	
 	
 	//if there is only one panel, open it
-	if ((!tree.values || tree.values.length==0) && (!tree.coreqs || tree.coreqs.values.length==0)) {
+	if (tree.prereqs.values.length==0 && tree.coreqs.values.length==0) {
 		tree.panel.style.visibility = 'hidden'
 		this.expandPanel(tree);
 		console.log('opening ',tree.classId);

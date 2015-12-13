@@ -14,32 +14,32 @@ function TreeMgr () {
 
 
 TreeMgr.prototype.simplifyTree = function(tree) {
-	if (!tree.values) {
+	if (tree.prereqs.values.length==0) {
 		return;
 	}
 
 	//remove duplicates
 	var newTreeValues = [];
-	tree.values.forEach(function (subTree) {
+	tree.prereqs.values.forEach(function (subTree) {
 		if (!_.any(newTreeValues, _.matches(subTree))) {
 			newTreeValues.push(subTree)
 		}
 	}.bind(this))
-	tree.values = newTreeValues;
+	tree.prereqs.values = newTreeValues;
 
 
 	//if values is only 1 long to a circle, delete circle and bring lines straight to parent
 	//if values is only 1 long from panel to circle, same as above
-	if (tree.values.length==1) {
-		if (!tree.values[0].isClass) {
-			tree.type = tree.values[0].type;
-			tree.values = tree.values[0].values;
+	if (tree.prereqs.values.length==1) {
+		if (!tree.prereqs.values[0].isClass) {
+			tree.prereqs.type = tree.prereqs.values[0].prereqs.type;
+			tree.prereqs.values = tree.prereqs.values[0].prereqs.values;
 		}
 		
 		if (!tree.isClass) {
 			
 			//if node -> panel, copy panel attrs to node
-			var subTree = tree.values[0];
+			var subTree = tree.prereqs.values[0];
 
 			//clear all the values in the tree
 			for (var attrName in tree) {
@@ -54,40 +54,38 @@ TreeMgr.prototype.simplifyTree = function(tree) {
 		
 	};
 	
-	
-	
 
 
 	//if type of dep is the same, merge cs 2800
 	newTreeValues = [];
-	tree.values.forEach(function (subTree) {
+	tree.prereqs.values.forEach(function (subTree) {
 		
-		if (!subTree.isClass && subTree.type==tree.type) {
-			newTreeValues = newTreeValues.concat(subTree.values);
+		if (!subTree.isClass && subTree.prereqs.type==tree.prereqs.type) {
+			newTreeValues = newTreeValues.concat(subTree.prereqs.values);
 		}
 		else {
 			newTreeValues.push(subTree)
 		}
 
 	}.bind(this))
-	tree.values = newTreeValues
+	tree.prereqs.values = newTreeValues
 
 
 	//just changes the single red lines to blue
 	//if there is only 1 option it dosent matter if its "or" or "and"
-	if (tree.values.length===1) {
-		tree.type='or'
+	if (tree.prereqs.values.length===1) {
+		tree.prereqs.type='or'
 	}
 
 	//recursion
-	tree.values.forEach(function (subTree) {
+	tree.prereqs.values.forEach(function (subTree) {
 		this.simplifyTree(subTree);
 	}.bind(this))
 }
 
 
 TreeMgr.prototype.sortTree = function(tree) {
-	if (!tree.values) {
+	if (tree.prereqs.values.length==0) {
 		return;
 	}
 
@@ -98,8 +96,8 @@ TreeMgr.prototype.sortTree = function(tree) {
 	//subTrees with no values are sorted by classId
 	var subPanels = [];
 
-	tree.values.forEach(function (subTree) {
-		if (!subTree.values || subTree.values.length===0) {
+	tree.prereqs.values.forEach(function (subTree) {
+		if (!subTree.prereqs.values || subTree.prereqs.values.length===0) {
 			subPanels.push(subTree);
 		}
 		else {
@@ -179,9 +177,9 @@ TreeMgr.prototype.sortTree = function(tree) {
 
 	evens.reverse();
 
-	tree.values = evens.concat(subPanels.concat(odds))
+	tree.prereqs.values = evens.concat(subPanels.concat(odds))
 
-	tree.values.forEach(function (subTree) {
+	tree.prereqs.values.forEach(function (subTree) {
 		this.sortTree(subTree);
 	}.bind(this))
 }
@@ -198,20 +196,15 @@ TreeMgr.prototype.countClassesInTree = function(tree) {
 	else {
 		retVal =0;
 	}
+	
+	tree.prereqs.values.forEach(function(subTree) {
+		retVal+=this.countClassesInTree(subTree);
+	}.bind(this))
 
-	
-	if (tree.values) {
-		tree.values.forEach(function(subTree) {
-			retVal+=this.countClassesInTree(subTree);
-		}.bind(this))
-	}
-	
-	if (tree.coreqs) {
-		tree.coreqs.values.forEach(function(subTree){
-			retVal+=this.countClassesInTree(subTree);
-		}.bind(this))
-	}
-	
+	tree.coreqs.values.forEach(function(subTree){
+		retVal+=this.countClassesInTree(subTree);
+	}.bind(this))
+
 	return retVal;
 }
 
@@ -229,17 +222,15 @@ TreeMgr.prototype.addAllParentRelations = function(tree,parent) {
 			console.log('added a second parent on ',tree.subject,tree.classId)
 		};
 	}
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.addAllParentRelations(subTree,tree);
-		}.bind(this))
-	};
 
-	if (tree.coreqs) {
-		tree.coreqs.values.forEach(function (subTree) {
-			this.addAllParentRelations(subTree,tree);
-		}.bind(this))
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.addAllParentRelations(subTree,tree);
+	}.bind(this))
+
+
+	tree.coreqs.values.forEach(function (subTree) {
+		this.addAllParentRelations(subTree,tree);
+	}.bind(this))
 }
 
 
@@ -258,33 +249,29 @@ TreeMgr.prototype.addLowestParent = function(tree) {
 	}
 
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.addLowestParent(subTree);
-		}.bind(this))
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.addLowestParent(subTree);
+	}.bind(this))
 
-	if (tree.coreqs) {
-		tree.coreqs.values.forEach(function (subTree) {
-			this.addLowestParent(subTree);
-		}.bind(this))
-	};
+	tree.coreqs.values.forEach(function (subTree) {
+		this.addLowestParent(subTree);
+	}.bind(this))
 }
 
 
 //currenly used to flatten coreq trees (which are usally flat anyway)
 TreeMgr.prototype.getFirstLayer = function(tree) {
-	if (!tree.values) {
+	if (!tree.prereqs.values) {
 		return [];
 	};
 
 
 	if (tree.isClass) {
-		return tree.values;
+		return tree.prereqs.values;
 	}
 	else {
 		var values = [];
-		tree.values.forEach(function (subTree) {
+		tree.prereqs.values.forEach(function (subTree) {
 			values=values.concat(this.getFirstLayer(subTree));
 
 		}.bind(this));
@@ -300,11 +287,9 @@ TreeMgr.prototype.addDepthLevel = function(tree,depth) {
 	}
 	tree.depth = depth;
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.addDepthLevel(subTree,depth+1);
-		}.bind(this))
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.addDepthLevel(subTree,depth+1);
+	}.bind(this))
 }
 
 // only recurses on nodes and not classes - finds a list of classes
@@ -314,8 +299,8 @@ TreeMgr.prototype.findFlattendClassList = function(tree) {
 		retVal.push(tree);
 	}
 
-	if (tree.values && !tree.isClass) {
-		tree.values.forEach(function (subTree) {
+	if (!tree.isClass) {
+		tree.prereqs.values.forEach(function (subTree) {
 			retVal=retVal.concat(this.findFlattendClassList(subTree));
 		}.bind(this))
 	};
@@ -337,18 +322,16 @@ TreeMgr.prototype.flattenCoreqs = function(tree) {
 			subTree.isCoreq = true;
 
 			//delete the coreq's prereq's, for now
-			subTree.values = undefined;
+			subTree.prereqs.values = [];
 		}.bind(this))
 
 		tree.coreqs.values = flatCoreqs;
 	}
 
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.flattenCoreqs(subTree)
-		}.bind(this));
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.flattenCoreqs(subTree)
+	}.bind(this));
 };
 
 
@@ -356,21 +339,17 @@ TreeMgr.prototype.removeCoreqsCoreqs = function(tree,isACoreq) {
 
 	//if this class is a coreq to another class, remove its coreqs
 	if (isACoreq) {
-		tree.coreqs = undefined;
+		tree.coreqs.values = [];
 	}
 
 
-	if (tree.coreqs) {
-		tree.coreqs.values.forEach(function (subTree) {
-			this.removeCoreqsCoreqs(subTree,true);
-		}.bind(this))
-	}
+	tree.coreqs.values.forEach(function (subTree) {
+		this.removeCoreqsCoreqs(subTree,true);
+	}.bind(this))
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.removeCoreqsCoreqs(subTree);
-		}.bind(this));
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.removeCoreqsCoreqs(subTree);
+	}.bind(this));
 };
 
 
@@ -407,11 +386,9 @@ TreeMgr.prototype.groupByHonors = function(tree) {
 
 
 
-	if (tree.values) {
-		tree.values.forEach(function (subTree) {
-			this.groupByHonors(subTree);
-		}.bind(this));
-	};
+	tree.prereqs.values.forEach(function (subTree) {
+		this.groupByHonors(subTree);
+	}.bind(this));
 };
 
 
@@ -567,8 +544,7 @@ TreeMgr.prototype.showClasses = function(classList,callback) {
 	var tree = {};
 
 	tree.isClass = false;
-	tree.type='or'
-	tree.values = classList
+	tree.prereqs = {type:'or',values:classList}
 	tree.host = classList[0].host
 	tree.termId = classList[0].termId
 	
@@ -581,8 +557,8 @@ TreeMgr.prototype.showClasses = function(classList,callback) {
 
 	//this is ghetto
 	//remove the prereqs of the class given so they dont have trees coming down from them
-	tree.values.forEach(function (subTree) {
-		subTree.values = []
+	tree.prereqs.values.forEach(function (subTree) {
+		subTree.prereqs.values = []
 	}.bind(this))
 
 

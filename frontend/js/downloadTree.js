@@ -33,15 +33,14 @@ DownloadTree.prototype.convertServerData = function(data) {
 		};
 
 		if (data.prereqs) {
-			retVal.values = [];
-			retVal.type = data.prereqs.type;
+			var prereqs = [];
 			data.prereqs.values.forEach(function (item){
-				retVal.values.push(this.convertServerData(item));
+				prereqs.push(this.convertServerData(item));
 			}.bind(this))
+			data.prereqs.values = prereqs;
 		}
 		else {
-			retVal.type = "and";
-			retVal.values = [];
+			data.prereqs = {type:'or',values:[]};
 		}
 		
 		
@@ -60,10 +59,12 @@ DownloadTree.prototype.convertServerData = function(data) {
 	//given a branch in the prereqs
 	else if (data.values && data.type) {
 		retVal.isClass = false;
-		retVal.type=data.type
-		retVal.values = []
-		data.values.forEach(function (item){
-			retVal.values.push(this.convertServerData(item));
+
+		data.prereqs = {type:'or',values:[]};
+		data.coreqs = {type:'or',values:[]}
+
+		data.prereqs.values.forEach(function (item){
+			retVal.prereqs.values.push(this.convertServerData(item));
 		}.bind(this))
 	}
 
@@ -124,18 +125,17 @@ DownloadTree.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 
 					//setup an or tree
 					if (body.length > 1) {
-						tree.type = 'or';
 						tree.isClass = false;
-						tree.values = [];
+						tree.prereqs  = {type:'or',values:[]}
 
 						body.forEach(function (classData) {
-							tree.values.push(this.convertServerData(classData))
+							tree.prereqs.values.push(this.convertServerData(classData))
 						}.bind(this))
 
 						//load the nodes, skip tree and go right to the bottom edge of the loaded nodes
 						//if we just do fetch this tree, it will hit nodes it has already loaded (in the ignoreClasses list)
 						 //and stop processing
-						tree.values.forEach(function(subTree) {
+						tree.prereqs.values.forEach(function(subTree) {
 							this.fetchSubTrees(subTree,queue,ignoreClasses)
 						}.bind(this));
 						
@@ -177,42 +177,26 @@ DownloadTree.prototype.setNodesAttrs = function(tree,attrs) {
 	}
 	
 	
-	if (tree.values) {
-		tree.values.forEach(function(subTree) {
-			this.setNodesAttrs(subTree);
-		}.bind(this))
-	}
+	tree.prereqs.values.forEach(function(subTree) {
+		this.setNodesAttrs(subTree);
+	}.bind(this))
 	
-	if (tree.coreqs) {
-		tree.coreqs.values.forEach(function(subTree){
-			this.setNodesAttrs(subTree);
-		}.bind(this))
-	}
+	tree.coreqs.values.forEach(function(subTree){
+		this.setNodesAttrs(subTree);
+	}.bind(this))
 }
 
 //this is called on a subtree when it responds from the server and when recursing down a tree
 DownloadTree.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
-	// console.log('here',ignoreClasses)
 
 	var toProcess = [];
-	if (tree.coreqs) {
 		
-		//mark all the coreqs as coreqs
-		tree.coreqs.values.forEach(function (subTree) {
-			this.setNodesAttrs(subTree,{isCoreq:true});
-		}.bind(this))
-		
-		toProcess = toProcess.concat(tree.coreqs.values)
-	}
-
-	if (tree.values) {
-		
-		toProcess = toProcess.concat(tree.values)
-	}
-
-
-
-
+	//mark all the coreqs as coreqs
+	tree.coreqs.values.forEach(function (subTree) {
+		this.setNodesAttrs(subTree,{isCoreq:true});
+	}.bind(this))
+	
+	toProcess = toProcess.concat(tree.coreqs.values).concat(tree.prereqs.values)
 
 
 	toProcess.forEach(function (subTree) {
@@ -251,12 +235,8 @@ DownloadTree.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 			if (!tree.isCoreq) {
 				console.log('WARNING removing ',tree.classId,'because already loaded it',ignoreClasses,compareObject)
 
-				if (tree.values) {
-					_.pull(tree.values,subTree);
-				}
-				if (tree.coreqs) {
-					_.pull(tree.coreqs.values,subTree);
-				}
+				_.pull(tree.prereqs.values,subTree);
+				_.pull(tree.coreqs.values,subTree);
 				
 			}
 		}
