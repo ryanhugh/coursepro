@@ -12,9 +12,9 @@ function Popup () {
 		// ESCAPE key pressed
 	    if (e.keyCode == 27) {
 	    	var treeToClose = this.openOrder.pop();
-
-	    	render.resetPanel(treeToClose);
-	       
+	    	if (treeToClose) {
+		    	render.resetPanel(treeToClose);
+	    	};
 	    }
 	}.bind(this));
 
