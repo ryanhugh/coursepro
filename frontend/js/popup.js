@@ -356,7 +356,7 @@ Popup.prototype.expandPanel = function(tree) {
 				var leftBoxText;
 
 				if (section.meetings) {
-					leftBoxText = section.profs+'<br>'+section.crn
+					leftBoxText = section.profs+'<br> CRN: '+section.crn
 				}
 				else {
 					leftBoxText = section.crn
