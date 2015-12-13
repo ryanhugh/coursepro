@@ -6,6 +6,19 @@ var render = require('./render')
 
 function Popup () {
 	this.weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+	this.openOrder = []
+
+	$(document).keydown(function(e) {
+		// ESCAPE key pressed
+	    if (e.keyCode == 27) {
+	    	var treeToClose = this.openOrder.pop();
+
+	    	render.resetPanel(treeToClose);
+	       
+	    }
+	}.bind(this));
+
+
 }
 
 //creates 7:00 - 9:00 am
@@ -464,29 +477,56 @@ Popup.prototype.addPopups = function(tree) {
 	
 	if (tree.isClass) {
 
+		//click to expand
 		$(tree.panel).on('click.popup',function (event) {
 
+			//if already expanded, do nothing
 			if (tree.isExpanded) {
+				return;
+			}
 
-				ga('send', {
-					'hitType': 'pageview',
-					'page': window.location.href+'/closePopup/'+tree.subject+'/'+tree.classId,
-					'title': 'Coursepro.io'
-				});
 
-				render.resetPanel(tree);
+
+			ga('send', {
+				'hitType': 'pageview',
+				'page': window.location.href+'/openPopup/'+tree.subject+'/'+tree.classId,
+				'title': 'Coursepro.io'
+			});
+
+			this.expandPanel(tree);
+
+			if (_(this.openOrder).includes(tree)) {
+				console.log('error tree was already in the list of panels that were open?')
 			}
 			else {
-
-				ga('send', {
-					'hitType': 'pageview',
-					'page': window.location.href+'/openPopup/'+tree.subject+'/'+tree.classId,
-					'title': 'Coursepro.io'
-				});
-
-				this.expandPanel(tree);
+				this.openOrder.push(tree)
 			}
+
+		
 		}.bind(this))
+
+
+
+		$(tree.panel.getElementsByClassName('glyphicon-remove')[0]).on('click.popup',function (event) {
+			
+			//if already hidden, do nothing
+			if (!tree.isExpanded) {
+				return;
+			}
+
+
+			ga('send', {
+				'hitType': 'pageview',
+				'page': window.location.href+'/closePopup/'+tree.subject+'/'+tree.classId,
+				'title': 'Coursepro.io'
+			});
+
+			render.resetPanel(tree);
+			_.pull(this.openOrder,tree);
+			event.stopPropagation();
+
+		}.bind(this))
+
 	}
 
 	tree.prereqs.values.forEach(function (subTree) {
@@ -501,6 +541,10 @@ Popup.prototype.addPopups = function(tree) {
 
 Popup.prototype.go = function(tree) {
 	
+
+	//clear the open order
+	this.openOrder = []
+
 	
 	//if there is only one panel, open it
 	if (tree.prereqs.values.length==0 && tree.coreqs.values.length==0) {
@@ -508,6 +552,8 @@ Popup.prototype.go = function(tree) {
 		this.expandPanel(tree);
 		console.log('opening ',tree.classId);
 	}
+
+
 	
 	
 	this.addPopups(tree);
