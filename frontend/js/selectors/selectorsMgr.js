@@ -95,7 +95,11 @@ SelectorsMgr.prototype.setSelectors = function(values,doOpenNext) {
 				this.selectors[index].next.setup({shouldOpen:doOpenNext})
 			}
 			else if (doOpenNext) {
-				this.finish();
+				this.finish(function (err) {
+					if (err) {
+						console.log('error creating tree from selectors',err)
+					}
+				});
 			}
 		};
 
