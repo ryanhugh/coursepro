@@ -60,10 +60,11 @@ DownloadTree.prototype.convertServerData = function(data) {
 	else if (data.values && data.type) {
 		retVal.isClass = false;
 
-		data.prereqs = {type:'or',values:[]};
-		data.coreqs = {type:'or',values:[]}
+		retVal.prereqs = {type:data.type,values:[]};
+		retVal.coreqs = {type:'or',values:[]}
 
-		data.prereqs.values.forEach(function (item){
+		//HOW DO WE KNOW TO APPEND TO PREREQS?
+		data.values.forEach(function (item){
 			retVal.prereqs.values.push(this.convertServerData(item));
 		}.bind(this))
 	}
@@ -74,6 +75,10 @@ DownloadTree.prototype.convertServerData = function(data) {
 		retVal.isClass = true;
 		retVal.isString = true;
 		retVal.desc = data;
+
+
+		retVal.prereqs = {type:'or',values:[]};
+		retVal.coreqs = {type:'or',values:[]}
 	}
 
 	return retVal;
