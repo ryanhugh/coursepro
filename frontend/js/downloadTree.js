@@ -132,6 +132,7 @@ DownloadTree.prototype.fetchFullTreeOnce = function(tree,queue,ignoreClasses) {
 					if (body.length > 1) {
 						tree.isClass = false;
 						tree.prereqs  = {type:'or',values:[]}
+						tree.coreqs  = {type:'or',values:[]}
 
 						body.forEach(function (classData) {
 							tree.prereqs.values.push(this.convertServerData(classData))

@@ -1,5 +1,8 @@
 !!!!
 
+lift up the boxes
+http://localhost/#neu.edu/201630/CS/5310
+
 add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
 and add it to collegeNames somehow (and add the ids for the neu.edu/law)
 
