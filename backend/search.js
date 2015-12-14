@@ -132,7 +132,16 @@ Search.prototype.search = function(body,callback) {
 			}.bind(this))
 		}.bind(this))
 
-		callback(null,results)
+
+		//sanitize the output
+		var retVal = [];
+		results.forEach(function (classData) {
+			retVal.push(classesDB.removeInternalFields(classData))
+		}.bind(this))
+
+
+
+		callback(null,retVal)
 	}.bind(this))
 }
 

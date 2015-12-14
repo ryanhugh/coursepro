@@ -92,7 +92,7 @@ SelectorsMgr.prototype.setSelectors = function(values,doOpenNext) {
 			
 			
 			if (this.selectors[index].next) {
-				this.selectors[index].next.setup({shouldOpen:doOpenNext})
+				this.selectors[index].next.setup({shouldOpen:doOpenNext,defaultValue:this.selectors[index].helpId})
 			}
 			else if (doOpenNext) {
 				this.finish(function (err) {

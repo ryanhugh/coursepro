@@ -81,6 +81,27 @@ DownloadTree.prototype.convertServerData = function(data) {
 		retVal.coreqs = {type:'or',values:[]}
 	}
 
+	//already processed node
+	else if (data.prereqs && data.coreqs) {
+
+
+		var newCoreqs = [];
+		data.coreqs.values.forEach(function (subTree) {
+			newCoreqs.push(this.convertServerData(subTree))
+		}.bind(this))
+
+		data.coreqs.values = newCoreqs
+
+ 
+
+		var newPrereqs = [];
+		data.prereqs.values.forEach(function (subTree) {
+			newPrereqs.push(this.convertServerData(subTree))
+		}.bind(this))
+
+		data.prereqs.values = newPrereqs;
+	}
+
 	return retVal;
 }
 
@@ -204,19 +225,24 @@ DownloadTree.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 	
 	toProcess = toProcess.concat(tree.coreqs.values).concat(tree.prereqs.values)
 
+	var subTree;
 
-	toProcess.forEach(function (subTree) {
-		
+	while (subTree = toProcess.pop()) {
+
 
 		if (!subTree.isClass || subTree.isString) {
 
 			this.fetchFullTreeOnce(subTree,queue,_.cloneDeep(ignoreClasses));
-			return;
+			continue;
 		}
 		
 		if (subTree.dataStatus !=macros.DATASTATUS_NOTSTARTED) {
-			console.log('how is it already loaded??',subTree);
-			return;
+			if (!subTree.prereqs || !subTree.coreqs) {
+				console.log('tree already loaded but dosent have prereqs or coreqs?',tree)
+				continue
+			}
+			toProcess = toProcess.concat(subTree.prereqs.values).concat(subTree.coreqs.values)
+			continue;
 		}
 		
 
@@ -246,8 +272,7 @@ DownloadTree.prototype.fetchSubTrees = function(tree,queue,ignoreClasses) {
 				
 			}
 		}
-
-	}.bind(this))
+	}
 };
 
 

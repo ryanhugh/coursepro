@@ -148,7 +148,7 @@ BaseDB.prototype.getStaticValues = function() {
 // shouldBeOnlyOne: true/false (default false) returns a doc or null, logs warning if multiple found
 // skipValidation: true/false (default false) skips the query validation, eg with this on you can dump the enitre db instead of being limited to listing only subjects of a term and classes of a subject
 	//used for search
-// sanitize: true/false (default false) removes internal fields that the front end shouldn't see
+// sanitize: true/false (default false) removes internal fields that the front end shouldn't see sanitize
 
 
 BaseDB.prototype.find = function(lookupValues,config,callback) {
@@ -177,7 +177,7 @@ BaseDB.prototype.find = function(lookupValues,config,callback) {
 		
 		var retVal = [];
 
-		if (config.sanatize) {
+		if (config.sanitize) {
 			docs.forEach(function (doc) {
 				retVal.push(this.removeInternalFields(doc));
 			}.bind(this));

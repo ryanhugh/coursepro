@@ -125,7 +125,7 @@ app.use(function (req, res,next) {
 app.post('/listColleges',function (req,res) {
 	collegeNamesDB.find({},{
 		shouldBeOnlyOne:false,
-		sanatize:true
+		sanitize:true
 	},function (err,names) {
 		if (err) {
 			console.log('error college names failed',req.url,err);
@@ -152,7 +152,7 @@ app.post('/listTerms',function (req,res) {
 
 	termsDB.find({host:req.body.host},{
 		shouldBeOnlyOne:false,
-		sanatize:true
+		sanitize:true
 	},function (err,terms) {
 		if (err) {
 			res.status(500);
@@ -180,7 +180,7 @@ app.post('/listSubjects',function (req,res) {
 		termId:req.body.termId
 	},{
 		shouldBeOnlyOne:false,
-		sanatize:true
+		sanitize:true
 	},function (err,subjects) {
 		if (err) {
 			console.log(err)
@@ -218,7 +218,7 @@ app.post('/listClasses',function (req,res) {
 
 	classesDB.find(lookup,{
 		shouldBeOnlyOne:false,
-		sanatize:true
+		sanitize:true
 	},function (err,classes) {
 		if (err) {
 			console.log(err)
@@ -253,7 +253,7 @@ app.post('/listSections',function (req,res) {
 
 	sectionsDB.find(lookup,{
 		shouldBeOnlyOne:false,
-		sanatize:true
+		sanitize:true
 	},function (err,classes) {
 		if (err) {
 			console.log(err)

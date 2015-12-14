@@ -545,6 +545,7 @@ TreeMgr.prototype.showClasses = function(classList,callback) {
 
 	tree.isClass = false;
 	tree.prereqs = {type:'or',values:classList}
+	tree.coreqs = {type:'or',values:[]}
 	tree.host = classList[0].host
 	tree.termId = classList[0].termId
 	
@@ -553,7 +554,7 @@ TreeMgr.prototype.showClasses = function(classList,callback) {
 	tree.hidden = true;
 	
 
-	this.convertServerData(tree);
+	downloadTree.convertServerData(tree);
 
 	//this is ghetto
 	//remove the prereqs of the class given so they dont have trees coming down from them
