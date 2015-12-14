@@ -47,7 +47,7 @@ Main.prototype.updateFromHash = function() {
 	}.bind(this))
 	
 	
-	//if no hash, destory all dropdowns and show (but don't open) the first one
+	//if no hash, destroy all dropdowns and show (but don't open) the first one
 	if (values.length==0) {
 		selectorsMgr.resetAllSelectors()
 		render.clearContainer()
@@ -81,7 +81,7 @@ Main.prototype.updateFromHash = function() {
 	}
 }
 
-
+// http://stackoverflow.com/questions/19999388/check-if-user-is-using-ie-with-jquery
 Main.prototype.checkForIE = function() {
     var ua = navigator.userAgent;
     if (_(ua).includes("MSIE ") || ua.match(/Trident.*rv\:11\./)) {

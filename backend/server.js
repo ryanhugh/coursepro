@@ -6,6 +6,8 @@ var request = require('request');
 var fs = require('fs');
 var _ = require('lodash');
 var URI = require('urijs');
+var compress = require('compression');
+
 
 var blacklistedEmails = require('./blacklistedEmails.json')
 
@@ -27,6 +29,7 @@ sectionsDB.startUpdates();
 
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
+app.use(compress());  // gzip the output
 
 function logData (req,info) {
 	if (!info) {
@@ -99,6 +102,22 @@ app.use(function (req,res,next) {
 
 app.use(function (req, res, next) {
 	logData(req);
+	next()
+});
+
+
+
+
+// add cache forever to external js libraries
+app.use(function (req, res,next) {
+	if (_(req.path).startsWith('/js/external') || _(req.path).startsWith('/fonts') || _(req.path).startsWith('/css') || _(req.path).startsWith('/images')) {
+		// console.log('setting to 1 yr')
+	    res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year (in seconds)
+	}
+	else {
+		// console.log('setting to 5 min')
+	    res.setHeader('Cache-Control', 'public, max-age=300'); // 5 min (in seconds)
+	}
 	next()
 });
 
@@ -397,9 +416,9 @@ app.get('/unsubscribe',function(req,res){
 
 
 app.post('/log',function(req,res){
+	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
 	res.send(JSON.stringify({status:'success'}));
 })
-
 
 
 
@@ -408,14 +427,6 @@ app.get('/', function (req, res) {
 	res.sendFile('frontend/static/index.html',{"root": process.cwd()});
 });
 
-
-// add cache forever to external js libraries
-app.get('/*', function (req, res,next) {
-	if (_(req.path).startsWith('/js/external') || _(req.path).startsWith('/fonts') || _(req.path).startsWith('/css') || _(req.path).startsWith('/images')) {
-	    res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year
-	}
-	next()
-});
 
 app.use(express.static('frontend/static'));
 
