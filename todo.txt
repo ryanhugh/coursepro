@@ -6,6 +6,9 @@ http://localhost/#neu.edu/201630/CS/5310
 add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
 and add it to collegeNames somehow (and add the ids for the neu.edu/law)
 
+for the ones that don't have data, put an error or warning or something "No data on neu.edu about this class :/"
+
+
 any bugs in safari or firefox?
 in firefox the tree if offset sideways, and there is padding between Northeastern and the icon
 http://coursepro.io/#neu.edu/201630/IS/4200
