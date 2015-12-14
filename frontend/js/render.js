@@ -9,10 +9,10 @@ function Render () {
 	this.navBar = document.getElementById('navBar');
 
 	this.spinner = document.getElementById('spinner')
-	this.spinner.remove()
+	$(this.spinner).remove()
 	
 	this.padding = document.getElementById('paddingId')
-	this.padding.remove()
+	$(this.padding).remove()
 
 	this.COREQ_OFFSET = 20;
 

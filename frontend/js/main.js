@@ -82,12 +82,21 @@ Main.prototype.updateFromHash = function() {
 }
 
 
+Main.prototype.checkForIE = function() {
+    var ua = navigator.userAgent;
+    if (_(ua).includes("MSIE ") || ua.match(/Trident.*rv\:11\./)) {
+    	alert("This site doesn't work so great in Internet Explorer/Edge. Try upgrading to Google Chrome or Firefox!")
+    }
+};
+
 
 Main.prototype.main = function() {
+
+	this.checkForIE()
+
 	if (window.location.hash.length>1) {
 		this.updateFromHash();
 	}
-	
 };
 
 Main.prototype.Main=Main;
