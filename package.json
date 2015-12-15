@@ -31,7 +31,8 @@
     "vinyl-source-stream":"latest",
     "reactify":"latest",
     "watchify":"latest",
-    "glob":"latest"
+    "glob":"latest",
+    "compression":"latest"
   },
   "description": "Awesome sauce! Yay!"
 }
