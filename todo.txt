@@ -16,6 +16,20 @@ http://coursepro.io/#neu.edu/201630/IS/4200
 a 2500 (hon) should just bring up the (hon) and non hon should just bring up non-hon
 
 
+settings:
+-- hide/show/both (hon)
+-- hide broken classes (classes that don't exist in the db but are listed as a prereq)
+-- hide classes with no sections
+-- ignore graduate classes?
+-- d3 vs wide mode?
+
+
+buttons:
+-- update/refresh, that get server to update the data
+-- notify
+
+
+
 does it work in firefox? 
 - stiky note for classes could take
 - odd that tooltips went away, then confused what lines meant
