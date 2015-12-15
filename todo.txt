@@ -20,13 +20,19 @@ settings:
 -- hide/show/both (hon)
 -- hide broken classes (classes that don't exist in the db but are listed as a prereq)
 -- hide classes with no sections
+-- maximum number of classes (419 just too much...)
+-- depth max
 -- ignore graduate classes?
+later:
 -- d3 vs wide mode?
+-- render up and down/ or just down or just up
+
 
 
 buttons:
 -- update/refresh, that get server to update the data
 -- notify
+-- check mark for have taken this class
 
 
 star
