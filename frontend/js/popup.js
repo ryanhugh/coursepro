@@ -326,7 +326,18 @@ Popup.prototype.expandPanel = function(tree) {
 
 			//add credits to the left
 			if (tree.minCredits!==undefined || tree.maxCredits!==undefined) {
-				newBodyText.push('<div style="text-align:left;display: inline-block; position: absolute;max-width: 50%;">'+this.createCreditsHTML(tree)+'</div>')
+
+				var leftBoxHTML = '<div style="text-align:left;display: inline-block; position: absolute;max-width: 50%;line-height: 15px;">'
+
+				leftBoxHTML+=this.createCreditsHTML(tree)
+
+				if (tree.lastUpdateTime) {
+					leftBoxHTML+='<br>'
+					leftBoxHTML+='Updated '+moment(tree.lastUpdateTime).fromNow()
+				};
+				leftBoxHTML+='</div>'
+
+				newBodyText.push(leftBoxHTML)
 			}
 
 			var classURL ;
