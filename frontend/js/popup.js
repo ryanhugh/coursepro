@@ -11,9 +11,9 @@ function Popup () {
 	$(document).keydown(function(e) {
 		// ESCAPE key pressed
 	    if (e.keyCode == 27) {
-	    	var treeToClose = this.openOrder.pop();
-	    	if (treeToClose) {
-		    	render.resetPanel(treeToClose);
+	    	var tree = this.openOrder.shift();
+	    	if (tree) {
+	    		this.userClosePopup(tree);
 	    	};
 	    }
 	}.bind(this));
@@ -236,9 +236,6 @@ Popup.prototype.expandPanel = function(tree) {
 	if (tree.isString) {
 		return;
 	};
-	if (tree.dataStatus!==macros.DATASTATUS_DONE) {
-		return;
-	};
 
 
 
@@ -250,6 +247,16 @@ Popup.prototype.expandPanel = function(tree) {
 	tree.isExpanded=true;
 	var panelBody = tree.panel.getElementsByClassName('panelBodyId')[0]
 
+
+
+	if (tree.dataStatus===macros.DATASTATUS_FAIL) {
+		panelBody.innerHTML += '<div style="white-space: normal;"><br>Couldn\'t find any class info on<br> '+selectorsMgr.college.getValue()+' :( </div>'
+		return;
+	}
+	else if(tree.dataStatus!==macros.DATASTATUS_DONE) {
+		console.log("ERROR data status is not done and not error",tree)
+		return;
+	}
 
 	//overall
 	//credits
@@ -471,6 +478,36 @@ Popup.prototype.expandPanel = function(tree) {
 	}
 }
 
+Popup.prototype.userOpenPopup = function(tree) {
+	
+	ga('send', {
+		'hitType': 'pageview',
+		'page': window.location.href+'/openPopup/'+tree.subject+'/'+tree.classId,
+		'title': 'Coursepro.io'
+	});
+
+	this.expandPanel(tree);
+
+	if (_(this.openOrder).includes(tree)) {
+		console.log('error tree was already in the list of panels that were open?')
+	}
+	else {
+		this.openOrder.push(tree)
+	}
+};
+
+Popup.prototype.userClosePopup = function(tree) {
+	
+	ga('send', {
+		'hitType': 'pageview',
+		'page': window.location.href+'/closePopup/'+tree.subject+'/'+tree.classId,
+		'title': 'Coursepro.io'
+	});
+
+	render.resetPanel(tree);
+	_.pull(this.openOrder,tree);
+
+};
 
 
 Popup.prototype.addPopups = function(tree) {
@@ -480,29 +517,18 @@ Popup.prototype.addPopups = function(tree) {
 		//click to expand
 		$(tree.panel).on('click.popup',function (event) {
 
+			//if expanded and there is no remove button
+			if (tree.isExpanded && tree.panel.getElementsByClassName('glyphicon-remove')[0].style.display=='none') {
+				this.userClosePopup(tree);
+				return
+			}
+
 			//if already expanded, do nothing
 			if (tree.isExpanded) {
 				return;
 			}
 
-
-
-			ga('send', {
-				'hitType': 'pageview',
-				'page': window.location.href+'/openPopup/'+tree.subject+'/'+tree.classId,
-				'title': 'Coursepro.io'
-			});
-
-			this.expandPanel(tree);
-
-			if (_(this.openOrder).includes(tree)) {
-				console.log('error tree was already in the list of panels that were open?')
-			}
-			else {
-				this.openOrder.push(tree)
-			}
-
-		
+			this.userOpenPopup(tree);
 		}.bind(this))
 
 
@@ -514,15 +540,7 @@ Popup.prototype.addPopups = function(tree) {
 				return;
 			}
 
-
-			ga('send', {
-				'hitType': 'pageview',
-				'page': window.location.href+'/closePopup/'+tree.subject+'/'+tree.classId,
-				'title': 'Coursepro.io'
-			});
-
-			render.resetPanel(tree);
-			_.pull(this.openOrder,tree);
+			this.userClosePopup(tree);
 			event.stopPropagation();
 
 		}.bind(this))

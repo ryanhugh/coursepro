@@ -83,7 +83,7 @@ DownloadTree.prototype.convertServerData = function(data) {
 
 	//already processed node
 	else if (data.prereqs && data.coreqs) {
-
+		retVal = data;
 
 		var newCoreqs = [];
 		data.coreqs.values.forEach(function (subTree) {

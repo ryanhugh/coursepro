@@ -554,7 +554,7 @@ TreeMgr.prototype.showClasses = function(classList,callback) {
 	tree.hidden = true;
 	
 
-	downloadTree.convertServerData(tree);
+	tree = downloadTree.convertServerData(tree);
 
 	//this is ghetto
 	//remove the prereqs of the class given so they dont have trees coming down from them
