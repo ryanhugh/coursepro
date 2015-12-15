@@ -10,7 +10,7 @@ function Homepage () {
 }
 
 Homepage.prototype.removeHomepage = function() {
-	$(this.homepageElement).remove()
+	$(this.homepageElement).detach()
 };
 
 
