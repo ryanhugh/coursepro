@@ -29,6 +29,12 @@ buttons:
 -- notify
 
 
+star
+ -- default goes to stared courses
+
+
+
+
 
 does it work in firefox? 
 - stiky note for classes could take
