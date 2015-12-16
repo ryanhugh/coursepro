@@ -3,6 +3,7 @@ import re
 from datetime import datetime, time,timedelta
 import exceptions
 import sys
+import re
 
 
 def getInput():
@@ -46,12 +47,10 @@ def getTimeString(timeStamp):
 	
 
 def shouldIgnoreReferrer(currRef):
-	refs = ['http://coursepro.io/','http://www.coursepro.io/','http://beta.coursepro.io/']
-	for ref in refs:
-		if currRef.startswith(ref):
-			return True
-	return False
 
+	if re.match('http://(?:\w+.)?coursepro.io/',currRef):
+		return True
+	return False
 
 def main():
 	line = getInput()
