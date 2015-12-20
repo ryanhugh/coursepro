@@ -7,6 +7,12 @@ var fs = require('fs');
 var _ = require('lodash');
 var URI = require('urijs');
 var compress = require('compression');
+var googleAuthLibrary = require('google-auth-library')
+
+var googleAuth = new googleAuthLibrary()
+var OAuth2 = new googleAuth.OAuth2()
+// var (new (new a).OAuth2).verifyIdToken
+
 
 
 var blacklistedEmails = require('./blacklistedEmails.json')
@@ -412,6 +418,22 @@ app.get('/unsubscribe',function(req,res){
 		res.send(response);
 	})
 })
+
+
+
+
+app.post('/testauth',function (req,res) {
+	console.log(req.body)
+
+
+	OAuth2.verifyIdToken(req.body.idToken,undefined,function (err,results) {
+		console.log('here:',err,results,results.getEnvelope(),results.getPayload());
+	}.bind(this));
+
+	res.send('{status:"success"}')
+})
+
+
 
 
 

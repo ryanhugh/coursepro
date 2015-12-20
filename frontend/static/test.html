@@ -20,6 +20,21 @@
 		  console.log('Name: ' + profile.getName());
 		  console.log('Image URL: ' + profile.getImageUrl());
 		  console.log('Email: ' + profile.getEmail());
+
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', '/testauth');
+			xhr.setRequestHeader('Content-Type', 'application/json');
+			xhr.onload = function() {
+				console.log('Signed in as: ' + xhr.responseText);
+			};
+
+			xhr.send(JSON.stringify({idToken:googleUser.getAuthResponse().id_token}));
+
+
+
+
+
 		}
 	</script>
 	<div class="g-signin2" data-onsuccess="onSignIn"></div>
