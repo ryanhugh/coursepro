@@ -99,7 +99,7 @@ app.use(function (req,res,next) {
 	if (!_(['coursepro.io','www.coursepro.io','beta.coursepro.io','api.coursepro.io','localhost']).includes(req.hostname)) {
 		
 		logData(req,{msg:{summary:'Redirect from '+req.hostname+' to coursepro.io'}})
-		res.redirect('http://coursepro.io');
+		res.redirect('https://coursepro.io');
 	}
 	else {
 	  next();
@@ -128,6 +128,18 @@ app.use(function (req, res,next) {
 	}
 	next()
 });
+
+
+// add cache forever to external js libraries
+app.use(function (req, res, next) {
+	if (req.protocol=='http') {
+		res.redirect('https://coursepro.io');
+		return;
+	}
+	else {
+		next()
+	}
+})
 
 
 app.post('/listColleges',function (req,res) {
