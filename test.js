@@ -26,16 +26,53 @@ var queue = require("queue-async")
 // var collegeNamesDB = require('./databases/collegeNamesDB')
 
 
-async.waterfall([
-	function(callback){
-		console.log('in 1',callback);
-		callback()
-		callback()
+// async.waterfall([
+// 	function(callback){
+// 		console.log('in 1',callback);
+// 		callback()
+// 		callback()
+// 	},
+// 	function(callback){
+// 		console.log('in 2')
+// 		callback();
+// 	}])
+
+
+var express = require('express');
+var bodyParser = require('body-parser');
+var request = require('request');
+var fs = require('fs');
+var _ = require('lodash');
+var URI = require('urijs');
+var compress = require('compression');
+var googleAuthLibrary = require('google-auth-library')
+var https = require('https')
+var queue = require('queue-async')
+
+//https
+// var q = queue()
+async.parallel([
+	function (callback) {
+		fs.readFile('/etc/coursepro/privateKey.pem', 'utf8', function (err,data) {
+			if (err) {
+				console.log('ERROR reading private key for https',err);
+				return callback(err);
+			}
+			return callback(null,data);
+		});
 	},
-	function(callback){
-		console.log('in 2')
-		callback();
-	}])
+	function (callback) {
+		fs.readFile('/etc/coursepro/publicKey.crt', 'utf8', function (err,data) {
+			if (err) {
+				console.log('ERROR reading public cert for https',err);
+				return callback(err);
+			}
+			return callback(null,data);
+		});
+	}],
+	function (err,results) {
+		console.log(err,results)
+	})
 
 
 // var https = require('https');
@@ -107,7 +144,7 @@ async.waterfall([
 // 		// if (!doc.crns) {
 // 			// classesDB.db.update({_id:doc._id},{$set:{crns:[]}});
 // 		classesDB.db.update({_id:doc._id},{$set:{lastUpdateTime:0}});
-			
+
 // 		// };
 // 	})
 // })
@@ -188,15 +225,15 @@ async.waterfall([
 // }))
 
 
- 
+
 // a = { t:'a' };  // initial value of a
- 
+
 // a.a=a;
 
 // b = clone(a);                 // clone a -> b
 // b.t='b'
 
- 
+
 // console.log(a);               // show a
 // console.log(b.a.a.a);
 
@@ -319,8 +356,8 @@ async.waterfall([
 
 // var whois = require('whois-ux');
 // console.log(whois)
- 
- 
+
+
 // this works, but lehigh.edu does not
 // whois.whois('128.180.2.57', function (err, data){
 
@@ -336,14 +373,14 @@ async.waterfall([
 // var whois = require('whois')
 // whois.lookup('uillinois.edu', function(err, data) {
 //     // console.log(data)
-    
+
 //     data=data.match(/Registrant:\n[\w\d \t]+/i);
 //     data = data[0].replace('Registrant:','').trim()
 //     console.log(data)
-    
-    
-    
-    
+
+
+
+
 // })
 
 // console.debug('HIII')
@@ -366,7 +403,7 @@ async.waterfall([
 
 
 // var whoisAvailable = require('whois-available');
- 
+
 // whoisAvailable('neu.edu', function(err, whoisResponse, isAvailable) {
 //   console.log(whoisResponse)
 // });

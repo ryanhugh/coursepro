@@ -1,19 +1,19 @@
 'use strict';
 var express = require('express');
 var bodyParser = require('body-parser');
-var pageDataMgr = require('./pageDataMgr');
 var request = require('request');
 var fs = require('fs');
 var _ = require('lodash');
 var URI = require('urijs');
 var compress = require('compression');
 var googleAuthLibrary = require('google-auth-library')
+var https = require('https')
+var async = require('async')
 
 var googleAuth = new googleAuthLibrary()
 var OAuth2 = new googleAuth.OAuth2()
-// var (new (new a).OAuth2).verifyIdToken
 
-
+var pageDataMgr = require('./pageDataMgr');
 
 var blacklistedEmails = require('./blacklistedEmails.json')
 
@@ -25,6 +25,8 @@ var sectionsDB = require('./databases/sectionsDB');
 var usersDB = require('./databases/usersDB');
 
 var search = require('./search');
+
+
 
 //tell all the db's to update every 15 min
 collegeNamesDB.startUpdates();
@@ -468,3 +470,30 @@ app.post("/*", function(req, res, next) {
 
 
 app.listen(80);
+
+
+//https
+async.parallel([
+	function (callback) {
+		fs.readFile('/etc/coursepro/privateKey.pem', 'utf8', function (err,data) {
+			if (err) {
+				console.log('ERROR reading private key for https',err);
+				return callback(err);
+			}
+			return callback(null,data);
+		});
+	},
+	function (callback) {
+		fs.readFile('/etc/coursepro/publicKey.crt', 'utf8', function (err,data) {
+			if (err) {
+				console.log('ERROR reading public cert for https',err);
+				return callback(err);
+			}
+			return callback(null,data);
+		});
+	}],
+	function (err,results) {
+		var credentials = {key: results[0], cert: results[1]};
+		var server = https.createServer(credentials, app);
+		server.listen(443);
+	})
