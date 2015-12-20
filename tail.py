@@ -48,7 +48,7 @@ def getTimeString(timeStamp):
 
 def shouldIgnoreReferrer(currRef):
 
-	if re.match('http://(?:\w+.)?coursepro.io/',currRef):
+	if re.match('https?://(?:\w+.)?coursepro.io/',currRef):
 		return True
 	return False
 
