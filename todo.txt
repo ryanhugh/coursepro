@@ -9,9 +9,7 @@ and add it to collegeNames somehow (and add the ids for the neu.edu/law)
 for the ones that don't have data, put an error or warning or something "No data on neu.edu about this class :/"
 
 
-any bugs in safari or firefox?
-in firefox the tree if offset sideways, and there is padding between Northeastern and the icon
-http://coursepro.io/#neu.edu/201630/IS/4200
+any bugs in safari?
 
 a 2500 (hon) should just bring up the (hon) and non hon should just bring up non-hon
 
@@ -31,6 +29,7 @@ later:
 
 buttons:
 -- update/refresh, that get server to update the data
+-- star
 -- notify
 -- check mark for have taken this class
 
