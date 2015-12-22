@@ -174,7 +174,7 @@ Request.prototype.fireRequest = function(config,callback) {
 	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function()
 	{
-		if (xmlhttp.readyState!=4) {
+		if (xmlhttp.readyState!=XMLHttpRequest.DONE) {
 			return;
 		}
 		if (xmlhttp.status!=200) {
