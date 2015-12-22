@@ -48,5 +48,6 @@
   "https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_dyn_sched",
   "https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched",
   "https://banner.drexel.edu/pls/duprod/bwckctlg.p_disp_dyn_ctlg",
-  "https://infobear.bridgew.edu/BANP/bwckschd.p_disp_dyn_sched"
+  "https://infobear.bridgew.edu/BANP/bwckschd.p_disp_dyn_sched",
+  "https://new-sis-app.sph.harvard.edu:9010/prod/bwckschd.p_disp_dyn_sched"
   ]
