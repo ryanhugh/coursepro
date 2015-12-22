@@ -1,5 +1,8 @@
 !!!!
 
+need to implement an unsubscribe feature, create a subscriptionsKey that is emailed to user and allows control over subscriptions settings
+
+
 lift up the boxes
 http://localhost/#neu.edu/201630/CS/5310
 

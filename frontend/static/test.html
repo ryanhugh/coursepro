@@ -23,7 +23,7 @@
 
 
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', '/testauth');
+			xhr.open('POST', '/authenticateUser');
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.onload = function() {
 				console.log('Signed in as: ' + xhr.responseText);

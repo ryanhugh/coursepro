@@ -6,12 +6,9 @@ var fs = require('fs');
 var _ = require('lodash');
 var URI = require('urijs');
 var compress = require('compression');
-var googleAuthLibrary = require('google-auth-library')
 var https = require('https')
 var async = require('async')
 
-var googleAuth = new googleAuthLibrary()
-var OAuth2 = new googleAuth.OAuth2()
 
 var pageDataMgr = require('./pageDataMgr');
 
@@ -460,7 +457,8 @@ app.get('/unsubscribe', function(req, res) {
 
 
 
-app.post('/testauth', function(req, res) {
+
+app.post('/authenticateUser', function(req, res) {
 	if (!req.body.idToken) {
 		console.log('error, no idToken given body:');
 		console.log(req.body)
@@ -469,14 +467,21 @@ app.post('/testauth', function(req, res) {
 		return;
 	}
 
-	console.log(req.body)
+	usersDB.authenticateUser(req.body.idToken,req.connection.remoteAddress, function(err, loginKey) {
+		if (err) {
+			console.log('couldnt authenticate User', err);
+			res.send(JSON.stringify({
+				error: 'error yo'
+			}))
+			return;
+		};
 
 
-	OAuth2.verifyIdToken(req.body.idToken, undefined, function(err, results) {
-		console.log('here:', err, results, results.getEnvelope(), results.getPayload());
-	}.bind(this));
-
-	res.send('{status:"success"}')
+		res.send(JSON.stringify({
+			loginKey: loginKey,
+			status: 'success'
+		}))
+	})
 })
 
 

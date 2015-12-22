@@ -47,6 +47,9 @@ BaseDB.prototype.updateDatabaseFromPageData = function(pageData,callback) {
 }
 
 BaseDB.prototype.updateDatabase = function(newData,oldData,callback) {
+	if (!callback) {
+		callback = function () {}
+	}
 
 	if (!this.shouldUpdateDB(newData,oldData)) {
 		return callback(null,newData);
