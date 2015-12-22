@@ -1,8 +1,8 @@
 'use strict';
 
-function Homepage () {
-	
-	
+function Homepage() {
+
+
 	this.homepageElement = document.getElementById('homepageId');
 	this.masterContainer = document.getElementById('masterContainerId');
 
@@ -15,7 +15,7 @@ Homepage.prototype.removeHomepage = function() {
 
 
 Homepage.prototype.isOnHomepage = function() {
-	
+
 	// if the element has a parent, it is in the container, if not it needs to be added
 	if (this.homepageElement.parentElement) {
 		return true
@@ -27,10 +27,9 @@ Homepage.prototype.isOnHomepage = function() {
 
 
 
+Homepage.prototype.show = function() {
 
-Homepage.prototype.show = function () {
-	
-	
+
 	if (this.isOnHomepage()) {
 		return;
 	}
@@ -45,8 +44,5 @@ Homepage.prototype.show = function () {
 
 
 
-
-
-Homepage.prototype.Homepage=Homepage;
+Homepage.prototype.Homepage = Homepage;
 module.exports = new Homepage();
-

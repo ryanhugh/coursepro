@@ -3,18 +3,17 @@
 var assert = require('assert')
 var emailMgr = require('../emailMgr')
 
-function EmailMgrTests () {
+function EmailMgrTests() {
 	this.name = 'emailMgr';
 }
 
 
 
 EmailMgrTests.prototype.validateEmailTest = function() {
-	assert.equal(true,emailMgr.validateEmail('bob@gmail.com'));
-	assert.equal(false,emailMgr.validateEmail('gmail.com'));
+	assert.equal(true, emailMgr.validateEmail('bob@gmail.com'));
+	assert.equal(false, emailMgr.validateEmail('gmail.com'));
 
 };
-
 
 
 
@@ -25,6 +24,5 @@ EmailMgrTests.prototype.go = function() {
 
 
 
-EmailMgrTests.prototype.EmailMgrTests=EmailMgrTests;
+EmailMgrTests.prototype.EmailMgrTests = EmailMgrTests;
 module.exports = new EmailMgrTests();
-

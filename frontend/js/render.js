@@ -2,38 +2,38 @@
 var homepage = require('./homepage')
 var macros = require('./macros')
 
-function Render () {
-	
+function Render() {
+
 	this.template = document.getElementsByClassName('templatePanelId')[0];
 	this.container = document.getElementById('containerId');
 	this.navBar = document.getElementById('navBar');
 
 	this.spinner = document.getElementById('spinner')
 	$(this.spinner).detach()
-	
+
 	this.padding = document.getElementById('paddingId')
 	$(this.padding).detach()
 
 	this.COREQ_OFFSET = 20;
 
 	if (!this.template || !this.container || !this.navBar) {
-		console.log('error could not find template??',this.template,this.container,this.navBar)
+		console.log('error could not find template??', this.template, this.container, this.navBar)
 	}
 
-	if (localStorage.andPopupCount===undefined) {
+	if (localStorage.andPopupCount === undefined) {
 		localStorage.andPopupCount = 0;
 	}
-	
-	if (localStorage.orPopupCount===undefined) {
+
+	if (localStorage.orPopupCount === undefined) {
 		localStorage.orPopupCount = 0;
 	}
 }
 
 
 // http://stackoverflow.com/questions/4270485/drawing-lines-on-html-page
-Render.prototype.drawLine =function(tree,x1, y1, x2, y2,color){
+Render.prototype.drawLine = function(tree, x1, y1, x2, y2, color) {
 
-	if(y1 < y2){
+	if (y1 < y2) {
 		var pom = y1;
 		y1 = y2;
 		y2 = pom;
@@ -42,34 +42,34 @@ Render.prototype.drawLine =function(tree,x1, y1, x2, y2,color){
 		x2 = pom;
 	}
 
-	var a = Math.abs(x1-x2);
-	var b = Math.abs(y1-y2);
+	var a = Math.abs(x1 - x2);
+	var b = Math.abs(y1 - y2);
 	var c;
-	var sx = (x1+x2)/2 ;
-	var sy = (y1+y2)/2 ;
-	var width = Math.sqrt(a*a + b*b ) ;
-	var x = sx - width/2;
+	var sx = (x1 + x2) / 2;
+	var sy = (y1 + y2) / 2;
+	var width = Math.sqrt(a * a + b * b);
+	var x = sx - width / 2;
 	var y = sy;
 
 	a = width / 2;
 
-	c = Math.abs(sx-x);
+	c = Math.abs(sx - x);
 
-	b = Math.sqrt(Math.abs(x1-x)*Math.abs(x1-x)+Math.abs(y1-y)*Math.abs(y1-y) );
+	b = Math.sqrt(Math.abs(x1 - x) * Math.abs(x1 - x) + Math.abs(y1 - y) * Math.abs(y1 - y));
 
-	var cosb = (b*b - a*a - c*c) / (2*a*c);
+	var cosb = (b * b - a * a - c * c) / (2 * a * c);
 	var rad = Math.acos(cosb);
-	var deg = (rad*180)/Math.PI
+	var deg = (rad * 180) / Math.PI
 
 	var htmlns = "http://www.w3.org/1999/xhtml";
 	var div = document.createElementNS(htmlns, "div");
-	div.setAttribute('style','width:'+width+'px;height:0px;');
-	div.style.border = '4px solid '+color;
+	div.setAttribute('style', 'width:' + width + 'px;height:0px;');
+	div.style.border = '4px solid ' + color;
 	div.style.borderRadius = '99px'
 
 	var aElement = document.createElement('a')
-	aElement.setAttribute('style','width:'+(width+5)+'px;height:0px;-moz-transform:rotate('+deg+'deg);-webkit-transform:rotate('+deg+'deg);top:'+y+'px;left:'+x+'px;');
-	aElement.style.position='absolute';
+	aElement.setAttribute('style', 'width:' + (width + 5) + 'px;height:0px;-moz-transform:rotate(' + deg + 'deg);-webkit-transform:rotate(' + deg + 'deg);top:' + y + 'px;left:' + x + 'px;');
+	aElement.style.position = 'absolute';
 	aElement.className = 'lineToParentLink'
 
 
@@ -78,9 +78,9 @@ Render.prototype.drawLine =function(tree,x1, y1, x2, y2,color){
 	var mouseOver = document.createElement('div');
 	mouseOver.style.width = '100%'
 	mouseOver.style.padding = '20px'
-	mouseOver.style.marginTop='-20px';
+	mouseOver.style.marginTop = '-20px';
 
-	
+
 	aElement.appendChild(mouseOver)
 
 
@@ -100,75 +100,75 @@ Render.prototype.calculateLine = function(tree) {
 		return;
 	}
 
-	tree.allParents.forEach(function (parent) {
+	tree.allParents.forEach(function(parent) {
 		if (!parent) {
-			console.log('error wtf there is an undefined parent added to tree ',tree)
+			console.log('error wtf there is an undefined parent added to tree ', tree)
 			return
 		};
-		
+
 		if (parent.hidden) {
 			return;
 		}
-		
-		
-		
+
+
+
 		if (tree.lineToParent) {
 			tree.lineToParent.remove();
 		};
-		
-		
+
+
 		if (!tree.panel) {
-			console.log(tree,'????????? error')
+			console.log(tree, '????????? error')
 		};
 		if (!parent.panel) {
-			console.log('no panel on parent???',tree)
+			console.log('no panel on parent???', tree)
 			return;
 		};
 		//draw the line
 		var color = this.getColor(parent.prereqs.type);
 		if (!color) {
-			console.log('error could not get color of ',tree)
+			console.log('error could not get color of ', tree)
 			return;
 		};
-		this.drawLine(tree,parent.x,parent.y,tree.x,tree.y,color);
+		this.drawLine(tree, parent.x, parent.y, tree.x, tree.y, color);
 	}.bind(this))
 
 }
 Render.prototype.getColor = function(type) {
-	if (type=='or') {
+	if (type == 'or') {
 		return '#0000ff'
 	}
-	else if (type=='and') {
+	else if (type == 'and') {
 		return '#A70000'
 	}
 	else {
-		console.log('wtf, what is',type)
+		console.log('wtf, what is', type)
 		console.trace()
 	}
 }
 Render.prototype.addToParentDiv = function(tree) {
-	
+
 	if (tree.lowestParent && !tree.lowestParent.panel) {
-		console.log('error tree.lowestParent has no panel tree:',tree)
+		console.log('error tree.lowestParent has no panel tree:', tree)
 	};
-	
+
 	if (tree.lowestParent) {
 		if (!tree.lowestParent.div) {
-			console.log('tree.lowestParent does not have a div!!',tree.lowestParent)
+			console.log('tree.lowestParent does not have a div!!', tree.lowestParent)
 			return;
 		}
 		tree.lowestParent.div.appendChild(tree.div);
 	}
 	else {
-		tree.div.style.minWidth="100%"
-		
+		tree.div.style.minWidth = "100%"
+
 		//the panels are added to the container div before this,
 		// so we need to insert this first -- need to insert padding,
 		$(tree.div).insertAfter(this.padding)
 	}
 }
 Render.prototype.getOptionalS = function(num) {
-	if (num===1) {
+	if (num === 1) {
 		return ''
 	}
 	else {
@@ -184,11 +184,11 @@ Render.prototype.getOptionalS = function(num) {
 Render.prototype.calcPanelSize = function(tree) {
 
 	//position the panel to the absolute position of the div
-	this.resetPanel(tree,false);
-	
+	this.resetPanel(tree, false);
+
 
 	this.container.appendChild(tree.panel);
-	
+
 	tree.width = tree.panel.offsetWidth;
 	tree.height = tree.panel.offsetHeight;
 
@@ -196,7 +196,7 @@ Render.prototype.calcPanelSize = function(tree) {
 		this.calcPanelSize(subTree);
 	}.bind(this))
 
-	tree.coreqs.values.forEach(function (subTree) {
+	tree.coreqs.values.forEach(function(subTree) {
 		this.calcPanelSize(subTree);
 	}.bind(this));
 }
@@ -206,10 +206,10 @@ Render.prototype.addStructure = function(tree) {
 
 		tree.div = document.createElement('div');
 		tree.div.className = 'holderDiv'
-		tree.div.style.display="inline-block"
-		tree.div.style.margin="0 auto"
-		tree.div.style.padding="20px"
-		tree.div.style.paddingBottom="0px"
+		tree.div.style.display = "inline-block"
+		tree.div.style.margin = "0 auto"
+		tree.div.style.padding = "20px"
+		tree.div.style.paddingBottom = "0px"
 
 		tree.filler = document.createElement('div');
 
@@ -218,65 +218,65 @@ Render.prototype.addStructure = function(tree) {
 		//adds this div to parent div
 		var fillerWidth = tree.width;
 		var fillerHeight = tree.height;
-		
+
 		//add the offset for the coreqs
-		fillerWidth += tree.coreqs.values.length*this.COREQ_OFFSET;
-		fillerHeight += tree.coreqs.values.length*this.COREQ_OFFSET;
-		
+		fillerWidth += tree.coreqs.values.length * this.COREQ_OFFSET;
+		fillerHeight += tree.coreqs.values.length * this.COREQ_OFFSET;
+
 		tree.filler.style.width = fillerWidth + 'px'
-		tree.filler.style.height = (fillerHeight+10) + 'px'
+		tree.filler.style.height = (fillerHeight + 10) + 'px'
 		tree.filler.style.margin = '0 auto'
-		tree.filler.className='filler'
+		tree.filler.className = 'filler'
 		tree.div.appendChild(tree.filler);
 	}
 	else {
 		console.log('tree has already been rendered')
 	}
 
-	tree.prereqs.values.forEach(function (subTree) {
+	tree.prereqs.values.forEach(function(subTree) {
 		this.addStructure(subTree);
 	}.bind(this));
 }
 Render.prototype.calcPanelPos = function(tree) {
 
-	if (tree.coreqIndex===undefined) {
-		
+	if (tree.coreqIndex === undefined) {
+
 		var coords = tree.filler.getBoundingClientRect();
-		
-		tree.x = coords.left + tree.panel.offsetWidth/2+document.body.scrollLeft;
-		tree.y = coords.bottom - tree.panel.offsetHeight/2+document.body.scrollTop;
-		if (tree.x<0) {
-			console.log('erjdlfjls',document.body.scrollLeft)
+
+		tree.x = coords.left + tree.panel.offsetWidth / 2 + document.body.scrollLeft;
+		tree.y = coords.bottom - tree.panel.offsetHeight / 2 + document.body.scrollTop;
+		if (tree.x < 0) {
+			console.log('erjdlfjls', document.body.scrollLeft)
 		};
 	}
 	else {
-		tree.x = tree.lowestParent.x + this.COREQ_OFFSET*(tree.coreqIndex+1);
-		tree.y = tree.lowestParent.y - this.COREQ_OFFSET*(tree.coreqIndex+1)-this.COREQ_OFFSET;
+		tree.x = tree.lowestParent.x + this.COREQ_OFFSET * (tree.coreqIndex + 1);
+		tree.y = tree.lowestParent.y - this.COREQ_OFFSET * (tree.coreqIndex + 1) - this.COREQ_OFFSET;
 	}
 
 
 	this.resetPanel(tree);
-	
 
-	tree.prereqs.values.forEach(function (subTree) {
+
+	tree.prereqs.values.forEach(function(subTree) {
 		this.calcPanelPos(subTree);
 	}.bind(this));
 
-	tree.coreqs.values.forEach(function (subTree) {
+	tree.coreqs.values.forEach(function(subTree) {
 		this.calcPanelPos(subTree);
 	}.bind(this));
 }
 
 
 //only requires .width and .height if resizing
-Render.prototype.resetPanel = function(tree,relocate) {
-	if (relocate===undefined) {
-		relocate=true;
+Render.prototype.resetPanel = function(tree, relocate) {
+	if (relocate === undefined) {
+		relocate = true;
 	};
 
-	tree.isExpanded=false;
-	
-	
+	tree.isExpanded = false;
+
+
 	if (tree.hidden) {
 
 		if (!tree.panel) {
@@ -289,35 +289,35 @@ Render.prototype.resetPanel = function(tree,relocate) {
 		tree.panel.style.height = '35px';
 	}
 	else {
-		
+
 		if (tree.isClass) {
-	
-	
+
+
 			if (!tree.panel) {
 				tree.panel = this.template.cloneNode(true);
 			}
-	
+
 			var xButton = tree.panel.getElementsByClassName('glyphicon-remove')[0]
 			xButton.style.display = 'none'
-	
-			tree.panel.setAttribute('style','width:165px;margin: 0 auto;cursor:pointer;white-space:normal;z-index:5;text-align:initial')
-			var panelBody =tree.panel.getElementsByClassName('panelBodyId')[0];
+
+			tree.panel.setAttribute('style', 'width:165px;margin: 0 auto;cursor:pointer;white-space:normal;z-index:5;text-align:initial')
+			var panelBody = tree.panel.getElementsByClassName('panelBodyId')[0];
 			if (tree.isString) {
 				tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.desc
 			}
 			else {
-				tree.panel.getElementsByClassName('subjClassId')[0].innerHTML = tree.subject + ' '+tree.classId
-				panelBody.setAttribute('style','line-height: 14px;white-space:nowrap')
-				if (tree.dataStatus==macros.DATASTATUS_DONE) {
+				tree.panel.getElementsByClassName('subjClassId')[0].innerHTML = tree.subject + ' ' + tree.classId
+				panelBody.setAttribute('style', 'line-height: 14px;white-space:nowrap')
+				if (tree.dataStatus == macros.DATASTATUS_DONE) {
 					tree.panel.getElementsByClassName('classTitleId')[0].innerHTML = tree.name
-	
+
 					//this should never happen - all classes have at least [] for crns
 					if (!tree.crns) {
-						console.log('error, no crns found!?',tree,tree.url)
+						console.log('error, no crns found!?', tree, tree.url)
 						panelBody.innerHTML = ''
 					}
 					else {
-						panelBody.innerHTML = tree.crns.length + ' section'+this.getOptionalS(tree.crns.length)+' this term'
+						panelBody.innerHTML = tree.crns.length + ' section' + this.getOptionalS(tree.crns.length) + ' this term'
 					}
 				}
 				else if (tree.dataStatus === macros.DATASTATUS_FAIL) {
@@ -325,17 +325,17 @@ Render.prototype.resetPanel = function(tree,relocate) {
 				}
 				else {
 					panelBody.innerHTML = ''
-	
+
 				}
 			}
 		}
 		else {
-	
+
 			if (!tree.panel) {
 				tree.panel = document.createElement('div');
 				this.container.appendChild(tree.panel);
 			};
-	
+
 			//reset the circle
 			tree.panel.style.backgroundColor = this.getColor(tree.prereqs.type);
 			tree.panel.style.width = '35px';
@@ -350,10 +350,10 @@ Render.prototype.resetPanel = function(tree,relocate) {
 	if (relocate) {
 
 		tree.panel.style.position = 'absolute';
-		tree.panel.style.top =  (tree.y - tree.height/2 ) + 'px';
-		var left = tree.x - tree.width/2 + this.container.scrollLeft ;
+		tree.panel.style.top = (tree.y - tree.height / 2) + 'px';
+		var left = tree.x - tree.width / 2 + this.container.scrollLeft;
 		tree.panel.style.left = left + 'px';
-		if (left<0) {
+		if (left < 0) {
 			console.log('errer yo')
 		};
 	};
@@ -361,7 +361,7 @@ Render.prototype.resetPanel = function(tree,relocate) {
 
 	//calculate the z Index
 	//z index is 999 if mouse if over element, else calculate
-	tree.panel.onmouseover = function (event) {
+	tree.panel.onmouseover = function(event) {
 		if (tree.isExpanded) {
 			tree.panel.style.zIndex = '1500';
 		}
@@ -370,17 +370,17 @@ Render.prototype.resetPanel = function(tree,relocate) {
 		}
 	}.bind(this);
 
-	tree.panel.onmouseout = function () {
+	tree.panel.onmouseout = function() {
 		if (tree.isExpanded) {
 			return;
 		};
 
 
-		if (tree.coreqIndex===undefined) {
+		if (tree.coreqIndex === undefined) {
 			tree.panel.style.zIndex = '100'
 		}
 		else {
-			tree.panel.style.zIndex = parseInt(tree.lowestParent.panel.style.zIndex)-tree.coreqIndex-1;
+			tree.panel.style.zIndex = parseInt(tree.lowestParent.panel.style.zIndex) - tree.coreqIndex - 1;
 		}
 	}.bind(this)
 
@@ -393,14 +393,14 @@ Render.prototype.addLines = function(tree) {
 		this.calculateLine(tree);
 	}
 
-	tree.prereqs.values.forEach(function (subTree) {
+	tree.prereqs.values.forEach(function(subTree) {
 		this.addLines(subTree);
 	}.bind(this))
 }
 
 //this is called before the loading starts
 Render.prototype.clearContainer = function() {
-	
+
 	homepage.removeHomepage()
 
 	//remove everything in the container for a new tree
@@ -420,9 +420,9 @@ Render.prototype.hideSpinner = function() {
 
 
 Render.prototype.go = function(tree) {
-	
+
 	this.hideSpinner();
-	
+
 	//use document.body instead of this.container because this.container will add double padding to the left...
 	document.body.style.height = '';
 	document.body.style.width = '';
@@ -430,13 +430,13 @@ Render.prototype.go = function(tree) {
 	//attempt to reset the scroll still need to add the offset when calculating the panel positon from the filler
 	document.body.scrollTop = 0
 	document.body.scrollLeft = 0
-	this.container.scrollLeft=0
-	this.container.scrollTop=0
+	this.container.scrollLeft = 0
+	this.container.scrollTop = 0
 
 	this.tree = tree;
-	
-	this.padding.style.height = (this.navBar.offsetHeight+75) + 'px';
-	
+
+	this.padding.style.height = (this.navBar.offsetHeight + 75) + 'px';
+
 	this.container.appendChild(this.padding)
 
 	if (!tree.isClass) {
@@ -457,23 +457,22 @@ Render.prototype.go = function(tree) {
 	// if two giant trees are off screen, pick one and scroll to it
 	// so something is on the screen when the loading finishes
 	// http://localhost/#neu.edu/201630/EECE/4792
-	if (tree.hidden && tree.prereqs.values.length>0 && (tree.prereqs.values.length%2)==0) {
+	if (tree.hidden && tree.prereqs.values.length > 0 && (tree.prereqs.values.length % 2) == 0) {
 
 		//scroll to one of sub trees
-		var x = tree.prereqs.values[parseInt(tree.prereqs.values.length/2)].x
-		window.scrollTo(x-$(window).width()/2 ,document.body.scrollTop);	
+		var x = tree.prereqs.values[parseInt(tree.prereqs.values.length / 2)].x
+		window.scrollTo(x - $(window).width() / 2, document.body.scrollTop);
 	}
 	else {
 		//scroll to the middle of the page, and don't touch the scroll height
-		window.scrollTo(document.body.scrollWidth/2-$(window).width()/2 ,document.body.scrollTop);
+		window.scrollTo(document.body.scrollWidth / 2 - $(window).width() / 2, document.body.scrollTop);
 	}
-	
+
 	$('.holderDiv').remove();
-	
-	
+
+
 };
 
 
-Render.prototype.Render=Render;
+Render.prototype.Render = Render;
 module.exports = new Render();
-

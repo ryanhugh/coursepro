@@ -1,4 +1,3 @@
-
 var urls = require('./tests\\differentCollegeUrls.json')
 var https = require('https');
 var URI = require('urijs')
@@ -8,12 +7,12 @@ var URI = require('urijs')
 // console.log(urls)
 
 
-urls.forEach(function(url){
+urls.forEach(function(url) {
 
 	var urlParsed = new URI(url)
 	var host = urlParsed.hostname()
-	if (urlParsed.port() && urlParsed.port() !=443) {
-		console.log(host,': port not 443',urlParsed.port())
+	if (urlParsed.port() && urlParsed.port() != 443) {
+		console.log(host, ': port not 443', urlParsed.port())
 		return
 	};
 	// console.log(host)
@@ -26,7 +25,7 @@ urls.forEach(function(url){
 			host: host,
 			port: 443,
 			method: 'GET',
-			rejectUnauthorized : false
+			rejectUnauthorized: false
 		};
 		// console.log('trying to send request',options)
 
@@ -38,19 +37,16 @@ urls.forEach(function(url){
 			var cert = res.connection.getPeerCertificate()
 
 			//bad: 
-				 // == to host (prodssb.mscc.edu)
-				 // undefined
-		    console.log(host,':',cert.subject.O);
-		    // console.log(JSON.stringify(cert,null,4))
-			
+			// == to host (prodssb.mscc.edu)
+			// undefined
+			console.log(host, ':', cert.subject.O);
+			// console.log(JSON.stringify(cert,null,4))
+
 		});
 		req.end();
 	}
 	catch (e) {
-		console.log(host,":",'error')
+		console.log(host, ":", 'error')
 	}
 	// process.exit()
 })
-
-
-

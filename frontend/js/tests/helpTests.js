@@ -1,15 +1,15 @@
 'use strict';
 
-function HelpTests () {
-	
+function HelpTests() {
+
 }
 
 
 
 HelpTests.prototype.go = function() {
-	
+
 };
 
 
-HelpTests.prototype.HelpTests=HelpTests;
+HelpTests.prototype.HelpTests = HelpTests;
 module.exports = new HelpTests();

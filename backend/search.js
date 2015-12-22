@@ -12,14 +12,14 @@ function Search() {
 }
 
 
-Search.prototype.search = function(body,callback) {
+Search.prototype.search = function(body, callback) {
 
 	body.value = body.value.toLowerCase()
 
 	//strip all unneeded members, in case give more
 	var lookupTerms = {
-		host:body.host,
-		termId:body.termId
+		host: body.host,
+		termId: body.termId
 	}
 
 	var results = [];
@@ -31,76 +31,73 @@ Search.prototype.search = function(body,callback) {
 	var q = queue()
 
 	//search classes
-	q.defer(function (callback) {
+	q.defer(function(callback) {
 
 		var classLookupData = {
-			host:body.host,
-			termId:body.termId,
-			subject:body.subject
+			host: body.host,
+			termId: body.termId,
+			subject: body.subject
 		}
 
-		classesDB.find(classLookupData,{
-			shouldBeOnlyOne:false,
-			sanatize:false
-		},function (err,classes) {
+		classesDB.find(classLookupData, {
+			shouldBeOnlyOne: false,
+			sanatize: false
+		}, function(err, classes) {
 			if (err) {
 				return callback(err);
 			};
 			allClassesFound = classes;
 
 
-			classes.forEach(function (classData) {
+			classes.forEach(function(classData) {
 
 
 				//search the classes details
-				var stringToSearch = (classData.desc + classData.name +classData.classId + classData.subject)
-				stringToSearch = stringToSearch.replace(/\s+/gi,'').toLowerCase();
+				var stringToSearch = (classData.desc + classData.name + classData.classId + classData.subject)
+				stringToSearch = stringToSearch.replace(/\s+/gi, '').toLowerCase();
 
 				if (_(stringToSearch).includes(body.value)) {
 					results.push(classData);
 				}
 
 			}.bind(this))
-			//
 			callback()
 		}.bind(this));
-		//
 	}.bind(this))
-	//
 
 	var matchingSections = []
 
 	//search sections
-	q.defer(function (callback) {
+	q.defer(function(callback) {
 
 		var sectionLookupData = {
-			host:body.host,
-			termId:body.termId,
-			subject:body.subject
+			host: body.host,
+			termId: body.termId,
+			subject: body.subject
 		}
 
-		sectionsDB.find(sectionLookupData,{
-			shouldBeOnlyOne:false,
-			sanatize:false,
-			skipValidation:true
-		},function (err,sections) {
+		sectionsDB.find(sectionLookupData, {
+			shouldBeOnlyOne: false,
+			sanatize: false,
+			skipValidation: true
+		}, function(err, sections) {
 			if (err) {
 				return callback(err);
 			}
-			sections.forEach(function (section) {
-				
+			sections.forEach(function(section) {
+
 				//crn, profs, where
 				var stringToSearch = [section.crn];
 				if (section.meetings) {
-					section.meetings.forEach(function (meeting) {
+					section.meetings.forEach(function(meeting) {
 						stringToSearch.push(meeting.where);
-						meeting.profs.forEach(function (prof) {
+						meeting.profs.forEach(function(prof) {
 							stringToSearch.push(prof);
 						}.bind(this));
 					}.bind(this));
 				};
 
-				stringToSearch=stringToSearch.join('').replace(/\s+/gi,'').toLowerCase()
+				stringToSearch = stringToSearch.join('').replace(/\s+/gi, '').toLowerCase()
 
 				if (_(stringToSearch).includes(body.value)) {
 					//yay found it
@@ -110,21 +107,20 @@ Search.prototype.search = function(body,callback) {
 			callback()
 		}.bind(this))
 	}.bind(this));
-	//
 
 
 
-	q.awaitAll(function (err) {
+	q.awaitAll(function(err) {
 		if (err) {
 			callback(err);
 		};
 
 
-		allClassesFound.forEach(function (classData) {
-			matchingSections.forEach(function (section) {
+		allClassesFound.forEach(function(classData) {
+			matchingSections.forEach(function(section) {
 
 				//subject compare is not requried
-				if (classData.classId==section.classId && classData.subject === section.subject && _(classData.crns).includes(section.crn)) {
+				if (classData.classId == section.classId && classData.subject === section.subject && _(classData.crns).includes(section.crn)) {
 					if (!_(results).includes(classData)) {
 						results.push(classData);
 					}
@@ -135,34 +131,32 @@ Search.prototype.search = function(body,callback) {
 
 		//sanitize the output
 		var retVal = [];
-		results.forEach(function (classData) {
+		results.forEach(function(classData) {
 			retVal.push(classesDB.removeInternalFields(classData))
 		}.bind(this))
 
 
 
-		callback(null,retVal)
+		callback(null, retVal)
 	}.bind(this))
 }
 
 
 
-
-
 Search.prototype.tests = function() {
 	this.search({
-		host:'neu.edu',
-		termId:'201610',
-		value:'cs4800',
-		subject:'CS'
-	},function (err,results) {
-		console.log('test returnd with:',err,results);
+		host: 'neu.edu',
+		termId: '201610',
+		value: 'cs4800',
+		subject: 'CS'
+	}, function(err, results) {
+		console.log('test returnd with:', err, results);
 	}.bind(this));
 };
 
 
 
-Search.prototype.Search=Search;
+Search.prototype.Search = Search;
 module.exports = new Search();
 
 if (require.main === module) {

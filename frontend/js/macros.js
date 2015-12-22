@@ -3,7 +3,7 @@
 
 //used just to define constance used mostly in treeMgr, also in render.js
 
-function Macros () {
+function Macros() {
 
 
 	//states of trees
@@ -16,8 +16,5 @@ function Macros () {
 
 
 
-
-
-
-Macros.prototype.Macros=Macros;
+Macros.prototype.Macros = Macros;
 module.exports = new Macros();
