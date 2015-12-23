@@ -6,6 +6,11 @@ var database = require('monk')('52.6.184.210/coursepro');
 
 var macros = require('../macros')
 //if getting this.table undefined its BaseDB trying to run something...
+
+
+
+
+
 function BaseDB () {
 
 	this.updateTimer = null;
@@ -54,8 +59,11 @@ BaseDB.prototype.updateDatabase = function(newData,oldData,callback) {
 		newData.updatedByParent=false;
 	};
 
+
+	//note, without the set, the entire row is overriden. with the set newData is copied on top of the old row.
+	//it should be without the $set
 	if (newData._id) {
-		this.table.update({ _id: newData._id }, {$set:newData}, {}, function (err, numReplaced) {
+		this.table.update({ _id: newData._id }, newData, {}, function (err, numReplaced) {
 			if (numReplaced!==1) {
 				console.log('ERROR: updated !==0?',numReplaced,newData);
 			};
