@@ -1,5 +1,4 @@
 'use strict';
-var Datastore = require('nedb');
 var _ = require('lodash');
 var path = require("path");
 var database = require('monk')('52.20.189.150/coursepro_prod');

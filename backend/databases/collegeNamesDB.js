@@ -1,5 +1,4 @@
 'use strict';
-var Datastore = require('nedb');
 var fs = require('fs');
 var _ = require('lodash');
 var assert = require('assert')
