@@ -2,19 +2,16 @@
 var Datastore = require('nedb');
 var _ = require('lodash');
 var path = require("path");
-var database = require('monk')('52.6.184.210/coursepro');
+var database = require('monk')('52.20.189.150/coursepro_prod');
 
 var macros = require('../macros')
-//if getting this.table undefined its BaseDB trying to run something...
-
-
-
 
 
 function BaseDB () {
 
 	this.updateTimer = null;
 
+	//if getting this.table undefined its BaseDB trying to run something...
 	if (this.filename) {
 		this.table = database.get(this.filename);
 	}

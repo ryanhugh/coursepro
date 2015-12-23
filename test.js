@@ -21,7 +21,7 @@ var queue = require("queue-async")
 
 // var MongoClient = require('mongodb').MongoClient;
 
-var db = require('monk')('52.6.184.210/test');
+var db = require('monk')('52.20.189.150/test');
 var test = db.get('test');
 
 // Connection URL 

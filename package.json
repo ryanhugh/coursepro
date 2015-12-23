@@ -21,7 +21,6 @@
     "lodash": "latest",
     "moment": "latest",
     "monk": "^1.0.1",
-    "nedb": "latest",
     "needle": "latest",
     "nodemailer": "latest",
     "nodemailer-smtp-transport": "latest",
