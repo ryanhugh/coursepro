@@ -8,7 +8,7 @@ var BaseDB = require('./baseDB').BaseDB;
 
 
 function CollegeNamesDB () {
-	this.filename = 'collegeNames.db'
+	this.filename = 'collegeNames'
 	BaseDB.prototype.constructor.apply(this,arguments);
 }
 

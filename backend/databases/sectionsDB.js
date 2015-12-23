@@ -3,7 +3,7 @@ var BaseDB = require('./baseDB').BaseDB;
 
 
 function SectionsDB () {
-	this.filename = 'sections.db'
+	this.filename = 'sections'
 	BaseDB.prototype.constructor.apply(this,arguments);
 }
 

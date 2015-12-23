@@ -18,6 +18,39 @@ var dns = require('dns');
 // var title = require('to-title-case');
 var queue = require("queue-async")
 
+
+// var MongoClient = require('mongodb').MongoClient;
+
+var db = require('monk')('52.6.184.210/test');
+var test = db.get('test');
+
+// Connection URL 
+// var url = 'mongodb://52.6.184.210:27017/test';
+// Use connect method to connect to the Server 
+// MongoClient.connect(url, function(err, db) {
+
+
+// var test = db.collection('test');
+
+test.find({},function (err,results) {
+	console.log(err,results)
+	db.close()
+}.bind(this))
+// test.find(function(err, results) {
+// 	console.log(err, results)
+
+// 	// db.close();
+// }.bind(this))
+
+
+// console.log();
+
+// assert.equal(null, err);
+// console.log("Connected correctly to server",err,db);
+
+// });
+
+
 // var classesDB = require('./databases/classesDB')
 // var sectionsDB = require('./databases/sectionsDB')
 // var linksDB = require('./databases/linksDB')
@@ -38,41 +71,41 @@ var queue = require("queue-async")
 // 	}])
 
 
-var express = require('express');
-var bodyParser = require('body-parser');
-var request = require('request');
-var fs = require('fs');
-var _ = require('lodash');
-var URI = require('urijs');
-var compress = require('compression');
-var googleAuthLibrary = require('google-auth-library')
-var https = require('https')
-var queue = require('queue-async')
+// var express = require('express');
+// var bodyParser = require('body-parser');
+// var request = require('request');
+// var fs = require('fs');
+// var _ = require('lodash');
+// var URI = require('urijs');
+// var compress = require('compression');
+// var googleAuthLibrary = require('google-auth-library')
+// var https = require('https')
+// var queue = require('queue-async')
 
-//https
-// var q = queue()
-async.parallel([
-	function (callback) {
-		fs.readFile('/etc/coursepro/privateKey.pem', 'utf8', function (err,data) {
-			if (err) {
-				console.log('ERROR reading private key for https',err);
-				return callback(err);
-			}
-			return callback(null,data);
-		});
-	},
-	function (callback) {
-		fs.readFile('/etc/coursepro/publicKey.crt', 'utf8', function (err,data) {
-			if (err) {
-				console.log('ERROR reading public cert for https',err);
-				return callback(err);
-			}
-			return callback(null,data);
-		});
-	}],
-	function (err,results) {
-		console.log(err,results)
-	})
+// //https
+// // var q = queue()
+// async.parallel([
+// 	function (callback) {
+// 		fs.readFile('/etc/coursepro/privateKey.pem', 'utf8', function (err,data) {
+// 			if (err) {
+// 				console.log('ERROR reading private key for https',err);
+// 				return callback(err);
+// 			}
+// 			return callback(null,data);
+// 		});
+// 	},
+// 	function (callback) {
+// 		fs.readFile('/etc/coursepro/publicKey.crt', 'utf8', function (err,data) {
+// 			if (err) {
+// 				console.log('ERROR reading public cert for https',err);
+// 				return callback(err);
+// 			}
+// 			return callback(null,data);
+// 		});
+// 	}],
+// 	function (err,results) {
+// 		console.log(err,results)
+// 	})
 
 
 // var https = require('https');
@@ -135,7 +168,6 @@ async.parallel([
 
 // a = new h
 // console.log(a())
-
 
 
 
@@ -344,13 +376,10 @@ async.parallel([
 //   console.log(body);
 // });
 
-  // needle.post('https://httpbin.org/post',a,{}, function (error, response, body) {
-  // needle.post('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec',a,{}, function (error, response, body) {
-  //   console.log('HERE',error,body)
-  // }.bind(this));
-
-
-
+// needle.post('https://httpbin.org/post',a,{}, function (error, response, body) {
+// needle.post('https://ssb.cc.binghamton.edu/banner/bwckschd.p_get_crse_unsec',a,{}, function (error, response, body) {
+//   console.log('HERE',error,body)
+// }.bind(this));
 
 
 
@@ -377,7 +406,6 @@ async.parallel([
 //     data=data.match(/Registrant:\n[\w\d \t]+/i);
 //     data = data[0].replace('Registrant:','').trim()
 //     console.log(data)
-
 
 
 
@@ -413,7 +441,6 @@ async.parallel([
 // whois('neu.edu', function(err, result){
 //     console.log(JSON.stringify(result, null, 2))
 // })
-
 
 
 
@@ -503,12 +530,8 @@ async.parallel([
 
 
 
-
-
-
-
 // fs.readFile('classes.db.sample.json','utf8',function (err,body) {
-	
+
 // 	console.log('hi',JSON.parse(body).length)
 // })
 // fs.readFile('tests/EllucianCatalogParser/1.html','utf8',function (err,body) {
@@ -531,8 +554,6 @@ async.parallel([
 
 
 // 		// console.log(domutils.getText(a))
-
-
 
 
 

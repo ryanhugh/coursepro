@@ -3,7 +3,7 @@ var BaseDB = require('./baseDB').BaseDB;
 
 
 function LinksDB () {
-	this.filename = 'links.db'
+	this.filename = 'links'
 	BaseDB.prototype.constructor.apply(this,arguments);
 }
 

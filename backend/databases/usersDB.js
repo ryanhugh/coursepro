@@ -12,7 +12,7 @@ var OAuth2 = new googleAuth.OAuth2()
 
 
 function UsersDB() {
-	this.filename = 'users.db'
+	this.filename = 'users'
 	this.shouldAutoUpdate = false;
 	this.peopleCanRegister = true;
 	BaseDB.prototype.constructor.apply(this, arguments);

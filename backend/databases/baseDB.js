@@ -2,21 +2,16 @@
 var Datastore = require('nedb');
 var _ = require('lodash');
 var path = require("path");
+var database = require('monk')('52.6.184.210/coursepro');
 
 var macros = require('../macros')
-//if getting this.db undefined its BaseDB trying to run something...
+//if getting this.table undefined its BaseDB trying to run something...
 function BaseDB () {
 
 	this.updateTimer = null;
 
 	if (this.filename) {
-
-		//if the cwd is a folder in the root of the project, move it up to the root of the prject
-		//cwd management moved into macros.js
-		var filePath = path.join(process.cwd(),'backend','databases',this.filename)
-
-		this.db = new Datastore({ filename:filePath , autoload: true });
-
+		this.table = database.get(this.filename);
 	}
 }
 
@@ -60,7 +55,7 @@ BaseDB.prototype.updateDatabase = function(newData,oldData,callback) {
 	};
 
 	if (newData._id) {
-		this.db.update({ _id: newData._id }, {$set:newData}, {}, function (err, numReplaced) {
+		this.table.update({ _id: newData._id }, {$set:newData}, {}, function (err, numReplaced) {
 			if (numReplaced!==1) {
 				console.log('ERROR: updated !==0?',numReplaced,newData);
 			};
@@ -68,7 +63,7 @@ BaseDB.prototype.updateDatabase = function(newData,oldData,callback) {
 		}.bind(this));
 	}
 	else {
-		this.db.insert(newData,function (err,newDoc) {
+		this.table.insert(newData,function (err,newDoc) {
 			if (err) {
 				console.log('error, nedb inserting error',err);
 				return callback(err);
@@ -99,7 +94,7 @@ BaseDB.prototype.removeInternalFields = function(doc) {
 // interval
 BaseDB.prototype.onInterval = function() {
 	console.log('UPDATING ALL DATA FOR '+this.constructor.name)
-	this.db.find({}, function (err,docs) {
+	this.table.find({}, function (err,docs) {
 		docs.forEach(function(doc){
 			
 			// THIS WILL NOT WORK, SOME DOCS DONT HAVE URLS
@@ -164,7 +159,7 @@ BaseDB.prototype.find = function(lookupValues,config,callback) {
 		return callback('invalid search')
 	};
 
-	this.db.find(lookupValues,function (err,docs) {
+	this.table.find(lookupValues,function (err,docs) {
 		if (err) {
 			console.log('NEDB error in section db, ',err,lookupValues);
 			return callback(err);

@@ -210,24 +210,26 @@ PageDataMgr.prototype.main = function() {
 	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched',function (){
 	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201530&subj_in=MATH&crse_in=1252&schd_in=%25',function () {
 
-	this.createFromURL('https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched', function() {
-		console.log('all done!! sju')
-	}.bind(this))
+	// this.createFromURL('https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched', function() {
+	// 	console.log('all done!! sju')
+	// }.bind(this))
 
-	this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched', function() {
-		console.log('all done!! neu')
-	}.bind(this))
+	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched', function() {
+	// 	console.log('all done!! neu')
+	// }.bind(this))
 
 
-	this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched', function() {
-		console.log('all done!! swarthmore')
-	}.bind(this))
+	// this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched', function() {
+	// 	console.log('all done!! swarthmore')
+	// }.bind(this))
 
 
 
 	// this.createFromURL('https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_course_detail?cat_term_in=201504&subj_code_in=MATH&crse_numb_in=027',function () {
-	// var pageData = this.create({dbData:{url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_course_detail?cat_term_in=201504&subj_code_in=MATH&crse_numb_in=027',termId:'201504',subject:'MATH'}});
-	// pageDataMgr.go(pageData,function () {
+	var pageData = this.create({dbData:{url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_course_detail?cat_term_in=201504&subj_code_in=MATH&crse_numb_in=027',termId:'201504',subject:'MATH'}});
+	pageDataMgr.go(pageData,function () {
+		console.log('done!!')
+	})
 
 
 
