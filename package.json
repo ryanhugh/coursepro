@@ -20,6 +20,7 @@
     "htmlparser2": "latest",
     "lodash": "latest",
     "moment": "latest",
+    "mongodb": "^1.4.39",
     "monk": "^1.0.1",
     "needle": "latest",
     "nodemailer": "latest",
