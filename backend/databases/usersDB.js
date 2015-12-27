@@ -3,6 +3,8 @@ var _ = require('lodash')
 var assert = require('assert');
 var async = require('async');
 var googleAuthLibrary = require('google-auth-library')
+var queue = require('queue-async')
+var diff = require('deep-diff').diff
 
 var BaseDB = require('./baseDB').BaseDB;
 var emailMgr = require('../emailMgr');
@@ -12,19 +14,59 @@ var OAuth2 = new googleAuth.OAuth2()
 
 
 function UsersDB() {
-	this.filename = 'users'
+
+	//cache of user data
+	//maps class._id to users
+	//and section._id to users
+	this.classWatchCache = {
+		classes: {},
+		sections: {},
+		lastUpdateTime: 0,
+		timeout: 300000 // 5 min
+	};
+
+
+	this.tableName = 'users'
 	this.shouldAutoUpdate = false;
 	this.peopleCanRegister = true;
 	BaseDB.prototype.constructor.apply(this, arguments);
+
+	this.usersSchema = {
+		ips: [],
+		email: '',
+		subscriptions: {},
+		authenticated: false,
+		watching: {
+			// watchCount: {},
+			classes: [],
+			sections: [],
+		}
+	}
+
+	this.ensureDefaultSchema();
 }
 
 
 // things to store now:
-// userId (the long client generated string)
-// ips = [] #going to be used for neat location graphs and automatically determining which college people go to
-// emails (if they registered for updates)
-// subscriptions = {everything:true,specificColleges:['neu.edu','neu.edu/cps','sju.edu'],somethingelse:true}
+// email (required)
+//loginKey = string, required when authorized = true
+// authorized = true or false/undefined, determins if a user has proven to be this user
+//googleId = string, present when authorized = true
+
+// ips = [] #going to be used for neat location graphs and automatically determining which college people go to maybe
+// subscriptions = {everything:true,specificColleges:['neu.edu','neu.edu/cps','sju.edu'],somethingelse:true}. at min it is {}
 //right now the only one that is used is [everything]
+
+
+//watching = {
+// this does not go down on unwatch
+// watchCount : {
+// termId:int
+// }
+// classes:[_ids of classes]
+// sections:[_ids of sections]
+// } (at min {})
+
 
 //later when we have account management we can have option to manage/delete/add emails
 
@@ -34,7 +76,7 @@ UsersDB.prototype = Object.create(BaseDB.prototype);
 UsersDB.prototype.constructor = UsersDB;
 
 
-UsersDB.prototype.isValidLookupValues = function(lookupValues) {
+UsersDB.prototype.isValidLookupValues = function (lookupValues) {
 
 	//all of these are unique for each row
 	//never send the googleId to the client and don't allow external lookups with googleId (from other server code is ok)
@@ -47,18 +89,37 @@ UsersDB.prototype.isValidLookupValues = function(lookupValues) {
 	}
 };
 
-UsersDB.prototype.createBaseUserData = function(email, ip) {
-	return {
-		ips: [ip],
-		email: email,
-		subscriptions: {},
-		authenticated: false
-	}
+UsersDB.prototype.createBaseUserData = function () {
+	return _.cloneDeep(this.usersSchema);
 };
+
+UsersDB.prototype.ensureDefaultSchema = function () {
+	return;
+	this.find({}, {
+		shouldBeOnlyOne: false,
+		skipValidation: true
+	}, function (err, users) {
+		if (err) {
+			console.log('error!!!?!', err)
+			return
+		}
+		users.forEach(function (user) {
+			//make this recursive!!!
+			for (var attrName in this.usersSchema) {
+
+			}
+
+
+
+		}.bind(this))
+	}.bind(this))
+};
+
+
 
 //looks up user in database, and ensures that user is same authentication level as the found user in db
 //also changes the default to only look up one user, unlike the BaseDB
-UsersDB.prototype.find = function(userData, config, callback) {
+UsersDB.prototype.find = function (userData, config, callback) {
 	if (!config) {
 		config = {}
 	};
@@ -83,7 +144,7 @@ UsersDB.prototype.find = function(userData, config, callback) {
 
 
 	//check for at least one of them is handled by this call
-	BaseDB.prototype.find.call(this, lookupValues, config, function(err, doc) {
+	BaseDB.prototype.find.call(this, lookupValues, config, function (err, doc) {
 		if (err) {
 			console.log('lookupUser error on this.find', err);
 			return callback(err)
@@ -111,14 +172,14 @@ UsersDB.prototype.find = function(userData, config, callback) {
 	}.bind(this));
 };
 
-UsersDB.prototype.subscribeForEverything = function(userData, callback) {
+UsersDB.prototype.subscribeForEverything = function (userData, callback) {
 
 	if (!userData.email || !userData.ip) {
 		console.log('given invalid userData ', userData);
 		return callback('invalid user data');
 	}
 
-	this.find(userData, {}, function(err, doc) {
+	this.find(userData, {}, function (err, doc) {
 		if (err) {
 			console.log('subscribeForEverything error on this.find', err);
 			return callback(err)
@@ -145,7 +206,10 @@ UsersDB.prototype.subscribeForEverything = function(userData, callback) {
 			//insert new user to db
 			sendThanksEmail = true;
 
-			doc = this.createBaseUserData(userData.email, userData.ip)
+			doc = this.createBaseUserData()
+
+			doc.ips.push(userData.ip)
+			doc.email = userData.email
 			doc.subscriptions.everything = true;
 
 		}
@@ -154,7 +218,7 @@ UsersDB.prototype.subscribeForEverything = function(userData, callback) {
 			emailMgr.sendThanksForRegistering(userData.email);
 		}
 
-		this.updateDatabase(doc, originalDoc, function(err, newDoc) {
+		this.updateDatabase(doc, originalDoc, function (err, newDoc) {
 			if (err) {
 				console.log('wtf error', err);
 				return callback(err);
@@ -167,16 +231,16 @@ UsersDB.prototype.subscribeForEverything = function(userData, callback) {
 }
 
 
-UsersDB.prototype.unsubscribe = function(userData, callback) {
+UsersDB.prototype.unsubscribe = function (userData, callback) {
 	if (!userData.loginKey) {
 		return callback('unsubscribe without loginKey is not implemented!');
 	}
 
 	this.find({
 		loginKey: userData.loginKey
-	}, {}, function(err, userDBData) {
+	}, {}, function (err, userDBData) {
 		if (err) {
-			console.log('nedb error couldnt find user with id ', userData.userId, err);
+			console.log('nedb error couldnt find user with id ', userData, err);
 			return callback(err);
 		}
 
@@ -192,7 +256,7 @@ UsersDB.prototype.unsubscribe = function(userData, callback) {
 		//turn off the subscriptions, but don't remove the email
 		userDBData.subscriptions.everything = false;
 
-		this.updateDatabase(userDBData, originalUserDBData, function(err, newDoc) {
+		this.updateDatabase(userDBData, originalUserDBData, function (err, newDoc) {
 			if (err) {
 				console.log('update db error', err);
 				return callback(err);
@@ -204,7 +268,7 @@ UsersDB.prototype.unsubscribe = function(userData, callback) {
 	}.bind(this))
 }
 
-UsersDB.prototype.randomString = function(length) {
+UsersDB.prototype.randomString = function (length) {
 	if (!length) {
 		length = 400;
 	}
@@ -221,9 +285,9 @@ UsersDB.prototype.randomString = function(length) {
 
 
 
-UsersDB.prototype.authenticateUser = function(idToken, ip, callback) {
+UsersDB.prototype.authenticateUser = function (idToken, ip, callback) {
 
-	OAuth2.verifyIdToken(idToken, null, function(err, results) {
+	OAuth2.verifyIdToken(idToken, null, function (err, results) {
 		if (err) {
 			console.log('Warning, error when verifiying Google Id Token', err, results);
 			callback('invalid id token')
@@ -232,19 +296,19 @@ UsersDB.prototype.authenticateUser = function(idToken, ip, callback) {
 
 		var payload = results.getPayload()
 
-		console.log('google login success', payload, results.getEnvelope());
+		console.log('google login success', payload);
 
 		//payload.sub is the id of the google user, and returns the same thing as profile.getId() client side
 		//in the db this is stored as googleId
 
 		async.waterfall([
-				function(callback) {
+				function (callback) {
 
 					//lookup by googleId, and if not found, lookup by email 
 
 					this.find({
 						googleId: payload.sub
-					}, {}, function(err, doc) {
+					}, {}, function (err, doc) {
 						if (err || doc) {
 							return callback(err, doc);
 						}
@@ -255,7 +319,7 @@ UsersDB.prototype.authenticateUser = function(idToken, ip, callback) {
 							this.find({
 									email: payload.email
 								}, {},
-								function(err, doc) {
+								function (err, doc) {
 									return callback(err, doc);
 								}.bind(this)
 							)
@@ -265,7 +329,7 @@ UsersDB.prototype.authenticateUser = function(idToken, ip, callback) {
 					}.bind(this))
 				}.bind(this)
 			],
-			function(err, doc) {
+			function (err, doc) {
 				if (err) {
 					console.log('ERROR userdb error when looking up google id', err, doc);
 					return callback('error yo')
@@ -331,6 +395,240 @@ UsersDB.prototype.authenticateUser = function(idToken, ip, callback) {
 	}.bind(this));
 }
 
+UsersDB.prototype.getUserWatchData = function (callback) {
+
+	var currTime = new Date().getTime()
+
+	//if class list is too old
+	if (this.classWatchCache.lastUpdateTime + this.classWatchCache.timeout < currTime) {
+		this.find({}, {
+			skipValidation: true,
+			shouldBeOnlyOne: false
+		}, function (err, results) {
+			if (err) {
+				return callback(err);
+			};
+			this.classWatchCache.classes = {};
+			this.classWatchCache.sections = {};
+
+			results.forEach(function (user) {
+				user.watching.classes.forEach(function (_id) {
+
+					//create the list if it dosent exist
+					if (!this.classWatchCache.classes[_id]) {
+						this.classWatchCache.classes[_id] = []
+					}
+
+					//add this user to the list
+					this.classWatchCache.classes[_id].push(user)
+				}.bind(this))
+
+				user.watching.sections.forEach(function (_id) {
+
+
+					if (!this.classWatchCache.sections[_id]) {
+						this.classWatchCache.sections[_id] = []
+					}
+
+					//add this user to the list
+					this.classWatchCache.sections[_id].push(user)
+
+				}.bind(this))
+
+			}.bind(this))
+
+			this.classWatchCache.lastUpdateTime = currTime
+			callback(null, this.classWatchCache)
+		}.bind(this))
+	}
+	else {
+		console.log('cache is updated')
+		callback(null, this.classWatchCache)
+	}
+};
+
+//users id map is this.classWatchCache.classes or this.classWatchCache.sections
+UsersDB.prototype.rowUpdatedTrigger = function (oldData, newData, idUsersMap, callback) {
+
+	var oldDataClone = _.cloneDeep(oldData);
+	var newDataClone = _.cloneDeep(newData);
+
+	['lastUpdateTime', 'deps', 'prettyUrl', 'url'].forEach(function (ignoreAttribute) {
+		oldDataClone[ignoreAttribute] = null;
+		newDataClone[ignoreAttribute] = null;
+	}.bind(this))
+
+	var differences = diff(oldDataClone, newDataClone);
+
+	// console.log('diff here:', differences, newDataClone, oldDataClone)
+	// console.trace()
+
+	if (!differences) {
+		console.log('nothing changed except for ignore stuff')
+		return callback()
+	};
+
+	var emails = [];
+
+
+	if (idUsersMap[newDataClone._id]) {
+		idUsersMap[newDataClone._id].forEach(function (user) {
+			console.log('class ', newDataClone._id, 'was updated and ', user.email, 'was watching!');
+			emails.push(user.email)
+		}.bind(this))
+	}
+	return callback(null, emails, differences);
+};
+
+UsersDB.prototype.classUpdated = function (oldData, newData, callback) {
+	if (!callback) {
+		callback = function () {}
+	};
+
+
+	this.getUserWatchData(function (err, watchCache) {
+		if (err) {
+			return callback(err)
+		}
+
+		this.rowUpdatedTrigger(oldData, newData, watchCache.classes, function (err, emails, diff) {
+			if (err) {
+				return callback(err)
+			}
+			if (!emails) {
+				return callback();
+			};
+
+			//calculate email content here
+			emailMgr.sendClassUpdatedEmail(emails, oldData, newData, diff);
+
+			return callback()
+
+
+		}.bind(this))
+	}.bind(this));
+}
+
+
+UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
+	if (!callback) {
+		callback = function () {}
+	};
+	// console.log('jflkdasjfsklj')
+
+
+	this.getUserWatchData(function (err, watchCache) {
+		if (err) {
+			return callback(err)
+		}
+
+		this.rowUpdatedTrigger(oldData, newData, watchCache.sections, function (err, emails, diff) {
+			if (err) {
+				console.log(err)
+				return callback(err)
+			}
+			if (!emails) {
+				console.log('no emails given!')
+				return callback();
+			};
+
+			console.log('section ', dbData._id, 'was updated and ', user.email, 'was watching!');
+			//calculate email content here
+			emailMgr.sendSectionUpdatedEmail(emails, oldData, newData, diff);
+
+			return callback()
+
+
+		}.bind(this))
+
+	}.bind(this));
+}
+
+
+UsersDB.prototype.addClassToWatchList = function (postData, callback) {
+	if (!postData.loginKey || !postData.classMongoId) {
+		return callback('need key and mongoId as a json')
+	}
+
+	this.find({
+			loginKey: postData.loginKey
+		}, {},
+		function (err, user) {
+			if (err) {
+				return callback(err)
+			}
+			if (!user) {
+				return callback('no user found')
+			};
+
+			var originalDoc = _.cloneDeep(user);
+
+			if (_(user.watching.classes).includes(postData.classMongoId)) {
+				console.log('user ', user.email, 'is already watching class', postData.classMongoId)
+				return callback()
+			}
+			else if (user.watching.classes.length>10) {
+				console.log("user",user.email,'is already watching to many classes')
+				return callback('user is already watching to many classes')
+			}
+			else {
+				user.watching.classes.push(postData.classMongoId)
+
+				console.log('adding class', postData.classMongoId, ' to ', user.email, 'watch list')
+
+				this.updateDatabase(user, originalDoc, function (err, newDoc) {
+					return callback(err)
+				}.bind(this))
+			}
+		}.bind(this))
+};
+
+
+
+UsersDB.prototype.loadTestData = function (callback) {
+
+	this.table.insert({
+			"_id": "567c58302d8576e482f04e82",
+			"ips": ["::1"],
+			"email": "rysquash@gmail.com",
+			"subscriptions": {},
+			"authenticated": true,
+			"watching": {
+				"watchCount": {},
+				"classes": ['567ae73c817bd7005fd101ce', 'hiii'],
+				"sections": ['567ae748817bd7005fd103a5', 'hiii']
+			},
+			"loginKey": "YTWi",
+			"loginKeyCreationDate": 1450989615999,
+			"name": "Ryan H",
+			"googleId": "42",
+			"updatedByParent": false
+		},
+		function (err, newDoc) {
+			callback(err);
+		}.bind(this))
+};
+
+//this function is not ran! yet
+UsersDB.prototype.tests = function (callback) {
+	return callback()
+		// console.log('running the thng thdfasjfklj')
+
+
+	// this.find({}, {
+	// 	shouldBeOnlyOne: false,
+	// 	skipValidation: true
+	// }, function (err, results) {
+	// 	console.log(results)
+	// }.bind(this))
+
+	// this.getUserWatchData(function (err, data) {
+	// 	console.log(err, JSON.stringify(data))
+	// 	callback()
+	// 		// this.close()
+	// }.bind(this))
+
+};
 
 
 UsersDB.prototype.UsersDB = UsersDB;
@@ -338,5 +636,5 @@ module.exports = new UsersDB();
 
 
 if (require.main === module) {
-	module.exports.tests();
+	// module.exports.tests();
 }

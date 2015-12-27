@@ -2,6 +2,10 @@
 
 need to implement an unsubscribe feature, create a subscriptionsKey that is emailed to user and allows control over subscriptions settings
 
+disconnect plugin blocking log in with google button
+null ip?
+
+on startup, loop through users data and make sure each row is at minimum the default data
 
 lift up the boxes
 http://localhost/#neu.edu/201630/CS/5310

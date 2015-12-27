@@ -7,7 +7,7 @@ var BaseDB = require('./baseDB').BaseDB;
 
 
 function CollegeNamesDB () {
-	this.filename = 'collegeNames'
+	this.tableName = 'collegeNames'
 	BaseDB.prototype.constructor.apply(this,arguments);
 }
 
@@ -110,6 +110,7 @@ CollegeNamesDB.prototype.isValidLookupValues = function(lookupValues) {
 
 
 CollegeNamesDB.prototype.tests = function() {
+	BaseDB.prototype.tests.call(this);
 	var a = this.getStaticHost('neu.edu','Law othertext')
 	assert.equal(a.host,'neu.edu/law')
 	assert.equal(a.text,'othertext')

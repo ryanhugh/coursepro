@@ -361,8 +361,6 @@ BaseParser.prototype.tests = function () {
 
 				var pageData = new PageData({dbData:{url:fileJSON.url}});
 				this.parseDOM(pageData,dom);
-				console.log("HERE",JSON.stringify(pageData,null,4));
-
 			}
 
 		}.bind(this));

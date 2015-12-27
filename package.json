@@ -5,6 +5,7 @@
     "browserify": "latest",
     "clone": "latest",
     "compression": "latest",
+    "deep-diff": "^0.3.3",
     "domutils": "latest",
     "express": "latest",
     "glob": "latest",

@@ -1,21 +1,31 @@
 'use strict';
 var _ = require('lodash');
 var path = require("path");
-var database = require('monk')('52.20.189.150/coursepro_prod');
+var monk = require('monk')
 
 var macros = require('../macros')
 
+var DATABASEURL_PROD = '52.20.189.150/coursepro_prod'
+var DATABASEURL_DEV = '52.20.189.150/coursepro_dev'
+
+//when one is changed the other must be changed too
+var database = monk(DATABASEURL_PROD);
+var databaseUrl = DATABASEURL_PROD;
 
 function BaseDB () {
 
 	this.updateTimer = null;
 
-	//if getting this.table undefined its BaseDB trying to run something...
-	if (this.filename) {
-		this.table = database.get(this.filename);
-	}
+	this.loadTable();
 }
 
+BaseDB.prototype.loadTable = function() {
+
+	//if getting this.table undefined its BaseDB trying to run something...
+	if (this.tableName) {
+		this.table = database.get(this.tableName);
+	}	
+};
 
 
 BaseDB.prototype.shouldUpdateDB = function(newData,oldData) {
@@ -28,6 +38,13 @@ BaseDB.prototype.shouldUpdateDB = function(newData,oldData) {
 		//check difference for all other attributes
 		if (!_.isEqual(newData[attrName], oldData[attrName])) {
 			console.log('updating db because of change in',attrName)
+
+			//this should not happen
+			if (attrName=='_id' && newData[attrName]!=oldData[attrName]) {
+				console.log('id changed on data?',newData,oldData)
+				console.trace()
+				newData[attrName] = oldData[attrName]
+			};
 			return true;
 		};
 	}
@@ -59,7 +76,7 @@ BaseDB.prototype.updateDatabase = function(newData,oldData,callback) {
 	//note, without the set, the entire row is overriden. with the set newData is copied on top of the old row.
 	//it should be without the $set
 	if (newData._id) {
-		this.table.update({ _id: newData._id }, newData, {}, function (err, numReplaced) {
+		this.table.update({ _id: newData._id }, _.cloneDeep(newData), {}, function (err, numReplaced) {
 			if (numReplaced!==1) {
 				console.log('ERROR: updated !==0?',numReplaced,newData);
 			};
@@ -67,7 +84,7 @@ BaseDB.prototype.updateDatabase = function(newData,oldData,callback) {
 		}.bind(this));
 	}
 	else {
-		this.table.insert(newData,function (err,newDoc) {
+		this.table.insert(_.cloneDeep(newData),function (err,newDoc) {
 			if (err) {
 				console.log('error, nedb inserting error',err);
 				return callback(err);
@@ -169,6 +186,11 @@ BaseDB.prototype.find = function(lookupValues,config,callback) {
 			return callback(err);
 		}
 
+		//change to _id to a string (monk returns an object that behaves oddly with _.cloneDeep)
+		docs.forEach(function (doc) {
+			doc._id = doc._id.toString()
+		}.bind(this))
+
 		//db can have a couple values static
 		docs = docs.concat(this.getStaticValues(lookupValues,config))
 
@@ -206,15 +228,39 @@ BaseDB.prototype.find = function(lookupValues,config,callback) {
 };
 
 
+BaseDB.prototype.close = function() {
+	database.close()
+};
 
 
+BaseDB.prototype.loadTestData = function(callback) {
+	console.log('ERROR loadTestData called on ',this.constructor.name,' which did not override basedb!');
+	return callback()
+};
+
+BaseDB.prototype.switchToTestsDB = function(callback) {
+	if (databaseUrl!=DATABASEURL_DEV) {
+		database.close()
+		database = monk(DATABASEURL_DEV);
+		databaseUrl = DATABASEURL_DEV
+	}
+
+	//load dev table and clear contents
+	this.loadTable()
+	this.table.drop(function (err) {
+		if (err && err.errmsg!='ns not found') {
+			return callback(err)
+		}
+		else {
+			return callback()
+		}
+	}.bind(this))
+};
 
 
+BaseDB.prototype.tests = function(callback) {
+	return callback()
 
-
-BaseDB.prototype.tests = function() {
-	
-	
 };
 
 

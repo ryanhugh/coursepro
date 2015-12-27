@@ -3,7 +3,7 @@ var BaseDB = require('./baseDB').BaseDB;
 
 
 function TermsDB () {
-	this.filename = 'terms'
+	this.tableName = 'terms'
 	BaseDB.prototype.constructor.apply(this,arguments);
 }
 

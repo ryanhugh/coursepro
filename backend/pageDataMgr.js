@@ -161,11 +161,6 @@ PageDataMgr.prototype.finish = function(pageData, callback) {
 			}
 			pageData.dbData = newdbData;
 
-			//send email here
-			// if (pageData.database.peopleCanRegister) {
-			// 	emailMgr.sendEmails(pageData,pageData.parser.getEmailData(pageData));
-			// }
-
 			callback(null, pageData);
 		});
 

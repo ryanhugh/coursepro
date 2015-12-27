@@ -59,7 +59,7 @@ function logData(req, info) {
 
 
 //catch errors with invalid requests
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
 	if (err) {
 		logData(req, {
 			msg: {
@@ -79,7 +79,7 @@ app.use(function(err, req, res, next) {
 
 
 //if no user agent present, drop request
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 
 	var ua = req.get('User-Agent');
 	if (!ua) {
@@ -99,7 +99,7 @@ app.use(function(req, res, next) {
 
 //if you didnt go to courespro.io, redirect to coursepro.io (going direcly to ip, etc)
 //this catches lots of robots scanning all ip addresses
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	//send redirect request
 	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost']).includes(req.hostname)) {
 
@@ -117,7 +117,7 @@ app.use(function(req, res, next) {
 
 
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	logData(req);
 	next()
 });
@@ -125,7 +125,7 @@ app.use(function(req, res, next) {
 
 
 // add cache forever to external js libraries
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	if (_(req.path).startsWith('/js/external') || _(req.path).startsWith('/fonts') || _(req.path).startsWith('/css') || _(req.path).startsWith('/images')) {
 		// console.log('setting to 1 yr')
 		res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year (in seconds)
@@ -139,9 +139,9 @@ app.use(function(req, res, next) {
 
 
 // add cache forever to external js libraries
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	if (req.protocol == 'http') {
-		res.redirect('https://coursepro.io');
+		res.redirect('https://coursepro.io' + req.url);
 		return;
 	}
 	else {
@@ -150,11 +150,11 @@ app.use(function(req, res, next) {
 })
 
 
-app.post('/listColleges', function(req, res) {
+app.post('/listColleges', function (req, res) {
 	collegeNamesDB.find({}, {
 		shouldBeOnlyOne: false,
 		sanitize: true
-	}, function(err, names) {
+	}, function (err, names) {
 		if (err) {
 			console.log('error college names failed', req.url, err);
 			res.status(500);
@@ -169,7 +169,7 @@ app.post('/listColleges', function(req, res) {
 
 
 
-app.post('/listTerms', function(req, res) {
+app.post('/listTerms', function (req, res) {
 
 	if (!req.body.host) {
 		console.log('error, no host given body:');
@@ -183,7 +183,7 @@ app.post('/listTerms', function(req, res) {
 	}, {
 		shouldBeOnlyOne: false,
 		sanitize: true
-	}, function(err, terms) {
+	}, function (err, terms) {
 		if (err) {
 			res.status(500);
 			res.send('internal server error :/')
@@ -194,7 +194,7 @@ app.post('/listTerms', function(req, res) {
 	})
 })
 
-app.post('/listSubjects', function(req, res) {
+app.post('/listSubjects', function (req, res) {
 
 	if (!req.body.host || !req.body.termId) {
 		console.log('error, no host or termId given body:');
@@ -211,7 +211,7 @@ app.post('/listSubjects', function(req, res) {
 	}, {
 		shouldBeOnlyOne: false,
 		sanitize: true
-	}, function(err, subjects) {
+	}, function (err, subjects) {
 		if (err) {
 			console.log(err)
 			res.status(500);
@@ -224,7 +224,7 @@ app.post('/listSubjects', function(req, res) {
 })
 
 
-app.post('/listClasses', function(req, res) {
+app.post('/listClasses', function (req, res) {
 
 	if (!req.body.host || !req.body.termId || !req.body.subject) {
 		console.log('error, no host or termId or subject given body:');
@@ -249,7 +249,7 @@ app.post('/listClasses', function(req, res) {
 	classesDB.find(lookup, {
 		shouldBeOnlyOne: false,
 		sanitize: true
-	}, function(err, classes) {
+	}, function (err, classes) {
 		if (err) {
 			console.log(err)
 			res.status(500);
@@ -260,7 +260,7 @@ app.post('/listClasses', function(req, res) {
 	})
 })
 
-app.post('/listSections', function(req, res) {
+app.post('/listSections', function (req, res) {
 
 	if (!req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) {
 		console.log('error, no host or termId or subject or classId given body:');
@@ -284,7 +284,7 @@ app.post('/listSections', function(req, res) {
 	sectionsDB.find(lookup, {
 		shouldBeOnlyOne: false,
 		sanitize: true
-	}, function(err, classes) {
+	}, function (err, classes) {
 		if (err) {
 			console.log(err)
 			res.status(500);
@@ -296,7 +296,7 @@ app.post('/listSections', function(req, res) {
 })
 
 
-app.post('/search', function(req, res) {
+app.post('/search', function (req, res) {
 	if (!req.body.value || !req.body.host || !req.body.termId || !req.body.subject) {
 		console.log('error:no search value,host,termid, or subject given');
 		console.log(req.body);
@@ -304,7 +304,7 @@ app.post('/search', function(req, res) {
 		return;
 	}
 
-	search.search(req.body, function(err, results) {
+	search.search(req.body, function (err, results) {
 		if (err) {
 			console.log(err);
 			res.send('{"error":"uh oh"}');
@@ -329,7 +329,7 @@ app.post('/search', function(req, res) {
 })
 
 
-app.post('/spider', function(req, res) {
+app.post('/spider', function (req, res) {
 	if (!_(req.connection.remoteAddress).includes('127.0.0.1') && req.connection.remoteAddress != '::1') {
 		return res.send('404, yo'); // ;)
 	}
@@ -337,7 +337,7 @@ app.post('/spider', function(req, res) {
 	console.log('Spidering ', req.body.url);
 
 
-	pageDataMgr.createFromURL(req.body.url, function() {
+	pageDataMgr.createFromURL(req.body.url, function () {
 		console.log('all done!! sju')
 	}.bind(this))
 
@@ -372,7 +372,7 @@ function validateEmail(email) {
 
 
 
-app.post('/registerForEmails', function(req, res) {
+app.post('/registerForEmails', function (req, res) {
 	if (!req.body.email || !req.body.userId || req.body.userId.length < 10) {
 		console.log('ERROR invalid user data given ', req.body);
 		return res.send(JSON.stringify({
@@ -393,7 +393,7 @@ app.post('/registerForEmails', function(req, res) {
 		ip: req.connection.remoteAddress
 	}
 
-	usersDB.subscribeForEverything(userData, function(err) {
+	usersDB.subscribeForEverything(userData, function (err) {
 		if (err) {
 			console.log('ERROR couldnt subscribe for everthing', err);
 			return res.send(JSON.stringify({
@@ -424,7 +424,7 @@ function unsubscribe(body, callback) {
 	}
 
 
-	usersDB.unsubscribe(userData, function(err) {
+	usersDB.unsubscribe(userData, function (err) {
 		if (err) {
 			console.log('couldn"t unsubscribe... ', userData.userId, err);
 			return callback(JSON.stringify({
@@ -442,23 +442,22 @@ function unsubscribe(body, callback) {
 
 //unsubscribe can be either post or get so it works in emails and in other pages
 //in boh cases need email and userId
-app.post('/unsubscribe', function(req, res) {
-	unsubscribe(req.body, function(response) {
+app.post('/unsubscribe', function (req, res) {
+	unsubscribe(req.body, function (response) {
 		res.send(response);
 	})
 })
 
-app.get('/unsubscribe', function(req, res) {
+app.get('/unsubscribe', function (req, res) {
 	var body = new URI(req.url).query(true);
-	unsubscribe(body, function(response) {
+	unsubscribe(body, function (response) {
 		res.send(response);
 	})
 })
 
 
 
-
-app.post('/authenticateUser', function(req, res) {
+app.post('/authenticateUser', function (req, res) {
 	if (!req.body.idToken) {
 		console.log('error, no idToken given body:');
 		console.log(req.body)
@@ -467,7 +466,7 @@ app.post('/authenticateUser', function(req, res) {
 		return;
 	}
 
-	usersDB.authenticateUser(req.body.idToken,req.connection.remoteAddress, function(err, loginKey) {
+	usersDB.authenticateUser(req.body.idToken, req.connection.remoteAddress, function (err, loginKey) {
 		if (err) {
 			console.log('couldnt authenticate User', err);
 			res.send(JSON.stringify({
@@ -485,8 +484,29 @@ app.post('/authenticateUser', function(req, res) {
 })
 
 
+app.post('/addClassToWatchList', function (req, res) {
+	if (!req.body.loginKey || !req.body.classMongoId) {
+		return callback('need key and mongoId as a json')
+	}
 
-app.post('/log', function(req, res) {
+
+
+	usersDB.addClassToWatchList(req.body, function (err) {
+		if (err) {
+			console.log('ERROR couldnt add class', req.body.classMongoId, ' id to user', req.body.loginKey)
+			res.send('error')
+			return
+		};
+
+		res.send(JSON.stringify({
+			status: 'success'
+		}));
+	}.bind(this))
+})
+
+
+
+app.post('/log', function (req, res) {
 	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
 	res.send(JSON.stringify({
 		status: 'success'
@@ -496,7 +516,7 @@ app.post('/log', function(req, res) {
 
 
 // serve the webpage
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
 	res.sendFile('frontend/static/index.html', {
 		"root": process.cwd()
 	});
@@ -505,14 +525,14 @@ app.get('/', function(req, res) {
 
 app.use(express.static('frontend/static'));
 
-app.get("/*", function(req, res, next) {
+app.get("/*", function (req, res, next) {
 
 	console.log('error: 404: ' + req.url)
 	res.status(404);
 	res.send('404, yo')
 });
 
-app.post("/*", function(req, res, next) {
+app.post("/*", function (req, res, next) {
 
 	console.log('error: 404: ' + req.url)
 	res.status(404);
@@ -525,8 +545,8 @@ app.listen(80);
 
 //https
 async.parallel([
-		function(callback) {
-			fs.readFile('/etc/coursepro/privateKey.pem', 'utf8', function(err, data) {
+		function (callback) {
+			fs.readFile('/etc/coursepro/privateKey.pem', 'utf8', function (err, data) {
 				if (err) {
 					console.log('ERROR reading private key for https', err);
 					return callback(err);
@@ -534,8 +554,8 @@ async.parallel([
 				return callback(null, data);
 			});
 		},
-		function(callback) {
-			fs.readFile('/etc/coursepro/publicKey.crt', 'utf8', function(err, data) {
+		function (callback) {
+			fs.readFile('/etc/coursepro/publicKey.crt', 'utf8', function (err, data) {
 				if (err) {
 					console.log('ERROR reading public cert for https', err);
 					return callback(err);
@@ -544,7 +564,7 @@ async.parallel([
 			});
 		}
 	],
-	function(err, results) {
+	function (err, results) {
 		var credentials = {
 			key: results[0],
 			cert: results[1]
