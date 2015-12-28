@@ -3,6 +3,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
 var fs = require('fs');
+var queue = require('queue-async');
 var _ = require('lodash');
 var URI = require('urijs');
 var compress = require('compression');
@@ -388,6 +389,7 @@ app.post('/registerForEmails', function (req, res) {
 	}
 
 	var userData = {
+		loginKey: req.body.loginKey,
 		userId: req.body.userId,
 		email: req.body.email,
 		ip: req.connection.remoteAddress
@@ -485,23 +487,107 @@ app.post('/authenticateUser', function (req, res) {
 
 
 app.post('/addClassToWatchList', function (req, res) {
-	if (!req.body.loginKey || !req.body.classMongoId) {
-		return callback('need key and mongoId as a json')
+	if (!req.body.loginKey || !req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) {
+		res.send(JSON.stringify({
+			error:'addClassToWatchList needs loginKey, host, termId, subject, and classId as json'
+		}))
+		return;
 	}
 
 
+	async.waterfall([
+			function (callback) {
+				async.parallel([
 
-	usersDB.addClassToWatchList(req.body, function (err) {
-		if (err) {
-			console.log('ERROR couldnt add class', req.body.classMongoId, ' id to user', req.body.loginKey)
-			res.send('error')
-			return
-		};
+						//get the class with that _id
+						function (callback) {
+							classesDB.find({
+								host: req.body.host,
+								termId: req.body.termId,
+								subject: req.body.subject,
+								classId: req.body.classId
+							}, {
+								shouldBeOnlyOne: false
+							}, function (err, docs) {
+								if (err) {
+									return callback(err);
+								};
 
-		res.send(JSON.stringify({
-			status: 'success'
-		}));
-	}.bind(this))
+								//invalid mongo class id was submitted...
+								if (docs.length === 0) {
+									return callback('could not find class')
+								}
+
+								callback(null, docs)
+							}.bind(this))
+						}.bind(this),
+
+						//get all sections in that class
+						function (callback) {
+							sectionsDB.find({
+									host: req.body.host,
+									termId: req.body.termId,
+									subject: req.body.subject,
+									classId: req.body.classId
+								}, {
+									shouldBeOnlyOne: false,
+								},
+								function (err, docs) {
+									callback(err, docs)
+								}.bind(this))
+						}.bind(this),
+					],
+					function (err, results) {
+						return callback(err, results);
+					}.bind(this))
+			},
+			function (results, callback) {
+				var classes = results[0];
+				var sections = results[1];
+
+				if (classes.length === 0 && sections.length === 0) {
+					return callback(null, 'No classes or sections found with that host, termId, subject, and classId')
+				};
+
+				//get a list of the _id's of the sections
+				var sectionMongoIds = [];
+				sections.forEach(function (section) {
+					sectionMongoIds.push(section._id)
+				}.bind(this))
+
+				//get a list of the _id's for the classes
+				var classesMongoIds = [];
+				classes.forEach(function (theClass) {
+					classesMongoIds.push(theClass._id)
+				}.bind(this))
+
+
+				//register for the class
+				usersDB.addClassToWatchList(classesMongoIds, sectionMongoIds, req.body.loginKey, function (err, clientMsg) {
+					callback(err, clientMsg)
+				}.bind(this))
+			}.bind(this)
+		],
+		function (err, clientMsg) {
+
+			if (err) {
+				console.log('ERROR couldnt add class', req.body.classMongoId, ' id to user', req.body.loginKey)
+				console.log(err)
+				res.send('{"error":"uh oh"}');
+				return;
+			}
+			if (clientMsg) {
+				res.send(JSON.stringify({
+					error: 'error',
+					msg: clientMsg
+				}));
+				return;
+			};
+
+			res.send(JSON.stringify({
+				status: 'success'
+			}));
+		}.bind(this))
 })
 
 

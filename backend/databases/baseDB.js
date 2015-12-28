@@ -180,6 +180,10 @@ BaseDB.prototype.find = function(lookupValues,config,callback) {
 		return callback('invalid search')
 	};
 
+	if (lookupValues._id && lookupValues._id.length!=24) {
+		return callback('_id is included and is not 24 chars long, and therefore is invalid')
+	};
+
 	this.table.find(lookupValues,function (err,docs) {
 		if (err) {
 			console.log('NEDB error in section db, ',err,lookupValues);

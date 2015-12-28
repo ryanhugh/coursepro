@@ -296,7 +296,7 @@ UsersDB.prototype.authenticateUser = function (idToken, ip, callback) {
 
 		var payload = results.getPayload()
 
-		console.log('google login success', payload);
+		console.log('google login success', payload.email);
 
 		//payload.sub is the id of the google user, and returns the same thing as profile.getId() client side
 		//in the db this is stored as googleId
@@ -314,7 +314,7 @@ UsersDB.prototype.authenticateUser = function (idToken, ip, callback) {
 						}
 
 						else {
-							console.log('failed to find with google id, using email', payload)
+							console.log('failed to find with google id, using email', payload.email)
 
 							this.find({
 									email: payload.email
@@ -514,7 +514,6 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
-	// console.log('jflkdasjfsklj')
 
 
 	this.getUserWatchData(function (err, watchCache) {
@@ -545,13 +544,11 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 }
 
 
-UsersDB.prototype.addClassToWatchList = function (postData, callback) {
-	if (!postData.loginKey || !postData.classMongoId) {
-		return callback('need key and mongoId as a json')
-	}
+UsersDB.prototype.addClassToWatchList = function (classMongoIds, sectionMongoIds, loginKey, callback) {
+
 
 	this.find({
-			loginKey: postData.loginKey
+			loginKey: loginKey
 		}, {},
 		function (err, user) {
 			if (err) {
@@ -560,26 +557,44 @@ UsersDB.prototype.addClassToWatchList = function (postData, callback) {
 			if (!user) {
 				return callback('no user found')
 			};
-
 			var originalDoc = _.cloneDeep(user);
 
-			if (_(user.watching.classes).includes(postData.classMongoId)) {
-				console.log('user ', user.email, 'is already watching class', postData.classMongoId)
-				return callback()
-			}
-			else if (user.watching.classes.length>10) {
-				console.log("user",user.email,'is already watching to many classes')
-				return callback('user is already watching to many classes')
-			}
-			else {
-				user.watching.classes.push(postData.classMongoId)
 
-				console.log('adding class', postData.classMongoId, ' to ', user.email, 'watch list')
-
-				this.updateDatabase(user, originalDoc, function (err, newDoc) {
-					return callback(err)
-				}.bind(this))
+			if (user.watching.classes.length + classMongoIds.length > 10) {
+				console.log("user", user.email, 'is already watching to many classes',user.watching.classes,classMongoIds)
+				return callback(null, 'Can\'t watch more classes because too many classes are being watched. The current limit is 10 classes.')
 			}
+
+			var numClassesAdded = 0;
+			classMongoIds.forEach(function (classMongoId) {
+				if (!_(user.watching.classes).includes(classMongoId)) {
+					numClassesAdded++;
+					user.watching.classes.push(classMongoId)
+				}
+			}.bind(this))
+
+
+			var numSectionsAdded = 0;
+			sectionMongoIds.forEach(function (sectionMongoId) {
+				if (!_(user.watching.sections).includes(sectionMongoId)) {
+					numSectionsAdded++;
+					user.watching.sections.push(sectionMongoId)
+				}
+			}.bind(this))
+
+			if (numClassesAdded===0 && numSectionsAdded===0) {
+				console.log('user ', user.email, 'is already watching class and sections', classMongoIds,sectionMongoIds)
+				return callback(null,'All these classes and sections are already being watched!')
+			};
+
+
+			console.log('added ',numClassesAdded,' and ',numSectionsAdded,' to user ',user.email,' watch list!');
+
+
+			this.updateDatabase(user, originalDoc, function (err, newDoc) {
+				return callback(err)
+			}.bind(this))
+
 		}.bind(this))
 };
 

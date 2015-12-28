@@ -170,6 +170,10 @@ Request.prototype.fireRequest = function(config, callback) {
 		body.userId = localStorage.userId;
 	}
 
+	if (config.auth && localStorage.loginKey) {
+		body.loginKey = localStorage.loginKey
+	};
+
 
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
@@ -216,7 +220,8 @@ Request.prototype.fireRequest = function(config, callback) {
 }
 
 
-
+//config.auth : weather or not to send loginKey, default no
+//useCache : weather or not to use cache, default yes
 Request.prototype.go = function(config, callback) {
 
 	//default values

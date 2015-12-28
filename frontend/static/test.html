@@ -1,43 +1,48 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Meta, title, CSS, favicons, etc. -->
-    <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <!--<meta name="viewport" content="width=100, initial-scale=1">-->
-<meta name="keywords" content="College Classes Courses CoursePro.io Planning Schedule prerequsites corequsites">
-<meta name="description" content="Easily see class data and prerequsites of any class at your school!">
-<meta name="google-signin-client_id" content="1053343762351-u4kohlvr1ifjqn6d5th280o0v0rdasaq.apps.googleusercontent.com">
+<head>
+	<!-- Meta, title, CSS, favicons, etc. -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--<meta name="viewport" content="width=100, initial-scale=1">-->
+	<meta name="keywords" content="College Classes Courses CoursePro.io Planning Schedule prerequsites corequsites">
+	<meta name="description" content="Easily see class data and prerequsites of any class at your school!">
+	<meta name="google-signin-client_id" content="1053343762351-u4kohlvr1ifjqn6d5th280o0v0rdasaq.apps.googleusercontent.com">
 </head>
 <body>
 
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
 	<script>
-		function onSignIn(googleUser) {
-		  var profile = googleUser.getBasicProfile();
-		  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-		  console.log('Name: ' + profile.getName());
-		  console.log('Image URL: ' + profile.getImageUrl());
-		  console.log('Email: ' + profile.getEmail());
+	function onSignIn(googleUser) {
+		var profile = googleUser.getBasicProfile();
+		console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+		console.log('Name: ' + profile.getName());
+		console.log('Image URL: ' + profile.getImageUrl());
+		console.log('Email: ' + profile.getEmail());
 
 
-			var xhr = new XMLHttpRequest();
-			xhr.open('POST', '/authenticateUser');
-			xhr.setRequestHeader('Content-Type', 'application/json');
-			xhr.onload = function() {
-				console.log('Signed in as: ' + xhr.responseText);
-			};
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/authenticateUser');
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.onload = function() {
+			console.log('Signed in as: ' + xhr.responseText);
+		};
 
-			xhr.send(JSON.stringify({idToken:googleUser.getAuthResponse().id_token}));
+		xhr.send(JSON.stringify({idToken:googleUser.getAuthResponse().id_token}));
+	}
+
+	document.onload = function () {
+		setTimeout(function() {
+			document.body.innerHTML+='<div class="g-signin2" data-onsuccess="onSignIn"></div>'
+			
+		}, 1000);
+
+	}.bind(this)
 
 
-
-
-
-		}
 	</script>
-	<div class="g-signin2" data-onsuccess="onSignIn"></div>
+	
 
 </body>
 </html>

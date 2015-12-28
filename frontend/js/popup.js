@@ -2,13 +2,13 @@
 var macros = require('./macros')
 var request = require('./request')
 var render = require('./render')
-
+var watchClassesModel = require('./watchClassesModel')
 
 function Popup() {
 	this.weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 	this.openOrder = []
 
-	$(document).keydown(function(e) {
+	$(document).keydown(function (e) {
 		// ESCAPE key pressed
 		if (e.keyCode == 27) {
 			var tree = this.openOrder.shift();
@@ -23,15 +23,15 @@ function Popup() {
 
 //creates 7:00 - 9:00 am
 // Thursday, Friday string
-Popup.prototype.createTimeStrings = function(meetings) {
+Popup.prototype.createTimeStrings = function (meetings) {
 
 	//{startDate: 16554, endDate: 16554, profs: Array[1], where: "Snell Engineering Center 168", times: Object…}
-	meetings.forEach(function(meeting) {
+	meetings.forEach(function (meeting) {
 
 		var timeText = []
 			// "[{"times":[{"start":46800,"end":54000}],"days":["3"]}]"
-		meeting.groupedTimes.forEach(function(groupedTime) {
-			groupedTime.times.forEach(function(time, index) {
+		meeting.groupedTimes.forEach(function (groupedTime) {
+			groupedTime.times.forEach(function (time, index) {
 				if (index > 0) {
 					timeText.push(', ')
 				};
@@ -60,13 +60,13 @@ Popup.prototype.createTimeStrings = function(meetings) {
 		meeting.dayString = meeting.dayString.trim().replace(/,$/gi, '')
 	}.bind(this))
 }
-Popup.prototype.calculateHoursPerWeek = function(meetings) {
-	meetings.forEach(function(meeting) {
+Popup.prototype.calculateHoursPerWeek = function (meetings) {
+	meetings.forEach(function (meeting) {
 		meeting.hoursPerWeek = 0;
 
 		for (var dayIndex in meeting.times) {
 			var dayTimes = meeting.times[dayIndex]
-			dayTimes.forEach(function(time) {
+			dayTimes.forEach(function (time) {
 				//end and start are in seconds so conver them to hours
 				meeting.hoursPerWeek += (time.end - time.start) / (60 * 60)
 			}.bind(this))
@@ -76,7 +76,7 @@ Popup.prototype.calculateHoursPerWeek = function(meetings) {
 	}.bind(this))
 }
 
-Popup.prototype.addTimestoGroupedTimes = function(meeting, dayIndex) {
+Popup.prototype.addTimestoGroupedTimes = function (meeting, dayIndex) {
 	var times = meeting.times[dayIndex]
 
 	for (var i = 0; i < meeting.groupedTimes.length; i++) {
@@ -91,8 +91,8 @@ Popup.prototype.addTimestoGroupedTimes = function(meeting, dayIndex) {
 	})
 }
 
-Popup.prototype.calculateExams = function(meetings) {
-	meetings.forEach(function(meeting) {
+Popup.prototype.calculateExams = function (meetings) {
+	meetings.forEach(function (meeting) {
 		if (meeting.startDate == meeting.endDate) {
 			meeting.isExam = true;
 		}
@@ -102,7 +102,7 @@ Popup.prototype.calculateExams = function(meetings) {
 
 	}.bind(this))
 };
-Popup.prototype.prettyLocation = function(location) {
+Popup.prototype.prettyLocation = function (location) {
 	if (location.toLowerCase() === 'tba' || location === '') {
 		return 'location undecided'
 	}
@@ -115,20 +115,20 @@ Popup.prototype.prettyLocation = function(location) {
 	}
 };
 
-Popup.prototype.groupSectionTimes = function(sections) {
+Popup.prototype.groupSectionTimes = function (sections) {
 	//make a list of all profs
-	sections.forEach(function(section) {
+	sections.forEach(function (section) {
 		if (!section.meetings) {
 			return;
 		}
 		section.profs = []
 		section.locations = []
 
-		section.meetings.forEach(function(meeting) {
+		section.meetings.forEach(function (meeting) {
 
 
 			//make a big list of all meetings prof's in the section
-			meeting.profs.forEach(function(prof) {
+			meeting.profs.forEach(function (prof) {
 				if (section.profs.indexOf(prof) < 0) {
 					section.profs.push(prof);
 				};
@@ -144,7 +144,7 @@ Popup.prototype.groupSectionTimes = function(sections) {
 
 		//group the times by start/end time (so can put days underneath)
 		// var meetingsGrouped = []
-		section.meetings.forEach(function(meeting) {
+		section.meetings.forEach(function (meeting) {
 			meeting.groupedTimes = [];
 			for (var dayIndex in meeting.times) {
 				this.addTimestoGroupedTimes(meeting, dayIndex)
@@ -162,7 +162,7 @@ Popup.prototype.groupSectionTimes = function(sections) {
 
 
 	//sort sections by first grouped time start time
-	sections.sort(function(a, b) {
+	sections.sort(function (a, b) {
 		if (!a.meetings && !b.meetings) {
 			return 0;
 		}
@@ -199,10 +199,10 @@ Popup.prototype.groupSectionTimes = function(sections) {
 
 	return sections;
 }
-Popup.prototype.createViewOnUrl = function(tree, url) {
+Popup.prototype.createViewOnUrl = function (tree, url) {
 	return '<a target="_blank" href="' + url + '">View on <span class="hostName">' + tree.host + '</span></a>'
 }
-Popup.prototype.createCreditsHTML = function(tree) {
+Popup.prototype.createCreditsHTML = function (tree) {
 	if (tree.minCredits !== undefined || tree.maxCredits !== undefined) {
 		if (tree.minCredits === tree.maxCredits) {
 			return tree.minCredits + ' credit' + render.getOptionalS(tree.minCredits);
@@ -213,7 +213,7 @@ Popup.prototype.createCreditsHTML = function(tree) {
 	}
 	return ''
 }
-Popup.prototype.removeSectionsNotInClass = function(tree, sections) {
+Popup.prototype.removeSectionsNotInClass = function (tree, sections) {
 	if (!tree.crns) {
 		console.log('error class has no crns!!!')
 		return sections
@@ -221,7 +221,7 @@ Popup.prototype.removeSectionsNotInClass = function(tree, sections) {
 
 
 	var retVal = [];
-	sections.forEach(function(section) {
+	sections.forEach(function (section) {
 		if (_(tree.crns).includes(section.crn)) {
 			retVal.push(section)
 		};
@@ -229,7 +229,7 @@ Popup.prototype.removeSectionsNotInClass = function(tree, sections) {
 	return retVal;
 }
 
-Popup.prototype.expandPanel = function(tree) {
+Popup.prototype.expandPanel = function (tree) {
 	if (tree.isString) {
 		return;
 	};
@@ -288,7 +288,7 @@ Popup.prototype.expandPanel = function(tree) {
 				subject: tree.subject,
 				classId: tree.classId
 			}
-		}, function(err, body) {
+		}, function (err, body) {
 			if (err) {
 				console.log(err);
 				return;
@@ -312,10 +312,13 @@ Popup.prototype.expandPanel = function(tree) {
 
 			//description box
 			if (tree.desc) {
-				newBodyText.push('<div style="white-space: normal;margin-bottom:10px">')
+				newBodyText.push('<div style="white-space: normal;margin-bottom:10px;line-height:15px">')
 				newBodyText.push(tree.desc)
 				newBodyText.push('</div>')
 			};
+
+			var notificationLink = '<div style="text-align: center;    margin-bottom: -20px;"><a class="linkToClassWatchModel" data-toggle="modal" data-target="#myModal">Get notified if this class changes<br> or if any seats open up!</a></div>'
+			newBodyText.push(notificationLink)
 
 			//credits and class url
 			newBodyText.push('<div class="classInfoContainer">')
@@ -344,6 +347,7 @@ Popup.prototype.expandPanel = function(tree) {
 				classURL = tree.url;
 			}
 
+
 			newBodyText.push('<div style="text-align: right;display: inline-block;float:right;white-space: normal;max-width: 50%;" class="rightSectionText rightClassText">' + this.createViewOnUrl(tree, classURL) + '</div>')
 
 			newBodyText.push('</div>')
@@ -351,13 +355,13 @@ Popup.prototype.expandPanel = function(tree) {
 
 
 			var sections = this.groupSectionTimes(body);
-			sections.forEach(function(section) {
+			sections.forEach(function (section) {
 
 				if (section.meetings) {
 					panelWidth += 330
 					newBodyText.push('<div style="width: 260px;" class="classSection">')
 
-					section.meetings.forEach(function(meeting) {
+					section.meetings.forEach(function (meeting) {
 						if (meeting.hoursPerWeek === 0) {
 							return;
 						};
@@ -403,11 +407,16 @@ Popup.prototype.expandPanel = function(tree) {
 			panelBody.style.whiteSpace = 'initial'
 			panelBody.innerHTML = newBodyText.join('');
 
+			$(panelBody).find('.linkToClassWatchModel').on('click',function() {
+				watchClassesModel.go(tree);
+			});
+
+
 			tree.panel.getElementsByClassName('rightSectionText')
 
 			var elements = [].slice.call(tree.panel.getElementsByClassName('rightSectionText'))
 
-			elements.forEach(function(element) {
+			elements.forEach(function (element) {
 				element.style.minWidth = element.getElementsByClassName('hostName')[0].offsetWidth + 'px'
 			}.bind(this))
 
@@ -431,8 +440,8 @@ Popup.prototype.expandPanel = function(tree) {
 				};
 			}
 
-			if (panelWidth < 164) {
-				panelWidth = 250
+			if (panelWidth < 476) {
+				panelWidth = 476
 			};
 
 
@@ -461,6 +470,7 @@ Popup.prototype.expandPanel = function(tree) {
 			xButton.style.display = ''
 
 
+
 			//for some reason after you go back in history to a big tree (wider than page) chrome will change scroll position when expanding a panel
 			//this just scrolls back instantly
 			document.body.scrollLeft = currScrollLeft;
@@ -485,7 +495,7 @@ Popup.prototype.expandPanel = function(tree) {
 	}
 }
 
-Popup.prototype.userOpenPopup = function(tree) {
+Popup.prototype.userOpenPopup = function (tree) {
 
 	ga('send', {
 		'hitType': 'pageview',
@@ -503,7 +513,7 @@ Popup.prototype.userOpenPopup = function(tree) {
 	}
 };
 
-Popup.prototype.userClosePopup = function(tree) {
+Popup.prototype.userClosePopup = function (tree) {
 
 	ga('send', {
 		'hitType': 'pageview',
@@ -517,12 +527,12 @@ Popup.prototype.userClosePopup = function(tree) {
 };
 
 
-Popup.prototype.addPopups = function(tree) {
+Popup.prototype.addPopups = function (tree) {
 
 	if (tree.isClass) {
 
 		//click to expand
-		$(tree.panel).on('click.popup', function(event) {
+		$(tree.panel).on('click.popup', function (event) {
 
 			//if expanded and there is no remove button
 			if (tree.isExpanded && tree.panel.getElementsByClassName('glyphicon-remove')[0].style.display == 'none') {
@@ -540,7 +550,7 @@ Popup.prototype.addPopups = function(tree) {
 
 
 
-		$(tree.panel.getElementsByClassName('glyphicon-remove')[0]).on('click.popup', function(event) {
+		$(tree.panel.getElementsByClassName('glyphicon-remove')[0]).on('click.popup', function (event) {
 
 			//if already hidden, do nothing
 			if (!tree.isExpanded) {
@@ -554,17 +564,17 @@ Popup.prototype.addPopups = function(tree) {
 
 	}
 
-	tree.prereqs.values.forEach(function(subTree) {
+	tree.prereqs.values.forEach(function (subTree) {
 		this.addPopups(subTree);
 	}.bind(this));
 
-	tree.coreqs.values.forEach(function(subTree) {
+	tree.coreqs.values.forEach(function (subTree) {
 		this.addPopups(subTree);
 	}.bind(this));
 }
 
 
-Popup.prototype.go = function(tree) {
+Popup.prototype.go = function (tree) {
 
 
 	//clear the open order

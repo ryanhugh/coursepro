@@ -48,6 +48,7 @@ EmailMgr.prototype.submitTo = function(url, callback) {
 
 	request({
 		url: url,
+		auth:true,
 		body: {
 			email: email
 		}
