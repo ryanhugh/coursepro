@@ -162,7 +162,8 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newDat
 	diff.forEach(function (diffAttr) {
 		var diffDescription = this.sectionAttrDescriptions[diffAttr.path[0]]
 		if (diffDescription) {
-			diffSummary.push(diffDescription + ' changed<br>')
+			email.push(diffDescription + ' changed<br>')
+			console.log('DIFF of class/section:',diffAttr)
 		}
 	}.bind(this))
 

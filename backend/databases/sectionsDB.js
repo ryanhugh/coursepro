@@ -1,6 +1,7 @@
 'use strict';
 var BaseDB = require('./baseDB').BaseDB;
 var async = require('async')
+var usersDB = require('./usersDB')
 
 
 function SectionsDB() {

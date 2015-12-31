@@ -21,17 +21,10 @@ var subjectsDB = require('./databases/subjectsDB');
 var classesDB = require('./databases/classesDB');
 var sectionsDB = require('./databases/sectionsDB');
 var usersDB = require('./databases/usersDB');
+var dbUpdater = require('./databases/updater')
+
 
 var search = require('./search');
-
-
-
-//tell all the db's to update every 15 min
-collegeNamesDB.startUpdates();
-termsDB.startUpdates();
-subjectsDB.startUpdates();
-classesDB.startUpdates();
-sectionsDB.startUpdates();
 
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies

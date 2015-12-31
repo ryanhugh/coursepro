@@ -9,6 +9,7 @@ var requireDir = require('require-dir');
 var parsersClasses = requireDir('./parsers');
 
 var emailMgr = require('./emailMgr');
+var dbUpdater = require('./databases/updater')
 
 
 var parserNames = [];
@@ -39,7 +40,7 @@ function PageDataMgr() {
 }
 
 
-PageDataMgr.prototype.createFromURL = function(url, callback) {
+PageDataMgr.prototype.createFromURL = function (url, callback) {
 	var pageData = this.create({
 		dbData: {
 			url: url
@@ -48,12 +49,12 @@ PageDataMgr.prototype.createFromURL = function(url, callback) {
 	pageDataMgr.go(pageData, callback);
 };
 
-PageDataMgr.prototype.getParsers = function() {
+PageDataMgr.prototype.getParsers = function () {
 	return parsers;
 };
 
 
-PageDataMgr.prototype.create = function(startingData) {
+PageDataMgr.prototype.create = function (startingData) {
 
 	var pageData = new PageData(startingData);
 	if (!pageData.dbData) {
@@ -68,10 +69,11 @@ PageDataMgr.prototype.create = function(startingData) {
 //main starting point for parsing urls
 //startingData.url or startingData._id is required
 //callback = function (err,pageData) {}
-PageDataMgr.prototype.go = function(pageData, callback) {
+PageDataMgr.prototype.go = function (pageData, callback) {
 	if (!callback) {
-		callback = function() {};
+		callback = function () {};
 	}
+	// console.log('in go',pageData.dbData._id,pageData.dbData)
 
 	if (pageData.dbData.updatedByParent) {
 		return this.finish(pageData, callback);
@@ -87,17 +89,20 @@ PageDataMgr.prototype.go = function(pageData, callback) {
 		console.log('error dont have a url or a db', pageData);
 		return callback('no db');
 	}
+	// console.log('in go2',pageData.dbData._id)
 
 	//main control flow for processing a url
 
 	//load, then continue
 	if (pageData.dbLoadingStatus == pageData.DBLOAD_NONE) {
-		pageData.loadFromDB(function(err) {
+		// console.log('in go3',pageData.dbData._id)
+		pageData.loadFromDB(function (err) {
 			if (err) {
 				console.log("error ", err);
 				return callback(err);
 			}
 			else {
+				// console.log('in go4',pageData.dbData._id)
 				return this.processPageAfterDbLoad(pageData, callback);
 			}
 		}.bind(this));
@@ -108,33 +113,37 @@ PageDataMgr.prototype.go = function(pageData, callback) {
 		return callback('internal error')
 	}
 	else if (pageData.dbLoadingStatus == pageData.DBLOAD_DONE) {
+		// console.log('in go5',pageData.dbData._id)
 		return this.processPageAfterDbLoad(pageData, callback);
 	}
 };
 
-PageDataMgr.prototype.processPageAfterDbLoad = function(pageData, callback) {
+PageDataMgr.prototype.processPageAfterDbLoad = function (pageData, callback) {
 	if (!pageData.dbData.url) {
 		console.log('started pageData without url and could not find it in db!', pageData);
 		return callback('cant find dep');
 	}
+	// console.log('in go6',pageData.dbData._id)
 
 
 	//if haven't found the parser yet, try again
 	//this will happen when parent loaded this from cache with just an _id
 	if (pageData.dbData.url && !pageData.parser) {
+		// console.log('in go7',pageData.dbData._id)
 		if (!pageData.findSupportingParser()) {
 			console.log('error cant find parser after second try');
 			return callback("NOSUPPORT");
 		}
 	}
 
-
+	// console.log('in go8',pageData.dbData._id)
 	if (pageData.isUpdated()) {
 		console.log('CACHE HIT!', pageData.dbData.url);
 		this.finish(pageData, callback);
 	}
 	else {
-		pageData.parser.parse(pageData, function(err) {
+		pageData.parser.parse(pageData, function (err) {
+			// console.log('in go9',pageData.dbData._id)
 			if (err) {
 				console.log('Error, pagedata parse call failed', err)
 				if (pageData.dbData.lastUpdateTime) {
@@ -152,9 +161,16 @@ PageDataMgr.prototype.processPageAfterDbLoad = function(pageData, callback) {
 
 
 
-PageDataMgr.prototype.finish = function(pageData, callback) {
-	pageData.processDeps(function() {
-		pageData.database.updateDatabaseFromPageData(pageData, function(err, newdbData) {
+PageDataMgr.prototype.finish = function (pageData, callback) {
+	// console.log('in go10',pageData.dbData._id)
+	pageData.processDeps(function (err) {
+		if (err) {
+			console.log('ERROR processing deps',err)
+			return callback(err)
+		}
+
+
+		pageData.database.updateDatabaseFromPageData(pageData, function (err, newdbData) {
 			if (err) {
 				console.log('error adding to db?', err);
 				return callback(err);
@@ -169,7 +185,17 @@ PageDataMgr.prototype.finish = function(pageData, callback) {
 
 
 
-PageDataMgr.prototype.main = function() {
+PageDataMgr.prototype.main = function () {
+
+
+	// 
+
+	dbUpdater.updateClassFromMongoId('5683fb2f36b66840e86bab4a',function (err) {
+		console.log("all done!",err)
+	}.bind(this))
+	return;
+
+
 	// this.createFromURL('https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched')
 	// this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_display_courses?term_in=201610&one_subj=MUS&sel_crse_strt=147A&sel_crse_end=147A&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
 	// this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_display_courses?term_in=201610&one_subj=VTE&sel_crse_strt=113&sel_crse_end=113&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
@@ -205,18 +231,18 @@ PageDataMgr.prototype.main = function() {
 	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched',function (){
 	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201530&subj_in=MATH&crse_in=1252&schd_in=%25',function () {
 
-	this.createFromURL('https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched', function() {
+	this.createFromURL('https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched', function () {
 		console.log('all done!! sju')
 	}.bind(this))
 
-	this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched', function() {
+	this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched', function () {
 		console.log('all done!! neu')
 	}.bind(this))
 
 
-	// this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched', function() {
-	// 	console.log('all done!! swarthmore')
-	// }.bind(this))
+	this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched', function() {
+		console.log('all done!! swarthmore')
+	}.bind(this))
 
 
 
@@ -242,7 +268,7 @@ PageDataMgr.prototype.main = function() {
 	// return;
 };
 
-PageDataMgr.prototype.tests = function() {
+PageDataMgr.prototype.tests = function () {
 
 	//a class with no links to sections
 	// https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=AC&crse_in=507&schd_in=HY
@@ -250,7 +276,7 @@ PageDataMgr.prototype.tests = function() {
 	return;
 
 	//THIS WILL RUN FULL COLLEGE PARSRS IT LOOKS LIKE
-	fs.readFile('backend/tests/differentCollegeUrls.json', 'utf8', function(err, body) {
+	fs.readFile('backend/tests/differentCollegeUrls.json', 'utf8', function (err, body) {
 		if (err) {
 			console.trace(err)
 			return;
@@ -280,7 +306,7 @@ PageDataMgr.prototype.tests = function() {
 	// https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=6610
 
 
-	fs.readFile('backend/tests/' + this.constructor.name + '/toparse3.json', 'utf8', function(err, body) {
+	fs.readFile('backend/tests/' + this.constructor.name + '/toparse3.json', 'utf8', function (err, body) {
 		if (err) {
 			console.trace(err)
 			return;
@@ -301,7 +327,7 @@ PageDataMgr.prototype.tests = function() {
 	return;
 
 	// this.createFromURL('https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=', null, function(err, pageData) {
+	this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=', null, function (err, pageData) {
 		// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=COM&crse_in=507&schd_in=%',null,function (err,pageData) {
 		// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=10739',null,function (err,pageData) {
 		console.log("CALLBACK WAS CALLED!!!!!!!", pageData.getClientString());

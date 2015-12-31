@@ -27,8 +27,6 @@ function UsersDB() {
 
 
 	this.tableName = 'users'
-	this.shouldAutoUpdate = false;
-	this.peopleCanRegister = true;
 	BaseDB.prototype.constructor.apply(this, arguments);
 
 	this.usersSchema = {
@@ -44,6 +42,7 @@ function UsersDB() {
 	}
 
 	this.ensureDefaultSchema();
+
 }
 
 
@@ -442,13 +441,15 @@ UsersDB.prototype.getUserWatchData = function (callback) {
 		}.bind(this))
 	}
 	else {
-		console.log('cache is updated')
 		callback(null, this.classWatchCache)
 	}
 };
 
 //users id map is this.classWatchCache.classes or this.classWatchCache.sections
 UsersDB.prototype.rowUpdatedTrigger = function (oldData, newData, idUsersMap, callback) {
+	if (!oldData) {
+		oldData = {}
+	};
 
 	var oldDataClone = _.cloneDeep(oldData);
 	var newDataClone = _.cloneDeep(newData);
@@ -464,7 +465,6 @@ UsersDB.prototype.rowUpdatedTrigger = function (oldData, newData, idUsersMap, ca
 	// console.trace()
 
 	if (!differences) {
-		console.log('nothing changed except for ignore stuff')
 		return callback()
 	};
 
@@ -473,7 +473,7 @@ UsersDB.prototype.rowUpdatedTrigger = function (oldData, newData, idUsersMap, ca
 
 	if (idUsersMap[newDataClone._id]) {
 		idUsersMap[newDataClone._id].forEach(function (user) {
-			console.log('class ', newDataClone._id, 'was updated and ', user.email, 'was watching!');
+			console.log('class/section ', newDataClone._id, 'was updated and ', user.email, 'was watching!');
 			emails.push(user.email)
 		}.bind(this))
 	}
@@ -527,11 +527,9 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 				return callback(err)
 			}
 			if (!emails) {
-				console.log('no emails given!')
 				return callback();
 			};
 
-			console.log('section ', dbData._id, 'was updated and ', user.email, 'was watching!');
 			//calculate email content here
 			emailMgr.sendSectionUpdatedEmail(emails, oldData, newData, diff);
 
@@ -561,7 +559,7 @@ UsersDB.prototype.addClassToWatchList = function (classMongoIds, sectionMongoIds
 
 
 			if (user.watching.classes.length + classMongoIds.length > 10) {
-				console.log("user", user.email, 'is already watching to many classes',user.watching.classes,classMongoIds)
+				console.log("user", user.email, 'is already watching to many classes', user.watching.classes, classMongoIds)
 				return callback(null, 'Can\'t watch more classes because too many classes are being watched. The current limit is 10 classes.')
 			}
 
@@ -582,13 +580,13 @@ UsersDB.prototype.addClassToWatchList = function (classMongoIds, sectionMongoIds
 				}
 			}.bind(this))
 
-			if (numClassesAdded===0 && numSectionsAdded===0) {
-				console.log('user ', user.email, 'is already watching class and sections', classMongoIds,sectionMongoIds)
-				return callback(null,'All these classes and sections are already being watched!')
+			if (numClassesAdded === 0 && numSectionsAdded === 0) {
+				console.log('user ', user.email, 'is already watching class and sections', classMongoIds, sectionMongoIds)
+				return callback(null, 'All these classes and sections are already being watched!')
 			};
 
 
-			console.log('added ',numClassesAdded,' and ',numSectionsAdded,' to user ',user.email,' watch list!');
+			console.log('added ', numClassesAdded, ' and ', numSectionsAdded, ' to user ', user.email, ' watch list!');
 
 
 			this.updateDatabase(user, originalDoc, function (err, newDoc) {

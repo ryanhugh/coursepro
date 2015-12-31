@@ -73,7 +73,7 @@ PageData.prototype.DBLOAD_DONE = 2;
 
 
 // parsername is optionall, used when loading from db
-PageData.prototype.findSupportingParser = function(parserName) {
+PageData.prototype.findSupportingParser = function (parserName) {
 	if (this.parser) {
 		console.log('error, told to find a parser but already have one???', this)
 		console.trace();
@@ -98,7 +98,7 @@ PageData.prototype.findSupportingParser = function(parserName) {
 
 
 //returns true if successful, else false
-PageData.prototype.setParser = function(parser) {
+PageData.prototype.setParser = function (parser) {
 	if (!parser || !parser.name) {
 		console.log('error tried to set to invalid parser', parser);
 		return false;
@@ -123,16 +123,11 @@ PageData.prototype.setParser = function(parser) {
 		this.database = newDatabase;
 	}
 
-
-	if (this.database.peopleCanRegister) {
-
-		//insert _id of user here
-	}
 	return true;
 }
 
 
-PageData.prototype.loadFromDB = function(callback) {
+PageData.prototype.loadFromDB = function (callback) {
 	if (!this.database) {
 		console.log('cant lookup, dont have a db', this);
 		return callback('cant lookup');
@@ -162,7 +157,7 @@ PageData.prototype.loadFromDB = function(callback) {
 	this.database.find(lookupValues, {
 		shouldBeOnlyOne: true,
 		sanatize: false
-	}, function(err, doc) {
+	}, function (err, doc) {
 		if (err) {
 			return callback(err);
 		}
@@ -191,7 +186,7 @@ PageData.prototype.loadFromDB = function(callback) {
 			//load all deps too
 			//iterate over each type of dep
 			for (var parserName in this.dbData.deps) {
-				this.dbData.deps[parserName].forEach(function(newDepId) {
+				this.dbData.deps[parserName].forEach(function (newDepId) {
 
 					var newDepPageData = this.addDep({
 						_id: newDepId
@@ -205,18 +200,25 @@ PageData.prototype.loadFromDB = function(callback) {
 
 					newDepPageData.findSupportingParser(parserName);
 
-					q.defer(function(callback) {
+					q.defer(function (callback) {
 						newDepPageData.loadFromDB(callback);
 					}.bind(this));
 				}.bind(this));
 			}
 		}
 
-		q.awaitAll(function(error, results) {
+		q.awaitAll(function (error, results) {
 
+
+			// console.log('loading from db',this)
 			//log when the main pageData (the top of the tree) is done loading
 			if (!this.parent) {
-				console.log('info pageData with no parent done loading!', this.parser.name)
+				if (this.parser) {
+					console.log('info pageData with no parent done loading!', this.parser.name);
+				}
+				else {
+					console.log('info pageData with no parent done loading!')
+				}
 			};
 			return callback();
 		}.bind(this));
@@ -225,10 +227,10 @@ PageData.prototype.loadFromDB = function(callback) {
 };
 
 
-PageData.prototype.isUpdated = function() {
+PageData.prototype.isUpdated = function () {
 
-	var twoWeeksAgo = new Date().getTime() - 1209600000;
-	if (this.dbData.lastUpdateTime !== undefined && this.dbData.lastUpdateTime > twoWeeksAgo) {
+	var fiveMinAgo = new Date().getTime() - 300000;
+	if (this.dbData.lastUpdateTime !== undefined && this.dbData.lastUpdateTime > fiveMinAgo) {
 		return true;
 	}
 	else {
@@ -238,7 +240,7 @@ PageData.prototype.isUpdated = function() {
 
 
 
-PageData.prototype.processDeps = function(callback) {
+PageData.prototype.processDeps = function (callback) {
 
 	if (!this.deps) {
 		return callback();
@@ -247,8 +249,8 @@ PageData.prototype.processDeps = function(callback) {
 	this.dbData.deps = {};
 
 	//any dep data will be inserted into main PageData for dep
-	async.map(this.deps, function(depPageData, callback) {
-		pageDataMgr.go(depPageData, function(err, newDepData) {
+	async.map(this.deps, function (depPageData, callback) {
+		pageDataMgr.go(depPageData, function (err, newDepData) {
 			if (err) {
 				console.log('ERROR: processing deps:', err);
 				return callback(err);
@@ -283,7 +285,7 @@ PageData.prototype.processDeps = function(callback) {
 		}.bind(this));
 
 
-	}.bind(this), function(err, results) { //
+	}.bind(this), function (err, results) { //
 		if (err) {
 			console.log('error found while processing dep of', this.dbData.url, err);
 			return callback(err);
@@ -296,19 +298,19 @@ PageData.prototype.processDeps = function(callback) {
 };
 
 
-PageData.prototype.getClientString = function() {
+PageData.prototype.getClientString = function () {
 	return this.parser.getMetadata(this).clientString;
 };
 
 
-PageData.prototype.getUrlStart = function() {
+PageData.prototype.getUrlStart = function () {
 	var urlParsed = new URI(this.dbData.url);
 	return urlParsed.scheme() + '://' + urlParsed.host();
 };
 
 //can add by url or _id - one of two is required
 
-PageData.prototype.addDep = function(depData) {
+PageData.prototype.addDep = function (depData) {
 	if (!depData) {
 		console.log('Error:Tried to add invalid depdata??', depData);
 		console.trace()
@@ -318,7 +320,7 @@ PageData.prototype.addDep = function(depData) {
 	//copy over values from this pageData
 	//this way, parsers dont have to explicitly state these values each time they add a dep
 	var valuesToCopy = ['host', 'termId', 'subject', 'classId', 'crn'];
-	valuesToCopy.forEach(function(attrName) {
+	valuesToCopy.forEach(function (attrName) {
 		if (!this.dbData[attrName]) {
 			return;
 		}
@@ -388,7 +390,7 @@ PageData.prototype.addDep = function(depData) {
 }
 
 
-PageData.prototype.setParentData = function(name, value) {
+PageData.prototype.setParentData = function (name, value) {
 	if (!this.parent) {
 		console.log('error told to add to parent but dont have parent', name, JSON.stringify(value, null, 2));
 		return;
@@ -400,15 +402,22 @@ PageData.prototype.setParentData = function(name, value) {
 
 
 //used in html parser and updateDeps, here
-PageData.prototype.setData = function(name, value) {
+PageData.prototype.setData = function (name, value) {
 	if (name === undefined || value === undefined) {
 		console.trace('ERROR:name or value was undefined!', name, value);
 		return;
 	}
 
 
-	if (['deps'].indexOf(name) > -1) {
-		console.log('ERROR: html set tried to override deps');
+	if (_(['deps']).includes(name)) {
+		console.log('ERROR: html set tried to override', name);
+		console.trace()
+		return;
+	}
+
+	if (_(['_id']).includes(name) && this.dbData[name] !== undefined) {
+		console.log('ERROR: cant override', name, ' from value ', this.dbData[name], 'to value ', value)
+		console.trace()
 		return;
 	}
 
@@ -422,12 +431,12 @@ PageData.prototype.setData = function(name, value) {
 };
 
 
-PageData.prototype.getData = function(name) {
+PageData.prototype.getData = function (name) {
 	return this.dbData[name];
 };
 
 
-PageData.prototype.tests = function() {
+PageData.prototype.tests = function () {
 
 }
 

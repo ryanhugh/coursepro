@@ -118,8 +118,9 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 
 
 
-
+//this is called for each section that is found on the page
 EllucianClassParser.prototype.parseClassData = function(pageData,element) {
+
 
 	//if different name than this class, save to new class
 	var classToAddSectionTo = pageData;
@@ -223,7 +224,7 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 				for (var attrName in pageData.dbData) {
 
 					//dont copy over some attributes
-					if (_(['name','updatedByParent','url']).includes(attrName)) {
+					if (_(['name','updatedByParent','url','_id','crns','lastUpdateTime']).includes(attrName)) {
 						continue;
 					}
 					
@@ -243,6 +244,11 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 		}
 
 		sectionStartingData.crn = sectionURLParsed.crn;
+		if (!classToAddSectionTo.parsingData.crns) {
+			console.log('ERROR class parsing data has no crns attr??!?!??',classToAddSectionTo)
+			console.trace()
+			return;
+		};
 		classToAddSectionTo.parsingData.crns.push(sectionURLParsed.crn);
 
 	}.bind(this),element.children);
@@ -369,6 +375,13 @@ EllucianClassParser.prototype.parseClassData = function(pageData,element) {
 
 EllucianClassParser.prototype.onBeginParsing = function(pageData) {
 	pageData.parsingData.crns=[]
+
+	//create a parsingData.crns for any classes that are also deps
+	pageData.deps.forEach(function (dep) {
+		if (dep.parser == this) {
+			dep.parsingData.crns=[]
+		}
+	}.bind(this))
 };
 
 
