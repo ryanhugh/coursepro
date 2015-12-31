@@ -190,9 +190,11 @@ PageDataMgr.prototype.main = function () {
 
 	// 
 
-	dbUpdater.updateClassFromMongoId('5683fb2f36b66840e86bab4a',function (err) {
-		console.log("all done!",err)
-	}.bind(this))
+	console.log(process)
+
+	// dbUpdater.updateClassFromMongoId('5683fb2f36b66840e86bab4a',function (err) {
+	// 	console.log("all done!",err)
+	// }.bind(this))
 	return;
 
 

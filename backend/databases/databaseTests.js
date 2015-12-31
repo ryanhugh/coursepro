@@ -3,9 +3,11 @@ var _ = require('lodash')
 var queue = require('queue-async')
 var async = require('async')
 
+var baseDB = require('./baseDB')
 var usersDB = require('./usersDB')
 var classesDB = require('./classesDB')
 var sectionsDB = require('./sectionsDB')
+var macros = require('../macros')
 
 
 function DatabaseTests() {
@@ -15,23 +17,22 @@ function DatabaseTests() {
 
 
 DatabaseTests.prototype.go = function () {
+	if (!macros.UNIT_TESTS) {
+		console.log('wtf database tests called when db not in tests mode')
+		console.trace()
+		return;
+	};
 
-
+	//the test database is opened 
 	async.waterfall([
 			function (callback) {
 
 
-				//switch all the databases to test mode (which clears contents)
-				async.map(
-					this.databases,
-					function (database, callback) {
-						database.switchToTestsDB(callback)
-					}.bind(this),
-					function (err) {
-						callback(err)
-					});
-
-
+				//drop the tests database
+				baseDB.database.driver.dropDatabase(function (err) {
+					callback(err)
+				}.bind(this))
+				
 
 			}.bind(this),
 			function (callback) {

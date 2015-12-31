@@ -7,7 +7,7 @@ var classesDB = require('./classesDB')
 function Updater() {
 
 	this.onInterval();
-	// setInterval(this.onInterval.bind(this), 1800000)
+	setInterval(this.onInterval.bind(this), 1800000)
 }
 
 Updater.prototype.updateClassFromMongoId = function (classMongoId, callback) {
@@ -34,7 +34,7 @@ Updater.prototype.updateClassFromMongoId = function (classMongoId, callback) {
 			return;
 		}
 
-		console.log('done top level pagedata fetching from db ', pageData)
+		// console.log('done top level pagedata fetching from db ', pageData)
 			//updatedByParent:true
 		if (!pageData.dbData.url || pageData.dbData.updatedByParent) {
 			console.log('does not have url or updated by parent, skipping', pageData.dbData._id)

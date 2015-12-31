@@ -5,21 +5,21 @@ var monk = require('monk')
 
 var macros = require('../macros')
 
-var DATABASEURL_PROD = '52.20.189.150/coursepro_prod_new'
-var DATABASEURL_DEV = '52.20.189.150/coursepro_dev'
-
-//when one is changed the other must be changed too
-var database = monk(DATABASEURL_PROD);
-var databaseUrl = DATABASEURL_PROD;
+//all the db files (classes.js, sections.js etc) all share the same database instance,
+//so if it is closed or modified anywhere, it will affect them all
+var database = monk(macros.DATABASE_URL);
+// var databaseUrl = DATABASEURL_PROD;
 
 function BaseDB() {
 
+	this.database = database;
 	this.updateTimer = null;
 
 	this.loadTable();
 }
 
 BaseDB.prototype.loadTable = function () {
+
 
 	//if getting this.table undefined its BaseDB trying to run something...
 	if (this.tableName) {
@@ -243,31 +243,10 @@ BaseDB.prototype.close = function () {
 };
 
 
+
 BaseDB.prototype.loadTestData = function (callback) {
 	console.log('ERROR loadTestData called on ', this.constructor.name, ' which did not override basedb!');
 	return callback()
-};
-
-BaseDB.prototype.switchToTestsDB = function (callback) {
-	if (databaseUrl != DATABASEURL_DEV) {
-		database.close()
-		database = monk(DATABASEURL_DEV);
-		databaseUrl = DATABASEURL_DEV
-
-		//also clear the update timer
-		this.stopUpdates()
-	}
-
-	//load dev table and clear contents
-	this.loadTable()
-	this.table.drop(function (err) {
-		if (err && err.errmsg != 'ns not found') {
-			return callback(err)
-		}
-		else {
-			return callback()
-		}
-	}.bind(this))
 };
 
 

@@ -68,8 +68,10 @@ EmailMgr.prototype.sendEmail = function (toEmails, subject, html) {
 		return;
 	}
 
-	if (!macros.SEND_EMAILS) {
-		console.log('Not sending email to ', toEmails, ' because in test mode');
+	if (!macros.PRODUCTION) {
+		console.log('Not sending email to ', toEmails, ' because not in PRODUCTION mode');
+		console.log(subject)
+		console.log(html)
 		return;
 	}
 
@@ -163,7 +165,7 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newDat
 		var diffDescription = this.sectionAttrDescriptions[diffAttr.path[0]]
 		if (diffDescription) {
 			email.push(diffDescription + ' changed<br>')
-			console.log('DIFF of class/section:',diffAttr)
+			console.log('DIFF of class/section:', diffAttr)
 		}
 	}.bind(this))
 
