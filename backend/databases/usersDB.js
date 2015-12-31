@@ -582,7 +582,7 @@ UsersDB.prototype.addClassToWatchList = function (classMongoIds, sectionMongoIds
 
 			if (numClassesAdded === 0 && numSectionsAdded === 0) {
 				console.log('user ', user.email, 'is already watching class and sections', classMongoIds, sectionMongoIds)
-				return callback(null, 'All these classes and sections are already being watched!')
+				return callback(null, 'All these classes and sections are already being watched.')
 			};
 
 

@@ -2,12 +2,17 @@
 
 var usersDB = require('./usersDB')
 var classesDB = require('./classesDB')
-	// var sectionsDB = require('./sectionsDB')
+
+var macros = require('../macros')
+
+
 
 function Updater() {
 
 	this.onInterval();
-	setInterval(this.onInterval.bind(this), 1800000)
+
+	//30 min
+	setInterval(this.onInterval.bind(this), macros.DB_REFRESH_INTERVAL)
 }
 
 Updater.prototype.updateClassFromMongoId = function (classMongoId, callback) {

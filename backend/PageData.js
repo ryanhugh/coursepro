@@ -5,6 +5,7 @@ var _ = require('lodash');
 var queue = require("queue-async");
 var clone = require('clone');
 
+var macros = require('./macros')
 
 //this is called in 3 places
 //server.js
@@ -229,7 +230,7 @@ PageData.prototype.loadFromDB = function (callback) {
 
 PageData.prototype.isUpdated = function () {
 
-	var fiveMinAgo = new Date().getTime() - 300000;
+	var fiveMinAgo = new Date().getTime() - macros.OLD_PAGEDATA;
 	if (this.dbData.lastUpdateTime !== undefined && this.dbData.lastUpdateTime > fiveMinAgo) {
 		return true;
 	}
