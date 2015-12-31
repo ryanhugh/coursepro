@@ -82,9 +82,10 @@ exports.DATABASE_URL = databaseIp + '/' + databaseName;
 //if a page data is newer that this, there is a cache hit 
 //ms
 exports.OLD_PAGEDATA = 300000
+// exports.OLD_PAGEDATA = 150000
 
 
 // 30 min
 // interval for a updater.js
-// exports.DB_REFRESH_INTERVAL = 1800000
-exports.DB_REFRESH_INTERVAL = 300000
+exports.DB_REFRESH_INTERVAL = 1800000
+// exports.DB_REFRESH_INTERVAL = 300000
