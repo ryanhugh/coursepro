@@ -116,6 +116,9 @@ EmailMgr.prototype.generateDBDataURL = function (dbData) {
 };
 
 EmailMgr.prototype.printDBRow = function (dbData) {
+	console.log('Something called printDBRow, but this function isnt done yet!')
+	console.trace()
+	return;
 
 	var html = [];
 	for (var attrName in dbData) {
