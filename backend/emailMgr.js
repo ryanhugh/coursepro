@@ -3,6 +3,7 @@ var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 var fs = require('fs')
 var _ = require('lodash')
+var queue = require('queue-async')
 
 var macros = require('./macros')
 
@@ -30,68 +31,74 @@ function EmailMgr() {
 		crns: 'CRNs of sections in this class'
 	}
 
+	this.fromEmail = 'notifications@coursepro.io'
 
-	var password;
+	this.emailPasswdQueue = queue()
 
-	try {
-		password = fs.readFileSync('/etc/coursepro/passwd');
-	}
-	catch (e) {
-		if (e.code = 'ENOENT') {
-			console.log("WARNING: can't find password file, disabling email mgr");
-		}
-		else {
-			console.log('ERROR', e);
-		}
-		return;
-	}
+	this.emailPasswdQueue.defer(function (callback) {
+		fs.readFile('/etc/coursepro/emailPasswd', 'utf8', function (err, password) {
+			if (err) {
+				console.log('ERROR opening email password, disabling email mgr')
+				return callback()
+			}
 
+			password = password.trim();
 
-	password = password.toString().trim();
+			this.transporter = nodemailer.createTransport(smtpTransport({
+				host: 'mail.gandi.net',
+				port: 587,
+				auth: {
+					user: this.fromEmail,
+					pass: password
+				}
+			}));
+			callback()
 
-	this.transporter = nodemailer.createTransport(smtpTransport({
-		host: 'mail.gandi.net',
-		port: 25,
-		auth: {
-			user: 'ryan@coursepro.io',
-			pass: password
-		}
-	}));
+		}.bind(this))
+	}.bind(this))
 }
 
 
 EmailMgr.prototype.sendEmail = function (toEmails, subject, html) {
-	if (!this.transporter) {
-		console.log("WARNING: not sending email because don't have email password", toEmails);
-		console.log(subject)
-		console.log(html)
-		return;
-	}
+	this.emailPasswdQueue.awaitAll(function () {
+		if (!this.transporter) {
+			console.log("WARNING: not sending email because don't have email password", toEmails);
+			console.log(subject)
+			console.log(html)
+			return;
+		}
 
-	if (!macros.PRODUCTION) {
-		console.log('Not sending email to ', toEmails, ' because not in PRODUCTION mode');
-		console.log(subject)
-		console.log(html)
-		return;
-	}
-
-
-	toEmails.forEach(function (toEmail) {
-
-		toEmail = toEmail.trim();
+		// if (!macros.PRODUCTION) {
+		// 	console.log('Not sending email to ', toEmails, ' because not in PRODUCTION mode');
+		// 	console.log(subject)
+		// 	console.log(html)
+		// 	return;
+		// }
 
 
-		console.log('Sending email to ', toEmail);
+		toEmails.forEach(function (toEmail) {
 
-		// send mail
-		this.transporter.sendMail({
-			from: 'ryan@coursepro.io',
-			to: toEmail,
-			subject: subject,
-			html: html
-		});
+			toEmail = toEmail.trim();
+
+
+			console.log('Sending email to ', toEmail);
+
+			// send mail
+			this.transporter.sendMail({
+				from: this.fromEmail,
+				to: toEmail,
+				subject: subject,
+				html: html
+			},function (err,info) {
+				if (err) {
+					console.log('ERROR sending email',toEmails,subject,html,err)
+					return;
+				}
+				
+			}.bind(this));
+		}.bind(this))
 	}.bind(this))
-};
+}
 
 EmailMgr.prototype.sendThanksForRegistering = function (toEmail) {
 
@@ -175,7 +182,7 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newDat
 
 	email.push('<a href="' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
 
-	this.sendEmail(toEmails, 'A section you\'re watching was changed!', email.join(''))
+	this.sendEmail(toEmails, 'A section in ' + newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', email.join(''))
 
 	// email.push('And in case you\'re wondering, here is the section before and after the change:<br>\n')
 
@@ -201,15 +208,21 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (toEmails, oldData, newData,
 
 	email.push('<a href="' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
 
-	this.sendEmail(toEmails, 'A class you\'re watching was changed!', email.join(''))
+	this.sendEmail(toEmails, newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', email.join(''))
 
 }
 
 
 EmailMgr.prototype.tests = function () {
 
+	this.sendEmail(['rysquash@gmail.com'], 'CS 4800 was changed - CoursePro.io', 'Number of open seats in the classes changed<br><a href="https://coursepro.io/#neu.edu/201630/ENGW/1111/">View on CoursePro.io</a>')
 }
 
 
 EmailMgr.prototype.EmailMgr = EmailMgr;
 module.exports = new EmailMgr();
+
+
+if (require.main === module) {
+	module.exports.tests();
+}

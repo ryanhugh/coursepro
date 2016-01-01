@@ -35,9 +35,14 @@ function logData(req, info) {
 		info = {};
 	}
 
+	var remoteIp = req.connection.remoteAddress;
+	if (_(remoteIp).startsWith('::ffff:')) {
+		remoteIp=remoteIp.slice(7)
+	};
+
 
 	var logObject = {
-		'ip': req.connection.remoteAddress,
+		'ip': remoteIp,
 		'time': new Date().getTime(),
 		'userAgent': req.get('User-Agent'),
 		'referer': req.get('Referer'),
@@ -109,6 +114,21 @@ app.use(function (req, res, next) {
 	}
 })
 
+// add cache forever to external js libraries
+app.use(function (req, res, next) {
+	if (req.protocol == 'http') {
+		logData(req, {
+			msg: {
+				summary: 'http -> https redirect'
+			}
+		})
+		res.redirect('https://coursepro.io' + req.url);
+		return;
+	}
+	else {
+		next()
+	}
+})
 
 
 app.use(function (req, res, next) {
@@ -132,16 +152,6 @@ app.use(function (req, res, next) {
 });
 
 
-// add cache forever to external js libraries
-app.use(function (req, res, next) {
-	if (req.protocol == 'http') {
-		res.redirect('https://coursepro.io' + req.url);
-		return;
-	}
-	else {
-		next()
-	}
-})
 
 
 app.post('/listColleges', function (req, res) {
