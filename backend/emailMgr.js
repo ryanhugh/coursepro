@@ -17,7 +17,7 @@ function EmailMgr() {
 		crn: 'Class Registration Number',
 		meetings: 'Time, Location, or/and Professor',
 		seatsCapacity: 'Total number of seats in the class',
-		seatsRemaining: 'Number of open seats in the classes',
+		seatsRemaining: 'Number of open seats in the class',
 		waitCapacity: 'Total number of seats in the waitlist',
 		waitRemaining: 'Number of open seats on the waitlist'
 	}
@@ -59,8 +59,13 @@ function EmailMgr() {
 }
 
 
-EmailMgr.prototype.sendEmail = function (toEmails, subject, html) {
+EmailMgr.prototype.sendEmail = function (toEmails, subject, html,callback) {
 	this.emailPasswdQueue.awaitAll(function () {
+		if (!callback) {
+			callback = function () {}
+		};
+
+
 		if (!this.transporter) {
 			console.log("WARNING: not sending email because don't have email password", toEmails);
 			console.log(subject)
@@ -68,7 +73,7 @@ EmailMgr.prototype.sendEmail = function (toEmails, subject, html) {
 			return;
 		}
 
-		if (!macros.PRODUCTION) {
+		if (!macros.SEND_EMAILS) {
 			console.log('Not sending email to ', toEmails, ' because not in PRODUCTION mode');
 			console.log(subject)
 			console.log(html)
@@ -92,8 +97,9 @@ EmailMgr.prototype.sendEmail = function (toEmails, subject, html) {
 			},function (err,info) {
 				if (err) {
 					console.log('ERROR sending email',toEmails,subject,html,err)
-					return;
+					return callback(err)
 				}
+				callback()
 				
 			}.bind(this));
 		}.bind(this))
@@ -180,7 +186,7 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newDat
 	}.bind(this))
 
 
-	email.push('<a href="' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
+	email.push('<br><a href="' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
 
 	this.sendEmail(toEmails, 'A section in ' + newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', email.join(''))
 
@@ -206,7 +212,7 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (toEmails, oldData, newData,
 		}
 	}.bind(this))
 
-	email.push('<a href="' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
+	email.push('<br><a href="' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
 
 	this.sendEmail(toEmails, newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', email.join(''))
 
@@ -215,7 +221,7 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (toEmails, oldData, newData,
 
 EmailMgr.prototype.tests = function () {
 
-	this.sendEmail(['rysquash@gmail.com'], 'CS 4800 was changed - CoursePro.io', 'Number of open seats in the classes changed<br><a href="https://coursepro.io/#neu.edu/201630/ENGW/1111/">View on CoursePro.io</a>')
+	this.sendEmail(['rysquash@gmail.com'], 'CS 4800 was changed - CoursePro.io', 'Number of open seats in the class changed<br><br><a href="https://coursepro.io/#neu.edu/201630/ENGW/1111/">View on CoursePro.io</a>')
 }
 
 

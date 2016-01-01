@@ -89,3 +89,17 @@ exports.OLD_PAGEDATA = 300000
 // interval for a updater.js
 exports.DB_REFRESH_INTERVAL = 1800000
 // exports.DB_REFRESH_INTERVAL = 300000
+
+
+
+
+//enable or disable sending emails
+//by default, only send if in PRODUCTION
+if (exports.PRODUCTION) {
+	exports.SEND_EMAILS = true;
+}
+else {
+	exports.SEND_EMAILS = false
+}
+
+// exports.SEND_EMAILS = true;
