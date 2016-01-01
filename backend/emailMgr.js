@@ -68,12 +68,12 @@ EmailMgr.prototype.sendEmail = function (toEmails, subject, html) {
 			return;
 		}
 
-		// if (!macros.PRODUCTION) {
-		// 	console.log('Not sending email to ', toEmails, ' because not in PRODUCTION mode');
-		// 	console.log(subject)
-		// 	console.log(html)
-		// 	return;
-		// }
+		if (!macros.PRODUCTION) {
+			console.log('Not sending email to ', toEmails, ' because not in PRODUCTION mode');
+			console.log(subject)
+			console.log(html)
+			return;
+		}
 
 
 		toEmails.forEach(function (toEmail) {
