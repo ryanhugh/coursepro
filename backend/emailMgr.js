@@ -59,7 +59,7 @@ function EmailMgr() {
 }
 
 
-EmailMgr.prototype.sendEmail = function (toEmails, subject, html,callback) {
+EmailMgr.prototype.sendEmail = function (toEmails, subject, html, callback) {
 	this.emailPasswdQueue.awaitAll(function () {
 		if (!callback) {
 			callback = function () {}
@@ -94,13 +94,13 @@ EmailMgr.prototype.sendEmail = function (toEmails, subject, html,callback) {
 				to: toEmail,
 				subject: subject,
 				html: html
-			},function (err,info) {
+			}, function (err, info) {
 				if (err) {
-					console.log('ERROR sending email',toEmails,subject,html,err)
+					console.log('ERROR sending email', toEmails, subject, html, err)
 					return callback(err)
 				}
 				callback()
-				
+
 			}.bind(this));
 		}.bind(this))
 	}.bind(this))

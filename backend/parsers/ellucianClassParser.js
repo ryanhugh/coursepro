@@ -102,6 +102,10 @@ EllucianClassParser.prototype.parseTimeStamps = function(times,days) {
 		var start = moment(timesMatch[1],"hh:mm a").diff(timeZero,'seconds');
 		var end = moment(timesMatch[2],"hh:mm a").diff(timeZero,'seconds');
 
+		//one day, moment shouldn't return anything more that this...
+		start = start % 86400;
+		end = end % 86400;
+
 		retVal[dayIndex] = [{
 			start:start,
 			end:end
