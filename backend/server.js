@@ -593,25 +593,30 @@ app.post('/addClassToWatchList', function (req, res) {
 })
 
 
-app.post('/getUserWatchList', function (req, res) {
+app.post('/getUser', function (req, res) {
 	if (!req.body.loginKey) {
 		res.send(JSON.stringify({
-			error: 'getUserWatchList needs loginKey as json'
+			error: 'getUser needs loginKey as json'
 		}))
 		return;
 	}
 
 
-	usersDB.getUserWatchList(req.body.loginKey, function (err, watching) {
-		if (err || !watching) {
-			console.log('ERROR couldnt get watch list for user', req.body.loginKey)
-			console.log(err)
-			res.send('{"error":"uh oh"}');
-			return;
-		}
+	usersDB.find({
+			loginKey: req.body.loginKey
+		}, {
+			sanitize:true
+		},
+		function (err, user) {
+			if (err || !user) {
+				console.log('ERROR couldnt get watch list for user', req.body.loginKey)
+				console.log(err)
+				res.send('{"error":"uh oh"}');
+				return;
+			}
 
-		res.send(JSON.stringify(watching))
-	}.bind(this))
+			res.send(JSON.stringify(user))
+		}.bind(this))
 }.bind(this))
 
 

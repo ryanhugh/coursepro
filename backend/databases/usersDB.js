@@ -162,6 +162,11 @@ UsersDB.prototype.find = function (userData, config, callback) {
 		//if doc has email and userData has key, return null, because /auth should insert keys, which means this is probably someone guessing keys
 
 		if (userData.loginKey == doc.loginKey || (!userData.loginKey && !doc.loginKey)) {
+
+			if (doc.loginKey && config.sanitize) {
+				doc.loginKey = undefined
+			}
+
 			return callback(null, doc);
 		}
 		else {
@@ -610,7 +615,7 @@ UsersDB.prototype.getUserWatchList = function (loginKey, callback) {
 				return callback(null,null)
 			};
 
-			return callback(null,user.watching)
+			return callback(null,user)
 
 
 		}.bind(this))

@@ -111,7 +111,7 @@ BaseDB.prototype.updateDatabase = function (newData, oldData, callback) {
 BaseDB.prototype.removeInternalFields = function (doc) {
 	var retVal = {};
 	for (var attrName in doc) {
-		if (!_(['emails', 'ips', 'deps', 'updatedByParent']).includes(attrName)) {
+		if (!_(['ips', 'deps', 'updatedByParent','googleId']).includes(attrName)) {
 			retVal[attrName] = doc[attrName];
 		}
 	}
@@ -184,7 +184,6 @@ BaseDB.prototype.find = function (lookupValues, config, callback) {
 	if (lookupValues._id && lookupValues._id.length != 24) {
 		console.log('_id is included and is not 24 chars long, and therefore is invalid ', lookupValues._id, lookupValues._id.length)
 		console.log('more stuff', _.cloneDeep(lookupValues._id))
-			// if (true) {};
 		return callback('_id is included and is not 24 chars long, and therefore is invalid ' + lookupValues._id + lookupValues._id.length)
 	};
 

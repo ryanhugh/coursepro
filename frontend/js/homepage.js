@@ -9,12 +9,12 @@ function Homepage() {
 
 }
 
-Homepage.prototype.removeHomepage = function() {
+Homepage.prototype.removeHomepage = function () {
 	$(this.homepageElement).detach()
 };
 
 
-Homepage.prototype.isOnHomepage = function() {
+Homepage.prototype.isOnHomepage = function () {
 
 	// if the element has a parent, it is in the container, if not it needs to be added
 	if (this.homepageElement.parentElement) {
@@ -27,7 +27,7 @@ Homepage.prototype.isOnHomepage = function() {
 
 
 
-Homepage.prototype.show = function() {
+Homepage.prototype.show = function () {
 
 
 	if (this.isOnHomepage()) {

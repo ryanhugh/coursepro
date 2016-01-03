@@ -2,6 +2,7 @@
 var search = require('./search')
 var render = require('./render')
 var homepage = require('./homepage')
+var settings = require('./settings')
 
 function Main() {
 
@@ -13,13 +14,13 @@ function Main() {
 	}.bind(this)
 
 
-	$(".showHomepage").on('click', function() {
+	$(".showHomepage").on('click', function () {
 		this.clickHomeButton();
 	}.bind(this))
 }
 
 
-Main.prototype.clickHomeButton = function() {
+Main.prototype.clickHomeButton = function () {
 
 	if (homepage.isOnHomepage()) {
 		return;
@@ -28,20 +29,21 @@ Main.prototype.clickHomeButton = function() {
 
 	history.pushState(null, null, "#"); // only do this if icon clicked, not if back used to show
 
+	settings.hide();
 	render.clearContainer();
 	homepage.show();
 };
 
 
 
-Main.prototype.updateFromHash = function() {
+Main.prototype.updateFromHash = function () {
 	var values = window.location.hash.slice(1).split('/')
 
 
 	//remove empty strings
 	_.pull(values, "");
 
-	values.forEach(function(value, index) {
+	values.forEach(function (value, index) {
 		values[index] = decodeURIComponent(value)
 	}.bind(this))
 
@@ -50,6 +52,7 @@ Main.prototype.updateFromHash = function() {
 	if (values.length == 0) {
 		selectorsMgr.resetAllSelectors()
 		render.clearContainer()
+		settings.hide()
 		homepage.show();
 		return;
 	}
@@ -71,6 +74,11 @@ Main.prototype.updateFromHash = function() {
 			console.log('not running tests')
 		}
 	}
+	else if (values[0] == 'settings') {
+		homepage.removeHomepage();
+		render.clearContainer()
+		settings.show()
+	}
 	else {
 
 
@@ -81,7 +89,7 @@ Main.prototype.updateFromHash = function() {
 }
 
 // http://stackoverflow.com/questions/19999388/check-if-user-is-using-ie-with-jquery
-Main.prototype.checkForIE = function() {
+Main.prototype.checkForIE = function () {
 	var ua = navigator.userAgent;
 	if (_(ua).includes("MSIE ") || ua.match(/Trident.*rv\:11\./)) {
 		alert("This site doesn't work so great in Internet Explorer/Edge. Try upgrading to Google Chrome or Firefox!")
@@ -89,7 +97,7 @@ Main.prototype.checkForIE = function() {
 };
 
 
-Main.prototype.main = function() {
+Main.prototype.main = function () {
 
 	this.checkForIE()
 
@@ -101,7 +109,7 @@ Main.prototype.main = function() {
 Main.prototype.Main = Main;
 var instance = new Main();
 
-$(function() {
+$(function () {
 	instance.main();
 })
 

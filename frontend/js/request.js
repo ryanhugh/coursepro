@@ -10,7 +10,7 @@ function Request(config, callback) {
 	this.cache = [];
 }
 
-Request.prototype.randomString = function() {
+Request.prototype.randomString = function () {
 	var mask = '';
 	var length = 200;
 	mask += 'abcdefghijklmnopqrstuvwxyz';
@@ -27,7 +27,7 @@ Request.prototype.randomString = function() {
 //if they share a key:value, the key goes in same
 //if compareTo is missing key in Src, goes in missing
 //if compareTo has different value, goes in different
-Request.prototype.findDiff = function(compareSrc, compareTo) {
+Request.prototype.findDiff = function (compareSrc, compareTo) {
 
 	var retVal = {
 		missing: [],
@@ -55,7 +55,7 @@ Request.prototype.findDiff = function(compareSrc, compareTo) {
 //if config matches, return the body
 //if the config.body is fully contained within the body of any cache item, return the body
 //else return no
-Request.prototype.searchCache = function(config, callback) {
+Request.prototype.searchCache = function (config, callback) {
 	for (var i = 0; i < this.cache.length; i++) {
 		var cacheItem = this.cache[i];
 
@@ -101,7 +101,7 @@ Request.prototype.searchCache = function(config, callback) {
 
 
 		async.waterfall([
-			function(callback) {
+			function (callback) {
 
 
 				//if the item in the cache is still loading, add a callback to fire and then process when its done
@@ -117,7 +117,7 @@ Request.prototype.searchCache = function(config, callback) {
 					return callback('internal error');
 				}
 			}.bind(this)
-		], function(err, supersetResults) {
+		], function (err, supersetResults) {
 			if (err) {
 				return callback(err);
 			}
@@ -144,7 +144,7 @@ Request.prototype.searchCache = function(config, callback) {
 }
 
 
-Request.prototype.fireRequest = function(config, callback) {
+Request.prototype.fireRequest = function (config, callback) {
 
 	var cacheItem = {
 		loadingStatus: this.LOADINGSTATUS_LOADING,
@@ -158,6 +158,12 @@ Request.prototype.fireRequest = function(config, callback) {
 
 	//add the userid
 	if (config.type === 'POST') {
+
+		if (!config.body) {
+			config.body = {}
+			body = {}
+		};
+
 		if (config.body.userId) {
 			console.log('error config.body had a userId??')
 		}
@@ -170,13 +176,13 @@ Request.prototype.fireRequest = function(config, callback) {
 		body.userId = localStorage.userId;
 	}
 
-	if (config.auth && localStorage.loginKey) {
+	if (config.auth && localStorage.loginKey && config.type == 'POST') {
 		body.loginKey = localStorage.loginKey
 	};
 
 
 	var xmlhttp = new XMLHttpRequest();
-	xmlhttp.onreadystatechange = function() {
+	xmlhttp.onreadystatechange = function () {
 		if (xmlhttp.readyState != XMLHttpRequest.DONE) {
 			return;
 		}
@@ -195,7 +201,7 @@ Request.prototype.fireRequest = function(config, callback) {
 			console.log('error, bad code recievied', xmlhttp.status, err)
 
 			//also need to call all the other callbacks
-			cacheItem.callbacks.forEach(function(callback) {
+			cacheItem.callbacks.forEach(function (callback) {
 				callback(err);
 			}.bind(this))
 
@@ -207,7 +213,7 @@ Request.prototype.fireRequest = function(config, callback) {
 		cacheItem.loadingStatus = this.LOADINGSTATUS_DONE;
 
 		callback(null, _.cloneDeep(response));
-		cacheItem.callbacks.forEach(function(callback) {
+		cacheItem.callbacks.forEach(function (callback) {
 			callback(null, _.cloneDeep(response));
 		}.bind(this))
 
@@ -222,12 +228,12 @@ Request.prototype.fireRequest = function(config, callback) {
 
 //config.auth : weather or not to send loginKey, default no
 //useCache : weather or not to use cache, default yes
-Request.prototype.go = function(config, callback) {
+Request.prototype.go = function (config, callback) {
 
 	//default values
 	if (!callback) {
 		console.log('no callback given??', config, callback)
-		callback = function() {}
+		callback = function () {}
 	}
 
 	//if given string, convert it to config object
@@ -259,7 +265,7 @@ Request.prototype.go = function(config, callback) {
 
 
 	async.waterfall([
-		function(callback) {
+		function (callback) {
 
 			//if use cache, search cache
 			//if cache it, return
@@ -275,7 +281,7 @@ Request.prototype.go = function(config, callback) {
 			}
 		}.bind(this)
 
-	], function(err, results) {
+	], function (err, results) {
 		if (err) {
 			return callback(err);
 		}
@@ -297,6 +303,6 @@ Request.prototype.go = function(config, callback) {
 var instance = new Request();
 
 Request.prototype.Request = Request;
-module.exports = function(config, callback) {
+module.exports = function (config, callback) {
 	instance.go(config, callback);
 };
