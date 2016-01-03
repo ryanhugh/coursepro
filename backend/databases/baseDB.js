@@ -37,7 +37,11 @@ BaseDB.prototype.shouldUpdateDB = function (newData, oldData) {
 
 		//check difference for all other attributes
 		if (!_.isEqual(newData[attrName], oldData[attrName])) {
-			console.log('updating db because of change in', attrName)
+
+			//only print lastupdate time if in verbose mode
+			if (attrName!='lastUpdateTime' || macros.VERBOSE) {
+				console.log('updating db because of change in', attrName)
+			};
 
 			//this should not happen
 			if (attrName == '_id' && newData[attrName] != oldData[attrName]) {

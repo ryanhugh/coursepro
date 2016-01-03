@@ -6,6 +6,8 @@ var _ = require('lodash');
 var URI = require('urijs');
 var assert = require('assert');
 
+var macros = require('./macros')
+
 
 function Pointer() {
 	this.maxRetryCount = 35;
@@ -13,7 +15,7 @@ function Pointer() {
 }
 
 
-Pointer.prototype.handleRequestResponce = function(body, callback) {
+Pointer.prototype.handleRequestResponce = function (body, callback) {
 	var handler = new htmlparser.DomHandler(callback);
 	var parser = new htmlparser.Parser(handler);
 	parser.write(body);
@@ -22,7 +24,7 @@ Pointer.prototype.handleRequestResponce = function(body, callback) {
 
 
 
-Pointer.prototype.fireRequest = function(url, options, callback) {
+Pointer.prototype.fireRequest = function (url, options, callback) {
 
 	var urlParsed = new URI(url);
 
@@ -64,14 +66,18 @@ Pointer.prototype.fireRequest = function(url, options, callback) {
 			return callback('no content type for post')
 		};
 
+		if (macros.VERBOSE) {
+			console.log('firing post len ', options.payload.length, ' to ', url);
+			console.log('data', options.payload)
+		}
 
-		console.log('firing post len ', options.payload.length, ' to ', url);
-		console.log('data', options.payload)
 		needle.post(url, options.payload, needleConfig, callback);
 	}
 	else {
+		if (macros.VERBOSE) {
+			console.log('firing get to ', url);
+		}
 
-		console.log('firing get to ', url);
 		needle.get(url, needleConfig, callback);
 	}
 	//callback is called by the needle code
@@ -79,7 +85,7 @@ Pointer.prototype.fireRequest = function(url, options, callback) {
 
 
 
-Pointer.prototype.getBaseHost = function(url) {
+Pointer.prototype.getBaseHost = function (url) {
 	var homepage = new URI(url).hostname();
 	if (!homepage || homepage == '') {
 		console.log('ERROR: could not find homepage of', url);
@@ -96,12 +102,12 @@ Pointer.prototype.getBaseHost = function(url) {
 }
 
 
-Pointer.prototype.payloadJSONtoString = function(json) {
+Pointer.prototype.payloadJSONtoString = function (json) {
 
 	var urlParsed = new URI();
 
 	//create the string
-	json.forEach(function(entry) {
+	json.forEach(function (entry) {
 		urlParsed.addQuery(entry.name, entry.value)
 	});
 	return urlParsed.query()
@@ -111,13 +117,13 @@ Pointer.prototype.payloadJSONtoString = function(json) {
 
 //fire the connection and try again functions
 
-Pointer.prototype.tryAgain = function(url, options, callback, tryCount) {
-	setTimeout(function() {
+Pointer.prototype.tryAgain = function (url, options, callback, tryCount) {
+	setTimeout(function () {
 		this.request(url, options, callback, tryCount + 1);
 	}.bind(this), 20000 + parseInt(Math.random() * 15000));
 };
 
-Pointer.prototype.doAnyStringsInArray = function(array, body) {
+Pointer.prototype.doAnyStringsInArray = function (array, body) {
 	for (var i = 0; i < array.length; i++) {
 		if (_(body).includes(array[i])) {
 			return true;
@@ -139,7 +145,7 @@ var throtteling = {
 
 
 //try count is internal use only
-Pointer.prototype.request = function(url, options, callback, tryCount) {
+Pointer.prototype.request = function (url, options, callback, tryCount) {
 	if (!options) {
 		options = {}
 	};
@@ -158,7 +164,7 @@ Pointer.prototype.request = function(url, options, callback, tryCount) {
 	}
 
 
-	this.fireRequest(url, options, function(error, response, body) {
+	this.fireRequest(url, options, function (error, response, body) {
 		this.openRequests--;
 
 		if (error) {
@@ -194,7 +200,7 @@ Pointer.prototype.request = function(url, options, callback, tryCount) {
 
 
 
-		this.handleRequestResponce(body, function(err, dom) {
+		this.handleRequestResponce(body, function (err, dom) {
 			if (error) {
 				console.log('ERROR: cant parse html of ', url)
 				return callback(error);
@@ -210,7 +216,7 @@ Pointer.prototype.request = function(url, options, callback, tryCount) {
 
 
 
-Pointer.prototype.tests = function() {
+Pointer.prototype.tests = function () {
 	assert.equal(this.payloadJSONtoString([{
 		name: 'name',
 		value: 'value'

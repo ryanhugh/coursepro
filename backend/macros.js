@@ -1,5 +1,4 @@
 'use strict';
-var path = require('path');
 var fs = require('fs')
 
 //change the current working directory to the directory with package.json
@@ -87,6 +86,7 @@ exports.OLD_PAGEDATA = 300000
 
 // 30 min
 // interval for a updater.js
+// if this is changed also change the description in WatchClassesModel.js
 exports.DB_REFRESH_INTERVAL = 1800000
 // exports.DB_REFRESH_INTERVAL = 300000
 
@@ -103,3 +103,7 @@ else {
 }
 
 // exports.SEND_EMAILS = true;
+
+
+
+exports.VERBOSE = false;

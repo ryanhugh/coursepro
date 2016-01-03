@@ -113,7 +113,9 @@ PageData.prototype.setParser = function (parser) {
 
 
 	this.parser = parser;
-	console.log('Using parser:', this.parser.constructor.name, 'for url', this.dbData.url, ' and name', parser.name);
+	if (macros.VERBOSE) {
+		console.log('Using parser:', this.parser.constructor.name, 'for url', this.dbData.url, ' and name', parser.name);
+	}
 
 	var newDatabase = parser.getDatabase(this);
 
@@ -213,7 +215,7 @@ PageData.prototype.loadFromDB = function (callback) {
 
 			// console.log('loading from db',this)
 			//log when the main pageData (the top of the tree) is done loading
-			if (!this.parent) {
+			if (!this.parent && macros.VERBOSE) {
 				if (this.parser) {
 					console.log('info pageData with no parent done loading!', this.parser.name);
 				}
@@ -422,9 +424,13 @@ PageData.prototype.setData = function (name, value) {
 		return;
 	}
 
-
+	// if there was an old value, and new value is different, log warning
 	if (this.dbData[name] !== undefined && !_.isEqual(this.dbData[name], value)) {
-		console.log('warning, overriding pageData.dbData.' + name + ' with new data existing:', JSON.stringify(this.dbData[name]), JSON.stringify(value))
+
+		//only log change in last update time if in verbose mode
+		if (name!='lastUpdateTime' || macros.VERBOSE) {
+			console.log('warning, overriding pageData.dbData.' + name + ' with new data existing:', JSON.stringify(this.dbData[name]), JSON.stringify(value))
+		}
 	}
 
 
