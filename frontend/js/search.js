@@ -22,7 +22,7 @@ function Search() {
 	document.onclick = this.closeSearchBox.bind(this);
 
 
-	this.searchBox.onkeypress = function(e) {
+	this.searchBox.onkeypress = function (e) {
 		if (!e) e = window.event;
 		var keyCode = e.keyCode || e.which;
 		if (keyCode == '13') {
@@ -32,13 +32,13 @@ function Search() {
 
 	this.searchSubmitButton.onclick = this.searchFromEntry.bind(this);
 }
-Search.prototype.closeSearchBox = function(event) {
+Search.prototype.closeSearchBox = function (event) {
 	this.isOpen = false;
 	$("#searchDropdown").parent().removeClass('open');
 };
 
 
-Search.prototype.openSearchBox = function(event) {
+Search.prototype.openSearchBox = function (event) {
 
 	this.isOpen = true;
 	$("#searchDropdown").dropdown('toggle'); //toggle only opens it and does not close it...
@@ -65,7 +65,7 @@ Search.prototype.openSearchBox = function(event) {
 	};
 };
 
-Search.prototype.updateHash = function(host, termId, subject, value) {
+Search.prototype.updateHash = function (host, termId, subject, value) {
 
 	var hash = 'search/' + encodeURIComponent(host) + '/' + encodeURIComponent(termId) + '/' + encodeURIComponent(subject) + '/' + encodeURIComponent(value)
 
@@ -77,7 +77,7 @@ Search.prototype.updateHash = function(host, termId, subject, value) {
 	}
 }
 
-Search.prototype.searchFromString = function(host, termId, subject, string) {
+Search.prototype.searchFromString = function (host, termId, subject, string) {
 	if (!string) {
 		return
 	};
@@ -85,7 +85,7 @@ Search.prototype.searchFromString = function(host, termId, subject, string) {
 	this.go(host, termId, subject, string);
 };
 
-Search.prototype.searchFromEntry = function() {
+Search.prototype.searchFromEntry = function () {
 	var host = selectorsMgr.college.getValue();
 	if (!host) {
 		console.log('error: need to select college first');
@@ -116,7 +116,7 @@ Search.prototype.searchFromEntry = function() {
 
 
 
-Search.prototype.go = function(host, termId, subject, value) {
+Search.prototype.go = function (host, termId, subject, value) {
 	value = value.trim()
 	if (!value) {
 		return;
@@ -152,13 +152,13 @@ Search.prototype.go = function(host, termId, subject, value) {
 			subject: subject,
 			value: value
 		}
-	}, function(err, results) {
+	}, function (err, results) {
 		console.log('found ', results.length, ' classes!');
 
 
 		//update the deeplink here
 		if (results.length > 0) {
-			treeMgr.showClasses(results, function(err, tree) {
+			treeMgr.showClasses(results, function (err, tree) {
 				if (err) {
 					console.log('ERROR rendering tree...?', err, tree);
 					return;

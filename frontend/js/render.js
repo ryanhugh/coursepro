@@ -4,6 +4,7 @@ var macros = require('./macros')
 
 function Render() {
 
+
 	this.template = document.getElementsByClassName('templatePanelId')[0];
 	this.container = document.getElementById('containerId');
 	this.navBar = document.getElementById('navBar');
@@ -31,7 +32,7 @@ function Render() {
 
 
 // http://stackoverflow.com/questions/4270485/drawing-lines-on-html-page
-Render.prototype.drawLine = function(tree, x1, y1, x2, y2, color) {
+Render.prototype.drawLine = function (tree, x1, y1, x2, y2, color) {
 
 	if (y1 < y2) {
 		var pom = y1;
@@ -95,12 +96,12 @@ Render.prototype.drawLine = function(tree, x1, y1, x2, y2, color) {
 }
 
 
-Render.prototype.calculateLine = function(tree) {
+Render.prototype.calculateLine = function (tree) {
 	if (tree.hidden) {
 		return;
 	}
 
-	tree.allParents.forEach(function(parent) {
+	tree.allParents.forEach(function (parent) {
 		if (!parent) {
 			console.log('error wtf there is an undefined parent added to tree ', tree)
 			return
@@ -134,7 +135,7 @@ Render.prototype.calculateLine = function(tree) {
 	}.bind(this))
 
 }
-Render.prototype.getColor = function(type) {
+Render.prototype.getColor = function (type) {
 	if (type == 'or') {
 		return '#0000ff'
 	}
@@ -146,7 +147,7 @@ Render.prototype.getColor = function(type) {
 		console.trace()
 	}
 }
-Render.prototype.addToParentDiv = function(tree) {
+Render.prototype.addToParentDiv = function (tree) {
 
 	if (tree.lowestParent && !tree.lowestParent.panel) {
 		console.log('error tree.lowestParent has no panel tree:', tree)
@@ -167,7 +168,7 @@ Render.prototype.addToParentDiv = function(tree) {
 		$(tree.div).insertAfter(this.padding)
 	}
 }
-Render.prototype.getOptionalS = function(num) {
+Render.prototype.getOptionalS = function (num) {
 	if (num === 1) {
 		return ''
 	}
@@ -181,7 +182,7 @@ Render.prototype.getOptionalS = function(num) {
 //and then the coreqs are put on an offset in the top right direction
 
 
-Render.prototype.calcPanelSize = function(tree) {
+Render.prototype.calcPanelSize = function (tree) {
 
 	//position the panel to the absolute position of the div
 	this.resetPanel(tree, false);
@@ -192,15 +193,15 @@ Render.prototype.calcPanelSize = function(tree) {
 	tree.width = tree.panel.offsetWidth;
 	tree.height = tree.panel.offsetHeight;
 
-	tree.prereqs.values.forEach(function(subTree) {
+	tree.prereqs.values.forEach(function (subTree) {
 		this.calcPanelSize(subTree);
 	}.bind(this))
 
-	tree.coreqs.values.forEach(function(subTree) {
+	tree.coreqs.values.forEach(function (subTree) {
 		this.calcPanelSize(subTree);
 	}.bind(this));
 }
-Render.prototype.addStructure = function(tree) {
+Render.prototype.addStructure = function (tree) {
 
 	if (!tree.div) {
 
@@ -233,11 +234,11 @@ Render.prototype.addStructure = function(tree) {
 		console.log('tree has already been rendered')
 	}
 
-	tree.prereqs.values.forEach(function(subTree) {
+	tree.prereqs.values.forEach(function (subTree) {
 		this.addStructure(subTree);
 	}.bind(this));
 }
-Render.prototype.calcPanelPos = function(tree) {
+Render.prototype.calcPanelPos = function (tree) {
 
 	if (tree.coreqIndex === undefined) {
 
@@ -258,18 +259,18 @@ Render.prototype.calcPanelPos = function(tree) {
 	this.resetPanel(tree);
 
 
-	tree.prereqs.values.forEach(function(subTree) {
+	tree.prereqs.values.forEach(function (subTree) {
 		this.calcPanelPos(subTree);
 	}.bind(this));
 
-	tree.coreqs.values.forEach(function(subTree) {
+	tree.coreqs.values.forEach(function (subTree) {
 		this.calcPanelPos(subTree);
 	}.bind(this));
 }
 
 
 //only requires .width and .height if resizing
-Render.prototype.resetPanel = function(tree, relocate) {
+Render.prototype.resetPanel = function (tree, relocate) {
 	if (relocate === undefined) {
 		relocate = true;
 	};
@@ -361,7 +362,7 @@ Render.prototype.resetPanel = function(tree, relocate) {
 
 	//calculate the z Index
 	//z index is 999 if mouse if over element, else calculate
-	tree.panel.onmouseover = function(event) {
+	tree.panel.onmouseover = function (event) {
 		if (tree.isExpanded) {
 			tree.panel.style.zIndex = '1500';
 		}
@@ -370,7 +371,7 @@ Render.prototype.resetPanel = function(tree, relocate) {
 		}
 	}.bind(this);
 
-	tree.panel.onmouseout = function() {
+	tree.panel.onmouseout = function () {
 		if (tree.isExpanded) {
 			return;
 		};
@@ -388,18 +389,18 @@ Render.prototype.resetPanel = function(tree, relocate) {
 }
 
 
-Render.prototype.addLines = function(tree) {
+Render.prototype.addLines = function (tree) {
 	if (!tree.hidden) {
 		this.calculateLine(tree);
 	}
 
-	tree.prereqs.values.forEach(function(subTree) {
+	tree.prereqs.values.forEach(function (subTree) {
 		this.addLines(subTree);
 	}.bind(this))
 }
 
 //this is called before the loading starts
-Render.prototype.clearContainer = function() {
+Render.prototype.clearContainer = function () {
 
 	homepage.removeHomepage()
 
@@ -409,17 +410,17 @@ Render.prototype.clearContainer = function() {
 	}
 
 }
-Render.prototype.showSpinner = function() {
+Render.prototype.showSpinner = function () {
 	this.spinner.style.display = ''
 	this.container.appendChild(this.spinner)
 };
-Render.prototype.hideSpinner = function() {
+Render.prototype.hideSpinner = function () {
 	this.spinner.style.display = 'none'
 };
 
 
 
-Render.prototype.go = function(tree) {
+Render.prototype.go = function (tree) {
 
 	this.hideSpinner();
 

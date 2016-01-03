@@ -14,7 +14,7 @@ function EmailMgr() {
 
 // http://stackoverflow.com/a/46181/11236
 // this is also done client side
-EmailMgr.prototype.validateEmail = function(email) {
+EmailMgr.prototype.validateEmail = function (email) {
 	if (!email) {
 		return false;
 	};
@@ -30,7 +30,7 @@ EmailMgr.prototype.validateEmail = function(email) {
 
 
 
-EmailMgr.prototype.submitTo = function(url, callback) {
+EmailMgr.prototype.submitTo = function (url, callback) {
 
 
 	var box = document.getElementById('emailBoxId');
@@ -48,11 +48,11 @@ EmailMgr.prototype.submitTo = function(url, callback) {
 
 	request({
 		url: url,
-		auth:true,
+		auth: true,
 		body: {
 			email: email
 		}
-	}, function(err, response) {
+	}, function (err, response) {
 		if (err) {
 
 			//server error, probably will not happen but can be a bunch of different stuff
@@ -77,9 +77,9 @@ EmailMgr.prototype.submitTo = function(url, callback) {
 
 
 
-EmailMgr.prototype.onEmailSubmit = function(email) {
+EmailMgr.prototype.onEmailSubmit = function (email) {
 
-	this.submitTo('/registerForEmails', function(err) {
+	this.submitTo('/registerForEmails', function (err) {
 
 		if (err == 'invalid email') {
 			this.emailError.style.display = '';

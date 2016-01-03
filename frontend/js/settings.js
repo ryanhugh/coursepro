@@ -2,15 +2,18 @@
 
 var request = require('./request')
 var angular = require('angular')
+var angularDirectives = angular.module('app', []); //move this to abstraction layer
 
-function Settings() {
+function Settings($scope) {
+
+	this.$scope = $scope
 
 	this.settingsElement = document.getElementById('settingsId');
 	this.masterContainer = document.getElementById('masterContainerId');
 }
 
-Settings.prototype.populateFields = function(userData) {
-	
+Settings.prototype.populateFields = function (userData) {
+
 };
 
 Settings.prototype.isVisible = function () {
@@ -30,15 +33,15 @@ Settings.prototype.show = function () {
 
 	request({
 		url: '/getUser',
-		type:'POST',
+		type: 'POST',
 		auth: true
 	}, function (err, user) {
 		if (err) {
-			console.log('ERROR',err)
+			console.log('ERROR', err)
 			return;
 		}
 
-		this.populateFields(userData)
+		this.populateFields(user)
 	}.bind(this))
 
 	if (this.isVisible()) {
@@ -60,4 +63,15 @@ Settings.prototype.hide = function () {
 
 
 Settings.prototype.Settings = Settings;
-module.exports = new Settings();
+// module.exports = new Settings();
+
+angularDirectives.directive('settings', function () {
+	return {
+		templateUrl: 'settings.html',
+		scope: true,
+		controller: Settings
+	};
+}.bind(this))
+
+
+// this.templateUrl = 'test.html'

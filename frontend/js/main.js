@@ -61,7 +61,7 @@ Main.prototype.updateFromHash = function () {
 
 	//first term is search, last is the search term
 	if (values[0] == 'search') {
-		selectorsMgr.setSelectors(values.slice(1, values.length - 1), false);
+		selectorsMgr.setSelectors(values.slice(1, values.length - 1), false);	
 		search.searchFromString(values[1], values[2], values[3], values[4])
 	}
 	else if (values[0] == 'tests') {
@@ -77,7 +77,8 @@ Main.prototype.updateFromHash = function () {
 	else if (values[0] == 'settings') {
 		homepage.removeHomepage();
 		render.clearContainer()
-		settings.show()
+		// settings.show()
+		document.getElementById('settingsId')
 	}
 	else {
 
