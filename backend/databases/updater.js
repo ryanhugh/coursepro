@@ -58,7 +58,7 @@ Updater.prototype.updateClassFromMongoId = function (classMongoId, callback) {
 Updater.prototype.onInterval = function () {
 	console.log('updater running!')
 
-	usersDB.getUserWatchData(function (err, classWatchCache) {
+	usersDB.getUsersWatchCache(function (err, classWatchCache) {
 
 		for (var classMongoId in classWatchCache.classes) {
 			console.log('updating class', classMongoId)

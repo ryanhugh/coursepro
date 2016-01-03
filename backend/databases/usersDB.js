@@ -394,7 +394,7 @@ UsersDB.prototype.authenticateUser = function (idToken, ip, callback) {
 	}.bind(this));
 }
 
-UsersDB.prototype.getUserWatchData = function (callback) {
+UsersDB.prototype.getUsersWatchCache = function (callback) {
 
 	var currTime = new Date().getTime()
 
@@ -486,7 +486,7 @@ UsersDB.prototype.classUpdated = function (oldData, newData, callback) {
 	};
 
 
-	this.getUserWatchData(function (err, watchCache) {
+	this.getUsersWatchCache(function (err, watchCache) {
 		if (err) {
 			return callback(err)
 		}
@@ -516,7 +516,7 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 	};
 
 
-	this.getUserWatchData(function (err, watchCache) {
+	this.getUsersWatchCache(function (err, watchCache) {
 		if (err) {
 			return callback(err)
 		}
@@ -596,6 +596,26 @@ UsersDB.prototype.addClassToWatchList = function (classMongoIds, sectionMongoIds
 		}.bind(this))
 };
 
+UsersDB.prototype.getUserWatchList = function (loginKey, callback) {
+	this.find({
+			loginKey: loginKey
+		}, {},
+		function (err, user) {
+			if (err) {
+				console.log("ERROR getting user watch list,",loginKey)
+				return callback(err)
+			}
+			if (!user) {
+				console.log('ERROR couldnt get user watch list of user that dosent exist')
+				return callback(null,null)
+			};
+
+			return callback(null,user.watching)
+
+
+		}.bind(this))
+};
+
 
 
 UsersDB.prototype.loadTestData = function (callback) {
@@ -635,7 +655,7 @@ UsersDB.prototype.tests = function (callback) {
 	// 	console.log(results)
 	// }.bind(this))
 
-	// this.getUserWatchData(function (err, data) {
+	// this.getUsersWatchCache(function (err, data) {
 	// 	console.log(err, JSON.stringify(data))
 	// 	callback()
 	// 		// this.close()

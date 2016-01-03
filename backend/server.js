@@ -37,7 +37,7 @@ function logData(req, info) {
 
 	var remoteIp = req.connection.remoteAddress;
 	if (_(remoteIp).startsWith('::ffff:')) {
-		remoteIp=remoteIp.slice(7)
+		remoteIp = remoteIp.slice(7)
 	};
 
 
@@ -150,7 +150,6 @@ app.use(function (req, res, next) {
 	}
 	next()
 });
-
 
 
 
@@ -492,7 +491,7 @@ app.post('/authenticateUser', function (req, res) {
 app.post('/addClassToWatchList', function (req, res) {
 	if (!req.body.loginKey || !req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) {
 		res.send(JSON.stringify({
-			error:'addClassToWatchList needs loginKey, host, termId, subject, and classId as json'
+			error: 'addClassToWatchList needs loginKey, host, termId, subject, and classId as json'
 		}))
 		return;
 	}
@@ -593,6 +592,27 @@ app.post('/addClassToWatchList', function (req, res) {
 		}.bind(this))
 })
 
+
+app.post('/getUserWatchList', function (req, res) {
+	if (!req.body.loginKey) {
+		res.send(JSON.stringify({
+			error: 'getUserWatchList needs loginKey as json'
+		}))
+		return;
+	}
+
+
+	usersDB.getUserWatchList(req.body.loginKey, function (err, watching) {
+		if (err || !watching) {
+			console.log('ERROR couldnt get watch list for user', req.body.loginKey)
+			console.log(err)
+			res.send('{"error":"uh oh"}');
+			return;
+		}
+
+		res.send(JSON.stringify(watching))
+	}.bind(this))
+}.bind(this))
 
 
 app.post('/log', function (req, res) {
