@@ -545,6 +545,17 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 						console.log('WARNING Not sending email for diff',aDiff)
 					}
 				}
+				else if (aDiff.path.length == 1 && aDiff.path[0] == 'waitRemaining') {
+
+					//only send email if was <=0 and increase to above 0
+					// "increased to a positive number" is goal, but then like 25 -> 26 would fire...
+					if (aDiff.lhs<=0 && aDiff.rhs>0) {
+						shouldSendEmail = true;
+					}
+					else {
+						console.log('WARNING Not sending email for diff',aDiff)
+					}
+				}
 				else {
 					shouldSendEmail = true;
 				}
