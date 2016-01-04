@@ -1,0 +1,93 @@
+<br>
+<div class="page-header">
+	<h1>
+		Settings
+	</h1>
+</div>
+
+<div class="page-header">
+	<h2>
+		Profile
+	</h2>
+</div>
+<div>
+	<table class="table table-striped">
+		<tbody>
+			<tr>
+				<td>Name</td>
+				<td>{{user.name}}</td>
+			</tr>
+			<tr>
+				<td>Email</td>
+				<td>{{user.email}}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="page-header">
+	<h2>
+		Classes Watching
+	</h2>
+</div>
+
+
+<div class="panel-group" id="accordion" ng-repeat="class in classes">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a class="accordion-toggle" data-toggle="collapse" ng-href="#{{class._id}}">
+					{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}&nbsp;&nbsp;({{class.termText}})
+				</a>
+			</h4>
+		</div>
+		<div id="{{class._id}}" class="panel-collapse collapse in">
+			<div class="panel-body">
+
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Class Registration Number</th>
+							<th>Start Times</th>
+							<th>Open seats/Total Seats</th>
+							<th>Remove</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>56438</td>
+							<td>1:35pm - 4pm</td>
+							<td>5/80</td>
+							<td><span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+						</tr>
+						<tr>
+							<td>18915</td>
+							<td>1:35pm - 4pm</td>
+							<td>5/80</td>
+							<td><span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+						</tr>
+					</tbody>
+				</table>
+				<!-- Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. -->
+			</div>
+		</div>
+	</div>
+</div>
+<!-- </div> -->
+<!-- 
+<div class="col-md-6">
+	<div class="page-header">
+		<h2>
+			Sections Watching
+		</h2>
+	</div>
+	<table class="table table-striped">
+		<tbody>
+			<tr>
+				<td>Email</td>
+				<td>rysquash@gmail.com</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+ -->

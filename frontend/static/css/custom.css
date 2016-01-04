@@ -1,4 +1,24 @@
 
+/*settings*/
+.panel-heading .accordion-toggle:after {
+	/* symbol for "opening" panels */
+	font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+	content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+	float: left;        /* adjust as needed */
+	color: gray;         /* adjust as needed */
+	padding-right:7px;
+}
+.panel-heading .accordion-toggle.collapsed:after {
+	/* symbol for "collapsed" panels */
+	content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+}
+
+.panel.panel-default:hover {
+	box-shadow: gray 0px 0px 2px !important;
+}
+
+
+
 .modal-backdrop {
 	z-index: 2050 !important;
 } 
@@ -103,7 +123,7 @@
 
 
 
- /*set the width on each selector*/
+/*set the width on each selector*/
 .collegeSelectContainer {
 	width: 210px !important;
 }
@@ -187,46 +207,46 @@
 
 /*some other stuff......?*/
 .dropdown.dropdown-lg .dropdown-menu {
-margin-top: -1px;
-padding: 6px 20px;
+	margin-top: -1px;
+	padding: 6px 20px;
 }
 .input-group-btn .btn-group {
-display: flex !important;
+	display: flex !important;
 }
 .btn-group .btn {
-border-radius: 0;
-margin-left: -1px;
+	border-radius: 0;
+	margin-left: -1px;
 }
 .btn-group .btn:last-child {
-border-top-right-radius: 4px;
-border-bottom-right-radius: 4px;
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
 }
 .btn-group .form-horizontal .btn[type="submit"] {
-border-top-left-radius: 4px;
-border-bottom-left-radius: 4px;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
 }
 .form-horizontal .form-group {
-margin-left: 0;
-margin-right: 0;
+	margin-left: 0;
+	margin-right: 0;
 }
 .form-group .form-control:last-child {
-border-top-left-radius: 4px;
-border-bottom-left-radius: 4px;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
 }
 .tooltip > .tooltip-inner {
 
-font-size: 20px;
-min-width: 165px;
+	font-size: 20px;
+	min-width: 165px;
 }
 
 @media screen and (min-width: 768px) {
-#adv-search {
-  width: 500px;
-  margin: 0 auto;
-}
-.dropdown.dropdown-lg {
-  position: static !important;
-}
+	#adv-search {
+		width: 500px;
+		margin: 0 auto;
+	}
+	.dropdown.dropdown-lg {
+		position: static !important;
+	}
 }
 
 

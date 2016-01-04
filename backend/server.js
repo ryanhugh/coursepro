@@ -229,7 +229,7 @@ app.post('/listSubjects', function (req, res) {
 
 app.post('/listClasses', function (req, res) {
 
-	if (!req.body.host || !req.body.termId || !req.body.subject) {
+	if ((!req.body.host || !req.body.termId || !req.body.subject) && !req.body._id) {
 		console.log('error, no host or termId or subject given body:');
 		console.log(req.body)
 		res.status(400);
@@ -237,16 +237,25 @@ app.post('/listClasses', function (req, res) {
 		return;
 	};
 
-	var lookup = {
-		host: req.body.host,
-		termId: req.body.termId,
-		subject: req.body.subject
+	var lookup = {}
+
+	if (req.body._id) {
+		lookup._id = req.body._id
+	}
+	else {
+
+		lookup = {
+			host: req.body.host,
+			termId: req.body.termId,
+			subject: req.body.subject
+		}
+
+		//add classs id if its given
+		if (req.body.classId) {
+			lookup.classId = req.body.classId;
+		};
 	}
 
-	//add classs id if its given
-	if (req.body.classId) {
-		lookup.classId = req.body.classId;
-	};
 
 
 	classesDB.find(lookup, {
@@ -265,23 +274,31 @@ app.post('/listClasses', function (req, res) {
 
 app.post('/listSections', function (req, res) {
 
-	if (!req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) {
+	if ((!req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) && !req.body._id) {
 		console.log('error, no host or termId or subject or classId given body:');
 		console.log(req.body)
 		res.send('{"error":"no host or termId or subject or classId given (expected JSON)"}')
 		return;
 	};
 
-	var lookup = {
-		host: req.body.host,
-		termId: req.body.termId,
-		subject: req.body.subject,
-		classId: req.body.classId
+	var lookup = {}
+
+	if (req.body._id) {
+		lookup._id = req.body._id
+	}
+	else {
+		lookup = {
+			host: req.body.host,
+			termId: req.body.termId,
+			subject: req.body.subject,
+			classId: req.body.classId
+		}
+
+		if (req.body.crn) {
+			lookup.crn = req.body.crn;
+		}
 	}
 
-	if (req.body.crn) {
-		lookup.crn = req.body.crn;
-	}
 
 
 	sectionsDB.find(lookup, {
@@ -605,7 +622,7 @@ app.post('/getUser', function (req, res) {
 	usersDB.find({
 			loginKey: req.body.loginKey
 		}, {
-			sanitize:true
+			sanitize: true
 		},
 		function (err, user) {
 			if (err || !user) {

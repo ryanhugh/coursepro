@@ -1,5 +1,5 @@
 'use strict';
-
+var _ = require('lodash')
 
 //lightweight json only wrapper around xmlhttp
 //aggresive caching and never fires the same request twice
@@ -25,29 +25,34 @@ Request.prototype.randomString = function () {
 
 //finds the difference between two query configs
 //if they share a key:value, the key goes in same
-//if compareTo is missing key in Src, goes in missing
+//if compareTo is srcOnly key in Src, goes in srcOnly
 //if compareTo has different value, goes in different
-Request.prototype.findDiff = function (compareSrc, compareTo) {
+Request.prototype.findDiff = function (src, dest) {
 
 	var retVal = {
-		missing: [],
+		srcOnly: [],
 		different: [],
-		same: []
+		same: [],
+		destOnly: []
 	}
 
+	_.keys(src).concat(_.keys(dest)).forEach(function (attrName) {
+		if (src[attrName] === undefined && dest[attrName] !== undefined) {
+			retVal.destOnly.push(attrName)
+		}
+		else if (src[attrName] !== undefined && dest[attrName] === undefined) {
+			retVal.srcOnly.push(attrName)
+		}
+		else if (_.isEqual(src[attrName], dest[attrName])) {
+			retVal.same.push(attrName)
+		}
 
-	for (var attrName in compareSrc) {
-		if (compareTo[attrName] === undefined) {
-			retVal.missing.push(attrName);
-		}
-		else if (compareTo[attrName] !== compareSrc[attrName]) {
-			retVal.different.push(attrName);
-		}
-		//must be same
+		//must be different
 		else {
-			retVal.same.push(attrName);
+			retVal.different.push(attrName)
 		}
-	}
+	}.bind(this))
+
 	return retVal;
 }
 
@@ -78,8 +83,13 @@ Request.prototype.searchCache = function (config, callback) {
 			continue;
 		}
 
+		//cache item had query attributes not on this config.body
+		if (diff.destOnly.length > 0) {
+			continue;
+		};
+
 		//everything was the same
-		if (diff.missing.length === 0) {
+		if (diff.srcOnly.length === 0) {
 
 			//clone return object
 			if (cacheItem.loadingStatus === this.LOADINGSTATUS_LOADING) {
@@ -93,10 +103,10 @@ Request.prototype.searchCache = function (config, callback) {
 			}
 			return true;
 		}
-		//it is ok for cacheItem to be missing 1 of the attributes - eg all cs classes
+		//it is ok for cacheItem to be srcOnly 1 of the attributes - eg all cs classes
 		// looked up for the selectors, and then a specific class looked up for the tree
-		if (diff.missing.length !== 1) {
-			console.log('warning: cacheItem.config is missing more than 1 attr?', diff, config, cacheItem.config);
+		if (diff.srcOnly.length !== 1) {
+			console.log('warning: cacheItem.config is srcOnly more than 1 attr?', diff, config, cacheItem.config);
 		}
 
 
@@ -129,8 +139,8 @@ Request.prototype.searchCache = function (config, callback) {
 			}
 			else {
 
-				//ok, loop through the cache body and puck the ones that match the missing attributes
-				var attrToCheck = _.pick(config.body, diff.missing);
+				//ok, loop through the cache body and puck the ones that match the srcOnly attributes
+				var attrToCheck = _.pick(config.body, diff.srcOnly);
 				var matches = _.where(cacheItem.body, attrToCheck)
 
 				callback(null, _.cloneDeep(matches));
