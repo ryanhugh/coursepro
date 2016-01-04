@@ -292,10 +292,8 @@ DownloadTree.prototype.fetchSubTrees = function(tree, queue, ignoreClasses) {
 		else {
 			if (!tree.isCoreq) {
 				console.log('WARNING removing ', tree.classId, 'because already loaded it', ignoreClasses, compareObject)
-
 				_.pull(tree.prereqs.values, subTree);
 				_.pull(tree.coreqs.values, subTree);
-
 			}
 		}
 	}

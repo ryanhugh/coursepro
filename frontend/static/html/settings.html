@@ -1,6 +1,6 @@
 <br>
 <div class="page-header">
-	<h1>
+	<h1 ng-click="v.test()">
 		Settings
 	</h1>
 </div>
@@ -15,11 +15,11 @@
 		<tbody>
 			<tr>
 				<td>Name</td>
-				<td>{{user.name}}</td>
+				<td>{{self.user.name}}</td>
 			</tr>
 			<tr>
 				<td>Email</td>
-				<td>{{user.email}}</td>
+				<td>{{self.user.email}}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -43,51 +43,33 @@
 		</div>
 		<div id="{{class._id}}" class="panel-collapse collapse in">
 			<div class="panel-body">
-
-				<table class="table table-striped">
+				{{class.desc}}
+				<table class="table table-striped" ng-if="class.sections.length>0">
 					<thead>
 						<tr>
 							<th>Class Registration Number</th>
 							<th>Start Times</th>
-							<th>Open seats/Total Seats</th>
+							<th>Open Seats/Total Seats</th>
+							<th>Open Spots/Total Waitlist Spots</th>
+							<th>URL</th>
 							<th>Remove</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>56438</td>
-							<td>1:35pm - 4pm</td>
-							<td>5/80</td>
-							<td><span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></td>
-						</tr>
-						<tr>
-							<td>18915</td>
-							<td>1:35pm - 4pm</td>
-							<td>5/80</td>
-							<td><span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+						<tr ng-repeat="section in class.sections">
+							<td>{{section.crn}}</td>
+							<td>{{section.startTimes}}</td>
+							<td>{{section.seatsRemaining}}/{{section.seatsCapacity}}</td>
+							<td>{{section.waitRemaining}}/{{section.waitCapacity}}</td>
+							<td><a href="{{section.url}}">View on {{section.host}}</a></td>
+							<td><span ng-click="$parent.test()" class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></td>
 						</tr>
 					</tbody>
 				</table>
-				<!-- Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. -->
+				<div ng-if="class.sections.length==0">
+					No sections found
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
-<!-- </div> -->
-<!-- 
-<div class="col-md-6">
-	<div class="page-header">
-		<h2>
-			Sections Watching
-		</h2>
-	</div>
-	<table class="table table-striped">
-		<tbody>
-			<tr>
-				<td>Email</td>
-				<td>rysquash@gmail.com</td>
-			</tr>
-		</tbody>
-	</table>
-</div>
- -->

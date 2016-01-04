@@ -2,7 +2,7 @@
 
 function BaseDirective ($scope) {
 	this.$scope = $scope;
-
+	$scope.self = this;
 }
 
 

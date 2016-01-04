@@ -2,6 +2,7 @@
 var queue = require('queue-async')
 var _ = require('lodash')
 var async = require('async')
+var moment = require('moment')
 
 var request = require('./request')
 var directiveMgr = require('./directiveMgr')
@@ -9,6 +10,14 @@ var BaseDirective = require('./BaseDirective')
 
 function Settings($scope) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
+
+	// this.
+
+	// this.testttt='fdsafsafsa'
+
+	// return
+
+	// $scope.v=this;
 
 	this.user = null;
 
@@ -27,7 +36,11 @@ function Settings($scope) {
 						return callback(err)
 					}
 					this.user = user;
-					$scope.user = user;
+
+
+
+					
+					// $scope.user = user;
 					$scope.$apply()
 
 
@@ -178,13 +191,22 @@ function Settings($scope) {
 						}
 						for (var dayIndex in meeting.times) {
 
+							meeting.times[dayIndex].forEach(function (dayTime) {
+								var start = dayTime.start
+								if (!_(startTimes).includes(start)) {
+									startTimes.push(start)
+								}
+							}.bind(this))
 						}
-
-						meeting.
-
 					}.bind(this))
-				};
+				}
 
+				var startStrings = [];
+				startTimes.forEach(function (startTime) {
+					startStrings.push(moment.utc(startTime * 1000).format('h:mm a'))
+				}.bind(this))
+
+				section.startTimes = startStrings.join(', ')
 
 
 				//pick all the key:values that should be identical to the matching class
@@ -219,6 +241,11 @@ function Settings($scope) {
 //prototype constructor
 Settings.prototype = Object.create(BaseDirective.prototype);
 Settings.prototype.constructor = Settings;
+
+Settings.prototype.test = function() {
+	console.log('fdnsafhdasfkl')
+};
+
 
 
 // Settings.prototype.populateFields = function (userData) {

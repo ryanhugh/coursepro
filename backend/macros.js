@@ -80,8 +80,8 @@ exports.DATABASE_URL = databaseIp + '/' + databaseName;
 
 //if a page data is newer that this, there is a cache hit 
 //ms
-exports.OLD_PAGEDATA = 300000
-// exports.OLD_PAGEDATA = 150000
+// exports.OLD_PAGEDATA = 300000
+exports.OLD_PAGEDATA = 1500
 
 
 // 30 min
