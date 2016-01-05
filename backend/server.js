@@ -488,6 +488,80 @@ app.post('/authenticateUser', function (req, res) {
 })
 
 
+function getClassAndSectionIdFromPath(host, termId, subject, classId, callback) {
+
+	async.parallel([
+
+			//get the class with that _id
+			function (callback) {
+				classesDB.find({
+					host: host,
+					termId: termId,
+					subject: subject,
+					classId: classId
+				}, {
+					shouldBeOnlyOne: false
+				}, function (err, docs) {
+					if (err) {
+						return callback(err);
+					};
+
+					//invalid mongo class id was submitted...
+					if (docs.length === 0) {
+						return callback('could not find class')
+					}
+
+					callback(null, docs)
+				}.bind(this))
+			}.bind(this),
+
+			//get all sections in that class
+			function (callback) {
+				sectionsDB.find({
+						host: host,
+						termId: termId,
+						subject: subject,
+						classId: classId
+					}, {
+						shouldBeOnlyOne: false,
+					},
+					function (err, docs) {
+						callback(err, docs)
+					}.bind(this))
+			}.bind(this),
+		],
+		function (err, results) {
+			if (err) {
+				console.log("ERROR", err)
+				return callback(err)
+			};
+
+			var classes = results[0];
+			var sections = results[1];
+
+			if (classes.length === 0 && sections.length === 0) {
+				return callback('No classes or sections found with that host, termId, subject, and classId')
+			};
+
+			//get a list of the _id's of the sections
+			var sectionMongoIds = [];
+			sections.forEach(function (section) {
+				sectionMongoIds.push(section._id)
+			}.bind(this))
+
+			//get a list of the _id's for the classes
+			var classesMongoIds = [];
+			classes.forEach(function (theClass) {
+				classesMongoIds.push(theClass._id)
+			}.bind(this))
+
+
+			return callback(null, classesMongoIds, sectionMongoIds);
+		}.bind(this))
+}
+
+
+
 app.post('/addClassToWatchList', function (req, res) {
 	if (!req.body.loginKey || !req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) {
 		res.send(JSON.stringify({
@@ -496,81 +570,10 @@ app.post('/addClassToWatchList', function (req, res) {
 		return;
 	}
 
+	getClassAndSectionIdFromPath(req.body.host, req.body.termId, req.body.subject, req.body.classId, function (err, classMongoId, sectionMongoIds) {
 
-	async.waterfall([
-			function (callback) {
-				async.parallel([
-
-						//get the class with that _id
-						function (callback) {
-							classesDB.find({
-								host: req.body.host,
-								termId: req.body.termId,
-								subject: req.body.subject,
-								classId: req.body.classId
-							}, {
-								shouldBeOnlyOne: false
-							}, function (err, docs) {
-								if (err) {
-									return callback(err);
-								};
-
-								//invalid mongo class id was submitted...
-								if (docs.length === 0) {
-									return callback('could not find class')
-								}
-
-								callback(null, docs)
-							}.bind(this))
-						}.bind(this),
-
-						//get all sections in that class
-						function (callback) {
-							sectionsDB.find({
-									host: req.body.host,
-									termId: req.body.termId,
-									subject: req.body.subject,
-									classId: req.body.classId
-								}, {
-									shouldBeOnlyOne: false,
-								},
-								function (err, docs) {
-									callback(err, docs)
-								}.bind(this))
-						}.bind(this),
-					],
-					function (err, results) {
-						return callback(err, results);
-					}.bind(this))
-			},
-			function (results, callback) {
-				var classes = results[0];
-				var sections = results[1];
-
-				if (classes.length === 0 && sections.length === 0) {
-					return callback(null, 'No classes or sections found with that host, termId, subject, and classId')
-				};
-
-				//get a list of the _id's of the sections
-				var sectionMongoIds = [];
-				sections.forEach(function (section) {
-					sectionMongoIds.push(section._id)
-				}.bind(this))
-
-				//get a list of the _id's for the classes
-				var classesMongoIds = [];
-				classes.forEach(function (theClass) {
-					classesMongoIds.push(theClass._id)
-				}.bind(this))
-
-
-				//register for the class
-				usersDB.addClassToWatchList(classesMongoIds, sectionMongoIds, req.body.loginKey, function (err, clientMsg) {
-					callback(err, clientMsg)
-				}.bind(this))
-			}.bind(this)
-		],
-		function (err, clientMsg) {
+		//register for the class
+		usersDB.addClassToWatchList(classMongoId, sectionMongoIds, req.body.loginKey, function (err, clientMsg) {
 
 			if (err) {
 				console.log('ERROR couldnt add class', req.body.classMongoId, ' id to user', req.body.loginKey)
@@ -590,7 +593,45 @@ app.post('/addClassToWatchList', function (req, res) {
 				status: 'success'
 			}));
 		}.bind(this))
+	}.bind(this))
+
 })
+
+app.post('/removeClassFromWatchList', function (req, res) {
+	if (!req.body.loginKey || !req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) {
+		res.send(JSON.stringify({
+			error: 'removeClassFromWatchList needs loginKey, host, termId, subject, and classId as json'
+		}))
+		return;
+	}
+
+	getClassAndSectionIdFromPath(req.body.host, req.body.termId, req.body.subject, req.body.classId, function (err, classMongoId, sectionMongoIds) {
+
+		//register for the class
+		usersDB.removeClassFromWatchList(classMongoId, sectionMongoIds, req.body.loginKey, function (err, clientMsg) {
+
+			if (err) {
+				console.log('ERROR couldnt add class', req.body.classMongoId, ' id to user', req.body.loginKey)
+				console.log(err)
+				res.send('{"error":"uh oh"}');
+				return;
+			}
+			if (clientMsg) {
+				res.send(JSON.stringify({
+					msg: clientMsg
+				}));
+				return;
+			};
+
+			res.send(JSON.stringify({
+				status: 'success'
+			}));
+		}.bind(this))
+	}.bind(this))
+
+
+
+}.bind(this))
 
 
 app.post('/getUserWatchList', function (req, res) {

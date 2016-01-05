@@ -73,15 +73,49 @@ WatchClassesModel.prototype.addClassToWatchList = function () {
 			bodyText.push("Update emails will be sent to ")
 			bodyText.push('<span style=\"font-weight:bold;\">');
 			bodyText.push(email)
-			bodyText.push('</span> !')
+			bodyText.push('</span> !<br>')
 		};
 		if (!response.error) {
-			bodyText.push("<br><br>We check for updates every 30 minutes and we'll send you an email if anything changes in the class or any of the sections!<br>")
-			// bodyText.push('')
+			bodyText.push("<br>We check for updates every 30 minutes and we'll send you an email if anything changes in the class or any of the sections!<br>")
+				// bodyText.push('')
 		};
+		bodyText.push('<br>Want to unsubscribe?<a href="javascript:void(0)" id="RemoveWatchListId"> Click here</a><span id="unsubscribeDoneId" style="display:none"> done!</span>')
+
 		bodyText.push('<br><br>Got questions? Feel free to send us an email at <a href="mailto:coursepro@coursepro.io"> coursepro@coursepro.io </a>')
 
 		this.modelBody.innerHTML = bodyText.join('')
+
+		document.getElementById('RemoveWatchListId').onclick = function () {
+			request({
+				url: '/removeClassFromWatchList',
+				useCache: false,
+				auth: true,
+				body: {
+					host: this.tree.host,
+					termId: this.tree.termId,
+					subject: this.tree.subject,
+					classId: this.tree.classId
+				}
+			},function (err,response) {
+				document.getElementById('RemoveWatchListId').style.display = 'none'
+
+				var string = '';
+				if (err) {
+					string = 'There was an error removing from the database :/'
+					console.log(string)
+				}
+				else if (response && response.msg) {
+					string = response.msg
+				}
+				else {
+					string = 'done'
+				}
+
+				document.getElementById('unsubscribeDoneId').style.display = ''
+				document.getElementById('unsubscribeDoneId').innerHTML = ' ' +string
+			}.bind(this))
+		}.bind(this)
+
 
 	}.bind(this))
 

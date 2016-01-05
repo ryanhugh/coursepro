@@ -538,22 +538,22 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 
 					//only send email if was <=0 and increase to above 0
 					// "increased to a positive number" is goal, but then like 25 -> 26 would fire...
-					if (aDiff.lhs<=0 && aDiff.rhs>0) {
+					if (aDiff.lhs <= 0 && aDiff.rhs > 0) {
 						shouldSendEmail = true;
 					}
 					else {
-						console.log('WARNING Not sending email for diff',aDiff)
+						console.log('WARNING Not sending email for diff', aDiff)
 					}
 				}
 				else if (aDiff.path.length == 1 && aDiff.path[0] == 'waitRemaining') {
 
 					//only send email if was <=0 and increase to above 0
 					// "increased to a positive number" is goal, but then like 25 -> 26 would fire...
-					if (aDiff.lhs<=0 && aDiff.rhs>0) {
+					if (aDiff.lhs <= 0 && aDiff.rhs > 0) {
 						shouldSendEmail = true;
 					}
 					else {
-						console.log('WARNING Not sending email for diff',aDiff)
+						console.log('WARNING Not sending email for diff', aDiff)
 					}
 				}
 				else {
@@ -630,6 +630,57 @@ UsersDB.prototype.addClassToWatchList = function (classMongoIds, sectionMongoIds
 
 		}.bind(this))
 };
+
+UsersDB.prototype.removeClassFromWatchList = function (classMongoIds, sectionMongoIds, loginKey, callback) {
+
+
+	this.find({
+			loginKey: loginKey
+		}, {},
+		function (err, user) {
+			if (err) {
+				return callback(err)
+			}
+			if (!user) {
+				return callback('no user found')
+			};
+			var originalDoc = _.cloneDeep(user);
+
+			var classRemovedCount = 0;
+
+			//remove the classes
+			classMongoIds.forEach(function (classMongoId) {
+				if (_(user.watching.classes).includes(classMongoId)) {
+					classRemovedCount++;
+				}
+
+				_.pull(user.watching.classes, classMongoId)
+
+			}.bind(this))
+
+
+			var sectionRemovedCount = 0;
+
+			sectionMongoIds.forEach(function (sectionMongoId) {
+				if (_(user.watching.sections).includes(sectionMongoId)) {
+					sectionRemovedCount++;
+				}
+
+				_.pull(user.watching.sections, sectionMongoId)
+			}.bind(this))
+
+
+			this.updateDatabase(user, originalDoc, function (err, newDoc) {
+				if (err) {
+					console.log('ERROR', err)
+					return callback(err)
+				}
+
+				return callback(null, 'Stopped watching ' + classRemovedCount + ' classes and ' + sectionRemovedCount + ' sections')
+			}.bind(this))
+		}.bind(this))
+}
+
 
 UsersDB.prototype.getUserWatchList = function (loginKey, callback) {
 	this.find({
