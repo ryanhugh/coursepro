@@ -1,6 +1,6 @@
 'use strict';
 
-var treeMgr = require('../treeMgr')
+var graph = require('../graph')
 
 var collegeInstance = require('./college')
 var termInstance = require('./term')
@@ -64,7 +64,7 @@ SelectorsMgr.prototype.closeAllSelectors = function () {
 }
 
 SelectorsMgr.prototype.finish = function(callback) {
-	treeMgr.createTree(this.college.getValue(),this.term.getValue(),this.subject.getValue(),this.class.getValue(),callback);
+	graph.createTreeWithPath(this.college.getValue(),this.term.getValue(),this.subject.getValue(),this.class.getValue(),callback);
 }
 
 //

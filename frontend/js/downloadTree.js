@@ -4,6 +4,7 @@ var queue = require('queue-async')
 
 var request = require('./request')
 var macros = require('./macros')
+var Class = require('./Class')
 
 
 function DownloadTree() {
@@ -15,6 +16,9 @@ function DownloadTree() {
 DownloadTree.prototype.convertServerData = function(data) {
 	var retVal = {};
 
+	if (data instanceof Class) {
+
+	}
 
 	//given a class, process the prereqs
 	//squish the class details and the first row of the prereqs
@@ -140,71 +144,18 @@ DownloadTree.prototype.fetchFullTreeOnce = function(tree, queue, ignoreClasses) 
 				console.log('class must have class id and subject')
 				return;
 			};
-			tree.dataStatus = macros.DATASTATUS_LOADING;
+
+
 
 			queue.defer(function(callback) {
-					request({
-						url: '/listClasses',
-						type: 'POST',
-						resultsQuery: {
-							classId: tree.classId
-						},
-						body: {
-							subject: tree.subject,
-							host: this.host,
-							termId: this.termId
-						}
-					}, function(err, body) {
-						tree.dataStatus = macros.DATASTATUS_DONE;
-						if (err) {
-							console.log('http error...', err);
-							return callback(err)
-						}
-
-						if (body.length == 0) {
-							console.log('unable to find class even though its a prereq of another class????', tree)
-							tree.dataStatus = macros.DATASTATUS_FAIL;
-							return callback()
-						};
-
-						//setup an or tree
-						if (body.length > 1) {
-							tree.isClass = false;
-							tree.prereqs = {
-								type: 'or',
-								values: []
+					
+						tree.download(function (err,tree) {
+							if (err) {
+								console.log(err)
+								return callback(err)
 							}
-							tree.coreqs = {
-								type: 'or',
-								values: []
-							}
-
-							body.forEach(function(classData) {
-								tree.prereqs.values.push(this.convertServerData(classData))
-							}.bind(this))
-
-							//load the nodes, skip tree and go right to the bottom edge of the loaded nodes
-							//if we just do fetch this tree, it will hit nodes it has already loaded (in the ignoreClasses list)
-							//and stop processing
-							tree.prereqs.values.forEach(function(subTree) {
-								this.fetchSubTrees(subTree, queue, ignoreClasses)
-							}.bind(this));
-
-
-						}
-
-						//else just add more data to the class
-						else {
-							var classData = this.convertServerData(body[0])
-
-							for (var attrName in classData) {
-								tree[attrName] = classData[attrName]
-							}
-
-							//process this nodes values, already at bottom edge of loaded nodes
-							this.fetchSubTrees(tree, queue, ignoreClasses)
-						}
-
+							callback(null,tree)
+						}.bind(this))
 
 						callback();
 					}.bind(this));
@@ -316,7 +267,7 @@ DownloadTree.prototype.fetchFullTree = function(tree, callback) {
 			return callback('error different tree started before this one finished')
 		}
 		else {
-			return callback();
+			return callback(null,this.tree);
 		}
 	}.bind(this));
 }

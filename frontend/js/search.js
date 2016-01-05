@@ -1,7 +1,6 @@
 'use strict';
 var request = require('./request')
-var render = require('./render')
-var treeMgr = require('./treeMgr')
+var graph = require('./graph')
 
 
 function Search() {
@@ -140,9 +139,8 @@ Search.prototype.go = function (host, termId, subject, value) {
 
 	console.log('searching for ', value)
 
-	render.clearContainer()
-	render.showSpinner()
-
+	graph.beforeLoad()
+	
 	request({
 		url: '/search',
 		type: 'POST',

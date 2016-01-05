@@ -30,7 +30,7 @@ Main.prototype.clickHomeButton = function () {
 	history.pushState(null, null, "#"); // only do this if icon clicked, not if back used to show
 
 	settings.hide();
-	render.clearContainer();
+	graph.hide();
 	homepage.show();
 };
 
