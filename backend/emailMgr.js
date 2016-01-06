@@ -112,7 +112,7 @@ EmailMgr.prototype.sendThanksForRegistering = function (toEmail) {
 }
 
 EmailMgr.prototype.generateDBDataURL = function (dbData) {
-	var url = ['https://coursepro.io/#']
+	var url = []
 
 
 	var urlParts = ['host', 'termId', 'subject', 'classId'];
@@ -157,7 +157,7 @@ EmailMgr.prototype.printDBRow = function (dbData) {
 			}.bind(this))
 		}
 		else {
-			html.push('<a href="' + this.generateDBDataURL(dbData) + '">View on CoursePro.io</a>')
+			html.push('<a href="https://coursepro.io/#' + this.generateDBDataURL(dbData) + '">View on CoursePro.io</a>')
 		}
 		html.push('<br>\n')
 	}
@@ -186,7 +186,9 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newDat
 	}.bind(this))
 
 
-	email.push('<br><a href="' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
+	email.push('<br><a href="https://coursepro.io/#' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
+	
+	email.push('<br><br>Want to unsubscribe? <a href="https://coursepro.io/#unsubscribe/' +this.generateDBDataURL(newData) + '">Click here</a>')
 
 	this.sendEmail(toEmails, 'A section in ' + newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', email.join(''))
 
@@ -212,7 +214,9 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (toEmails, oldData, newData,
 		}
 	}.bind(this))
 
-	email.push('<br><a href="' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
+	email.push('<br><a href="https://coursepro.io/#' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
+
+	email.push('<br><br>Want to unsubscribe? <a href="https://coursepro.io/#unsubscribe/' +this.generateDBDataURL(newData) + '">Click here</a>')
 
 	this.sendEmail(toEmails, newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', email.join(''))
 

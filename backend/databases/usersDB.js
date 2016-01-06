@@ -669,6 +669,11 @@ UsersDB.prototype.removeClassFromWatchList = function (classMongoIds, sectionMon
 				_.pull(user.watching.sections, sectionMongoId)
 			}.bind(this))
 
+			console.log(user.email,' unsubscribed from ',classRemovedCount,' classes and ',sectionRemovedCount,' sections')
+
+			if (classRemovedCount==0 && sectionRemovedCount==0) {
+				return callback(null,'None of these classes and sections are being watched.')
+			}
 
 			this.updateDatabase(user, originalDoc, function (err, newDoc) {
 				if (err) {
@@ -676,7 +681,7 @@ UsersDB.prototype.removeClassFromWatchList = function (classMongoIds, sectionMon
 					return callback(err)
 				}
 
-				return callback(null, 'Stopped watching ' + classRemovedCount + ' classes and ' + sectionRemovedCount + ' sections')
+				return callback(null, 'Successfully unsubscribed from ' + classRemovedCount + ' classes and ' + sectionRemovedCount + ' sections!')
 			}.bind(this))
 		}.bind(this))
 }
