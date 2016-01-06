@@ -107,38 +107,7 @@ TreeMgr.prototype.sortTree = function (tree) {
 
 	//sort the panels by classId
 	subPanels.sort(function (a, b) {
-		if (a.isString && b.isString) {
-			return 0;
-		}
-
-		if (a.isString) {
-			return -1;
-		}
-		if (b.isString) {
-			return 1;
-		};
-
-		var aId = parseInt(a.classId);
-		var bId = parseInt(b.classId);
-
-		if (aId > bId) {
-			return 1;
-		}
-		else if (aId < bId) {
-			return -1;
-		}
-
-		//if ids are the same, sort by subject
-		else if (a.subject > b.subject) {
-			return 1;
-		}
-		else if (a.subject < b.subject) {
-			return -1;
-		}
-
-		//this is possible if there are (hon) and non hon classes of same subject classId
-		return 0
-
+		return a.compareTo(b)
 	}.bind(this))
 
 
@@ -386,49 +355,13 @@ TreeMgr.prototype.groupByHonors = function (tree) {
 };
 
 
-TreeMgr.prototype.logTree = function (tree, body) {
-
+TreeMgr.prototype.logTree = function(tree,body) {
+	
 	//tell the server how big this tree is
-	var classCount = this.countClassesInTree(tree);
-
-	if (!body.type) {
-		console.log('ERROR not given a tree type', body);
-		console.trace();
-	}
-
-	body.classCount = classCount;
-
-	//copy data from the tree
-	if (tree.isClass) {
-		body.classId = tree.classId;
-		body.subject = tree.subject;
-		body.termId = tree.termId;
-		body.host = tree.host;
-	}
-	else {
-		if (tree.termId !== undefined) {
-			body.termId = tree.termId;
-		}
-		if (tree.host !== undefined) {
-			body.host = tree.host;
-		}
-	}
-
-
-	console.log('The tree is ', classCount, ' big');
-	request({
-		url: '/log',
-		body: body,
-		useCache: false
-	}, function (err, response) {
-		if (err) {
-			console.log("ERROR: couldn't log tree size :(", err, response, body);
-		}
-	}.bind(this))
-
-
-}
-
+	body.classCount = this.countClassesInTree(tree);
+	tree.logTree(body)
+	
+};
 
 
 // TreeMgr.prototype.processTree = function(tree, callback) {

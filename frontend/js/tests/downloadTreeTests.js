@@ -3,6 +3,7 @@ var assert = require('assert')
 
 var macros = require('../macros')
 var downloadTree = require('../downloadTree')
+var treeMgr = require('../treeMgr')
 var Class = require('../Class')
 
 function DownloadTreeTests() {
@@ -21,6 +22,7 @@ DownloadTreeTests.prototype.go = function () {
 
 
 	}, function (err, tree) {
+		treeMgr.go(tree)
 		console.log(err, tree)
 
 	}.bind(this))

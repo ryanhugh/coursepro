@@ -71,8 +71,6 @@ function Class(config) {
 			config.coreqs.values.forEach(function (subTree) {
 				this.coreqs.values.push(this.convertServerData(subTree))
 			}.bind(this))
-
-
 		}
 	}
 
@@ -132,21 +130,8 @@ Class.create = function (serverData) {
 }
 
 
-// //could move these 2 to a separate file, and bring with it the require node
-// Class.createWithPath = function (host, termId, subject, classId) {
-// 	return Class.create({
-// 		host: host,
-// 		termId: termId,
-// 		subject: subject,
-// 		classId: classId
-// 	})
-
-// };
-
 Class.prototype.convertServerData = function (data) {
 	var retVal = {};
-
-
 
 	//already processed node, just process the prereqs and coreqs
 	if (data instanceof Class) {
@@ -223,7 +208,7 @@ Class.prototype.download = function (callback) {
 		return callback('data status was not not started, and called class.download?', this)
 	};
 	if (this.isString || !this.isClass) {
-		console.log("ERROR class.download called on string or node",this)
+		console.log("ERROR class.download called on string or node", this)
 		console.trace()
 		return callback('no')
 	};
@@ -300,6 +285,86 @@ Class.prototype.download = function (callback) {
 
 		}
 		callback(null, this)
+	}.bind(this))
+}
+
+
+Class.prototype.compareTo = function (otherClass) {
+	if (this.isString && otherClass.isString) {
+		return 0;
+	}
+
+	if (this.isString) {
+		return -1;
+	}
+	if (otherClass.isString) {
+		return 1;
+	};
+
+	var aId = parseInt(this.classId);
+	var bId = parseInt(otherClass.classId);
+
+	if (aId > bId) {
+		return 1;
+	}
+	else if (aId < bId) {
+		return -1;
+	}
+
+	//if ids are the same, sort by subject
+	else if (this.subject > otherClass.subject) {
+		return 1;
+	}
+	else if (this.subject < otherClass.subject) {
+		return -1;
+	}
+
+	//this is possible if there are (hon) and non hon classes of same subject classId
+	return 0
+};
+
+
+
+Class.prototype.getPathObject = function () {
+	var retVal = {};
+
+	var path = ['host', 'termId', 'subject', 'classId']
+	for (var i = 0; i < path.length; i++) {
+		if (this[path[i]]) {
+			retVal[path[i]] = this[path[i]]
+		}
+		else {
+			return retVal;
+		}
+	};
+};
+
+
+
+Class.prototype.logTree = function (body) {
+	if (!body.type) {
+		console.log('ERROR not given a tree type', body);
+		console.trace();
+		return;
+	}
+
+	if (!this.isClass || this.isString) {
+		console.log("ERROR cant log a string or a node")
+		console.trace();
+		return;
+	};
+
+	body = _.merge(this.getPathObject(), body);
+
+	console.log('The tree is ', classCount, ' big');
+	request({
+		url: '/log',
+		body: body,
+		useCache: false
+	}, function (err, response) {
+		if (err) {
+			console.log("ERROR: couldn't log tree size :(", err, response, body);
+		}
 	}.bind(this))
 }
 
