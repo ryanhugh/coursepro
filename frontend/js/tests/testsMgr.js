@@ -6,6 +6,8 @@ var _ = require('lodash')
 var emailMgrTests = require('./emailMgrTests')
 var helpTests = require('./helpTests')
 var popupTests = require('./popupTests')
+var classTests = require('./classTests')
+var downloadTreeTests = require('./downloadTreeTests')
 
 var baseSelector = require('../selectors/baseSelector')
 
@@ -192,6 +194,9 @@ TestsMgr.prototype.go = function(values) {
 	}
 	else {
 		console.log('running tests!')
+		classTests.go();
+		downloadTreeTests.go();
+		return;
 
 		this.tests.forEach(function(testModule) {
 
@@ -204,8 +209,8 @@ TestsMgr.prototype.go = function(values) {
 };
 
 
-
+ 
 TestsMgr.prototype.TestsMgr = TestsMgr;
 
-window.compiledWithUnitTests = true
+window.compiledWithUnitTests = true 
 window.unitTestsMgr = new TestsMgr();

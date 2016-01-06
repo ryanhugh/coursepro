@@ -6,7 +6,6 @@ var render = require('./render')
 var popup = require('./popup')
 var help = require('./help')
 var Class = require('./Class')
-var Node = require('./Node')
 
 var homepage = require('./homepage')//this needs to go
 
@@ -88,7 +87,7 @@ Graph.prototype.showClasses = function (classList, callback) {
 		return;
 	};
 
-	var tree = new Node();
+	// var tree = new Node();
 
 	tree.prereqs.values = classList
 

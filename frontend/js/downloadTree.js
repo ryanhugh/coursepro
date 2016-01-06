@@ -9,192 +9,66 @@ var Class = require('./Class')
 
 function DownloadTree() {
 
-	this.host = null;
-	this.termId = null;
 }
 
-DownloadTree.prototype.convertServerData = function(data) {
-	var retVal = {};
 
-	if (data instanceof Class) {
-
-	}
-
-	//given a class, process the prereqs
-	//squish the class details and the first row of the prereqs
-	if (data.classId !== undefined && data.subject !== undefined) {
-		retVal = data;
-		retVal.isClass = true;
-		retVal.isString = false;
-		if (data.name !== undefined || data.prereqs !== undefined || data.url !== undefined) {
-			retVal.dataStatus = macros.DATASTATUS_DONE;
-		}
-		else {
-			retVal.dataStatus = macros.DATASTATUS_NOTSTARTED;
-		}
-		if (data.type !== undefined || data.values !== undefined) {
-			console.log('error type or values in data???', data)
-		};
-
-		if (data.prereqs) {
-			var prereqs = [];
-			data.prereqs.values.forEach(function(item) {
-				prereqs.push(this.convertServerData(item));
-			}.bind(this))
-			data.prereqs.values = prereqs;
-		}
-		else {
-			data.prereqs = {
-				type: 'or',
-				values: []
-			};
-		}
-
-
-		if (data.coreqs) {
-			var convertedCoreqs = [];
-			data.coreqs.values.forEach(function(subTree) {
-				convertedCoreqs.push(this.convertServerData(subTree));
-			}.bind(this));
-			data.coreqs.values = convertedCoreqs;
-		}
-		else {
-			data.coreqs = {
-				type: 'or',
-				values: []
-			}
-		}
-	}
-
-	//given a branch in the prereqs
-	else if (data.values && data.type) {
-		retVal.isClass = false;
-
-		retVal.prereqs = {
-			type: data.type,
-			values: []
-		};
-		retVal.coreqs = {
-			type: 'or',
-			values: []
-		}
-
-		//HOW DO WE KNOW TO APPEND TO PREREQS?
-		data.values.forEach(function(item) {
-			retVal.prereqs.values.push(this.convertServerData(item));
-		}.bind(this))
-	}
-
-	//basic string
-	else if ((typeof data) == 'string') {
-		retVal.dataStatus = macros.DATASTATUS_DONE;
-		retVal.isClass = true;
-		retVal.isString = true;
-		retVal.desc = data;
-
-
-		retVal.prereqs = {
-			type: 'or',
-			values: []
-		};
-		retVal.coreqs = {
-			type: 'or',
-			values: []
-		}
-	}
-
-	//already processed node
-	else if (data.prereqs && data.coreqs) {
-		retVal = data;
-
-		var newCoreqs = [];
-		data.coreqs.values.forEach(function(subTree) {
-			newCoreqs.push(this.convertServerData(subTree))
-		}.bind(this))
-
-		data.coreqs.values = newCoreqs
-
-
-
-		var newPrereqs = [];
-		data.prereqs.values.forEach(function(subTree) {
-			newPrereqs.push(this.convertServerData(subTree))
-		}.bind(this))
-
-		data.prereqs.values = newPrereqs;
-	}
-
-	return retVal;
-}
-
-DownloadTree.prototype.fetchFullTreeOnce = function(tree, queue, ignoreClasses) {
+DownloadTree.prototype.fetchFullTreeOnce = function (tree, queue, ignoreClasses) {
 	if (ignoreClasses === undefined) {
 		ignoreClasses = [];
 	}
 
-
-
-	if (tree.isClass && !tree.isString) {
-
-
-		//fire off ajax and add it to queue
-		if (tree.dataStatus === macros.DATASTATUS_NOTSTARTED) {
-
-			if (!tree.classId || !tree.subject) {
-				console.log('class must have class id and subject')
-				return;
-			};
-
-
-
-			queue.defer(function(callback) {
-					
-						tree.download(function (err,tree) {
-							if (err) {
-								console.log(err)
-								return callback(err)
-							}
-							callback(null,tree)
-						}.bind(this))
-
-						callback();
-					}.bind(this));
-					//
-				}.bind(this))
-				// 
-		}
-		else {
-			console.log('skipping tree because data status is already started?')
-		}
-	}
-	else {
+	if (!tree.isClass || tree.isString) {
 		this.fetchSubTrees(tree, queue, ignoreClasses)
+		return;
 	}
+
+	//fire off ajax and add it to queue
+	if (tree.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
+		console.log('skipping tree because data status is already started?')
+		return;
+	}
+
+	queue.defer(function (callback) {
+
+		tree.download(function (err) {
+			if (err) {
+				console.log(err)
+				return callback(err)
+			}
+
+			//process this nodes values, already at bottom edge of loaded nodes
+			this.fetchSubTrees(tree, queue, ignoreClasses)
+
+			callback(null, tree)
+
+		}.bind(this))
+	}.bind(this));
 }
 
-DownloadTree.prototype.setNodesAttrs = function(tree, attrs) {
+
+DownloadTree.prototype.setNodesAttrs = function (tree, attrs) {
 
 	for (var attrName in attrs) {
 		tree[attrName] = attrs[attrName]
 	}
 
 
-	tree.prereqs.values.forEach(function(subTree) {
+	tree.prereqs.values.forEach(function (subTree) {
 		this.setNodesAttrs(subTree);
 	}.bind(this))
 
-	tree.coreqs.values.forEach(function(subTree) {
+	tree.coreqs.values.forEach(function (subTree) {
 		this.setNodesAttrs(subTree);
 	}.bind(this))
 }
 
 //this is called on a subtree when it responds from the server and when recursing down a tree
-DownloadTree.prototype.fetchSubTrees = function(tree, queue, ignoreClasses) {
+DownloadTree.prototype.fetchSubTrees = function (tree, queue, ignoreClasses) {
 
 	var toProcess = [];
 
 	//mark all the coreqs as coreqs
-	tree.coreqs.values.forEach(function(subTree) {
+	tree.coreqs.values.forEach(function (subTree) {
 		this.setNodesAttrs(subTree, {
 			isCoreq: true
 		});
@@ -251,23 +125,30 @@ DownloadTree.prototype.fetchSubTrees = function(tree, queue, ignoreClasses) {
 };
 
 
-DownloadTree.prototype.fetchFullTree = function(tree, callback) {
+DownloadTree.prototype.fetchFullTree = function (serverData, callback) {
 
-	this.host = tree.host;
-	this.termId = tree.termId;
+	// this.host = tree.host;
+	// this.termId = tree.termId;
+
+	var tree = Class.create(serverData);
+	if (!tree) {
+		console.log(serverData)
+		return callback('wtf')
+	};
+
 	this.tree = tree;
 
 
 	var q = queue()
 	this.fetchFullTreeOnce(tree, q);
-	q.awaitAll(function() {
+	q.awaitAll(function () {
 
 		//another tree was began before this one finished
 		if (this.tree != tree) {
 			return callback('error different tree started before this one finished')
 		}
 		else {
-			return callback(null,this.tree);
+			return callback(null, this.tree);
 		}
 	}.bind(this));
 }

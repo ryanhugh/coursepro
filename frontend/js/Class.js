@@ -1,26 +1,94 @@
 'use strict';
+var _ = require('lodash')
+
 var macros = require('./macros')
 var request = require('./request')
-var Node = require('./Node')
 
 
 function Class(config) {
-	if ((!config.host || !config.termId || !config.subject || !config.classId) && !config._id) {
-		console.log('ERROR need (host termId, subject, classId) or _id to make a class')
+	if (!(config.host && config.termId && config.subject && config.classId) && !config._id && !config.isString && !(config.isClass === false)) {
+		console.log('ERROR need (host termId, subject, classId) or _id or string to make a class', config)
 		return;
 	};
 
-	if (config._id) {
-		this._id = config._id
-	}
-	else {
-		this.host = config.host
-		this.termId = config.termId
-		this.subject = config.subject
-		this.classId = config.classId
+
+	//true, if for instance "AP placement exam, etc"
+	this.isString = false;
+
+
+
+	//turn to false to be a node in a graph
+	//this can happen if a request gets back multiple classes (eg (hon) an norm)
+	//and for complex nodes in prereqs (a or b) and c
+	//when this is false this is only required to have a .prereqs and coreqs
+	this.isClass = true;
+
+
+	//copy over all other attr given
+	for (var attrName in config) {
+
+		//dont copy over some attr
+		//these are copied above
+		if (!_(['coreqs', 'prereqs']).includes(attrName) && config[attrName]) {
+			this[attrName] = config[attrName]
+		}
 	}
 
-	Node.prototype.constructor.apply(this, arguments)
+
+	this.prereqs = {
+		type: 'or',
+		values: []
+	}
+
+	if (config.prereqs) {
+		if (!config.prereqs.values || !config.prereqs.type) {
+			console.log("ERROR given prereqs invalid", config.prereqs)
+		}
+		else {
+			this.prereqs.type = config.prereqs.type
+
+			//add the prereqs to this node, and convert server data
+			config.prereqs.values.forEach(function (subTree) {
+				this.prereqs.values.push(this.convertServerData(subTree))
+			}.bind(this))
+
+		}
+	}
+
+	this.coreqs = {
+		type: 'or',
+		values: []
+	}
+
+	if (config.coreqs) {
+		if (!config.coreqs.values || !config.coreqs.type) {
+			console.log("ERROR given coreqs invalid", config.coreqs)
+		}
+		else {
+			this.coreqs.type = config.coreqs.type
+
+			//add the coreqs to this node, and convert server data
+			config.coreqs.values.forEach(function (subTree) {
+				this.coreqs.values.push(this.convertServerData(subTree))
+			}.bind(this))
+
+
+		}
+	}
+
+
+
+	//loading status is done if any sign that has data
+	if (config.datastatus !== undefined) {
+		this.datastatus = config.datastatus
+	}
+	else if (!this.isClass || this.prereqs.length > 0 || this.desc || this.lastUpdateTime !== undefined || this.isString) {
+		this.dataStatus = macros.DATASTATUS_DONE
+	}
+	else {
+		this.dataStatus = macros.DATASTATUS_NOTSTARTED
+	}
+
 
 
 	// host: "neu.edu"
@@ -44,49 +112,150 @@ function Class(config) {
 
 	// termText: "Spring 2016" //move this to the Terms.js and make a getter ?
 
-	this.dataStatus = macros.DATASTATUS_NOTSTARTED
 
-	//this is allways true, nodes are a different class // CHANGE THIS AKA REMOVE NODE.js
-	this.isClass = true;
-
-	this.isString = false;
 
 }
 
+//TODO here
+//add subscribe and unsubscribe
+//add download, which updates datastatus
 
-Class.prototype = Object.create(Node.prototype);
-Class.prototype.constructor = Class;
 
 
-//could move these 2 to a separate file, and bring with it the require node
-Class.createWithPath = function (host, termId, subject, classId) {
-	var aClass = new Class({
-		host: host,
-		termId: termId,
-		subject: subject,
-		classId: classId
-	})
-
-	//failed at the check
+Class.create = function (serverData) {
+	var aClass = new Class(serverData);
 	if (aClass.isClass === undefined) {
+		console.log('ERROR failed to create new class with data', serverData)
 		return null;
-	};
+	}
+	return aClass;
+}
 
-};
 
+// //could move these 2 to a separate file, and bring with it the require node
+// Class.createWithPath = function (host, termId, subject, classId) {
+// 	return Class.create({
+// 		host: host,
+// 		termId: termId,
+// 		subject: subject,
+// 		classId: classId
+// 	})
+
+// };
+
+Class.prototype.convertServerData = function (data) {
+	var retVal = {};
+
+
+
+	//already processed node, just process the prereqs and coreqs
+	if (data instanceof Class) {
+		retVal = data;
+
+		var newCoreqs = [];
+		data.coreqs.values.forEach(function (subTree) {
+			newCoreqs.push(this.convertServerData(subTree))
+		}.bind(this))
+
+		data.coreqs.values = newCoreqs
+
+
+
+		var newPrereqs = [];
+		data.prereqs.values.forEach(function (subTree) {
+			newPrereqs.push(this.convertServerData(subTree))
+		}.bind(this))
+
+		data.prereqs.values = newPrereqs;
+	}
+	//need to create a new Class()
+	else {
+
+		//basic string
+		if ((typeof data) == 'string') {
+			data = {
+				isClass: true,
+				isString: true,
+				desc: data
+			}
+		}
+		//given a branch in the prereqs
+		else if (data.values && data.type) {
+
+			//HOW DO WE KNOW TO APPEND TO PREREQS?
+			data = {
+				prereqs: data,
+				isClass: false
+			}
+		}
+
+
+		//the leafs of the prereq trees returned from the server dosent have host or termId,
+		//but it is the same as the class that returned it,
+		//so copy over the values
+		if (!data.host) {
+			data.host = this.host
+		}
+		if (!data.termId) {
+			data.termId = this.termId
+		};
+
+
+		retVal = Class.create(data)
+
+	}
+
+	if (!retVal) {
+		console.log("ERROR creating jawn", retVal, data, retVal == data)
+		return
+	}
+
+	return retVal;
+}
 
 Class.prototype.download = function (callback) {
+	if (!callback) {
+		callback = function () {}
+	}
+
+	if (this.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
+		console.trace()
+		return callback('data status was not not started, and called class.download?', this)
+	};
+	if (this.isString || !this.isClass) {
+		console.log("ERROR class.download called on string or node",this)
+		console.trace()
+		return callback('no')
+	};
+
+
+	var lookupValues = {};
+	var resultsQuery = {};
+
+	if (this._id) {
+		lookupValues._id = this._id
+	}
+	else if (this.host && this.termId && this.subject && this.classId) {
+		lookupValues = {
+			host: this.host,
+			termId: this.termId,
+			subject: this.subject
+		}
+
+		resultsQuery = {
+			classId: this.classId
+		}
+	}
+	else {
+		console.log('ERROR tried to lookup but dont have enought info??', this)
+	}
+
+
 	this.dataStatus = macros.DATASTATUS_LOADING;
 	request({
 		url: '/listClasses',
-		resultsQuery: {
-			classId: this.classId
-		},
-		body: {
-			subject: this.subject,
-			host: this.host,
-			termId: this.termId
-		}
+		resultsQuery: resultsQuery,
+		body: lookupValues
 	}, function (err, body) {
 		this.dataStatus = macros.DATASTATUS_DONE;
 		if (err) {
@@ -95,41 +264,28 @@ Class.prototype.download = function (callback) {
 		}
 
 		if (body.length == 0) {
-			console.log('unable to find class even though its a prereq of another class????', tree)
+			console.log('unable to find class even though its a prereq of another class????', this)
 			this.dataStatus = macros.DATASTATUS_FAIL;
-			return callback(null,this)
+			return callback(null, this)
 		};
 
 		//setup an or tree
 		if (body.length > 1) {
 
-			var newTree = new Node(this.host,this.termId)
+			//change this to a node
+			this.isClass = false;
 
-			//because we are replacing the variable (which could be the root node) need to update the pointer to root node if it is
-			if (this.tree == tree) {
-				this.tree = newTree;
+			if (this.prereqs.values.length != 0 || this.coreqs.values.length != 0) {
+				console.log('ERROR already has prereqs or coreqs in download callback??', this)
+				this.prereqs.values = []
+				this.coreqs.values = []
 			};
 
-			tree.isClass = false;
-			tree.prereqs = {
-				type: 'or',
-				values: []
-			}
-			tree.coreqs = {
-				type: 'or',
-				values: []
-			}
+
 
 			body.forEach(function (classData) {
-				tree.prereqs.values.push(this.convertServerData(classData))
+				this.prereqs.values.push(this.convertServerData(classData))
 			}.bind(this))
-
-			//load the nodes, skip tree and go right to the bottom edge of the loaded nodes
-			//if we just do fetch this tree, it will hit nodes it has already loaded (in the ignoreClasses list)
-			//and stop processing
-			tree.prereqs.values.forEach(function (subTree) {
-				this.fetchSubTrees(subTree, queue, ignoreClasses)
-			}.bind(this));
 
 
 		}
@@ -139,12 +295,11 @@ Class.prototype.download = function (callback) {
 			var classData = this.convertServerData(body[0])
 
 			for (var attrName in classData) {
-				tree[attrName] = classData[attrName]
+				this[attrName] = classData[attrName]
 			}
 
-			//process this nodes values, already at bottom edge of loaded nodes
-			this.fetchSubTrees(tree, queue, ignoreClasses)
 		}
+		callback(null, this)
 	}.bind(this))
 }
 
