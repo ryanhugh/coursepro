@@ -1,13 +1,12 @@
 'use strict';
 var BaseSelector = require('./baseSelector').BaseSelector;
-var termInstance = require('./term')
 
 function College () {
 	BaseSelector.prototype.constructor.apply(this,arguments);
 
 	this.element = $(".selectCollege");
 	this.class ='collegeSelectContainer';
-	this.next = termInstance;
+	this.next = selectorsMgr.term;
 	this.helpText = 'Select Your College!'
 }
 
@@ -42,8 +41,4 @@ College.prototype.processValues = function(values) {
 };
 
 
-
-College.prototype.College=College;
-module.exports = new College();
-
-
+module.exports = College;

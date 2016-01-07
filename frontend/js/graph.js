@@ -23,7 +23,7 @@ Graph.prototype.hide = function() {
 //search and below call this, search submits the search request
 Graph.prototype.beforeLoad = function() {
 	
-	this.clearContainer()
+	render.clearContainer()
 	render.showSpinner()
 
 	document.body.style.height = '';
@@ -33,16 +33,16 @@ Graph.prototype.beforeLoad = function() {
 
 Graph.prototype.go = function (tree, callback) {
 
-	this.beforeLoad();
+	// this.beforeLoad();
 
 	downloadTree.fetchFullTree(tree, function (err) {
 		if (err) {
 			return callback(err);
 		};
 
-		if (homepage.isOnHomepage()) {
-			return callback('jumped to homepage before loading tree finished');
-		}
+		// if (homepage.isOnHomepage()) {
+		// 	return callback('jumped to homepage before loading tree finished');
+		// }
 
 		treeMgr.go(tree);
 		render.go(tree);
@@ -58,7 +58,13 @@ Graph.prototype.createTreeWithPath = function (host, termId, subject, classId, c
 		callback = function () {}
 	}
 
-	var tree = Class.createWithPath(host,termId,subject,classId)
+	var tree = Class.create({
+		host:host,
+		termId:termId,
+		subject:subject,
+		classId:classId
+	})
+	
 	if (!tree) {
 		console.log('ERROR failed to create tree with ',host,termId,subject,classId)
 		console.trace()
@@ -111,3 +117,6 @@ Graph.prototype.showClasses = function (classList, callback) {
 
 	treeMgr.go(tree, callback);
 }
+
+Graph.prototype.Graph = Graph;
+module.exports = new Graph();

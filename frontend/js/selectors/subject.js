@@ -1,6 +1,6 @@
 'use strict';
 var BaseSelector = require('./baseSelector').BaseSelector;
-var classInstance = require('./class')
+// var classInstance = require('./class')
 
 
 function Subject () {
@@ -8,7 +8,7 @@ function Subject () {
 
 	this.element = $(".selectSubject")
 	this.class ='subjectSelectContainer'
-	this.next = classInstance;
+	this.next = selectorsMgr.class;
 	this.helpText = 'Select Subject!'
 }
 
@@ -53,8 +53,4 @@ Subject.prototype.processValues = function(values) {
 
 
 
-Subject.prototype.Subject=Subject;
-module.exports = new Subject();
-
-
-
+module.exports = Subject;

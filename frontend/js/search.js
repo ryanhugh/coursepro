@@ -15,21 +15,21 @@ function Search() {
 
 
 	//focus the box when the search button is clicked
-	this.searchIcon.onclick = this.openSearchBox.bind(this)
+	// this.searchIcon.onclick = this.openSearchBox.bind(this)
 
 
-	document.onclick = this.closeSearchBox.bind(this);
+	// document.onclick = this.closeSearchBox.bind(this);
 
 
-	this.searchBox.onkeypress = function (e) {
-		if (!e) e = window.event;
-		var keyCode = e.keyCode || e.which;
-		if (keyCode == '13') {
-			this.searchFromEntry();
-		}
-	}.bind(this)
+	// this.searchBox.onkeypress = function (e) {
+	// 	if (!e) e = window.event;
+	// 	var keyCode = e.keyCode || e.which;
+	// 	if (keyCode == '13') {
+	// 		this.searchFromEntry();
+	// 	}
+	// }.bind(this)
 
-	this.searchSubmitButton.onclick = this.searchFromEntry.bind(this);
+	// this.searchSubmitButton.onclick = this.searchFromEntry.bind(this);
 }
 Search.prototype.closeSearchBox = function (event) {
 	this.isOpen = false;

@@ -2,12 +2,6 @@
 var request = require('./request')
 
 function EmailMgr() {
-	this.emailError = document.getElementById('emailErrorId')
-	this.emailSuccess = document.getElementById('emailSuccessId')
-
-	this.submitButton = document.getElementById('emailSubmitButtonId')
-
-	this.submitButton.onclick = this.onEmailSubmit.bind(this);
 
 }
 
@@ -30,17 +24,13 @@ EmailMgr.prototype.validateEmail = function (email) {
 
 
 
-EmailMgr.prototype.submitTo = function (url, callback) {
-
-
-	var box = document.getElementById('emailBoxId');
-	var email = box.value.trim();
+EmailMgr.prototype.submitTo = function (url, email, callback) {
 
 	if (!this.validateEmail(email)) {
 		console.log(email, 'is not an email address!');
 
 		//show some warning in the html
-		return callback('invalid email');
+		return callback('Invalid email, try again');
 	}
 
 
@@ -53,23 +43,18 @@ EmailMgr.prototype.submitTo = function (url, callback) {
 			email: email
 		}
 	}, function (err, response) {
-		if (err) {
+		//some other errors are possible - same thing as above
+		if (err || response.error) {
 
 			//server error, probably will not happen but can be a bunch of different stuff
-			console.log(err);
-			return callback('error');
+			console.log(err,response);
+			return callback('Error :/');
 		}
 
-		else if (response.error) {
-
-			//some other errors are possible - same thing as above
-			console.log(response.error)
-			return callback('error');
-		}
 
 		else {
 			console.log('it worked!')
-			return callback();
+			return callback(null, 'Success!');
 		}
 
 	}.bind(this))
@@ -77,26 +62,8 @@ EmailMgr.prototype.submitTo = function (url, callback) {
 
 
 
-EmailMgr.prototype.onEmailSubmit = function (email) {
-
-	this.submitTo('/registerForEmails', function (err) {
-
-		if (err == 'invalid email') {
-			this.emailError.style.display = '';
-			this.emailError.innerHTML = 'Invalid email, try again';
-			this.emailSuccess.style.display = 'none';
-		}
-		else if (err) {
-			this.emailError.innerHTML = 'Error :/';
-			this.emailError.style.display = '';
-			this.emailSuccess.style.display = 'none';
-		}
-		else {
-			this.emailSuccess.style.display = '';
-			this.emailError.style.display = 'none';
-		}
-	}.bind(this))
-
+EmailMgr.prototype.subscribe = function (email, callback) {
+	this.submitTo('/registerForEmails', email, callback)
 }
 
 

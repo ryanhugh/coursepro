@@ -52,5 +52,4 @@ Class.prototype.processValues = function(values) {
 
 
 
-Class.prototype.Class=Class;
-module.exports =new Class();
+module.exports =Class;

@@ -1,9 +1,16 @@
 'use strict';
-var homepage = require('./homepage')
 var macros = require('./macros')
 
 function Render() {
 
+	if (localStorage.andPopupCount === undefined) {
+		localStorage.andPopupCount = 0;
+	}
+
+	if (localStorage.orPopupCount === undefined) {
+		localStorage.orPopupCount = 0;
+	}
+	return;
 
 	this.template = document.getElementsByClassName('templatePanelId')[0];
 	this.container = document.getElementById('containerId');
@@ -21,13 +28,6 @@ function Render() {
 		console.log('error could not find template??', this.template, this.container, this.navBar)
 	}
 
-	if (localStorage.andPopupCount === undefined) {
-		localStorage.andPopupCount = 0;
-	}
-
-	if (localStorage.orPopupCount === undefined) {
-		localStorage.orPopupCount = 0;
-	}
 }
 
 
@@ -402,7 +402,7 @@ Render.prototype.addLines = function (tree) {
 //this is called before the loading starts
 Render.prototype.clearContainer = function () {
 
-	homepage.removeHomepage()
+	// homepage.removeHomepage()
 
 	//remove everything in the container for a new tree
 	while (this.container.firstChild) {

@@ -108,10 +108,10 @@ Main.prototype.main = function () {
 };
 
 Main.prototype.Main = Main;
-var instance = new Main();
+// var instance = new Main();
 
 $(function () {
-	instance.main();
+	// instance.main();
 })
 
-module.exports = instance;
+// module.exports = instance;

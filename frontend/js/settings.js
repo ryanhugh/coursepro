@@ -238,6 +238,8 @@ function Settings($scope) {
 	// this.masterContainer = document.getElementById('masterContainerId');
 }
 
+Settings.isPage = true;
+
 //prototype constructor
 Settings.prototype = Object.create(BaseDirective.prototype);
 Settings.prototype.constructor = Settings;

@@ -88,6 +88,8 @@ function Class(config) {
 	}
 
 
+	this.sections = []
+
 
 	// host: "neu.edu"
 	// termId: "201630"
@@ -323,24 +325,30 @@ Class.prototype.compareTo = function (otherClass) {
 	return 0
 };
 
-
-
-Class.prototype.getPathObject = function () {
-	var retVal = {};
+// returns {
+// 	obj:{host:,termid,...},
+// 	str:'neu.edu/201630/CS...'
+// }
+Class.prototype.getPath = function () {
+	var obj = {};
+	var str = []
 
 	var path = ['host', 'termId', 'subject', 'classId']
 	for (var i = 0; i < path.length; i++) {
 		if (this[path[i]]) {
-			retVal[path[i]] = this[path[i]]
+			obj[path[i]] = this[path[i]]
+			str.push(path[i])
 		}
 		else {
-			return retVal;
+			return {
+				obj:obj,
+				str:str.join('/')
+			};
 		}
 	};
 };
 
-
-
+//is can also be called through treeMgr, which will add class count of the tree
 Class.prototype.logTree = function (body) {
 	if (!body.type) {
 		console.log('ERROR not given a tree type', body);
@@ -354,7 +362,8 @@ Class.prototype.logTree = function (body) {
 		return;
 	};
 
-	body = _.merge(this.getPathObject(), body);
+	//add host, termId, subject, and classId
+	body = _.merge(this.getPath().obj, body);
 
 	console.log('The tree is ', classCount, ' big');
 	request({

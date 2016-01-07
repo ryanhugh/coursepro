@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
 	<!-- Meta, title, CSS, favicons, etc. -->
 	<meta charset="utf-8">
@@ -49,203 +49,21 @@
 
 
 </head>
-<body class="bs-docs-home" style="    min-width: 1500px;">
+<body class="bs-docs-home" style="min-width: 1500px;" ng-app="app" >
+
+	<div selectorsMgr></div>
+
+	<!-- id="masterContainerId" -->
+	<div  class="normalFont" style="min-width:100%" >
 
 
-
-	<div id ="navbarContainerid">
-		<nav class="navbar navbar-inverse navbar-fixed-top" id="navBar" style="min-width: 100%;background: rgba(0,0,0,0.8);">
-			<div class="container" style="position: relative;">
-				<a class="navbar-brand showHomepage"  id="navbarIconAId" style="max-width: 66px;">
-					<img src="images/whiteicon.png"  id="navbarIconId">
-				</a>
-
-				<div id="navbar" class="collapse navbar-collapse">
-
-
-					<select class="js-example-basic-single selectCollege" style="display:none">
-					</select>
-
-					<select class="js-example-basic-single selectTerm" style="display:none" >
-					</select>
-
-					<select class="js-example-basic-single selectSubject" style="display:none" >
-					</select>
-
-					<select class="js-example-basic-single selectClass" style="display:none" >
-					</select>
-
-					<div id="nothingFound" style="display:none;">
-						Nothing Found!
-					</div>
-
-					<!--search -->
-					<div class="input-group" id="adv-search" style="display: inline-block;float: right;width: 32px;padding-top: 10px;    position: absolute;right: 0px;    top: 0px;">
-						<div class="input-group-btn">
-							<div class="btn-group" role="group">
-								<div class="dropdown dropdown-lg">
-									<button type="button" class="btn btn-default" id="searchIcon" aria-expanded="false" style="background-color: transparent;border: transparent;"><span class="glyphicon glyphicon-search searchIcon"></span></button>
-
-									<div class="dropdown-menu dropdown-menu-right" role="menu" style="width: 250px;padding-right: 48px;padding-left: 10px;" id="searchDropdown">
-										<div style="padding-bottom: 5px;" id ="searchHelp"></div>
-										<input class="form-control" type="text" id="searchBox"/>
-										<button type="submit" class="btn btn-primary" id="searchSubmitButton"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-			</div><!--/.nav-collapse -->
-		</nav>
-	</div>
-
-	<div id="masterContainerId" class="normalFont" style="min-width:100%" >
-
-		<div id="containerId" style="white-space: nowrap;display: inline-block;    margin: 0 auto;min-width:100%">
-
-			<!--template panel, used for trees-->
-			<!-- remove the white-space below and above to wrap the panels -->
-			<div class="panel panel-primary templatePanelId" style="width:165px;display:none;margin: 0 auto;white-space: initial;text-align:initial">
-				<div class="panel-heading classPanelHead">
-					<h3 class="panel-title" style="text-align: center;"><span class="subjClassId"></span><br/><span class="classTitleId"></span></h3>
-					<span class="glyphicon glyphicon-remove" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;display:none;"></span>
-				</div>
-				<div class="panel-body panelBodyId" style="line-height: 14px;">
-
-				</div>
-			</div>
+<!-- 
+		<div id="settingsId" class="container" settings>
 		</div>
+ -->
+    <div ng-view></div>
 
 
-		<div id="homepageId">
-
-
-
-			<section class="fp-billboard fp-billboard-center fp-billboard-inline-small fp-education section">
-				<figure class="fp-billboard-image image-macforeducation" style="background-image: url(&quot;images/background1_small.jpg&quot;);background-position: 60% 50%;"></figure>
-				<div class="fp-billboard-wrapper">
-					<div class="fp-section-content">
-						<div class="fp-billboard-content large-6 large-offset-1 small-12 small-offset-0">
-							<p class="fp-billboard-copy" style="font-size: 30px;font-weight: bold;margin-right: -332px;margin-bottom: -117px;margin-bottom: -33px;">Beta!</p>
-							<img src="images/whitelogo.png" style="width:350px;position: relative;left: -10px;">
-							<p class="fp-billboard-copy" style="font-size: 28px;">Plan For Success</p>
-							<p class="fp-billboard-copy" style="font-size: 20px;padding-top: 13px;" ><a id="selectYourCollegeId" class="openCollegeSelector">Select your College ></a></p>
-
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section class="fp-product fp-product-macbook-air section" style="padding-top: 140px;background: white;padding-bottom: 160px;">
-				<div class="fp-section-content fp-product-content ">
-					<div class="row">
-						<div class="large-8 medium-6 small-12 large-offset-4 medium-offset-5 small-offset-0 column" style="left:10%;">
-							<h2 class="fp-product-headline"><font><font>Find your Path</font></font></h2>
-							<p class="fp-product-subheadline">Quickly see all the<br> prerequisites for any class!</p>
-							<span class="fp-moreblock fp-product-moreblock">
-								<a href="#neu.edu/201630/MATH/4681"><font><font>Check it out!</font></font></a>
-							</span>
-							<figure class="image-macbookair small-only"> </figure>
-						</div>
-					</div>
-					<figure class="image-macbookair desktop-only" style="background-image: url(&quot;images/mbpr_largeflipped.png&quot;);"> </figure>
-				</div>
-			</section>
-
-			<section class="fp-product fp-product-macbook-pro section" style="padding-top:135px; background:whitesmoke; padding-bottom:165px;">
-				<div class="fp-section-content fp-product-content ">
-
-					<div class="row" style="margin-left: -113px;">
-						<div class="col-md-6">
-							<div  style="right:10%;">
-								<h3 class="fp-product-headline">All the Details</h3>
-								<p class="fp-product-subheadline">See course requirements, descriptions, class times, professors, and more!</p>
-								<span class="fp-moreblock fp-product-moreblock" >
-									<a href="#neu.edu/201610/CS/2500">Check it out!</a>
-								</span>
-							</div>
-						</div>
-						<div class="col-md-6"><img src="/images/fundies.png" style="max-width: 125%;"/></div>
-					</div>
-
-				</div>
-			</section>
-
-
-			<section class="fp-product fp-product-macbook-air section" style="padding-top: 150px;padding-bottom: 150px; background:white;">
-				<div class="fp-section-content fp-product-content ">
-					<div class="row">
-						<div class="large-8 medium-6 small-12 large-offset-4 medium-offset-5 small-offset-0 column">
-							<h2 class="fp-product-headline"><font><font>Don't Miss Out</font></font></h2>
-							<p class="fp-product-subheadline">Instant Notifications when spots&nbsp;open&nbsp;up.</p>
-							<span class="fp-moreblock fp-product-moreblock">
-								<a href="javascript:void(0);"><font><font>Coming Soon!</font></font></a>
-							</span>
-							<figure class="image-macbookair small-only"> </figure>
-						</div>
-					</div>
-					<figure class="image-macbookair desktop-only" style="background-image: url(&quot;images/iphonenotification.png&quot;);"> </figure>
-				</div>
-			</section>
-
-			<section class="fp-product fp-product-accessories section" style="background:whitesmoke; padding-top:140px; padding-bottom:150px; ">
-				<div class="fp-section-content row">
-					<div class="fp-product-content large-8 medium-8 small-12 large-centered small-centered column">
-						<h2 class="fp-product-headline">Stay up to Date!</h2>
-						<p class="fp-product-subheadline" style="font-size:30px; margin-top:10px;">Enter your Email to Recieve Updates on our newest&nbsp;features:</p>
-						<span class="fp-moreblock fp-product-moreblock">
-							<input type="text" name="email" id="emailBoxId" style="text-align: center; width: 400px;">
-							<input type="submit" value="Subscribe" id="emailSubmitButtonId" class = "btn btn-primary" style="font-size:24px;position: absolute;right: -10px;top:74%;">
-						</span>
-					</div>
-
-					<div class="fp-product-content large-8 medium-8 small-12 large-centered small-centered column">
-						<p class="fp-product-subheadline" style="font-size:30px; margin-top:10px;display:none;" id = "emailSuccessId">Success!</p>
-						<p class="fp-product-subheadline" style="font-size:30px; margin-top:10px;display:none;" id = "emailErrorId">Error :/</p>
-					</div>
-
-				</div>
-			</section>
-
-
-			<section class="fp-billboard fp-billboard-center fp-billboard-inline-small fp-education section" style="height:524px;">
-				<figure class="fp-billboard-image image-macforeducation" style="background-image: url(&quot;images/background3_small.jpg&quot;);max-height: 524px;background-size: 100% 524px !important; margin-bottom: -76px"></figure>
-				<div class="fp-billboard-wrapper">
-					<div class="fp-section-content">
-						<div class="fp-billboard-content large-6 large-offset-1 small-12 small-offset-0">
-							<a class="btn btn-primary openCollegeSelector" role="button" style="font-size: 30px;">Search for Your College</a>
-						</div>
-					</div>
-				</div>
-			</section>
-
-
-
-
-
-			<footer class="bs-docs-footer" role="contentinfo" style="margin-top:0px;">
-				<div class="row" style="max-width: 500px;margin: 0 auto;">
-					<div class="span6">
-						<p>Designed and built by Ryan Hughes</p>
-					</div>
-					<div class="span6">
-						<p><a href="mailto:coursepro@coursepro.io"> coursepro@coursepro.io </a></p>
-					</div>
-				</div>
-
-
-			</footer>
-		</div>
-
-		<div id="settingsId" class="container" ng-app="app" settings>
-			
-
-
-
-
-		</div>
 
 		<!-- Modal -->
 		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

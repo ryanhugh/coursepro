@@ -1,48 +1,40 @@
 'use strict';
+var directiveMgr = require('./directiveMgr')
+var BaseDirective = require('./BaseDirective')
+var emailMgr = require('./emailMgr')
 
-function Homepage() {
+function Homepage($scope) {
+	BaseDirective.prototype.constructor.apply(this, arguments);
 
-
-	this.homepageElement = document.getElementById('homepageId');
-	this.masterContainer = document.getElementById('masterContainerId');
-
-
+	this.email = '';
+	this.emailMsg = ''
 }
 
-Homepage.prototype.removeHomepage = function () {
-	$(this.homepageElement).detach()
+Homepage.url = '/'
+Homepage.isPage = true
+
+//prototype constructor
+Homepage.prototype = Object.create(BaseDirective.prototype);
+Homepage.prototype.constructor = Homepage;
+
+Homepage.prototype.subscribe = function (email) {
+	emailMgr.subscribe(this.email, function (errMsg, successMsg) {
+		if (errMsg) {
+			this.emailMsg = errMsg
+		}
+		else {
+			this.emailMsg = successMsg
+		}
+		this.$scope.$apply()
+	}.bind(this))
 };
 
 
-Homepage.prototype.isOnHomepage = function () {
-
-	// if the element has a parent, it is in the container, if not it needs to be added
-	if (this.homepageElement.parentElement) {
-		return true
-	}
-	else {
-		return false;
-	}
-}
-
-
-
-Homepage.prototype.show = function () {
-
-
-	if (this.isOnHomepage()) {
-		return;
-	}
-
-	document.body.style.height = '';
-	document.body.style.width = '';
-
-
-	this.masterContainer.appendChild(this.homepageElement);
-
-}
-
+Homepage.prototype.openSelectors = function () {
+	selectorsMgr.go()
+};
 
 
 Homepage.prototype.Homepage = Homepage;
-module.exports = new Homepage();
+module.exports = Homepage;
+directiveMgr.addDirective(Homepage)
