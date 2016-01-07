@@ -23,6 +23,16 @@ function Class(config) {
 	//when this is false this is only required to have a .prereqs and coreqs
 	this.isClass = true;
 
+	//instances of Section()
+	this.sections = []
+
+
+	//weather the tree is expanded or not
+	this.isExpanded = false;
+
+	// //if it is a coreq
+	// this.coreqIndex = 0;
+
 
 	//copy over all other attr given
 	for (var attrName in config) {
@@ -88,7 +98,6 @@ function Class(config) {
 	}
 
 
-	this.sections = []
 
 
 	// host: "neu.edu"
@@ -375,6 +384,14 @@ Class.prototype.logTree = function (body) {
 		}
 	}.bind(this))
 }
+
+
+
+Class.prototype.test = function() {
+	console.log(arguments,this)
+};
+
+
 
 
 

@@ -1,12 +1,12 @@
 
 <!--template panel, used for trees-->
 <!-- remove the white-space below and above to wrap the panels -->
-<div class="panel panel-primary templatePanelId" style="width:165px;display:none;margin: 0 auto;white-space: initial;text-align:initial">
-	<div class="panel-heading classPanelHead">
-		<h3 class="panel-title" style="text-align: center;"><span class="subjClassId"></span><br/><span class="classTitleId"></span></h3>
+<div class="panel panel-primary treePanel"> 
+	<div class="panel-heading">
+		<h3 class="panel-title" style="text-align: center;">{{tree.subject}} {{tree.classId}}<br/> {{tree.name}}</h3>
 		<span class="glyphicon glyphicon-remove" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;display:none;"></span>
 	</div>
 	<div class="panel-body panelBodyId" style="line-height: 14px;">
-
+		<ng-pluralize count="tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
 	</div>
 </div>

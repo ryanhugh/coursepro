@@ -1,5 +1,18 @@
-<div class="holderDiv" style="display: inline-block; margin: 0px auto; padding: 20px 20px 0px; min-width: 100%;">
-	<div class="filler" style="width: 165px; height: 128px; margin: 0px auto;background:blue;"></div>
-	
-	<div ng-repeat="tree in tree.prereqs.values" ng-include="'/html/graph.html'" style="display:inline-block"></div>
+<div class="holderDiv">
+
+	<div class="filler" ng-style="{'width':165 + (20* tree.coreqs.values.length)+'px','height':165 + (20* tree.coreqs.values.length)+'px'}">
+
+
+		<div style="display:inline-block;left:0px;bottom:0px;position:absolute;width: 165px;height: 128px;">
+			<div style="display:inline-block;z-index:100;position:relative;width: 165px;height: 128px;" ng-include="'/html/panel.html'"></div>
+
+			<div 
+			style="display:inline-block;position:absolute;width: 165px;height: 128px;" 
+			ng-repeat="tree in tree.coreqs.values"
+			ng-style="{'top':-($index*30+30)+'px','right':-($index*30+30)+'px','z-index':100-$index-1}" 
+			ng-include="'/html/panel.html'"></div>
+
+		</div>
+	</div>
+	<div ng-repeat="tree in tree.prereqs.values" ng-include="'/html/graphInner.html'" style="display:inline-block"></div>
 </div>

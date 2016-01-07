@@ -145,7 +145,22 @@
 }
 
 
+.treePanel{
+	width: 165px;
+	white-space: initial;
+	text-align: initial;
+	margin-bottom: 0;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	top: 50%;
+	position: absolute;
+}
 
+.mainPanel {
+	left: 50%;
+	position: absolute;
+	transform: translate(-50%, 0);
+}
 
 /*panels get a little shadow when you hover over them*/
 .panel:hover{
@@ -194,8 +209,21 @@
 
 .holderDiv {
 	text-align: center;
-	
+	display: inline-block;
+	margin: 0px auto;
+	padding: 20px 20px 0px;
+	min-width: 100%;
 }
+
+.filler { 
+	width: 165px;
+	height: 128px;
+	margin: 0px auto;
+	position:relative
+}
+
+/*ng-style="{'width':165 + (20* tree.coreqs.values.length)+'px','height':165 + (20* tree.coreqs.values.length)+'px'}"*/
+
 .lineToParentLink,.lineToParentLink:focus{
 	outline: 0;
 	border:0 none;
