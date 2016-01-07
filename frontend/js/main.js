@@ -1,6 +1,6 @@
 'use strict';
 var search = require('./search')
-var render = require('./render')
+// var render = require('./render')
 var homepage = require('./homepage')
 var settings = require('./settings')
 
@@ -51,7 +51,7 @@ Main.prototype.updateFromHash = function () {
 	//if no hash, destroy all dropdowns and show (but don't open) the first one
 	if (values.length == 0) {
 		selectorsMgr.resetAllSelectors()
-		render.clearContainer()
+		// render.clearContainer()
 		settings.hide()
 		homepage.show();
 		return;
@@ -76,7 +76,7 @@ Main.prototype.updateFromHash = function () {
 	}
 	else if (values[0] == 'settings') {
 		homepage.removeHomepage();
-		render.clearContainer()
+		// render.clearContainer()
 		// settings.show()
 		document.getElementById('settingsId')
 	}

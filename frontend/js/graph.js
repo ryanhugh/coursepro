@@ -1,4 +1,6 @@
 'use strict';
+var directiveMgr = require('./directiveMgr')
+var BaseDirective = require('./BaseDirective')
 
 var downloadTree = require('./downloadTree')
 var treeMgr = require('./treeMgr')
@@ -7,35 +9,41 @@ var popup = require('./popup')
 var help = require('./help')
 var Class = require('./Class')
 
-var homepage = require('./homepage')//this needs to go
 
 //thing that calls on download tree, treeMgr, render, popup and help
 //manages the page that generates the tree graphs
 
-function Graph() {
+function Graph($scope,$routeParams) {
+	BaseDirective.prototype.constructor.apply(this, arguments);
+	console.log($routeParams)
+
+	this.createGraph($routeParams)
 
 }
 
-Graph.prototype.hide = function() {
-	render.clearContainer();
-};
+Graph.isPage = true;
+Graph.url = '/graph/:host/:termId/:subject/:classId'
 
-//search and below call this, search submits the search request
-Graph.prototype.beforeLoad = function() {
+// Graph.prototype.hide = function() {
+// 	render.clearContainer();
+// };
+
+// //search and below call this, search submits the search request
+// Graph.prototype.beforeLoad = function() {
 	
-	render.clearContainer()
-	render.showSpinner()
+// 	render.clearContainer()
+// 	render.showSpinner()
 
-	document.body.style.height = '';
-	document.body.style.width = '';
-};
+// 	document.body.style.height = '';
+// 	document.body.style.width = '';
+// };
 
 
 Graph.prototype.go = function (tree, callback) {
 
 	// this.beforeLoad();
 
-	downloadTree.fetchFullTree(tree, function (err) {
+	downloadTree.fetchFullTree(tree, function (err,tree) {
 		if (err) {
 			return callback(err);
 		};
@@ -45,31 +53,30 @@ Graph.prototype.go = function (tree, callback) {
 		// }
 
 		treeMgr.go(tree);
-		render.go(tree);
-		popup.go(tree);
-		help.go(tree);
+		// render.go(tree);
+		// popup.go(tree);
+		// help.go(tree);
+		// this.tree = tree;
+		this.$scope.tree = tree;
+		this.$scope.$apply()
+
 		callback(null, tree)
 	}.bind(this))
 
 };
 
-Graph.prototype.createTreeWithPath = function (host, termId, subject, classId, callback) {
+Graph.prototype.createGraph = function (tree, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
 
-	var tree = Class.create({
-		host:host,
-		termId:termId,
-		subject:subject,
-		classId:classId
-	})
+	// var tree = Class.create(serverData)
 	
-	if (!tree) {
-		console.log('ERROR failed to create tree with ',host,termId,subject,classId)
-		console.trace()
-		return callback('error')
-	};
+	// if (!tree) {
+	// 	console.log('ERROR failed to create tree with ',host,termId,subject,classId)
+	// 	console.trace()
+	// 	return callback('error')
+	// };
 
 	//process tree takes in a callback
 	this.go(tree, function (err, tree) {
@@ -119,4 +126,5 @@ Graph.prototype.showClasses = function (classList, callback) {
 }
 
 Graph.prototype.Graph = Graph;
-module.exports = new Graph();
+module.exports = Graph;
+directiveMgr.addDirective(Graph)

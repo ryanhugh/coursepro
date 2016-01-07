@@ -65,7 +65,13 @@ SelectorsMgr.prototype.closeAllSelectors = function () {
 }
 
 SelectorsMgr.prototype.finish = function (callback) {
-	graph.createTreeWithPath(this.college.getValue(), this.term.getValue(), this.subject.getValue(), this.class.getValue(), callback);
+	graph.createGraph({
+		host: this.college.getValue(),
+		termId: this.term.getValue(),
+		subject: this.subject.getValue(),
+		classId: this.class.getValue(),
+		callback
+	});
 }
 
 SelectorsMgr.prototype.setSelectors = function (values, doOpenNext) {

@@ -6,8 +6,6 @@ var angularModule = angular.module('app', [require('angular-route')]);
 
 function DirectiveMgr() {
 
-
-
 }
 
 

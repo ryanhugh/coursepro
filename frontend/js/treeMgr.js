@@ -359,6 +359,8 @@ TreeMgr.prototype.logTree = function(tree,body) {
 	
 	//tell the server how big this tree is
 	body.classCount = this.countClassesInTree(tree);
+
+	console.log('The tree is ', body.classCount, ' big');
 	tree.logTree(body)
 	
 };

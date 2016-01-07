@@ -3,11 +3,13 @@ var directiveMgr = require('./directiveMgr')
 var BaseDirective = require('./BaseDirective')
 var emailMgr = require('./emailMgr')
 
-function Homepage($scope) {
+function Homepage($scope,$location) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	this.email = '';
 	this.emailMsg = ''
+
+	// this.$location = $location
 }
 
 Homepage.url = '/'

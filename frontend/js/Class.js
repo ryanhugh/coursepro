@@ -330,22 +330,22 @@ Class.prototype.compareTo = function (otherClass) {
 // 	str:'neu.edu/201630/CS...'
 // }
 Class.prototype.getPath = function () {
-	var obj = {};
-	var str = []
+	var retVal = {
+		obj:{},
+		str:[]
+	}
 
 	var path = ['host', 'termId', 'subject', 'classId']
 	for (var i = 0; i < path.length; i++) {
 		if (this[path[i]]) {
-			obj[path[i]] = this[path[i]]
-			str.push(path[i])
+			retVal.obj[path[i]] = this[path[i]]
+			retVal.str.push(path[i])
 		}
 		else {
-			return {
-				obj:obj,
-				str:str.join('/')
-			};
+			return retVal;
 		}
-	};
+	}
+	return retVal;
 };
 
 //is can also be called through treeMgr, which will add class count of the tree
@@ -365,7 +365,6 @@ Class.prototype.logTree = function (body) {
 	//add host, termId, subject, and classId
 	body = _.merge(this.getPath().obj, body);
 
-	console.log('The tree is ', classCount, ' big');
 	request({
 		url: '/log',
 		body: body,
