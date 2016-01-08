@@ -13,7 +13,7 @@ var Class = require('./Class')
 //thing that calls on download tree, treeMgr, render, popup and help
 //manages the page that generates the tree graphs
 
-function Graph($scope,$routeParams) {
+function Graph($scope, $routeParams) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	console.log($routeParams)
 
@@ -24,41 +24,55 @@ function Graph($scope,$routeParams) {
 Graph.isPage = true;
 Graph.url = '/graph/:host/:termId/:subject/:classId'
 
-// Graph.prototype.hide = function() {
-// 	render.clearContainer();
-// };
 
-// //search and below call this, search submits the search request
-// Graph.prototype.beforeLoad = function() {
-	
-// 	render.clearContainer()
-// 	render.showSpinner()
+Graph.prototype.setupUUIDLinks = function (tree) {
 
-// 	document.body.style.height = '';
-// 	document.body.style.width = '';
-// };
+	tree.panel = document.getElementById(tree.uuid)
 
+	tree.prereqs.values.forEach(function (subTree) {
+		this.setupUUIDLinks(subTree);
+	}.bind(this));
+
+	tree.coreqs.values.forEach(function (subTree) {
+		this.setupUUIDLinks(subTree);
+	}.bind(this));
+};
+
+Graph.prototype.getCoords = function (tree) {
+
+	var coords = tree.panel.getBoundingClientRect();
+
+	tree.x = coords.left + tree.panel.offsetWidth / 2 + document.body.scrollLeft;
+	tree.y = coords.bottom - tree.panel.offsetHeight / 2 + document.body.scrollTop;
+
+	tree.prereqs.values.forEach(function (subTree) {
+		this.getCoords(subTree);
+	}.bind(this));
+
+	tree.coreqs.values.forEach(function (subTree) {
+		this.getCoords(subTree);
+	}.bind(this));
+};
 
 Graph.prototype.go = function (tree, callback) {
-
-	// this.beforeLoad();
-
-	downloadTree.fetchFullTree(tree, function (err,tree) {
+	downloadTree.fetchFullTree(tree, function (err, tree) {
 		if (err) {
 			return callback(err);
 		};
 
-		// if (homepage.isOnHomepage()) {
-		// 	return callback('jumped to homepage before loading tree finished');
-		// }
-
 		treeMgr.go(tree);
+
+
 		// render.go(tree);
 		// popup.go(tree);
 		// help.go(tree);
 		// this.tree = tree;
 		this.$scope.tree = tree;
 		this.$scope.$apply()
+
+		this.setupUUIDLinks(tree)
+		this.getCoords(tree);
+		render.addLines(tree);
 
 		callback(null, tree)
 	}.bind(this))
@@ -71,7 +85,7 @@ Graph.prototype.createGraph = function (tree, callback) {
 	}
 
 	// var tree = Class.create(serverData)
-	
+
 	// if (!tree) {
 	// 	console.log('ERROR failed to create tree with ',host,termId,subject,classId)
 	// 	console.trace()

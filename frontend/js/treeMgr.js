@@ -392,6 +392,7 @@ TreeMgr.prototype.go = function (tree) {
 
 
 	this.addLowestParent(tree);
+
 }
 
 

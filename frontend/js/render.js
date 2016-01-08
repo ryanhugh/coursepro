@@ -13,7 +13,6 @@ function Render() {
 	return;
 
 	this.template = document.getElementsByClassName('templatePanelId')[0];
-	this.container = document.getElementById('containerId');
 	this.navBar = document.getElementById('navBar');
 
 	this.spinner = document.getElementById('spinner')
@@ -89,7 +88,6 @@ Render.prototype.drawLine = function (tree, x1, y1, x2, y2, color) {
 	tree.lineContainer.appendChild(aElement);
 
 	this.container.appendChild(tree.lineContainer);
-
 
 	tree.lineToParent = div;
 	tree.lineToParentLink = aElement;
@@ -393,6 +391,8 @@ Render.prototype.addLines = function (tree) {
 	if (!tree.hidden) {
 		this.calculateLine(tree);
 	}
+
+	this.container = document.getElementById('containerId');
 
 	tree.prereqs.values.forEach(function (subTree) {
 		this.addLines(subTree);

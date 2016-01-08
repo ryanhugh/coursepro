@@ -4,12 +4,13 @@
 
 
 		<div style="display:inline-block;left:0px;bottom:0px;position:absolute;width: 165px;height: 128px;">
-			<div style="display:inline-block;z-index:100;position:relative;width: 165px;height: 128px;" ng-include="'/html/panel.html'"></div>
+			<div style="display:inline-block;z-index:100;position:relative;width: 165px;height: 128px;" ng-include="'/html/panel.html'" class="zIndexHover"></div>
 
 			<div 
+			class = "zIndexHover"
 			style="display:inline-block;position:absolute;width: 165px;height: 128px;" 
 			ng-repeat="tree in tree.coreqs.values"
-			ng-style="{'top':-($index*30+30)+'px','right':-($index*30+30)+'px','z-index':100-$index-1}" 
+			ng-style="{'top':-($index*39+39)+'px','right':-($index*30+30)+'px','z-index':100-$index-1}"
 			ng-include="'/html/panel.html'"></div>
 
 		</div>

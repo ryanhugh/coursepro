@@ -30,8 +30,8 @@ function Class(config) {
 	//weather the tree is expanded or not
 	this.isExpanded = false;
 
-	// //if it is a coreq
-	// this.coreqIndex = 0;
+	//ghetto bypass angularjs to link dom elements to tree structure
+	this.uuid = Math.random()+''+Math.random();
 
 
 	//copy over all other attr given
@@ -386,11 +386,44 @@ Class.prototype.logTree = function (body) {
 }
 
 
+Class.prototype.loadSections = function(callback) {
 
-Class.prototype.test = function() {
-	console.log(arguments,this)
+	// tried to load sections twice
+	if (this.sections.length>0) {
+		console.log('ERROR already have sections??')
+		return callback('already done')
+	}
+
+	if (!this.isClass || this.isString) {
+		console.log('ERROR cant load sections of !class or string')
+		return callback('!class or string')
+	};
+
+	var q = queue();
+
+	this.crns.forEach(function (crn) {
+		var section = new Section({
+			host:this.host,
+			termId:this.termid,
+			subject:this.subject,
+			classId:this.classId,
+			crn:crn
+		})
+
+		q.defer(function (callback) {
+			section.download(callback)
+		}.bind(this))
+
+		this.sections.push(section)
+	}.bind(this))
+
+	q.awaitAll(function (err) {
+		callback(err)
+	}.bind(this))
+
+
+
 };
-
 
 
 

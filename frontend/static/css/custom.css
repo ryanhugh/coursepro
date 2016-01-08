@@ -168,6 +168,9 @@
 }
 
 
+.zIndexHover:hover {
+	z-index: 999 !important; /*needs to override the css in the elements (which changes with angular)*/
+}
 
 
 /*inside an expanded panel*/
