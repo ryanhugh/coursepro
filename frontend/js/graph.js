@@ -1,4 +1,6 @@
 'use strict';
+var moment = require('moment')
+
 var directiveMgr = require('./directiveMgr')
 var BaseDirective = require('./BaseDirective')
 
@@ -8,6 +10,7 @@ var render = require('./render')
 var popup = require('./popup')
 var help = require('./help')
 var Class = require('./Class')
+var macros = require('./macros')
 
 
 //thing that calls on download tree, treeMgr, render, popup and help
@@ -67,6 +70,8 @@ Graph.prototype.go = function (tree, callback) {
 		// popup.go(tree);
 		// help.go(tree);
 		// this.tree = tree;
+		//SOMEWHERE ENsure that all class have prettyurl, and if not copy over url
+
 		this.$scope.tree = tree;
 		this.$scope.$apply()
 
@@ -138,6 +143,75 @@ Graph.prototype.showClasses = function (classList, callback) {
 
 	treeMgr.go(tree, callback);
 }
+
+
+Graph.prototype.loadSections = function(tree) {
+	if (tree.sectionsLoadingStatus !== macros.DATASTATUS_DONE) {
+		return;
+	}
+
+	
+	if (tree.sectionsLoadingStatus !== macros.DATASTATUS_NOTSTARTED) {
+		console.log("ERROR wtf section loading status",tree.sectionsLoadingStatus)
+		return;
+	};
+
+	tree.loadSections(function (err) {
+		if (err) {
+			console.log("ERRor loading loadSections",err)
+		}
+		this.$scope.$apply()
+	}.bind(this))
+};
+
+
+Graph.prototype.getUpdatedString = function(tree) {
+	return moment(tree.lastUpdateTime).fromNow()
+};
+
+
+// the given scope is the scope of a tree inside a recursions
+Graph.prototype.updateShadow = function($scope,isMouseOver) {
+	if ($scope.isExpanded) {
+		$scope.style['box-shadow'] = 'gray 0px 0px 9px'
+		$scope.style.zIndex = 999;
+	}
+	else {
+		if (isMouseOver) {
+			$scope.style['box-shadow'] = 'gray 0px 0px 6px'
+			$scope.style.zIndex = 150;	
+		}
+		else {
+			$scope.style['box-shadow'] = 'gray 0px 0px 0px'
+			$scope.style.zIndex = $scope.baseZIndex;	
+		}
+	}
+};
+
+Graph.prototype.onMouseOver = function($scope) {
+	this.updateShadow($scope,true);
+}
+
+Graph.prototype.onMouseOut = function($scope) {
+	this.updateShadow($scope,false);
+};
+
+Graph.prototype.onClick = function($scope,tree) {
+	$scope.isExpanded=!$scope.isExpanded;
+	this.updateShadow($scope,false);
+};
+
+// called for each recursive call in graphInner.html
+Graph.prototype.initScope = function($scope) {
+	$scope.style={'box-shadow':'gray 0px 0px 0px'}
+	if (!$scope.$parent.baseZIndex) {
+		console.log("hiii");
+	};
+
+	$scope.baseZIndex = $scope.$parent.baseZIndex
+	$scope.style.zIndex = $scope.baseZIndex;
+};
+
 
 Graph.prototype.Graph = Graph;
 module.exports = Graph;

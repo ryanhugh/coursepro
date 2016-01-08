@@ -3,11 +3,17 @@ var _ = require('lodash')
 
 var macros = require('./macros')
 var request = require('./request')
+var Section = require('./Section')
 
 
 function Class(config) {
 	if (!(config.host && config.termId && config.subject && config.classId) && !config._id && !config.isString && !(config.isClass === false)) {
 		console.log('ERROR need (host termId, subject, classId) or _id or string to make a class', config)
+		return;
+	};
+	if (config instanceof Class) {
+		console.log("TRIED to make class from instance of class");
+		console.trace();
 		return;
 	};
 
@@ -28,7 +34,10 @@ function Class(config) {
 
 
 	//weather the tree is expanded or not
-	this.isExpanded = false;
+	// this.isExpanded = false;
+
+	//loading status of the sections
+	this.sectionsLoadingStatus = macros.DATASTATUS_NOTSTARTED;
 
 	//ghetto bypass angularjs to link dom elements to tree structure
 	this.uuid = Math.random()+''+Math.random();
@@ -87,8 +96,8 @@ function Class(config) {
 
 
 	//loading status is done if any sign that has data
-	if (config.datastatus !== undefined) {
-		this.datastatus = config.datastatus
+	if (config.dataStatus !== undefined) {
+		this.dataStatus = config.dataStatus
 	}
 	else if (!this.isClass || this.prereqs.length > 0 || this.desc || this.lastUpdateTime !== undefined || this.isString) {
 		this.dataStatus = macros.DATASTATUS_DONE
@@ -387,6 +396,14 @@ Class.prototype.logTree = function (body) {
 
 
 Class.prototype.loadSections = function(callback) {
+	if (!callback) {
+		callback = function () {}
+	};
+
+	if (this.sectionsLoadingStatus===macros.DATASTATUS_DONE) {
+		console.log("Warning, already loaded sections")
+		return callback()
+	};
 
 	// tried to load sections twice
 	if (this.sections.length>0) {
@@ -399,18 +416,22 @@ Class.prototype.loadSections = function(callback) {
 		return callback('!class or string')
 	};
 
+	this.sectionsLoadingStatus = macros.DATASTATUS_LOADING;
+
 	var q = queue();
 
 	this.crns.forEach(function (crn) {
-		var section = new Section({
+
+
+		var section = Section.create({
 			host:this.host,
-			termId:this.termid,
+			termId:this.termId,
 			subject:this.subject,
 			classId:this.classId,
 			crn:crn
 		})
 
-		q.defer(function (callback) {
+		q.defer(function (callback) { 
 			section.download(callback)
 		}.bind(this))
 
@@ -418,11 +439,9 @@ Class.prototype.loadSections = function(callback) {
 	}.bind(this))
 
 	q.awaitAll(function (err) {
+		this.sectionsLoadingStatus = macros.DATASTATUS_DONE;
 		callback(err)
 	}.bind(this))
-
-
-
 };
 
 

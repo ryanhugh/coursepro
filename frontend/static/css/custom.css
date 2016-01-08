@@ -12,10 +12,10 @@
 	/* symbol for "collapsed" panels */
 	content: "\e080";    /* adjust as needed, taken from bootstrap.css */
 }
-
+/*
 .panel.panel-default:hover {
 	box-shadow: gray 0px 0px 2px !important;
-}
+}*/
 
 
 
@@ -146,7 +146,6 @@
 
 
 .treePanel{
-	width: 165px;
 	white-space: initial;
 	text-align: initial;
 	margin-bottom: 0;
@@ -154,7 +153,18 @@
 	transform: translate(-50%, -50%);
 	top: 50%;
 	position: absolute;
+	cursor: pointer;
 }
+.treePanel>.panel-heading {
+	
+	margin-top: -1px;
+	margin-left: -1px;
+}
+
+.treePanel>.panel-body {
+	width: 164px;
+}
+
 
 .mainPanel {
 	left: 50%;
@@ -163,15 +173,15 @@
 }
 
 /*panels get a little shadow when you hover over them*/
-.panel:hover{
+/*.panel:hover{
 	box-shadow: gray 0px 0px 6px;
-}
+}*/
 
-
+/*
 .zIndexHover:hover {
-	z-index: 999 !important; /*needs to override the css in the elements (which changes with angular)*/
+	z-index: 999 !important; needs to override the css in the elements (which changes with angular)
 }
-
+*/
 
 /*inside an expanded panel*/
 

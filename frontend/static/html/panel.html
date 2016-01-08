@@ -1,18 +1,55 @@
 
 <!--template panel, used for trees-->
 <!-- remove the white-space below and above to wrap the panels -->
-<div class="panel panel-primary treePanel" id="{{tree.uuid}}" ng-click="tree.loadSections()"> 
+<!-- baseZIndex needs to be set in this scope before included (it is currently set in graphInner.html) -->
+
+<div 
+class="panel panel-primary treePanel" 
+id="{{tree.uuid}}" 
+ng-click="self.onClick(this,tree);" 
+ng-init="self.initScope(this)" 
+ng-mouseover="self.onMouseOver(this)"
+ng-mouseout="self.onMouseOut(this)"
+ng-style="style"> 
+
 	<div class="panel-heading">
 		<h3 class="panel-title" style="text-align: center;">{{tree.subject}} {{tree.classId}}<br/> {{tree.name}}</h3>
 		<span class="glyphicon glyphicon-remove" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;display:none;"></span>
 	</div>
 
 
-	<div ng-if = "tree.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
-		sup man
+	<div ng-if = "isExpanded" class="panel-body panelBodyId" style="line-height: 14px;width:610px">
+		<div style="white-space: normal;margin-bottom:10px;line-height:15px">{{tree.desc}}</div>
+
+
+
+		<div style="text-align: center;margin-bottom: -20px;">
+			<a class="linkToClassWatchModel" data-toggle="modal" data-target="#myModal">Get notified if this class changes<br> or if any seats open up!</a>
+		</div>
+		<div class="classInfoContainer">
+			<div style="text-align:left;display: inline-block; position: absolute;max-width: 50%;line-height: 15px;">
+				<span ng-if="tree.maxCredits === tree.minCredits">
+					{{tree.maxCredits}}
+				</span>
+				<span ng-if="tree.maxCredits !== tree.minCredits">
+					{{tree.minCredits}} to {{tree.maxCredits}}
+				</span> 
+				credits
+				<br>
+				Updated {{self.getUpdatedString(tree)}}
+				</div>
+			<div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;" class="rightSectionText rightClassText">
+				<a target="_blank" href="{{tree.prettyURL}}">View on {{tree.host}}</a>
+			</div>
+		</div>
+
 	</div>
 
-	<div ng-if = "!tree.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
+
+
+
+
+	<div ng-if = "!isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
 		<ng-pluralize count="tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
 	</div>
 
