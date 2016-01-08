@@ -1,5 +1,6 @@
 'use strict';
 var _ = require('lodash')
+var async = require('async')
 
 var macros = require('./macros')
 var request = require('./request')
@@ -40,7 +41,7 @@ function Class(config) {
 	this.sectionsLoadingStatus = macros.DATASTATUS_NOTSTARTED;
 
 	//ghetto bypass angularjs to link dom elements to tree structure
-	this.uuid = Math.random()+''+Math.random();
+	this.uuid = Math.random() + '' + Math.random();
 
 
 	//copy over all other attr given
@@ -48,7 +49,7 @@ function Class(config) {
 
 		//dont copy over some attr
 		//these are copied above
-		if (!_(['coreqs', 'prereqs']).includes(attrName) && config[attrName]) {
+		if (!_(['coreqs', 'prereqs']).includes(attrName) && config[attrName] !== undefined) {
 			this[attrName] = config[attrName]
 		}
 	}
@@ -108,7 +109,6 @@ function Class(config) {
 
 
 
-
 	// host: "neu.edu"
 	// termId: "201630"
 	// prereqs and coreqs are inhereted from node
@@ -136,7 +136,8 @@ function Class(config) {
 
 //TODO here
 //add subscribe and unsubscribe
-//add download, which updates datastatus
+//add download, which updates dataStatus
+//abstrat away some of the checks that are the same accross fns here
 
 
 
@@ -222,6 +223,12 @@ Class.prototype.download = function (callback) {
 	if (!callback) {
 		callback = function () {}
 	}
+
+	//already loaded
+	if (this.dataStatus === macros.DATASTATUS_DONE) {
+		return callback(null, this)
+	};
+
 
 	if (this.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
 		console.trace()
@@ -349,8 +356,8 @@ Class.prototype.compareTo = function (otherClass) {
 // }
 Class.prototype.getPath = function () {
 	var retVal = {
-		obj:{},
-		str:[]
+		obj: {},
+		str: []
 	}
 
 	var path = ['host', 'termId', 'subject', 'classId']
@@ -395,18 +402,16 @@ Class.prototype.logTree = function (body) {
 }
 
 
-Class.prototype.loadSections = function(callback) {
+Class.prototype.loadSections = function (callback) {
 	if (!callback) {
 		callback = function () {}
 	};
-
-	if (this.sectionsLoadingStatus===macros.DATASTATUS_DONE) {
-		console.log("Warning, already loaded sections")
+	if (this.sectionsLoadingStatus === macros.DATASTATUS_DONE) {
 		return callback()
 	};
 
 	// tried to load sections twice
-	if (this.sections.length>0) {
+	if (this.sections.length > 0) {
 		console.log('ERROR already have sections??')
 		return callback('already done')
 	}
@@ -416,34 +421,44 @@ Class.prototype.loadSections = function(callback) {
 		return callback('!class or string')
 	};
 
-	this.sectionsLoadingStatus = macros.DATASTATUS_LOADING;
-
-	var q = queue();
-
-	this.crns.forEach(function (crn) {
 
 
-		var section = Section.create({
-			host:this.host,
-			termId:this.termId,
-			subject:this.subject,
-			classId:this.classId,
-			crn:crn
-		})
+	if (this.dataStatus === macros.DATASTATUS_FAIL) {
+		return callback('class load failed')
+	};
 
-		q.defer(function (callback) { 
-			section.download(callback)
+	//need to load this class first, then can load sections
+	//if already loaded this class, callback is called immediately
+	this.download(function (err) {
+
+		this.sectionsLoadingStatus = macros.DATASTATUS_LOADING;
+
+		var q = queue();
+
+		this.crns.forEach(function (crn) {
+
+
+			var section = Section.create({
+				host: this.host,
+				termId: this.termId,
+				subject: this.subject,
+				classId: this.classId,
+				crn: crn
+			})
+
+			q.defer(function (callback) {
+				section.download(callback)
+			}.bind(this))
+
+			this.sections.push(section)
 		}.bind(this))
 
-		this.sections.push(section)
-	}.bind(this))
-
-	q.awaitAll(function (err) {
-		this.sectionsLoadingStatus = macros.DATASTATUS_DONE;
-		callback(err)
+		q.awaitAll(function (err) {
+			this.sectionsLoadingStatus = macros.DATASTATUS_DONE;
+			callback(err)
+		}.bind(this))
 	}.bind(this))
 };
-
 
 
 

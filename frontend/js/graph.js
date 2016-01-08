@@ -18,7 +18,8 @@ var macros = require('./macros')
 
 function Graph($scope, $routeParams) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
-	console.log($routeParams)
+	this.macros = macros;
+
 
 	this.createGraph($routeParams)
 
@@ -145,33 +146,8 @@ Graph.prototype.showClasses = function (classList, callback) {
 }
 
 
-Graph.prototype.loadSections = function(tree) {
-	if (tree.sectionsLoadingStatus !== macros.DATASTATUS_DONE) {
-		return;
-	}
-
-	
-	if (tree.sectionsLoadingStatus !== macros.DATASTATUS_NOTSTARTED) {
-		console.log("ERROR wtf section loading status",tree.sectionsLoadingStatus)
-		return;
-	};
-
-	tree.loadSections(function (err) {
-		if (err) {
-			console.log("ERRor loading loadSections",err)
-		}
-		this.$scope.$apply()
-	}.bind(this))
-};
-
-
-Graph.prototype.getUpdatedString = function(tree) {
-	return moment(tree.lastUpdateTime).fromNow()
-};
-
-
 // the given scope is the scope of a tree inside a recursions
-Graph.prototype.updateShadow = function($scope,isMouseOver) {
+Graph.prototype.updateScope = function ($scope, isMouseOver) {
 	if ($scope.isExpanded) {
 		$scope.style['box-shadow'] = 'gray 0px 0px 9px'
 		$scope.style.zIndex = 999;
@@ -179,37 +155,103 @@ Graph.prototype.updateShadow = function($scope,isMouseOver) {
 	else {
 		if (isMouseOver) {
 			$scope.style['box-shadow'] = 'gray 0px 0px 6px'
-			$scope.style.zIndex = 150;	
+			$scope.style.zIndex = 150;
 		}
 		else {
 			$scope.style['box-shadow'] = 'gray 0px 0px 0px'
-			$scope.style.zIndex = $scope.baseZIndex;	
+			$scope.style.zIndex = $scope.baseZIndex;
 		}
 	}
 };
 
-Graph.prototype.onMouseOver = function($scope) {
-	this.updateShadow($scope,true);
+Graph.prototype.onMouseOver = function ($scope) {
+	this.updateScope($scope, true);
 }
 
-Graph.prototype.onMouseOut = function($scope) {
-	this.updateShadow($scope,false);
+Graph.prototype.onMouseOut = function ($scope) {
+	this.updateScope($scope, false);
 };
 
-Graph.prototype.onClick = function($scope,tree) {
-	$scope.isExpanded=!$scope.isExpanded;
-	this.updateShadow($scope,false);
+Graph.prototype.calculatePanelWidth = function (tree) {
+	//calculate the width of this tree
+	var panelWidth = 0;
+	tree.sections.forEach(function (section) {
+		if (section.meetings) {
+			panelWidth += 330;
+		}
+		else {
+			panelWidth += 185;
+		}
+	}.bind(this))
+
+	if (panelWidth) {
+		panelWidth = Math.min(970, panelWidth)
+		if (tree.sections.length < 5) {
+			panelWidth = 610;
+		};
+	}
+	else {
+		if (tree.desc) {
+			panelWidth = tree.desc.length
+		}
+		else {
+			panelWidth = ''
+		}
+	}
+	if (panelWidth < 476) {
+		panelWidth = 576
+	};
+	return panelWidth;
+};
+
+Graph.prototype.onClick = function ($scope, tree) {
+
+	//this returns instantly if already loaded
+	tree.loadSections(function (err) {
+		$scope.isExpanded = !$scope.isExpanded;
+
+		//if it failed, toggle isExpanded and update the scpe
+		if (err) {
+			console.log("ERRor loading loadSections", err)
+		}
+		//if it worked, calculate the panel width
+		else {
+			$scope.panelWidth = this.calculatePanelWidth(tree)
+
+			popup.groupSectionTimes(tree.sections)
+			
+			if (tree.lastUpdateTime!==undefined) {
+				tree.lastUpdateString = moment(tree.lastUpdateTime).fromNow()
+			};
+		}
+
+		//$scope references just the $scope of the tree that was updated, 
+		// this.$scope references everything, and contains $scope
+
+		this.updateScope($scope, false);
+
+		setTimeout(function () {
+			this.$scope.$apply()
+		}.bind(this), 0)
+
+	}.bind(this))
+
 };
 
 // called for each recursive call in graphInner.html
-Graph.prototype.initScope = function($scope) {
-	$scope.style={'box-shadow':'gray 0px 0px 0px'}
-	if (!$scope.$parent.baseZIndex) {
-		console.log("hiii");
-	};
-
+Graph.prototype.initScope = function ($scope, tree) {
+	//grab the default z index from the parent $scope, which in intended for this tree
 	$scope.baseZIndex = $scope.$parent.baseZIndex
-	$scope.style.zIndex = $scope.baseZIndex;
+
+	// z index and shadow both change when expand and on mouse over
+	$scope.style = {
+		'box-shadow': 'gray 0px 0px 0px',
+		zIndex: $scope.baseZIndex
+	}
+};
+
+Graph.prototype.getCollegeName = function() {
+	return selectorsMgr.college.getText();
 };
 
 

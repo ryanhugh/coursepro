@@ -19,6 +19,14 @@ function Section(config) {
 	else {
 		this.dataStatus = macros.DATASTATUS_NOTSTARTED
 	}
+
+	//copy over all given attrs
+	for (var attrName in config) {
+		if (this[attrName]!==undefined && this[attrName] !== config[attrName]) {
+			console.log('WARNING overriding data with config',attrName,this,config)
+		}
+		this[attrName] = config[attrName]
+	}
 }
 
 

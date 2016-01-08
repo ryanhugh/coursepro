@@ -28,36 +28,31 @@ Popup.prototype.createTimeStrings = function (meetings) {
 	//{startDate: 16554, endDate: 16554, profs: Array[1], where: "Snell Engineering Center 168", times: Object…}
 	meetings.forEach(function (meeting) {
 
-		var timeText = []
+		meeting.timeStrings = []
 			// "[{"times":[{"start":46800,"end":54000}],"days":["3"]}]"
 		meeting.groupedTimes.forEach(function (groupedTime) {
 			groupedTime.times.forEach(function (time, index) {
-				if (index > 0) {
-					timeText.push(', ')
-				};
-
-				timeText.push(moment.utc(time.start * 1000).format('h:mm'))
-
-				timeText.push(' - ')
-
-				timeText.push(moment.utc(time.end * 1000).format('h:mm a'))
+				meeting.timeStrings.push({
+					start:moment.utc(time.start * 1000).format('h:mm'),
+					end:moment.utc(time.end * 1000).format('h:mm a')
+				})
 			}.bind(this))
-
 		}.bind(this))
-		meeting.timeString = timeText.join('')
-		meeting.dayString = ''
+		
+
+		meeting.days = []
 
 
 		for (var dayIndex in meeting.times) {
 			if (!this.weekDays[dayIndex]) {
-				console.log('error dayIndex not found?')
-				meeting.dayString += 'Someday'
+				console.log('error dayIndex not found?',meeting)
+				meeting.days.push('Someday')
 			}
 			else {
-				meeting.dayString += this.weekDays[dayIndex] + ', '
+				meeting.days.push(this.weekDays[dayIndex])
 			}
 		}
-		meeting.dayString = meeting.dayString.trim().replace(/,$/gi, '')
+		// meeting.days = meeting.days.trim().replace(/,$/gi, '')
 	}.bind(this))
 }
 Popup.prototype.calculateHoursPerWeek = function (meetings) {
@@ -135,9 +130,11 @@ Popup.prototype.groupSectionTimes = function (sections) {
 			}.bind(this))
 
 
-			if (section.locations.indexOf(meeting.where) < 0) {
-				section.locations.push(this.prettyLocation(meeting.where));
+			if (!_(section.locations).includes(meeting.where)) {
+				section.locations.push(meeting.where);
 			};
+
+			meeting.building = meeting.where.replace(/\d+\s*$/i, '')
 
 
 		}.bind(this))
@@ -156,8 +153,8 @@ Popup.prototype.groupSectionTimes = function (sections) {
 		this.calculateExams(section.meetings);
 
 
-		section.profs = section.profs.join(', ');
-		section.locations = section.locations.join(', ');
+		
+		
 	}.bind(this))
 
 
