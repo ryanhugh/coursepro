@@ -50,11 +50,11 @@ ng-style="style">
 
 
 
-		<div style="text-align:center;display: inline-block;padding-top:10px">
+		<div style="text-align:center;display: inline-block;padding-top:10px;width: 100%;margin-bottom: -10px;">
 			<div style="width: 260px;"  ng-repeat = "section in tree.sections" class="classSection">
 
 				<div style=" text-align: center;margin-bottom: 22px;">
-					<span ng-repeat = "meeting in section.meetings">
+					<span ng-repeat = "meeting in section.meetings" ng-if ="!meeting.hidden">
 
 						<!-- times, eg 10:30 - 11:35 am -->
 						<span ng-repeat = "timeString in meeting.timeStrings">

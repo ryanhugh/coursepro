@@ -185,7 +185,7 @@ Graph.prototype.calculatePanelWidth = function (tree) {
 	}.bind(this))
 
 	if (panelWidth) {
-		panelWidth = Math.min(970, panelWidth)
+		panelWidth = Math.min(888, panelWidth)
 		if (tree.sections.length < 5) {
 			panelWidth = 610;
 		};
@@ -204,38 +204,118 @@ Graph.prototype.calculatePanelWidth = function (tree) {
 	return panelWidth;
 };
 
+
+// if a panel in a tree is clicked
 Graph.prototype.onClick = function ($scope, tree) {
 
 	//this returns instantly if already loaded
 	tree.loadSections(function (err) {
-		$scope.isExpanded = !$scope.isExpanded;
 
-		//if it failed, toggle isExpanded and update the scpe
-		if (err) {
-			console.log("ERRor loading loadSections", err)
-		}
-		//if it worked, calculate the panel width
-		else {
-			$scope.panelWidth = this.calculatePanelWidth(tree)
-
-			popup.groupSectionTimes(tree.sections)
-			
-			if (tree.lastUpdateTime!==undefined) {
-				tree.lastUpdateString = moment(tree.lastUpdateTime).fromNow()
-			};
-		}
-
-		//$scope references just the $scope of the tree that was updated, 
-		// this.$scope references everything, and contains $scope
-
-		this.updateScope($scope, false);
-
+		//setTimeout 0 because $scope.$update()
 		setTimeout(function () {
+			$scope.isExpanded = !$scope.isExpanded;
+
+			//if it failed, toggle isExpanded and update the scpe
+			if (err) {
+				console.log("ERRor loading loadSections", err)
+			}
+			//if it worked, calculate the panel width
+			else {
+				$scope.panelWidth = this.calculatePanelWidth(tree)
+
+				popup.groupSectionTimes(tree.sections)
+
+				if (tree.lastUpdateTime !== undefined) {
+					tree.lastUpdateString = moment(tree.lastUpdateTime).fromNow()
+				};
+			}
+
+			//$scope references just the $scope of the tree that was updated, 
+			// this.$scope references everything, and contains $scope
+
+			this.updateScope($scope, false);
+
+			//get the height and width of the document before update angular
+			var documentHeight = $(document).height()
+			var documentWidth = $(document).width()
+
+
+			//update the dom with the new $scope and tree
 			this.$scope.$apply()
+
+
+			//then mess with the dom directly
+
+			//this is slightly ghetto
+			//move the panel if it is exending past the top/bottom/left/right of the screen
+			//and make page scroll if extending past (top and bottom) or (right and left)
+
+			var coords = $(tree.panel).offset();
+			coords.right = tree.panel.offsetWidth + coords.left;
+			coords.bottom = tree.panel.offsetHeight + coords.top;
+
+
+
+			//don't mess with the dom if panel is not expanded
+			if (!$scope.isExpanded) {
+				tree.panel.style.marginTop = '';
+				tree.panel.style.marginLeft = '';
+				return;
+			};
+
+
+			var edgePadding = 30.5
+
+			var topMargin = 0;
+
+			//top also accounts for navbar
+			if (coords.top < 82.5) {
+				topMargin = 82.5 - coords.top
+			}
+
+			if (coords.bottom > documentHeight - edgePadding) {
+
+				//had to move it down because it was above the top of the screen
+				//so extend the bottom of the document
+				if (topMargin != 0) {
+
+				}
+				else {
+					topMargin = documentHeight - edgePadding - coords.bottom
+				}
+			}
+			tree.panel.style.marginTop = topMargin + 'px'
+
+
+
+			var minLeftSide = edgePadding;
+			var leftMargin = 0;
+
+			var left = $(tree.panel).offset().left
+
+
+			if (left < minLeftSide) {
+				leftMargin = minLeftSide - left;
+			}
+
+
+
+			var maxRightSide = documentWidth - edgePadding;
+
+			if (coords.right > maxRightSide) {
+				if (leftMargin != 0) {
+
+				}
+				else {
+					leftMargin = maxRightSide - coords.right;
+				}
+			}
+			tree.panel.style.marginLeft = leftMargin + 'px'
+
+
+
 		}.bind(this), 0)
-
 	}.bind(this))
-
 };
 
 // called for each recursive call in graphInner.html
@@ -250,7 +330,7 @@ Graph.prototype.initScope = function ($scope, tree) {
 	}
 };
 
-Graph.prototype.getCollegeName = function() {
+Graph.prototype.getCollegeName = function () {
 	return selectorsMgr.college.getText();
 };
 

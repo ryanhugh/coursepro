@@ -109,6 +109,16 @@ Popup.prototype.prettyLocation = function (location) {
 		return '<a target="_blank" href="http://maps.google.com/?q=' + selectorsMgr.college.getText() + ' ' + location.replace(/\d+\s*$/i, '') + '">' + location + '</a>';
 	}
 };
+Popup.prototype.calculateHiddenMeetings = function(meetings) {
+	meetings.forEach(function (meeting) {
+		if (meeting.hoursPerWeek===0) {
+			meeting.hidden = true;
+		}
+		else {
+			meeting.hidden = false;
+		}
+	}.bind(this))
+};
 
 Popup.prototype.groupSectionTimes = function (sections) {
 	//make a list of all profs
@@ -151,7 +161,7 @@ Popup.prototype.groupSectionTimes = function (sections) {
 		this.createTimeStrings(section.meetings)
 		this.calculateHoursPerWeek(section.meetings);
 		this.calculateExams(section.meetings);
-
+		this.calculateHiddenMeetings(section.meetings);
 
 		
 		
