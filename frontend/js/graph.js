@@ -16,8 +16,9 @@ var macros = require('./macros')
 //thing that calls on download tree, treeMgr, render, popup and help
 //manages the page that generates the tree graphs
 
-function Graph($scope, $routeParams) {
+function Graph($scope, $routeParams,$document) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
+	$scope.graph = this;
 
 	//need to get the macros to the html somehow...
 	this.macros = macros;
@@ -26,6 +27,8 @@ function Graph($scope, $routeParams) {
 
 
 	this.createGraph($routeParams)
+
+	$document.keydown(this.onKeyDown.bind(this))
 
 }
 
@@ -124,7 +127,6 @@ Graph.prototype.showClasses = function (classList, callback) {
 		return;
 	};
 
-	// var tree = new Node();
 
 	tree.prereqs.values = classList
 
@@ -148,6 +150,11 @@ Graph.prototype.showClasses = function (classList, callback) {
 
 	treeMgr.go(tree, callback);
 }
+
+
+
+//mouse over stuff
+
 
 
 // the given scope is the scope of a tree inside a recursions
@@ -175,6 +182,12 @@ Graph.prototype.onMouseOver = function ($scope) {
 Graph.prototype.onMouseOut = function ($scope) {
 	this.updateScope($scope, false);
 };
+
+
+
+//expand and shrink
+
+
 
 Graph.prototype.calculatePanelWidth = function (tree) {
 	//calculate the width of this tree
@@ -210,7 +223,9 @@ Graph.prototype.calculatePanelWidth = function (tree) {
 
 
 // if a panel in a tree is clicked
-Graph.prototype.onClick = function ($scope, tree) {
+Graph.prototype.onClick = function ($scope) {
+
+	var tree = $scope.tree
 
 	//this returns instantly if already loaded
 	tree.loadSections(function (err) {
@@ -326,21 +341,42 @@ Graph.prototype.onClick = function ($scope, tree) {
 	}.bind(this))
 };
 
-Graph.prototype.openPanel = function ($scope, tree) {
+Graph.prototype.openPanel = function ($scope) {
 	if ($scope.isExpanded) {
 		return;
 	}
-	this.onClick($scope, tree)
+
+	this.openOrder.push($scope)
+
+	this.onClick($scope)
 };
-Graph.prototype.closePanel = function ($scope, tree) {
+Graph.prototype.closePanel = function ($scope) {
 	if (!$scope.isExpanded) {
 		return;
 	}
-	this.onClick($scope, tree)
+
+	_.pull(this.openOrder,$scope)
+
+	this.onClick($scope)
 };
 
+
+//called from graph.html
+Graph.prototype.onKeyDown = function() {
+	var $scope = this.openOrder.shift();
+	if (!$scope) {
+		return;
+	};
+	this.closePanel($scope)
+};
+
+
+
+
+
 // called for each recursive call in graphInner.html
-Graph.prototype.initScope = function ($scope, tree) {
+//this is called once when $scope.tree === undefined, when the root node first loads
+Graph.prototype.initScope = function ($scope) {
 	//grab the default z index from the parent $scope, which in intended for this tree
 	$scope.baseZIndex = $scope.$parent.baseZIndex
 

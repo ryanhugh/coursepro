@@ -7,7 +7,7 @@
 <div
 class= "treePanelWrapper"
 id="{{tree.uuid}}" 
-ng-init="self.initScope(this,tree)" 
+ng-init="graph.initScope(this)" 
 ng-style="style"
 >
 
@@ -16,18 +16,18 @@ ng-style="style"
 <div 
 class="panel panel-primary treePanel" 
 ng-if ="tree.isClass && !tree.hidden"
-ng-click="self.openPanel(this,tree);" 
-ng-mouseover="self.onMouseOver(this)"
-ng-mouseout="self.onMouseOut(this)"> 
+ng-click="graph.openPanel(this);" 
+ng-mouseover="graph.onMouseOver(this)"
+ng-mouseout="graph.onMouseOut(this)"> 
 
 <div class="panel-heading">
 	<h3 class="panel-title" style="text-align: center;">{{tree.subject}} {{tree.classId}}<br/> {{tree.name}}</h3>
-	<span class="glyphicon glyphicon-remove" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;" ng-style="{'display':isExpanded?'':'none'}" ng-click="self.closePanel(this,tree)"></span>
+	<span class="glyphicon glyphicon-remove" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;" ng-style="{'display':isExpanded?'':'none'}" ng-click="graph.closePanel(this)"></span>
 </div>
 
 <!-- only the panel body changes on isExpanded -->
 <div ng-if = "isExpanded" class="panel-body panelBodyId" style="line-height: 14px;" ng-style="{'width':panelWidth+'px'}">
-	<div ng-if = "tree.dataStatus === self.macros.DATASTATUS_DONE">
+	<div ng-if = "tree.dataStatus === graph.macros.DATASTATUS_DONE">
 		<div style="white-space: normal;margin-bottom:10px;line-height:15px">{{tree.desc}}</div>
 
 
@@ -88,7 +88,7 @@ ng-mouseout="self.onMouseOut(this)">
 							<span ng-switch-when="web online">Web Online</span>
 							<span ng-switch-default>
 
-								<a target="_blank" href="http://maps.google.com/?q={{self.getCollegeName() + meeting.building}}">{{meeting.where}}</a>
+								<a target="_blank" href="http://maps.google.com/?q={{graph.getCollegeName() + meeting.building}}">{{meeting.where}}</a>
 
 							</span>
 						</span>
@@ -120,7 +120,7 @@ ng-mouseout="self.onMouseOut(this)">
 
 		</div>
 
-		<div ng-if = "tree.dataStatus === self.macros.DATASTATUS_FAIL">
+		<div ng-if = "tree.dataStatus === graph.macros.DATASTATUS_FAIL">
 
 			0 sections this term
 			<div style="white-space: normal;"><br>Couldn't find any class info on<br> {{tree.host}} :( </div>
@@ -133,9 +133,9 @@ ng-mouseout="self.onMouseOut(this)">
 
 
 	<div ng-if = "!isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
-		<div ng-if = "tree.dataStatus===self.macros.DATASTATUS_FAIL">0 sections this term</div>
+		<div ng-if = "tree.dataStatus===graph.macros.DATASTATUS_FAIL">0 sections this term</div>
 
-		<ng-pluralize ng-if = "tree.dataStatus!==self.macros.DATASTATUS_FAIL" count="tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
+		<ng-pluralize ng-if = "tree.dataStatus!==graph.macros.DATASTATUS_FAIL" count="tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
 	</div>
 
 
