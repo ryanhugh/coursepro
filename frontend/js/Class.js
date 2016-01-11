@@ -1,6 +1,7 @@
 'use strict';
 var _ = require('lodash')
 var async = require('async')
+var he = require('he')
 
 var macros = require('./macros')
 var request = require('./request')
@@ -49,7 +50,15 @@ function Class(config) {
 
 		//dont copy over some attr
 		//these are copied above
-		if (!_(['coreqs', 'prereqs']).includes(attrName) && config[attrName] !== undefined) {
+		if (_(['coreqs', 'prereqs']).includes(attrName) || config[attrName]===undefined) {
+			continue;
+		}
+		//title and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
+		//setting the innerHTML instead of innerText will work too, but this is better
+		else if (_(['desc','name']).includes(attrName)) {
+			this[attrName] = he.decode(config[attrName]) 
+		}
+		else {
 			this[attrName] = config[attrName]
 		}
 	}

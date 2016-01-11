@@ -355,14 +355,14 @@ TreeMgr.prototype.groupByHonors = function (tree) {
 };
 
 
-TreeMgr.prototype.logTree = function(tree,body) {
-	
+TreeMgr.prototype.logTree = function (tree, body) {
+
 	//tell the server how big this tree is
 	body.classCount = this.countClassesInTree(tree);
 
 	console.log('The tree is ', body.classCount, ' big');
 	tree.logTree(body)
-	
+
 };
 
 
@@ -392,6 +392,12 @@ TreeMgr.prototype.go = function (tree) {
 
 
 	this.addLowestParent(tree);
+
+
+
+	if (!tree.isClass) {
+		tree.hidden = true;
+	};
 
 }
 

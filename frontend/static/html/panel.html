@@ -3,20 +3,26 @@
 <!-- remove the white-space below and above to wrap the panels -->
 <!-- baseZIndex needs to be set in this scope before included (it is currently set in graphInner.html) -->
 
+
+<div
+class= "treePanelWrapper"
+id="{{tree.uuid}}" 
+ng-init="self.initScope(this,tree)" 
+ng-style="style"
+>
+
+
 <!-- main panel -->
 <div 
 class="panel panel-primary treePanel" 
-id="{{tree.uuid}}" 
-ng-if ="tree.isClass"
-ng-click="self.onClick(this,tree);" 
-ng-init="self.initScope(this,tree)" 
+ng-if ="tree.isClass && !tree.hidden"
+ng-click="self.openPanel(this,tree);" 
 ng-mouseover="self.onMouseOver(this)"
-ng-mouseout="self.onMouseOut(this)"
-ng-style="style"> 
+ng-mouseout="self.onMouseOut(this)"> 
 
 <div class="panel-heading">
 	<h3 class="panel-title" style="text-align: center;">{{tree.subject}} {{tree.classId}}<br/> {{tree.name}}</h3>
-	<span class="glyphicon glyphicon-remove" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;display:none;"></span>
+	<span class="glyphicon glyphicon-remove" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;" ng-style="{'display':isExpanded?'':'none'}" ng-click="self.closePanel(this,tree)"></span>
 </div>
 
 <!-- only the panel body changes on isExpanded -->
@@ -86,6 +92,8 @@ ng-style="style">
 
 							</span>
 						</span>
+						<br>
+						<br>
 					</span>
 				</div>
 
@@ -131,10 +139,12 @@ ng-style="style">
 	</div>
 
 
-	<!-- circle node in graph -->
 </div>
+<!-- circle node in graph -->
 <div 
-id="{{tree.uuid}}" 
-ng-init="self.initScope(this,tree)" 
-ng-if="!tree.isClass"
+ng-if="!tree.isClass && !tree.hidden"
 style="width: 35px; height: 35px; border-radius: 50%;z-index: 150;position: relative;margin: 0px auto; background-color: rgb(0, 0, 255);"></div>
+
+<div ng-if="tree.hidden"></div>
+
+</div>

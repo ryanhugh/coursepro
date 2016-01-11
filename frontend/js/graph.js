@@ -18,7 +18,11 @@ var macros = require('./macros')
 
 function Graph($scope, $routeParams) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
+
+	//need to get the macros to the html somehow...
 	this.macros = macros;
+
+	this.openOrder = []
 
 
 	this.createGraph($routeParams)
@@ -215,7 +219,7 @@ Graph.prototype.onClick = function ($scope, tree) {
 		setTimeout(function () {
 			$scope.isExpanded = !$scope.isExpanded;
 
-			//if it failed, toggle isExpanded and update the scpe
+			//if it failed, toggle isExpanded and update the scope
 			if (err) {
 				console.log("ERRor loading loadSections", err)
 			}
@@ -234,6 +238,9 @@ Graph.prototype.onClick = function ($scope, tree) {
 			// this.$scope references everything, and contains $scope
 
 			this.updateScope($scope, false);
+
+			document.body.style.height = ''
+			document.body.style.width = ''
 
 			//get the height and width of the document before update angular
 			var documentHeight = $(document).height()
@@ -265,12 +272,13 @@ Graph.prototype.onClick = function ($scope, tree) {
 
 
 			var edgePadding = 30.5
+			var topPadding = 82.5
 
 			var topMargin = 0;
 
 			//top also accounts for navbar
-			if (coords.top < 82.5) {
-				topMargin = 82.5 - coords.top
+			if (coords.top < topPadding) {
+				topMargin = topPadding - coords.top
 			}
 
 			if (coords.bottom > documentHeight - edgePadding) {
@@ -278,7 +286,7 @@ Graph.prototype.onClick = function ($scope, tree) {
 				//had to move it down because it was above the top of the screen
 				//so extend the bottom of the document
 				if (topMargin != 0) {
-
+					document.body.style.height = (tree.panel.offsetHeight + edgePadding + topPadding) + 'px'
 				}
 				else {
 					topMargin = documentHeight - edgePadding - coords.bottom
@@ -304,7 +312,7 @@ Graph.prototype.onClick = function ($scope, tree) {
 
 			if (coords.right > maxRightSide) {
 				if (leftMargin != 0) {
-
+					document.body.style.width = tree.panel.offsetWidth + 'px'
 				}
 				else {
 					leftMargin = maxRightSide - coords.right;
@@ -316,6 +324,19 @@ Graph.prototype.onClick = function ($scope, tree) {
 
 		}.bind(this), 0)
 	}.bind(this))
+};
+
+Graph.prototype.openPanel = function ($scope, tree) {
+	if ($scope.isExpanded) {
+		return;
+	}
+	this.onClick($scope, tree)
+};
+Graph.prototype.closePanel = function ($scope, tree) {
+	if (!$scope.isExpanded) {
+		return;
+	}
+	this.onClick($scope, tree)
 };
 
 // called for each recursive call in graphInner.html
