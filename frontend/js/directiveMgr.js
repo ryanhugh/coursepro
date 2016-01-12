@@ -1,7 +1,11 @@
 'use strict';
 
 var angular = require('angular')
-var angularModule = angular.module('app', [require('angular-route')]);
+
+//max depth for a tree, if it reaches this angular will barf
+var angularModule = angular.module('app', [require('angular-route')], function ($rootScopeProvider) {
+	$rootScopeProvider.digestTtl(20);
+});
 
 
 function DirectiveMgr() {
@@ -69,7 +73,7 @@ DirectiveMgr.prototype.addLink = function (link) {
 	};
 
 
-	angularModule.directive(link.directiveName,link );
+	angularModule.directive(link.directiveName, link);
 };
 
 

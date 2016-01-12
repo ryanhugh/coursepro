@@ -21,21 +21,13 @@ function GraphPanelReposition($timeout, $document) {
 				var documentHeight = $document.height()
 				var documentWidth = $document.width()
 
+				//this is called from the controller after $apply
 				scope.update = function () {
 
 					document.body.style.height = ''
 					document.body.style.width = ''
 
 
-					// scope.$apply()
-					// var tree = scope.tree;
-
-
-
-
-					//then mess with the dom directly
-
-					//this is slightly ghetto
 					//move the panel if it is exending past the top/bottom/left/right of the screen
 					//and make page scroll if extending past (top and bottom) or (right and left)
 

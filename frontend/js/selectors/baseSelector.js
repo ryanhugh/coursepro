@@ -156,7 +156,7 @@ BaseSelector.prototype.setupSelector = function(values,config) {
 
 
 		this.resetAllFutureVals();
-		selectorsMgr.updateDeeplink()
+		// selectorsMgr.updateDeeplink()
 		
 		
 		if (!this.getValue()) {

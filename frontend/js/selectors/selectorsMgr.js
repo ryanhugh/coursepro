@@ -10,8 +10,10 @@ var Subject = require('./Subject')
 var Class = require('./Class')
 
 
-function SelectorsMgr($scope, $routeParams) {
+function SelectorsMgr($scope, $routeParams, $route) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
+
+	this.$route = $route
 
 	//allow circular dependencies
 	window.selectorsMgr = this;
@@ -29,8 +31,15 @@ function SelectorsMgr($scope, $routeParams) {
 		this.subject,
 		this.class
 	]
+	$scope.$on('$routeChangeSuccess', function () {
 
-	// selectorsMgr.setSelectors(values, true);
+		var params = $routeParams;
+		var values = [params.host,params.termId,params.subject,params.classId]
+
+		selectorsMgr.setSelectors(values, true);
+		// console.log(" $routeParams", $routeParams);
+	});
+
 }
 
 //prototype constructor
@@ -39,6 +48,7 @@ SelectorsMgr.prototype.constructor = SelectorsMgr;
 
 
 SelectorsMgr.prototype.updateDeeplink = function () {
+	return;
 	var url = []
 
 	this.selectors.forEach(function (dropdown) {
@@ -68,13 +78,15 @@ SelectorsMgr.prototype.closeAllSelectors = function () {
 }
 
 SelectorsMgr.prototype.finish = function (callback) {
-	graph.createGraph({
+	this.$route.updateParams({
 		host: this.college.getValue(),
 		termId: this.term.getValue(),
 		subject: this.subject.getValue(),
-		classId: this.class.getValue(),
-		callback
+		classId: this.class.getValue()
 	});
+	setTimeout(function () {
+		this.$scope.$apply()
+	}.bind(this),0)
 }
 
 SelectorsMgr.prototype.setSelectors = function (values, doOpenNext) {

@@ -68,44 +68,48 @@ Graph.prototype.getCoords = function (tree) {
 Graph.prototype.go = function (tree, callback) {
 	this.isLoading = true;
 	downloadTree.fetchFullTree(tree, function (err, tree) {
-
-		this.isLoading = false;
-
-		if (err) {
-			return callback(err);
-		};
-
-		treeMgr.go(tree);
+		setTimeout(function () {
 
 
-		// render.go(tree);
-		// popup.go(tree);
-		// help.go(tree);
-		// this.tree = tree;
-		//SOMEWHERE ENsure that all class have prettyurl, and if not copy over url
 
-		this.$scope.tree = tree;
-		this.$scope.$apply()
+			this.isLoading = false;
 
-		this.setupUUIDLinks(tree)
-		this.getCoords(tree);
-		render.addLines(tree);
+			if (err) {
+				return callback(err);
+			};
+
+			treeMgr.go(tree);
 
 
-		// if two giant trees are off screen, pick one and scroll to it
-		// so something is on the screen when the loading finishes
-		// http://localhost/#neu.edu/201630/EECE/4792
-		if (tree.hidden && tree.prereqs.values.length > 0 && (tree.prereqs.values.length % 2) == 0) {
+			// render.go(tree);
+			// popup.go(tree);
+			// help.go(tree);
+			// this.tree = tree;
+			//SOMEWHERE ENsure that all class have prettyurl, and if not copy over url
 
-			//scroll to one of sub trees
-			var x = tree.prereqs.values[parseInt(tree.prereqs.values.length / 2)].x
-			window.scrollTo(x - $(window).width() / 2, document.body.scrollTop);
-		}
-		else {
-			//scroll to the middle of the page, and don't touch the scroll height
-			window.scrollTo(document.body.scrollWidth / 2 - $(window).width() / 2, document.body.scrollTop);
-		}
+			this.$scope.tree = tree;
+			this.$scope.$apply()
 
+			this.setupUUIDLinks(tree)
+			this.getCoords(tree);
+			render.addLines(tree);
+
+
+			// if two giant trees are off screen, pick one and scroll to it
+			// so something is on the screen when the loading finishes
+			// http://localhost/#neu.edu/201630/EECE/4792
+			if (tree.hidden && tree.prereqs.values.length > 0 && (tree.prereqs.values.length % 2) == 0) {
+
+				//scroll to one of sub trees
+				var x = tree.prereqs.values[parseInt(tree.prereqs.values.length / 2)].x
+				window.scrollTo(x - $(window).width() / 2, document.body.scrollTop);
+			}
+			else {
+				//scroll to the middle of the page, and don't touch the scroll height
+				window.scrollTo(document.body.scrollWidth / 2 - $(window).width() / 2, document.body.scrollTop);
+			}
+
+		}.bind(this), 0)
 
 		callback(null, tree)
 	}.bind(this))
@@ -279,8 +283,6 @@ Graph.prototype.onClick = function ($scope) {
 			if ($scope.update) {
 				$scope.update()
 			}
-
-
 
 
 		}.bind(this), 0)
