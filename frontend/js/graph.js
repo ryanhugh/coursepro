@@ -273,9 +273,12 @@ Graph.prototype.onClick = function ($scope) {
 
 			this.updateScope($scope, false);
 
-
 			//update the dom with the new $scope and tree
 			this.$scope.$apply()
+
+			if ($scope.update) {
+				$scope.update()
+			}
 
 
 
