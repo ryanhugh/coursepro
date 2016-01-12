@@ -16,7 +16,7 @@ var macros = require('./macros')
 //thing that calls on download tree, treeMgr, render, popup and help
 //manages the page that generates the tree graphs
 
-function Graph($scope, $routeParams,$document) {
+function Graph($scope, $routeParams, $document) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	$scope.graph = this;
 
@@ -66,7 +66,11 @@ Graph.prototype.getCoords = function (tree) {
 };
 
 Graph.prototype.go = function (tree, callback) {
+	this.isLoading = true;
 	downloadTree.fetchFullTree(tree, function (err, tree) {
+
+		this.isLoading = false;
+
 		if (err) {
 			return callback(err);
 		};
@@ -87,9 +91,24 @@ Graph.prototype.go = function (tree, callback) {
 		this.getCoords(tree);
 		render.addLines(tree);
 
+
+		// if two giant trees are off screen, pick one and scroll to it
+		// so something is on the screen when the loading finishes
+		// http://localhost/#neu.edu/201630/EECE/4792
+		if (tree.hidden && tree.prereqs.values.length > 0 && (tree.prereqs.values.length % 2) == 0) {
+
+			//scroll to one of sub trees
+			var x = tree.prereqs.values[parseInt(tree.prereqs.values.length / 2)].x
+			window.scrollTo(x - $(window).width() / 2, document.body.scrollTop);
+		}
+		else {
+			//scroll to the middle of the page, and don't touch the scroll height
+			window.scrollTo(document.body.scrollWidth / 2 - $(window).width() / 2, document.body.scrollTop);
+		}
+
+
 		callback(null, tree)
 	}.bind(this))
-
 };
 
 Graph.prototype.createGraph = function (tree, callback) {
@@ -355,22 +374,20 @@ Graph.prototype.closePanel = function ($scope) {
 		return;
 	}
 
-	_.pull(this.openOrder,$scope)
+	_.pull(this.openOrder, $scope)
 
 	this.onClick($scope)
 };
 
 
 //called from graph.html
-Graph.prototype.onKeyDown = function() {
+Graph.prototype.onKeyDown = function () {
 	var $scope = this.openOrder.shift();
 	if (!$scope) {
 		return;
 	};
 	this.closePanel($scope)
 };
-
-
 
 
 
