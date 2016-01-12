@@ -10,12 +10,13 @@ var Subject = require('./Subject')
 var Class = require('./Class')
 
 
-function SelectorsMgr($scope) {
+function SelectorsMgr($scope, $routeParams) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	//allow circular dependencies
 	window.selectorsMgr = this;
 
+	//these must be made in this order, because they keep references to the next one (except class)
 	this.class = new Class();
 	this.subject = new Subject();
 	this.term = new Term();
@@ -28,6 +29,8 @@ function SelectorsMgr($scope) {
 		this.subject,
 		this.class
 	]
+
+	// selectorsMgr.setSelectors(values, true);
 }
 
 //prototype constructor
@@ -135,7 +138,6 @@ SelectorsMgr.prototype.searchClasses = function (value) {
 		if (currClass.id.toLowerCase() === value.toLowerCase()) {
 
 			//open
-
 			this.class.element.select2('val', value);
 			this.class.element.trigger('select2:select')
 			return true;
@@ -157,10 +159,7 @@ SelectorsMgr.prototype.go = function () {
 };
 
 
-// SelectorsMgr.prototype.SelectorsMgr=SelectorsMgr;
-
 //window.selectorsMgr is set in the constructor
-
 SelectorsMgr.prototype.SelectorsMgr = SelectorsMgr;
 module.exports = SelectorsMgr;
 directiveMgr.addDirective(SelectorsMgr)

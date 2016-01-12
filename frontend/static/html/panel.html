@@ -18,7 +18,9 @@ class="panel panel-primary treePanel"
 ng-if ="tree.isClass && !tree.hidden"
 ng-click="graph.openPanel(this);" 
 ng-mouseover="graph.onMouseOver(this)"
-ng-mouseout="graph.onMouseOut(this)"> 
+ng-mouseout="graph.onMouseOut(this)"
+graph-panel-reposition
+> 
 
 <div class="panel-heading">
 	<h3 class="panel-title" style="text-align: center;">{{tree.subject}} {{tree.classId}}<br/> {{tree.name}}</h3>

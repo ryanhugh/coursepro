@@ -9,6 +9,10 @@ function DirectiveMgr() {
 }
 
 
+DirectiveMgr.prototype.calculateName = function (aClass) {
+	return aClass.name[0].toLowerCase() + aClass.name.slice(1)
+};
+
 DirectiveMgr.prototype.addDirective = function (directive) {
 
 
@@ -16,7 +20,7 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 	//angular creates a instance of the directive (new directive) below, 
 	//so can go this.fn(), but not here because the instance has not been made yet
 	//if need to override url or directive name, just pass in a config param to this fn
-	var directiveName = directive.name.toLowerCase()
+	var directiveName = this.calculateName(directive)
 	var htmlPath = '/html/' + directiveName + '.html'
 	var url;
 
@@ -28,6 +32,7 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 		url = '/' + directiveName
 	}
 
+	//this should be split up to addPage, addController, and addLink
 	if (directive.isPage) {
 
 		angularModule.config(['$routeProvider',
@@ -40,6 +45,9 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 			}
 		])
 	}
+	else if (directive.isLink) {
+
+	}
 	else {
 		angularModule.directive(directiveName, function () {
 			return {
@@ -49,9 +57,19 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 			};
 		}.bind(this))
 	}
+};
+
+
+DirectiveMgr.prototype.addLink = function (link) {
 
 
 
+	if (!link.directiveName) {
+		link.directiveName = this.calculateName(link)
+	};
+
+
+	angularModule.directive(link.directiveName,link );
 };
 
 
