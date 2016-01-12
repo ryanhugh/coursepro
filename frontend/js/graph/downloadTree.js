@@ -2,9 +2,9 @@
 var _ = require('lodash')
 var queue = require('queue-async')
 
-var request = require('./request')
-var macros = require('./macros')
-var Class = require('./Class')
+var request = require('../request')
+var macros = require('../macros')
+var Class = require('../Class')
 
 
 function DownloadTree() {
@@ -126,9 +126,6 @@ DownloadTree.prototype.fetchSubTrees = function (tree, queue, ignoreClasses) {
 
 
 DownloadTree.prototype.fetchFullTree = function (serverData, callback) {
-
-	// this.host = tree.host;
-	// this.termId = tree.termId;
 
 	var tree = Class.create(serverData);
 	if (!tree) {

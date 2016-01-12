@@ -1,8 +1,8 @@
 'use strict';
-var search = require('./search')
+// var search = require('./search')
 // var render = require('./render')
-var homepage = require('./homepage')
-var settings = require('./settings')
+// var homepage = require('./homepage')
+// var settings = require('./settings')
 
 function Main() {
 

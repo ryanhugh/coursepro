@@ -2,8 +2,8 @@
 var assert = require('assert')
 
 var macros = require('../macros')
-var downloadTree = require('../downloadTree')
-var treeMgr = require('../treeMgr')
+var downloadTree = require('../graph/downloadTree')
+var treeMgr = require('../graph/treeMgr')
 var Class = require('../Class')
 
 function DownloadTreeTests() {

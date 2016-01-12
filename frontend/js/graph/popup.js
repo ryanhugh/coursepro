@@ -1,8 +1,8 @@
 'use strict';
-var macros = require('./macros')
-var request = require('./request')
+var macros = require('../macros')
+var request = require('../request')
 var render = require('./render')
-var watchClassesModel = require('./watchClassesModel')
+// var watchClassesModel = require('../watchClassesModel')
 
 function Popup() {
 	this.weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']

@@ -51,7 +51,27 @@
 </head>
 <body class="bs-docs-home" style="min-width: 1500px;" ng-app="app" >
 
-	<div selectors-mgr></div>
+	<div class="container">
+		<div id ="navbarContainerid">
+			<nav class="navbar navbar-inverse navbar-fixed-top" id="navBar" style="min-width: 100%;background: rgba(0,0,0,0.8);">
+				<div class="container" style="position: relative;">
+					<a class="navbar-brand showHomepage"  id="navbarIconAId" style="max-width: 66px;">
+						<img src="images/whiteicon.png"  id="navbarIconId">
+					</a>
+
+					<div id="navbar" class="collapse navbar-collapse">
+
+
+						<div selectors-mgr></div>
+
+						<div search></div>
+
+					</div>
+
+				</div><!--/.nav-collapse -->
+			</nav>
+		</div>
+	</div>
 
 	<!-- id="masterContainerId" -->
 	<div  class="normalFont" style="min-width:100%" >
@@ -60,48 +80,48 @@
 <!-- 
 		<div id="settingsId" class="container" settings>
 		</div>
- -->
-    <div ng-view></div>
+	-->
+	<div ng-view></div>
 
 
 
-		<!-- Modal -->
-		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-						<h4 class="modal-title" id="myModalLabel">Sign up for automatic notifications!</h4>
-					</div>
-					<div class="modal-body" id="watchClassesModelBodyId">
-						
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					</div>
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">Sign up for automatic notifications!</h4>
+				</div>
+				<div class="modal-body" id="watchClassesModelBodyId">
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
-
 	</div>
 
-	
-	<div id="paddingId"></div>
+</div>
+
+
+<div id="paddingId"></div>
 
 
 
-	<!-- JS -->
-	<script src="/js/external/jquery.min.js"></script>
-	<script src="/js/external/bootstrap.min.js"></script>
-	<script src="/js/external/queue.v1.min.js"></script>
-	<script src="/js/external/async.min.js"></script>
-	<script src="/js/external/lodash.min.js"></script>
-	<script src="/js/external/moment.min.js"></script>
-	<script src="/js/external/select2.min.js"></script>
-	<script src="https://apis.google.com/js/platform.js" async defer></script>
-	<script src="/js/internal/allthejavascript.js"></script>
+<!-- JS -->
+<script src="/js/external/jquery.min.js"></script>
+<script src="/js/external/bootstrap.min.js"></script>
+<script src="/js/external/queue.v1.min.js"></script>
+<script src="/js/external/async.min.js"></script>
+<script src="/js/external/lodash.min.js"></script>
+<script src="/js/external/moment.min.js"></script>
+<script src="/js/external/select2.min.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script src="/js/internal/allthejavascript.js"></script>
 
 
 

@@ -6,7 +6,6 @@
 
 <div
 class= "treePanelWrapper"
-id="{{tree.uuid}}" 
 ng-init="graph.initScope(this)" 
 ng-style="style"
 >
@@ -20,6 +19,7 @@ ng-click="graph.openPanel(this);"
 ng-mouseover="graph.onMouseOver(this)"
 ng-mouseout="graph.onMouseOut(this)"
 graph-panel-reposition
+graph-line-to-parent
 > 
 
 <div class="panel-heading">
@@ -39,10 +39,10 @@ graph-panel-reposition
 		</div>
 		<div>
 			<div style="text-align:left;display: inline-block; position: absolute;max-width: 50%;line-height: 15px;">
-				<span ng-if="tree.maxCredits === tree.minCredits">
+				<span ng-if="tree.maxCredits === tree.minCredits && tree.maxCredits">
 					{{tree.maxCredits}}
 				</span>
-				<span ng-if="tree.maxCredits !== tree.minCredits">
+				<span ng-if="tree.maxCredits !== tree.minCredits && tree.maxCredits">
 					{{tree.minCredits}} to {{tree.maxCredits}}
 				</span> 
 				credits
@@ -52,7 +52,7 @@ graph-panel-reposition
 				</span>
 			</div>
 			<div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;">
-				<a target="_blank" href="{{tree.prettyURL}}">View on {{tree.host}}</a>
+				<a target="_blank" href="{{tree.prettyUrl}}" >View on {{tree.host}}</a>
 			</div>
 		</div>
 

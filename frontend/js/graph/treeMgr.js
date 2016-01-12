@@ -1,6 +1,6 @@
 'use strict';
-var request = require('./request')
-var macros = require('./macros')
+var request = require('../request')
+var macros = require('../macros')
 
 
 function TreeMgr() {

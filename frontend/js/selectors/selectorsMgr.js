@@ -2,7 +2,6 @@
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var graph = require('../graph')
 
 var College = require('./College')
 var Term = require('./Term')
@@ -34,6 +33,10 @@ function SelectorsMgr($scope, $routeParams, $route) {
 	$scope.$on('$routeChangeSuccess', function () {
 
 		var params = $routeParams;
+		if (_.isEqual(params,{})) {
+			return;
+		};
+
 		var values = [params.host,params.termId,params.subject,params.classId]
 
 		selectorsMgr.setSelectors(values, true);
@@ -45,30 +48,6 @@ function SelectorsMgr($scope, $routeParams, $route) {
 //prototype constructor
 SelectorsMgr.prototype = Object.create(BaseDirective.prototype);
 SelectorsMgr.prototype.constructor = SelectorsMgr;
-
-
-SelectorsMgr.prototype.updateDeeplink = function () {
-	return;
-	var url = []
-
-	this.selectors.forEach(function (dropdown) {
-		if (dropdown.getValue()) {
-			url.push(encodeURIComponent(dropdown.getValue()));
-		};
-	}.bind(this))
-
-
-	var hash = url.join('/')
-
-	//add both trees and selectors to history
-	if (history.pushState) {
-		history.pushState(null, null, "#" + hash);
-	}
-	else {
-		window.location.hash = hash
-	}
-
-};
 
 
 SelectorsMgr.prototype.closeAllSelectors = function () {
