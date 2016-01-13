@@ -2,6 +2,7 @@
 var request = require('../request')
 var macros = require('../macros')
 
+// var downloadTree = require('./downloadTree')
 
 function TreeMgr() {
 
@@ -401,6 +402,18 @@ TreeMgr.prototype.go = function (tree) {
 
 }
 
+// TreeMgr.prototype.go = function (tree, callback) {
+
+// 	downloadTree.fetchFullTree(tree, function (err, tree) {
+// 		if (err) {
+// 			return callback(err)
+// 		}
+// 		this.processTree(tree)
+// 		callback(null, tree);
+
+// 	}.bind(this))
+
+// };
 
 
 TreeMgr.prototype.TreeMgr = TreeMgr;

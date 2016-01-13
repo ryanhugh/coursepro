@@ -8,8 +8,8 @@ function GraphLineToParent($timeout) {
 
 	function GraphLineToParentInner() {
 
-
 	}
+
 	GraphLineToParentInner.scope = true;
 
 	GraphLineToParentInner.prototype.link = function (scope, element, attrs) {
@@ -52,7 +52,9 @@ function GraphLineToParent($timeout) {
 
 
 	GraphLineToParentInner.prototype.addLine = function (tree) {
-
+		if (tree.isCoreq) {
+			return;
+		};
 
 		if (tree.hidden) {
 			console.log("hidden yo");
@@ -60,6 +62,9 @@ function GraphLineToParent($timeout) {
 		}
 		if (!tree.lowestParent) {
 			console.log("no parent yo");
+			return;
+		};
+		if (tree.lowestParent.hidden) {
 			return;
 		};
 

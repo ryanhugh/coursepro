@@ -1,9 +1,16 @@
 'use strict';
 var request = require('./request')
 
-function WatchClassesModel() {
+var directiveMgr = require('../directiveMgr')
+var BaseDirective = require('../BaseDirective')
 
-	this.modelBody = document.getElementById('watchClassesModelBodyId')
+
+function WatchClassesModel($scope) {
+	BaseDirective.prototype.constructor.apply(this, arguments);
+	// $scope.search = this;
+
+
+	// this.modelBody = document.getElementById('watchClassesModelBodyId')
 
 	//the current class being watched
 	this.tree = null;
@@ -77,7 +84,7 @@ WatchClassesModel.prototype.addClassToWatchList = function () {
 		};
 		if (!response.error) {
 			bodyText.push("<br><br>We check for updates every 30 minutes and we'll send you an email if anything changes in the class or any of the sections!<br>")
-			// bodyText.push('')
+				// bodyText.push('')
 		};
 		bodyText.push('<br><br>Got questions? Feel free to send us an email at <a href="mailto:coursepro@coursepro.io"> coursepro@coursepro.io </a>')
 
@@ -151,6 +158,6 @@ WatchClassesModel.prototype.go = function (tree) {
 };
 
 
-
-WatchClassesModel.prototype.WatchClassesModel = WatchClassesModel;
-module.exports = new WatchClassesModel();
+Search.prototype.Search = Search;
+module.exports = Search;
+directiveMgr.addDirective(Search)

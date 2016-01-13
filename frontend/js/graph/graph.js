@@ -10,6 +10,7 @@ var treeMgr = require('./treeMgr')
 var help = require('./help')
 var Class = require('../Class')
 var macros = require('../macros')
+var request = require('../request')
 
 
 //thing that calls on download tree, treeMgr, render, popup and help
@@ -18,12 +19,13 @@ var macros = require('../macros')
 function Graph($scope, $routeParams, $document, $route, $location) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	$scope.graph = this;
+	this.$routeParams = $routeParams;
 
 	//need to get the macros to the html somehow...
 	this.macros = macros;
 
 	if (_($location.path()).startsWith('/search')) {
-		this.showClasses()
+		this.search($routeParams)
 	}
 	else if (_($location.path()).startsWith('/graph')) {
 		this.createGraph($routeParams)
@@ -31,9 +33,9 @@ function Graph($scope, $routeParams, $document, $route, $location) {
 }
 
 Graph.isPage = true;
-Graph.urls = ['/graph/:host/:termId/:subject/:classId','/search/:host/:termId/:subject:/:searchTerm']
+Graph.urls = ['/graph/:host/:termId/:subject/:classId', '/search/:host/:termId/:subject/:searchTerm']
 
- 
+
 
 Graph.prototype.go = function (tree, callback) {
 	downloadTree.fetchFullTree(tree, function (err, tree) {
@@ -42,9 +44,9 @@ Graph.prototype.go = function (tree, callback) {
 				return callback(err);
 			};
 
+
+
 			treeMgr.go(tree);
-
-
 			// render.go(tree);
 			// popup.go(tree);
 			// help.go(tree);
@@ -91,6 +93,119 @@ Graph.prototype.createGraph = function (tree, callback) {
 		})
 		callback(null, tree);
 	}.bind(this));
+}
+
+
+//search
+
+
+Graph.prototype.search = function ($routeParams) {
+	var value = $routeParams.searchTerm.trim()
+	if (value === '') {
+		return;
+	};
+
+	var value = value.replace(/\s+/g, '').toLowerCase()
+
+
+	//if found a class, open the class tree with the selectorsMgr and dont search for anything
+	// if (selectorsMgr.searchClasses(value)) {
+	// 	this.closeSearchBox();
+	// 	return;
+	// };
+
+
+	ga('send', {
+		'hitType': 'pageview',
+		'page': window.location.href,
+		'title': 'Coursepro.io'
+	});
+
+	console.log('searching for ', value)
+
+	// graph.beforeLoad()
+
+	request({
+		url: '/search',
+		type: 'POST',
+		body: {
+			host: $routeParams.host,
+			termId: $routeParams.termId,
+			subject: $routeParams.subject,
+			value: value
+		}
+	}, function (err, results) {
+		console.log('found ', results.length, ' classes!');
+
+
+		//update the deeplink here
+		if (results.length > 0) {
+			this.showClasses(results, function (err, tree) {
+				if (err) {
+					console.log('ERROR rendering tree...?', err, tree);
+					return;
+				}
+
+				treeMgr.logTree(tree, {
+					type: 'search',
+					host: host,
+					termId: termId,
+					subject: subject,
+					searchQuery: value
+				})
+			});
+		}
+		else {
+			this.container.innerHTML = '<div style="font-size: 28px;text-align: center;padding-top: 200px;font-weight: 600;">Nothing Found!</div>'
+
+			treeMgr.logTree({}, {
+				type: 'search',
+				host: $routeParams.host,
+				termId: $routeParams.termId,
+				subject: $routeParams.subject,
+				searchQuery: value
+
+			})
+		}
+
+	}.bind(this))
+};
+
+
+
+Graph.prototype.showClasses = function (classList) {
+	if (classList.length < 1) {
+		console.log('error show classes was called with 0 classes!')
+		return;
+	};
+
+	//this is ghetto
+	//remove the prereqs from classes so we don't load all the result's prereqs
+	classList.forEach(function (aClass) {
+
+		if (aClass.prereqs) {
+			aClass.prereqs.values = []
+		};
+
+	}.bind(this))
+
+
+
+	var treeParams = {
+		host: this.$routeParams.host,
+		termId: this.$routeParams.termId,
+		subject: this.$routeParams.subject,
+		prereqs: {
+			type: 'or',
+			values: classList
+		},
+		isClass: false,
+		hidden: true
+	}
+
+	this.go(treeParams,function () {
+		
+	}.bind(this))
 }
 
 

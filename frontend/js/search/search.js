@@ -15,14 +15,6 @@ function Search($scope) {
 	this.isExpanded = false;
 }
 
- 
-// Search.prototype.searchFromString = function (host, termId, subject, string) {
-// 	if (!string) {
-// 		return
-// 	};
-// 	this.searchText = string;
-// 	this.go(host, termId, subject, string);
-// };
 
 Search.prototype.searchFromEntry = function () {
 	var host = selectorsMgr.college.getValue();

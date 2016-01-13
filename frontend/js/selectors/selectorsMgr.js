@@ -9,10 +9,11 @@ var Subject = require('./Subject')
 var Class = require('./Class')
 
 
-function SelectorsMgr($scope, $routeParams, $route) {
+function SelectorsMgr($scope, $routeParams, $route, $location) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	this.$route = $route
+	this.$location = $location
 
 	//allow circular dependencies
 	window.selectorsMgr = this;
@@ -33,11 +34,11 @@ function SelectorsMgr($scope, $routeParams, $route) {
 	$scope.$on('$routeChangeSuccess', function () {
 
 		var params = $routeParams;
-		if (_.isEqual(params,{})) {
+		if (_.isEqual(params, {})) {
 			return;
 		};
 
-		var values = [params.host,params.termId,params.subject,params.classId]
+		var values = [params.host, params.termId, params.subject, params.classId]
 
 		selectorsMgr.setSelectors(values, true);
 		// console.log(" $routeParams", $routeParams);
@@ -57,15 +58,16 @@ SelectorsMgr.prototype.closeAllSelectors = function () {
 }
 
 SelectorsMgr.prototype.finish = function (callback) {
-	this.$route.updateParams({
-		host: this.college.getValue(),
-		termId: this.term.getValue(),
-		subject: this.subject.getValue(),
-		classId: this.class.getValue()
-	});
+	var host = this.college.getValue()
+	var termId = this.term.getValue()
+	var subject = this.subject.getValue()
+	var classId = this.class.getValue()
+
+	this.$location.path('/graph/' + host + '/' + termId + '/' + subject + '/' + classId)
+
 	setTimeout(function () {
 		this.$scope.$apply()
-	}.bind(this),0)
+	}.bind(this), 0)
 }
 
 SelectorsMgr.prototype.setSelectors = function (values, doOpenNext) {
