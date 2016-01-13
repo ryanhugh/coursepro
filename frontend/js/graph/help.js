@@ -3,6 +3,14 @@
 function Help() {
 
 	this.HELP_POPUP_COUNT = 5
+	
+	if (localStorage.andPopupCount === undefined) {
+		localStorage.andPopupCount = 0;
+	}
+
+	if (localStorage.orPopupCount === undefined) {
+		localStorage.orPopupCount = 0;
+	}
 
 }
 

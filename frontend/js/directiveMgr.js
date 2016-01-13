@@ -17,8 +17,9 @@ DirectiveMgr.prototype.calculateName = function (aClass) {
 	return aClass.name[0].toLowerCase() + aClass.name.slice(1)
 };
 
-DirectiveMgr.prototype.addDirective = function (directive) {
 
+//by default, directive.urls is set to the name of the class with the first letter lowercased eg settings
+DirectiveMgr.prototype.addDirective = function (directive) {
 
 
 	//angular creates a instance of the directive (new directive) below, 
@@ -26,26 +27,31 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 	//if need to override url or directive name, just pass in a config param to this fn
 	var directiveName = this.calculateName(directive)
 	var htmlPath = '/html/' + directiveName + '.html'
-	var url;
+	var urls = '';
 
 	//homepage overrides url
-	if (directive.url) {
-		url = directive.url
-	}
-	else {
-		url = '/' + directiveName
-	}
+	if (directive.isPage) {
+
+		if (directive.urls) {
+			urls = directive.urls;
+		}
+		else {
+			urls = ['/' + directiveName]
+		}
+	};
 
 	//this should be split up to addPage, addController, and addLink
 	if (directive.isPage) {
 
 		angularModule.config(['$routeProvider',
 			function ($routeProvider) {
-				$routeProvider
-					.when(url, {
+				urls.forEach(function (url) {
+
+					$routeProvider.when(url, {
 						templateUrl: htmlPath,
 						controller: directive,
 					});
+				}.bind(this))
 			}
 		])
 	}

@@ -12,7 +12,7 @@ function Homepage($scope,$location) {
 	// this.$location = $location
 }
 
-Homepage.url = '/'
+Homepage.urls = ['/']
 Homepage.isPage = true
 
 //prototype constructor

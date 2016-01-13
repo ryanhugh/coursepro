@@ -1,7 +1,7 @@
 'use strict';
 var macros = require('../macros')
 var request = require('../request')
-var render = require('./render')
+// var render = require('./render')
 // var watchClassesModel = require('../watchClassesModel')
 
 function Popup() {

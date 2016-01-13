@@ -8,24 +8,20 @@ function GraphLineToParent($timeout) {
 
 	function GraphLineToParentInner() {
 
-		this.container = document.getElementById('containerId');
 
 	}
 	GraphLineToParentInner.scope = true;
 
 	GraphLineToParentInner.prototype.link = function (scope, element, attrs) {
 
-		//$scope.tree = tree
-		//tree.$scope = $scope
-		//tree.panel = $element
-		scope.tree.$scope = scope
-		scope.tree.panel = element[0]
+		scope.$watch('tree', function () {
+			$timeout(function () {
+				this.container = document.getElementById('containerId');
+				this.addLine(scope.tree)
+			}.bind(this))
 
-		$timeout(function () {
-			this.addLine(scope.tree)
 		}.bind(this))
 	}
-
 
 	GraphLineToParentInner.prototype.getColor = function (type) {
 		if (type == 'or') {

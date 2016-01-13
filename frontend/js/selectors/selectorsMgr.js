@@ -74,6 +74,9 @@ SelectorsMgr.prototype.setSelectors = function (values, doOpenNext) {
 	this.closeAllSelectors()
 
 	values.forEach(function (value, index) {
+		if (!value) {
+			return;
+		};
 
 		//remove anything that isnt a letter, a "/" or a . 
 		value = value.replace(/[^a-z0-9\/\.]/gi, '')

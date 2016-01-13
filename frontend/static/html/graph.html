@@ -1,5 +1,5 @@
 <div style="height:100px"></div>
-<div ng-include="'/html/graphInner.html'" style="white-space: nowrap;" ng-style = "{'display':(graph.isLoading)?'none':''}"></div>
+<div ng-if = "tree" ng-include="'/html/graphInner.html'" style="white-space: nowrap;" ng-style = "{'display':(graph.isLoading)?'none':''}"></div>
 <div id="containerId"></div>
 
 <div class="spinner-loader" style="margin:0 auto;margin-left: 50%;margin-top: 150px;" ng-if = "graph.isLoading"></div> 

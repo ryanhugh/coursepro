@@ -8,6 +8,8 @@
 class= "treePanelWrapper"
 ng-init="graph.initScope(this)" 
 ng-style="style"
+graph-linker
+graph-line-to-parent
 >
 
 
@@ -15,16 +17,13 @@ ng-style="style"
 <div 
 class="panel panel-primary treePanel" 
 ng-if ="tree.isClass && !tree.hidden"
-ng-click="graph.openPanel(this);" 
-ng-mouseover="graph.onMouseOver(this)"
-ng-mouseout="graph.onMouseOut(this)"
-graph-panel-reposition
-graph-line-to-parent
+graph-panel-expand
+panel-close = ".closePanel"
 > 
 
 <div class="panel-heading">
 	<h3 class="panel-title" style="text-align: center;">{{tree.subject}} {{tree.classId}}<br/> {{tree.name}}</h3>
-	<span class="glyphicon glyphicon-remove" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;" ng-style="{'display':isExpanded?'':'none'}" ng-click="graph.closePanel(this)"></span>
+	<span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;" ng-style="{'display':isExpanded?'':'none'}"></span>
 </div>
 
 <!-- only the panel body changes on isExpanded -->
