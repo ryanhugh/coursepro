@@ -3,6 +3,8 @@
 var directiveMgr = require('./directiveMgr')
 var BaseDirective = require('./BaseDirective')
 
+var user = require('./user')
+
 function SignInWithGoogle() {
 
 	function SignInWithGoogleInner() {
@@ -21,24 +23,14 @@ function SignInWithGoogle() {
 
 		gapi.signin2.render(id, {
 			onsuccess: function (googleUser) {
-				this.onSignIn(null,googleUser)
+				user.signedInWithGoogle(null,googleUser)
 			}.bind(this),
 			onfailure: function (err) {
 				console.log('Error signing in with google',err)
-				this.onSignIn(err)
+				user.signedInWithGoogle(err)
 			}.bind(this)
 		});
 	}
-
-	SignInWithGoogleInner.prototype.onSignIn = function (err, googleUser) {
-		this.scope.$emit('googleSignIn',{
-			err:err,
-			googleUser:googleUser
-		})
-	};
-
-
-
 	var instance = new SignInWithGoogleInner();
 	instance.link = instance.link.bind(instance)
 

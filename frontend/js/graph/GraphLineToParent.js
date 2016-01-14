@@ -11,6 +11,7 @@ function GraphLineToParent($timeout) {
 	}
 
 	GraphLineToParentInner.scope = true;
+	// GraphLineToParentInner.priority = -9999999999;
 
 	GraphLineToParentInner.prototype.link = function (scope, element, attrs) {
 
@@ -21,7 +22,6 @@ function GraphLineToParent($timeout) {
 
 
 				window.addEventListener('resize', function (event) {
-					// this.$scope.$apply();
 					this.addLine(scope.tree)
 				}.bind(this));
 
@@ -39,7 +39,7 @@ function GraphLineToParent($timeout) {
 		}
 		else {
 			console.log('wtf, what is', type)
-			console.trace() 
+			console.trace()
 		}
 	}
 
@@ -77,10 +77,14 @@ function GraphLineToParent($timeout) {
 
 
 		var treeCoords = this.getCoords(tree);
-		var parentCoords = this.getCoords(tree.lowestParent);
 
+		tree.allParents.forEach(function (parent) {
 
-		this.drawLine(tree, treeCoords.x, treeCoords.y, parentCoords.x, parentCoords.y, this.getColor(tree.prereqs.type))
+			var parentCoords = this.getCoords(parent);
+			this.drawLine(tree, treeCoords.x, treeCoords.y, parentCoords.x, parentCoords.y, this.getColor(tree.prereqs.type))
+
+		}.bind(this))
+
 
 	};
 

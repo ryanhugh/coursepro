@@ -10,7 +10,7 @@
 	</div>
 	<div class="modal-body">
 
-		<div ng-if = "!model.getSignedIn()">
+		<div ng-if = "!user.getAuthenticated()">
 			<div style="font-weight:bold;">
 				Sign in with Google!
 			</div>
@@ -20,17 +20,17 @@
 
 		</div>
 
-		<div ng-if = "model.getSignedIn()">
+		<div ng-if = "user.getAuthenticated()">
 			<div style="font-weight:bold;">
 				{{model.subscribeMsg}}
 			</div>
 			<br>
-			Update emails will be sent to <span style="font-weight:bold;">{{model.getEmail()}}</span> !
+			Update emails will be sent to <span style="font-weight:bold;">{{user.getEmail()}}</span> !
 			<br>
 			<br>
 			Want to unsubscribe?
 
-			<a href="javascript:void(0)" ng-click="model.removeClassFromWatchList()" ng-if = "!model.unsubscribeMsg"> Click here</a>
+			<a href="javascript:void(0)" ng-click="model.removeClick()" ng-if = "!model.unsubscribeMsg"> Click here</a>
 			{{model.unsubscribeMsg}}
 
 

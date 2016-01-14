@@ -54,6 +54,11 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 	var directiveName = this.calculateName(directive)
 	var htmlPath = this.getHTMLPathFromName(directiveName)
 	var urls = '';
+	var priority = 0;
+
+	if (directive.priority) {
+		priority = directive.priority;
+	};
 
 	//homepage overrides url
 	if (directive.isPage) {
@@ -76,6 +81,7 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 					$routeProvider.when(url, {
 						templateUrl: htmlPath,
 						controller: directive,
+						priority:priority
 					});
 				}.bind(this))
 			}
@@ -89,7 +95,8 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 			return {
 				templateUrl: htmlPath,
 				scope: true,
-				controller: directive
+				controller: directive,
+				priority:priority
 			};
 		}.bind(this))
 	}

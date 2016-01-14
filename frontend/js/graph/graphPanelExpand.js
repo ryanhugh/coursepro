@@ -201,7 +201,7 @@ function GraphPanelExpand($timeout, $document) {
 
 	//called from graph.html
 	GraphPanelExpandInner.prototype.onKeyDown = function (event) {
-		if (event.code != 27 || event.type != 'keydown') {
+		if (event.which != 27 || event.type != 'keydown') {
 			return;
 		};
 

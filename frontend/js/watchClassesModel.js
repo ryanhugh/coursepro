@@ -4,10 +4,13 @@ var request = require('./request')
 var directiveMgr = require('./directiveMgr')
 var BaseDirective = require('./BaseDirective')
 
+var user = require('./user')
+
 
 function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	$scope.model = this;
+	$scope.user = user;
 	this.$uibModalInstance = $uibModalInstance
 
 	//the current class being watched
@@ -15,30 +18,39 @@ function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 
 
 	//if not the google sign in button will appear
-
-	$scope.$on('googleSignIn', function (event, data) {
-		this.onSignIn(data.err, data.googleUser)
-	}.bind(this))
-
-
 	this.subscribeMsg = ''
 	this.unsubscribeMsg = ''
 
+
 	// if signed in, don't show the model until the request is done 
 	// this prevents a flickering of something before the request comes back
-	if (localStorage.loginKey) {
+	if (user.getAuthenticated()) {
 		this.addClassToWatchList(function () {
 			$timeout(function () {
 				this.doneRendering = true;
 			}.bind(this))
 		}.bind(this))
 	}
-	
-	//else just show it
 	else {
+
+		//when authenticate, fire off request
+		user.onAuthenticate(function (err) {
+			if (err) {
+				console.log("ERROR", err);
+				return;
+			}
+
+			this.addClassToWatchList(function () {
+				setTimeout(function () {
+					this.$scope.$apply()
+				}.bind(this), 0)
+			}.bind(this));
+
+		}.bind(this))
+
+
 		this.doneRendering = true;
 	}
-
 }
 
 //called from controllers wanting to make and instance of this
@@ -53,38 +65,6 @@ WatchClassesModel.getOpenDetails = function (tree) {
 	}
 }
 
-WatchClassesModel.prototype.getSignedIn = function () {
-	if (localStorage.loginKey) {
-		return true;
-	}
-	else {
-		return false;
-	}
-};
-
-
-WatchClassesModel.prototype.getUserData = function () {
-	if (!localStorage.userData) {
-		return {};
-	}
-
-	return JSON.parse(localStorage.userData)
-};
-WatchClassesModel.prototype.setUserData = function (userData) {
-	localStorage.userData = JSON.stringify(userData)
-};
-
-WatchClassesModel.prototype.getEmail = function () {
-	return this.getUserData().email;
-};
-
-WatchClassesModel.prototype.setEmail = function (email) {
-	var userData = this.getUserData()
-	userData.email = email;
-	this.setUserData(userData);
-};
-
-
 WatchClassesModel.prototype.sendRequest = function (url, callback) {
 	request({
 		url: url,
@@ -98,7 +78,6 @@ WatchClassesModel.prototype.sendRequest = function (url, callback) {
 			return callback(err);
 		}
 
-
 		if (response.error) {
 			console.log('ERROR look at the server logs', response)
 			return callback(response.msg)
@@ -107,13 +86,15 @@ WatchClassesModel.prototype.sendRequest = function (url, callback) {
 			return callback(null, response.msg)
 		}
 
-
-
 	}.bind(this))
 };
 
 //sends post reque
 WatchClassesModel.prototype.addClassToWatchList = function (callback) {
+	if (!callback) {
+		callback = function () {}
+	};
+
 	this.sendRequest('/addClassToWatchList', function (err, msg) {
 
 		this.error = false;
@@ -135,7 +116,12 @@ WatchClassesModel.prototype.addClassToWatchList = function (callback) {
 };
 
 
-WatchClassesModel.prototype.removeClassFromWatchList = function () {
+WatchClassesModel.prototype.removeClassFromWatchList = function (callback) {
+	if (!callback) {
+		callback = function () {}
+	};
+
+
 	this.sendRequest('/removeClassFromWatchList', function (err, msg) {
 
 		var string = '';
@@ -151,48 +137,21 @@ WatchClassesModel.prototype.removeClassFromWatchList = function () {
 
 		console.log(this.unsubscribeMsg)
 
-		setTimeout(function () {
-			this.$scope.$apply();
-		}.bind(this), 0)
-
+		callback()
 	}.bind(this))
-
 };
 
-WatchClassesModel.prototype.onSignIn = function (err, googleUser) {
-	if (err) {
-		console.log("ERROR", err);
-		return;
-	};
 
-
-	var profile = googleUser.getBasicProfile();
-	this.setEmail(profile.getEmail())
-
-	request({
-		url: '/authenticateUser',
-		body: {
-			idToken: googleUser.getAuthResponse().id_token
-		}
-	}, function (err, response) {
-		if (err) {
-			console.log('ERROR', err)
-			return;
-		}
-
-		if (!response.loginKey) {
-			console.log("didn't get a login key?", response, err)
-			return;
-		}
-
-		localStorage.loginKey = response.loginKey
-
-		this.addClassToWatchList()
-
+WatchClassesModel.prototype.removeClick = function() {
+	this.removeClassFromWatchList(function () {
+		setTimeout(function () {
+			this.$scope.$apply();
+		}.bind(this))
 	}.bind(this))
-}
+};
 
-WatchClassesModel.prototype.close = function() {
+
+WatchClassesModel.prototype.close = function () {
 	this.$uibModalInstance.close()
 };
 
