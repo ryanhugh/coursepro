@@ -132,7 +132,7 @@ function Class(config) {
 	// name: "Algorithms and Data"
 
 	// prettyUrl: "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201630&subj_code_in=CS&crse_numb_in=4800"
-	// sections: [new Seciton()]
+	// sections: [new Section()]
 	// subject: "CS"
 	// url: "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201630&subj_in=CS&crse_in=4800&schd_in=%25"
 
