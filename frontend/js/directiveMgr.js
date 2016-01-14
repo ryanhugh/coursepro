@@ -1,15 +1,34 @@
 'use strict';
-
+var _ = require('lodash')
 var angular = require('angular')
 
 //max depth for a tree, if it reaches this angular will barf
-var angularModule = angular.module('app', [require('angular-route'),require('angular-ui-bootstrap')], function ($rootScopeProvider) {
+var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap')], function ($rootScopeProvider) {
 	$rootScopeProvider.digestTtl(20);
 });
 
 
 function DirectiveMgr() {
 
+	//convert the old style urls
+	var hash = document.location.hash.slice(1);
+
+	//if old style
+	if (!_(hash).startsWith('/') && hash !== '') {
+		if (_(hash).startsWith('search')) {
+			hash = '/' + hash
+		}
+		else {
+			hash = '/graph/' + hash
+		}
+		document.location.hash = '#' + hash
+	}
+
+	angularModule.config(function ($routeProvider) {
+		$routeProvider.otherwise({
+			redirectTo: '/'
+		})
+	});
 }
 
 
@@ -17,11 +36,11 @@ DirectiveMgr.prototype.calculateName = function (aClass) {
 	return aClass.name[0].toLowerCase() + aClass.name.slice(1)
 };
 
-DirectiveMgr.prototype.getHTMLPathFromClass = function(aClass) {
+DirectiveMgr.prototype.getHTMLPathFromClass = function (aClass) {
 	return this.getHTMLPathFromName(this.calculateName(aClass));
 };
 
-DirectiveMgr.prototype.getHTMLPathFromName = function(directiveName) {
+DirectiveMgr.prototype.getHTMLPathFromName = function (directiveName) {
 	return '/html/' + directiveName + '.html';
 };
 
@@ -89,14 +108,14 @@ DirectiveMgr.prototype.addLink = function (link) {
 	angularModule.directive(link.directiveName, link);
 };
 
-DirectiveMgr.prototype.addRawController = function(controller) {
+DirectiveMgr.prototype.addRawController = function (controller) {
 
 
 	if (!controller.controllerName) {
 		controller.controllerName = this.calculateName(controller)
 	};
 
-	angularModule.controller(controller.controllerName,controller)
+	angularModule.controller(controller.controllerName, controller)
 };
 
 DirectiveMgr.prototype.DirectiveMgr = DirectiveMgr;

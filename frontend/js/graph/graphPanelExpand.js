@@ -132,8 +132,10 @@ function GraphPanelExpand($timeout, $document) {
 		if ($scope.isExpanded) {
 			$scope.style['box-shadow'] = 'gray 0px 0px 9px'
 			$scope.style.zIndex = 999;
+			$scope.style.cursor = '';
 		}
 		else {
+			$scope.style.cursor = 'pointer';
 			if (isMouseOver) {
 				$scope.style['box-shadow'] = 'gray 0px 0px 6px'
 				$scope.style.zIndex = 150;
@@ -246,11 +248,27 @@ function GraphPanelExpand($timeout, $document) {
 		this.updateScope(tree, false);
 	};
 
+	// called for each recursive call in graphInner.html
+	//this is called once when $scope.tree === undefined, when the root node first loads
 	GraphPanelExpandInner.prototype.link = function ($scope, element, attrs) {
+
 
 		var tree = $scope.tree
 
 		element = element.parent()
+
+
+
+		//grab the default z index from the parent $scope, which in intended for this tree
+		tree.$scope.baseZIndex = tree.$scope.$parent.baseZIndex
+
+		// z index and shadow both change when expand and on mouse over
+		tree.$scope.style = {
+			'box-shadow': 'gray 0px 0px 0px',
+			zIndex: $scope.baseZIndex,
+			cursor: 'pointer'
+		}
+
 
 
 		//get the height and width of the document when the page first loads

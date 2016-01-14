@@ -71,6 +71,14 @@
 	cursor: pointer;
 }
 
+.navbar-brand:hover, .navbar-brand:active{
+	opacity:.5 !important;
+	text-decoration:none
+}
+
+.navbar-brand, .navbar-brand:visited {
+	opacity:1  !important;
+}
 
 
 /*select 2 stuff*/
@@ -159,7 +167,6 @@
 	white-space: initial;
 	text-align: initial;
 	margin-bottom: 0;
-	cursor: pointer;
 }
 .treePanel>.panel-heading {
 	

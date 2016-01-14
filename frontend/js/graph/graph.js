@@ -29,11 +29,19 @@ function Graph($scope, $routeParams, $location, $uibModal) {
 	//need to get the macros to the html somehow...
 	this.macros = macros;
 
+
+	var path = {};
+
+	for (var attrName in $routeParams) {
+		path[attrName] = decodeURIComponent($routeParams[attrName])
+	}
+
+
 	if (_($location.path()).startsWith('/search')) {
-		this.search($routeParams)
+		this.search(path)
 	}
 	else if (_($location.path()).startsWith('/graph')) {
-		this.createGraph($routeParams)
+		this.createGraph(path)
 	}
 }
 
@@ -75,9 +83,8 @@ Graph.prototype.go = function (tree, callback) {
 				window.scrollTo(document.body.scrollWidth / 2 - $(window).width() / 2, document.body.scrollTop);
 			}
 
+			callback(null, tree)
 		}.bind(this), 0)
-
-		callback(null, tree)
 	}.bind(this))
 };
 
@@ -214,19 +221,6 @@ Graph.prototype.showClasses = function (classList) {
 }
 
 
-
-// called for each recursive call in graphInner.html
-//this is called once when $scope.tree === undefined, when the root node first loads
-Graph.prototype.initScope = function ($scope) {
-	//grab the default z index from the parent $scope, which in intended for this tree
-	$scope.baseZIndex = $scope.$parent.baseZIndex
-
-	// z index and shadow both change when expand and on mouse over
-	$scope.style = {
-		'box-shadow': 'gray 0px 0px 0px',
-		zIndex: $scope.baseZIndex
-	}
-};
 
 Graph.prototype.getCollegeName = function () {
 	return selectorsMgr.college.getText();

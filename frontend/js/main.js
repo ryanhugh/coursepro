@@ -165,3 +165,7 @@ $(function () {
 })
 
 // module.exports = instance;
+
+// window.onhashchange = function () {
+// 	debugger
+// }.bind(this)

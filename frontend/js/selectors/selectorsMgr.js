@@ -40,6 +40,10 @@ function SelectorsMgr($scope, $routeParams, $route, $location) {
 
 		var values = [params.host, params.termId, params.subject, params.classId]
 
+		values.forEach(function (value,i) {
+			values[i] = decodeURIComponent(value)
+		}.bind(this))
+
 		selectorsMgr.setSelectors(values, true);
 		// console.log(" $routeParams", $routeParams);
 	});
@@ -58,11 +62,11 @@ SelectorsMgr.prototype.closeAllSelectors = function () {
 }
 
 SelectorsMgr.prototype.finish = function (callback) {
-	var host = this.college.getValue()
-	var termId = this.term.getValue()
-	var subject = this.subject.getValue()
-	var classId = this.class.getValue()
-
+	var host    = encodeURIComponent(this.college.getValue())
+	var termId  = encodeURIComponent(this.term.getValue())
+	var subject = encodeURIComponent(this.subject.getValue())
+	var classId = encodeURIComponent(this.class.getValue())
+ 
 	this.$location.path('/graph/' + host + '/' + termId + '/' + subject + '/' + classId)
 
 	setTimeout(function () {

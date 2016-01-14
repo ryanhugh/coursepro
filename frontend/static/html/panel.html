@@ -6,7 +6,6 @@
 
 <div
 class= "treePanelWrapper"
-ng-init="graph.initScope(this)" 
 ng-style="style"
 graph-linker
 graph-line-to-parent
@@ -23,7 +22,7 @@ panel-close = ".closePanel"
 
 <div class="panel-heading">
 	<h3 class="panel-title" style="text-align: center;">{{tree.subject}} {{tree.classId}}<br/> {{tree.name}}</h3>
-	<span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;" ng-style="{'display':isExpanded?'':'none'}"></span>
+	<span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;cursor: pointer;" ng-style="{'display':isExpanded?'':'none'}"></span>
 </div>
 
 <!-- only the panel body changes on isExpanded -->
