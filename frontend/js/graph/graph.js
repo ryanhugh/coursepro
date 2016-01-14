@@ -29,7 +29,10 @@ function Graph($scope, $routeParams, $location, $uibModal) {
 	//need to get the macros to the html somehow...
 	this.macros = macros;
 
-	this.nothingFound = false;
+	// this.nothingFound = false;
+
+	//updated on tree callback
+	this.classCount = null;
 
 
 	var path = {};
@@ -45,6 +48,8 @@ function Graph($scope, $routeParams, $location, $uibModal) {
 	else if (_($location.path()).startsWith('/graph')) {
 		this.createGraph(path)
 	}
+
+
 }
 
 Graph.isPage = true;
@@ -64,6 +69,7 @@ Graph.prototype.go = function (tree, callback) {
 			treeMgr.go(tree);
 
 
+			this.classCount = treeMgr.countClassesInTree(tree);
 
 
 
@@ -202,30 +208,36 @@ Graph.prototype.search = function ($routeParams) {
 
 				treeMgr.logTree(tree, {
 					type: 'search',
-					host: host,
-					termId: termId,
-					subject: subject,
+					host: $routeParams.host,
+					termId: $routeParams.termId,
+					subject: $routeParams.subject,
 					searchQuery: value
 				})
 			});
 		}
 		else {
-			console.log("FIX MEEEEEEE");
-			// this.container.innerHTML = '<div style="font-size: 28px;text-align: center;padding-top: 200px;font-weight: 600;">Nothing Found!</div>'
+			this.classCount = 0
 
-			treeMgr.logTree({}, {
-				type: 'search',
-				host: $routeParams.host,
-				termId: $routeParams.termId,
-				subject: $routeParams.subject,
-				searchQuery: value
 
-			})
+			// console.log("FIX MEEEEEEE");
+			// // this.container.innerHTML = '<div style="font-size: 28px;text-align: center;padding-top: 200px;font-weight: 600;">Nothing Found!</div>'
+
+			// treeMgr.logTree({}, {
+			// 	type: 'search',
+			// 	host: $routeParams.host,
+			// 	termId: $routeParams.termId,
+			// 	subject: $routeParams.subject,
+			// 	searchQuery: value
+
+			// })
 		}
+
+		setTimeout(function () {
+			this.$scope.$apply();
+		}.bind(this), 0)
 
 	}.bind(this))
 };
-
 
 
 

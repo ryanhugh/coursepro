@@ -109,13 +109,13 @@ SelectorsMgr.prototype.setSelectors = function (values, doOpenNext) {
 					defaultValue: this.selectors[index].helpId
 				})
 			}
-			else if (doOpenNext) {
-				this.finish(function (err) {
-					if (err) {
-						console.log('error creating tree from selectors', err)
-					}
-				});
-			}
+			// else if (doOpenNext) {
+			// 	this.finish(function (err) {
+			// 		if (err) {
+			// 			console.log('error creating tree from selectors', err)
+			// 		}
+			// 	});
+			// }
 		};
 
 	}.bind(this))

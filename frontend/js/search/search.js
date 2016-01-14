@@ -41,7 +41,7 @@ Search.prototype.searchFromEntry = function () {
 		return;
 	};
 
-	this.$location.path('/search/'+host+'/'+termId+'/'+subject+'/'+this.searchText)
+	this.$location.path('/search/'+encodeURIComponent(host)+'/'+termId+'/'+subject+'/'+this.searchText)
 	// this.go(host, termId, subject, this.searchText);
 };
 

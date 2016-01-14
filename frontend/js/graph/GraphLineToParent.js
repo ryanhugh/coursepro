@@ -18,6 +18,13 @@ function GraphLineToParent($timeout) {
 			$timeout(function () {
 				this.container = document.getElementById('containerId');
 				this.addLine(scope.tree)
+
+
+				window.addEventListener('resize', function (event) {
+					// this.$scope.$apply();
+					this.addLine(scope.tree)
+				}.bind(this));
+
 			}.bind(this))
 
 		}.bind(this))
@@ -32,7 +39,7 @@ function GraphLineToParent($timeout) {
 		}
 		else {
 			console.log('wtf, what is', type)
-			console.trace()
+			console.trace() 
 		}
 	}
 
@@ -131,6 +138,18 @@ function GraphLineToParent($timeout) {
 
 
 		aElement.appendChild(mouseOver)
+
+
+		//remove the old lines (if the exist)
+		if (tree.lineContainer) {
+			tree.lineContainer.remove();
+		}
+		if (tree.lineToParent) {
+			tree.lineToParent.remove()
+		}
+		if (tree.lineToParentLink) {
+			tree.lineToParentLink.remove()
+		}
 
 
 		tree.lineContainer = document.createElement('div');
