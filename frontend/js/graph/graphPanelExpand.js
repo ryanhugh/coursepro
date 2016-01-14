@@ -227,7 +227,7 @@ function GraphPanelExpand($timeout, $document) {
 
 		this.openOrder.push(tree)
 
-		this.onClick(tree,callback)
+		this.onClick(tree, callback)
 	};
 
 	GraphPanelExpandInner.prototype.closePanel = function (tree, callback) {
@@ -244,7 +244,7 @@ function GraphPanelExpand($timeout, $document) {
 
 		_.pull(this.openOrder, tree)
 
-		this.onClick(tree,callback)
+		this.onClick(tree, callback)
 	};
 
 
@@ -277,6 +277,10 @@ function GraphPanelExpand($timeout, $document) {
 			cursor: 'pointer'
 		}
 
+		if (!tree.lowestParent) {
+
+			this.openOrder = []
+		};
 
 		//if only this panel, expand it
 		if (!tree.lowestParent && treeMgr.countClassesInTree(tree) === 1) {
@@ -284,17 +288,17 @@ function GraphPanelExpand($timeout, $document) {
 			//this is undone when openPanel is done, a couple lines down
 			tree.$scope.style.visibility = 'hidden'
 
-			this.openPanel(tree,function (err) {
+			this.openPanel(tree, function (err) {
 				if (err) {
-					console.log("ERROR",err);
+					console.log("ERROR", err);
 				}
 
 				tree.$scope.style.visibility = ''
 
 				setTimeout(function () {
 					tree.$scope.$apply();
-				}.bind(this),0)
-				
+				}.bind(this), 0)
+
 			}.bind(this))
 		}
 

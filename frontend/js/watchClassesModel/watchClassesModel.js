@@ -1,10 +1,10 @@
 'use strict';
-var request = require('./request')
+var request = require('../request')
 
-var directiveMgr = require('./directiveMgr')
-var BaseDirective = require('./BaseDirective')
+var directiveMgr = require('../directiveMgr')
+var BaseDirective = require('../BaseDirective')
 
-var user = require('./user')
+var user = require('../user')
 
 
 function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {

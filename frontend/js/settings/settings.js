@@ -4,9 +4,9 @@ var _ = require('lodash')
 var async = require('async')
 var moment = require('moment')
 
-var request = require('./request')
-var directiveMgr = require('./directiveMgr')
-var BaseDirective = require('./BaseDirective')
+var request = require('../request')
+var directiveMgr = require('../directiveMgr')
+var BaseDirective = require('../BaseDirective')
 
 function Settings($scope) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
@@ -14,7 +14,7 @@ function Settings($scope) {
 	// this.
 
 	// this.testttt='fdsafsafsa'
-
+ 
 	// return
 
 	// $scope.v=this;

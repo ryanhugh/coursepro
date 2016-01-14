@@ -1,7 +1,7 @@
 'use strict';
-var directiveMgr = require('./directiveMgr')
-var BaseDirective = require('./BaseDirective')
-var emailMgr = require('./emailMgr')
+var directiveMgr = require('../directiveMgr')
+var BaseDirective = require('../BaseDirective')
+var emailMgr = require('../emailMgr')
 
 function Homepage($scope,$location) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
