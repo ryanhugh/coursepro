@@ -1,7 +1,7 @@
 'use strict';
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
-var emailMgr = require('../emailMgr')
+var user = require('../user')
 
 function Homepage($scope,$location) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
@@ -20,7 +20,7 @@ Homepage.prototype = Object.create(BaseDirective.prototype);
 Homepage.prototype.constructor = Homepage;
 
 Homepage.prototype.subscribe = function (email) {
-	emailMgr.subscribe(this.email, function (errMsg, successMsg) {
+	user.subscribeForNews(this.email, function (errMsg, successMsg) {
 		if (errMsg) {
 			this.emailMsg = errMsg
 		}

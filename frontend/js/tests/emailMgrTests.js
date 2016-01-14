@@ -1,17 +1,17 @@
 'use strict';
 
 var assert = require('assert')
-var emailMgr = require('../emailMgr')
+var user = require('../user')
 
 function EmailMgrTests() {
-	this.name = 'emailMgr';
+	this.name = 'user';
 }
 
 
 
 EmailMgrTests.prototype.validateEmailTest = function() {
-	assert.equal(true, emailMgr.validateEmail('bob@gmail.com'));
-	assert.equal(false, emailMgr.validateEmail('gmail.com'));
+	assert.equal(true, user.validateEmail('bob@gmail.com'));
+	assert.equal(false, user.validateEmail('gmail.com'));
 
 };
 
