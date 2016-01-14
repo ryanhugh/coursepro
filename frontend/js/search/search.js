@@ -6,9 +6,10 @@ var BaseDirective = require('../BaseDirective')
 var request = require('../request')
 
 
-function Search($scope) {
+function Search($scope,$location) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	$scope.search = this;
+	this.$location = $location
 
 	this.searchText = ''
 

@@ -3,6 +3,7 @@ var _ = require('lodash')
 
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
+var treeMgr = require('./treeMgr')
 
 var popup = require('./popup')
 
@@ -150,11 +151,18 @@ function GraphPanelExpand($timeout, $document) {
 
 
 	// if a panel in a tree is clicked
-	GraphPanelExpandInner.prototype.onClick = function (tree) {
+	GraphPanelExpandInner.prototype.onClick = function (tree, callback) {
+		if (!callback) {
+			callback = function () {}
+		};
 
 
 		//this returns instantly if already loaded
 		tree.loadSections(function (err) {
+			if (err) {
+				console.log("ERROR", err);
+				return callback(err)
+			}
 
 			//setTimeout 0 because $scope.$update()
 			setTimeout(function () {
@@ -183,8 +191,8 @@ function GraphPanelExpand($timeout, $document) {
 				//update the dom with the new $scope and tree
 				tree.$scope.$apply()
 
-
 				this.moveOnScreen(tree)
+				callback()
 
 			}.bind(this), 0)
 		}.bind(this))
@@ -193,7 +201,7 @@ function GraphPanelExpand($timeout, $document) {
 
 	//called from graph.html
 	GraphPanelExpandInner.prototype.onKeyDown = function (event) {
-		if (!event.code == 27 || !event.type == 'keydown') {
+		if (event.code != 27 || event.type != 'keydown') {
 			return;
 		};
 
@@ -205,7 +213,7 @@ function GraphPanelExpand($timeout, $document) {
 		this.closePanel(tree)
 	};
 
-	GraphPanelExpandInner.prototype.openPanel = function (tree) {
+	GraphPanelExpandInner.prototype.openPanel = function (tree, callback) {
 		if (tree.$scope.isExpanded) {
 			return;
 		}
@@ -219,10 +227,10 @@ function GraphPanelExpand($timeout, $document) {
 
 		this.openOrder.push(tree)
 
-		this.onClick(tree)
+		this.onClick(tree,callback)
 	};
 
-	GraphPanelExpandInner.prototype.closePanel = function (tree) {
+	GraphPanelExpandInner.prototype.closePanel = function (tree, callback) {
 		if (!tree.$scope.isExpanded) {
 			return;
 		}
@@ -236,7 +244,7 @@ function GraphPanelExpand($timeout, $document) {
 
 		_.pull(this.openOrder, tree)
 
-		this.onClick(tree)
+		this.onClick(tree,callback)
 	};
 
 
@@ -267,6 +275,27 @@ function GraphPanelExpand($timeout, $document) {
 			'box-shadow': 'gray 0px 0px 0px',
 			zIndex: $scope.baseZIndex,
 			cursor: 'pointer'
+		}
+
+
+		//if only this panel, expand it
+		if (!tree.lowestParent && treeMgr.countClassesInTree(tree) === 1) {
+
+			//this is undone when openPanel is done, a couple lines down
+			tree.$scope.style.visibility = 'hidden'
+
+			this.openPanel(tree,function (err) {
+				if (err) {
+					console.log("ERROR",err);
+				}
+
+				tree.$scope.style.visibility = ''
+
+				setTimeout(function () {
+					tree.$scope.$apply();
+				}.bind(this),0)
+				
+			}.bind(this))
 		}
 
 

@@ -37,13 +37,15 @@ panel-close = ".closePanel"
 		</div>
 		<div>
 			<div style="text-align:left;display: inline-block; position: absolute;max-width: 50%;line-height: 15px;">
-				<span ng-if="tree.maxCredits === tree.minCredits && tree.maxCredits">
-					{{tree.maxCredits}}
+				<span ng-if = "tree.maxCredits">
+					<span ng-if="tree.maxCredits === tree.minCredits">
+						{{tree.maxCredits}}
+					</span>
+					<span ng-if="tree.maxCredits !== tree.minCredits">
+						{{tree.minCredits}} to {{tree.maxCredits}}
+					</span> 
+					credits
 				</span>
-				<span ng-if="tree.maxCredits !== tree.minCredits && tree.maxCredits">
-					{{tree.minCredits}} to {{tree.maxCredits}}
-				</span> 
-				credits
 				<br>
 				<span ng-if ="tree.lastUpdateString">
 					Updated {{tree.lastUpdateString}}

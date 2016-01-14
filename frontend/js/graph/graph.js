@@ -29,6 +29,8 @@ function Graph($scope, $routeParams, $location, $uibModal) {
 	//need to get the macros to the html somehow...
 	this.macros = macros;
 
+	this.nothingFound = false;
+
 
 	var path = {};
 
@@ -60,6 +62,11 @@ Graph.prototype.go = function (tree, callback) {
 
 
 			treeMgr.go(tree);
+
+
+
+
+
 			// render.go(tree);
 			// popup.go(tree);
 			// help.go(tree);
@@ -105,6 +112,41 @@ Graph.prototype.createGraph = function (tree, callback) {
 		})
 		callback(null, tree);
 	}.bind(this));
+}
+
+
+
+Graph.prototype.showClasses = function (classList, callback) {
+	if (classList.length < 1) {
+		console.log('error show classes was called with 0 classes!')
+		return;
+	};
+
+	//this is ghetto
+	//remove the prereqs from classes so we don't load all the result's prereqs
+	classList.forEach(function (aClass) {
+
+		if (aClass.prereqs) {
+			aClass.prereqs.values = []
+		};
+
+	}.bind(this))
+
+
+
+	var treeParams = {
+		host: this.$routeParams.host,
+		termId: this.$routeParams.termId,
+		subject: this.$routeParams.subject,
+		prereqs: {
+			type: 'or',
+			values: classList
+		},
+		isClass: false,
+		hidden: true
+	}
+
+	this.go(treeParams, callback)
 }
 
 
@@ -168,7 +210,8 @@ Graph.prototype.search = function ($routeParams) {
 			});
 		}
 		else {
-			this.container.innerHTML = '<div style="font-size: 28px;text-align: center;padding-top: 200px;font-weight: 600;">Nothing Found!</div>'
+			console.log("FIX MEEEEEEE");
+			// this.container.innerHTML = '<div style="font-size: 28px;text-align: center;padding-top: 200px;font-weight: 600;">Nothing Found!</div>'
 
 			treeMgr.logTree({}, {
 				type: 'search',
@@ -185,42 +228,6 @@ Graph.prototype.search = function ($routeParams) {
 
 
 
-Graph.prototype.showClasses = function (classList) {
-	if (classList.length < 1) {
-		console.log('error show classes was called with 0 classes!')
-		return;
-	};
-
-	//this is ghetto
-	//remove the prereqs from classes so we don't load all the result's prereqs
-	classList.forEach(function (aClass) {
-
-		if (aClass.prereqs) {
-			aClass.prereqs.values = []
-		};
-
-	}.bind(this))
-
-
-
-	var treeParams = {
-		host: this.$routeParams.host,
-		termId: this.$routeParams.termId,
-		subject: this.$routeParams.subject,
-		prereqs: {
-			type: 'or',
-			values: classList
-		},
-		isClass: false,
-		hidden: true
-	}
-
-	this.go(treeParams, function () {
-
-	}.bind(this))
-}
-
-
 
 Graph.prototype.getCollegeName = function () {
 	return selectorsMgr.college.getText();
@@ -235,4 +242,4 @@ Graph.prototype.openWatchModel = function ($scope) {
 
 Graph.prototype.Graph = Graph;
 module.exports = Graph;
-directiveMgr.addDirective(Graph) 
+directiveMgr.addDirective(Graph)
