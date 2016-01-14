@@ -5,17 +5,15 @@ var directiveMgr = require('./directiveMgr')
 var BaseDirective = require('./BaseDirective')
 
 
-function WatchClassesModel($scope, tree) {
+function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	$scope.model = this;
+	this.$uibModalInstance = $uibModalInstance
 
 	//the current class being watched
 	this.tree = tree;
 
 
-	if (localStorage.loginKey) {
-		this.addClassToWatchList()
-	}
 	//if not the google sign in button will appear
 
 	$scope.$on('googleSignIn', function (event, data) {
@@ -23,7 +21,24 @@ function WatchClassesModel($scope, tree) {
 	}.bind(this))
 
 
-	this.msg = ''
+	this.subscribeMsg = ''
+	this.unsubscribeMsg = ''
+
+	// if signed in, don't show the model until the request is done 
+	// this prevents a flickering of something before the request comes back
+	if (localStorage.loginKey) {
+		this.addClassToWatchList(function () {
+			$timeout(function () {
+				this.doneRendering = true;
+			}.bind(this))
+		}.bind(this))
+	}
+	
+	//else just show it
+	else {
+		this.doneRendering = true;
+	}
+
 }
 
 //called from controllers wanting to make and instance of this
@@ -70,79 +85,77 @@ WatchClassesModel.prototype.setEmail = function (email) {
 };
 
 
-//sends post reque
-WatchClassesModel.prototype.addClassToWatchList = function () {
-
+WatchClassesModel.prototype.sendRequest = function (url, callback) {
 	request({
-		url: '/addClassToWatchList',
+		url: url,
+		type: 'POST',
 		useCache: false,
 		auth: true,
-		body: {
-			host: this.tree.host,
-			termId: this.tree.termId,
-			subject: this.tree.subject,
-			classId: this.tree.classId
-		}
+		tree: this.tree
 	}, function (err, response) {
 		if (err) {
 			console.log('ERROR', err)
-			return;
+			return callback(err);
 		}
 
-		this.error = false;
 
 		if (response.error) {
 			console.log('ERROR look at the server logs', response)
-			this.msg = response.msg
-			this.error = true;
-		}
-		else if (this.tree.name) {
-			this.msg = 'Successfully registered for updates on ' + this.tree.name + '!'
+			return callback(response.msg)
 		}
 		else {
-			this.msg = 'Successfully registered for updates!'
+			return callback(null, response.msg)
 		}
+
+
+
+	}.bind(this))
+};
+
+//sends post reque
+WatchClassesModel.prototype.addClassToWatchList = function (callback) {
+	this.sendRequest('/addClassToWatchList', function (err, msg) {
+
+		this.error = false;
+
+		if (err) {
+			this.error = true;
+			this.subscribeMsg = err;
+		}
+		else if (this.tree.name) {
+			this.subscribeMsg = 'Successfully registered for updates on ' + this.tree.name + '!'
+		}
+		else {
+			this.subscribeMsg = 'Successfully registered for updates!'
+		}
+		callback()
+
+	}.bind(this))
+
+};
+
+
+WatchClassesModel.prototype.removeClassFromWatchList = function () {
+	this.sendRequest('/removeClassFromWatchList', function (err, msg) {
+
+		var string = '';
+		if (err) {
+			this.unsubscribeMsg = 'There was an error removing from the database :/ ( ' + err + ' )'
+		}
+		else if (msg) {
+			this.unsubscribeMsg = msg
+		}
+		else {
+			this.unsubscribeMsg = 'done'
+		}
+
+		console.log(this.unsubscribeMsg)
 
 		setTimeout(function () {
 			this.$scope.$apply();
 		}.bind(this), 0)
 
 	}.bind(this))
-};
-
-
-WatchClassesModel.prototype.removeClassFromWatchList = function() {
-	
-		document.getElementById('RemoveWatchListId').onclick = function () {
-			request({
-				url: '/removeClassFromWatchList',
-				useCache: false,
-				auth: true,
-				body: {
-					host: this.tree.host,
-					termId: this.tree.termId,
-					subject: this.tree.subject,
-					classId: this.tree.classId
-				}
-			},function (err,response) {
-				document.getElementById('RemoveWatchListId').style.display = 'none'
-
-				var string = '';
-				if (err) {
-					string = 'There was an error removing from the database :/'
-					console.log(string)
-				}
-				else if (response && response.msg) {
-					string = response.msg
-				}
-				else {
-					string = 'done'
-				}
-
-				document.getElementById('unsubscribeDoneId').style.display = ''
-				document.getElementById('unsubscribeDoneId').innerHTML = ' ' +string
-			}.bind(this))
-		}.bind(this)
 
 };
 
@@ -178,6 +191,11 @@ WatchClassesModel.prototype.onSignIn = function (err, googleUser) {
 
 	}.bind(this))
 }
+
+WatchClassesModel.prototype.close = function() {
+	this.$uibModalInstance.close()
+};
+
 
 WatchClassesModel.prototype.WatchClassesModel = WatchClassesModel;
 module.exports = WatchClassesModel;

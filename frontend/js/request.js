@@ -169,11 +169,6 @@ Request.prototype.fireRequest = function (config, callback) {
 	//add the userid
 	if (config.type === 'POST') {
 
-		if (!config.body) {
-			config.body = {}
-			body = {}
-		};
-
 		if (config.body.userId) {
 			console.log('error config.body had a userId??')
 		}
@@ -262,7 +257,23 @@ Request.prototype.go = function (config, callback) {
 			config.type = 'GET'
 		}
 	}
-	if (['POST', 'GET'].indexOf(config.type) < 0) {
+
+	if (!config.body && config.type == "POST") {
+		config.body = {}
+	};
+
+	//tree given, copy over host, termId, subject, classId
+	if (config.tree) {
+		['host', 'termId', 'subject', 'classId'].forEach(function (attrName) {
+			if (config.tree[attrName] !== undefined) {
+				config.body[attrName] = config.tree[attrName]
+			};
+		}.bind(this))
+	}
+
+
+
+	if (!_(['POST', 'GET']).includes(config.type)) {
 		console.log('dropping request unknown method type', config.type);
 		console.trace()
 		return callback('internal error');

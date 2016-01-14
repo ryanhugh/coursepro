@@ -1,44 +1,55 @@
 
-<div class="modal-header">
-	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-		<span aria-hidden="true">&times;</span>
-	</button>
-	<h4 class="modal-title" id="myModalLabel">Sign up for automatic notifications!</h4>
-</div>
-<div class="modal-body">
+<!-- prevent flash of uncompiled html on screen -->
+<div style="display:none" ng-style="{display:model.doneRendering?'':'none'}">
 
-	<div ng-if = "!model.getSignedIn()">
-		<div style="font-weight:bold;">
-			Sign in with Google!
+	<div class="modal-header">
+		<button type="button" class="close" aria-label="Close" ng-click = "model.close()">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<h4 class="modal-title" id="myModalLabel">Sign up for automatic notifications!</h4>
+	</div>
+	<div class="modal-body">
+
+		<div ng-if = "!model.getSignedIn()">
+			<div style="font-weight:bold;">
+				Sign in with Google!
+			</div>
+			(If you can't see the button below, try disabling any browser extention that might block external scripts from google).
+			<div sign-in-with-google style="display: table;padding-top: 17px;">
+			</div>
+
 		</div>
-		(If you can't see the button below, try disabling any browser extention that might block external scripts from google).
-		<div sign-in-with-google style="display: table;padding-top: 17px;">
+
+		<div ng-if = "model.getSignedIn()">
+			<div style="font-weight:bold;">
+				{{model.subscribeMsg}}
+			</div>
+			<br>
+			Update emails will be sent to <span style="font-weight:bold;">{{model.getEmail()}}</span> !
+			<br>
+			<br>
+			Want to unsubscribe?
+
+			<a href="javascript:void(0)" ng-click="model.removeClassFromWatchList()" ng-if = "!model.unsubscribeMsg"> Click here</a>
+			{{model.unsubscribeMsg}}
+
+
+
+			<span ng-if ="!model.error">
+				<br>
+				<br>
+				We check for updates every 30 minutes and we'll send you an email if anything changes in the class or any of the sections!
+				<br>
+			</span>
+			<br>
+			<br>
+			Got questions? Feel free to send us an email at <a href="mailto:coursepro@coursepro.io"> coursepro@coursepro.io </a>
 		</div>
+
 
 	</div>
-
-	<div ng-if = "model.getSignedIn()">
-		<div style="font-weight:bold;">
-			{{model.msg}}
-		</div>
-		<br>
-		Update emails will be sent to <span style="font-weight:bold;">{{model.getEmail()}}</span> !
-		<br>
-		<br>
-		Want to unsubscribe?<a href="javascript:void(0)" ng-click="model.unsubscribe()"> Click here</a>
-		<span ng-if ="!model.error">
-			<br>
-			<br>
-			We check for updates every 30 minutes and we'll send you an email if anything changes in the class or any of the sections!
-			<br>
-		</span>
-		<br>
-		<br>
-		Got questions? Feel free to send us an email at <a href="mailto:coursepro@coursepro.io"> coursepro@coursepro.io </a>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default" ng-click = "model.close()">Close</button>
 	</div>
 
-
-</div>
-<div class="modal-footer">
-	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 </div>
