@@ -1,25 +1,30 @@
 'use strict';
 var moment = require('moment')
-
-var directiveMgr = require('../directiveMgr')
-var BaseDirective = require('../BaseDirective')
-
-var downloadTree = require('./downloadTree')
-var treeMgr = require('./treeMgr')
-
-var help = require('./help')
-var Class = require('../Class')
 var macros = require('../macros')
 var request = require('../request')
 
+// base angular stuff
+var directiveMgr = require('../directiveMgr')
+var BaseDirective = require('../BaseDirective')
+
+//tree stuff
+var downloadTree = require('./downloadTree')
+var treeMgr = require('./treeMgr')
+var help = require('./help')
+
+//model
+var Class = require('../Class')
+
+var WatchClassesModel = require('../WatchClassesModel')
 
 //thing that calls on download tree, treeMgr, render, popup and help
 //manages the page that generates the tree graphs
 
-function Graph($scope, $routeParams, $document, $route, $location) {
+function Graph($scope, $routeParams, $location, $uibModal) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	$scope.graph = this;
 	this.$routeParams = $routeParams;
+	this.$uibModal = $uibModal
 
 	//need to get the macros to the html somehow...
 	this.macros = macros;
@@ -203,8 +208,8 @@ Graph.prototype.showClasses = function (classList) {
 		hidden: true
 	}
 
-	this.go(treeParams,function () {
-		
+	this.go(treeParams, function () {
+
 	}.bind(this))
 }
 
@@ -228,6 +233,12 @@ Graph.prototype.getCollegeName = function () {
 };
 
 
+
+Graph.prototype.openWatchModel = function ($scope) {
+	this.$uibModal.open(WatchClassesModel.getOpenDetails($scope.tree))
+};
+
+
 Graph.prototype.Graph = Graph;
 module.exports = Graph;
-directiveMgr.addDirective(Graph)
+directiveMgr.addDirective(Graph) 

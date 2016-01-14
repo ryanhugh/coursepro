@@ -59,6 +59,10 @@ Updater.prototype.onInterval = function () {
 	console.log('updater running!')
 
 	usersDB.getUsersWatchCache(function (err, classWatchCache) {
+		if (err) {
+			console.log("ERROR",err);
+			return;
+		};
 
 		for (var classMongoId in classWatchCache.classes) {
 			console.log('updating class', classMongoId)

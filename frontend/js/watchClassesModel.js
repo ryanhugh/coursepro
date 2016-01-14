@@ -1,20 +1,52 @@
 'use strict';
 var request = require('./request')
 
-var directiveMgr = require('../directiveMgr')
-var BaseDirective = require('../BaseDirective')
+var directiveMgr = require('./directiveMgr')
+var BaseDirective = require('./BaseDirective')
 
 
-function WatchClassesModel($scope) {
+function WatchClassesModel($scope, tree) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
-	// $scope.search = this;
-
-
-	// this.modelBody = document.getElementById('watchClassesModelBodyId')
+	$scope.model = this;
 
 	//the current class being watched
-	this.tree = null;
+	this.tree = tree;
+
+
+	if (localStorage.loginKey) {
+		this.addClassToWatchList()
+	}
+	//if not the google sign in button will appear
+
+	$scope.$on('googleSignIn', function (event, data) {
+		this.onSignIn(data.err, data.googleUser)
+	}.bind(this))
+
+
+	this.msg = ''
 }
+
+//called from controllers wanting to make and instance of this
+WatchClassesModel.getOpenDetails = function (tree) {
+	return {
+		animation: true,
+		templateUrl: directiveMgr.getHTMLPathFromClass(WatchClassesModel),
+		controller: WatchClassesModel,
+		resolve: {
+			tree: tree
+		}
+	}
+}
+
+WatchClassesModel.prototype.getSignedIn = function () {
+	if (localStorage.loginKey) {
+		return true;
+	}
+	else {
+		return false;
+	}
+};
+
 
 WatchClassesModel.prototype.getUserData = function () {
 	if (!localStorage.userData) {
@@ -57,44 +89,34 @@ WatchClassesModel.prototype.addClassToWatchList = function () {
 			return;
 		}
 
-		var bodyText = [];
-
-		bodyText.push('<div style=\"font-weight:bold;\">');
-
+		this.error = false;
 
 		if (response.error) {
 			console.log('ERROR look at the server logs', response)
-			bodyText.push(response.msg)
+			this.msg = response.msg
+			this.error = true;
 		}
 		else if (this.tree.name) {
-			bodyText.push('Successfully registered for updates on ' + this.tree.name + '!')
+			this.msg = 'Successfully registered for updates on ' + this.tree.name + '!'
 		}
 		else {
-			bodyText.push('Successfully registered for updates!')
+			this.msg = 'Successfully registered for updates!'
 		}
-		bodyText.push('</div>')
-		bodyText.push('<br>')
 
-		var email = this.getEmail()
-		if (email) {
-			bodyText.push("Update emails will be sent to ")
-			bodyText.push('<span style=\"font-weight:bold;\">');
-			bodyText.push(email)
-			bodyText.push('</span> !')
-		};
-		if (!response.error) {
-			bodyText.push("<br><br>We check for updates every 30 minutes and we'll send you an email if anything changes in the class or any of the sections!<br>")
-				// bodyText.push('')
-		};
-		bodyText.push('<br><br>Got questions? Feel free to send us an email at <a href="mailto:coursepro@coursepro.io"> coursepro@coursepro.io </a>')
-
-		this.modelBody.innerHTML = bodyText.join('')
+		setTimeout(function () {
+			this.$scope.$apply();
+		}.bind(this), 0)
 
 	}.bind(this))
 
 };
 
-WatchClassesModel.prototype.onSignIn = function (googleUser) {
+WatchClassesModel.prototype.onSignIn = function (err, googleUser) {
+	if (err) {
+		console.log("ERROR", err);
+		return;
+	};
+
 
 	var profile = googleUser.getBasicProfile();
 	this.setEmail(profile.getEmail())
@@ -122,42 +144,6 @@ WatchClassesModel.prototype.onSignIn = function (googleUser) {
 	}.bind(this))
 }
 
-
-//this is called from anelBody).find('.linkToClassWatchModel').on('click',fun
-// in popup.js TODO change to angular
-WatchClassesModel.prototype.go = function (tree) {
-
-	this.tree = tree;
-
-	//bring up google sign in if your not signed in with google
-	if (!localStorage.loginKey) {
-		var bodyText = [];
-
-		bodyText.push('<div style=\"font-weight:bold;\">Sign in with Google!</div>')
-		bodyText.push("(If you can't see the button below, try disabling any browser extention that might block external scripts from google).")
-		bodyText.push('<div id="signInWithGoogleButtonId" style="display: table;padding-top: 17px;"></div>')
-
-		this.modelBody.innerHTML = bodyText.join('')
-
-		gapi.signin2.render('signInWithGoogleButtonId', {
-			onsuccess: this.onSignIn.bind(this),
-			onfailure: function () {
-				console.log('Error signing in with google')
-			}.bind(this)
-		});
-
-		return;
-	}
-	//if you are, send the post req	
-	else {
-		this.addClassToWatchList()
-	}
-
-
-
-};
-
-
-Search.prototype.Search = Search;
-module.exports = Search;
-directiveMgr.addDirective(Search)
+WatchClassesModel.prototype.WatchClassesModel = WatchClassesModel;
+module.exports = WatchClassesModel;
+directiveMgr.addRawController(WatchClassesModel)

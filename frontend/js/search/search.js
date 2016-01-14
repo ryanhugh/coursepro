@@ -25,7 +25,7 @@ Search.prototype.searchFromEntry = function () {
 
 	var termId = selectorsMgr.term.getValue();
 	if (!termId) {
-		console.log('error: need to selecte term first');
+		console.log('error: need to select term first');
 		return;
 	}
 
