@@ -108,6 +108,41 @@ WatchClassesModel.prototype.addClassToWatchList = function () {
 		}.bind(this), 0)
 
 	}.bind(this))
+};
+
+
+WatchClassesModel.prototype.removeClassFromWatchList = function() {
+	
+		document.getElementById('RemoveWatchListId').onclick = function () {
+			request({
+				url: '/removeClassFromWatchList',
+				useCache: false,
+				auth: true,
+				body: {
+					host: this.tree.host,
+					termId: this.tree.termId,
+					subject: this.tree.subject,
+					classId: this.tree.classId
+				}
+			},function (err,response) {
+				document.getElementById('RemoveWatchListId').style.display = 'none'
+
+				var string = '';
+				if (err) {
+					string = 'There was an error removing from the database :/'
+					console.log(string)
+				}
+				else if (response && response.msg) {
+					string = response.msg
+				}
+				else {
+					string = 'done'
+				}
+
+				document.getElementById('unsubscribeDoneId').style.display = ''
+				document.getElementById('unsubscribeDoneId').innerHTML = ' ' +string
+			}.bind(this))
+		}.bind(this)
 
 };
 

@@ -535,6 +535,41 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 				return callback();
 			};
 
+			var shouldSendEmail = false;
+
+			//lhs is old, and rhs is new
+			diff.forEach(function (aDiff) {
+				if (aDiff.path.length == 1 && aDiff.path[0] == 'seatsRemaining') {
+
+					//only send email if was <=0 and increase to above 0
+					// "increased to a positive number" is goal, but then like 25 -> 26 would fire...
+					if (aDiff.lhs <= 0 && aDiff.rhs > 0) {
+						shouldSendEmail = true;
+					}
+					else {
+						console.log('WARNING Not sending email for diff', aDiff)
+					}
+				}
+				else if (aDiff.path.length == 1 && aDiff.path[0] == 'waitRemaining') {
+
+					//only send email if was <=0 and increase to above 0
+					// "increased to a positive number" is goal, but then like 25 -> 26 would fire...
+					if (aDiff.lhs <= 0 && aDiff.rhs > 0) {
+						shouldSendEmail = true;
+					}
+					else {
+						console.log('WARNING Not sending email for diff', aDiff)
+					}
+				}
+				else {
+					shouldSendEmail = true;
+				}
+			}.bind(this))
+
+			if (!shouldSendEmail) {
+				return callback()
+			};
+
 			//calculate email content here
 			emailMgr.sendSectionUpdatedEmail(emails, oldData, newData, diff);
 
@@ -601,22 +636,77 @@ UsersDB.prototype.addClassToWatchList = function (classMongoIds, sectionMongoIds
 		}.bind(this))
 };
 
+UsersDB.prototype.removeClassFromWatchList = function (classMongoIds, sectionMongoIds, loginKey, callback) {
+
+
+	this.find({
+			loginKey: loginKey
+		}, {},
+		function (err, user) {
+			if (err) {
+				return callback(err)
+			}
+			if (!user) {
+				return callback('no user found')
+			};
+			var originalDoc = _.cloneDeep(user);
+
+			var classRemovedCount = 0;
+
+			//remove the classes
+			classMongoIds.forEach(function (classMongoId) {
+				if (_(user.watching.classes).includes(classMongoId)) {
+					classRemovedCount++;
+				}
+
+				_.pull(user.watching.classes, classMongoId)
+
+			}.bind(this))
+
+
+			var sectionRemovedCount = 0;
+
+			sectionMongoIds.forEach(function (sectionMongoId) {
+				if (_(user.watching.sections).includes(sectionMongoId)) {
+					sectionRemovedCount++;
+				}
+
+				_.pull(user.watching.sections, sectionMongoId)
+			}.bind(this))
+
+			console.log(user.email,' unsubscribed from ',classRemovedCount,' classes and ',sectionRemovedCount,' sections')
+
+			if (classRemovedCount==0 && sectionRemovedCount==0) {
+				return callback(null,'None of these classes and sections are being watched.')
+			}
+
+			this.updateDatabase(user, originalDoc, function (err, newDoc) {
+				if (err) {
+					console.log('ERROR', err)
+					return callback(err)
+				}
+
+				return callback(null, 'Successfully unsubscribed from ' + classRemovedCount + ' classes and ' + sectionRemovedCount + ' sections!')
+			}.bind(this))
+		}.bind(this))
+}
+
+
 UsersDB.prototype.getUserWatchList = function (loginKey, callback) {
 	this.find({
 			loginKey: loginKey
 		}, {},
 		function (err, user) {
 			if (err) {
-				console.log("ERROR getting user watch list,",loginKey)
+				console.log("ERROR getting user watch list,", loginKey)
 				return callback(err)
 			}
 			if (!user) {
 				console.log('ERROR couldnt get user watch list of user that dosent exist')
-				return callback(null,null)
+				return callback(null, null)
 			};
 
-			return callback(null,user)
-
+			return callback(null, user.watching)
 
 		}.bind(this))
 };

@@ -1,8 +1,6 @@
 'use strict';
-// var search = require('./search')
-// var render = require('./render')
-// var homepage = require('./homepage')
-// var settings = require('./settings')
+
+
 
 function Main() {
 
@@ -74,11 +72,63 @@ Main.prototype.updateFromHash = function () {
 			console.log('not running tests')
 		}
 	}
+
 	else if (values[0] == 'settings') {
-		homepage.removeHomepage();
+		// homepage.removeHomepage();
 		// render.clearContainer()
 		// settings.show()
-		document.getElementById('settingsId')
+		// document.getElementById('settingsId')
+	}
+
+	else if (values[0]=='unsubscribe') {
+		console.log('unsubscribe')
+
+		homepage.removeHomepage();
+		var host = values[1]
+		var termId = values[2]
+		var subject = values[3]
+		var classId = values[4]
+
+		//this is copied from watchClassesModel.js, and should be in Class.js
+		request({
+				url: '/removeClassFromWatchList',
+				useCache: false,
+				auth: true,
+				body: {
+					host: host,
+					termId: termId,
+					subject: subject,
+					classId: classId
+				}
+			},function (err,response) {
+
+				var string = '';
+				if (err || (response && response.error)) {
+					string = 'There was an error removing from the database :/'
+					console.log(string)
+				}
+				else if (response.msg) {
+					string = response.msg
+				}
+				else {
+					//don't think this is possible??
+					string = 'You have been unsubscribed!'
+				}
+
+				string += '\n\nRedirecting to coursepro.io in 3 seconds'
+
+				alert(string);
+
+				setTimeout(function () {
+					window.location.href = "https://coursepro.io";
+				}.bind(this),3000)
+
+
+
+			}.bind(this))
+
+
+// >>>>>>> master
 	}
 	else {
 
