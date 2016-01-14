@@ -9,7 +9,7 @@ var macros = require('../macros')
 
 function Updater() {
 
-	this.onInterval();
+	// this.onInterval();
 
 	//30 min
 	setInterval(this.onInterval.bind(this), macros.DB_REFRESH_INTERVAL)

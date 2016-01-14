@@ -16,6 +16,7 @@
     "gulp": "latest",
     "gulp-add-src": "latest",
     "gulp-concat": "latest",
+    "gulp-flatten": "^0.2.0",
     "gulp-streamify": "latest",
     "gulp-uglify": "latest",
     "gulp-uncss": "latest",

@@ -7,6 +7,7 @@ var concat = require("gulp-concat");
 var uncss = require('gulp-uncss');
 var addsrc = require('gulp-add-src');
 var streamify = require('gulp-streamify');
+var flatten = require('gulp-flatten');
 
 // browsify stuff
 var browserify = require('browserify');
@@ -31,6 +32,26 @@ var parsers = requireDir('./backend/parsers');
 var databases = requireDir('./backend/databases');
 
 
+//this is not used atm
+gulp.task('uglifyCSS', function () {
+	return gulp.src('frontend/css/homepage/*.css')
+		// .pipe(concat('allthecss.css'))
+		.pipe(uncss({
+			html: ['frontend/static/index.html']
+		}))
+		// .pipe(addsrc('frontend/css/all/*.css'))
+		.pipe(concat('allthecss.css'))
+		.pipe(gulp.dest('frontend/static/css'));
+});
+
+gulp.task('watchUglifyCSS', function () {
+	gulp.watch(['frontend/css/*.css'], ['uglifyCSS']);
+});
+
+
+
+//javascript
+
 //watch is allways on, to turn off (or add the option back) 
 // turn fullPaths back to shouldWatch and only run bundler = watchify(bundler) is shouldWatch is true
 // http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
@@ -51,36 +72,38 @@ function compileJS(shouldUglify) {
 	else {
 		filesToProccess = files;
 	}
-	console.log('Processing:',filesToProccess)
+	console.log('Processing:', filesToProccess)
 
 
 
-	var bundler = browserify({entries:filesToProccess}, {
-		basedir: __dirname, 
-		debug: false, 
+	var bundler = browserify({
+		entries: filesToProccess
+	}, {
+		basedir: __dirname,
+		debug: false,
 		cache: {}, // required for watchify
 		packageCache: {}, // required for watchify
 
 		// required to be true only for watchify (?) but watchify works when it is off.
 		//dont show C:/ryan/google drive etc in the uglified source code
-		fullPaths: false 
+		fullPaths: false
 	});
 
 	if (shouldUglify) {
-		 bundler.ignore('./testsMgr');
-		 bundler.ignore('./tests/testsMgr');
-		 bundler.ignore('../tests/testsMgr');
+		bundler.ignore('./testsMgr');
+		bundler.ignore('./tests/testsMgr');
+		bundler.ignore('../tests/testsMgr');
 	};
 
-	bundler = watchify(bundler) 
+	bundler = watchify(bundler)
 
 	bundler.transform(reactify);
 
-	var rebundle = function() {
+	var rebundle = function () {
 		console.log("----Rebundling custom JS!----")
 		var stream = bundler.bundle();
 
-		stream.on('error', function(err){
+		stream.on('error', function (err) {
 			// print the error (can replace with gulp-util)
 			console.log(err.message);
 			// end this stream
@@ -90,8 +113,10 @@ function compileJS(shouldUglify) {
 		stream = stream.pipe(source('allthejavascript.js'));
 
 		if (shouldUglify) {
-			stream=stream.pipe(streamify(uglify({
-				compress: { drop_console: true }
+			stream = stream.pipe(streamify(uglify({
+				compress: {
+					drop_console: true
+				}
 			})));
 		};
 
@@ -105,55 +130,37 @@ function compileJS(shouldUglify) {
 }
 
 
-// gulp.task('compileJSModules', function() {
-// 	return gulp.src(['frontend/js/modules/*.js'])
-// 	.pipe(concat("javascriptmodules.js"))
-// 	.pipe(gulp.dest('frontend/static/js/external'));
-// });
-
+gulp.task('copyHTML', function () {
+	return gulp
+		.src('./frontend/js/**/*.html')
+		.pipe(flatten())
+		.pipe(gulp.dest('./frontend/static/html'));
+})
 
 
 
 //production
-gulp.task('uglifyJS', function() {
+gulp.task('uglifyJS', function () {
 	return compileJS(true);
-});
-
-
-gulp.task('uglifyCSS', function () {
-	return gulp.src('frontend/css/homepage/*.css')
-        // .pipe(concat('allthecss.css'))
-        .pipe(uncss({
-        	html: ['frontend/static/index.html']
-        }))
-        // .pipe(addsrc('frontend/css/all/*.css'))
-        .pipe(concat('allthecss.css'))
-        .pipe(gulp.dest('frontend/static/css'));
-    });
-
-gulp.task('watchUglifyCSS', function() {
-	gulp.watch(['frontend/css/*.css'], ['uglifyCSS']);
 });
 
 
 
 //main prod starting point
-gulp.task('prod',['uglifyJS'],function() {
+gulp.task('prod', ['uglifyJS'], function () {
 	macros.SEND_EMAILS = true;
 	require('./backend/server')
 })
 
 
 
-
-
 //development
-gulp.task('compressJS', function() {
+gulp.task('compressJS', function () {
 	return compileJS(false);
 });
 
 
-gulp.task('dev',['compressJS'],function () {
+gulp.task('dev', ['compressJS', 'copyHTML'], function () {
 	require('./backend/server')
 })
 
@@ -161,13 +168,13 @@ gulp.task('dev',['compressJS'],function () {
 //other
 
 // when frontend tests work, add them here
-gulp.task('tests',function(){
-	
+gulp.task('tests', function () {
+
 	//run all of the parser tests
 	for (var parserName in parsers) {
 		parsers[parserName].tests();
 	}
-	
+
 	//run all of the db tests
 	for (var databaseName in databases) {
 		databases[databaseName].tests();
@@ -181,8 +188,6 @@ gulp.task('tests',function(){
 
 
 
-gulp.task('spider',function(){
+gulp.task('spider', function () {
 	pageDataMgr.main()
 });
-
-
