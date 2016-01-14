@@ -137,6 +137,10 @@ gulp.task('copyHTML', function () {
 		.pipe(gulp.dest('./frontend/static/html'));
 })
 
+gulp.task('watchCopyHTML', function () {
+	gulp.watch(['frontend/js/**/*.html'], ['copyHTML']);
+});
+
 
 
 //production
@@ -147,7 +151,7 @@ gulp.task('uglifyJS', function () {
 
 
 //main prod starting point
-gulp.task('prod', ['uglifyJS'], function () {
+gulp.task('prod', ['uglifyJS','watchCopyHTML','copyHTML'], function () {
 	macros.SEND_EMAILS = true;
 	require('./backend/server')
 })
@@ -160,7 +164,7 @@ gulp.task('compressJS', function () {
 });
 
 
-gulp.task('dev', ['compressJS', 'copyHTML'], function () {
+gulp.task('dev', ['compressJS', 'watchCopyHTML','copyHTML'], function () {
 	require('./backend/server')
 })
 

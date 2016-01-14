@@ -1,4 +1,5 @@
 frontend/static/js/internal/*
+frontend/static/html/*
 *.db
 node_modules
 *.log
