@@ -4,7 +4,7 @@ var macros = require('./macros')
 
 function Section(config) {
 	if (!config._id && !(config.host && config.termId && config.subject && config.classId && config.crn)) {
-		console.log('ERROR section needs host, termId, subject, classId, crn or _id',config)
+		console.log('ERROR section needs host, termId, subject, classId, crn or _id', config)
 	};
 
 
@@ -22,8 +22,8 @@ function Section(config) {
 
 	//copy over all given attrs
 	for (var attrName in config) {
-		if (this[attrName]!==undefined && this[attrName] !== config[attrName]) {
-			console.log('WARNING overriding data with config',attrName,this,config)
+		if (this[attrName] !== undefined && this[attrName] !== config[attrName]) {
+			console.log('WARNING overriding data with config', attrName, this, config)
 		}
 		this[attrName] = config[attrName]
 	}
@@ -45,7 +45,7 @@ Section.prototype.download = function (callback) {
 		callback = function () {}
 	}
 
-	this.dataStatus =  macros.DATASTATUS_LOADING;
+	this.dataStatus = macros.DATASTATUS_LOADING;
 	request({
 		url: '/listSections',
 		type: 'POST',
@@ -60,13 +60,13 @@ Section.prototype.download = function (callback) {
 		}
 	}, function (err, sections) {
 		if (err) {
-			console.log("ERROR in list sections",err)
+			console.log("ERROR in list sections", err)
 			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(err);
 		}
 		this.dataStatus = macros.DATASTATUS_DONE;
 
-		if (sections.length>1) {
+		if (sections.length > 1) {
 			console.log("ERROR have more than 1 section??");
 		}
 
@@ -76,7 +76,7 @@ Section.prototype.download = function (callback) {
 		//safe to copy all attrs?
 		for (var attrName in serverData) {
 			if (this[attrName] && this[attrName] !== serverData[attrName]) {
-				console.log("ERROR server returned data that was not equal to data here??",this[attrName],serverData[attrName],this,serverData)
+				console.log("ERROR server returned data that was not equal to data here??", this[attrName], serverData[attrName], this, serverData)
 			}
 
 			this[attrName] = serverData[attrName]
@@ -88,6 +88,43 @@ Section.prototype.download = function (callback) {
 
 	}.bind(this))
 }
+
+
+Section.prototype.compareTo = function (other) {
+
+	if (!this.meetings && !other.meetings) {
+		return 0;
+	}
+	if (!this.meetings || this.meetings.length === 0) {
+		return 1;
+	}
+	if (!other.meetings || other.meetings.length === 0) {
+		return -1;
+	}
+
+	if (this.meetings[0].groupedTimes.length === 0) {
+		return 1;
+	}
+	if (other.meetings[0].groupedTimes.length === 0) {
+		return -1;
+	}
+	if (this.meetings[0].groupedTimes[0].times.length === 0) {
+		return 1;
+	}
+	if (other.meetings[0].groupedTimes[0].times.length === 0) {
+		return -1;
+	}
+	if (this.meetings[0].groupedTimes[0].times[0].start > other.meetings[0].groupedTimes[0].times[0].start) {
+		return 1;
+	}
+	else if (this.meetings[0].groupedTimes[0].times[0].start < other.meetings[0].groupedTimes[0].times[0].start) {
+		return -1;
+	}
+	else {
+		return 0;
+	}
+};
+
 
 
 module.exports = Section;
