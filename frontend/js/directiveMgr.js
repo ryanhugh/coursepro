@@ -24,6 +24,12 @@ function DirectiveMgr() {
 		document.location.hash = '#' + hash
 	}
 
+	var ua = navigator.userAgent;
+	if (_(ua).includes("MSIE ") || ua.match(/Trident.*rv\:11\./)) {
+		alert("This site doesn't work so great in Internet Explorer/Edge. Try upgrading to Google Chrome or Firefox!")
+		return;
+	}
+
 	angularModule.config(function ($routeProvider) {
 		$routeProvider.otherwise({
 			redirectTo: '/'
