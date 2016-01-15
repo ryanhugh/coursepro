@@ -33,10 +33,6 @@ function Class(config) {
 	//instances of Section()
 	this.sections = []
 
-
-	//weather the tree is expanded or not
-	// this.isExpanded = false;
-
 	//loading status of the sections
 	this.sectionsLoadingStatus = macros.DATASTATUS_NOTSTARTED;
 

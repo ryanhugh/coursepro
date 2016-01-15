@@ -253,7 +253,7 @@
 .lineToParentLink,.lineToParentLink:focus{
 	outline: 0;
 	border:0 none;
-	z-index: -1;
+	/*z-index: -1;*/
 }
 .popover>.arrow{
 	left: 50% !important;

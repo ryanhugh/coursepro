@@ -11,7 +11,7 @@ function GraphLineToParent($timeout) {
 	}
 
 	GraphLineToParentInner.scope = true;
-	// GraphLineToParentInner.priority = -9999999999;
+	GraphLineToParentInner.priority = 1;
 
 	GraphLineToParentInner.prototype.link = function (scope, element, attrs) {
 

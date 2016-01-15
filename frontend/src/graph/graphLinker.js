@@ -10,7 +10,7 @@ function GraphLinker() {
 
 	}
 	GraphLinkerInner.scope = true;
-	GraphLinkerInner.priority = 1;
+	GraphLinkerInner.priority = 2;
 
 	GraphLinkerInner.prototype.link = function (scope, element, attrs) {
 
