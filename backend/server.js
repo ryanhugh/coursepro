@@ -726,6 +726,15 @@ app.post('/log', function (req, res) {
 
 
 
+app.post('/logError', function (req, res) {
+	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
+	res.send(JSON.stringify({
+		status: 'success'
+	}));
+})
+
+
+
 // serve the webpage
 app.get('/', function (req, res) {
 	res.sendFile('frontend/static/index.html', {

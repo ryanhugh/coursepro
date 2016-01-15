@@ -264,8 +264,7 @@ Request.prototype.go = function (config, callback) {
 
 
 	if (!_(['POST', 'GET']).includes(config.type)) {
-		console.log('dropping request unknown method type', config.type);
-		console.trace()
+		elog('dropping request unknown method type', config.type);
 		return callback('internal error');
 	};
 

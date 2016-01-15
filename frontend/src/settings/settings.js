@@ -8,45 +8,16 @@ var request = require('../request')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
+var user = require('../user')
+
 function Settings($scope) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
-
-	// this.
-
-	// this.testttt='fdsafsafsa'
- 
-	// return
-
-	// $scope.v=this;
-
-	this.user = null;
 
 	async.waterfall([
 
 			//fetch the user data
 			function (callback) {
-
-				request({
-					url: '/getUser',
-					type: 'POST',
-					auth: true
-				}, function (err, user) {
-					if (err) {
-						console.log('ERROR', err)
-						return callback(err)
-					}
-					this.user = user;
-
-
-
-					
-					// $scope.user = user;
-					$scope.$apply()
-
-
-
-					return callback()
-				}.bind(this))
+				user.download(callback)
 			}.bind(this),
 
 			//fetch class for every section and class _id
@@ -57,7 +28,7 @@ function Settings($scope) {
 				var sections = [];
 
 				//fetch all the class data from the _id's in the user watch list
-				this.user.watching.classes.forEach(function (classMongoId) {
+				user.watching.classes.forEach(function (classMongoId) {
 					q.defer(function (callback) {
 						request({
 							url: '/listClasses',
@@ -84,7 +55,7 @@ function Settings($scope) {
 
 
 				//same thing for the sections
-				this.user.watching.sections.forEach(function (sectionMongoId) {
+				user.watching.sections.forEach(function (sectionMongoId) {
 					q.defer(function (callback) {
 						request({
 							url: '/listSections',
@@ -226,16 +197,11 @@ function Settings($scope) {
 					//maybe make an "other" at the bottom at this point?
 			}.bind(this))
 
-			$scope.classes = classes;
+			this.$scope.classes = classes;
 
-			$scope.$apply()
+			this.$scope.$apply()
 
 		}.bind(this))
-
-
-
-	// this.settingsElement = document.getElementById('settingsId');
-	// this.masterContainer = document.getElementById('masterContainerId');
 }
 
 Settings.isPage = true;
@@ -248,43 +214,6 @@ Settings.prototype.test = function() {
 	console.log('fdnsafhdasfkl')
 };
 
-
-
-// Settings.prototype.populateFields = function (userData) {
-
-// };
-
-// Settings.prototype.isVisible = function () {
-
-// 	// if the element has a parent, it is in the container, if not it needs to be added
-// 	if (this.settingsElement.parentElement) {
-// 		return true
-// 	}
-// 	else {
-// 		return false;
-// 	}
-// }
-
-
-
-// Settings.prototype.show = function () {
-
-
-// 	if (this.isVisible()) {
-// 		return;
-// 	}
-
-// 	// document.body.style.height = '';
-// 	// document.body.style.width = '';
-
-
-// 	this.masterContainer.appendChild(this.settingsElement);
-
-// }
-
-// Settings.prototype.hide = function () {
-// 	$(this.settingsElement).detach()
-// };
 
 
 

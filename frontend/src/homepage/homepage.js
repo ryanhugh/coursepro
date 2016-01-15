@@ -3,15 +3,14 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var user = require('../user')
 
-function Homepage($scope,$location) {
+function Homepage() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	this.email = '';
 	this.emailMsg = ''
-
-	// this.$location = $location
 }
 
+Homepage.$inject = ['$scope', '$location']
 Homepage.urls = ['/']
 Homepage.isPage = true
 

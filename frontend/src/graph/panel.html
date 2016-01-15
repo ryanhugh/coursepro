@@ -27,7 +27,7 @@ panel-close = ".closePanel"
 
 <!-- only the panel body changes on isExpanded -->
 <div ng-if = "isExpanded" class="panel-body panelBodyId" style="line-height: 14px;" ng-style="{'width':panelWidth+'px'}">
-	<div ng-if = "tree.dataStatus === graph.macros.DATASTATUS_DONE">
+	<div ng-if = "tree.dataStatus === macros.DATASTATUS_DONE">
 		<div style="white-space: normal;margin-bottom:10px;line-height:15px">{{tree.desc}}</div>
 
 
@@ -90,7 +90,7 @@ panel-close = ".closePanel"
 							<span ng-switch-when="web online">Web Online</span>
 							<span ng-switch-default>
 
-								<a target="_blank" href="http://maps.google.com/?q={{graph.getCollegeName() + meeting.building}}">{{meeting.where}}</a>
+								<a target="_blank" href="http://maps.google.com/?q={{graph.getCollegeName() +' '+ meeting.building}}">{{meeting.where}}</a>
 
 							</span>
 						</span>
@@ -122,7 +122,7 @@ panel-close = ".closePanel"
 
 		</div>
 
-		<div ng-if = "tree.dataStatus === graph.macros.DATASTATUS_FAIL">
+		<div ng-if = "tree.dataStatus === macros.DATASTATUS_FAIL">
 
 			0 sections this term
 			<div style="white-space: normal;"><br>Couldn't find any class info on<br> {{tree.host}} :( </div>
@@ -135,9 +135,9 @@ panel-close = ".closePanel"
 
 
 	<div ng-if = "!isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
-		<div ng-if = "tree.dataStatus===graph.macros.DATASTATUS_FAIL">0 sections this term</div>
+		<div ng-if = "tree.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
 
-		<ng-pluralize ng-if = "tree.dataStatus!==graph.macros.DATASTATUS_FAIL" count="tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
+		<ng-pluralize ng-if = "tree.dataStatus!==macros.DATASTATUS_FAIL" count="tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
 	</div>
 
 

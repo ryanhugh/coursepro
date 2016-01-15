@@ -9,11 +9,8 @@ var Subject = require('./Subject')
 var Class = require('./Class')
 
 
-function SelectorsMgr($scope, $routeParams, $route, $location) {
+function SelectorsMgr() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
-
-	this.$route = $route
-	this.$location = $location
 
 	//allow circular dependencies
 	window.selectorsMgr = this;
@@ -31,24 +28,34 @@ function SelectorsMgr($scope, $routeParams, $route, $location) {
 		this.subject,
 		this.class
 	]
-	$scope.$on('$routeChangeSuccess', function () {
 
-		var params = $routeParams;
+	this.$scope.$on('$routeChangeSuccess', function () {
+
+		var params = this.$routeParams;
 		if (_.isEqual(params, {})) {
+
+			//if no route and no value in college, show to dropdown, but not opened
+			if (!this.college.getValue()) {
+				this.college.setup({
+					shouldOpen: false,
+					defaultValue: this.college.helpId
+				})
+			};
+
 			return;
 		};
 
 		var values = [params.host, params.termId, params.subject, params.classId]
 
-		values.forEach(function (value,i) {
+		values.forEach(function (value, i) {
 			values[i] = decodeURIComponent(value)
 		}.bind(this))
 
 		selectorsMgr.setSelectors(values, true);
-		// console.log(" $routeParams", $routeParams);
-	});
-
+	}.bind(this));
 }
+SelectorsMgr.$inject = ['$scope', '$routeParams', '$route', '$location']
+
 
 //prototype constructor
 SelectorsMgr.prototype = Object.create(BaseDirective.prototype);
@@ -62,11 +69,11 @@ SelectorsMgr.prototype.closeAllSelectors = function () {
 }
 
 SelectorsMgr.prototype.finish = function (callback) {
-	var host    = encodeURIComponent(this.college.getValue())
-	var termId  = encodeURIComponent(this.term.getValue())
+	var host = encodeURIComponent(this.college.getValue())
+	var termId = encodeURIComponent(this.term.getValue())
 	var subject = encodeURIComponent(this.subject.getValue())
 	var classId = encodeURIComponent(this.class.getValue())
- 
+
 	this.$location.path('/graph/' + host + '/' + termId + '/' + subject + '/' + classId)
 
 	setTimeout(function () {

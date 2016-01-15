@@ -6,10 +6,8 @@ var BaseDirective = require('../BaseDirective')
 var request = require('../request')
 
 
-function Search($scope,$location) {
+function Search($scope, $location) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
-	$scope.search = this;
-	this.$location = $location
 
 	this.searchText = ''
 
@@ -41,8 +39,7 @@ Search.prototype.searchFromEntry = function () {
 		return;
 	};
 
-	this.$location.path('/search/'+encodeURIComponent(host)+'/'+termId+'/'+subject+'/'+this.searchText)
-	// this.go(host, termId, subject, this.searchText);
+	this.$location.path('/search/' + encodeURIComponent(host) + '/' + encodeURIComponent(termId) + '/' + encodeURIComponent(subject) + '/' + encodeURIComponent(this.searchText))
 };
 
 

@@ -38,8 +38,7 @@ function GraphLineToParent($timeout) {
 			return '#A70000'
 		}
 		else {
-			console.log('wtf, what is', type)
-			console.trace()
+			elog('wtf, what is', type)
 		}
 	}
 

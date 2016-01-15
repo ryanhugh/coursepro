@@ -20,16 +20,8 @@ var WatchClassesModel = require('../WatchClassesModel/WatchClassesModel')
 //thing that calls on download tree, treeMgr, render, popup and help
 //manages the page that generates the tree graphs
 
-function Graph($scope, $routeParams, $location, $uibModal) {
+function Graph() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
-	$scope.graph = this;
-	this.$routeParams = $routeParams;
-	this.$uibModal = $uibModal
-
-	//need to get the macros to the html somehow...
-	this.macros = macros;
-
-	// this.nothingFound = false;
 
 	//updated on tree callback
 	this.classCount = null;
@@ -40,20 +32,20 @@ function Graph($scope, $routeParams, $location, $uibModal) {
 
 	var path = {};
 
-	for (var attrName in $routeParams) {
-		path[attrName] = decodeURIComponent($routeParams[attrName])
+	for (var attrName in this.$routeParams) {
+		path[attrName] = decodeURIComponent(this.$routeParams[attrName])
 	}
 
 
-	if (_($location.path()).startsWith('/search')) {
+	if (_(this.$location.path()).startsWith('/search')) {
 		this.search(path)
 	}
-	else if (_($location.path()).startsWith('/graph')) {
+	else if (_(this.$location.path()).startsWith('/graph')) {
 		this.createGraph(path)
 	}
-
-
 }
+
+Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal']
 
 Graph.isPage = true;
 Graph.urls = ['/graph/:host/:termId/:subject/:classId', '/search/:host/:termId/:subject/:searchTerm']

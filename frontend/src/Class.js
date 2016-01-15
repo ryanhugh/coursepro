@@ -14,8 +14,7 @@ function Class(config) {
 		return;
 	};
 	if (config instanceof Class) {
-		console.log("TRIED to make class from instance of class");
-		console.trace();
+		elog("TRIED to make class from instance of class");
 		return;
 	};
 
@@ -40,10 +39,6 @@ function Class(config) {
 
 	//loading status of the sections
 	this.sectionsLoadingStatus = macros.DATASTATUS_NOTSTARTED;
-
-	//ghetto bypass angularjs to link dom elements to tree structure
-	this.uuid = Math.random() + '' + Math.random();
-
 
 	//copy over all other attr given
 	for (var attrName in config) {
@@ -71,7 +66,7 @@ function Class(config) {
 
 	if (config.prereqs) {
 		if (!config.prereqs.values || !config.prereqs.type) {
-			console.log("ERROR given prereqs invalid", config.prereqs)
+			elog("ERROR given prereqs invalid", config.prereqs)
 		}
 		else {
 			this.prereqs.type = config.prereqs.type
@@ -91,7 +86,7 @@ function Class(config) {
 
 	if (config.coreqs) {
 		if (!config.coreqs.values || !config.coreqs.type) {
-			console.log("ERROR given coreqs invalid", config.coreqs)
+			elog("ERROR given coreqs invalid", config.coreqs)
 		}
 		else {
 			this.coreqs.type = config.coreqs.type
@@ -221,7 +216,7 @@ Class.prototype.convertServerData = function (data) {
 	}
 
 	if (!retVal) {
-		console.log("ERROR creating jawn", retVal, data, retVal == data)
+		elog("ERROR creating jawn", retVal, data, retVal == data)
 		return
 	}
 
@@ -240,13 +235,14 @@ Class.prototype.download = function (callback) {
 
 
 	if (this.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
-		console.trace()
-		return callback('data status was not not started, and called class.download?', this)
+		var errorMsg = 'data status was not not started, and called class.download?'
+		elog(errorMsg,this)
+		return callback(errorMsg, this)
 	};
 	if (this.isString || !this.isClass) {
-		console.log("ERROR class.download called on string or node", this)
-		console.trace()
-		return callback('no')
+		var errorMsg = "class.download called on string or node"
+		elog(errorMsg, this)
+		return callback(errorMsg)
 	};
 
 
@@ -394,14 +390,12 @@ Class.prototype.getIdentifer = function () {
 //is can also be called through treeMgr, which will add class count of the tree
 Class.prototype.logTree = function (body) {
 	if (!body.type) {
-		console.log('ERROR not given a tree type', body);
-		console.trace();
+		elog('ERROR not given a tree type', body);
 		return;
 	}
 
 	if (!this.isClass || this.isString) {
-		console.log("ERROR cant log a string or a node")
-		console.trace();
+		elog("ERROR cant log a string or a node")
 		return;
 	};
 
@@ -414,7 +408,7 @@ Class.prototype.logTree = function (body) {
 		useCache: false
 	}, function (err, response) {
 		if (err) {
-			console.log("ERROR: couldn't log tree size :(", err, response, body);
+			elog("ERROR: couldn't log tree size :(", err, response, body);
 		}
 	}.bind(this))
 }

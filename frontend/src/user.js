@@ -8,6 +8,46 @@ function User() {
 	this.onAuthenticateTriggers = []
 }
 
+
+//getters and setters for localStorage stuff
+User.prototype.getAuthenticated = function () {
+	if (localStorage.loginKey) {
+		return true;
+	}
+	else {
+		return false;
+	}
+};
+
+
+User.prototype.getUserData = function () {
+	if (!localStorage.userData) {
+		return {};
+	}
+
+	return JSON.parse(localStorage.userData)
+};
+User.prototype.setUserData = function (userData) {
+	localStorage.userData = JSON.stringify(userData)
+};
+
+User.prototype.getEmail = function () {
+	return this.getUserData().email;
+};
+
+User.prototype.setEmail = function (email) {
+	var userData = this.getUserData()
+	userData.email = email;
+	this.setUserData(userData);
+};
+
+
+//fired when authenticated
+User.prototype.onAuthenticate = function (trigger) {
+	this.onAuthenticateTriggers.push(trigger)
+};
+
+
 //this is called direcly from the signed in with google.js
 User.prototype.signedInWithGoogle = function (err, googleUser) {
 	if (err) {
@@ -52,43 +92,35 @@ User.prototype.signedInWithGoogle = function (err, googleUser) {
 	}.bind(this))
 }
 
+//download user data
+User.prototype.download = function (callback) {
+	if (!this.getAuthenticated()) {
+		console.log("ERROR not authenticated cant get user data");
+		return callback('Cannot get user data without being signed in')
+	};
 
-User.prototype.onAuthenticate = function (trigger) {
-	this.onAuthenticateTriggers.push(trigger)
+	request({
+		url: '/getUser',
+		type: 'POST',
+		auth: true
+	}, function (err, user) {
+		if (err) {
+			console.log('ERROR', err)
+			return callback(err)
+		}
+
+		//copy the attrs to this
+		for (var attrName in user) {
+			if (this[attrName] != user[attrName] && this[attrName]!==undefined) {
+				console.log("ERROR overrideing value",attrName,this[attrName],user[attrName]);
+			}
+			this[attrName] =  user[attrName]
+		}
+
+
+		return callback(null,this)
+	}.bind(this))
 };
-
-
-User.prototype.getAuthenticated = function () {
-	if (localStorage.loginKey) {
-		return true;
-	}
-	else {
-		return false;
-	}
-};
-
-
-User.prototype.getUserData = function () {
-	if (!localStorage.userData) {
-		return {};
-	}
-
-	return JSON.parse(localStorage.userData)
-};
-User.prototype.setUserData = function (userData) {
-	localStorage.userData = JSON.stringify(userData)
-};
-
-User.prototype.getEmail = function () {
-	return this.getUserData().email;
-};
-
-User.prototype.setEmail = function (email) {
-	var userData = this.getUserData()
-	userData.email = email;
-	this.setUserData(userData);
-};
-
 
 
 // http://stackoverflow.com/a/46181/11236

@@ -2,8 +2,6 @@
 var request = require('../request')
 var macros = require('../macros')
 
-// var downloadTree = require('./downloadTree')
-
 function TreeMgr() {
 
 }
