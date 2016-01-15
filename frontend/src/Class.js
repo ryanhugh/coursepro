@@ -50,13 +50,13 @@ function Class(config) {
 
 		//dont copy over some attr
 		//these are copied above
-		if (_(['coreqs', 'prereqs']).includes(attrName) || config[attrName]===undefined) {
+		if (_(['coreqs', 'prereqs']).includes(attrName) || config[attrName] === undefined) {
 			continue;
 		}
 		//title and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
 		//setting the innerHTML instead of innerText will work too, but this is better
-		else if (_(['desc','name']).includes(attrName)) {
-			this[attrName] = he.decode(config[attrName]) 
+		else if (_(['desc', 'name']).includes(attrName)) {
+			this[attrName] = he.decode(config[attrName])
 		}
 		else {
 			this[attrName] = config[attrName]
@@ -250,26 +250,14 @@ Class.prototype.download = function (callback) {
 	};
 
 
-	var lookupValues = {};
+	var lookupValues = this.getIdentifer();
 	var resultsQuery = {};
 
-	if (this._id) {
-		lookupValues._id = this._id
-	}
-	else if (this.host && this.termId && this.subject && this.classId) {
-		lookupValues = {
-			host: this.host,
-			termId: this.termId,
-			subject: this.subject
-		}
-
-		resultsQuery = {
-			classId: this.classId
-		}
-	}
-	else {
-		console.log('ERROR tried to lookup but dont have enought info??', this)
-	}
+	//move classId to resultsQuery if is is there
+	if (lookupValues.classId) {
+		resultsQuery.classId = lookupValues.classId
+		lookupValues.classId = undefined
+	};
 
 
 	this.dataStatus = macros.DATASTATUS_LOADING;
@@ -380,6 +368,27 @@ Class.prototype.getPath = function () {
 		}
 	}
 	return retVal;
+};
+
+//returns {_id} if has id, else returns {host,termId, subject, classId}
+Class.prototype.getIdentifer = function () {
+	if (this._id) {
+		return {
+			_id: this._id
+		}
+	}
+	else if (this.host && this.termId && this.subject && this.classId) {
+		return {
+			host: this.host,
+			termId: this.termId,
+			subject: this.subject,
+			classId: this.classId
+		}
+	}
+	else {
+		console.log('ERROR cant get id dont have enough info')
+		return null;
+	}
 };
 
 //is can also be called through treeMgr, which will add class count of the tree

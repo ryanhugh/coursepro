@@ -11,6 +11,7 @@ function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	$scope.model = this;
 	$scope.user = user;
+	this.$timeout = $timeout
 	this.$uibModalInstance = $uibModalInstance
 
 	//the current class being watched
@@ -25,11 +26,7 @@ function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 	// if signed in, don't show the model until the request is done 
 	// this prevents a flickering of something before the request comes back
 	if (user.getAuthenticated()) {
-		this.addClassToWatchList(function () {
-			$timeout(function () {
-				this.doneRendering = true;
-			}.bind(this))
-		}.bind(this))
+		this.addClassToWatchList()
 	}
 	else {
 
@@ -40,11 +37,7 @@ function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 				return;
 			}
 
-			this.addClassToWatchList(function () {
-				setTimeout(function () {
-					this.$scope.$apply()
-				}.bind(this), 0)
-			}.bind(this));
+			this.addClassToWatchList();
 
 		}.bind(this))
 
@@ -65,37 +58,8 @@ WatchClassesModel.getOpenDetails = function (tree) {
 	}
 }
 
-WatchClassesModel.prototype.sendRequest = function (url, callback) {
-	request({
-		url: url,
-		type: 'POST',
-		useCache: false,
-		auth: true,
-		tree: this.tree
-	}, function (err, response) {
-		if (err) {
-			console.log('ERROR', err)
-			return callback(err);
-		}
-
-		if (response.error) {
-			console.log('ERROR look at the server logs', response)
-			return callback(response.msg)
-		}
-		else {
-			return callback(null, response.msg)
-		}
-
-	}.bind(this))
-};
-
-//sends post reque
-WatchClassesModel.prototype.addClassToWatchList = function (callback) {
-	if (!callback) {
-		callback = function () {}
-	};
-
-	this.sendRequest('/addClassToWatchList', function (err, msg) {
+WatchClassesModel.prototype.addClassToWatchList = function () {
+	user.addClassToWatchList(this.tree, function (err, msg) {
 
 		this.error = false;
 
@@ -109,21 +73,16 @@ WatchClassesModel.prototype.addClassToWatchList = function (callback) {
 		else {
 			this.subscribeMsg = 'Successfully registered for updates!'
 		}
-		callback()
 
+		this.$timeout(function () {
+			this.doneRendering = true;
+		}.bind(this))
 	}.bind(this))
-
 };
 
+WatchClassesModel.prototype.removeClassFromWatchList = function () {
 
-WatchClassesModel.prototype.removeClassFromWatchList = function (callback) {
-	if (!callback) {
-		callback = function () {}
-	};
-
-
-	this.sendRequest('/removeClassFromWatchList', function (err, msg) {
-
+	user.removeClassFromWatchList(this.tree, function (err, msg) {
 		var string = '';
 		if (err) {
 			this.unsubscribeMsg = 'There was an error removing from the database :/ ( ' + err + ' )'
@@ -137,16 +96,10 @@ WatchClassesModel.prototype.removeClassFromWatchList = function (callback) {
 
 		console.log(this.unsubscribeMsg)
 
-		callback()
-	}.bind(this))
-};
-
-
-WatchClassesModel.prototype.removeClick = function() {
-	this.removeClassFromWatchList(function () {
-		setTimeout(function () {
-			this.$scope.$apply();
+		this.$timeout(function () {
+			this.doneRendering = true;
 		}.bind(this))
+
 	}.bind(this))
 };
 

@@ -58,7 +58,7 @@ gulp.task('watchUglifyCSS', function () {
 
 //another note, if you include a module that dosent exist, it will silently hang forever(?) eg (require('jdklfjdasjfkl'))
 function compileJS(shouldUglify) {
-	var files = glob.sync('frontend/js/**/*.js');
+	var files = glob.sync('frontend/src/**/*.js');
 
 
 	var filesToProccess = [];
@@ -132,13 +132,13 @@ function compileJS(shouldUglify) {
 
 gulp.task('copyHTML', function () {
 	return gulp
-		.src('./frontend/js/**/*.html')
+		.src('./frontend/src/**/*.html')
 		.pipe(flatten())
 		.pipe(gulp.dest('./frontend/static/html'));
 })
 
 gulp.task('watchCopyHTML', function () {
-	gulp.watch(['frontend/js/**/*.html'], ['copyHTML']);
+	gulp.watch(['frontend/src/**/*.html'], ['copyHTML']);
 });
 
 

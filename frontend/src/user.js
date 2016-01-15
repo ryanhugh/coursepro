@@ -8,6 +8,7 @@ function User() {
 	this.onAuthenticateTriggers = []
 }
 
+//this is called direcly from the signed in with google.js
 User.prototype.signedInWithGoogle = function (err, googleUser) {
 	if (err) {
 		console.log("ERROR", err);
@@ -46,12 +47,12 @@ User.prototype.signedInWithGoogle = function (err, googleUser) {
 		this.onAuthenticateTriggers.forEach(function (trigger) {
 			trigger();
 		}.bind(this))
-		
+
 
 	}.bind(this))
 }
 
-//this isnt used rn lol
+
 User.prototype.onAuthenticate = function (trigger) {
 	this.onAuthenticateTriggers.push(trigger)
 };
@@ -90,7 +91,6 @@ User.prototype.setEmail = function (email) {
 
 
 
-
 // http://stackoverflow.com/a/46181/11236
 // this is also done client side
 User.prototype.validateEmail = function (email) {
@@ -117,7 +117,7 @@ User.prototype.subscribeForNews = function (email, callback) {
 		return callback('Invalid email, try again');
 	}
 
- 
+
 	console.log('email submitted:', email);
 
 	request({
@@ -131,7 +131,7 @@ User.prototype.subscribeForNews = function (email, callback) {
 		if (err || response.error) {
 
 			//server error, probably will not happen but can be a bunch of different stuff
-			console.log(err,response);
+			console.log(err, response);
 			return callback('Error :/');
 		}
 
@@ -143,6 +143,48 @@ User.prototype.subscribeForNews = function (email, callback) {
 
 	}.bind(this))
 };
+
+
+//watch classes
+
+User.prototype.sendRequest = function (url, tree, callback) {
+	if (!callback) {
+		callback = function () {}
+	};
+
+	request({
+		url: url,
+		type: 'POST',
+		useCache: false,
+		auth: true,
+		body: tree.getIdentifer()
+	}, function (err, response) {
+		if (err) {
+			console.log('ERROR', err)
+			return callback(err);
+		}
+
+		if (response.error) {
+			console.log('ERROR look at the server logs', response)
+			return callback(response.msg)
+		}
+		else {
+			return callback(null, response.msg)
+		}
+
+	}.bind(this))
+};
+
+//sends post reque
+User.prototype.addClassToWatchList = function (tree, callback) {
+	this.sendRequest('/addClassToWatchList', tree, callback)
+};
+
+
+User.prototype.removeClassFromWatchList = function (tree, callback) {
+	this.sendRequest('/removeClassFromWatchList', tree, callback)
+};
+
 
 
 User.prototype.User = User;
