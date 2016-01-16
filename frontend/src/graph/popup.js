@@ -96,7 +96,8 @@ Popup.prototype.calculateHiddenMeetings = function(meetings) {
 Popup.prototype.createDayStrings = function(meetings) {
 	meetings.forEach(function (meeting) {
 		meeting.dayStrings = {
-			startDate:moment.utc(time.start * 1000).format('h:mm')
+			startDate:moment((meeting.startDate + 1) * 24 * 60 * 60 * 1000).format('MMM Do'),
+			endDate:moment((meeting.endDate + 1) * 24 * 60 * 60 * 1000).format('MMM Do')
 		}
 	}.bind(this))
 };
@@ -125,7 +126,7 @@ Popup.prototype.groupSectionTimes = function (sections) {
 				section.locations.push(meeting.where);
 			};
 
-			meeting.building = meeting.where.replace(/\d+\s*$/i, '')
+			meeting.building = meeting.where.replace(/\d+\s*$/i, '').trim()
 
 
 		}.bind(this))

@@ -68,7 +68,7 @@ panel-close = ".closePanel"
 
 
 						<span ng-if = "meeting.isExam">
-							Exam
+							Exam <br>
 						</span>
 
 						<!-- times, eg 10:30 - 11:35 am -->
@@ -83,14 +83,18 @@ panel-close = ".closePanel"
 							<span ng-if = "!$last">, </span>
 						</span>
 
-						<span ng-if "meeting.isExam">
-							{{meeting.dateStrings.startDate}}
+						<span ng-if = "meeting.isExam">
+							{{meeting.dayStrings.startDate}}
 						</span>
 
 						<br>
 
 						<!-- hr/week jawn, eg 3.3 hours/week -->
-						{{meeting.hoursPerWeek}} hours/week
+						{{meeting.hoursPerWeek}} 
+						<span ng-if = "meeting.isExam">hours</span>
+						<span ng-if = "!meeting.isExam">hours/week</span>
+
+						
 
 						<br>
 
