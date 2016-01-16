@@ -8,7 +8,7 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
 //tree stuff
-var downloadTree = require('./downloadTree')
+var downloadTree = require('./downloadTree') 
 var treeMgr = require('./treeMgr')
 var help = require('./help')
 
@@ -36,7 +36,7 @@ function Graph() {
 		path[attrName] = decodeURIComponent(this.$routeParams[attrName])
 	}
 
-
+ 
 	if (_(this.$location.path()).startsWith('/search')) {
 		this.search(path)
 	}

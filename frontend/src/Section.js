@@ -27,6 +27,9 @@ function Section(config) {
 		}
 		this[attrName] = config[attrName]
 	}
+
+
+	this.weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 }
 
 
@@ -38,6 +41,144 @@ Section.create = function (serverData) {
 	}
 	return aSection;
 };
+
+
+
+//creates 7:00 - 9:00 am
+// Thursday, Friday string
+Section.prototype.createTimeStrings = function () {
+
+	//{startDate: 16554, endDate: 16554, profs: Array[1], where: "Snell Engineering Center 168", times: Object…}
+	this.meetings.forEach(function (meeting) {
+
+		meeting.timeStrings = []
+			// "[{"times":[{"start":46800,"end":54000}],"days":["3"]}]"
+		meeting.groupedTimes.forEach(function (groupedTime) {
+			groupedTime.times.forEach(function (time, index) {
+				meeting.timeStrings.push({
+					start: moment.utc(time.start * 1000).format('h:mm'),
+					end: moment.utc(time.end * 1000).format('h:mm a')
+				})
+			}.bind(this))
+		}.bind(this))
+
+
+		meeting.days = []
+
+
+		for (var dayIndex in meeting.times) {
+			if (!this.weekDays[dayIndex]) {
+				console.log('error dayIndex not found?', meeting)
+				meeting.days.push('Someday')
+			}
+			else {
+				meeting.days.push(this.weekDays[dayIndex])
+			}
+		}
+	}.bind(this))
+}
+Section.prototype.calculateHoursPerWeek = function () {
+	this.meetings.forEach(function (meeting) {
+		meeting.hoursPerWeek = 0;
+
+		for (var dayIndex in meeting.times) {
+			var dayTimes = meeting.times[dayIndex]
+			dayTimes.forEach(function (time) {
+				//end and start are in seconds so conver them to hours
+				meeting.hoursPerWeek += (time.end - time.start) / (60 * 60)
+			}.bind(this))
+		}
+
+		meeting.hoursPerWeek = Math.round(10 * meeting.hoursPerWeek) / 10
+	}.bind(this))
+}
+
+Section.prototype.addTimestoGroupedTimes = function (meeting, dayIndex) {
+	var times = meeting.times[dayIndex]
+
+	for (var i = 0; i < meeting.groupedTimes.length; i++) {
+		if (_.isEqual(meeting.groupedTimes[i].times, times)) {
+			meeting.groupedTimes[i].days.push(dayIndex)
+			return;
+		}
+	}
+	meeting.groupedTimes.push({
+		times: times,
+		days: [dayIndex]
+	})
+}
+
+Section.prototype.calculateExams = function () {
+	this.meetings.forEach(function (meeting) {
+		if (meeting.startDate == meeting.endDate) {
+			meeting.isExam = true;
+		}
+		else {
+			meeting.isExam = false;
+		}
+
+	}.bind(this))
+};
+Section.prototype.calculateHiddenMeetings = function () {
+	this.meetings.forEach(function (meeting) {
+		if (meeting.hoursPerWeek === 0) {
+			meeting.hidden = true;
+		}
+		else {
+			meeting.hidden = false;
+		}
+	}.bind(this))
+};
+
+Section.prototype.createDayStrings = function () {
+	this.meetings.forEach(function (meeting) {
+		meeting.dayStrings = {
+			startDate: moment((meeting.startDate + 1) * 24 * 60 * 60 * 1000).format('MMM Do'),
+			endDate: moment((meeting.endDate + 1) * 24 * 60 * 60 * 1000).format('MMM Do')
+		}
+	}.bind(this))
+};
+
+Section.prototype.groupSectionTimes = function () {
+	if (!this.meetings) {
+		return;
+	}
+	this.profs = []
+	this.locations = []
+
+	this.meetings.forEach(function (meeting) {
+
+
+		//make a big list of all meetings prof's in the section
+		meeting.profs.forEach(function (prof) {
+			if (!_(this.profs).includes(prof)) {
+				this.profs.push(prof);
+			}
+		}.bind(this))
+
+
+		if (!_(this.locations).includes(meeting.where)) {
+			this.locations.push(meeting.where);
+		}
+
+		meeting.building = meeting.where.replace(/\d+\s*$/i, '').trim()
+	}.bind(this))
+
+	//group the times by start/end time (so can put days underneath)
+	this.meetings.forEach(function (meeting) {
+		meeting.groupedTimes = [];
+		for (var dayIndex in meeting.times) {
+			this.addTimestoGroupedTimes(meeting, dayIndex)
+		}
+	}.bind(this))
+
+	this.createTimeStrings()
+	this.calculateHoursPerWeek();
+	this.calculateExams();
+	this.calculateHiddenMeetings();
+	this.createDayStrings();
+}
+
 
 
 Section.prototype.download = function (callback) {
@@ -75,14 +216,13 @@ Section.prototype.download = function (callback) {
 
 		//safe to copy all attrs?
 		for (var attrName in serverData) {
-			if (this[attrName] && this[attrName] !== serverData[attrName]) {
-				console.log("ERROR server returned data that was not equal to data here??", this[attrName], serverData[attrName], this, serverData)
+			if (this[attrName] !== undefined && this[attrName] !== serverData[attrName]) {
+				elog("ERROR server returned data that was not equal to data here??", this[attrName], serverData[attrName], this, serverData)
 			}
 
 			this[attrName] = serverData[attrName]
 		}
-
-
+		this.groupSectionTimes()
 
 		callback()
 

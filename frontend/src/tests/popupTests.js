@@ -1,6 +1,6 @@
 'use strict';
 
-var popup = require('../graph/popup')
+// var popup = require('../graph/popup')
 var assert = require('assert')
 
 function PopupTests() {

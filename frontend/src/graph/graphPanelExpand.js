@@ -5,7 +5,7 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var treeMgr = require('./treeMgr')
 
-var popup = require('./popup')
+// var popup = require('./popup')
 
 
 
@@ -176,7 +176,7 @@ function GraphPanelExpand($timeout, $document) {
 				else {
 					tree.$scope.panelWidth = this.calculatePanelWidth(tree)
 
-					popup.groupSectionTimes(tree.sections)
+					// popup.groupSectionTimes(tree.sections)
 
 					if (tree.lastUpdateTime !== undefined) {
 						tree.lastUpdateString = moment(tree.lastUpdateTime).fromNow()
@@ -199,7 +199,7 @@ function GraphPanelExpand($timeout, $document) {
 	};
 
 
-	//called from graph.html
+	//called from graph.html 
 	GraphPanelExpandInner.prototype.onKeyDown = function (event) {
 		if (event.which != 27 || event.type != 'keydown') {
 			return;

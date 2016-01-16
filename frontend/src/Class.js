@@ -232,7 +232,7 @@ Class.prototype.download = function (callback) {
 
 	if (this.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
 		var errorMsg = 'data status was not not started, and called class.download?'
-		elog(errorMsg,this)
+		elog(errorMsg, this)
 		return callback(errorMsg, this)
 	};
 	if (this.isString || !this.isClass) {
@@ -463,6 +463,14 @@ Class.prototype.loadSections = function (callback) {
 
 		q.awaitAll(function (err) {
 			this.sectionsLoadingStatus = macros.DATASTATUS_DONE;
+
+
+			//sort sections
+			this.sections.sort(function (a, b) {
+				return a.compareTo(b);
+			}.bind(this))
+
+
 			callback(err)
 		}.bind(this))
 	}.bind(this))
