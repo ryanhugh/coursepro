@@ -22,75 +22,11 @@ function Settings($scope) {
 
 			//fetch class for every section and class _id
 			function (callback) {
-
-				var q = queue()
-				var classes = [];
-				var sections = [];
-
-				//fetch all the class data from the _id's in the user watch list
-				user.watching.classes.forEach(function (classMongoId) {
-					q.defer(function (callback) {
-						request({
-							url: '/listClasses',
-							body: {
-								_id: classMongoId
-							}
-						}, function (err, results) {
-							if (err) {
-								console.log('ERROR couldnt get data for ', err, classMongoId)
-								return callback(err)
-							}
-							if (results.length == 0) {
-								console.log('ERROR couldnt get data for ', classMongoId)
-								return callback();
-							}
-							var theClass = results[0];
-
-							classes.push(theClass)
-
-							callback()
-						}.bind(this))
-					}.bind(this))
-				}.bind(this))
-
-
-				//same thing for the sections
-				user.watching.sections.forEach(function (sectionMongoId) {
-					q.defer(function (callback) {
-						request({
-							url: '/listSections',
-							body: {
-								_id: sectionMongoId
-							}
-						}, function (err, results) {
-							if (err) {
-								console.log('ERROR couldnt get data for ', err)
-								return callback(err);
-							}
-							if (results.length == 0) {
-								console.log('ERROR couldnt get data for ', sectionMongoId)
-								return callback();
-							}
-
-							sections.push(results[0])
-							callback()
-						}.bind(this))
-					}.bind(this))
-				}.bind(this))
-
-				q.awaitAll(function (err) {
-					if (err) {
-						console.log('ERROR', err)
-					}
-
-					callback(null, sections, classes)
-
-				}.bind(this))
-
+				user.loadWatching(callback)
 			}.bind(this),
 
 			//get a list of hosts -> list of termTexts
-			function (sections, classes, callback) {
+			function (callback) {
 
 				var hosts = [];
 

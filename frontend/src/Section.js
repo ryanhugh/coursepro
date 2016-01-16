@@ -179,6 +179,28 @@ Section.prototype.groupSectionTimes = function () {
 	this.createDayStrings();
 }
 
+//returns {_id} if has id, else returns {host,termId, subject, classId,crn}
+Section.prototype.getIdentifer = function () {
+	if (this._id) {
+		return {
+			_id: this._id
+		}
+	}
+	else if (this.host && this.termId && this.subject && this.classId && this.crn) {
+		return {
+			host: this.host,
+			termId: this.termId,
+			subject: this.subject,
+			classId: this.classId,
+			crn: this.crn
+		}
+	}
+	else {
+		console.log('ERROR cant get id dont have enough info')
+		return null;
+	}
+};
+
 
 
 Section.prototype.download = function (callback) {
@@ -187,18 +209,22 @@ Section.prototype.download = function (callback) {
 	}
 
 	this.dataStatus = macros.DATASTATUS_LOADING;
+
+
+	var lookupValues = this.getIdentifer()
+	var resultsQuery = {}
+
+	if (lookupValues.crn) {
+		resultsQuery.crn = lookupValues.crn
+		lookupValues.crn = undefined
+	}
+
+
 	request({
 		url: '/listSections',
 		type: 'POST',
-		body: {
-			host: this.host,
-			termId: this.termId,
-			subject: this.subject,
-			classId: this.classId,
-		},
-		resultsQuery: {
-			crn: this.crn
-		}
+		body: lookupValues,
+		resultsQuery: resultsQuery
 	}, function (err, sections) {
 		if (err) {
 			console.log("ERROR in list sections", err)

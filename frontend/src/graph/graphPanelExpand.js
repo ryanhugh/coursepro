@@ -176,7 +176,6 @@ function GraphPanelExpand($timeout, $document) {
 				else {
 					tree.$scope.panelWidth = this.calculatePanelWidth(tree)
 
-					// popup.groupSectionTimes(tree.sections)
 
 					if (tree.lastUpdateTime !== undefined) {
 						tree.lastUpdateString = moment(tree.lastUpdateTime).fromNow()

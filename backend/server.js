@@ -396,14 +396,16 @@ app.post('/registerForEmails', function (req, res) {
 	if (!req.body.email || !req.body.userId || req.body.userId.length < 10) {
 		console.log('ERROR invalid user data given ', req.body);
 		return res.send(JSON.stringify({
-			error: 'not given email or user id'
+			error: 'error',
+			msg: 'Not given email or user id.'
 		}))
 	}
 
 	if (!validateEmail(req.body.email)) {
 		console.log('INFO dropping invalid email ', req.body.email);
 		return res.send(JSON.stringify({
-			error: 'invalid email'
+			error: 'error',
+			msg: 'Invalid email'
 		}))
 	}
 
@@ -418,13 +420,14 @@ app.post('/registerForEmails', function (req, res) {
 		if (err) {
 			console.log('ERROR couldnt subscribe for everthing', err);
 			return res.send(JSON.stringify({
-				status: 'error',
-				error: 'internal error'
+				error: 'error',
+				msg: 'Internal error :/'
 			}));
 		}
 		else {
 			return res.end(JSON.stringify({
-				status: 'success'
+				status: 'success',
+				msg: 'Success!'
 			}));
 		}
 	})

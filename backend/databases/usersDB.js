@@ -177,9 +177,9 @@ UsersDB.prototype.find = function (userData, config, callback) {
 
 		if (userData.loginKey == doc.loginKey || (!userData.loginKey && !doc.loginKey)) {
 
-			if (doc.loginKey && config.sanitize) {
-				doc.loginKey = undefined
-			}
+			// if (doc.loginKey && config.sanitize) {
+			// 	doc.loginKey = undefined
+			// }
 
 			return callback(null, doc);
 		}

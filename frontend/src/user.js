@@ -1,14 +1,32 @@
 'use strict';
+var queue = require('queue-async')
+var macros = require('./macros')
 
 var request = require('./request')
+var Class = require('./Class')
+var Section = require('./Section')
 
 function User() {
 
 	//all the data on the db schema for users is copied to this object
 	//and updated on some events
-	// perhaps change vv to dataChangeTrigger + type?
+	// perhaps change vv to dataChangeTrigger + type? no, because there is only 1 state, authenticated+with data, or neither. 
 
 	this.onAuthenticateTriggers = []
+
+	//data in the server
+	//email and name are copied to this when done loading
+	//sections and classes watching, when loaded, are copied to this.watching
+	this.dbData = {}
+
+	this.email = ''
+	this.name = ''
+
+	this.watching = {
+		classes: [],
+		sections: [],
+		dataStatus: macros.DATASTATUS_NOTSTARTED
+	}
 
 
 	//load from localStorage
@@ -22,15 +40,38 @@ function User() {
 
 User.prototype.loadFromLocalStorage = function () {
 	if (!localStorage.user) {
-		return {};
+		return;
 	}
 
 	var userData = JSON.parse(localStorage.user);
 
 	for (var attrName in userData) {
-		this[attrName] = userData[attrName]
+		this.dbData[attrName] = userData[attrName]
 	}
 }
+
+User.prototype.dataUpdated = function () {
+	//save login key to localstorage
+	if (this.loginKey) {
+		localStorage.loginKey = this.dbData.loginKey
+	}
+
+	this.email = this.dbData.email;
+	this.name = this.dbData.name;
+
+
+	//and fire off the triggers
+	this.onAuthenticateTriggers.forEach(function (trigger) {
+		trigger.trigger();
+	}.bind(this))
+
+	//remove all triggers on success
+	this.onAuthenticateTriggers = []
+
+	setTimeout(function () {
+		this.loadWatching()
+	}.bind(this),0)
+};
 
 
 
@@ -45,29 +86,9 @@ User.prototype.getAuthenticated = function () {
 };
 
 
-// User.prototype.getUserData = function () {
-// 	if (!localStorage.userData) {
-// 		return {};
-// 	}
-
-// 	return JSON.parse(localStorage.userData)
-// };
-// User.prototype.setUserData = function (userData) {
-// 	localStorage.userData = JSON.stringify(userData)
-// };
-
-// User.prototype.getEmail = function () {
-// 	return this.getUserData().email;
-// };
-
-// User.prototype.setEmail = function (email) {
-// 	var userData = this.getUserData()
-// 	userData.email = email;
-// 	this.setUserData(userData);
-// };
-
-
 //fired when authenticated
+//fires with an error if google auth faied, and does not remove trigger
+//fires with success if it worked (and /getUser worked), and then removes trigger
 User.prototype.onAuthenticate = function (name, trigger) {
 	//lol just fire it now
 	if (this.getAuthenticated()) {
@@ -114,8 +135,56 @@ User.prototype.signedInWithGoogle = function (err, idToken) {
 	})
 }
 
+
+
+//networking stuff
+
+
+//all user networking requests go through here
+User.prototype.sendRequest = function (config, callback) {
+	if (!callback) {
+		callback = function () {}
+	};
+
+	if (!config.url || !config.body) {
+		elog('error config does not have a url or a body', config);
+		return callback('internal error')
+	};
+
+	request({
+		url: config.url,
+		type: 'POST',
+		useCache: false,
+		auth: true,
+		body: config.body
+	}, function (err, response) {
+		if (err) {
+			elog('ERROR', err)
+			return callback(err);
+		}
+
+		//if its a msg, return the error msg or the success msg
+		if (config.isMsg) {
+			if (response.error) {
+				console.log('ERROR look at the server logs', response)
+				return callback(response.msg)
+			}
+			else {
+				return callback(null, response.msg)
+			}
+		}
+
+		//return the contents
+		else {
+			return callback(null, response)
+		}
+
+	}.bind(this))
+};
+
+
 //download user data
-User.prototype.download = function (config, callback) {
+User.prototype.download = function (body, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
@@ -130,10 +199,8 @@ User.prototype.download = function (config, callback) {
 		return callback('Cannot get user data without being signed in')
 	};
 
-	request({
+	this.sendRequest({
 		url: '/getUser',
-		type: 'POST',
-		auth: true,
 		body: body
 	}, function (err, user) {
 		if (err) {
@@ -141,30 +208,23 @@ User.prototype.download = function (config, callback) {
 			return callback(err)
 		}
 
-		if (!response.loginKey) {
-			console.log("didn't get a login key?", response, err)
+		if (!user.loginKey) {
+			console.log("didn't get a login key?", user, err)
 			return;
 		}
 
 
-		localStorage.loginKey = response.loginKey
 
-		//copy the attrs to this
+		//copy the attrs to this.dbData
 		for (var attrName in user) {
-			if (this[attrName] != user[attrName] && this[attrName] !== undefined) {
-				console.log("ERROR overrideing value", attrName, this[attrName], user[attrName]);
+			if (this.dbData[attrName] != user[attrName] && this.dbData[attrName] !== undefined) {
+				console.log("ERROR overrideing value", attrName, this.dbData[attrName], user[attrName]);
 			}
-			this[attrName] = user[attrName]
+			this.dbData[attrName] = user[attrName]
 		}
 
+		this.dataUpdated()
 
-		//call all the callbacks
-		this.onAuthenticateTriggers.forEach(function (trigger) {
-			trigger.trigger();
-		}.bind(this))
-
-		//remove all triggers on success
-		this.onAuthenticateTriggers = []
 
 		return callback(null, this)
 	}.bind(this))
@@ -172,7 +232,7 @@ User.prototype.download = function (config, callback) {
 
 
 // http://stackoverflow.com/a/46181/11236
-// this is also done client side
+// this is also done server side
 User.prototype.validateEmail = function (email) {
 	if (!email) {
 		return false;
@@ -188,6 +248,9 @@ User.prototype.validateEmail = function (email) {
 }
 
 
+//watch classes
+
+
 User.prototype.subscribeForNews = function (email, callback) {
 
 	if (!this.validateEmail(email)) {
@@ -200,71 +263,93 @@ User.prototype.subscribeForNews = function (email, callback) {
 
 	console.log('email submitted:', email);
 
-	request({
+	this.sendRequest({
 		url: '/registerForEmails',
-		auth: true,
+		isMsg: true,
 		body: {
 			email: email
 		}
-	}, function (err, response) {
-		//some other errors are possible - same thing as above
-		if (err || response.error) {
-
-			//server error, probably will not happen but can be a bunch of different stuff
-			console.log(err, response);
-			return callback('Error :/');
-		}
-
-
-		else {
-			console.log('it worked!')
-			return callback(null, 'Success!');
-		}
-
-	}.bind(this))
+	}, callback);
 };
 
 
-//watch classes
 
-User.prototype.sendRequest = function (url, tree, callback) {
-	if (!callback) {
-		callback = function () {}
-	};
-
-	request({
-		url: url,
-		type: 'POST',
-		useCache: false,
-		auth: true,
-		body: tree.getIdentifer()
-	}, function (err, response) {
-		if (err) {
-			console.log('ERROR', err)
-			return callback(err);
-		}
-
-		if (response.error) {
-			console.log('ERROR look at the server logs', response)
-			return callback(response.msg)
-		}
-		else {
-			return callback(null, response.msg)
-		}
-
-	}.bind(this))
-};
-
-//sends post reque
+//sends post request
 User.prototype.addClassToWatchList = function (tree, callback) {
-	this.sendRequest('/addClassToWatchList', tree, callback)
+	this.sendRequest({
+		url: '/addClassToWatchList',
+		isMsg: true,
+		body: tree.getIdentifer()
+	}, callback)
 };
 
 
 User.prototype.removeClassFromWatchList = function (tree, callback) {
-	this.sendRequest('/removeClassFromWatchList', tree, callback)
+	this.sendRequest({
+		url: '/removeClassFromWatchList',
+		isMsg: true,
+		body: tree.getIdentifer()
+	}, callback)
 };
 
+
+User.prototype.loadWatching = function (callback) {
+	if (!callback) {
+		callback = function () {}
+	};
+
+	if (this.watching.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
+		elog('loadWatching called when data status was', this.watching.dataStatus)
+		return callback('internal error');
+	};
+
+	this.watching.dataStatus = macros.DATASTATUS_LOADING
+
+
+	var q = queue()
+
+	//fetch all the class data from the _id's in the user watch list
+	this.dbData.watching.classes.forEach(function (classMongoId) {
+		q.defer(function (callback) {
+			Class.create({
+				_id: classMongoId
+			}).download(function (err, aClass) {
+				if (err) {
+					return callback(err)
+				}
+
+				this.watching.classes.push(aClass);
+				callback()
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
+
+
+	//same thing for the sections
+	this.dbData.watching.sections.forEach(function (sectionMongoId) {
+		q.defer(function (callback) {
+			Section.create({
+				_id: sectionMongoId
+			}).download(function (err, section) {
+				if (err) {
+					return callback(err)
+				}
+				this.watching.sections.push(section)
+				callback()
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
+
+	q.awaitAll(function (err) {
+		if (err) {
+			this.watching.dataStatus = macros.DATASTATUS_FAIL;
+			elog(err, 'when loading watching classes')
+			return callback(err)
+		}
+		this.watching.dataStatus = macros.DATASTATUS_DONE;
+		callback()
+	}.bind(this))
+};
 
 
 User.prototype.User = User;

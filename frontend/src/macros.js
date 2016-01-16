@@ -15,24 +15,26 @@ function Macros() {
 	//used all over the place for logging erros
 	window.elog = function () {
 
-		var args = [];
-		for (var i = 0; i < arguments.length; i++) {
-			args[i] = arguments[i];
-		}
+		//use a separate calls stack in case this throws an error, it will not affect code that calls this
+		setTimeout(function () {
+			var args = [];
+			for (var i = 0; i < arguments.length; i++) {
+				args[i] = arguments[i];
+			}
 
-		console.log.apply(console, args);
-		console.trace();
+			console.log.apply(console, args);
+			console.trace();
 
-		request({
-			url: '/logError',
-			useCache:false,
-			body:args
-		},function (err,response) {
-			if (err) {
-				console.log("error logging error... lol");
-			};
-		}.bind(this))
-
+			request({
+				url: '/logError',
+				useCache: false,
+				body: args
+			}, function (err, response) {
+				if (err) {
+					console.log("error logging error... lol");
+				};
+			}.bind(this))
+		}.bind(this), 0)
 	}.bind(this)
 }
 
