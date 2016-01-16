@@ -93,6 +93,14 @@ Popup.prototype.calculateHiddenMeetings = function(meetings) {
 	}.bind(this))
 };
 
+Popup.prototype.createDayStrings = function(meetings) {
+	meetings.forEach(function (meeting) {
+		meeting.dayStrings = {
+			startDate:moment.utc(time.start * 1000).format('h:mm')
+		}
+	}.bind(this))
+};
+
 Popup.prototype.groupSectionTimes = function (sections) {
 	//make a list of all profs
 	sections.forEach(function (section) {
@@ -135,6 +143,7 @@ Popup.prototype.groupSectionTimes = function (sections) {
 		this.calculateHoursPerWeek(section.meetings);
 		this.calculateExams(section.meetings);
 		this.calculateHiddenMeetings(section.meetings);
+		this.createDayStrings(section.meetings);
 
 		
 		

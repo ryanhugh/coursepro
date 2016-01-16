@@ -66,17 +66,27 @@ panel-close = ".closePanel"
 				<div style=" text-align: center;margin-bottom: 22px;">
 					<span ng-repeat = "meeting in section.meetings" ng-if ="!meeting.hidden">
 
+
+						<span ng-if = "meeting.isExam">
+							Exam
+						</span>
+
 						<!-- times, eg 10:30 - 11:35 am -->
 						<span ng-repeat = "timeString in meeting.timeStrings">
 							{{timeString.start}} - {{timeString.end}}
 						</span>
-						<br>
+						<br ng-if = "!meeting.isExam">
 
 						<!-- days, eg Monday, Wednesday, Thursday -->
 						<span ng-repeat = "day in meeting.days">
 							{{day}}
 							<span ng-if = "!$last">, </span>
 						</span>
+
+						<span ng-if "meeting.isExam">
+							{{meeting.dateStrings.startDate}}
+						</span>
+
 						<br>
 
 						<!-- hr/week jawn, eg 3.3 hours/week -->
