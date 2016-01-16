@@ -206,7 +206,9 @@ Pointer.prototype.request = function (url, options, callback, tryCount) {
 				return callback(error);
 			};
 
-			console.log('Parsed', body.length, 'from ', url);
+			if (!macros.QUIET_LOGGING) {
+				console.log('Parsed', body.length, 'from ', url);
+			};
 
 			return callback(null, dom)
 

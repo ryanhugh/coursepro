@@ -4,7 +4,8 @@ var request = require('./request')
 
 function User() {
 
-	// this.
+	//all the data on the db schema for users is copied to this object
+	//but use getters so can download if need to
 
 	this.onAuthenticateTriggers = []
 }
@@ -91,7 +92,7 @@ User.prototype.signedInWithGoogle = function (err, googleUser) {
 	this.setEmail(profile.getEmail())
 
 	request({
-		url: '/authenticateUser',
+		url: '/getUser',
 		body: {
 			idToken: googleUser.getAuthResponse().id_token
 		}

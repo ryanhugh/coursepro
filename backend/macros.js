@@ -97,10 +97,15 @@ exports.DB_REFRESH_INTERVAL = 1800000
 //by default, only send if in PRODUCTION
 if (exports.PRODUCTION) {
 	exports.SEND_EMAILS = true;
+	exports.QUIET_LOGGING = true;
 }
 else {
 	exports.SEND_EMAILS = false
+	exports.QUIET_LOGGING = false;
 }
+
+
+exports.QUIET_LOGGING = true;
 
 // exports.SEND_EMAILS = true;
 

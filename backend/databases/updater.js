@@ -1,4 +1,5 @@
 'use strict';
+var _ = require('lodash')
 
 var usersDB = require('./usersDB')
 var classesDB = require('./classesDB')
@@ -9,7 +10,10 @@ var macros = require('../macros')
 
 function Updater() {
 
-	// this.onInterval();
+	//run updater on boot if in production
+	if (macros.PRODUCTION) {
+		this.onInterval();
+	};
 
 	//30 min
 	setInterval(this.onInterval.bind(this), macros.DB_REFRESH_INTERVAL)
@@ -40,7 +44,7 @@ Updater.prototype.updateClassFromMongoId = function (classMongoId, callback) {
 		}
 
 		// console.log('done top level pagedata fetching from db ', pageData)
-			//updatedByParent:true
+		//updatedByParent:true
 		if (!pageData.dbData.url || pageData.dbData.updatedByParent) {
 			console.log('does not have url or updated by parent, skipping', pageData.dbData._id)
 			return callback('skipping class that is updated by parent, fetch that _id to update');
@@ -56,16 +60,18 @@ Updater.prototype.updateClassFromMongoId = function (classMongoId, callback) {
 
 //update all classes that are being watched
 Updater.prototype.onInterval = function () {
-	console.log('updater running!')
 
 	usersDB.getUsersWatchCache(function (err, classWatchCache) {
 		if (err) {
-			console.log("ERROR",err);
+			console.log("ERROR", err);
 			return;
 		};
 
+		var classIds = _.keys(classWatchCache.classes)
+
+		console.log("updating ", classIds.length, ' classes', classIds);
+
 		for (var classMongoId in classWatchCache.classes) {
-			console.log('updating class', classMongoId)
 
 			this.updateClassFromMongoId(classMongoId)
 

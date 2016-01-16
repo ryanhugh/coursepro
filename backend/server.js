@@ -477,34 +477,6 @@ app.get('/unsubscribe', function (req, res) {
 })
 
 
-
-app.post('/authenticateUser', function (req, res) {
-	if (!req.body.idToken) {
-		console.log('error, no idToken given body:');
-		console.log(req.body)
-		res.status(400);
-		res.send('{"error":"no idToken given (expected JSON)"}')
-		return;
-	}
-
-	usersDB.authenticateUser(req.body.idToken, req.connection.remoteAddress, function (err, loginKey) {
-		if (err) {
-			console.log('couldnt authenticate User', err);
-			res.send(JSON.stringify({
-				error: 'error yo'
-			}))
-			return;
-		};
-
-
-		res.send(JSON.stringify({
-			loginKey: loginKey,
-			status: 'success'
-		}))
-	})
-})
-
-
 function getClassAndSectionIdFromPath(body, callback) {
 
 	async.waterfall([
@@ -691,17 +663,24 @@ app.post('/removeClassFromWatchList', function (req, res) {
 
 
 app.post('/getUser', function (req, res) {
-	if (!req.body.loginKey) {
+	if (!req.body.loginKey && !req.body.idToken) {
 		res.send(JSON.stringify({
 			error: 'getUser needs loginKey as json'
 		}))
 		return;
 	}
 
+	var lookup = {};
+	if (req.body.idToken) {
+		lookup.idToken = req.body.idToken
+	}
+	else if (req.body.loginKey) {
+		lookup.loginKey = req.body.loginKey;
+	}
 
-	usersDB.find({
-			loginKey: req.body.loginKey
-		}, {
+
+	usersDB.find(
+		lookup, {
 			sanitize: true
 		},
 		function (err, user) {

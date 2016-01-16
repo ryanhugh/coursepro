@@ -80,7 +80,7 @@ UsersDB.prototype.isValidLookupValues = function (lookupValues) {
 	//all of these are unique for each row
 	//never send the googleId to the client and don't allow external lookups with googleId (from other server code is ok)
 	//ok to send _id to client, but don't allow external lookups either
-	if (lookupValues._id || lookupValues.googleId || lookupValues.loginKey || lookupValues.email) {
+	if (lookupValues._id || lookupValues.googleId || lookupValues.loginKey || lookupValues.email || lookupValues.idToken) {
 		return true;
 	}
 	else {
@@ -126,6 +126,19 @@ UsersDB.prototype.find = function (userData, config, callback) {
 		config.shouldBeOnlyOne = true;
 	};
 
+	if (userData.idToken) {
+
+		if (_.keys(userData).length !== 1) {
+			console.log("WARNING ignoring more than idToken on user find", userData, config);
+			console.trace();
+		};
+
+		this.authenticateUser(userData.idToken, function (err, doc) {
+			callback(err, doc)
+		}.bind(this))
+		return;
+	}
+
 	//only use one of the keys for each row, in this order
 	var lookupValues = {};
 	if (userData._id) {
@@ -140,6 +153,7 @@ UsersDB.prototype.find = function (userData, config, callback) {
 	else if (userData.email) {
 		lookupValues.email = userData.email;
 	}
+	//valid lookup terms is checked above
 
 
 	//check for at least one of them is handled by this call
@@ -289,7 +303,7 @@ UsersDB.prototype.randomString = function (length) {
 
 
 
-UsersDB.prototype.authenticateUser = function (idToken, ip, callback) {
+UsersDB.prototype.authenticateUser = function (idToken, callback) {
 
 	OAuth2.verifyIdToken(idToken, null, function (err, results) {
 		if (err) {
@@ -367,11 +381,7 @@ UsersDB.prototype.authenticateUser = function (idToken, ip, callback) {
 				doc.email = payload.email
 				doc.googleId = payload.sub
 				doc.authenticated = true
-				if (!_(doc.ips).includes(ip)) {
-					doc.ips.push(ip)
-				}
-
-				callback(null, doc.loginKey)
+				callback(null, doc)
 
 				//don't need callback for db		
 				this.updateDatabase(doc, originalDoc);
@@ -482,6 +492,11 @@ UsersDB.prototype.rowUpdatedTrigger = function (oldData, newData, idUsersMap, ca
 			emails.push(user.email)
 		}.bind(this))
 	}
+
+	if (emails.length != 0) {
+		console.log("data link:", newData.url);
+	};
+
 	return callback(null, emails, differences);
 };
 
@@ -674,10 +689,10 @@ UsersDB.prototype.removeClassFromWatchList = function (classMongoIds, sectionMon
 				_.pull(user.watching.sections, sectionMongoId)
 			}.bind(this))
 
-			console.log(user.email,' unsubscribed from ',classRemovedCount,' classes and ',sectionRemovedCount,' sections')
+			console.log(user.email, ' unsubscribed from ', classRemovedCount, ' classes and ', sectionRemovedCount, ' sections')
 
-			if (classRemovedCount==0 && sectionRemovedCount==0) {
-				return callback(null,'None of these classes and sections are being watched.')
+			if (classRemovedCount == 0 && sectionRemovedCount == 0) {
+				return callback(null, 'None of these classes and sections are being watched.')
 			}
 
 			this.updateDatabase(user, originalDoc, function (err, newDoc) {
