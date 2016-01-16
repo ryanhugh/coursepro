@@ -31,7 +31,7 @@ function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 	else {
 
 		//when authenticate, fire off request
-		user.onAuthenticate(function (err) {
+		user.onAuthenticate(this.constructor.name, function (err) {
 			if (err) {
 				console.log("ERROR", err);
 				return;
@@ -40,6 +40,11 @@ function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 			this.addClassToWatchList();
 
 		}.bind(this))
+
+		// remove the trigger when this view goes away so the triggers dont stack up
+		$scope.$on("$destroy", function () {
+			user.removeTriggers(this.constructor.name);
+		}.bind(this));
 
 
 		this.doneRendering = true;

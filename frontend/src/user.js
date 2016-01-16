@@ -43,8 +43,20 @@ User.prototype.setEmail = function (email) {
 
 
 //fired when authenticated
-User.prototype.onAuthenticate = function (trigger) {
-	this.onAuthenticateTriggers.push(trigger)
+User.prototype.onAuthenticate = function (name, trigger) {
+	this.onAuthenticateTriggers.push({
+		name: name,
+		trigger: trigger
+	})
+};
+User.prototype.removeTriggers = function (name) {
+	var triggersToRemove = _.where(this.onAuthenticateTriggers, {
+		name: name
+	})
+
+	triggersToRemove.forEach(function (trigger) {
+		_.pull(this.onAuthenticateTriggers,trigger)
+	}.bind(this))
 };
 
 
@@ -55,7 +67,7 @@ User.prototype.signedInWithGoogle = function (err, googleUser) {
 
 		//call all the callbacks
 		this.onAuthenticateTriggers.forEach(function (trigger) {
-			trigger(err);
+			trigger.trigger(err);
 		}.bind(this))
 
 		return;
@@ -85,7 +97,7 @@ User.prototype.signedInWithGoogle = function (err, googleUser) {
 
 		//call all the callbacks
 		this.onAuthenticateTriggers.forEach(function (trigger) {
-			trigger();
+			trigger.trigger();
 		}.bind(this))
 
 
@@ -111,14 +123,14 @@ User.prototype.download = function (callback) {
 
 		//copy the attrs to this
 		for (var attrName in user) {
-			if (this[attrName] != user[attrName] && this[attrName]!==undefined) {
-				console.log("ERROR overrideing value",attrName,this[attrName],user[attrName]);
+			if (this[attrName] != user[attrName] && this[attrName] !== undefined) {
+				console.log("ERROR overrideing value", attrName, this[attrName], user[attrName]);
 			}
-			this[attrName] =  user[attrName]
+			this[attrName] = user[attrName]
 		}
 
 
-		return callback(null,this)
+		return callback(null, this)
 	}.bind(this))
 };
 
