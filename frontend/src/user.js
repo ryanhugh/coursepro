@@ -5,10 +5,33 @@ var request = require('./request')
 function User() {
 
 	//all the data on the db schema for users is copied to this object
-	//but use getters so can download if need to
+	//and updated on some events
+	// perhaps change vv to dataChangeTrigger + type?
 
 	this.onAuthenticateTriggers = []
+
+
+	//load from localStorage
+	this.loadFromLocalStorage();
+
+	//download data from server on init, if have loginKey
+	if (this.getAuthenticated()) {
+		this.download()
+	}
 }
+
+User.prototype.loadFromLocalStorage = function () {
+	if (!localStorage.user) {
+		return {};
+	}
+
+	var userData = JSON.parse(localStorage.user);
+
+	for (var attrName in userData) {
+		this[attrName] = userData[attrName]
+	}
+}
+
 
 
 //getters and setters for localStorage stuff
@@ -22,26 +45,26 @@ User.prototype.getAuthenticated = function () {
 };
 
 
-User.prototype.getUserData = function () {
-	if (!localStorage.userData) {
-		return {};
-	}
+// User.prototype.getUserData = function () {
+// 	if (!localStorage.userData) {
+// 		return {};
+// 	}
 
-	return JSON.parse(localStorage.userData)
-};
-User.prototype.setUserData = function (userData) {
-	localStorage.userData = JSON.stringify(userData)
-};
+// 	return JSON.parse(localStorage.userData)
+// };
+// User.prototype.setUserData = function (userData) {
+// 	localStorage.userData = JSON.stringify(userData)
+// };
 
-User.prototype.getEmail = function () {
-	return this.getUserData().email;
-};
+// User.prototype.getEmail = function () {
+// 	return this.getUserData().email;
+// };
 
-User.prototype.setEmail = function (email) {
-	var userData = this.getUserData()
-	userData.email = email;
-	this.setUserData(userData);
-};
+// User.prototype.setEmail = function (email) {
+// 	var userData = this.getUserData()
+// 	userData.email = email;
+// 	this.setUserData(userData);
+// };
 
 
 //fired when authenticated
@@ -73,7 +96,7 @@ User.prototype.removeTriggers = function (name) {
 
 
 //this is called direcly from the signed in with google.js
-User.prototype.signedInWithGoogle = function (err, googleUser) {
+User.prototype.signedInWithGoogle = function (err, idToken) {
 	if (err) {
 		console.log("ERROR", err);
 
@@ -83,46 +106,25 @@ User.prototype.signedInWithGoogle = function (err, googleUser) {
 		}.bind(this))
 
 		//keep the callbacks when error
-
 		return;
 	};
 
-
-	var profile = googleUser.getBasicProfile();
-	this.setEmail(profile.getEmail())
-
-	request({
-		url: '/getUser',
-		body: {
-			idToken: googleUser.getAuthResponse().id_token
-		}
-	}, function (err, response) {
-		if (err) {
-			console.log('ERROR', err)
-			return;
-		}
-
-		if (!response.loginKey) {
-			console.log("didn't get a login key?", response, err)
-			return;
-		}
-
-		localStorage.loginKey = response.loginKey
-
-		//call all the callbacks
-		this.onAuthenticateTriggers.forEach(function (trigger) {
-			trigger.trigger();
-		}.bind(this))
-
-		//remove all triggers on success
-		this.onAuthenticateTriggers = []
-
-
-	}.bind(this))
+	this.download({
+		idToken: idToken
+	})
 }
 
 //download user data
-User.prototype.download = function (callback) {
+User.prototype.download = function (config, callback) {
+	if (!callback) {
+		callback = function () {}
+	};
+
+	if (!body) {
+		body = {}
+	};
+
+
 	if (!this.getAuthenticated()) {
 		console.log("ERROR not authenticated cant get user data");
 		return callback('Cannot get user data without being signed in')
@@ -131,12 +133,21 @@ User.prototype.download = function (callback) {
 	request({
 		url: '/getUser',
 		type: 'POST',
-		auth: true
+		auth: true,
+		body: body
 	}, function (err, user) {
 		if (err) {
 			console.log('ERROR', err)
 			return callback(err)
 		}
+
+		if (!response.loginKey) {
+			console.log("didn't get a login key?", response, err)
+			return;
+		}
+
+
+		localStorage.loginKey = response.loginKey
 
 		//copy the attrs to this
 		for (var attrName in user) {
@@ -146,6 +157,14 @@ User.prototype.download = function (callback) {
 			this[attrName] = user[attrName]
 		}
 
+
+		//call all the callbacks
+		this.onAuthenticateTriggers.forEach(function (trigger) {
+			trigger.trigger();
+		}.bind(this))
+
+		//remove all triggers on success
+		this.onAuthenticateTriggers = []
 
 		return callback(null, this)
 	}.bind(this))

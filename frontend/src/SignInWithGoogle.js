@@ -23,7 +23,7 @@ function SignInWithGoogle() {
 
 		gapi.signin2.render(id, {
 			onsuccess: function (googleUser) {
-				user.signedInWithGoogle(null,googleUser)
+				user.signedInWithGoogle(null,googleUser.getAuthResponse().id_token)
 			}.bind(this),
 			onfailure: function (err) {
 				console.log('Error signing in with google',err)
