@@ -80,7 +80,7 @@ function GraphLineToParent($timeout) {
 		tree.allParents.forEach(function (parent) {
 
 			var parentCoords = this.getCoords(parent);
-			this.drawLine(tree, treeCoords.x, treeCoords.y, parentCoords.x, parentCoords.y, this.getColor(tree.prereqs.type))
+			this.drawLine(tree, treeCoords.x, treeCoords.y, parentCoords.x, parentCoords.y, this.getColor(parent.prereqs.type))
 
 		}.bind(this))
 

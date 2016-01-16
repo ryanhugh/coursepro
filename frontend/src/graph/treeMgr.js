@@ -363,6 +363,23 @@ TreeMgr.prototype.logTree = function (tree, body) {
 	tree.logTree(body)
 
 };
+TreeMgr.prototype.defaultToOr = function(tree) {
+	
+	//if this class is a coreq to another class, remove its coreqs
+	if (tree.prereqs.length<2) {
+		tree.prereqs.type = 'or'
+	}
+
+
+	tree.coreqs.values.forEach(function (subTree) {
+		this.defaultToOr(subTree);
+	}.bind(this))
+
+	tree.prereqs.values.forEach(function (subTree) {
+		this.defaultToOr(subTree);
+	}.bind(this));
+};
+
 
 
 // TreeMgr.prototype.processTree = function(tree, callback) {
@@ -392,27 +409,13 @@ TreeMgr.prototype.go = function (tree) {
 
 	this.addLowestParent(tree);
 
-
+	this.defaultToOr(tree);
 
 	if (!tree.isClass) {
 		tree.hidden = true;
 	};
 
 }
-
-// TreeMgr.prototype.go = function (tree, callback) {
-
-// 	downloadTree.fetchFullTree(tree, function (err, tree) {
-// 		if (err) {
-// 			return callback(err)
-// 		}
-// 		this.processTree(tree)
-// 		callback(null, tree);
-
-// 	}.bind(this))
-
-// };
-
 
 TreeMgr.prototype.TreeMgr = TreeMgr;
 module.exports = new TreeMgr();

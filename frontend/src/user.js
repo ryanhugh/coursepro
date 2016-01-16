@@ -4,6 +4,7 @@ var request = require('./request')
 
 function User() {
 
+	// this.
 
 	this.onAuthenticateTriggers = []
 }
@@ -44,10 +45,20 @@ User.prototype.setEmail = function (email) {
 
 //fired when authenticated
 User.prototype.onAuthenticate = function (name, trigger) {
-	this.onAuthenticateTriggers.push({
-		name: name,
-		trigger: trigger
-	})
+	//lol just fire it now
+	if (this.getAuthenticated()) {
+		trigger();
+		return;
+	}
+	else {
+
+		this.onAuthenticateTriggers.push({
+			name: name,
+			trigger: trigger
+		})
+
+	}
+
 };
 User.prototype.removeTriggers = function (name) {
 	var triggersToRemove = _.where(this.onAuthenticateTriggers, {
@@ -55,7 +66,7 @@ User.prototype.removeTriggers = function (name) {
 	})
 
 	triggersToRemove.forEach(function (trigger) {
-		_.pull(this.onAuthenticateTriggers,trigger)
+		_.pull(this.onAuthenticateTriggers, trigger)
 	}.bind(this))
 };
 
@@ -69,6 +80,8 @@ User.prototype.signedInWithGoogle = function (err, googleUser) {
 		this.onAuthenticateTriggers.forEach(function (trigger) {
 			trigger.trigger(err);
 		}.bind(this))
+
+		//keep the callbacks when error
 
 		return;
 	};
@@ -99,6 +112,9 @@ User.prototype.signedInWithGoogle = function (err, googleUser) {
 		this.onAuthenticateTriggers.forEach(function (trigger) {
 			trigger.trigger();
 		}.bind(this))
+
+		//remove all triggers on success
+		this.onAuthenticateTriggers = []
 
 
 	}.bind(this))

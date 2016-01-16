@@ -11,12 +11,6 @@ function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	$scope.model = this;
 	$scope.user = user;
-	// this.$timeout = $timeout
-	// this.$uibModalInstance = $uibModalInstance
-
-	//the current class being watched
-	// this.tree = tree;
-
 
 	//if not the google sign in button will appear
 	this.subscribeMsg = ''
