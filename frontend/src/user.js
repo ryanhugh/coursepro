@@ -19,13 +19,13 @@ function User() {
 	//sections and classes watching, when loaded, are copied to this.watching
 	this.dbData = {
 
-		watching : {
-			classes:[],
-			sections:[]
+		watching: {
+			classes: [],
+			sections: []
 		},
 		starred: {
-			classes:[],
-			sections:[]
+			classes: [],
+			sections: []
 		}
 
 	}
@@ -41,8 +41,8 @@ function User() {
 	}
 
 	this.starred = {
-		classes:[],
-		sections:[]
+		classes: [],
+		sections: []
 	}
 
 
@@ -170,7 +170,6 @@ User.prototype.sendRequest = function (config, callback) {
 
 	if (config.tree) {
 		config.body = config.tree.getIdentifer().full.obj;
-		// config.resultsQuery = config.tree.getIdentifer().optional.obj;
 	}
 
 	request(config, function (err, response) {
@@ -322,6 +321,24 @@ User.prototype.removeSectionFromWatchList = function (tree, callback) {
 	}, callback)
 };
 
+//sends post request
+User.prototype.addSectionToStarredList = function (tree, callback) {
+	this.sendRequest({
+		url: '/addSectionToStarredList',
+		isMsg: true,
+		tree: tree
+	}, callback)
+};
+
+
+User.prototype.removeSectionFromStarredList = function (tree, callback) {
+	this.sendRequest({
+		url: '/removeSectionFromStarredList',
+		isMsg: true,
+		tree: tree
+	}, callback)
+};
+
 
 User.prototype.loadWatching = function (callback) {
 	if (!callback) {
@@ -330,7 +347,7 @@ User.prototype.loadWatching = function (callback) {
 
 	if (this.watching.dataStatus === macros.DATASTATUS_DONE) {
 		return callback()
-	}; 
+	};
 
 	if (this.watching.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
 		elog('loadWatching called when data status was', this.watching.dataStatus)
@@ -387,15 +404,14 @@ User.prototype.loadWatching = function (callback) {
 
 
 
-
-User.prototype.isWatchingSection = function(section) {
+User.prototype.isWatchingSection = function (section) {
 	if (!this.getAuthenticated()) {
 		elog("isWatchingSection called when not authenticated!");
 		return null;
 	}
 
 	if (section.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('isWatchingSection given ',section)
+		elog('isWatchingSection given ', section)
 	};
 
 	if (_(this.dbData.watching.sections).includes(section._id)) {
@@ -408,15 +424,14 @@ User.prototype.isWatchingSection = function(section) {
 
 
 
-
-User.prototype.isSectionStarred = function(section) {
+User.prototype.isSectionStarred = function (section) {
 	if (!this.getAuthenticated()) {
 		elog("isSectionStarred called when not authenticated!");
 		return null;
 	}
 
 	if (section.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('isSectionStarred given ',section)
+		elog('isSectionStarred given ', section)
 	};
 
 	if (_(this.dbData.starred.sections).includes(section._id)) {
@@ -427,30 +442,32 @@ User.prototype.isSectionStarred = function(section) {
 	}
 };
 
-User.prototype.toggleWatching = function(section) {
+User.prototype.toggleWatching = function (section) {
 	if (!this.getAuthenticated()) {
 		elog("isSectionStarred called when not authenticated!");
 		return null;
 	}
 	if (section.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('isSectionStarred given ',section)
+		elog('isSectionStarred given ', section)
 	}
 
 	//if watching, unwatch it
 	if (this.isWatchingSection(section)) {
 
-		var matchingSections = _.where(this.watching.sections,{_id:section._id})
+		var matchingSections = _.where(this.watching.sections, {
+			_id: section._id
+		})
 
 		matchingSections.forEach(function (section) {
-			_.pull(this.watching.sections,section)
+			_.pull(this.watching.sections, section)
 		}.bind(this))
 
-		_.pull(this.dbData.watching.sections,section._id)
+		_.pull(this.dbData.watching.sections, section._id)
 
 
-		this.removeSectionFromWatchList(section,function (err) {
+		this.removeSectionFromWatchList(section, function (err) {
 			if (err) {
-				console.log("ERROR",err);
+				console.log("ERROR", err);
 			};
 		}.bind(this))
 
@@ -462,14 +479,58 @@ User.prototype.toggleWatching = function(section) {
 
 		this.dbData.watching.sections.push(section._id)
 
-		this.addSectionToWatchList(section,function (err) {
+		this.addSectionToWatchList(section, function (err) {
 			if (err) {
-				console.log("ERROR",err);
+				console.log("ERROR", err);
 			};
 		}.bind(this))
 	}
-}; 
+};
 
+User.prototype.toggleStarred = function (section) {
+	if (!this.getAuthenticated()) {
+		elog("isSectionStarred called when not authenticated!");
+		return null;
+	}
+	if (section.dataStatus !== macros.DATASTATUS_DONE) {
+		elog('isSectionStarred given ', section)
+	}
+
+	//if starred, unwatch it
+	if (this.isSectionStarred(section)) {
+
+		var matchingSections = _.where(this.starred.sections, {
+			_id: section._id
+		})
+
+		matchingSections.forEach(function (section) {
+			_.pull(this.starred.sections, section)
+		}.bind(this))
+
+		_.pull(this.dbData.starred.sections, section._id)
+
+
+		this.removeSectionFromStarredList(section, function (err) {
+			if (err) {
+				console.log("ERROR", err);
+			};
+		}.bind(this))
+
+	}
+	//add it to the watch list
+	//and tell server
+	else {
+		this.starred.sections.push(section)
+
+		this.dbData.starred.sections.push(section._id)
+
+		this.addSectionToStarredList(section, function (err) {
+			if (err) {
+				console.log("ERROR", err);
+			};
+		}.bind(this))
+	}
+};
 
 
 
