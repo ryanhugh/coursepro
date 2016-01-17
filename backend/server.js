@@ -659,11 +659,115 @@ app.post('/removeClassFromWatchList', function (req, res) {
 			}));
 		}.bind(this))
 	}.bind(this))
-
-
-
 }.bind(this))
 
+
+
+function getSectionId(body, callback) {
+	if (body._id) {
+		callback(null, body._id)
+	}
+	else if (body.host && body.termId && body.subject && body.classId && body.crn) {
+
+		sectionsDB.find({
+			host: body.host,
+			termId: body.termId,
+			subject: body.subject,
+			classId: body.classId,
+			crn: body.crn
+		}, {
+			shouldBeOnlyOne: true,
+		}, function (err, section) {
+			if (err) {
+				callback(err)
+			}
+			callback(null, section._id);
+		}.bind(this))
+	}
+	else {
+		callback('invalid request')
+	}
+}
+
+app.post('/addSectionToWatchList', function (req, res) {
+	if (!req.body.loginKey) {
+		res.send(JSON.stringify({
+			error: 'error',
+			msg: 'Need loginkey'
+		}))
+	};
+
+
+	getSectionId(req.body, function (err, sectionId) {
+		if (err) {
+			res.send(JSON.stringify({
+				error: 'error',
+				msg: 'Server Error'
+			}))
+			return;
+		}
+
+		usersDB.addClassToWatchList([], [sectionId], req.body.loginKey, function (err, clientMsg) {
+			if (err) {
+				console.log('ERROR couldnt add class', req.body, ' id to user')
+				console.log(err)
+				res.send('{"error":"uh oh"}');
+				return;
+			}
+			if (clientMsg) {
+				res.send(JSON.stringify({
+					error: 'error',
+					msg: clientMsg
+				}));
+				return;
+			};
+
+			res.send(JSON.stringify({
+				status: 'success'
+			}));
+		}.bind(this))
+	}.bind(this))
+}.bind(this))
+
+app.post('/removeSectionFromWatchList', function (req, res) {
+	if (!req.body.loginKey) {
+		res.send(JSON.stringify({
+			error: 'error',
+			msg: 'Need loginkey'
+		}))
+	};
+
+
+	getSectionId(req.body, function (err, sectionId) {
+		if (err) {
+			res.send(JSON.stringify({
+				error: 'error',
+				msg: 'Server Error'
+			}))
+			return;
+		}
+
+		usersDB.removeClassFromWatchList([], [sectionId], req.body.loginKey, function (err, clientMsg) {
+			if (err) {
+				console.log('ERROR couldnt remove class', req.body, ' id to user')
+				console.log(err)
+				res.send('{"error":"uh oh"}');
+				return;
+			}
+			if (clientMsg) {
+				res.send(JSON.stringify({
+					error: 'error',
+					msg: clientMsg
+				}));
+				return;
+			};
+
+			res.send(JSON.stringify({
+				status: 'success'
+			}));
+		}.bind(this))
+	}.bind(this))
+}.bind(this))
 
 app.post('/getUser', function (req, res) {
 	if (!req.body.loginKey && !req.body.idToken) {

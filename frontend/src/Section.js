@@ -2,7 +2,10 @@
 var request = require('./request')
 var macros = require('./macros')
 
+var BaseData = require('./BaseData')
+
 function Section(config) {
+	BaseData.prototype.constructor.apply(this, arguments);
 	if (!config._id && !(config.host && config.termId && config.subject && config.classId && config.crn)) {
 		elog('ERROR section needs host, termId, subject, classId, crn or _id', config)
 	};
@@ -37,6 +40,12 @@ function Section(config) {
 	this.weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 }
 
+macros.inherent(BaseData, Section)
+
+
+Section.prototype.requiredPath = ['host', 'termId', 'subject','classId']
+Section.prototype.optionalPath = ['crn']
+Section.prototype.API_ENDPOINT = '/listSections'
 
 Section.create = function (serverData) {
 	var aSection = new Section(serverData);
@@ -216,29 +225,38 @@ Section.prototype.groupSectionTimes = function () {
 	this.calculateHiddenMeetings();
 	this.createDayStrings();
 	this.calculateStartTimes();
-}
 
-//returns {_id} if has id, else returns {host,termId, subject, classId,crn}
-Section.prototype.getIdentifer = function () {
-	if (this._id) {
-		return {
-			_id: this._id
-		}
-	}
-	else if (this.host && this.termId && this.subject && this.classId && this.crn) {
-		return {
-			host: this.host,
-			termId: this.termId,
-			subject: this.subject,
-			classId: this.classId,
-			crn: this.crn
-		}
+	if (this.waitRemaining===0 && this.waitCapacity===0) {
+		this.hasWaitList = false;
 	}
 	else {
-		console.log('ERROR cant get id dont have enough info')
-		return null;
+		this.hasWaitList = true;
 	}
-};
+
+
+}
+
+// //returns {_id} if has id, else returns {host,termId, subject, classId,crn}
+// Section.prototype.getIdentifer = function () {
+// 	if (this._id) {
+// 		return {
+// 			_id: this._id
+// 		}
+// 	}
+// 	else if (this.host && this.termId && this.subject && this.classId && this.crn) {
+// 		return {
+// 			host: this.host,
+// 			termId: this.termId,
+// 			subject: this.subject,
+// 			classId: this.classId,
+// 			crn: this.crn
+// 		}
+// 	}
+// 	else {
+// 		console.log('ERROR cant get id dont have enough info')
+// 		return null;
+// 	}
+// };
 
 
 
@@ -262,8 +280,8 @@ Section.prototype.download = function (callback) {
 	request({
 		url: '/listSections',
 		type: 'POST',
-		body: lookupValues,
-		resultsQuery: resultsQuery
+		resultsQuery: this.getIdentifer().optional.lookup,
+		body: this.getIdentifer().required.lookup
 	}, function (err, sections) {
 		if (err) {
 			console.log("ERROR in list sections", err)

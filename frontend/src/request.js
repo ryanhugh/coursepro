@@ -203,7 +203,7 @@ Request.prototype.fireRequest = function (config, callback) {
 				err = 'unknown ajax error'
 			}
 
-			elog('error, bad code recievied', xmlhttp.status, err,config)
+			console.log('error, bad code recievied', xmlhttp.status, err,config)
 
 			//also need to call all the other callbacks
 			cacheItem.callbacks.forEach(function (callback) {
@@ -216,7 +216,7 @@ Request.prototype.fireRequest = function (config, callback) {
 		var response = JSON.parse(xmlhttp.response)
 
 		if (response.error) {
-			elog("ERROR networking error bad reqeust?",config);
+			console.log("ERROR networking error bad reqeust?",config);
 		}
 		
 		cacheItem.body = response;

@@ -3,7 +3,7 @@ var _ = require('lodash')
 var angular = require('angular')
 
 //max depth for a tree, if it reaches this angular will barf
-var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap')], function ($rootScopeProvider) {
+var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'),require('angular-animate')], function ($rootScopeProvider) {
 	$rootScopeProvider.digestTtl(20);
 });
 

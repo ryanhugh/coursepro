@@ -17,15 +17,32 @@ function User() {
 	//data in the server
 	//email and name are copied to this when done loading
 	//sections and classes watching, when loaded, are copied to this.watching
-	this.dbData = {}
+	this.dbData = {
+
+		watching : {
+			classes:[],
+			sections:[]
+		},
+		starred: {
+			classes:[],
+			sections:[]
+		}
+
+	}
 
 	this.email = ''
 	this.name = ''
 
+	//here, actual instances of classes and sections are stored
 	this.watching = {
 		classes: [],
 		sections: [],
 		dataStatus: macros.DATASTATUS_NOTSTARTED
+	}
+
+	this.starred = {
+		classes:[],
+		sections:[]
 	}
 
 
@@ -152,8 +169,8 @@ User.prototype.sendRequest = function (config, callback) {
 	config.auth = true;
 
 	if (config.tree) {
-		config.body = tree.getIdentifer().required.obj;
-		config.resultsQuery = tree.getIdentifer().optional.obj;
+		config.body = config.tree.getIdentifer().full.obj;
+		// config.resultsQuery = config.tree.getIdentifer().optional.obj;
 	}
 
 	request(config, function (err, response) {
@@ -287,6 +304,25 @@ User.prototype.removeClassFromWatchList = function (tree, callback) {
 };
 
 
+//sends post request
+User.prototype.addSectionToWatchList = function (tree, callback) {
+	this.sendRequest({
+		url: '/addSectionToWatchList',
+		isMsg: true,
+		tree: tree
+	}, callback)
+};
+
+
+User.prototype.removeSectionFromWatchList = function (tree, callback) {
+	this.sendRequest({
+		url: '/removeSectionFromWatchList',
+		isMsg: true,
+		tree: tree
+	}, callback)
+};
+
+
 User.prototype.loadWatching = function (callback) {
 	if (!callback) {
 		callback = function () {}
@@ -294,7 +330,7 @@ User.prototype.loadWatching = function (callback) {
 
 	if (this.watching.dataStatus === macros.DATASTATUS_DONE) {
 		return callback()
-	};
+	}; 
 
 	if (this.watching.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
 		elog('loadWatching called when data status was', this.watching.dataStatus)
@@ -368,8 +404,71 @@ User.prototype.isWatchingSection = function(section) {
 	else {
 		return false;
 	}
-
 };
+
+
+
+
+User.prototype.isSectionStarred = function(section) {
+	if (!this.getAuthenticated()) {
+		elog("isSectionStarred called when not authenticated!");
+		return null;
+	}
+
+	if (section.dataStatus !== macros.DATASTATUS_DONE) {
+		elog('isSectionStarred given ',section)
+	};
+
+	if (_(this.dbData.starred.sections).includes(section._id)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+};
+
+User.prototype.toggleWatching = function(section) {
+	if (!this.getAuthenticated()) {
+		elog("isSectionStarred called when not authenticated!");
+		return null;
+	}
+	if (section.dataStatus !== macros.DATASTATUS_DONE) {
+		elog('isSectionStarred given ',section)
+	}
+
+	//if watching, unwatch it
+	if (this.isWatchingSection(section)) {
+
+		var matchingSections = _.where(this.watching.sections,{_id:section._id})
+
+		matchingSections.forEach(function (section) {
+			_.pull(this.watching.sections,section)
+		}.bind(this))
+
+		_.pull(this.dbData.watching.sections,section._id)
+
+
+		this.removeSectionFromWatchList(section,function (err) {
+			if (err) {
+				console.log("ERROR",err);
+			};
+		}.bind(this))
+
+	}
+	//add it to the watch list
+	//and tell server
+	else {
+		this.watching.sections.push(section)
+
+		this.dbData.watching.sections.push(section._id)
+
+		this.addSectionToWatchList(section,function (err) {
+			if (err) {
+				console.log("ERROR",err);
+			};
+		}.bind(this))
+	}
+}; 
 
 
 

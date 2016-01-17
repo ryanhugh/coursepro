@@ -11,7 +11,7 @@ var BaseDirective = require('../BaseDirective')
 var user = require('../user')
 var Term = require('../Term')
 
-function Settings($scope) {
+function Settings() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	async.waterfall([
@@ -101,9 +101,16 @@ function Settings($scope) {
 
 Settings.isPage = true;
 
+Settings.$inject = ['$scope']
+
 //prototype constructor
 Settings.prototype = Object.create(BaseDirective.prototype);
 Settings.prototype.constructor = Settings;
+
+Settings.prototype.test = function(j) {
+	console.log(j);
+};
+
 
 
 Settings.prototype.Settings = Settings;

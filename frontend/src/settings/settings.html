@@ -32,48 +32,80 @@
 		</h2>
 	</div>
 
+	<style type="text/css">
+		.accordion-toggle:after {
+		    content: "" !important;
+		}
+		uib-accordion * {
+			outline: 0 !important;
+		}
+		uib-accordion  .panel-heading {
+			cursor: pointer;
+		}
+		.customClass {
+			font-size: 10px
+		}
+		.customClass > .tooltip-inner {
+		    font-size: 14px;
+		    min-width: 100px;
+		}
+	</style>
 
-	<div class="panel-group" id="accordion" ng-repeat="class in classes">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-					<a class="accordion-toggle" data-toggle="collapse" ng-href="#{{class._id}}">
-						{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}&nbsp;&nbsp;({{class.termText}})
-					</a>
-				</h4>
+	<uib-accordion close-others="false">
+		<uib-accordion-group is-open="isOpen" ng-repeat="class in classes">
+			<uib-accordion-heading>
+
+			<span class="glyphicon" ng-class ="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span>
+
+					{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}&nbsp;&nbsp;({{class.termText}})
+			</uib-accordion-heading>
+
+			{{class.desc}}
+			<table class="table table-striped" ng-if="class.sections.length>0">
+				<thead>
+					<tr>
+						<th><span uib-tooltip="Course Reference Number" tooltip-class="customClass">CRN</span></th>
+						<th>Professor</th>
+						<th>Start Time</th>
+						<th>Open Seats/Total Seats</th>
+						<th ng-if="section.hasWaitList">Open Spots/Total Waitlist Spots</th>
+						<th>URL</th>
+						<th>Email<br>Notifications</th>
+						<th>Saved</th>
+						<th>Remove</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="section in class.sections">
+						<td>{{section.crn}}</td>
+						<td>
+							<span ng-repeat = "prof in section.profs">{{prof}}</span>
+						</td>
+						<td>{{section.startTimesStrings}}</td>
+						<td>{{section.seatsRemaining}}/{{section.seatsCapacity}}</td>
+						<td ng-if ="section.hasWaitList">{{section.waitRemaining}}/{{section.waitCapacity}}</td>
+						<td><a href="{{section.url}}" target="_blank">View on {{section.host}}</a></td>
+
+
+
+						<!-- just like this, using a getter and a toggle instead of ngModel -->
+						<!-- https://material.angularjs.org/latest/demo/checkbox -->
+						<td>
+							<input type="checkbox" ng-checked="user.isWatchingSection(section)" ng-click="user.toggleWatching(section)">
+						</td>
+
+						<td>
+							<input type="checkbox" ng-checked="user.isSectionStarred(section)" ng-click="user.toggleStarred(section)">
+						</td>
+
+
+						<td><span ng-click="$parent.test()" class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+					</tr>
+				</tbody>
+			</table>
+			<div ng-if="class.sections.length==0">
+				No sections found
 			</div>
-			<div id="{{class._id}}" class="panel-collapse collapse in">
-				<div class="panel-body">
-					{{class.desc}}
-					<table class="table table-striped" ng-if="class.sections.length>0">
-						<thead>
-							<tr>
-								<th>Class Registration Number</th>
-								<th>Start Times</th>
-								<th>Open Seats/Total Seats</th>
-								<th>Open Spots/Total Waitlist Spots</th>
-								<th>URL</th>
-								<th>Watching</th>
-								<th>Remove</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat="section in class.sections">
-								<td>{{section.crn}}</td>
-								<td>{{section.startTimesStrings}}</td>
-								<td>{{section.seatsRemaining}}/{{section.seatsCapacity}}</td>
-								<td>{{section.waitRemaining}}/{{section.waitCapacity}}</td>
-								<td><a href="{{section.url}}">View on {{section.host}}</a></td>
-								<td>{{user.isWatchingSection(section)}}</td>
-								<td><span ng-click="$parent.test()" class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></td>
-							</tr>
-						</tbody>
-					</table>
-					<div ng-if="class.sections.length==0">
-						No sections found
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+		</uib-accordion-group>
+	</uib-accordion>
 </div>
