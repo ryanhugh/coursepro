@@ -1,7 +1,5 @@
 'use strict';
 var BaseSelector = require('./baseSelector').BaseSelector;
-var Host = require('./Host')
-
 
 function College () {
 	BaseSelector.prototype.constructor.apply(this,arguments);

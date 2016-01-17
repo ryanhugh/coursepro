@@ -4,6 +4,10 @@ var request = require('./request')
 
 function BaseData(config) {
 
+	for (var attrName in config) {
+		this[attrName] = config[attrName]
+	}
+
 
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
 }

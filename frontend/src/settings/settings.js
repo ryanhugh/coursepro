@@ -9,6 +9,7 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
 var user = require('../user')
+var Term = require('../Term')
 
 function Settings($scope) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
@@ -17,123 +18,81 @@ function Settings($scope) {
 
 			//fetch the user data
 			function (callback) {
-				user.download(callback)
+				user.download(function () {
+					callback()
+				}.bind(this))
 			}.bind(this),
 
 			//fetch class for every section and class _id
 			function (callback) {
-				user.loadWatching(callback)
+				user.loadWatching(function () {
+					callback()
+				}.bind(this))
+			}.bind(this),
+
+			function (callback) {
+				var q = queue();
+
+				//load all the sections of all the classes being watched
+				user.watching.classes.forEach(function (aClass) {
+					q.defer(function (callback) {
+						aClass.loadSections(function (err) {
+							callback(err)
+						}.bind(this))
+					}.bind(this))
+				}.bind(this))
+
+				q.awaitAll(function (err) {
+					callback(err)
+				}.bind(this))
+
+
 			}.bind(this),
 
 			//get a list of hosts -> list of termTexts
 			function (callback) {
 
-				var hosts = [];
+				//get a unique list of the term data to make some terms
+				var termDatas = [];
 
-				classes.forEach(function (theClass) {
+				user.watching.classes.forEach(function (aClass) {
+					var termData = _.pick(aClass, 'host', 'termId')
 
-					//keep track of the hosts so we can get all the term texts
-					if (!_(hosts).includes(theClass.host)) {
-						hosts.push(theClass.host)
-					}
+					if (_.where(termDatas, termData).length === 0) {
+						termDatas.push(termData)
+					};
+
 				}.bind(this))
 
+				//make some terms from the term data
 				//get the terms text, so we can say Spring 2016 or Fall 2015 next to the title of the classes
-				async.map(hosts, function (host, callback) {
-
-						request({
-							url: '/listTerms',
-							body: {
-								host: host
-							}
-						}, callback)
-
-					}.bind(this),
-					function (err, results) {
-						if (err) {
-							console.log("ERROR", err)
-						};
-						callback(null, sections, classes, _.flatten(results))
-					}.bind(this))
+				async.map(termDatas, function (termData, callback) {
+					Term.create(termData).download(callback)
+				}.bind(this), function (err, terms) {
+					callback(null, terms)
+				}.bind(this))
 			}
 		],
-		function (err, sections, classes, termTexts) {
+		function (err, terms) {
 			if (err) {
 				console.log('ERROR', err)
 					//don't return
 			}
 
 
-
-			classes.forEach(function (aClass) {
-				if (aClass.sections) {
-					console.log("ERROR class already has sections attr??", aClass)
-				}
-				aClass.sections = []
+			user.watching.classes.forEach(function (aClass) {
 
 				//loop through terms and find one that matches
-				for (var i = 0; i < termTexts.length; i++) {
-					if (_.isEqual(_.pick(aClass, 'host', 'termId'), _.pick(termTexts[i], 'host', 'termId'))) {
-						aClass.termText = termTexts[i].text
+				for (var i = 0; i < terms.length; i++) {
+					if (_.isEqual(_.pick(aClass, 'host', 'termId'), _.pick(terms[i], 'host', 'termId'))) {
+						aClass.termText = terms[i].text
 					}
 				};
-
-
 			}.bind(this))
 
-			sections.forEach(function (section) {
 
-				var startTimes = [];
-
-				//get all start times that exit and startDate != endDate
-				if (section.meetings) {
-					section.meetings.forEach(function (meeting) {
-
-						//exam, don't use this one
-						if (meeting.startDate == meeting.endDate) {
-							return;
-						}
-						if (!meeting.times) {
-							return;
-						}
-						for (var dayIndex in meeting.times) {
-
-							meeting.times[dayIndex].forEach(function (dayTime) {
-								var start = dayTime.start
-								if (!_(startTimes).includes(start)) {
-									startTimes.push(start)
-								}
-							}.bind(this))
-						}
-					}.bind(this))
-				}
-
-				var startStrings = [];
-				startTimes.forEach(function (startTime) {
-					startStrings.push(moment.utc(startTime * 1000).format('h:mm a'))
-				}.bind(this))
-
-				section.startTimes = startStrings.join(', ')
-
-
-				//pick all the key:values that should be identical to the matching class
-				var sectionPath = _.pick(section, 'host', 'termId', 'subject', 'classId')
-
-				for (var i = 0; i < classes.length; i++) {
-
-					var classPath = _.pick(classes[i], 'host', 'termId', 'subject', 'classId')
-
-					//find the class that has the crn of this section
-					if (_.isEqual(sectionPath, classPath) && _(classes[i].crns).includes(section.crn)) {
-						classes[i].sections.push(section)
-						return;
-					}
-				}
-				console.log('ERROR couldnt match seciton', section, 'with a class...', user)
-					//maybe make an "other" at the bottom at this point?
-			}.bind(this))
-
-			this.$scope.classes = classes;
+			this.$scope.classes = user.watching.classes;
+			this.$scope.user = user;
 
 			this.$scope.$apply()
 
@@ -145,12 +104,6 @@ Settings.isPage = true;
 //prototype constructor
 Settings.prototype = Object.create(BaseDirective.prototype);
 Settings.prototype.constructor = Settings;
-
-Settings.prototype.test = function() {
-	console.log('fdnsafhdasfkl')
-};
-
-
 
 
 Settings.prototype.Settings = Settings;

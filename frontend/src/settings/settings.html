@@ -16,11 +16,11 @@
 			<tbody>
 				<tr>
 					<td>Name</td>
-					<td>{{user.name}}</td>
+					<td>{{user.dbData.name}}</td>
 				</tr>
 				<tr>
 					<td>Email</td>
-					<td>{{user.email}}</td>
+					<td>{{user.dbData.email}}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -53,16 +53,18 @@
 								<th>Open Seats/Total Seats</th>
 								<th>Open Spots/Total Waitlist Spots</th>
 								<th>URL</th>
+								<th>Watching</th>
 								<th>Remove</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr ng-repeat="section in class.sections">
 								<td>{{section.crn}}</td>
-								<td>{{section.startTimes}}</td>
+								<td>{{section.startTimesStrings}}</td>
 								<td>{{section.seatsRemaining}}/{{section.seatsCapacity}}</td>
 								<td>{{section.waitRemaining}}/{{section.waitCapacity}}</td>
 								<td><a href="{{section.url}}">View on {{section.host}}</a></td>
+								<td>{{user.isWatchingSection(section)}}</td>
 								<td><span ng-click="$parent.test()" class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></td>
 							</tr>
 						</tbody>

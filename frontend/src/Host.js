@@ -36,3 +36,5 @@ Host.prototype.loadTerms = function (callback) {
 		}.bind(this))
 	}.bind(this))
 };
+
+module.exports = Host

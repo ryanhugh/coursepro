@@ -67,10 +67,6 @@ User.prototype.dataUpdated = function () {
 
 	//remove all triggers on success
 	this.onAuthenticateTriggers = []
-
-	setTimeout(function () {
-		this.loadWatching()
-	}.bind(this),0)
 };
 
 
@@ -146,8 +142,8 @@ User.prototype.sendRequest = function (config, callback) {
 		callback = function () {}
 	};
 
-	if (!config.url || !config.body) {
-		elog('error config does not have a url or a body', config);
+	if (!config.url) {
+		elog('error config does not have a url', config);
 		return callback('internal error')
 	};
 
@@ -187,13 +183,9 @@ User.prototype.sendRequest = function (config, callback) {
 
 
 //download user data
-User.prototype.download = function (body, callback) {
+User.prototype.download = function (callback) {
 	if (!callback) {
 		callback = function () {}
-	};
-
-	if (!body) {
-		body = {}
 	};
 
 
@@ -204,7 +196,6 @@ User.prototype.download = function (body, callback) {
 
 	this.sendRequest({
 		url: '/getUser',
-		body: body
 	}, function (err, user) {
 		if (err) {
 			console.log('ERROR', err)
@@ -220,7 +211,7 @@ User.prototype.download = function (body, callback) {
 
 		//copy the attrs to this.dbData
 		for (var attrName in user) {
-			if (this.dbData[attrName] != user[attrName] && this.dbData[attrName] !== undefined) {
+			if (!_.isEqual(this.dbData[attrName], user[attrName]) && this.dbData[attrName] !== undefined) {
 				console.log("ERROR overrideing value", attrName, this.dbData[attrName], user[attrName]);
 			}
 			this.dbData[attrName] = user[attrName]
@@ -301,6 +292,10 @@ User.prototype.loadWatching = function (callback) {
 		callback = function () {}
 	};
 
+	if (this.watching.dataStatus === macros.DATASTATUS_DONE) {
+		return callback()
+	};
+
 	if (this.watching.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
 		elog('loadWatching called when data status was', this.watching.dataStatus)
 		return callback('internal error');
@@ -353,6 +348,30 @@ User.prototype.loadWatching = function (callback) {
 		callback()
 	}.bind(this))
 };
+
+
+
+
+User.prototype.isWatchingSection = function(section) {
+	if (!this.getAuthenticated()) {
+		elog("isWatchingSection called when not authenticated!");
+		return null;
+	}
+
+	if (section.dataStatus !== macros.DATASTATUS_DONE) {
+		elog('isWatchingSection given ',section)
+	};
+
+	if (_(this.dbData.watching.sections).includes(section._id)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+};
+
+
 
 
 User.prototype.User = User;

@@ -20,6 +20,10 @@ function Section(config) {
 		this.dataStatus = macros.DATASTATUS_NOTSTARTED
 	}
 
+	//start times of all non-exam meetings
+	this.startTimesStrings = []
+
+
 	//copy over all given attrs
 	for (var attrName in config) {
 		if (this[attrName] !== undefined && this[attrName] !== config[attrName]) {
@@ -27,6 +31,7 @@ function Section(config) {
 		}
 		this[attrName] = config[attrName]
 	}
+
 
 
 	this.weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -139,6 +144,39 @@ Section.prototype.createDayStrings = function () {
 	}.bind(this))
 };
 
+
+Section.prototype.calculateStartTimes = function () {
+
+	var startTimes = [];
+
+	//get all start times that exit and startDate != endDate
+	if (this.meetings) {
+		this.meetings.forEach(function (meeting) {
+
+			//don't use some
+			if (meeting.isExam || !meeting.times) {
+				return;
+			}
+			for (var dayIndex in meeting.times) {
+
+				meeting.times[dayIndex].forEach(function (dayTime) {
+					var start = dayTime.start
+					if (!_(startTimes).includes(start)) {
+						startTimes.push(start)
+					}
+				}.bind(this))
+			}
+		}.bind(this))
+	}
+
+	var startStrings = [];
+	startTimes.forEach(function (startTime) {
+		startStrings.push(moment.utc(startTime * 1000).format('h:mm a'))
+	}.bind(this))
+
+	this.startTimesStrings = startStrings.join(', ')
+
+};
 Section.prototype.groupSectionTimes = function () {
 	if (!this.meetings) {
 		return;
@@ -177,6 +215,7 @@ Section.prototype.groupSectionTimes = function () {
 	this.calculateExams();
 	this.calculateHiddenMeetings();
 	this.createDayStrings();
+	this.calculateStartTimes();
 }
 
 //returns {_id} if has id, else returns {host,termId, subject, classId,crn}
@@ -234,7 +273,7 @@ Section.prototype.download = function (callback) {
 		this.dataStatus = macros.DATASTATUS_DONE;
 
 		if (sections.length > 1) {
-			elog("ERROR have more than 1 section??",lookupValues,resultsQuery,this);
+			elog("ERROR have more than 1 section??", lookupValues, resultsQuery, this);
 		}
 
 		var serverData = sections[0];
@@ -250,7 +289,7 @@ Section.prototype.download = function (callback) {
 		}
 		this.groupSectionTimes()
 
-		callback()
+		callback(null, this)
 
 	}.bind(this))
 }

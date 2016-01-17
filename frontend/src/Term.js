@@ -36,3 +36,5 @@ Term.prototype.loadSubjects = function (callback) {
 		}.bind(this))
 	}.bind(this))
 };
+
+module.exports = Term

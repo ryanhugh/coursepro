@@ -36,3 +36,5 @@ Subject.prototype.loadClasses = function (callback) {
 		}.bind(this))
 	}.bind(this))
 };
+
+module.exports = Subject
