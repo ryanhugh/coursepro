@@ -151,13 +151,16 @@ User.prototype.sendRequest = function (config, callback) {
 		return callback('internal error')
 	};
 
-	request({
-		url: config.url,
-		type: 'POST',
-		useCache: false,
-		auth: true,
-		body: config.body
-	}, function (err, response) {
+	config.type = 'POST'
+	config.useCache = false;
+	config.auth = true;
+
+	if (config.tree) {
+		config.body = tree.getIdentifer().required.obj;
+		config.resultsQuery = tree.getIdentifer().optional.obj;
+	}
+
+	request(config, function (err, response) {
 		if (err) {
 			elog('ERROR', err)
 			return callback(err);
@@ -279,7 +282,7 @@ User.prototype.addClassToWatchList = function (tree, callback) {
 	this.sendRequest({
 		url: '/addClassToWatchList',
 		isMsg: true,
-		body: tree.getIdentifer()
+		tree: tree
 	}, callback)
 };
 
@@ -288,7 +291,7 @@ User.prototype.removeClassFromWatchList = function (tree, callback) {
 	this.sendRequest({
 		url: '/removeClassFromWatchList',
 		isMsg: true,
-		body: tree.getIdentifer()
+		tree: tree
 	}, callback)
 };
 

@@ -1,11 +1,12 @@
 'use strict';
 
 var _ = require('lodash')
+var Host = require('../Host')
 
 // var se
-var emailMgrTests = require('./emailMgrTests')
+// var emailMgrTests = require('./emailMgrTests')
 var helpTests = require('./helpTests')
-var popupTests = require('./popupTests')
+// var popupTests = require('./popupTests')
 var classTests = require('./classTests')
 var downloadTreeTests = require('./downloadTreeTests')
 
@@ -13,9 +14,7 @@ var baseSelector = require('../selectors/baseSelector')
 
 function TestsMgr() {
 	this.tests = [
-		emailMgrTests,
-		helpTests,
-		popupTests
+		helpTests
 	]
 
 	this.host = null;
@@ -181,6 +180,7 @@ TestsMgr.prototype.go = function(values) {
 		return;
 	}
 	this.ran = true;
+	debugger;
 
 
 

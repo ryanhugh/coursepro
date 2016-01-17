@@ -15,16 +15,16 @@ function Macros() {
 	//used all over the place for logging erros
 	window.elog = function () {
 
+		var args = [];
+		for (var i = 0; i < arguments.length; i++) {
+			args[i] = arguments[i];
+		}
+
+		console.log.apply(console, args);
+		console.trace();
+
 		//use a separate calls stack in case this throws an error, it will not affect code that calls this
 		setTimeout(function () {
-			var args = [];
-			for (var i = 0; i < arguments.length; i++) {
-				args[i] = arguments[i];
-			}
-
-			console.log.apply(console, args);
-			console.trace();
-
 			request({
 				url: '/logError',
 				useCache: false,
@@ -37,6 +37,18 @@ function Macros() {
 		}.bind(this), 0)
 	}.bind(this)
 }
+
+Macros.prototype.inherent = function (Baseclass, Subclass) {
+
+	//copy static methods
+	for (var attrName in Baseclass) {
+		Subclass[attrName] = Baseclass[attrName]
+	}
+
+	//prototype constructor
+	Subclass.prototype = Object.create(Baseclass.prototype);
+	Subclass.prototype.constructor = Subclass;
+};
 
 
 Macros.prototype.Macros = Macros;

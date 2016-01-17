@@ -4,7 +4,7 @@ var macros = require('./macros')
 
 function Section(config) {
 	if (!config._id && !(config.host && config.termId && config.subject && config.classId && config.crn)) {
-		console.log('ERROR section needs host, termId, subject, classId, crn or _id', config)
+		elog('ERROR section needs host, termId, subject, classId, crn or _id', config)
 	};
 
 
@@ -234,7 +234,7 @@ Section.prototype.download = function (callback) {
 		this.dataStatus = macros.DATASTATUS_DONE;
 
 		if (sections.length > 1) {
-			console.log("ERROR have more than 1 section??");
+			elog("ERROR have more than 1 section??",lookupValues,resultsQuery,this);
 		}
 
 		var serverData = sections[0];

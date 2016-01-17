@@ -7,10 +7,13 @@ var macros = require('./macros')
 var request = require('./request')
 var Section = require('./Section')
 
+var BaseData = require('./BaseData')
+
 
 function Class(config) {
+	BaseData.prototype.constructor.apply(this, arguments);
 	if (!(config.host && config.termId && config.subject && config.classId) && !config._id && !config.isString && !(config.isClass === false)) {
-		console.log('ERROR need (host termId, subject, classId) or _id or string to make a class', config)
+		elog('ERROR need (host termId, subject, classId) or _id or string to make a class', config)
 		return;
 	};
 	if (config instanceof Class) {
@@ -134,9 +137,16 @@ function Class(config) {
 
 }
 
+
+
+macros.inherent(BaseData, Class)
+
+Class.prototype.requiredPath = ['host', 'termId', 'subject']
+Class.prototype.optionalPath = ['classId']
+Class.prototype.API_ENDPOINT = '/listClasses'
+
+
 //TODO here
-//add subscribe and unsubscribe
-//add download, which updates dataStatus
 //abstrat away some of the checks that are the same accross fns here
 
 
@@ -149,6 +159,18 @@ Class.create = function (serverData) {
 	}
 	return aClass;
 }
+
+//both instances and static function download calls go though here
+// Class.download = function (config, callback) {
+// 	if (!(config.body.host && config.body.termId && config.body.subject) && !config.body._id) {
+// 		return callback('need more data Class.download', config)
+// 	};
+
+// 	var configClone = _.cloneDeep(config);
+// 	configClone.url = '/listClasses';
+// 	request(configClone, callback)
+// }.bind(this)
+
 
 
 Class.prototype.convertServerData = function (data) {
@@ -242,23 +264,10 @@ Class.prototype.download = function (callback) {
 	};
 
 
-	var lookupValues = this.getIdentifer();
-	var resultsQuery = {};
-
-	//move classId to resultsQuery if is is there
-	if (lookupValues.classId) {
-		resultsQuery.classId = lookupValues.classId
-		lookupValues.classId = undefined
-	};
-
-
-	this.dataStatus = macros.DATASTATUS_LOADING;
-	request({
-		url: '/listClasses',
-		resultsQuery: resultsQuery,
-		body: lookupValues
+	BaseData.prototype.download.call(this, {
+		returnResults: true
 	}, function (err, body) {
-		this.dataStatus = macros.DATASTATUS_DONE;
+		this.dataStatus = macros.DATASTATUS_DONE; 
 		if (err) {
 			console.log('http error...', err);
 			return callback(err)
@@ -362,26 +371,26 @@ Class.prototype.getPath = function () {
 	return retVal;
 };
 
-//returns {_id} if has id, else returns {host,termId, subject, classId}
-Class.prototype.getIdentifer = function () {
-	if (this._id) {
-		return {
-			_id: this._id
-		}
-	}
-	else if (this.host && this.termId && this.subject && this.classId) {
-		return {
-			host: this.host,
-			termId: this.termId,
-			subject: this.subject,
-			classId: this.classId
-		}
-	}
-	else {
-		console.log('ERROR cant get id dont have enough info')
-		return null;
-	}
-};
+//returns {_id} if has id, else returns {host, termId, subject, classId}
+// Class.prototype.getIdentifer = function () {
+// 	if (this._id) {
+// 		return {
+// 			_id: this._id
+// 		}
+// 	}
+// 	else if (this.host && this.termId && this.subject && this.classId) {
+// 		return {
+// 			host: this.host,
+// 			termId: this.termId,
+// 			subject: this.subject,
+// 			classId: this.classId
+// 		}
+// 	}
+// 	else {
+// 		console.log('ERROR cant get id dont have enough info')
+// 		return null;
+// 	}
+// };
 
 //is can also be called through treeMgr, which will add class count of the tree
 Class.prototype.logTree = function (body) {
