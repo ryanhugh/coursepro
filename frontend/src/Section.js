@@ -192,6 +192,7 @@ Section.prototype.groupSectionTimes = function () {
 	}
 	this.profs = []
 	this.locations = []
+	this.locations = []
 
 	this.meetings.forEach(function (meeting) {
 
@@ -209,6 +210,10 @@ Section.prototype.groupSectionTimes = function () {
 		}
 
 		meeting.building = meeting.where.replace(/\d+\s*$/i, '').trim()
+
+		if (!_(this.locations).includes(meeting.where)) {
+			this.locations.push(meeting.where)
+		};
 	}.bind(this))
 
 	//group the times by start/end time (so can put days underneath)

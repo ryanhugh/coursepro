@@ -575,28 +575,90 @@ function getClassAndSectionIdFromPath(body, callback) {
 	)
 }
 
+//verifies that the given mongo ids and section ids are all valid
+function verifyClassSectionIds(classMongoIds, sectionMongoIds, callback) {
+
+	var q = queue();
+
+	var allValid = true;
+
+	classMongoIds.forEach(function (classMongoId) {
+		q.defer(function (callback) {
+			classesDB.find({
+				_id: classMongoId
+			}, {
+				shouldBeOnlyOne: true
+			}, function (err, aClass) {
+				if (err) {
+					console.log("err", err);
+					return callback(err)
+				}
+
+				if (!aClass) {
+					allValid = false;
+				}
+				callback()
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
 
 
-app.post('/addClassToWatchList', function (req, res) {
-	if (!req.body.loginKey) {
+	sectionMongoIds.forEach(function (sectionMongoId) {
+		q.defer(function (callback) {
+			sectionsDB.find({
+				_id: sectionMongoId
+			}, {
+				shouldBeOnlyOne: true
+			}, function (err, sections) {
+				if (err) {
+					console.log("err", err);
+					return callback(err)
+				}
+
+				if (!sections) {
+					allValid = false;
+				}
+				callback()
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
+
+	q.awaitAll(function (err) {
+		if (err) {
+			return callback(err)
+		}
+		return callback(null, allValid)
+	}.bind(this))
+}
+
+
+app.post('/addToUserLists', function (req, res) {
+	if (!req.body.loginKey || !req.body.listName || !req.body.classes || !req.body.sections) {
 		res.send(JSON.stringify({
-			error: 'addClassToWatchList needs loginKey as json'
+			error: 'addIdsToLists needs loginKey as json and listName'
 		}))
 		return;
 	};
 
+	verifyClassSectionIds(req.body.classes, req.body.sections, function (err, allValid) {
+		if (err) {
+			res.send(JSON.stringify({
+				error: 'error',
+				msg: 'server error'
+			}));
+			return;
+		}
 
-	if (!(req.body.host && req.body.termId && req.body.subject && req.body.classId) && !req.body._id) {
-		res.send(JSON.stringify({
-			error: 'addClassToWatchList needs _id or (host, termId, subject, and classId) as json'
-		}))
-		return;
-	}
-
-	getClassAndSectionIdFromPath(req.body, function (err, classesMongoIds, sectionMongoIds) {
+		if (!allValid) {
+			res.send(JSON.stringify({
+				error: 'error',
+				msg: 'Not all given classes and section _ids refer to valid sections/classes'
+			}));
+			return;
+		};
 
 		//register for the class
-		usersDB.addClassToWatchList(classesMongoIds, sectionMongoIds, req.body.loginKey, function (err, clientMsg) {
+		usersDB.addIdsToLists(req.body.listName, req.body.classes, req.body.sections, req.body.loginKey, function (err, clientMsg) {
 
 			if (err) {
 				console.log('ERROR couldnt add class', req.body.classesMongoIds, ' id to user', req.body.loginKey)
@@ -617,99 +679,39 @@ app.post('/addClassToWatchList', function (req, res) {
 			}));
 		}.bind(this))
 	}.bind(this))
-
 })
 
-app.post('/removeClassFromWatchList', function (req, res) {
-	if (!req.body.loginKey) {
+
+app.post('/removeFromUserLists', function (req, res) {
+	if (!req.body.loginKey || !req.body.listName || !req.body.classes || !req.body.sections) {
 		res.send(JSON.stringify({
-			error: 'removeClassFromWatchList needs loginKey as json'
+			error: 'removeFromUserLists needs loginKey as json and listName'
 		}))
 		return;
 	};
 
+	verifyClassSectionIds(req.body.classes, req.body.sections, function (err, allValid) {
+		if (err) {
+			res.send(JSON.stringify({
+				error: 'error',
+				msg: 'server error'
+			}));
+			return;
+		}
 
-	if (!(req.body.host && req.body.termId && req.body.subject && req.body.classId) && !req.body._id) {
-		res.send(JSON.stringify({
-			error: 'removeClassFromWatchList needs _id or (host, termId, subject, and classId) as json'
-		}))
-		return;
-	}
-
-	getClassAndSectionIdFromPath(req.body, function (err, classMongoId, sectionMongoIds) {
+		if (!allValid) {
+			res.send(JSON.stringify({
+				error: 'error',
+				msg: 'Not all given classes and section _ids refer to valid sections/classes'
+			}));
+			return;
+		};
 
 		//register for the class
-		usersDB.removeClassFromWatchList(classMongoId, sectionMongoIds, req.body.loginKey, function (err, clientMsg) {
+		usersDB.removeIdsFromLists(req.body.listName, req.body.classes, req.body.sections, req.body.loginKey, function (err, clientMsg) {
 
 			if (err) {
-				console.log('ERROR couldnt add class', req.body.classMongoId, ' id to user', req.body.loginKey)
-				console.log(err)
-				res.send('{"error":"uh oh"}');
-				return;
-			}
-			if (clientMsg) {
-				res.send(JSON.stringify({
-					msg: clientMsg
-				}));
-				return;
-			};
-
-			res.send(JSON.stringify({
-				status: 'success'
-			}));
-		}.bind(this))
-	}.bind(this))
-}.bind(this))
-
-
-
-function getSectionId(body, callback) {
-	if (body._id) {
-		callback(null, body._id)
-	}
-	else if (body.host && body.termId && body.subject && body.classId && body.crn) {
-
-		sectionsDB.find({
-			host: body.host,
-			termId: body.termId,
-			subject: body.subject,
-			classId: body.classId,
-			crn: body.crn
-		}, {
-			shouldBeOnlyOne: true,
-		}, function (err, section) {
-			if (err) {
-				callback(err)
-			}
-			callback(null, section._id);
-		}.bind(this))
-	}
-	else {
-		callback('invalid request')
-	}
-}
-
-app.post('/addSectionToWatchList', function (req, res) {
-	if (!req.body.loginKey) {
-		res.send(JSON.stringify({
-			error: 'error',
-			msg: 'Need loginkey'
-		}))
-	};
-
-
-	getSectionId(req.body, function (err, sectionId) {
-		if (err) {
-			res.send(JSON.stringify({
-				error: 'error',
-				msg: 'Server Error'
-			}))
-			return;
-		}
-
-		usersDB.addClassToWatchList([], [sectionId], req.body.loginKey, function (err, clientMsg) {
-			if (err) {
-				console.log('ERROR couldnt add class', req.body, ' id to user')
+				console.log('ERROR couldnt add class', req.body.classesMongoIds, ' id to user', req.body.loginKey)
 				console.log(err)
 				res.send('{"error":"uh oh"}');
 				return;
@@ -727,47 +729,8 @@ app.post('/addSectionToWatchList', function (req, res) {
 			}));
 		}.bind(this))
 	}.bind(this))
-}.bind(this))
+})
 
-app.post('/removeSectionFromWatchList', function (req, res) {
-	if (!req.body.loginKey) {
-		res.send(JSON.stringify({
-			error: 'error',
-			msg: 'Need loginkey'
-		}))
-	};
-
-
-	getSectionId(req.body, function (err, sectionId) {
-		if (err) {
-			res.send(JSON.stringify({
-				error: 'error',
-				msg: 'Server Error'
-			}))
-			return;
-		}
-
-		usersDB.removeClassFromWatchList([], [sectionId], req.body.loginKey, function (err, clientMsg) {
-			if (err) {
-				console.log('ERROR couldnt remove class', req.body, ' id to user')
-				console.log(err)
-				res.send('{"error":"uh oh"}');
-				return;
-			}
-			if (clientMsg) {
-				res.send(JSON.stringify({
-					error: 'error',
-					msg: clientMsg
-				}));
-				return;
-			};
-
-			res.send(JSON.stringify({
-				status: 'success'
-			}));
-		}.bind(this))
-	}.bind(this))
-}.bind(this))
 
 app.post('/getUser', function (req, res) {
 	if (!req.body.loginKey && !req.body.idToken) {

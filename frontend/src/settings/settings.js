@@ -18,15 +18,15 @@ function Settings() {
 
 			//fetch the user data
 			function (callback) {
-				user.download(function () {
-					callback()
+				user.download(function (err) {
+					callback(err)
 				}.bind(this))
 			}.bind(this),
 
 			//fetch class for every section and class _id
 			function (callback) {
-				user.loadWatching(function () {
-					callback()
+				user.loadAllLists(function (err) {
+					callback(err)
 				}.bind(this))
 			}.bind(this),
 
@@ -34,7 +34,7 @@ function Settings() {
 				var q = queue();
 
 				//load all the sections of all the classes being watched
-				user.watching.classes.forEach(function (aClass) {
+				user.lists.watching.classes.forEach(function (aClass) {
 					q.defer(function (callback) {
 						aClass.loadSections(function (err) {
 							callback(err)
@@ -55,7 +55,7 @@ function Settings() {
 				//get a unique list of the term data to make some terms
 				var termDatas = [];
 
-				user.watching.classes.forEach(function (aClass) {
+				user.getAllClassesInLists().forEach(function (aClass) {
 					var termData = _.pick(aClass, 'host', 'termId')
 
 					if (_.where(termDatas, termData).length === 0) {
@@ -79,8 +79,10 @@ function Settings() {
 					//don't return
 			}
 
+			var classes = user.getAllClassesInLists(); 
 
-			user.watching.classes.forEach(function (aClass) {
+
+			classes.forEach(function (aClass) {
 
 				//loop through terms and find one that matches
 				for (var i = 0; i < terms.length; i++) {
@@ -91,7 +93,7 @@ function Settings() {
 			}.bind(this))
 
 
-			this.$scope.classes = user.watching.classes;
+			this.$scope.classes = classes
 			this.$scope.user = user;
 
 			this.$scope.$apply()
@@ -107,9 +109,21 @@ Settings.$inject = ['$scope']
 Settings.prototype = Object.create(BaseDirective.prototype);
 Settings.prototype.constructor = Settings;
 
-Settings.prototype.test = function(j) {
-	console.log(j);
+
+Settings.prototype.classMailClicked = function($scope,$event) {
+	user.toggleListContainsClass('watching',$scope.class); 
+	$event.stopPropagation();
+	setTimeout(function () {
+		this.$scope.$apply()
+	}.bind(this))
 };
+
+
+Settings.prototype.sectionMailClicked = function() {
+	
+};
+
+
 
 
 

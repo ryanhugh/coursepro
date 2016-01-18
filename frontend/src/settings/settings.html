@@ -49,15 +49,36 @@
 		    font-size: 14px;
 		    min-width: 100px;
 		}
+		.rightIcon{
+			float:right;
+			padding-right: 5px;
+		}
 	</style>
 
 	<uib-accordion close-others="false">
 		<uib-accordion-group is-open="isOpen" ng-repeat="class in classes">
 			<uib-accordion-heading>
 
-			<span class="glyphicon" ng-class ="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span>
+				<span class="glyphicon" ng-class ="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span>
 
-					{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}&nbsp;&nbsp;({{class.termText}})
+				{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}&nbsp;&nbsp;({{class.termText}})
+				<span 
+				class="glyphicon glyphicon-envelope rightIcon" 
+				ng-style ="{'color':user.listIncludesClass('watching',class)?'':'#bbb'}"
+				uib-tooltip="Click to unsubscribe from email notifications" tooltip-class="customClass"
+				ng-click="settings.classMailClicked(this,$event)"
+				tooltip-append-to-body = "true"
+				></span>
+
+				<span 
+				class="glyphicon glyphicon-star rightIcon" 
+				ng-style ="{'color':user.listIncludesClass('saved',class)?'':'#bbb'}"
+				uib-tooltip="Click to save for later!" tooltip-class="customClass"
+				ng-click="user.toggleListContainsClass('saved',class); $event.stopPropagation();"
+				tooltip-append-to-body = "true"
+				></span>
+
+
 			</uib-accordion-heading>
 
 			{{class.desc}}
@@ -69,10 +90,10 @@
 						<th>Start Time</th>
 						<th>Open Seats/Total Seats</th>
 						<th ng-if="section.hasWaitList">Open Spots/Total Waitlist Spots</th>
+						<th>Location</th>
 						<th>URL</th>
 						<th>Email<br>Notifications</th>
 						<th>Saved</th>
-						<th>Remove</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -84,27 +105,40 @@
 						<td>{{section.startTimesStrings}}</td>
 						<td>{{section.seatsRemaining}}/{{section.seatsCapacity}}</td>
 						<td ng-if ="section.hasWaitList">{{section.waitRemaining}}/{{section.waitCapacity}}</td>
+						
+						<td>
+							<span ng-repeat = "location in section.locations">{{location}}</span>
+						</td>
+
 						<td><a href="{{section.url}}" target="_blank">View on {{section.host}}</a></td>
 
+						<td>
+						<span 
+						class="glyphicon glyphicon-envelope" 
+						ng-style ="{'color':user.listIncludesSection('watching',section)?'':'#bbb'}"
+						uib-tooltip="Click to unsubscribe from email notifications" tooltip-class="customClass"
+						ng-click="user.toggleListContainsSection('watching',section); $event.stopPropagation();"
+						tooltip-append-to-body = "true"
+						></span>
+</td>
 
 
 						<!-- just like this, using a getter and a toggle instead of ngModel -->
 						<!-- https://material.angularjs.org/latest/demo/checkbox -->
+					<!-- 	<td>
+							<input type="checkbox" ng-checked="user.listIncludesSection('watching',section)" ng-click="user.toggleListContainsSection('watching',section)">
+						</td>
+ -->
 						<td>
-							<input type="checkbox" ng-checked="user.isWatchingSection(section)" ng-click="user.toggleWatching(section)">
+							<input type="checkbox" ng-checked="user.listIncludesSection('saved',section)" ng-click="user.toggleListContainsSection('saved',section)">
 						</td>
 
-						<td>
-							<input type="checkbox" ng-checked="user.isSectionStarred(section)" ng-click="user.toggleStarred(section)">
-						</td>
 
-
-						<td><span ng-click="$parent.test()" class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span></td>
 					</tr>
 				</tbody>
 			</table>
 			<div ng-if="class.sections.length==0">
-				No sections found
+				<br>No sections found
 			</div>
 		</uib-accordion-group>
 	</uib-accordion>

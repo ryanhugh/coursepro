@@ -86,7 +86,7 @@ WatchClassesModel.prototype.removeClassFromWatchList = function () {
 	user.removeClassFromWatchList(this.tree, function (err, msg) {
 		var string = '';
 		if (err) {
-			this.unsubscribeMsg = 'There was an error removing from the database :/ ( ' + err + ' )'
+			this.unsubscribeMsg = err
 		}
 		else if (msg) {
 			this.unsubscribeMsg = msg

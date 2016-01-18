@@ -18,33 +18,24 @@ function User() {
 	//email and name are copied to this when done loading
 	//sections and classes watching, when loaded, are copied to this.watching
 	this.dbData = {
-
-		watching: {
-			classes: [],
-			sections: []
-		},
-		starred: {
-			classes: [],
-			sections: []
-		}
-
+		lists: {}
 	}
 
 	this.email = ''
 	this.name = ''
 
 	//here, actual instances of classes and sections are stored
-	this.watching = {
-		classes: [],
-		sections: [],
-		dataStatus: macros.DATASTATUS_NOTSTARTED
+	this.lists = {
+		watching: {
+			classes: [],
+			sections: [],
+			dataStatus: macros.DATASTATUS_NOTSTARTED
+		},
+		saved: {
+			classes: [],
+			sections: []
+		}
 	}
-
-	this.starred = {
-		classes: [],
-		sections: []
-	}
-
 
 	//load from localStorage
 	this.loadFromLocalStorage();
@@ -69,7 +60,7 @@ User.prototype.loadFromLocalStorage = function () {
 
 User.prototype.dataUpdated = function () {
 	//save login key to localstorage
-	if (this.loginKey) {
+	if (this.dbData.loginKey) {
 		localStorage.loginKey = this.dbData.loginKey
 	}
 
@@ -144,7 +135,9 @@ User.prototype.signedInWithGoogle = function (err, idToken) {
 	};
 
 	this.download({
-		idToken: idToken
+		body: {
+			idToken: idToken
+		}
 	})
 }
 
@@ -199,20 +192,30 @@ User.prototype.sendRequest = function (config, callback) {
 
 
 //download user data
-User.prototype.download = function (callback) {
+User.prototype.download = function (callbackOrConfig, callback) {
+	var config = {};
+
+	if (typeof callbackOrConfig == 'function') {
+		config = {}
+		callback = callbackOrConfig
+	}
+	else if (typeof callbackOrConfig == 'object') {
+		config = callbackOrConfig
+	}
+
 	if (!callback) {
 		callback = function () {}
 	};
 
 
-	if (!this.getAuthenticated()) {
+	if (!this.getAuthenticated() && !config.body.idToken) {
 		console.log("ERROR not authenticated cant get user data");
 		return callback('Cannot get user data without being signed in')
 	};
 
-	this.sendRequest({
-		url: '/getUser',
-	}, function (err, user) {
+	config.url = '/getUser'
+
+	this.sendRequest(config, function (err, user) {
 		if (err) {
 			console.log('ERROR', err)
 			return callback(err)
@@ -220,7 +223,7 @@ User.prototype.download = function (callback) {
 
 		if (!user.loginKey) {
 			console.log("didn't get a login key?", user, err)
-			return;
+			return callback('error')
 		}
 
 
@@ -270,7 +273,6 @@ User.prototype.subscribeForNews = function (email, callback) {
 		return callback('Invalid email, try again');
 	}
 
-
 	console.log('email submitted:', email);
 
 	this.sendRequest({
@@ -282,85 +284,119 @@ User.prototype.subscribeForNews = function (email, callback) {
 	}, callback);
 };
 
+//base add and remove calls
+User.prototype.addIdsToList = function (listName, classes, sections, callback) {
+	var classIds = [];
+	classes.forEach(function (aClass) {
+		classIds.push(aClass._id)
+	}.bind(this))
+
+	var sectionIds = [];
+	sections.forEach(function (section) {
+		sectionIds.push(section._id)
+	}.bind(this))
 
 
-//sends post request
-User.prototype.addClassToWatchList = function (tree, callback) {
 	this.sendRequest({
-		url: '/addClassToWatchList',
+		url: '/addToUserLists',
 		isMsg: true,
-		tree: tree
+		body: {
+			listName: listName,
+			classes: classIds,
+			sections: sectionIds
+		}
 	}, callback)
 };
 
 
-User.prototype.removeClassFromWatchList = function (tree, callback) {
+User.prototype.removeIdsFromList = function (listName, classes, sections, callback) {
+	var classIds = [];
+	classes.forEach(function (aClass) {
+		classIds.push(aClass._id)
+	}.bind(this))
+
+	var sectionIds = [];
+	sections.forEach(function (section) {
+		sectionIds.push(section._id)
+	}.bind(this))
+
 	this.sendRequest({
-		url: '/removeClassFromWatchList',
+		url: '/removeFromUserLists',
 		isMsg: true,
-		tree: tree
+		body: {
+			listName: listName,
+			classes: classIds,
+			sections: sectionIds
+		}
 	}, callback)
 };
 
 
-//sends post request
-User.prototype.addSectionToWatchList = function (tree, callback) {
-	this.sendRequest({
-		url: '/addSectionToWatchList',
-		isMsg: true,
-		tree: tree
-	}, callback)
-};
+
+// //sends post request
+// User.prototype.addClassToWatchList = function (tree, callback) {
+// 	this.addIdsToList('watching', [tree], [], callback)
+// };
 
 
-User.prototype.removeSectionFromWatchList = function (tree, callback) {
-	this.sendRequest({
-		url: '/removeSectionFromWatchList',
-		isMsg: true,
-		tree: tree
-	}, callback)
-};
-
-//sends post request
-User.prototype.addSectionToStarredList = function (tree, callback) {
-	this.sendRequest({
-		url: '/addSectionToStarredList',
-		isMsg: true,
-		tree: tree
-	}, callback)
-};
+// User.prototype.removeClassFromWatchList = function (tree, callback) {
+// 	this.removeIdsFromList('watching', [tree], [], callback)
+// };
 
 
-User.prototype.removeSectionFromStarredList = function (tree, callback) {
-	this.sendRequest({
-		url: '/removeSectionFromStarredList',
-		isMsg: true,
-		tree: tree
-	}, callback)
-};
+// //sends post request
+// User.prototype.addSectionToWatchList = function (tree, callback) {
+// 	this.addIdsToList('watching', [], [tree], callback)
+// };
 
 
-User.prototype.loadWatching = function (callback) {
+// User.prototype.removeSectionFromWatchList = function (tree, callback) {
+// 	this.removeIdsFromList('watching', [], [tree], callback)
+// };
+
+// //sends post request
+// User.prototype.addSectionToSavedList = function (tree, callback) {
+// 	this.addIdsToList('saved', [], [tree], callback)
+// };
+
+
+// User.prototype.removeSectionFromSavedList = function (tree, callback) {
+// 	this.removeIdsFromList('saved', [], [tree], callback)
+// };
+
+
+
+User.prototype.loadList = function (listName, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
 
-	if (this.watching.dataStatus === macros.DATASTATUS_DONE) {
+	//add check for dataStatus
+
+	if (this.lists[listName]) {
+
+		if (this.lists[listName].dataStatus === macros.DATASTATUS_DONE) {
+			return callback()
+		};
+
+		if (this.lists[listName].dataStatus !== macros.DATASTATUS_NOTSTARTED && this.lists[listName].dataStatus !== undefined) {
+			elog('loadWatching called when data status was', this.lists[listName].dataStatus)
+			return callback('internal error');
+		};
+	};
+
+	if (!this.dbData.lists[listName]) {
 		return callback()
 	};
 
-	if (this.watching.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
-		elog('loadWatching called when data status was', this.watching.dataStatus)
-		return callback('internal error');
-	};
 
-	this.watching.dataStatus = macros.DATASTATUS_LOADING
+	this.lists[listName].dataStatus = macros.DATASTATUS_LOADING
 
 
 	var q = queue()
 
 	//fetch all the class data from the _id's in the user watch list
-	this.dbData.watching.classes.forEach(function (classMongoId) {
+	this.dbData.lists[listName].classes.forEach(function (classMongoId) {
 		q.defer(function (callback) {
 			Class.create({
 				_id: classMongoId
@@ -369,7 +405,7 @@ User.prototype.loadWatching = function (callback) {
 					return callback(err)
 				}
 
-				this.watching.classes.push(aClass);
+				this.lists[listName].classes.push(aClass);
 				callback()
 			}.bind(this))
 		}.bind(this))
@@ -377,7 +413,7 @@ User.prototype.loadWatching = function (callback) {
 
 
 	//same thing for the sections
-	this.dbData.watching.sections.forEach(function (sectionMongoId) {
+	this.dbData.lists[listName].sections.forEach(function (sectionMongoId) {
 		q.defer(function (callback) {
 			Section.create({
 				_id: sectionMongoId
@@ -385,7 +421,7 @@ User.prototype.loadWatching = function (callback) {
 				if (err) {
 					return callback(err)
 				}
-				this.watching.sections.push(section)
+				this.lists[listName].sections.push(section)
 				callback()
 			}.bind(this))
 		}.bind(this))
@@ -393,28 +429,67 @@ User.prototype.loadWatching = function (callback) {
 
 	q.awaitAll(function (err) {
 		if (err) {
-			this.watching.dataStatus = macros.DATASTATUS_FAIL;
+			this.lists[listName].dataStatus = macros.DATASTATUS_FAIL;
 			elog(err, 'when loading watching classes')
 			return callback(err)
 		}
-		this.watching.dataStatus = macros.DATASTATUS_DONE;
+		this.lists[listName].dataStatus = macros.DATASTATUS_DONE;
 		callback()
 	}.bind(this))
 };
 
+User.prototype.loadAllLists = function (callback) {
 
+	var q = queue()
 
-User.prototype.isWatchingSection = function (section) {
+	for (var listName in this.dbData.lists) {
+		q.defer(function (callback) {
+			this.loadList(listName, function (err) {
+				callback(err)
+			}.bind(this))
+		}.bind(this))
+	}
+
+	q.awaitAll(function (err) {
+		callback(err)
+	}.bind(this))
+};
+
+//call load all before this
+User.prototype.getAllClassesInLists = function () {
+	var classes = [];
+	for (var listName in this.lists) {
+		this.lists[listName].classes.forEach(function (aClass) {
+			if (_.where(classes, {
+					_id: aClass._id
+				}).length === 0) {
+				classes.push(aClass)
+			}
+		}.bind(this))
+
+		// classes = classes.concat(this.lists[listName].classes)
+	}
+
+	return classes;
+};
+
+User.prototype.listIncludesClass = function (listName, tree) {
 	if (!this.getAuthenticated()) {
-		elog("isWatchingSection called when not authenticated!");
+		elog("listIncludesClass called when not authenticated!");
 		return null;
 	}
 
-	if (section.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('isWatchingSection given ', section)
+	if (tree.dataStatus !== macros.DATASTATUS_DONE) {
+		elog('listIncludesClass given ', tree)
+		return false;
 	};
 
-	if (_(this.dbData.watching.sections).includes(section._id)) {
+	if (!this.dbData.lists[listName]) {
+		return false;
+	}
+
+
+	if (_(this.dbData.lists[listName].classes).includes(tree._id)) {
 		return true;
 	}
 	else {
@@ -423,18 +498,23 @@ User.prototype.isWatchingSection = function (section) {
 };
 
 
-
-User.prototype.isSectionStarred = function (section) {
+User.prototype.listIncludesSection = function (listName, section) {
 	if (!this.getAuthenticated()) {
-		elog("isSectionStarred called when not authenticated!");
+		elog("listIncludesSection called when not authenticated!");
 		return null;
 	}
 
 	if (section.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('isSectionStarred given ', section)
+		elog('listIncludesSection given ', section)
+		return false;
 	};
 
-	if (_(this.dbData.starred.sections).includes(section._id)) {
+	if (!this.dbData.lists[listName]) {
+		return false;
+	}
+
+
+	if (_(this.dbData.lists[listName].sections).includes(section._id)) {
 		return true;
 	}
 	else {
@@ -442,30 +522,31 @@ User.prototype.isSectionStarred = function (section) {
 	}
 };
 
-User.prototype.toggleWatching = function (section) {
+
+User.prototype.toggleListContainsSection = function (listName, section) {
 	if (!this.getAuthenticated()) {
-		elog("isSectionStarred called when not authenticated!");
+		elog("toggleListContainsSection called when not authenticated!");
 		return null;
 	}
 	if (section.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('isSectionStarred given ', section)
+		elog('toggleListContainsSection given ', section)
 	}
 
 	//if watching, unwatch it
-	if (this.isWatchingSection(section)) {
+	if (this.listIncludesSection(listName, section)) {
 
-		var matchingSections = _.where(this.watching.sections, {
+		var matchingSections = _.where(this.lists[listName].sections, {
 			_id: section._id
 		})
 
 		matchingSections.forEach(function (section) {
-			_.pull(this.watching.sections, section)
+			_.pull(this.lists[listName].sections, section)
 		}.bind(this))
 
-		_.pull(this.dbData.watching.sections, section._id)
+		_.pull(this.dbData.lists[listName].sections, section._id)
 
 
-		this.removeSectionFromWatchList(section, function (err) {
+		this.removeIdsFromList(listName, [], [section], function (err) {
 			if (err) {
 				console.log("ERROR", err);
 			};
@@ -475,11 +556,26 @@ User.prototype.toggleWatching = function (section) {
 	//add it to the watch list
 	//and tell server
 	else {
-		this.watching.sections.push(section)
 
-		this.dbData.watching.sections.push(section._id)
+		if (!this.lists[listName]) {
+			this.lists[listName] = {
+				classes: [],
+				sections: []
+			}
+		};
+		if (!this.dbData.lists[listName]) {
+			this.dbData.lists[listName] = {
+				classes: [],
+				sections: []
+			}
+		};
 
-		this.addSectionToWatchList(section, function (err) {
+		this.lists[listName].sections.push(section)
+
+		this.dbData.lists[listName].sections.push(section._id)
+
+
+		this.addIdsToList(listName, [], [section], function (err) {
 			if (err) {
 				console.log("ERROR", err);
 			};
@@ -487,30 +583,44 @@ User.prototype.toggleWatching = function (section) {
 	}
 };
 
-User.prototype.toggleStarred = function (section) {
+User.prototype.toggleListContainsClass = function (listName, aClass) {
 	if (!this.getAuthenticated()) {
-		elog("isSectionStarred called when not authenticated!");
+		elog("toggleListContainsClass called when not authenticated!");
 		return null;
 	}
-	if (section.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('isSectionStarred given ', section)
+	if (aClass.dataStatus !== macros.DATASTATUS_DONE) {
+		elog('toggleListContainsClass given ', aClass)
 	}
 
-	//if starred, unwatch it
-	if (this.isSectionStarred(section)) {
+	//if watching, unwatch it
+	if (this.listIncludesClass(listName, aClass)) {
 
-		var matchingSections = _.where(this.starred.sections, {
-			_id: section._id
+		var matchingClasses = _.where(this.lists[listName].classes, {
+			_id: aClass._id
 		})
 
-		matchingSections.forEach(function (section) {
-			_.pull(this.starred.sections, section)
+		matchingClasses.forEach(function (aClass) {
+			_.pull(this.lists[listName].classes, aClass)
 		}.bind(this))
 
-		_.pull(this.dbData.starred.sections, section._id)
+		_.pull(this.dbData.lists[listName].classes, aClass._id)
 
+		//ghetto test, copied from above...
+		aClass.sections.forEach(function (section) {
 
-		this.removeSectionFromStarredList(section, function (err) {
+			var matchingSections = _.where(this.lists[listName].sections, {
+				_id: section._id
+			})
+
+			matchingSections.forEach(function (section) {
+				_.pull(this.lists[listName].sections, section)
+			}.bind(this))
+
+			_.pull(this.dbData.lists[listName].sections, section._id)
+		}.bind(this))
+
+		//unwatching a class also unwatches all of its sections
+		this.removeIdsFromList(listName, [aClass], aClass.sections, function (err) {
 			if (err) {
 				console.log("ERROR", err);
 			};
@@ -520,19 +630,31 @@ User.prototype.toggleStarred = function (section) {
 	//add it to the watch list
 	//and tell server
 	else {
-		this.starred.sections.push(section)
 
-		this.dbData.starred.sections.push(section._id)
+		if (!this.lists[listName]) {
+			this.lists[listName] = {
+				classes: [],
+				sections: []
+			}
+		};
+		if (!this.dbData.lists[listName]) {
+			this.dbData.lists[listName] = {
+				classes: [],
+				sections: []
+			}
+		};
 
-		this.addSectionToStarredList(section, function (err) {
+		this.lists[listName].classes.push(aClass)
+
+		this.dbData.lists[listName].classes.push(aClass._id)
+
+		this.addIdsToList(listName, [aClass], [], function (err) {
 			if (err) {
 				console.log("ERROR", err);
 			};
 		}.bind(this))
 	}
 };
-
-
 
 User.prototype.User = User;
 module.exports = new User();

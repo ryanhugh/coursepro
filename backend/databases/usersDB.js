@@ -34,10 +34,15 @@ function UsersDB() {
 		email: '',
 		subscriptions: {},
 		authenticated: false,
-		watching: {
-			// watchCount: {},
-			classes: [],
-			sections: [],
+		lists: {
+			// watching: { //optional, created dynamically
+			// 	classes: [],
+			// 	sections: [],
+			// },
+			// starred : {	
+			// 	classes: [],
+			// 	sections: [],
+			// }
 		}
 	}
 
@@ -426,7 +431,12 @@ UsersDB.prototype.getUsersWatchCache = function (callback) {
 			this.classWatchCache.sections = {};
 
 			results.forEach(function (user) {
-				user.watching.classes.forEach(function (_id) {
+				if (!user.lists.watching) {
+					return;
+				};
+
+
+				user.lists.watching.classes.forEach(function (_id) {
 
 					//create the list if it dosent exist
 					if (!this.classWatchCache.classes[_id]) {
@@ -437,7 +447,7 @@ UsersDB.prototype.getUsersWatchCache = function (callback) {
 					this.classWatchCache.classes[_id].push(user)
 				}.bind(this))
 
-				user.watching.sections.forEach(function (_id) {
+				user.lists.watching.sections.forEach(function (_id) {
 
 
 					if (!this.classWatchCache.sections[_id]) {
@@ -597,9 +607,7 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 }
 
 
-UsersDB.prototype.addClassToWatchList = function (classMongoIds, sectionMongoIds, loginKey, callback) {
-
-
+UsersDB.prototype.addIdsToLists = function (listName, classMongoIds, sectionMongoIds, loginKey, callback) {
 	this.find({
 			loginKey: loginKey
 		}, {},
@@ -612,36 +620,43 @@ UsersDB.prototype.addClassToWatchList = function (classMongoIds, sectionMongoIds
 			};
 			var originalDoc = _.cloneDeep(user);
 
+			//create the list if it does not exist
+			if (!user.lists[listName]) {
+				user.lists[listName] = {
+					classes: [],
+					sections: []
+				}
+			};
 
-			if (user.watching.classes.length + classMongoIds.length > 10) {
-				console.log("user", user.email, 'is already watching to many classes', user.watching.classes, classMongoIds)
+			if (listName == 'watching' && user.lists[listName].classes.length + classMongoIds.length > 10) {
+				console.log("user", user.email, 'is already watching to many classes', user.lists[listName].classes, classMongoIds)
 				return callback(null, 'Can\'t watch more classes because too many classes are being watched. The current limit is 10 classes.')
 			}
 
 			var numClassesAdded = 0;
 			classMongoIds.forEach(function (classMongoId) {
-				if (!_(user.watching.classes).includes(classMongoId)) {
+				if (!_(user.lists[listName].classes).includes(classMongoId)) {
 					numClassesAdded++;
-					user.watching.classes.push(classMongoId)
+					user.lists[listName].classes.push(classMongoId)
 				}
 			}.bind(this))
 
 
 			var numSectionsAdded = 0;
 			sectionMongoIds.forEach(function (sectionMongoId) {
-				if (!_(user.watching.sections).includes(sectionMongoId)) {
+				if (!_(user.lists[listName].sections).includes(sectionMongoId)) {
 					numSectionsAdded++;
-					user.watching.sections.push(sectionMongoId)
+					user.lists[listName].sections.push(sectionMongoId)
 				}
 			}.bind(this))
 
 			if (numClassesAdded === 0 && numSectionsAdded === 0) {
-				console.log('user ', user.email, 'is already watching class and sections', classMongoIds, sectionMongoIds)
-				return callback(null, 'All these classes and sections are already being watched.')
+				console.log('user ', user.email, 'already has all these ids in list', listName)
+				return callback(null, 'All these classes and sections are already in list ' + listName)
 			};
 
 
-			console.log('added ', numClassesAdded, ' and ', numSectionsAdded, ' to user ', user.email, ' watch list!');
+			console.log('added ', numClassesAdded, ' and ', numSectionsAdded, ' to user ', user.email, 'list', listName);
 
 
 			this.updateDatabase(user, originalDoc, function (err, newDoc) {
@@ -651,9 +666,7 @@ UsersDB.prototype.addClassToWatchList = function (classMongoIds, sectionMongoIds
 		}.bind(this))
 };
 
-UsersDB.prototype.removeClassFromWatchList = function (classMongoIds, sectionMongoIds, loginKey, callback) {
-
-
+UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectionMongoIds, loginKey, callback) {
 	this.find({
 			loginKey: loginKey
 		}, {},
@@ -670,11 +683,11 @@ UsersDB.prototype.removeClassFromWatchList = function (classMongoIds, sectionMon
 
 			//remove the classes
 			classMongoIds.forEach(function (classMongoId) {
-				if (_(user.watching.classes).includes(classMongoId)) {
+				if (_(user.lists[listName].classes).includes(classMongoId)) {
 					classRemovedCount++;
 				}
 
-				_.pull(user.watching.classes, classMongoId)
+				_.pull(user.lists[listName].classes, classMongoId)
 
 			}.bind(this))
 
@@ -682,17 +695,17 @@ UsersDB.prototype.removeClassFromWatchList = function (classMongoIds, sectionMon
 			var sectionRemovedCount = 0;
 
 			sectionMongoIds.forEach(function (sectionMongoId) {
-				if (_(user.watching.sections).includes(sectionMongoId)) {
+				if (_(user.lists[listName].sections).includes(sectionMongoId)) {
 					sectionRemovedCount++;
 				}
 
-				_.pull(user.watching.sections, sectionMongoId)
+				_.pull(user.lists[listName].sections, sectionMongoId)
 			}.bind(this))
 
-			console.log(user.email, ' unsubscribed from ', classRemovedCount, ' classes and ', sectionRemovedCount, ' sections')
+			console.log(user.email, ' removed', classRemovedCount, ' classes and ', sectionRemovedCount, ' sections from list', listName)
 
 			if (classRemovedCount == 0 && sectionRemovedCount == 0) {
-				return callback(null, 'None of these classes and sections are being watched.')
+				return callback(null, 'None of these classes and sections are in list ' + listName)
 			}
 
 			this.updateDatabase(user, originalDoc, function (err, newDoc) {
@@ -701,30 +714,30 @@ UsersDB.prototype.removeClassFromWatchList = function (classMongoIds, sectionMon
 					return callback(err)
 				}
 
-				return callback(null, 'Successfully unsubscribed from ' + classRemovedCount + ' classes and ' + sectionRemovedCount + ' sections!')
+				return callback(null, 'Successfully removed ' + classRemovedCount + ' classes and ' + sectionRemovedCount + ' sections.')
 			}.bind(this))
 		}.bind(this))
 }
 
 
-UsersDB.prototype.getUserWatchList = function (loginKey, callback) {
-	this.find({
-			loginKey: loginKey
-		}, {},
-		function (err, user) {
-			if (err) {
-				console.log("ERROR getting user watch list,", loginKey)
-				return callback(err)
-			}
-			if (!user) {
-				console.log('ERROR couldnt get user watch list of user that dosent exist')
-				return callback(null, null)
-			};
+// UsersDB.prototype.getUserWatchList = function (loginKey, callback) {
+// 	this.find({
+// 			loginKey: loginKey
+// 		}, {},
+// 		function (err, user) {
+// 			if (err) {
+// 				console.log("ERROR getting user watch list,", loginKey)
+// 				return callback(err)
+// 			}
+// 			if (!user) {
+// 				console.log('ERROR couldnt get user watch list of user that dosent exist')
+// 				return callback(null, null)
+// 			};
 
-			return callback(null, user.watching)
+// 			return callback(null, user.lists.watching)
 
-		}.bind(this))
-};
+// 		}.bind(this))
+// };
 
 
 
