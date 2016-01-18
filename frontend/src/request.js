@@ -141,7 +141,7 @@ Request.prototype.searchCache = function (config, callback) {
 
 				//ok, loop through the cache body and puck the ones that match the srcOnly attributes
 				var attrToCheck = _.pick(config.body, diff.srcOnly);
-				var matches = _.where(cacheItem.body, attrToCheck)
+				var matches = _.filter(cacheItem.body, attrToCheck)
 
 				callback(null, _.cloneDeep(matches));
 			}
@@ -303,7 +303,7 @@ Request.prototype.go = function (config, callback) {
 
 		if (config.resultsQuery) {
 
-			var matches = _.where(results, config.resultsQuery);
+			var matches = _.filter(results, config.resultsQuery);
 			return callback(null, _.cloneDeep(matches));
 
 		}

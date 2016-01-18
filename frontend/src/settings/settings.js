@@ -34,7 +34,7 @@ function Settings() {
 				var q = queue();
 
 				//load all the sections of all the classes being watched
-				user.lists.watching.classes.forEach(function (aClass) {
+				user.getAllClassesInLists().forEach(function (aClass) {
 					q.defer(function (callback) {
 						aClass.loadSections(function (err) {
 							callback(err)
@@ -58,7 +58,7 @@ function Settings() {
 				user.getAllClassesInLists().forEach(function (aClass) {
 					var termData = _.pick(aClass, 'host', 'termId')
 
-					if (_.where(termDatas, termData).length === 0) {
+					if (_.filter(termDatas, termData).length === 0) {
 						termDatas.push(termData)
 					};
 
@@ -113,15 +113,15 @@ Settings.prototype.constructor = Settings;
 Settings.prototype.classMailClicked = function($scope,$event) {
 	user.toggleListContainsClass('watching',$scope.class); 
 	$event.stopPropagation();
-	setTimeout(function () {
-		this.$scope.$apply()
-	}.bind(this))
+	// setTimeout(function () {
+	// 	this.$scope.$apply()
+	// }.bind(this))
 };
 
 
-Settings.prototype.sectionMailClicked = function() {
+// Settings.prototype.sectionMailClicked = function() {
 	
-};
+// };
 
 
 

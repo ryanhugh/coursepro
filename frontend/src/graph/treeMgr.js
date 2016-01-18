@@ -15,7 +15,7 @@ TreeMgr.prototype.simplifyTree = function (tree) {
 	//remove duplicates
 	var newTreeValues = [];
 	tree.prereqs.values.forEach(function (subTree) {
-		if (!_.any(newTreeValues, _.matches(subTree))) {
+		if (!_.some(newTreeValues, _.matches(subTree))) {
 			newTreeValues.push(subTree)
 		}
 	}.bind(this))

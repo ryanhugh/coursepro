@@ -60,7 +60,7 @@ WatchClassesModel.getOpenDetails = function (tree) {
 }
 
 WatchClassesModel.prototype.addClassToWatchList = function () {
-	user.addClassToWatchList(this.tree, function (err, msg) {
+	user.addToList('watching', [this.tree], this.tree.sections, function (err, msg) {
 
 		this.error = false;
 
@@ -83,7 +83,7 @@ WatchClassesModel.prototype.addClassToWatchList = function () {
 
 WatchClassesModel.prototype.removeClassFromWatchList = function () {
 
-	user.removeClassFromWatchList(this.tree, function (err, msg) {
+	user.removeFromList('watching', [this.tree], this.tree.sections, function (err, msg) {
 		var string = '';
 		if (err) {
 			this.unsubscribeMsg = err

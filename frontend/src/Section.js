@@ -26,6 +26,9 @@ function Section(config) {
 	//start times of all non-exam meetings
 	this.startTimesStrings = []
 
+	//pointer to the class instance that contains this
+	this.classInstance = null;
+
 
 	//copy over all given attrs
 	for (var attrName in config) {

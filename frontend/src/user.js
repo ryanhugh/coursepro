@@ -110,7 +110,7 @@ User.prototype.onAuthenticate = function (name, trigger) {
 
 };
 User.prototype.removeTriggers = function (name) {
-	var triggersToRemove = _.where(this.onAuthenticateTriggers, {
+	var triggersToRemove = _.filter(this.onAuthenticateTriggers, {
 		name: name
 	})
 
@@ -284,87 +284,6 @@ User.prototype.subscribeForNews = function (email, callback) {
 	}, callback);
 };
 
-//base add and remove calls
-User.prototype.addIdsToList = function (listName, classes, sections, callback) {
-	var classIds = [];
-	classes.forEach(function (aClass) {
-		classIds.push(aClass._id)
-	}.bind(this))
-
-	var sectionIds = [];
-	sections.forEach(function (section) {
-		sectionIds.push(section._id)
-	}.bind(this))
-
-
-	this.sendRequest({
-		url: '/addToUserLists',
-		isMsg: true,
-		body: {
-			listName: listName,
-			classes: classIds,
-			sections: sectionIds
-		}
-	}, callback)
-};
-
-
-User.prototype.removeIdsFromList = function (listName, classes, sections, callback) {
-	var classIds = [];
-	classes.forEach(function (aClass) {
-		classIds.push(aClass._id)
-	}.bind(this))
-
-	var sectionIds = [];
-	sections.forEach(function (section) {
-		sectionIds.push(section._id)
-	}.bind(this))
-
-	this.sendRequest({
-		url: '/removeFromUserLists',
-		isMsg: true,
-		body: {
-			listName: listName,
-			classes: classIds,
-			sections: sectionIds
-		}
-	}, callback)
-};
-
-
-
-// //sends post request
-// User.prototype.addClassToWatchList = function (tree, callback) {
-// 	this.addIdsToList('watching', [tree], [], callback)
-// };
-
-
-// User.prototype.removeClassFromWatchList = function (tree, callback) {
-// 	this.removeIdsFromList('watching', [tree], [], callback)
-// };
-
-
-// //sends post request
-// User.prototype.addSectionToWatchList = function (tree, callback) {
-// 	this.addIdsToList('watching', [], [tree], callback)
-// };
-
-
-// User.prototype.removeSectionFromWatchList = function (tree, callback) {
-// 	this.removeIdsFromList('watching', [], [tree], callback)
-// };
-
-// //sends post request
-// User.prototype.addSectionToSavedList = function (tree, callback) {
-// 	this.addIdsToList('saved', [], [tree], callback)
-// };
-
-
-// User.prototype.removeSectionFromSavedList = function (tree, callback) {
-// 	this.removeIdsFromList('saved', [], [tree], callback)
-// };
-
-
 
 User.prototype.loadList = function (listName, callback) {
 	if (!callback) {
@@ -455,12 +374,14 @@ User.prototype.loadAllLists = function (callback) {
 	}.bind(this))
 };
 
+
+
 //call load all before this
 User.prototype.getAllClassesInLists = function () {
 	var classes = [];
 	for (var listName in this.lists) {
 		this.lists[listName].classes.forEach(function (aClass) {
-			if (_.where(classes, {
+			if (_.filter(classes, {
 					_id: aClass._id
 				}).length === 0) {
 				classes.push(aClass)
@@ -473,21 +394,133 @@ User.prototype.getAllClassesInLists = function () {
 	return classes;
 };
 
-User.prototype.listIncludesClass = function (listName, tree) {
+User.prototype.ensureList = function (listName) {
+	if (!this.lists[listName]) {
+		this.lists[listName] = {
+			classes: [],
+			sections: []
+		}
+	};
+	if (!this.dbData.lists[listName]) {
+		this.dbData.lists[listName] = {
+			classes: [],
+			sections: []
+		}
+	};
+};
+
+
+//base add and remove calls
+User.prototype.addToList = function (listName, classes, sections, callback) {
+	this.ensureList(listName)
+
+	var classIds = [];
+	classes.forEach(function (aClass) {
+		classIds.push(aClass._id)
+	}.bind(this))
+
+
+	var sectionIds = [];
+	sections.forEach(function (section) {
+		sectionIds.push(section._id)
+	}.bind(this))
+
+
+	//add any classes given to both this.lists and this.dbData.lists
+	this.lists[listName].classes = _.uniq(this.lists[listName].classes.concat(classes))
+	this.dbData.lists[listName].classes = _.uniq(this.dbData.lists[listName].classes.concat(classIds))
+
+
+	//add any sections given to both this.lists and this.dbData.lists
+	this.lists[listName].sections = _.uniq(this.lists[listName].sections.concat(sections))
+	this.dbData.lists[listName].sections = _.uniq(this.dbData.lists[listName].sections.concat(sectionIds))
+
+
+	this.sendRequest({
+		url: '/addToUserLists',
+		isMsg: true,
+		body: {
+			listName: listName,
+			classes: classIds,
+			sections: sectionIds
+		}
+	}, callback)
+};
+
+//can either be a class or a section
+User.prototype.isAuthAndLoaded = function (instance) {
 	if (!this.getAuthenticated()) {
-		elog("listIncludesClass called when not authenticated!");
+		elog("assertAuthAndLoaded called when not authenticated!");
 		return null;
 	}
 
-	if (tree.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('listIncludesClass given ', tree)
+	if (instance.dataStatus !== macros.DATASTATUS_DONE) {
+		elog('assertAuthAndLoaded given ', tree)
 		return false;
 	};
+	return true;
+};
 
-	if (!this.dbData.lists[listName]) {
-		return false;
-	}
+User.prototype.removeFromList = function (listName, classes, sections, callback) {
+	this.ensureList(listName)
 
+	var classIds = [];
+	classes.forEach(function (aClass) {
+		classIds.push(aClass._id)
+	}.bind(this))
+
+	var sectionIds = [];
+	sections.forEach(function (section) {
+		sectionIds.push(section._id) 
+	}.bind(this))
+
+	classIds.forEach(function (classId) {
+
+		//remove it from this.lists
+		var matchingClasses = _.filter(this.lists[listName].classes, {
+			_id: classId
+		});
+
+		_.pullAll(this.lists[listName].classes, matchingClasses)
+
+		//and this.dbData.lists
+		_.pull(this.dbData.lists[listName].classes, classId)
+	}.bind(this))
+
+	sectionIds.forEach(function (sectionId) {
+
+		//remove it from this.lists
+		var matchingSections = _.filter(this.lists[listName].sections, {
+			_id: sectionId
+		});
+
+		_.pullAll(this.lists[listName].sections, matchingSections)
+
+		//and this.dbData.lists
+		_.pull(this.dbData.lists[listName].sections, sectionId)
+	}.bind(this))
+
+
+
+	this.sendRequest({
+		url: '/removeFromUserLists',
+		isMsg: true,
+		body: {
+			listName: listName,
+			classes: classIds,
+			sections: sectionIds
+		}
+	}, callback)
+};
+
+
+
+User.prototype.getListIncludesClass = function (listName, tree) {
+	if (!this.isAuthAndLoaded(tree)) {
+		return;
+	};
+
+	this.ensureList(listName)
 
 	if (_(this.dbData.lists[listName].classes).includes(tree._id)) {
 		return true;
@@ -498,21 +531,12 @@ User.prototype.listIncludesClass = function (listName, tree) {
 };
 
 
-User.prototype.listIncludesSection = function (listName, section) {
-	if (!this.getAuthenticated()) {
-		elog("listIncludesSection called when not authenticated!");
+User.prototype.getListIncludesSection = function (listName, section) {
+	if (!this.isAuthAndLoaded(section)) {
 		return null;
 	}
 
-	if (section.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('listIncludesSection given ', section)
-		return false;
-	};
-
-	if (!this.dbData.lists[listName]) {
-		return false;
-	}
-
+	this.ensureList(listName)
 
 	if (_(this.dbData.lists[listName].sections).includes(section._id)) {
 		return true;
@@ -523,104 +547,56 @@ User.prototype.listIncludesSection = function (listName, section) {
 };
 
 
+// User.prototype.setListIncludesSection = function (listName, section) {
+// 	if (!this.isAuthAndLoaded(section)) {
+// 		return null;
+// 	}
+
+// 	//and tell the server
+// 	this.addToList(listName, [], [section], function (err) {
+// 		if (err) {
+// 			console.log("ERROR", err);
+// 		};
+// 	}.bind(this))
+// };
+
 User.prototype.toggleListContainsSection = function (listName, section) {
-	if (!this.getAuthenticated()) {
-		elog("toggleListContainsSection called when not authenticated!");
+	if (!this.isAuthAndLoaded(section)) {
 		return null;
-	}
-	if (section.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('toggleListContainsSection given ', section)
 	}
 
 	//if watching, unwatch it
-	if (this.listIncludesSection(listName, section)) {
+	if (this.getListIncludesSection(listName, section)) {
 
-		var matchingSections = _.where(this.lists[listName].sections, {
-			_id: section._id
-		})
-
-		matchingSections.forEach(function (section) {
-			_.pull(this.lists[listName].sections, section)
-		}.bind(this))
-
-		_.pull(this.dbData.lists[listName].sections, section._id)
-
-
-		this.removeIdsFromList(listName, [], [section], function (err) {
+		this.removeFromList(listName, [], [section], function (err) {
 			if (err) {
 				console.log("ERROR", err);
 			};
 		}.bind(this))
 
-	}
+	} 
 	//add it to the watch list
 	//and tell server
 	else {
-
-		if (!this.lists[listName]) {
-			this.lists[listName] = {
-				classes: [],
-				sections: []
-			}
-		};
-		if (!this.dbData.lists[listName]) {
-			this.dbData.lists[listName] = {
-				classes: [],
-				sections: []
-			}
-		};
-
-		this.lists[listName].sections.push(section)
-
-		this.dbData.lists[listName].sections.push(section._id)
-
-
-		this.addIdsToList(listName, [], [section], function (err) {
+		this.addToList(listName, [section.classInstance], [section], function (err) {
 			if (err) {
 				console.log("ERROR", err);
 			};
 		}.bind(this))
+
 	}
 };
 
 User.prototype.toggleListContainsClass = function (listName, aClass) {
-	if (!this.getAuthenticated()) {
-		elog("toggleListContainsClass called when not authenticated!");
+	if (!this.isAuthAndLoaded(aClass)) {
 		return null;
-	}
-	if (aClass.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('toggleListContainsClass given ', aClass)
 	}
 
 	//if watching, unwatch it
-	if (this.listIncludesClass(listName, aClass)) {
+	if (this.getListIncludesClass(listName, aClass)) {
 
-		var matchingClasses = _.where(this.lists[listName].classes, {
-			_id: aClass._id
-		})
-
-		matchingClasses.forEach(function (aClass) {
-			_.pull(this.lists[listName].classes, aClass)
-		}.bind(this))
-
-		_.pull(this.dbData.lists[listName].classes, aClass._id)
-
-		//ghetto test, copied from above...
-		aClass.sections.forEach(function (section) {
-
-			var matchingSections = _.where(this.lists[listName].sections, {
-				_id: section._id
-			})
-
-			matchingSections.forEach(function (section) {
-				_.pull(this.lists[listName].sections, section)
-			}.bind(this))
-
-			_.pull(this.dbData.lists[listName].sections, section._id)
-		}.bind(this))
-
-		//unwatching a class also unwatches all of its sections
-		this.removeIdsFromList(listName, [aClass], aClass.sections, function (err) {
+		//removing a class also removes all of its sections
+		this.removeFromList(listName, [aClass], aClass.sections, function (err) {
 			if (err) {
 				console.log("ERROR", err);
 			};
@@ -631,24 +607,7 @@ User.prototype.toggleListContainsClass = function (listName, aClass) {
 	//and tell server
 	else {
 
-		if (!this.lists[listName]) {
-			this.lists[listName] = {
-				classes: [],
-				sections: []
-			}
-		};
-		if (!this.dbData.lists[listName]) {
-			this.dbData.lists[listName] = {
-				classes: [],
-				sections: []
-			}
-		};
-
-		this.lists[listName].classes.push(aClass)
-
-		this.dbData.lists[listName].classes.push(aClass._id)
-
-		this.addIdsToList(listName, [aClass], [], function (err) {
+		this.addToList(listName, [aClass], [], function (err) {
 			if (err) {
 				console.log("ERROR", err);
 			};

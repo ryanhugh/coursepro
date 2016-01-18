@@ -460,7 +460,8 @@ Class.prototype.loadSections = function (callback) {
 				termId: this.termId,
 				subject: this.subject,
 				classId: this.classId,
-				crn: crn
+				crn: crn,
+				classInstance: this
 			})
 
 			q.defer(function (callback) {

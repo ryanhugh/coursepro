@@ -1,5 +1,6 @@
 'use strict';
 var moment = require('moment')
+var _ = require('lodash')
 var macros = require('../macros')
 var request = require('../request')
 
