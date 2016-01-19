@@ -455,7 +455,7 @@ User.prototype.isAuthAndLoaded = function (instance) {
 	}
 
 	if (instance.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('assertAuthAndLoaded given ', tree)
+		elog('assertAuthAndLoaded given ', instance)
 		return false;
 	};
 	return true;

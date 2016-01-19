@@ -6,7 +6,7 @@ var BaseDirective = require('../BaseDirective')
 var request = require('../request')
 
 
-function Search($scope, $location) {
+function Search() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	this.searchText = ''
@@ -14,6 +14,7 @@ function Search($scope, $location) {
 	this.isExpanded = false;
 }
 
+Search.$inject = ['$scope', '$location']
 
 Search.prototype.searchFromEntry = function () {
 	var host = selectorsMgr.college.getValue();

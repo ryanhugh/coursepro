@@ -1,17 +1,15 @@
 <div class="container">
 	<br>
-	<div class="page-header">
-		<h1>
-			Settings
-		</h1>
-	</div>
+	
 
-	<div class="page-header">
-		<h2>
-			Profile
+
+	<div class="page-header" style="padding-top:20px;">
+		<h2 style="font-size:37px">
+			{{user.dbData.name}}
 		</h2>
+	<div>{{user.dbData.email}}</div>
 	</div>
-	<div>
+	<!-- <div>
 		<table class="table table-striped">
 			<tbody>
 				<tr>
@@ -20,12 +18,12 @@
 				</tr>
 				<tr>
 					<td>Email</td>
-					<td>{{user.dbData.email}}</td>
+					<td></td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
-
+ -->
 	<div class="page-header">
 		<h2>
 			Classes Watching
@@ -39,8 +37,18 @@
 		uib-accordion * {
 			outline: 0 !important;
 		}
+
+		/*move the padding from the panel-heading to the accordion toggle*/
+		/*so clicking anywhere in the heading makes the panel expand and shrink*/
 		uib-accordion  .panel-heading {
 			cursor: pointer;
+		    padding: 0;
+		}
+		uib-accordion .accordion-toggle {
+			padding-left: 15px;
+		    padding-right: 15px;
+		    padding-top: 10px;
+		    padding-bottom: 10px;
 		}
 		.customClass {
 			font-size: 10px
@@ -51,7 +59,7 @@
 		}
 		.rightIcon{
 			float:right;
-			padding-right: 5px;
+			padding-right: 7px;
 		}
 	</style>
 
@@ -62,21 +70,9 @@
 				<span class="glyphicon" ng-class ="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span>
 
 				{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}&nbsp;&nbsp;({{class.termText}})
-				<span 
-				class="glyphicon glyphicon-envelope rightIcon" 
-				ng-style ="{'color':user.getListIncludesClass('watching',class)?'':'#bbb'}"
-				uib-tooltip="Click to unsubscribe from email notifications" tooltip-class="customClass"
-				ng-click="settings.classMailClicked(this,$event)"
-				tooltip-append-to-body = "true"
-				></span>
-
-				<span 
-				class="glyphicon glyphicon-star rightIcon" 
-				ng-style ="{'color':user.getListIncludesClass('saved',class)?'':'#bbb'}"
-				uib-tooltip="Click to save for later!" tooltip-class="customClass"
-				ng-click="user.toggleListContainsClass('saved',class); $event.stopPropagation();"
-				tooltip-append-to-body = "true"
-				></span>
+				
+				<span list-icon = 'saved'    toggle="class" class="rightIcon" ></span>
+				<span list-icon = 'watching' toggle="class" class="rightIcon" ></span>
 
 
 			</uib-accordion-heading>
@@ -85,7 +81,7 @@
 			<table class="table table-striped" ng-if="class.sections.length>0">
 				<thead>
 					<tr>
-						<th><span uib-tooltip="Course Reference Number" tooltip-class="customClass">CRN</span></th>
+						<th><span uib-tooltip="Course Reference Number" tooltip-class="customClass" tooltip-append-to-body = "true">CRN</span></th>
 						<th>Professor</th>
 						<th>Start Time</th>
 						<th>Open Seats/Total Seats</th>
@@ -113,37 +109,12 @@
 						<td><a href="{{section.url}}" target="_blank">View on {{section.host}}</a></td>
 
 						<td>
-						<span 
-						class="glyphicon glyphicon-envelope" 
-						ng-style ="{'color':user.getListIncludesSection('watching',section)?'':'#bbb'}"
-						uib-tooltip="Click to unsubscribe from email notifications" tooltip-class="customClass"
-						ng-click="user.toggleListContainsSection('watching',section); $event.stopPropagation();"
-						tooltip-append-to-body = "true"
-						></span>
+						<span  list-icon = 'watching' toggle="section" ></span>
 						</td>
 
 						<td>
-						<span 
-						class="glyphicon glyphicon-star" 
-						ng-style ="{'color':user.getListIncludesSection('saved',section)?'':'#bbb'}"
-						uib-tooltip="Click to save for later!" tooltip-class="customClass"
-						ng-click="user.toggleListContainsSection('saved',section); $event.stopPropagation();"
-						tooltip-append-to-body = "true"
-						></span>
-</td>
-
-
-						<!-- just like this, using a getter and a toggle instead of ngModel -->
-						<!-- https://material.angularjs.org/latest/demo/checkbox -->
-					<!-- 	<td>
-							<input type="checkbox" ng-checked="user.getListIncludesSection('watching',section)" ng-click="user.toggleListContainsSection('watching',section)">
+						<span  list-icon = 'saved' toggle="section" ></span>
 						</td>
- --><!-- 
-						<td>
-							<input type="checkbox" ng-checked="user.getListIncludesSection('saved',section)" ng-click="user.toggleListContainsSection('saved',section)">
-						</td>
- -->
-
 					</tr>
 				</tbody>
 			</table>
