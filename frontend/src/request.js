@@ -1,5 +1,6 @@
 'use strict';
 var _ = require('lodash')
+var async = require('async')
 
 //lightweight json only wrapper around xmlhttp
 //aggresive caching and never fires the same request twice

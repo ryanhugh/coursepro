@@ -2,6 +2,7 @@
 var _ = require('lodash')
 var async = require('async')
 var he = require('he')
+var queue = require('queue-async')
 
 var macros = require('./macros')
 var request = require('./request')
