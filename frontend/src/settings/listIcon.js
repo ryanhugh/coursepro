@@ -43,7 +43,7 @@ function ListIcon() {
 			return user.getListIncludesSection($scope.listName, $scope.section)
 		}
 		else {
-			elog('ERROR $scope.toggle is not a jawn',$scope.toggle)
+			elog('ERROR $scope.toggle is not a jawn', $scope.toggle)
 			return null;
 		}
 	};
@@ -95,15 +95,18 @@ function ListIcon() {
 
 
 			if ($scope.toggle == 'section') {
-				user.toggleListContainsSection(listName, $scope.section)
+				user.toggleListContainsSection(listName, $scope.section, function (err) {
+					$scope.$root.$apply()
+				}.bind(this))
 			}
 			else if ($scope.toggle == 'class') {
-				user.toggleListContainsClass(listName, $scope.class) //somehow need to get this class vs section to the above fns
+				user.toggleListContainsClass(listName, $scope.class, function (err) {
+					$scope.$root.$apply()
+				}.bind(this))
 			}
 
-
 			event.stopPropagation()
-			$scope.$apply()
+			$scope.$root.$apply()
 		}.bind(this))
 
 	}

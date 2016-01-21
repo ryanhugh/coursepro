@@ -6,9 +6,6 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var treeMgr = require('./treeMgr')
 
-// var popup = require('./popup')
-
-
 
 function GraphPanelExpand($timeout, $document) {
 

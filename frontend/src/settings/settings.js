@@ -79,7 +79,7 @@ function Settings() {
 					//don't return
 			}
 
-			var classes = user.getAllClassesInLists(); 
+			var classes = user.getAllClassesInLists();
 
 
 			classes.forEach(function (aClass) {
@@ -103,27 +103,59 @@ function Settings() {
 
 Settings.isPage = true;
 
-Settings.$inject = ['$scope']
+Settings.$inject = ['$scope', '$timeout']
 
 //prototype constructor
 Settings.prototype = Object.create(BaseDirective.prototype);
 Settings.prototype.constructor = Settings;
 
 
-Settings.prototype.classMailClicked = function($scope,$event) {
-	user.toggleListContainsClass('watching',$scope.class); 
-	$event.stopPropagation();
-	// setTimeout(function () {
-	// 	this.$scope.$apply()
-	// }.bind(this))
+Settings.prototype.getLoadingHidden = function () {
+	var activeRequests = user.activeRequestCount;
+	var timeDiff = new Date().getTime() - user.lastRequestTime;
+
+	if (activeRequests <= 0) {
+
+		//recalculate 100 ms after last update
+		if (timeDiff < 100) {
+			this.$timeout(function () {}, 100 - timeDiff)
+			return false;
+		}
+		else if (timeDiff < 5000) {
+			this.$timeout(function () {}, 5000 - timeDiff)
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+
+		//recalculate 100 ms after last update
+		if (timeDiff < 100) {
+			this.$timeout(function () {}, 100 - timeDiff)
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
 };
 
 
-// Settings.prototype.sectionMailClicked = function() {
-	
-// };
-
-
+//show loading if has been loading for 100ms
+//this dosent work if another request is fired (which resets user.lastRequestTime)
+//or if two separate requests were running 100ms apart
+//...but is good enough for now
+Settings.prototype.showLoadingText = function () {
+	var timeDiff = new Date().getTime() - user.lastRequestTime;
+	if (user.activeRequestCount > 0 && timeDiff > 100) {
+		return true;
+	}
+	else {
+		return false;
+	}
+};
 
 
 

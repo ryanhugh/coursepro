@@ -21,8 +21,8 @@ function User() {
 		lists: {}
 	}
 
-	this.email = ''
-	this.name = ''
+	// this.email = ''
+	// this.name = ''
 
 	//here, actual instances of classes and sections are stored
 	this.lists = {
@@ -36,6 +36,18 @@ function User() {
 			sections: []
 		}
 	}
+
+	//this is incremented for each request, and decreased for every completed request
+	this.activeRequestCount = 0;
+
+	//same as above, but incremented 100ms after request fires. 
+	//used to show 'All changes saved' dialogue but not have super quick changes when request are fast
+	// this.delayedActiveRequest = 0;
+
+	//timestamp of last networking request
+	this.lastRequestTime = 0;
+
+
 
 	//load from localStorage
 	this.loadFromLocalStorage();
@@ -64,8 +76,8 @@ User.prototype.dataUpdated = function () {
 		localStorage.loginKey = this.dbData.loginKey
 	}
 
-	this.email = this.dbData.email;
-	this.name = this.dbData.name;
+	// this.email = this.dbData.email;
+	// this.name = this.dbData.name;
 
 
 	//and fire off the triggers
@@ -165,7 +177,15 @@ User.prototype.sendRequest = function (config, callback) {
 		config.body = config.tree.getIdentifer().full.obj;
 	}
 
+	this.activeRequestCount++;
+
+	this.lastRequestTime = new Date().getTime()
+
 	request(config, function (err, response) {
+		// this.lastRequestTime = new Date().getTime()
+		this.activeRequestCount--;
+		// this.delayedActiveRequest--;
+
 		if (err) {
 			elog('ERROR', err)
 			return callback(err);
@@ -471,7 +491,7 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 
 	var sectionIds = [];
 	sections.forEach(function (section) {
-		sectionIds.push(section._id) 
+		sectionIds.push(section._id)
 	}.bind(this))
 
 	classIds.forEach(function (classId) {
@@ -560,7 +580,7 @@ User.prototype.getListIncludesSection = function (listName, section) {
 // 	}.bind(this))
 // };
 
-User.prototype.toggleListContainsSection = function (listName, section) {
+User.prototype.toggleListContainsSection = function (listName, section, callback) {
 	if (!this.isAuthAndLoaded(section)) {
 		return null;
 	}
@@ -569,19 +589,15 @@ User.prototype.toggleListContainsSection = function (listName, section) {
 	if (this.getListIncludesSection(listName, section)) {
 
 		this.removeFromList(listName, [], [section], function (err) {
-			if (err) {
-				console.log("ERROR", err);
-			};
+			callback(err)
 		}.bind(this))
 
-	} 
+	}
 	//add it to the watch list
 	//and tell server
 	else {
 		this.addToList(listName, [section.classInstance], [section], function (err) {
-			if (err) {
-				console.log("ERROR", err);
-			};
+			callback(err)
 		}.bind(this))
 
 	}
