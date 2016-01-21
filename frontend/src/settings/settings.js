@@ -129,6 +129,10 @@ function Settings() {
 				};
 			}.bind(this))
 
+			classes.sort(function (a,b) {
+				return a.compareTo(b)
+			}.bind(this))
+
 
 			this.$scope.classes = classes
 			this.$scope.user = user;

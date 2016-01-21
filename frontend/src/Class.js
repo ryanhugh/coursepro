@@ -314,7 +314,8 @@ Class.prototype.download = function (callback) {
 	}.bind(this))
 }
 
-
+//this is used for panels i think and for class list (settings)
+//sort by classId, if it exists, and then subject
 Class.prototype.compareTo = function (otherClass) {
 	if (this.isString && otherClass.isString) {
 		return 0;

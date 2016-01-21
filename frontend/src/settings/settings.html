@@ -65,7 +65,7 @@
 
 	<div class="page-header">
 		<h2>
-			Classes Watching
+			Saved Classses
 		</h2>
 
 	<span  ng-show="settings.getLoadingHidden()" class ="savedText animate">
@@ -86,6 +86,15 @@
 				
 				<span list-icon = 'saved'    toggle="class" class="rightIcon" ></span>
 				<span list-icon = 'watching' toggle="class" class="rightIcon" ></span>
+
+				<a ng-href = "/#/graph/{{class.host}}/{{class.termId}}/{{class.subject}}/{{class.classId}}">
+					<span uib-tooltip="View Prerequisites" 
+					tooltip-class="listIconTooltip" 
+					tooltip-append-to-body = "true" 
+					style="float: right;padding-right: 6px;margin-top: -2px;opacity: .7;">
+						<img src="/images/tree.png">
+					</span>
+				</a>
 
 
 			</uib-accordion-heading>
