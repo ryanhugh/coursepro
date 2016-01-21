@@ -12,180 +12,185 @@
 	/* symbol for "collapsed" panels */
 	content: "\e080";    /* adjust as needed, taken from bootstrap.css */
 }
-/*
-.panel.panel-default:hover {
-	box-shadow: gray 0px 0px 2px !important;
-	}*/
 
 
 
-	.modal-backdrop {
-		z-index: 2050 !important;
-	} 
+.listIconTooltip {
+	font-size: 10px;
+	z-index: 999999;
+}
+.listIconTooltip > .tooltip-inner {
+	font-size: 14px;
+	min-width: 100px;
+}
 
-	.modal {
-		z-index: 3000 !important;
-	} 
+.modal-backdrop {
+	z-index: 2050 !important;
+} 
 
-	.modal-body {
-		font-size: 14px;
-	}
+.modal {
+	z-index: 3000 !important;
+} 
 
-
-	/*navbar*/
-
-	.navbar-inverse .navbar-brand:hover,
-	.navbar-inverse .navbar-brand:focus {
-		background-color: transparent;
-		color: #999999;
-		cursor: default;
-	}
-
-	.navbar-collapse.collapse {
-		display: block!important;
-	}
-
-	.navbar-nav>li, .navbar-nav {
-		float: left !important;
-	}
-
-	.navbar-nav.navbar-right:last-child {
-		margin-right: -15px !important;
-	}
-
-	.navbar-right {
-		float: right!important;
-	}
-	.navbar {
-		z-index: 1700;
-	}
+.modal-body {
+	font-size: 14px;
+}
 
 
-	#navbarIconId{
-		max-width:100px;
-		margin-top: -7px;
-		max-height:160%;
-	}
-	#navbarIconId:hover,
-	#navbarIconAId:hover{
-		cursor: pointer;
-	}
+/*navbar*/
 
-	.navbar-brand:hover, .navbar-brand:active{
-		opacity:.5 !important;
-		text-decoration:none
-	}
+.navbar-inverse .navbar-brand:hover,
+.navbar-inverse .navbar-brand:focus {
+	background-color: transparent;
+	color: #999999;
+	cursor: default;
+}
 
-	.navbar-brand, .navbar-brand:visited {
-		opacity:1  !important;
-	}
+.navbar-collapse.collapse {
+	display: block!important;
+}
 
+.navbar-nav>li, .navbar-nav {
+	float: left !important;
+}
 
-	/*select 2 stuff*/
-	.select2 {
-		width: initial !important;
-		margin: 11px !important;
-	}
+.navbar-nav.navbar-right:last-child {
+	margin-right: -15px !important;
+}
 
-	.select2-selection {
-		border: transparent !important;
-		background-color: transparent !important;
-		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-		font-size: 14px !important;
-	}
-	.select2-selection__rendered {
-		background-color: transparent !important;
-		border-color: #222222 !important;
-		color: #fff !important;
-		font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
-	}
-
-	.select2-container {
-		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-		font-size: 14px !important;
-	}
-
-	/*override height of the dropdowns*/
-	.select2-results>.select2-results__options {
-		max-height: 345px !important;
-	}
-
-	.select2-container--default .select2-selection--single {
-		background-color: transparent;
-	}
+.navbar-right {
+	float: right!important;
+}
+.navbar {
+	z-index: 1700;
+}
 
 
-	.select2-container--open {
-		z-index:2000 !important;
-	}
+#navbarIconId{
+	max-width:100px;
+	margin-top: -7px;
+	max-height:160%;
+}
+#navbarIconId:hover,
+#navbarIconAId:hover{
+	cursor: pointer;
+}
 
-	.searchIcon {
-		color: #fff;
-	}
+.navbar-brand:hover, .navbar-brand:active{
+	opacity:.5 !important;
+	text-decoration:none
+}
 
-
-	.normalFont {
-		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-		font-size: 14px !important;
-	}
-
-
-
-
-
-
-	/*set the width on each selector*/
-	.collegeSelectContainer {
-		width: 210px !important;
-	}
-	.termSelectContainer {
-		width: 140px !important;
-	}
-	.subjectSelectContainer {
-		width: 310px !important;
-	}
-	.classSelectContainer {
-		width: 310px !important;
-	}
+.navbar-brand, .navbar-brand:visited {
+	opacity:1  !important;
+}
 
 
-	#nothingFound {
-		color: #fff;
-		margin-top: 15px;
-		display: inline-block;
-	}
+/*select 2 stuff*/
+.select2 {
+	width: initial !important;
+	margin: 11px !important;
+}
+
+.select2-selection {
+	border: transparent !important;
+	background-color: transparent !important;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+	font-size: 14px !important;
+}
+.select2-selection__rendered {
+	background-color: transparent !important;
+	border-color: #222222 !important;
+	color: #fff !important;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
+}
+
+.select2-container {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+	font-size: 14px !important;
+}
+
+/*override height of the dropdowns*/
+.select2-results>.select2-results__options {
+	max-height: 345px !important;
+}
+
+.select2-container--default .select2-selection--single {
+	background-color: transparent;
+}
 
 
-	.treePanelWrapper { 
-		left: 50%;
-		transform: translate(-50%, -50%);
-		top: 50%;
-		position: absolute;
-	}
+.select2-container--open {
+	z-index:2000 !important;
+}
 
-	.treePanel{
-		white-space: initial;
-		text-align: initial;
-		margin-bottom: 0;
-	}
-	.treePanel>.panel-heading {
-		
-		margin-top: -1px;
-		margin-left: -1px;
-	}
-
-	.treePanel>.panel-body {
-		width: 164px;
-	}
+.searchIcon {
+	color: #fff;
+}
 
 
-	.mainPanel {
-		left: 50%;
-		position: absolute;
-		transform: translate(-50%, 0);
-	}
+.normalFont {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+	font-size: 14px !important;
+}
 
-	/*panels get a little shadow when you hover over them*/
+
+
+
+
+
+/*set the width on each selector*/
+.collegeSelectContainer {
+	width: 210px !important;
+}
+.termSelectContainer {
+	width: 140px !important;
+}
+.subjectSelectContainer {
+	width: 290px !important;
+}
+.classSelectContainer {
+	width: 310px !important;
+}
+
+
+#nothingFound {
+	color: #fff;
+	margin-top: 15px;
+	display: inline-block;
+}
+
+
+.treePanelWrapper { 
+	left: 50%;
+	transform: translate(-50%, -50%);
+	top: 50%;
+	position: absolute;
+}
+
+.treePanel{
+	white-space: initial;
+	text-align: initial;
+	margin-bottom: 0;
+}
+.treePanel>.panel-heading {
+
+	margin-top: -1px;
+	margin-left: -1px;
+}
+
+.treePanel>.panel-body {
+	width: 164px;
+}
+
+
+.mainPanel {
+	left: 50%;
+	position: absolute;
+	transform: translate(-50%, 0);
+}
+
+/*panels get a little shadow when you hover over them*/
 /*.panel:hover{
 	box-shadow: gray 0px 0px 6px;
 	}*/
@@ -288,11 +293,11 @@
 	border-top-left-radius: 4px;
 	border-bottom-left-radius: 4px;
 }
-.tooltip > .tooltip-inner {
+/*.tooltip > .tooltip-inner {
 
 	font-size: 20px;
 	min-width: 165px;
-}
+}*/
 
 @media screen and (min-width: 768px) {
 	#adv-search {

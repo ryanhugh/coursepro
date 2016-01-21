@@ -108,7 +108,7 @@ DownloadTree.prototype.fetchSubTrees = function (tree, queue, ignoreClasses) {
 		//so if the class has itself as a prereq, or a class that is above it,
 		//there is no infinate recursion
 		//common for coreqs that require each other
-		var hasAlreadyLoaded = _.any(ignoreClasses, _.matches(compareObject));
+		var hasAlreadyLoaded = _.some(ignoreClasses, _.matches(compareObject));
 
 
 		if (!hasAlreadyLoaded) {

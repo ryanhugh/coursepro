@@ -24,7 +24,14 @@ panel-close = ".closePanel"
 
 <div class="panel-heading">
 	<h3 class="panel-title" style="text-align: center;">{{tree.subject}} {{tree.classId}}<br/> {{tree.name}}</h3>
-	<span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;cursor: pointer;" ng-style="{'display':isExpanded?'':'none'}"></span>
+
+	<span ng-style="{'display':isExpanded?'':'none'}">
+		<span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;cursor: pointer;" ></span>
+		<div ng-init ="class = tree" list-icon = 'watching' toggle='class' style="    position: absolute;top: 5px;right: 27px;"></div>
+		<div ng-init ="class = tree" list-icon = 'saved' toggle='class' style="    position: absolute;top: 5px;right: 48px;"></div>
+
+	</span>
+
 </div>
 
 <!-- only the panel body changes on isExpanded -->

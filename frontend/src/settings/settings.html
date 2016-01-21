@@ -19,13 +19,6 @@
 	    padding-top: 10px;
 	    padding-bottom: 10px;
 	}
-	.customClass {
-		font-size: 10px
-	}
-	.customClass > .tooltip-inner {
-	    font-size: 14px;
-	    min-width: 100px;
-	}
 	.rightIcon{
 		float:right;
 		padding-right: 7px;
@@ -101,7 +94,7 @@
 			<table class="table table-striped" ng-if="class.sections.length>0">
 				<thead>
 					<tr>
-						<th><span uib-tooltip="Course Reference Number" tooltip-class="customClass" tooltip-append-to-body = "true">CRN</span></th>
+						<th><span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body = "true">CRN</span></th>
 						<th>Professor</th>
 						<th>Start Time</th>
 						<th>Open Seats/Total Seats</th>
