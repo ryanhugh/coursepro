@@ -89,10 +89,8 @@ function ListIcon() {
 		$scope.listIcon = this;
 		$scope.listName = listName
 
-
 		//open
 		element.on('click', function (event) {
-
 
 			if ($scope.toggle == 'section') {
 				user.toggleListContainsSection(listName, $scope.section, function (err) {
@@ -100,7 +98,7 @@ function ListIcon() {
 				}.bind(this))
 			}
 			else if ($scope.toggle == 'class') {
-				user.toggleListContainsClass(listName, $scope.class, function (err) {
+				user.toggleListContainsClass(listName, $scope.class, attrs.toggleSections ,function (err) {
 					$scope.$root.$apply()
 				}.bind(this))
 			}

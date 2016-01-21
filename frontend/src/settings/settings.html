@@ -116,7 +116,14 @@
 						<td ng-if ="section.hasWaitList">{{section.waitRemaining}}/{{section.waitCapacity}}</td>
 						
 						<td>
-							<span ng-repeat = "location in section.locations">{{location}}</span>
+							<span ng-repeat = "location in section.locations">
+
+								<span ng-if="location != 'Tba' || section.locations.length <= 1"> {{location}} </span>
+
+								
+
+
+							</span>
 						</td>
 
 						<td><a href="{{section.url}}" target="_blank">View on {{section.host}}</a></td>

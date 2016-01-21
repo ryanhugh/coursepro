@@ -182,9 +182,9 @@ User.prototype.sendRequest = function (config, callback) {
 	this.lastRequestTime = new Date().getTime()
 
 	request(config, function (err, response) {
-		// this.lastRequestTime = new Date().getTime()
+		
 		this.activeRequestCount--;
-		// this.delayedActiveRequest--;
+		
 
 		if (err) {
 			elog('ERROR', err)
@@ -194,7 +194,6 @@ User.prototype.sendRequest = function (config, callback) {
 		//if its a msg, return the error msg or the success msg
 		if (config.isMsg) {
 			if (response.error) {
-				console.log('ERROR look at the server logs', response)
 				return callback(response.msg)
 			}
 			else {
@@ -582,7 +581,7 @@ User.prototype.getListIncludesSection = function (listName, section) {
 
 User.prototype.toggleListContainsSection = function (listName, section, callback) {
 	if (!this.isAuthAndLoaded(section)) {
-		return null;
+		return callback('not loaded');
 	}
 
 	//if watching, unwatch it
@@ -603,9 +602,9 @@ User.prototype.toggleListContainsSection = function (listName, section, callback
 	}
 };
 
-User.prototype.toggleListContainsClass = function (listName, aClass) {
+User.prototype.toggleListContainsClass = function (listName, aClass, addSections, callback) {
 	if (!this.isAuthAndLoaded(aClass)) {
-		return null;
+		return callback('not loaded');
 	}
 
 	//if watching, unwatch it
@@ -613,20 +612,21 @@ User.prototype.toggleListContainsClass = function (listName, aClass) {
 
 		//removing a class also removes all of its sections
 		this.removeFromList(listName, [aClass], aClass.sections, function (err) {
-			if (err) {
-				console.log("ERROR", err);
-			};
+			callback(err)
 		}.bind(this))
 
 	}
 	//add it to the watch list
 	//and tell server
 	else {
+		var sectionsToAdd = [];
+		if (addSections) {
+			sectionsToAdd = aClass.sections
+		};
 
-		this.addToList(listName, [aClass], [], function (err) {
-			if (err) {
-				console.log("ERROR", err);
-			};
+
+		this.addToList(listName, [aClass], sectionsToAdd, function (err) {
+			callback(err)
 		}.bind(this))
 	}
 };
