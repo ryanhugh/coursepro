@@ -1,5 +1,12 @@
 !!!!
 
+before publish:
+login
+class list page, but how would do selectorMgr?
+
+
+
+
 need to implement an unsubscribe feature, create a subscriptionsKey that is emailed to user and allows control over subscriptions settings
 
 null ip?

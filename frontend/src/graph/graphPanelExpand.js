@@ -175,9 +175,6 @@ function GraphPanelExpand($timeout, $document) {
 					tree.$scope.panelWidth = this.calculatePanelWidth(tree)
 
 
-					if (tree.lastUpdateTime !== undefined) {
-						tree.lastUpdateString = moment(tree.lastUpdateTime).fromNow()
-					};
 				}
 
 				//$scope references just the $scope of the tree that was updated, 

@@ -3,6 +3,7 @@ var _ = require('lodash')
 var async = require('async')
 var he = require('he')
 var queue = require('queue-async')
+var moment = require('moment')
 
 var macros = require('./macros')
 var request = require('./request')
@@ -309,6 +310,10 @@ Class.prototype.download = function (callback) {
 				this[attrName] = classData[attrName]
 			}
 
+
+			if (this.lastUpdateTime !== undefined) {
+				this.lastUpdateString = moment(this.lastUpdateTime).fromNow()
+			};
 		}
 		callback(null, this)
 	}.bind(this))
@@ -475,6 +480,18 @@ Class.prototype.loadSections = function (callback) {
 
 		q.awaitAll(function (err) {
 			this.sectionsLoadingStatus = macros.DATASTATUS_DONE;
+
+			var hasWaitList = 0;
+			this.sections.forEach(function (section) {
+				hasWaitList +=section.hasWaitList;
+			}.bind(this))
+
+			if (hasWaitList>this.sections.length/2) {
+				this.hasWaitList = true;
+			}
+			else {
+				this.hasWaitList = false;
+			}
 
 
 			//sort sections
