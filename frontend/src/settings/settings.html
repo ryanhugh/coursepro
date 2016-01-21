@@ -35,13 +35,22 @@
 	    margin-top: -16px;
 	    color: #888;
 	
+	}
+
+	.animate {
 		-webkit-transition:all linear 0.5s;
 		transition:all linear 0.5s;
 	}
 
-	.savedText.ng-hide {
+	.animate.ng-hide {
 		opacity:0;
-		/* transform: scale(0.8); */
+	}
+
+	.alert {
+		position: absolute;
+	    left: 50%;
+	    transform: translate(-50%,0);
+	    padding-right: 35px;
 	}
 
 </style>
@@ -49,12 +58,16 @@
 
 <div class="container">
 	<br>
-	<div class="page-header" style="padding-top:20px;">
+	<div style="padding-top:41px"></div>
+	<div ng-show ="settings.showAlertMsg" class="alert alert-info animate" role="alert">{{settings.alertMsgText}}</div>
+	<div class="page-header">
 		<h2 style="font-size:37px">
 			{{user.dbData.name}}
 		</h2>
-	<div>{{user.dbData.email}}</div>
+		<div>{{user.dbData.email}}</div>
 	</div>
+
+
 
 
 	<div class="page-header">
@@ -62,7 +75,7 @@
 			Classes Watching
 		</h2>
 
-	<span  ng-show="settings.getLoadingHidden()" class ="savedText">
+	<span  ng-show="settings.getLoadingHidden()" class ="savedText animate">
 		<span ng-if="settings.showLoadingText()">Loading...</span>
 		<span ng-if="!settings.showLoadingText()">All changes saved</span>
 	</span>

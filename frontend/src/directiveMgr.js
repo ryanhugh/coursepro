@@ -13,9 +13,12 @@ function DirectiveMgr() {
 	//convert the old style urls
 	var hash = document.location.hash.slice(1);
 
-	//if old style
+	//convert old style
 	if (!_(hash).startsWith('/') && hash !== '') {
 		if (_(hash).startsWith('search')) {
+			hash = '/' + hash
+		}
+		if (_(hash).startsWith('unsubscribe')) {
 			hash = '/' + hash
 		}
 		else {

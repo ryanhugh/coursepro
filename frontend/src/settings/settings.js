@@ -11,8 +11,45 @@ var BaseDirective = require('../BaseDirective')
 var user = require('../user')
 var Term = require('../Term')
 
+var Class = require('../Class')
+
 function Settings() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
+
+	this.alertMsgText = ''
+	this.showAlertMsg = false;
+
+	if (_(this.$location.path()).startsWith('/unsubscribe')) {
+
+		var path = {};
+		for (var attrName in this.$routeParams) {
+			path[attrName] = decodeURIComponent(this.$routeParams[attrName])
+		}
+
+		Class.create(path).download(function (err, aClass) {
+			aClass.loadSections(function (err) {
+				user.removeFromList('watching', [aClass], aClass.sections, function (errMsg, clientMsg) {
+					console.log("msg here", errMsg, clientMsg);
+					if (errMsg) {
+						this.alertMsgText = errMsg;
+					}
+					else {
+						this.alertMsgText = clientMsg;
+					}
+					this.showAlertMsg = true;
+
+					this.$scope.$apply();
+
+					//and make it go away after 5 seconds
+					this.$timeout(function () {
+						this.showAlertMsg = false;
+					}.bind(this), 5000)
+
+				}.bind(this))
+			}.bind(this))
+		}.bind(this))
+
+	}
 
 	async.waterfall([
 
@@ -103,7 +140,12 @@ function Settings() {
 
 Settings.isPage = true;
 
-Settings.$inject = ['$scope', '$timeout']
+
+Settings.urls = ['/settings', '/unsubscribe/:host/:termId/:subject/:classId']
+
+
+
+Settings.$inject = ['$scope', '$timeout', '$routeParams', '$location']
 
 //prototype constructor
 Settings.prototype = Object.create(BaseDirective.prototype);
