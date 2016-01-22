@@ -2,18 +2,12 @@
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-
-// var request = require('../request')
-
+var user = require('../User')
 
 function ClassList() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
-
-
-
-
-
+	this.$scope.user = user;
 }
 
 ClassList.$inject = ['$scope']

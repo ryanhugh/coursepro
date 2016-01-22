@@ -135,7 +135,6 @@ function Settings() {
 
 
 			this.$scope.classes = classes
-			this.$scope.user = user;
 
 			this.$scope.$apply()
 

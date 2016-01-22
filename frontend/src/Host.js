@@ -2,7 +2,7 @@
 var macros = require('./macros')
 var request = require('./request')
 var BaseData = require('./BaseData');
-var Class = require('./Class');
+var Term = require('./Term');
 
 
 function Host(config) {
@@ -26,7 +26,7 @@ Host.prototype.loadTerms = function (callback) {
 			return callback(err)
 		}
 
-		Subject.createMany(this, function (err, terms) {
+		Term.createMany(this, function (err, terms) {
 			if (err) {
 				return callback(err)
 			}

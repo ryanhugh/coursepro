@@ -167,6 +167,10 @@ BaseData.prototype.getIdentifer = function () {
 };
 
 
+// BaseData.download = function (configOrCallback, callback) {
+		
+// }
+
 
 BaseData.prototype.download = function (configOrCallback, callback) {
 	var config = configOrCallback;
