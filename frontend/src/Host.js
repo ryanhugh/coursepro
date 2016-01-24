@@ -15,9 +15,9 @@ function Host(config) {
 
 macros.inherent(BaseData, Host)
 
-Host.prototype.requiredPath = []
-Host.prototype.optionalPath = ['host']
-Host.prototype.API_ENDPOINT = '/listColleges'
+Host.requiredPath = []
+Host.optionalPath = ['host']
+Host.API_ENDPOINT = '/listColleges'
 
 
 Host.prototype.loadTerms = function (callback) {

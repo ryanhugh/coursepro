@@ -1,34 +1,5 @@
 
 <style type="text/css">
-.accordion-toggle:after {
-    content: "" !important;
-}
-uib-accordion * {
-	outline: 0 !important;
-}
-
-/*move the padding from the panel-heading to the accordion toggle*/
-/*so clicking anywhere in the heading makes the panel expand and shrink*/
-uib-accordion  .panel-heading {
-	cursor: pointer;
-    padding: 0;
-}
-uib-accordion .accordion-toggle {
-	padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-.rightIcon{
-	float:right;
-	padding-right: 7px;
-}
-.savedText{
-	float: right;
-    margin-top: -16px;
-    color: #888;
-
-}
 
 .animate {
 	-webkit-transition:all linear 0.5s;
@@ -61,18 +32,6 @@ uib-accordion .accordion-toggle {
 	</div>
 
 
-
-
-	<div class="page-header">
-		<h2>
-			Saved Classses
-		</h2>
-
-	<span  ng-show="settings.getLoadingHidden()" class ="savedText animate">
-		<span ng-if="settings.showLoadingText()">Loading...</span>
-		<span ng-if="!settings.showLoadingText()">All changes saved</span>
-	</span>
-	</div>
 
 
 	<div class-list></div>

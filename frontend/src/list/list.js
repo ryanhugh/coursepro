@@ -24,23 +24,23 @@ function List() {
 				}.bind(this))
 			}.bind(this),
 
-			//fetch all sections
+			//fetch all sections DONT DO THIS load when you need them like graph
 			function (classes, callback) {
 
-				var q = queue();
+				// var q = queue();
 
-				classes.forEach(function (aClass) {
+				// classes.forEach(function (aClass) {
 
-					q.defer(function (callback) {
-						aClass.loadSections(function (err) {
-							callback(err)
-						}.bind(this))
-					}.bind(this))
-				}.bind(this))
+				// 	q.defer(function (callback) {
+				// 		aClass.loadSections(function (err) {
+				// 			callback(err)
+				// 		}.bind(this))
+				// 	}.bind(this))
+				// }.bind(this))
 
-				q.awaitAll(function (err) {
-					callback(err)
-				}.bind(this))
+				// q.awaitAll(function (err) {
+				// 	callback(err)
+				// }.bind(this))
 
 			}.bind(this),
 

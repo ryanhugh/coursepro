@@ -143,9 +143,9 @@ function Class(config) {
 
 macros.inherent(BaseData, Class)
 
-Class.prototype.requiredPath = ['host', 'termId', 'subject']
-Class.prototype.optionalPath = ['classId']
-Class.prototype.API_ENDPOINT = '/listClasses'
+Class.requiredPath = ['host', 'termId', 'subject']
+Class.optionalPath = ['classId']
+Class.API_ENDPOINT = '/listClasses'
 
 
 //TODO here

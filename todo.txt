@@ -1,5 +1,11 @@
 !!!!
 
+now changes
+- changing classlist to load sections on click instead of all before. 
+this is making the opening lag and animation goof up because it opens before they are done
+also the $scope.$apply is calling updates on the inner icons which is failing the checks to make sure the sections are loaded
+
+
 before publish:
 login
 class list page, but how would do selectorMgr?

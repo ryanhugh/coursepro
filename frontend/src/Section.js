@@ -48,9 +48,9 @@ function Section(config) {
 macros.inherent(BaseData, Section)
 
 
-Section.prototype.requiredPath = ['host', 'termId', 'subject','classId']
-Section.prototype.optionalPath = ['crn']
-Section.prototype.API_ENDPOINT = '/listSections'
+Section.requiredPath = ['host', 'termId', 'subject','classId']
+Section.optionalPath = ['crn']
+Section.API_ENDPOINT = '/listSections'
 
 Section.create = function (serverData) {
 	var aSection = new Section(serverData);

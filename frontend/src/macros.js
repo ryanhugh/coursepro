@@ -23,12 +23,22 @@ function Macros() {
 		console.log.apply(console, args);
 		console.trace();
 
+		var bodyString;
+		try {
+			bodyString = JSON.stringify(args)
+		}
+		catch (e) {
+			bodyString = {
+				msg: 'circular data'
+			}
+		}
+
 		//use a separate calls stack in case this throws an error, it will not affect code that calls this
 		setTimeout(function () {
 			request({
 				url: '/logError',
 				useCache: false,
-				body: args
+				body: bodyString
 			}, function (err, response) {
 				if (err) {
 					console.log("error logging error... lol");

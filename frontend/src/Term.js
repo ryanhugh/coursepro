@@ -15,9 +15,9 @@ function Term(config) {
 
 macros.inherent(BaseData, Term)
 
-Term.prototype.requiredPath = ['host']
-Term.prototype.optionalPath = ['termId']
-Term.prototype.API_ENDPOINT = '/listTerms'
+Term.requiredPath = ['host']
+Term.optionalPath = ['termId']
+Term.API_ENDPOINT = '/listTerms'
 
 
 Term.prototype.loadSubjects = function (callback) {

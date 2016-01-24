@@ -15,9 +15,9 @@ function Subject(config) {
 
 macros.inherent(BaseData, Subject)
 
-Subject.prototype.requiredPath = ['host', 'termId']
-Subject.prototype.optionalPath = ['subject']
-Subject.prototype.API_ENDPOINT = '/listSubjects'
+Subject.requiredPath = ['host', 'termId']
+Subject.optionalPath = ['subject']
+Subject.API_ENDPOINT = '/listSubjects'
 
 
 Subject.prototype.loadClasses = function (callback) {

@@ -68,6 +68,8 @@ function Settings() {
 			}.bind(this),
 
 			function (callback) {
+				return callback()
+
 				var q = queue();
 
 				//load all the sections of all the classes being watched

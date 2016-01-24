@@ -16,21 +16,21 @@ function BaseData(config) {
 //in static methods, "this" references the constructor
 BaseData.create = function (config) {
 	if (config instanceof this) {
-		console.log("tried to make instance of ",this.name,' with an instance of this');
+		console.log("tried to make instance of ", this.name, ' with an instance of this');
 		return null;
 	};
 
-	if (!this.prototype.requiredPath || !this.prototype.optionalPath) {
-		elog("dont have requiredPath or optionalPath",this,this.prototype);
+	if (!this.requiredPath || !this.optionalPath) {
+		elog("dont have requiredPath or optionalPath", this, this.prototype);
 		return null;
 	};
 
 
-	var keys = this.prototype.requiredPath.concat(this.prototype.optionalPath)
+	var keys = this.requiredPath.concat(this.optionalPath)
 	for (var i = 0; i < keys.length; i++) {
 		var attrName = keys[i]
-		if (config[attrName]===undefined) {
-			console.log("tried to make",this.name,'without a ',attrName);
+		if (config[attrName] === undefined) {
+			console.log("tried to make", this.name, 'without a ', attrName);
 			return null;
 		};
 	}
@@ -160,16 +160,32 @@ BaseData.prototype.getIdentiferWithKeys = function (keys, isOptional) {
 //calls the above fn twice, one 
 BaseData.prototype.getIdentifer = function () {
 	return {
-		required: this.getIdentiferWithKeys(this.requiredPath),
-		optional: this.getIdentiferWithKeys(this.optionalPath, true),
-		full: this.getIdentiferWithKeys(this.requiredPath.concat(this.optionalPath))
+		required: this.getIdentiferWithKeys(this.constructor.requiredPath),
+		optional: this.getIdentiferWithKeys(this.constructor.optionalPath, true),
+		full: this.getIdentiferWithKeys(this.constructor.requiredPath.concat(this.constructor.optionalPath))
 	}
 };
 
+//all requests from all trafic go through here
+BaseData.download = function (config, callback) {
 
-// BaseData.download = function (configOrCallback, callback) {
-		
-// }
+	//make sure have all the keys
+	if (!config.body._id) {
+
+		this.requiredPath.forEach(function (key) {
+			if (!config.body[key]) {
+				elog(this.name, ' not given a ', key, ' in base data download');
+				return;
+			}
+		}.bind(this))
+	}
+
+	config.url = this.API_ENDPOINT;
+
+	request(config, function (err, results) {
+		callback(err, results)
+	}.bind(this))
+}
 
 
 BaseData.prototype.download = function (configOrCallback, callback) {
@@ -200,7 +216,7 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 
 	this.dataStatus = macros.DATASTATUS_LOADING;
 
-	request({
+	this.constructor.download({
 		url: this.API_ENDPOINT,
 		resultsQuery: this.getIdentifer().optional.lookup,
 		body: this.getIdentifer().required.lookup
@@ -212,7 +228,7 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 		}
 
 		if (config.returnResults) {
-			return callback(null,results)
+			return callback(null, results)
 		};
 
 		if (results.length == 0) {
@@ -231,7 +247,7 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 		for (var attrName in serverData) {
 			this[attrName] = serverData[attrName]
 		}
-		callback(null,this)
+		callback(null, this)
 	}.bind(this))
 };
 
