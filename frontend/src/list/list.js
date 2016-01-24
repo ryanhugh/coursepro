@@ -24,7 +24,7 @@ function List() {
 				}.bind(this))
 			}.bind(this)
 
-			// //fetch all sections DONT DO THIS load when you need them like graph
+			// //fetch all sections DONT DO THIS load when you need them like graph but like preload them jawns
 			// function (classes, callback) {
 			// 	callback()
 
