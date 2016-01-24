@@ -50,7 +50,9 @@ BaseData.create = function (config) {
 BaseData.createMany = function (config, callback) {
 
 	//download with the given config, and then create a class instance from each one
-	this.constructor.download(config, function (err, results) {
+	this.download({
+		body:config
+	}, function (err, results) {
 		if (err) {
 			console.log("error", err);
 			return callback(err)
@@ -59,7 +61,7 @@ BaseData.createMany = function (config, callback) {
 		var instances = [];
 
 		results.forEach(function (classData) {
-			var instance = this.constructor.create(classData);
+			var instance = this.create(classData);
 			if (!instance) {
 				console.log("ERROR could not create a class with ", classData);
 				return;

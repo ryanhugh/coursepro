@@ -25,7 +25,9 @@ function Macros() {
 
 		var bodyString;
 		try {
-			bodyString = JSON.stringify(args)
+			bodyString = {
+				msg:JSON.stringify(args)
+			}
 		}
 		catch (e) {
 			bodyString = {
