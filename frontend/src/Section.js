@@ -188,7 +188,7 @@ Section.prototype.calculateStartTimes = function () {
 		startStrings.push(moment.utc(startTime * 1000).format('h:mm a'))
 	}.bind(this))
 
-	this.startTimesStrings = startStrings.join(', ')
+	this.startTimesStrings = startStrings
 
 };
 Section.prototype.groupSectionTimes = function () {

@@ -389,6 +389,8 @@ Class.prototype.compareTo = function (otherClass) {
 	return 0
 };
 
+
+//REPLACE THIS WITH THE JAWN FROM BASEDATA
 // returns {
 // 	obj:{host:,termid,...},
 // 	str:'neu.edu/201630/CS...'
@@ -410,6 +412,18 @@ Class.prototype.getPath = function () {
 		}
 	}
 	return retVal;
+};
+
+Class.prototype.getHeighestProfCount = function() {
+	var count = 0;
+
+
+	this.sections.forEach(function (section) {
+		if (section.profs) {
+			count = Math.max(section.profs.length,count)
+		};
+	}.bind(this))
+	return count;
 };
 
 //returns {_id} if has id, else returns {host, termId, subject, classId}
