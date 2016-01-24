@@ -112,6 +112,8 @@ function Class(config) {
 		this.dataStatus = macros.DATASTATUS_NOTSTARTED
 	}
 
+	this.updateSectionInstances();
+
 
 
 	// host: "neu.edu"
@@ -269,7 +271,7 @@ Class.prototype.download = function (callback) {
 	BaseData.prototype.download.call(this, {
 		returnResults: true
 	}, function (err, body) {
-		this.dataStatus = macros.DATASTATUS_DONE; 
+		this.dataStatus = macros.DATASTATUS_DONE;
 		if (err) {
 			console.log('http error...', err);
 			return callback(err)
@@ -309,8 +311,9 @@ Class.prototype.download = function (callback) {
 			for (var attrName in classData) {
 				this[attrName] = classData[attrName]
 			}
+			this.updateSectionInstances();
 
-
+			//THIS AND THE JAWN BELOW BOTH NEED TO BE RAN AFTER DATA
 			if (this.lastUpdateTime !== undefined) {
 				this.lastUpdateString = moment(this.lastUpdateTime).fromNow()
 			};
@@ -318,6 +321,37 @@ Class.prototype.download = function (callback) {
 		callback(null, this)
 	}.bind(this))
 }
+
+Class.prototype.updateSectionInstances = function () {
+	if (!this.crns) {
+		return;
+	};
+
+	//make sections from crns if they dont exist
+	if (this.crns.length > 0 && this.sections.length == 0) {
+
+		this.crns.forEach(function (crn) {
+
+			var section = Section.create({
+				host: this.host,
+				termId: this.termId,
+				subject: this.subject,
+				classId: this.classId,
+				crn: crn,
+				classInstance: this
+			})
+
+			this.sections.push(section)
+		}.bind(this))
+
+	};
+
+
+
+	this.sections.forEach(function (section) {
+		section.classInstance = this;
+	}.bind(this))
+};
 
 //this is used for panels i think and for class list (settings)
 //sort by classId, if it exists, and then subject
@@ -434,11 +468,11 @@ Class.prototype.loadSections = function (callback) {
 		return callback()
 	};
 
-	// tried to load sections twice
-	if (this.sections.length > 0) {
-		console.log('ERROR already have sections??')
-		return callback('already done')
-	}
+	// // tried to load sections twice
+	// if (this.sections.length > 0) {
+	// 	console.log('ERROR already have sections??')
+	// 	return callback('already done')
+	// }
 
 	if (!this.isClass || this.isString) {
 		console.log('ERROR cant load sections of !class or string')
@@ -459,23 +493,12 @@ Class.prototype.loadSections = function (callback) {
 
 		var q = queue();
 
-		this.crns.forEach(function (crn) {
-
-
-			var section = Section.create({
-				host: this.host,
-				termId: this.termId,
-				subject: this.subject,
-				classId: this.classId,
-				crn: crn,
-				classInstance: this
-			})
+		this.sections.forEach(function (section) {
 
 			q.defer(function (callback) {
 				section.download(callback)
 			}.bind(this))
 
-			this.sections.push(section)
 		}.bind(this))
 
 		q.awaitAll(function (err) {
@@ -483,10 +506,10 @@ Class.prototype.loadSections = function (callback) {
 
 			var hasWaitList = 0;
 			this.sections.forEach(function (section) {
-				hasWaitList +=section.hasWaitList;
+				hasWaitList += section.hasWaitList;
 			}.bind(this))
 
-			if (hasWaitList>this.sections.length/2) {
+			if (hasWaitList > this.sections.length / 2) {
 				this.hasWaitList = true;
 			}
 			else {

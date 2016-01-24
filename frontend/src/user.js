@@ -21,9 +21,6 @@ function User() {
 		lists: {}
 	}
 
-	// this.email = ''
-	// this.name = ''
-
 	//here, actual instances of classes and sections are stored
 	this.lists = {
 		watching: {
@@ -469,12 +466,12 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 //can either be a class or a section
 User.prototype.isAuthAndLoaded = function (instance) {
 	if (!this.getAuthenticated()) {
-		elog("assertAuthAndLoaded called when not authenticated!");
+		// elog("assertAuthAndLoaded called when not authenticated!");
 		return null;
 	}
 
 	if (instance.dataStatus !== macros.DATASTATUS_DONE) {
-		elog('assertAuthAndLoaded given ', instance)
+		// elog('assertAuthAndLoaded given ', instance)
 		return false;
 	};
 	return true;
