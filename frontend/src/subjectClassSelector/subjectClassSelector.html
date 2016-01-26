@@ -10,6 +10,6 @@
 </ui-select>
  -->
 
-<select2 ng-model="subjectClassSelector.selectedSubject" s2-options="val.id as val.name for val in subjects" >
-    
+<select2 ng-model="subjectClassSelector.selectedSubject" s2-options="val.id as val.text for val in subjects">
+	<!-- <option ng-repeat = "subject in subjects" value="{{subject.id}}">{{subject.text}}</option> -->
 </select2>

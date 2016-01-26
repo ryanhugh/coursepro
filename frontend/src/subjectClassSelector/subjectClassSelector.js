@@ -35,7 +35,7 @@ SubjectClassSelector.prototype.updateSubjects = function () {
         var subjects = [];
         term.subjects.forEach(function (subject) {
             subjects.push({
-                name:subject.text,
+                text:subject.text,
                 id:subject.subject
             })
         }.bind(this))
@@ -43,6 +43,10 @@ SubjectClassSelector.prototype.updateSubjects = function () {
         // console.log(JSON.stringify(subjects));
 
         this.$scope.subjects = subjects
+        setTimeout(function () {
+            this.$scope.$apply()
+        }.bind(this),0)
+
 
 
     }.bind(this))
