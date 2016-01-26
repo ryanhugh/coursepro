@@ -1,5 +1,8 @@
 !!!!
 
+
+to detect mailinator: nslookup for 23.239.11.30 (most of their alts) or 45.33.81.172 (mailinator.com)
+
 now changes
 - changing classlist to load sections on click instead of all before. 
 this is making the opening lag and animation goof up because it opens before they are done

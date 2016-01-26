@@ -114,9 +114,7 @@ uib-accordion .accordion-toggle {
 			<tbody>
 				<tr ng-repeat="section in class.sections">
 					<td>{{section.crn}}</td>
-					<td>
-						<span ng-repeat = "prof in section.profs">{{prof}}</span>
-					</td>
+					<td>{{section.profs.join(', ')}}</td>
 					<td>{{section.startTimesStrings.join(", ")}}</td>
 
 
