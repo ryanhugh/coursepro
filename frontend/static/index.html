@@ -1,34 +1,35 @@
-
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
+
 <head>
-	<!-- Meta, title, CSS, favicons, etc. -->
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<!--<meta name="viewport" content="width=100, initial-scale=1">-->
-	<meta name="keywords" content="College Classes Courses CoursePro.io Planning Schedule prerequsites corequsites">
-	<meta name="description" content="Easily see class data and prerequsites of any class at your school!">
-	<meta name="google-signin-client_id" content="1053343762351-u4kohlvr1ifjqn6d5th280o0v0rdasaq.apps.googleusercontent.com">
-	<meta name="author" content="Ryan Hughes">
-	<title>CoursePro &middot; Plan for Success</title>
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<meta name="viewport" content="width=100, initial-scale=1">-->
+    <meta name="keywords" content="College Classes Courses CoursePro.io Planning Schedule prerequsites corequsites">
+    <meta name="description" content="Easily see class data and prerequsites of any class at your school!">
+    <meta name="google-signin-client_id" content="1053343762351-u4kohlvr1ifjqn6d5th280o0v0rdasaq.apps.googleusercontent.com">
+    <meta name="author" content="Ryan Hughes">
+    <title>CoursePro &middot; Plan for Success</title>
 
-	<!-- CSS -->
-	<link rel="stylesheet" href="/css/bootstrap.min.css">
-	<link rel="stylesheet" href="/css/other.css" >
-	<link rel="stylesheet" href="/css/custom.css">
-	<link rel="stylesheet" href="/css/select2.min.css">
-	<link rel="stylesheet" href="/css/spinner.css">
-
-
-
-	<!-- Favicons -->
-	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-	<!--<link rel="apple-touch-icon" href="/apple-touch-icon.png">-->
-	<!--<link rel="icon" href="/favicon.ico">-->
-	<!--<link rel="stylesheet" href="./coursepro/fonts">-->
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/other.css">
+    <link rel="stylesheet" href="/css/custom.css">
+    <link rel="stylesheet" href="/css/select2.min.css">
+    <link rel="stylesheet" href="/css/select-ui.min.css">
+    <link rel="stylesheet" href="/css/spinner.css">
 
 
-	<script type="text/javascript">
+
+    <!-- Favicons -->
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <!--<link rel="apple-touch-icon" href="/apple-touch-icon.png">-->
+    <!--<link rel="icon" href="/favicon.ico">-->
+    <!--<link rel="stylesheet" href="./coursepro/fonts">-->
+
+
+    <script type="text/javascript">
 
 	if (!localStorage.noTrack) {
 		//google analytics
@@ -49,64 +50,63 @@
 
 
 </head>
-<body class="bs-docs-home" style="min-width: 1500px;" ng-app="app" >
 
-	<div class="container">
-		<div id ="navbarContainerid">
-			<nav class="navbar navbar-inverse navbar-fixed-top" style="min-width: 100%;background: rgba(0,0,0,0.8);">
-				<div class="container" style="position: relative;">
-					<a class="navbar-brand"  id="navbarIconAId" style="max-width: 66px;" href = "/#/">
-						<img src="images/whiteicon.png"  id="navbarIconId">
-					</a>
+<body class="bs-docs-home" style="min-width: 1500px;" ng-app="app">
 
-					<div id="navbar" class="collapse navbar-collapse">
+    <div class="container">
+        <div id="navbarContainerid">
+            <nav class="navbar navbar-inverse navbar-fixed-top" style="min-width: 100%;background: rgba(0,0,0,0.8);">
+                <div class="container" style="position: relative;">
+                    <a class="navbar-brand" id="navbarIconAId" style="max-width: 66px;" href="/#/">
+                        <img src="images/whiteicon.png" id="navbarIconId">
+                    </a>
 
-
-						<div selectors-mgr></div>
+                    <div id="navbar" class="collapse navbar-collapse">
 
 
-						<a href="/#/settings">
-							<div class="glyphicon glyphicon-cog" style="
-   position: absolute;
-   right: 35px;
-   top: 17px;
-   color: white;"></div>
-						<!-- <img class="icon icons8-Settings" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAADGElEQVRoQ+1Z7XXUMBDcqQA6IKkAUgGkAqACQgWECggVECogVABUQFIBoQKSDqCC4Q1PvuezLe3KliH3uP2TH5FXO/s5q4PtuGDH7bc9gH8dwaYRIPnNzB45oK4BHLUC3hoAI4YBaHZvM0Ukn5jZ1wgAMzsGcBk8Wzy2B9C5h+SZmb0JevU1gPPg2b8WgRoAbwHo/GJxU6iX29dmdg7gY/9WkgfJ88/M7H7QohszOxvq0rckn5rZaepmRwB0NisRAMPW+NPMLszsvZm9SJdFDR8aIuNeqqBJSpeiIod0cgngeDYAkidm9iHo1SXH5JScE4odKxsBklL4oyItlgAofXsD4DB3oASgpijXMr7Tm+1akwBSYcr7d0WUYocA9HdLcgA+mZm6yhy5VbcyMxWgOpc6i/iRJrW6y4M5StU0AOj7MoBKSjDU5w4okjLi3UwQisJWWx1FgKQ8rwjUinr2H497ssBJarlq4RvJpZBC/rki3K7nh6AqI/HLzE4AyCa/BlLeqo0KrSZjSW4B9IePF4DN/0kqHbyauErGT07kyCT2crba+x2CQBRczuQCSNEobVrh3J9II6WqdE9JcYB1H0QBZDetpdsVyUW6/xsApWJbK4W+A/AeCPx3IZLaskrLx5pFfApAtD0rJTKn1qiB5nkhVGxTFpAU3/JasHq/BtiIB0lnbpBpD9C4jy4q1VEItNA+ZqXw86lJP0Ul5i4x4VpYQFdCXEghnUul3Zwl+Sqx1fDE7h0cOSmXQqLDumiOKNz6/mpApx8nOu3lfO7OLwBGFD8HQLkvQ+7NQbDSN6P0yRZxog8eB1rJzkm1WU5UnMRBtrg2EFHpg6o22mOLpQdbKW6VYiVdoyWm7zGXC5HUK7IKsBPtvHpVu0iblXYGj9PnoiRdWlT0sKX2rYnf1+XSiQgAdQ2tit3T4mgrylxeSq2NE4aH0oxQ/clp7jO8CyCa4JWv0+6iEr23JYCarlVNPXKAWgLY/0ITTZuqLlSjtLQebl16F3/kS9NbneqhA9ptjTVOa1YDNZe2PLsH0NKbc3TtfAR+A36aTECwLSqWAAAAAElFTkSuQmCC" > -->
-						</a>
-
-						<div search></div>
-
-					</div>
-
-				</div><!--/.nav-collapse -->
-			</nav>
-		</div>
-	</div>
+                        <div selectors-mgr></div>
 
 
-	<div  class="normalFont" style="min-width:100%" >
+                        <a href="/#/settings">
+                            <div class="glyphicon glyphicon-cog" style="position: absolute;right: 35px;top: 17px;color: white;"></div>
+
+                        </a>
+
+                        <div search></div>
+
+                    </div>
+
+                </div>
+                <!--/.nav-collapse -->
+            </nav>
+        </div>
+    </div>
 
 
-		<!-- load the path (/settings or /graph) -->
-		<div ng-view></div>
+    <div class="normalFont" style="min-width:100%">
+
+
+        <!-- load the path (/settings or /graph) -->
+        <div ng-view></div>
 
 
 
-		<!-- Modal -->
-		<div watch-classes-model></div>
+        <!-- Modal -->
+        <div watch-classes-model></div>
 
-	</div>
+    </div>
 
 
-	<!-- JS -->
-	<script src="/js/external/jquery.min.js"></script>
-	<script src="/js/external/bootstrap.min.js"></script>
-	<script src="/js/external/select2.min.js"></script>
-	<script src="https://apis.google.com/js/platform.js" async defer></script>
-	<script src="/js/internal/allthejavascript.js"></script>
-
+    <!-- JS -->
+    <script src="/js/external/jquery.min.js"></script>
+    <script src="/js/external/bootstrap.min.js"></script>
+    <script src="/js/external/select2.min.js"></script>
+    <script src="/js/external/select-ui.min.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="/js/internal/allthejavascript.js"></script>
 
 
 
 </body>
+
 </html>

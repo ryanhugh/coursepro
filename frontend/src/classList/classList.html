@@ -2,162 +2,160 @@
 .accordion-toggle:after {
     content: "" !important;
 }
+
 uib-accordion * {
-	outline: 0 !important;
+    outline: 0 !important;
 }
 
-/*move the padding from the panel-heading to the accordion toggle*/
-/*so clicking anywhere in the heading makes the panel expand and shrink*/
-uib-accordion  .panel-heading {
-	cursor: pointer;
+
+/*move the padding from the panel-heading to the accordion toggle
+so clicking anywhere in the heading makes the panel expand and shrink*/
+
+uib-accordion .panel-heading {
+    cursor: pointer;
     padding: 0;
 }
+
 uib-accordion .accordion-toggle {
-	padding-left: 15px;
+    padding-left: 15px;
     padding-right: 15px;
     padding-top: 10px;
     padding-bottom: 10px;
 }
-.rightIcon{
-	float:right;
-	padding-right: 7px;
+
+.rightIcon {
+    float: right;
+    padding-right: 7px;
 }
 
 .animate {
-	-webkit-transition:all linear 0.5s;
-	transition:all linear 0.5s;
+    -webkit-transition: all linear 0.5s;
+    transition: all linear 0.5s;
 }
 
 .animate.ng-hide {
-	opacity:0;
+    opacity: 0;
 }
 
-
-.rightIcon{
-	float:right;
-	padding-right: 7px;
+.rightIcon {
+    float: right;
+    padding-right: 7px;
 }
-.savedText{
-	float: right;
+
+.savedText {
+    float: right;
     margin-top: -16px;
     color: #888;
-
 }
-
 </style>
 
 
 
-	<div class="page-header">
-		<h2>
-			Saved Classses
-		</h2>
+<div class="page-header">
+    <h2>
+        Saved Classses
+    </h2>
 
-	<span  ng-show="settings.getLoadingHidden()" class ="savedText animate">
-		<span ng-if="settings.showLoadingText()">Loading...</span>
-		<span ng-if="!settings.showLoadingText()">All changes saved</span>
-	</span>
-	</div>
+    <span ng-show="settings.getLoadingHidden()" class="savedText animate">
+        <span ng-if="settings.showLoadingText()">Loading...</span>
+        <span ng-if="!settings.showLoadingText()">All changes saved</span>
+    </span>
+</div>
 
 
 <uib-accordion close-others="false">
-	<uib-accordion-group is-open="isOpen" ng-repeat="class in classes" ng-click="class.loadSections()">
-		<uib-accordion-heading>
+    <uib-accordion-group is-open="isOpen" ng-repeat="class in classes" ng-click="class.loadSections()">
+        <uib-accordion-heading>
 
-			<span class="glyphicon" ng-class ="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span>
+            <span class="glyphicon" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span> {{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
 
-			{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
-			
-			<span list-icon = 'saved'    toggle="class" class="rightIcon" ></span>
-			<span list-icon = 'watching' toggle="class" class="rightIcon" ></span>
+            <span list-icon='saved' toggle="class" class="rightIcon"></span>
+            <span list-icon='watching' toggle="class" class="rightIcon"></span>
 
 
-			<a ng-if = "class.prereqs.values.length > 0" ng-href = "/#/graph/{{class.host}}/{{class.termId}}/{{class.subject}}/{{class.classId}}">
-				<span uib-tooltip="View Prerequisites" 
-				tooltip-class="listIconTooltip" 
-				tooltip-append-to-body = "true" 
-				style="float: right;padding-right: 6px;margin-top: -2px;opacity: .7;">
-					<img src="/images/tree.png">
-				</span>
-			</a>
-
-		
-			<span ng-if = "class.prereqs.values.length == 0" uib-tooltip="No prerequisites found" 
-			tooltip-class="listIconTooltip" 
-			tooltip-append-to-body = "true" 
-			style="float: right;padding-right: 6px;margin-top: -2px;opacity: .4;">
-				<img src="/images/tree.png">
-			</span>
-		
+            <a ng-if="class.prereqs.values.length > 0" ng-href="/#/graph/{{class.host}}/{{class.termId}}/{{class.subject}}/{{class.classId}}">
+                <span uib-tooltip="View Prerequisites" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .7;">
+                    <img src="/images/tree.png">
+                </span>
+            </a>
 
 
-		</uib-accordion-heading>
-
-		{{class.desc}}
-		<table class="table table-striped" ng-if="class.sections.length>0">
-			<thead>
-				<tr>
-					<th><span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body = "true">CRN</span></th>
-					<th>
-						<ng-pluralize count="class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
-					</th>
-
-					<th>Start Time</th>
-					<th>Open Seats/Total Seats</th>
-					<th ng-if="class.hasWaitList">Open/Total Waitlist Seats</th>
-					<th>Location</th>
-					<th>URL</th>
-					<th>Email<br>Notifications</th>
-					<th>Saved</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="section in class.sections">
-					<td>{{section.crn}}</td>
-					<td>{{section.profs.join(', ')}}</td>
-					<td>{{section.startTimesStrings.join(", ")}}</td>
+            <span ng-if="class.prereqs.values.length == 0" uib-tooltip="No prerequisites found" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .4;">
+                <img src="/images/tree.png">
+            </span>
 
 
-					<td>
 
-						<!-- don't display the "/" until these are loaded -->
-						<span ng-if ="section.seatsRemaining || section.seatsCapacity">
-							{{section.seatsRemaining}}/{{section.seatsCapacity}}
-						</span>
+        </uib-accordion-heading>
 
-					</td>
+        {{class.desc}}
+        <table class="table table-striped" ng-if="class.sections.length>0">
+            <thead>
+                <tr>
+                    <th>
+                        <span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body="true">CRN</span>
+                    </th>
+                    <th>
+                        <ng-pluralize count="class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
+                    </th>
+
+                    <th>Start Time</th>
+                    <th>Open Seats/Total Seats</th>
+                    <th ng-if="class.hasWaitList">Open/Total Waitlist Seats</th>
+                    <th>Location</th>
+                    <th>URL</th>
+                    <th>Email
+                        <br>Notifications</th>
+                    <th>Saved</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="section in class.sections">
+                    <td>{{section.crn}}</td>
+                    <td>{{section.profs.join(', ')}}</td>
+                    <td>{{section.startTimesStrings.join(", ")}}</td>
 
 
-					<td ng-if="section.hasWaitList">
+                    <td>
 
-						<!-- don't display the "/" until these are loaded -->
-						<span ng-if ="section.waitRemaining || section.waitCapacity">						
-							{{section.waitRemaining}}/{{section.waitCapacity}}
-						</span>
-					</td>
-					
-					<td>
-						<span ng-repeat = "location in section.locations">
-							<span ng-if="location != 'Tba' || section.locations.length <= 1"> {{location}} </span>
-						</span>
-					</td>
+                        <!-- don't display the "/" until these are loaded -->
+                        <span ng-if="section.seatsRemaining || section.seatsCapacity">
+                            {{section.seatsRemaining}}/{{section.seatsCapacity}}
+                        </span>
 
-					<td>
-						<a href="{{section.url}}" target="_blank">View on {{section.host}}</a>
-					</td>
+                    </td>
 
-					<td>
-					<span  list-icon = 'watching' toggle="section" ></span>
-					</td>
 
-					<td>
-					<span  list-icon = 'saved' toggle="section" ></span>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<div ng-if="class.crns.length==0">
-			<br>No sections found
-		</div>
-	</uib-accordion-group>
+                    <td ng-if="section.hasWaitList">
+
+                        <!-- don't display the "/" until these are loaded -->
+                        <span ng-if="section.waitRemaining || section.waitCapacity">
+                            {{section.waitRemaining}}/{{section.waitCapacity}}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span ng-repeat="location in section.locations">
+                            <span ng-if="location != 'Tba' || section.locations.length <= 1"> {{location}} </span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <a href="{{section.url}}" target="_blank">View on {{section.host}}</a>
+                    </td>
+
+                    <td>
+                        <span list-icon='watching' toggle="section"></span>
+                    </td>
+
+                    <td>
+                        <span list-icon='saved' toggle="section"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div ng-if="class.crns.length==0">
+            <br>No sections found
+        </div>
+    </uib-accordion-group>
 </uib-accordion>

@@ -1,38 +1,34 @@
-
 <style type="text/css">
-
 .animate {
-	-webkit-transition:all linear 0.5s;
-	transition:all linear 0.5s;
+    -webkit-transition: all linear 0.5s;
+    transition: all linear 0.5s;
 }
 
 .animate.ng-hide {
-	opacity:0;
+    opacity: 0;
 }
 
 .alert {
-	position: absolute;
+    position: absolute;
     left: 50%;
-    transform: translate(-50%,0);
+    transform: translate(-50%, 0);
     padding-right: 35px;
 }
-
 </style>
 
 
 <div class="container">
-	<br>
-	<div style="padding-top:41px"></div>
-	<div ng-show ="settings.showAlertMsg" class="alert alert-info animate" role="alert">{{settings.alertMsgText}}</div>
-	<div class="page-header">
-		<h2 style="font-size:37px">
-			{{user.dbData.name}}
-		</h2>
-		<div>{{user.dbData.email}}</div>
-	</div>
+    <br>
+    <div style="padding-top:41px"></div>
+    <div ng-show="settings.showAlertMsg" class="alert alert-info animate" role="alert">{{settings.alertMsgText}}</div>
+    <div class="page-header">
+        <h2 style="font-size:37px">
+            {{user.dbData.name}}
+        </h2>
+        <div>{{user.dbData.email}}</div>
+    </div>
 
 
 
-
-	<div class-list></div>
+    <div class-list></div>
 </div>
