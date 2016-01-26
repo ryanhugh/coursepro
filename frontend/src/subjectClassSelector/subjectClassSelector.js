@@ -36,7 +36,7 @@ SubjectClassSelector.prototype.updateSubjects = function () {
         term.subjects.forEach(function (subject) {
             subjects.push({
                 text:subject.text,
-                id:subject.subject
+                value:subject.subject
             })
         }.bind(this))
 

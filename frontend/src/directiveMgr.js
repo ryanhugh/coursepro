@@ -4,7 +4,7 @@ var angular = require('angular')
 
 
 //max depth for a tree, if it reaches this angular will barf
-var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'),'rt.select2'], function ($rootScopeProvider) {
+var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'),'selectize'], function ($rootScopeProvider) {
 	$rootScopeProvider.digestTtl(20);
 });
 

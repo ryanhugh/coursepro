@@ -9,7 +9,11 @@
     </ui-select-choices>
 </ui-select>
  -->
-
+<!-- 
 <select2 ng-model="subjectClassSelector.selectedSubject" s2-options="val.id as val.text for val in subjects">
-	<!-- <option ng-repeat = "subject in subjects" value="{{subject.id}}">{{subject.text}}</option> -->
+	<option ng-repeat = "subject in subjects" value="{{subject.id}}">{{subject.text}}</option> 
 </select2>
+
+ -->
+ <selectize placeholder='Pick some things...' options='subjects' config="{maxItems: 1}" ng-model="myModel2" ng-disabled='disable' required='true'></selectize>
+   
