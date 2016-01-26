@@ -116,6 +116,9 @@ BaseSelector.prototype.setup = function (config, callback) {
 	}.bind(this));
 }
 
+BaseSelector.prototype.onSelect = function() {
+	
+};
 
 BaseSelector.prototype.setupSelector = function (values, config) {
 	if (config === undefined) {
@@ -165,11 +168,16 @@ BaseSelector.prototype.setupSelector = function (values, config) {
 		this.resetAllFutureVals();
 		// selectorsMgr.updateDeeplink()
 
+		var newValue = this.getValue();
 
-		if (!this.getValue()) {
-			return;
+		if (!newValue) {
+			return
+		};
+
+		if (newValue!=this.help_id) {
+			//override in college and term to set user last used value		
+			this.onSelect(newValue);
 		}
-
 
 		ga('send', {
 			'hitType': 'pageview',

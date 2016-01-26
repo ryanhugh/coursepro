@@ -1,9 +1,15 @@
-<!-- <h3>Selectize theme</h3>
-  <p>Selected: {{country.selected}}</p>-->
-<ui-select ng-model="country.selected" theme="selectize" ng-disabled="disabled" style="width: 300px;">
-    <ui-select-match placeholder="Select or search a country in the list...">{{$select.selected.name}}</ui-select-match>
-    <ui-select-choices repeat="country in countries | filter: $select.search">
-        <span ng-bind-html="country.name | highlight: $select.search"></span>
-        <small ng-bind-html="country.code | highlight: $select.search"></small>
+
+
+<!-- cant use uiselect because of performance issues http://plnkr.co/edit/ddOIJGozWDdHDVNC4Cu6?p=preview -->
+<!-- 
+<ui-select ng-model="subjectClassSelector.selectedSubject" theme="bootstrap" >
+    <ui-select-match placeholder="Select a subject...">{{$select.selected.text}}</ui-select-match>
+    <ui-select-choices repeat="subject in subjects">
+        {{subject.text}}
     </ui-select-choices>
 </ui-select>
+ -->
+
+<select2 ng-model="subjectClassSelector.selectedSubject" s2-options="val.id as val.name for val in subjects" >
+    
+</select2>

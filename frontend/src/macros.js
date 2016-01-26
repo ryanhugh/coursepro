@@ -21,6 +21,7 @@ function Macros() {
 		}
 
 		console.log.apply(console, args);
+		debugger
 		console.trace();
 
 		var bodyString;

@@ -26,12 +26,13 @@ Host.prototype.loadTerms = function (callback) {
 			return callback(err)
 		}
 
-		Term.createMany(this, function (err, terms) {
+		Term.createMany(this.getIdentifer().full.obj, function (err, terms) {
 			if (err) {
 				return callback(err)
 			}
 
 			this.terms = terms
+			callback()
 
 		}.bind(this))
 	}.bind(this))

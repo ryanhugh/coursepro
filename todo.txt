@@ -1,6 +1,8 @@
 !!!!
 
 
+NEED TO ADD SETTERS AND GETTER FOR LAST USED HOST AND TERMID FOR USER and the subject + class selector will use this
+
 to detect mailinator: nslookup for 23.239.11.30 (most of their alts) or 45.33.81.172 (mailinator.com)
 
 now changes

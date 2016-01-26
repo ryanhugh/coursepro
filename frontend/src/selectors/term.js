@@ -2,18 +2,24 @@
 var BaseSelector = require('./baseSelector').BaseSelector;
 
 
+var user = require('../user')
+
 function Term () {
 	BaseSelector.prototype.constructor.apply(this,arguments);
 	this.element= $(".selectTerm");
 	this.class='termSelectContainer';
 	this.next = selectorsMgr.subject;
-	this.helpText = 'Select Term!'
+	this.helpText = 'Select Term'
 }
 
 
 //prototype constructor
 Term.prototype = Object.create(BaseSelector.prototype);
 Term.prototype.constructor = Term;
+
+Term.prototype.onSelect = function(value) {
+	user.setValue('lastSelectedTerm',value)
+};
 
 Term.prototype.getRequestBody = function() {
 	return {
@@ -27,7 +33,7 @@ Term.prototype.getRequestBody = function() {
 
 Term.prototype.processValues = function(values) {
 
-	var retVal = [];
+	var retVal = []; 
 	values.forEach(function (item) {
 		retVal.push({
 			text:item.text,

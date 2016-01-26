@@ -327,7 +327,7 @@ app.post('/search', function (req, res) {
 	search.search(req.body, function (err, results) {
 		if (err) {
 			console.log(err);
-			res.send('{"error":"uh oh"}');
+			res.send('{"error":"Internal server error"}');
 			return;
 		}
 
@@ -663,7 +663,7 @@ app.post('/addToUserLists', function (req, res) {
 			if (err) {
 				console.log('ERROR couldnt add class', req.body.classesMongoIds, ' id to user', req.body.loginKey)
 				console.log(err)
-				res.send('{"error":"uh oh"}');
+				res.send('{"error":"Internal server error"}');
 				return;
 			}
 			if (clientMsg) {
@@ -713,7 +713,7 @@ app.post('/removeFromUserLists', function (req, res) {
 			if (err) {
 				console.log('ERROR couldnt add class', req.body.classesMongoIds, ' id to user', req.body.loginKey)
 				console.log(err)
-				res.send('{"error":"uh oh"}');
+				res.send('{"error":"Internal server error"}');
 				return;
 			}
 			if (clientMsg) {
@@ -755,9 +755,9 @@ app.post('/getUser', function (req, res) {
 		},
 		function (err, user) {
 			if (err || !user) {
-				console.log('ERROR couldnt get watch list for user', req.body.loginKey)
+				console.log('ERROR couldnt get user', req.body.loginKey)
 				console.log(err)
-				res.send('{"error":"uh oh"}');
+				res.send('{"error":"Internal server error"}');
 				return;
 			}
 
@@ -765,6 +765,31 @@ app.post('/getUser', function (req, res) {
 		}.bind(this))
 }.bind(this))
 
+app.post('/setUserVar', function (req, res) {
+	if (!req.body.name || !req.body.value || !req.body.loginKey) {
+		res.send(JSON.stringify({
+			error: '/setUserVar needs loginKey, name and value as json'
+		}))
+	}
+
+	usersDB.setUserVar(req.body.name, req.body.value, req.body.loginKey, function (err, clientMsg) {
+		if (err) {
+			console.log('ERROR couldnt set var for user', req.body.loginKey)
+			console.log(err)
+			res.send('{"error":"Internal server error"}');
+			return;
+		}
+
+		res.send(JSON.stringify({
+			status: 'success',
+			msg:clientMsg
+		}));
+
+	}.bind(this))
+
+
+
+}.bind(this))
 
 app.post('/log', function (req, res) {
 	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this

@@ -43,7 +43,8 @@ function UsersDB() {
 			// 	classes: [],
 			// 	sections: [],
 			// }
-		}
+		},
+		vars: {}
 	}
 
 	this.ensureDefaultSchema();
@@ -739,6 +740,57 @@ UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectio
 // 		}.bind(this))
 // };
 
+UsersDB.prototype.setUserVar = function (name, value, loginKey, callback) {
+	this.find({
+		loginKey: loginKey
+	}, {}, function (err, user) {
+		if (err) {
+			return callback(err)
+		}
+
+		if (!user) {
+			console.log("no user found in set user var");
+			return callback()
+		}
+
+		//some verification on the value and name
+		if (typeof name != 'string' && name.length > 50) {
+			console.log("invalid name/user given", name, value);
+			return callback('invalid name')
+		}
+
+		if (!_(['string', 'boolean']).includes(typeof value)) {
+			console.log("invalid name/user given", name, value);
+			return callback('invalid value')
+		};
+
+		if (typeof value == 'string' && value.length > 50) {
+			console.log("invalid name/user given", name, value);
+			return callback('invalid value')
+		};
+
+		var originalDoc = _.cloneDeep(user);
+
+		if (!user.vars) {
+			user.vars = {}
+		};
+
+		user.vars[name] = value;
+
+
+		this.updateDatabase(user, originalDoc, function (err, newDoc) {
+			if (err) {
+				console.log('ERROR', err)
+				return callback(err)
+			}
+
+			return callback(null, 'Successfully set ' + name + ' to ' + value + '.')
+		}.bind(this))
+
+
+
+	}.bind(this))
+};
 
 
 UsersDB.prototype.loadTestData = function (callback) {

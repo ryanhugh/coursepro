@@ -2,7 +2,7 @@
 var macros = require('./macros')
 var request = require('./request')
 var BaseData = require('./BaseData');
-var Class = require('./Class');
+var Subject = require('./Subject');
 
 
 function Term(config) {
@@ -10,6 +10,10 @@ function Term(config) {
 
 	//populated on .loadSubjects
 	this.subjects = []
+
+	console.log(config);
+	this.host = config.host
+	this.termId = config.termId
 
 }
 
@@ -26,12 +30,13 @@ Term.prototype.loadSubjects = function (callback) {
 			return callback(err)
 		}
 
-		Subject.createMany(this, function (err, subjects) {
+		Subject.createMany(this.getIdentifer().full.obj, function (err, subjects) {
 			if (err) {
 				return callback(err)
 			}
 
 			this.subjects = subjects
+			callback()
 
 		}.bind(this))
 	}.bind(this))

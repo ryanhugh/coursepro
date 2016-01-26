@@ -2,8 +2,9 @@
 var _ = require('lodash')
 var angular = require('angular')
 
+
 //max depth for a tree, if it reaches this angular will barf
-var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'),require('angular-animate')], function ($rootScopeProvider) {
+var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'ui.select'], function ($rootScopeProvider) {
 	$rootScopeProvider.digestTtl(20);
 });
 
@@ -67,6 +68,11 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 
 	if (directive.priority) {
 		priority = directive.priority;
+	}
+
+	var scope = true;
+	if (directive.$scope) {
+		scope = directive.$scope
 	};
 
 	//homepage overrides url
@@ -90,7 +96,7 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 					$routeProvider.when(url, {
 						templateUrl: htmlPath,
 						controller: directive,
-						priority:priority
+						priority: priority
 					});
 				}.bind(this))
 			}
@@ -103,9 +109,9 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 		angularModule.directive(directiveName, function () {
 			return {
 				templateUrl: htmlPath,
-				scope: true,
+				scope: scope,
 				controller: directive,
-				priority:priority
+				priority: priority
 			};
 		}.bind(this))
 	}

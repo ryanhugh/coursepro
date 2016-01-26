@@ -26,12 +26,13 @@ Subject.prototype.loadClasses = function (callback) {
 			return callback(err)
 		}
 
-		Class.createMany(this, function (err, classes) {
+		Class.createMany(this.getIdentifer().full.obj, function (err, classes) {
 			if (err) {
 				return callback(err)
 			}
 
 			this.classes = classes
+			callback()
 
 		}.bind(this))
 	}.bind(this))

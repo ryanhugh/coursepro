@@ -26,6 +26,25 @@ SubjectsDB.prototype.isValidLookupValues = function(lookupValues) {
 };
 
 
+SubjectsDB.prototype.find = function(lookupValues, config, callback) {
+	BaseDB.prototype.find.call(this,lookupValues,config,function (err, results) {
+		if (err) {
+			return callback(err)
+		};
+
+
+		var retVal = [];
+		results.forEach(function (subject) {
+			if (subject.subject) {
+				retVal.push(subject)
+			};
+		}.bind(this))
+
+		return callback(null,retVal)
+
+	}.bind(this))
+};
+
 SubjectsDB.prototype.SubjectsDB= SubjectsDB;
 module.exports = new SubjectsDB();
 
