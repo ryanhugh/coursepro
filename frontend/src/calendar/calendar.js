@@ -2,12 +2,9 @@
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-// var Term = require('../Term')
 var user = require('../user')
 
 var fullcalendar = require('fullcalendar')
-var $ = require('jquery')
-
 
 function Calendar() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
@@ -49,7 +46,7 @@ function Calendar() {
 			// 	start: '2016-01-11',
 			// 	end: '2016-01-13'
 			// },
-			{
+			{ 
 				title: 'Meeting',
 				start: '2016-01-12T10:30:00',
 				end: '2016-01-12T12:30:00'

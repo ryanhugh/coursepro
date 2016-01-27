@@ -1,6 +1,7 @@
 'use strict';
 var fs = require('fs')
 
+
 //change the current working directory to the directory with package.json
 //gulp does this automatically too, but it is not ran on 'node file.js'
 function fixCWD() {
