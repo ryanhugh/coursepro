@@ -51,7 +51,7 @@ function Graph() {
 Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal']
 
 Graph.isPage = true;
-Graph.urls = ['/graph/:host/:termId/:subject/:classId', '/search/:host/:termId/:subject/:searchTerm']
+Graph.urls = ['/graph/:host/:termId/:subject?/:classId?', '/search/:host/:termId/:subject?/:searchTerm?']
 
 Graph.prototype.addClass = function (aClass) {
 

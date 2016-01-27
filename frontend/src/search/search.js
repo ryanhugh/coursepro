@@ -28,6 +28,7 @@ Search.prototype.searchFromEntry = function () {
 		console.log('error: need to select term first');
 		return;
 	}
+	return;
 
 	var subject = selectorsMgr.subject.getValue();
 	if (!subject) {

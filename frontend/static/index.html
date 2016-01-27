@@ -30,23 +30,41 @@
 
     <script type="text/javascript">
 
-	if (!localStorage.noTrack) {
-		//google analytics
-		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    if (!localStorage.noTrack) {
+        //google analytics
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-		ga('create', 'UA-67419497-1', 'auto');
-		ga('send', 'pageview');
-	}
-	else {
-		window.ga = function () {}
-	}
+        ga('create', 'UA-67419497-1', 'auto');
+        ga('send', 'pageview');
+    }
+    else {
+        window.ga = function () {}
+    }
 
-	</script>
+    </script>
 
-
+    <style type="text/css">
+    .navBarText {
+        color: #fff;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 15px;
+    }
+    
+    .navBarItem {
+        color: #fff;
+        display: inline-block;
+        z-index: 99999;
+    }
+    
+    .rightNavBarItem {
+        float: right;
+        display: inline-block;
+        margin-left: 31px;
+    }
+    </style>
 
 </head>
 
@@ -63,15 +81,54 @@
                     <div id="navbar" class="collapse navbar-collapse">
 
 
-                        <div selectors-mgr></div>
+                        <div selectors-mgr style="display:inline-block"></div>
 
 
-                        <a href="/#/settings">
-                            <div class="glyphicon glyphicon-cog" style="position: absolute;right: 35px;top: 17px;color: white;"></div>
 
-                        </a>
+                        <div style="margin-top: 14px;" class="rightNavBarItem">
+                            <a href="/#/settings">
+                                <div class="glyphicon glyphicon-cog navBarItem" style="color: white"></div>
+                                <div style="position: relative;top: -3px" class="navBarItem navBarText">
+                                    Settings
+                                </div>
+                            </a>
+                        </div>
 
-                        <div search></div>
+
+                        <div class="rightNavBarItem" style="    padding-top: 11px;position: relative;z-index: 99999;">
+                            <a href="/#/graph">
+                                <img src="/images/white_tree.png">
+                                <div class="navBarItem navBarText">Graph</div>
+                                
+                            </a>
+                        </div>
+
+
+                        <!-- style="display: inline-block;float: right;width: 32px;padding-top: 10px;    position: absolute;right: 0px;    top: 0px; -->
+                        <div style="margin-top: 10px;margin-left: 17px;" class="rightNavBarItem">
+                            <div search style="width: 25px;" class="navBarItem"></div>
+                            <div style="position: relative;top: -11px;" class="navBarItem navBarText">Search</div>
+                        </div>
+
+
+                        <div style="margin-top: 14px;" class="rightNavBarItem">
+                            <a href="/#/list">
+                                <div class="glyphicon glyphicon-th-list navBarItem" style="color: white"></div>
+                                <div style="position: relative;top: -3px" class="navBarItem navBarText">
+                                    List
+                                </div>
+                            </a>
+                        </div>
+
+                        <div style="margin-top: 14px;" class="rightNavBarItem">
+                            <a href="/#/calender">
+                                <div class="glyphicon glyphicon-calendar navBarItem" style="color: white"></div>
+                                <div style="position: relative;top: -3px" class="navBarItem navBarText">
+                                    Calender
+                                </div>
+                            </a>
+                        </div>
+
 
                     </div>
 
@@ -111,4 +168,3 @@
 </body>
 
 </html>
-  

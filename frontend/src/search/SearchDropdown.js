@@ -46,6 +46,7 @@ function SearchDropdown($timeout, $document) {
 	SearchDropdownInner.prototype.updateTermSubject = function (scope) {
 
 		scope.termText = selectorsMgr.term.getText();
+		return;
 		scope.subjectText = selectorsMgr.subject.getText();
 
 	};

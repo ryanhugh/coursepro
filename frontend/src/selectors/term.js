@@ -8,7 +8,7 @@ function Term () {
 	BaseSelector.prototype.constructor.apply(this,arguments);
 	this.element= $(".selectTerm");
 	this.class='termSelectContainer';
-	this.next = selectorsMgr.subject;
+	// this.next = selectorsMgr.subject;
 	this.helpText = 'Select Term'
 }
 

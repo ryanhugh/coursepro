@@ -19,8 +19,8 @@ function SelectorsMgr() {
 	window.selectorsMgr = this;
 
 	//these must be made in this order, because they keep references to the next one (except class)
-	this.class = new Class();
-	this.subject = new Subject();
+	// this.class = new Class();
+	// this.subject = new Subject();
 	this.term = new Term();
 	this.college = new College();
 
@@ -28,8 +28,8 @@ function SelectorsMgr() {
 	this.selectors = [
 		this.college,
 		this.term,
-		this.subject, 
-		this.class
+		// this.subject, 
+		// this.class/
 	]
 
 	this.$scope.$on('$routeChangeSuccess', function () {
@@ -63,10 +63,10 @@ function SelectorsMgr() {
 							defaultValue: lastSelectedTerm
 						})
 
-						this.subject.setup({
-							shouldOpen: false,
-							defaultValue: this.subject.helpId
-						})
+						// this.subject.setup({
+						// 	shouldOpen: false,
+						// 	defaultValue: this.subject.helpId
+						// })
 					}
 					else {
 						this.term.setup({
@@ -113,6 +113,7 @@ SelectorsMgr.prototype.closeAllSelectors = function () {
 }
 
 SelectorsMgr.prototype.finish = function (callback) {
+	return;
 	var host = encodeURIComponent(this.college.getValue())
 	var termId = encodeURIComponent(this.term.getValue())
 	var subject = encodeURIComponent(this.subject.getValue())
@@ -126,6 +127,8 @@ SelectorsMgr.prototype.finish = function (callback) {
 }
 
 SelectorsMgr.prototype.setSelectors = function (values, doOpenNext) {
+
+	values = values.slice(0,2)
 
 	//close all selectors, then open the ones told to
 	this.closeAllSelectors()
