@@ -379,12 +379,13 @@
 .selectize-input.input-active:hover,
 .selectize-control.multi .selectize-input.focus {
   background: #ffffff !important;
-  border-color: rgba(82, 168, 236, 0.8) !important;
-  outline: 0 !important;
-  outline: thin dotted \9 !important;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;
-  -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;
+  border-color: #ddd;
+  border-radius: 4px;
+  /*outline: 0 !important;*/
+  /*outline: thin dotted \9 !important;*/
+  /*-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;*/
+  /*-moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;*/
+  /*box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6) !important;*/
 }
 .selectize-control.single .selectize-input {
   color: #333333;
@@ -484,4 +485,19 @@
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #0088cc;
   border: 1px solid #0088cc;
+}
+
+
+.selectize-input, .dropdown-active, .has-options {
+    background: #F5F5F5 !important;
+    outline: initial !important;
+    border-color: transparent !important;
+    box-shadow: initial !important;
+    border-color: #ddd !important;
+    border-radius: 4px !important;
+}
+
+.selectize-input>input::-webkit-input-placeholder::before {
+    color: black;
+    content: "Line 1\A Line 2\A Line 3\A";
 }

@@ -8,6 +8,10 @@ var Class = require('./Class');
 function Subject(config) {
 	BaseData.prototype.constructor.apply(this, arguments);
 
+	if (config.subject && config.text) {
+		this.dataStatus = macros.DATASTATUS_DONE;
+	};
+
 	//populated on .loadClasses
 	this.classes = []
 
@@ -31,11 +35,30 @@ Subject.prototype.loadClasses = function (callback) {
 				return callback(err)
 			}
 
+			classes.sort(function (a,b) {
+				return a.compareTo(b)
+			}.bind(this))
+
 			this.classes = classes
 			callback()
 
 		}.bind(this))
 	}.bind(this))
 };
+
+
+Subject.prototype.compareTo = function(other) {
+	if (this.subject<other.subject) {
+		return -1;
+	}
+	else if (this.subject>other.subject) {
+		return 1;
+	}
+	else {
+		console.log("warning subjects are same??",this,other);
+		return 0;
+	}
+};
+
 
 module.exports = Subject

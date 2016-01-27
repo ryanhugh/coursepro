@@ -1,5 +1,3 @@
-
-
 <!-- cant use uiselect because of performance issues http://plnkr.co/edit/ddOIJGozWDdHDVNC4Cu6?p=preview -->
 <!-- 
 <ui-select ng-model="subjectClassSelector.selectedSubject" theme="bootstrap" >
@@ -12,8 +10,25 @@
 <!-- 
 <select2 ng-model="subjectClassSelector.selectedSubject" s2-options="val.id as val.text for val in subjects">
 	<option ng-repeat = "subject in subjects" value="{{subject.id}}">{{subject.text}}</option> 
-</select2>
+</select2><!-- 
+
+ 
+<style type="text/css">
+.dropdown-active {
+    background: #F5F5F5 !important;
+    outline: initial !important;
+    border-color: transparent !important;
+    box-shadow: initial !important;
+}
+
+.selectize-input>input::-webkit-input-placeholder::before {
+    color: black;
+    content: "Line 1\A Line 2\A Line 3\A";
+}
+</style>
 
  -->
- <selectize placeholder='Pick some things...' options='subjects' config="{maxItems: 1}" ng-model="myModel2" ng-disabled='disable' required='true'></selectize>
-   
+
+<selectize placeholder='Select Subject...' options='subjects' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedSubject" ng-disabled='disable' required='true'></selectize>
+
+<selectize ng-if = "subjectClassSelector.showClassesSelector" placeholder='Pick some things...' options='classes' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedClass" ng-disabled='disable' required='true' id="subjectSelectorId"></selectize>
