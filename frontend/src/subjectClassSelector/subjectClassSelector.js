@@ -56,7 +56,7 @@ SubjectClassSelector.prototype.updateSubjects = function () {
 			return;
 		}
 
-		console.log("done,", this.term.subjects);
+		// console.log("done,", this.term.subjects);
 
 		var subjects = [];
 		this.term.subjects.forEach(function (subject) {

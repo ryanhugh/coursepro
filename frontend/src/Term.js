@@ -11,7 +11,7 @@ function Term(config) {
 	//populated on .loadSubjects
 	this.subjects = []
 
-	console.log(config);
+	// console.log(config);
 	this.host = config.host
 	this.termId = config.termId
 
