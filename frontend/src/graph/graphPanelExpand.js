@@ -75,7 +75,7 @@ function GraphPanelExpand($timeout, $document) {
 
 
 		var edgePadding = 30.5
-		var topPadding = 82.5
+		var topPadding = 122.5
 
 		var topMargin = 0;
 

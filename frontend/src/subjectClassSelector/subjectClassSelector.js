@@ -109,7 +109,6 @@ SubjectClassSelector.prototype.onSelectSubject = function () {
             this.$scope.$apply()
 
             var a = $("#subjectSelectorId")[0].nextSibling.getElementsByTagName('input')[0].focus()
-            // debugger
         }.bind(this), 0)
 
     }.bind(this))
@@ -126,15 +125,15 @@ SubjectClassSelector.prototype.onSelectClass = function () {
         _id: this.selectedClass
     })[0]
 
-    if (this.$scope.addClass) {
-        this.$scope.addClass(aClass)
-    }
-    else {
-        console.log("NO add class??");
-    }
-
-
     setTimeout(function () {
+        if (this.$scope.addClass) {
+            this.$scope.addClass(aClass)
+        }
+        else {
+            console.log("NO add class??");
+        }
+
+
         this.reset()
         this.$scope.$apply()
     }.bind(this), 0)

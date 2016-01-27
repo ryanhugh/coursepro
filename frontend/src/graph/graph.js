@@ -9,7 +9,7 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
 //tree stuff
-var downloadTree = require('./downloadTree') 
+var downloadTree = require('./downloadTree')
 var treeMgr = require('./treeMgr')
 var help = require('./help')
 
@@ -37,13 +37,15 @@ function Graph() {
 		path[attrName] = decodeURIComponent(this.$routeParams[attrName])
 	}
 
- 
+
 	if (_(this.$location.path()).startsWith('/search')) {
 		this.search(path)
 	}
 	else if (_(this.$location.path()).startsWith('/graph')) {
 		this.createGraph(path)
 	}
+
+	this.$scope.addClass = this.addClass.bind(this)
 }
 
 Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal']
@@ -51,7 +53,13 @@ Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal']
 Graph.isPage = true;
 Graph.urls = ['/graph/:host/:termId/:subject/:classId', '/search/:host/:termId/:subject/:searchTerm']
 
+Graph.prototype.addClass = function (aClass) {
 
+	var obj = aClass.getIdentifer().full.obj;
+
+	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classId))
+	// this.createGraph()
+};
 
 Graph.prototype.go = function (tree, callback) {
 	this.isLoading = true;
