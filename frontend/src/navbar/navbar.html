@@ -1,0 +1,63 @@
+<!-- needed for the dropdowns -->
+<div id="navbarContainerid">
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="min-width: 100%;background: rgba(0,0,0,0.8);">
+        <div class="container" style="position: relative;">
+            <a class="navbar-brand" id="navbarIconAId" style="max-width: 66px;" href="/#/">
+                <img src="images/whiteicon.png" id="navbarIconId">
+            </a>
+
+            <div id="navbar" class="collapse navbar-collapse">
+
+
+                <div selectors-mgr style="display:inline-block"></div>
+
+
+
+                <div style="margin-top: 14px;" class="rightNavBarItem">
+                    <a href="/#/settings">
+                        <div class="glyphicon glyphicon-cog navBarItem" style="color: white"></div>
+                        <div style="position: relative;top: -3px" class="navBarItem navBarText">
+                            Settings
+                        </div>
+                    </a>
+                </div>
+
+
+                <div class="rightNavBarItem" style="padding-top: 11px;position: relative;z-index: 99999;">
+                    <a ng-href="/#/graph/{{navBar.getHost()}}/{{navBar.getTerm()}}">
+                        <img src="/images/white_tree.png">
+                        <div class="navBarItem navBarText">Graph</div>
+
+                    </a>
+                </div>
+
+
+                <!-- style="display: inline-block;float: right;width: 32px;padding-top: 10px;    position: absolute;right: 0px;    top: 0px; -->
+                <div style="margin-top: 10px;margin-left: 17px;" class="rightNavBarItem">
+                    <div search style="width: 25px;" class="navBarItem"></div>
+                    <div style="position: relative;top: -11px;" class="navBarItem navBarText">Search</div>
+                </div>
+
+
+                <div style="margin-top: 14px;" class="rightNavBarItem">
+                    <a ng-href="/#/list/{{navBar.getHost()}}/{{navBar.getTerm()}}">
+                        <div class="glyphicon glyphicon-th-list navBarItem" style="color: white"></div>
+                        <div style="position: relative;top: -3px" class="navBarItem navBarText">
+                            List
+                        </div>
+                    </a>
+                </div>
+
+                <div style="margin-top: 14px;" class="rightNavBarItem">
+                    <a href="/#/calender">
+                        <div class="glyphicon glyphicon-calendar navBarItem" style="color: white"></div>
+                        <div style="position: relative;top: -3px" class="navBarItem navBarText">
+                            Calender
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!--/.nav-collapse -->
+    </nav>
+</div>

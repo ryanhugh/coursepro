@@ -113,6 +113,13 @@ SelectorsMgr.prototype.closeAllSelectors = function () {
 }
 
 SelectorsMgr.prototype.finish = function (callback) {
+
+
+
+	setTimeout(function () {
+		this.$scope.$root.$apply()
+			// this.$scope.$apply()
+	}.bind(this), 0)
 	return;
 	var host = encodeURIComponent(this.college.getValue())
 	var termId = encodeURIComponent(this.term.getValue())
@@ -120,15 +127,11 @@ SelectorsMgr.prototype.finish = function (callback) {
 	var classId = encodeURIComponent(this.class.getValue())
 
 	this.$location.path('/graph/' + host + '/' + termId + '/' + subject + '/' + classId)
-
-	setTimeout(function () {
-		this.$scope.$apply()
-	}.bind(this), 0)
 }
 
 SelectorsMgr.prototype.setSelectors = function (values, doOpenNext) {
 
-	values = values.slice(0,2)
+	values = values.slice(0, 2)
 
 	//close all selectors, then open the ones told to
 	this.closeAllSelectors()

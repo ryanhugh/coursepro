@@ -11,7 +11,30 @@ var Class = require('../Class')
 function List() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
-	// debugger
+
+	this.$scope.$on('$routeChangeSuccess', function () {
+
+		//wait for a subject
+		if (!this.$routeParams.subject) {
+			return;
+		};
+		this.go()
+
+	}.bind(this))
+
+	this.$scope.addSubject = this.addSubject.bind(this)
+}
+
+List.isPage = true;
+List.$inject = ['$scope', '$routeParams','$route']
+List.urls = ['/list/:host/:termId/:subject?']
+
+//prototype constructor
+List.prototype = Object.create(BaseDirective.prototype);
+List.prototype.constructor = List;
+
+List.prototype.go = function () {
+
 
 	async.waterfall([
 
@@ -23,28 +46,6 @@ function List() {
 					callback(err, classes)
 				}.bind(this))
 			}.bind(this)
-
-			// //fetch all sections DONT DO THIS load when you need them like graph but like preload them jawns
-			// function (classes, callback) {
-			// 	callback()
-
-			// 	// var q = queue();
-
-			// 	// classes.forEach(function (aClass) {
-
-			// 	// 	q.defer(function (callback) {
-			// 	// 		aClass.loadSections(function (err) {
-			// 	// 			callback(err)
-			// 	// 		}.bind(this))
-			// 	// 	}.bind(this))
-			// 	// }.bind(this))
-
-			// 	// q.awaitAll(function (err) {
-			// 	// 	callback(err)
-			// 	// }.bind(this))
-
-			// }.bind(this),
-
 		],
 		function (err, classes) {
 			if (err) {
@@ -52,32 +53,20 @@ function List() {
 					//don't return
 			}
 
-
-
 			classes.sort(function (a, b) {
 				return a.compareTo(b)
 			}.bind(this))
 
-
 			this.$scope.classes = classes
-
 			this.$scope.$apply()
 
 		}.bind(this))
-}
 
-List.isPage = true;
+};
 
-
-List.$inject = ['$scope', '$routeParams']
-
-List.urls = ['/list/:host/:termId/:subject']
-
-//prototype constructor
-List.prototype = Object.create(BaseDirective.prototype);
-List.prototype.constructor = List;
-
-
+List.prototype.addSubject = function(subject) {
+	this.$route.updateParams({subject:subject.subject})
+};
 
 List.prototype.List = List;
 module.exports = List;

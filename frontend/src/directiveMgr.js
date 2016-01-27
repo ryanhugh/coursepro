@@ -4,7 +4,7 @@ var angular = require('angular')
 
 
 //max depth for a tree, if it reaches this angular will barf
-var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'),'selectize'], function ($rootScopeProvider) {
+var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize'], function ($rootScopeProvider) {
 	$rootScopeProvider.digestTtl(20);
 });
 
@@ -102,17 +102,20 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 			}
 		])
 	}
-	else if (directive.isLink) {
-
-	}
 	else {
 		angularModule.directive(directiveName, function () {
-			return {
+			var retVal = {
 				templateUrl: htmlPath,
 				scope: scope,
 				controller: directive,
 				priority: priority
-			};
+			}
+
+			if (directive.link) {
+				retVal.link = directive.link.bind(directive)
+			}
+
+			return retVal;
 		}.bind(this))
 	}
 };

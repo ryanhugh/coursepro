@@ -240,6 +240,7 @@ Request.prototype.fireRequest = function (config, callback) {
 //config.auth : weather or not to send loginKey, default no
 //useCache : weather or not to use cache, default yes
 Request.prototype.go = function (config, callback) {
+	config = _.cloneDeep(config)
 
 	//default values
 	if (!callback) {
