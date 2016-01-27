@@ -98,7 +98,7 @@ function ListIcon() {
 				}.bind(this))
 			}
 			else if ($scope.toggle == 'class') {
-				user.toggleListContainsClass(listName, $scope.class, attrs.toggleSections ,function (err) {
+				user.toggleListContainsClass(listName, $scope.class, attrs.toggleSections, function (err) {
 					$scope.$root.$apply()
 				}.bind(this))
 			}

@@ -122,7 +122,7 @@ SubjectClassSelector.prototype.onSelectClass = function () {
 
 
     //find the selected subject
-    var aClass = _.filter(this.selectedSubjectInstance, {
+    var aClass = _.filter(this.selectedSubjectInstance.classes, {
         _id: this.selectedClass
     })[0]
 

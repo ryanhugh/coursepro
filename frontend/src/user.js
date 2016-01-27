@@ -577,6 +577,10 @@ User.prototype.toggleListContainsSection = function (listName, section, callback
 };
 
 User.prototype.toggleListContainsClass = function (listName, aClass, addSections, callback) {
+    if (!callback) {
+        callback = function () {}
+    }
+    
     if (!this.isAuthAndLoaded(aClass)) {
         return callback('not loaded');
     }

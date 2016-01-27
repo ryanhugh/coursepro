@@ -131,7 +131,7 @@ function Settings() {
 				};
 			}.bind(this))
 
-			classes.sort(function (a,b) {
+			classes.sort(function (a, b) {
 				return a.compareTo(b)
 			}.bind(this))
 
@@ -141,6 +141,8 @@ function Settings() {
 			this.$scope.$apply()
 
 		}.bind(this))
+
+	this.$scope.addClass = this.addClass.bind(this)
 }
 
 Settings.isPage = true;
@@ -155,6 +157,25 @@ Settings.$inject = ['$scope', '$timeout', '$routeParams', '$location']
 //prototype constructor
 Settings.prototype = Object.create(BaseDirective.prototype);
 Settings.prototype.constructor = Settings;
+
+
+Settings.prototype.addClass = function (aClass) {
+
+	var matches = _.filter(this.$scope.classes, {
+		_id: aClass._id
+	})
+
+	//if this class already exists, ignore
+	if (matches.length > 0) {
+		return;
+	}
+
+	this.$scope.classes.push(aClass)
+
+
+	//if it is not in this list already, add it
+	user.toggleListContainsClass('saved', aClass)
+};
 
 
 Settings.prototype.getLoadingHidden = function () {
