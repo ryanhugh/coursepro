@@ -1,10 +1,11 @@
 'use strict';
 var _ = require('lodash')
 var angular = require('angular')
+// require('ui-calendar')
 
 
 //max depth for a tree, if it reaches this angular will barf
-var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize'], function ($rootScopeProvider) {
+var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize','ui.calendar'], function ($rootScopeProvider) {
 	$rootScopeProvider.digestTtl(20);
 });
 

@@ -18,7 +18,7 @@ function Section(config) {
 	if (config.dataStatus !== undefined) {
 		this.dataStatus = config.dataStatus
 	}
-	else if (!this.isClass || this.prereqs.length > 0 || this.desc || this.lastUpdateTime !== undefined || this.isString) {
+	else if (this.lastUpdateTime !== undefined || this.meetings) {
 		this.dataStatus = macros.DATASTATUS_DONE
 	}
 	else {
@@ -48,7 +48,7 @@ function Section(config) {
 macros.inherent(BaseData, Section)
 
 
-Section.requiredPath = ['host', 'termId', 'subject','classId']
+Section.requiredPath = ['host', 'termId', 'subject', 'classId']
 Section.optionalPath = ['crn']
 Section.API_ENDPOINT = '/listSections'
 
@@ -189,14 +189,37 @@ Section.prototype.calculateStartTimes = function () {
 	}.bind(this))
 
 	this.startTimesStrings = startStrings
+}
 
+Section.prototype.calculateMeetingDates = function () {
+	if (!this.meetings) {
+		return;
+	}
+
+	this.meetings.forEach(function (meeting) {
+		meeting.timeMoments = [];
+
+		for (var dayIndex in meeting.times) {
+			meeting.times[dayIndex].forEach(function (event) {
+
+				//3 is to set in the second week of 1970
+				var day = parseInt(dayIndex)+3
+
+				meeting.timeMoments.push({
+					start: moment.utc(event.start * 1000).add(day,'day'),
+					end: moment.utc(event.end * 1000).add(day,'day'),
+				})
+			}.bind(this))
+		}
+
+
+	}.bind(this))
 };
 Section.prototype.groupSectionTimes = function () {
 	if (!this.meetings) {
 		return;
 	}
 	this.profs = []
-	this.locations = []
 	this.locations = []
 
 	this.meetings.forEach(function (meeting) {
@@ -235,45 +258,36 @@ Section.prototype.groupSectionTimes = function () {
 	this.calculateHiddenMeetings();
 	this.createDayStrings();
 	this.calculateStartTimes();
+	this.calculateMeetingDates();
 
-	if (this.waitRemaining===0 && this.waitCapacity===0) {
+	if (this.waitRemaining === 0 && this.waitCapacity === 0) {
 		this.hasWaitList = false;
 	}
 	else {
 		this.hasWaitList = true;
 	}
-
-
 }
 
-// //returns {_id} if has id, else returns {host,termId, subject, classId,crn}
-// Section.prototype.getIdentifer = function () {
-// 	if (this._id) {
-// 		return {
-// 			_id: this._id
+// // returns the start and end of each meeting in a js date
+// Section.prototype.getDateMeetingTimestamps = function () {
+// 	var retVal = [];
+
+// 	this.meetings.forEach(function (meeting) {
+// 		for (var dayIndex in meeting.times) {
+// 			this.times[dayIndex].forEach(function (event) {
+// 				var start = moment(event.start * 60 * 60)
+// 			}.bind(this))
 // 		}
-// 	}
-// 	else if (this.host && this.termId && this.subject && this.classId && this.crn) {
-// 		return {
-// 			host: this.host,
-// 			termId: this.termId,
-// 			subject: this.subject,
-// 			classId: this.classId,
-// 			crn: this.crn
-// 		}
-// 	}
-// 	else {
-// 		console.log('ERROR cant get id dont have enough info')
-// 		return null;
-// 	}
+// 	}.bind(this))
 // };
-
-
 
 Section.prototype.download = function (callback) {
 	if (!callback) {
 		callback = function () {}
 	}
+	if (this.dataStatus == macros.DATASTATUS_DONE) {
+		return callback(null, this)
+	};
 
 	this.dataStatus = macros.DATASTATUS_LOADING;
 

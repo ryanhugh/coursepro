@@ -1,25 +1,28 @@
 <style>
-/*
-	body {
-		margin: 40px 10px;
-		padding: 0;
-		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
-		font-size: 14px;
-	}
-*/
 
-	.padding {
-	    height: 100px;
-	}
+.padding {
+    height: 100px;
+}
 
+#calendarId {
+    max-width: 750px;
+    margin: 0 auto;
+    margin-left: 376px;
+    display: inline-block;
+}
 
-	#calendarId {
-		max-width: 700px;
-		margin: 0 auto;
-		margin-left: 376px;
-	}
-
+.calenderSelectSubject {
+    width: 290px;
+    right: 201px;
+    top: 85px;
+    z-index: 999999;
+    display: inline-block;
+    vertical-align: top;
+}
 </style>
 <div class="padding"></div>
 
-<div id="calendarId"></div>
+
+<div ui-calendar="uiConfig.calendar" class="span8 calendar" ng-model="eventSources" id="calendarId"></div>
+
+<div subject-class-selector class="calenderSelectSubject"></div>
