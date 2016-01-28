@@ -609,6 +609,12 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 
 
 UsersDB.prototype.addIdsToLists = function (listName, classMongoIds, sectionMongoIds, loginKey, callback) {
+	// http://stackoverflow.com/questions/9759972/what-characters-are-not-allowed-in-mongodb-field-names
+	if (_(listName).includes('.') || listName[0] == '$') {
+		return callback('invalid list name', listName)
+	};
+
+
 	this.find({
 			loginKey: loginKey
 		}, {},
@@ -741,6 +747,12 @@ UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectio
 // };
 
 UsersDB.prototype.setUserVar = function (name, value, loginKey, callback) {
+	// http://stackoverflow.com/questions/9759972/what-characters-are-not-allowed-in-mongodb-field-names
+	if (_(name).includes('.') || name[0] == '$') {
+		return callback('invalid list name', name)
+	};
+
+
 	this.find({
 		loginKey: loginKey
 	}, {}, function (err, user) {

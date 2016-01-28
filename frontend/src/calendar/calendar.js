@@ -8,6 +8,7 @@ var user = require('../user')
 
 var fullcalendar = require('fullcalendar')
 var moment = require('moment')
+var queue = require('queue-async')
 
 function Calendar($scope) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
@@ -16,7 +17,7 @@ function Calendar($scope) {
 	$scope.uiConfig = {
 		calendar: {
 			header: false,
-			defaultDate: '1970-01-06', 
+			defaultDate: '1970-01-06',
 			minTime: '08:00:00',
 			maxTime: '20:00:00',
 			defaultView: 'agendaWeek',
@@ -24,69 +25,49 @@ function Calendar($scope) {
 			weekends: false, //unless there are meetings on weekends
 			columnFormat: 'ddd',
 			height: 550,
-			eventRender: this.eventRender.bind(this)
+			contentHeight: 550,
+			// aspectRatio: 1,
+			// eventRender: this.eventRender.bind(this)
 		}
 	};
 
+	//events that are shown on the calendar
+	// fullcalender requires that it is a list of lists of events
 	this.$scope.eventSources = [
-		[{
-			"title": "Meeting",
-			"start": "1970-01-03T10:30:00",
-			"end": "1970-01-01T12:30:00",
-			"_id": 1
-		}, {
-			"title": "Lunch",
-			"start": "1970-01-01T12:00:00",
-			"_id": 2
-		}, {
-			"title": "Meeting",
-			"start": "1970-01-01T14:30:00",
-			"_id": 3
-		}, {
-			"title": "Happy Hour",
-			"start": "1970-01-01T17:30:00",
-			"_id": 4
-		}, {
-			"title": "Dinner",
-			"start": "1970-01-01T20:00:00",
-			"_id": 5
-		}, {
-			"title": "Birthday Party",
-			"start": "2016-01-13T08:00:00",
-			"_id": 6
-		}, {
-			"title": "Open Sesame",
-			"start": "1970-01-01T09:00:00+00:00",
-			"end": "1970-01-01T10:00:00+00:00",
-			"className": ["openSesame"],
-			"_id": 7
-		}, {
-			"title": "Algorithms and Data",
-			"start": "1970-01-01T13:35:00+00:00",
-			"end": "1970-01-01T15:15:00+00:00",
-			"_id": 8
-		}, {
-			"title": "Algorithms and Data",
-			"start": "1970-01-01T13:35:00+00:00",
-			"end": "1970-01-01T15:15:00+00:00",
-			"_id": 9
-		}, {
-			"title": "Fin Acctng & Reporting (hon)",
-			"start": "1970-01-01T08:00:00+00:00",
-			"end": "1970-01-01T09:05:00+00:00",
-			_id: 19,
-		}, {
-			"title": "Fin Acctng & Reporting (hon)",
-			"start": "1970-01-01T08:00:00+00:00",
-			"end": "1970-01-01T09:05:00+00:00"
-		}, {
-			"title": "Fin Acctng & Reporting (hon)",
-			"start": "1970-01-01T08:00:00+00:00",
-			"end": "1970-01-01T09:05:00+00:00"
-		}]
+		[]
 	]
 
+
+ 
+
+	this.$scope.classes = []
+
 	this.$scope.addClass = this.addClass.bind(this)
+	user.loadList(this.getListName(), function (err, list) {
+		var q = queue();
+
+		q.defer(function (callback) {
+			list.classes.forEach(function (aClass) {
+				aClass.loadSections(function (err) {
+					callback(err)
+				}.bind(this))
+			}.bind(this))
+		}.bind(this))
+
+		q.awaitAll(function (err) {
+			if (err) {
+				elog(err)
+			}
+
+			this.$scope.classes = list.classes
+
+			this.updateCalendar()
+
+			setTimeout(function () {
+				this.$scope.$apply();
+			}.bind(this), 0)
+		}.bind(this))
+	}.bind(this))
 }
 
 
@@ -94,27 +75,51 @@ Calendar.isPage = true;
 Calendar.$inject = ['$scope']
 
 
-Calendar.prototype.addSection = function (section) {
-	// section.getDateMeetingTimestamps()
-	if (section.meetings) {
-		section.meetings.forEach(function (meeting) {
-			meeting.timeMoments.forEach(function (event) {
+//current calendar list must be loaded
+Calendar.prototype.updateCalendar = function () {
+ 
 
-				this.$scope.eventSources[0].push({
-					title: section.classInstance.name,
-					start: event.start.format(),
-					end: event.end.format()
-				})
+	user.loadList(this.getListName(), function (err, list) {
+		setTimeout(function () {
 
+
+			//remove the old calendarEvents
+			this.$scope.eventSources[0] = []
+
+			var sections = []
+
+			//get a list of sections that are pinned
+			list.classes.forEach(function (aClass) {
+				aClass.sections.forEach(function (section) {
+					if (this.isSectionPinned(section)) {
+						sections.push(section)
+					};
+				}.bind(this))
 			}.bind(this))
-		}.bind(this))
-	}
 
-	setTimeout(function () {
-			this.$scope.$apply();
+
+
+			sections.forEach(function (section) {
+				section.meetings.forEach(function (meeting) {
+					meeting.timeMoments.forEach(function (event) {
+
+						this.$scope.eventSources[0].push({
+							title: section.classInstance.name,
+							start: event.start.format(),
+							end: event.end.format()
+						})
+
+					}.bind(this))
+				}.bind(this))
+			}.bind(this))
+
+			this.$scope.$apply()
+
+
 		}.bind(this), 0)
-		// debugger
+	}.bind(this))
 };
+
 
 Calendar.prototype.addClass = function (aClass) {
 
@@ -124,18 +129,45 @@ Calendar.prototype.addClass = function (aClass) {
 			return;
 		}
 
+		this.$scope.classes.push(aClass)
+
+		setTimeout(function () {
+			this.$scope.$apply();
+		}.bind(this), 0)
+
+		return;
+
 		if (aClass.sections.length > 0) {
 			this.addSection(aClass.sections[0])
 		};
 	}.bind(this))
 };
 
-
-Calendar.prototype.eventRender = function (event, element, view) {
-	console.log("i");
-	//make the event pretty here
-
+Calendar.prototype.getListName = function () {
+	return (user.getValue('lastSelectedCollege') + '/' + user.getValue('lastSelectedTerm') + '/Primary Schedule').replace(/\./g, '')
 };
+
+Calendar.prototype.isSectionPinned = function (section) {
+	return user.getListIncludesSection(this.getListName(), section)
+};
+
+Calendar.prototype.toggleSectionPinned = function (section) {
+	user.toggleListContainsSection(this.getListName(), section)
+
+	this.updateCalendar()
+};
+
+
+Calendar.prototype.unpinClass = function(aClass) {
+	user.removeFromList(this.getListName(),[aClass],aClass.sections)
+	this.updateCalendar()
+};
+
+// Calendar.prototype.eventRender = function (event, element, view) {
+// 	console.log("i");
+// 	//make the event pretty here
+
+// };
 
 
 

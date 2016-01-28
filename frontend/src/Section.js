@@ -31,6 +31,10 @@ function Section(config) {
 	//pointer to the class instance that contains this
 	this.classInstance = null;
 
+	//seperate reasons to meet: eg Lecture or Lab.
+	//each of these then has times, and days
+	this.meetings = []
+
 
 	//copy over all given attrs
 	for (var attrName in config) {
@@ -323,9 +327,9 @@ Section.prototype.download = function (callback) {
 
 		//safe to copy all attrs?
 		for (var attrName in serverData) {
-			if (this[attrName] !== undefined && this[attrName] !== serverData[attrName]) {
-				elog("ERROR server returned data that was not equal to data here??", this[attrName], serverData[attrName], this, serverData)
-			}
+			// if (this[attrName] !== undefined && this[attrName] !== serverData[attrName]) {
+				// elog("ERROR server returned data that was not equal to data here??", this[attrName], serverData[attrName], this, serverData)
+			// }
 
 			this[attrName] = serverData[attrName]
 		}

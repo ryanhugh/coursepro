@@ -18,9 +18,10 @@ function User() {
     //email and name are copied to this when done loading
     //sections and classes watching, when loaded, are copied to this.watching
     this.dbData = {
-        lists: {},
-        vars: {}
-    }
+            lists: {},
+            vars: {}
+        }
+        //lastSelectedCollege and lastSelectedTerm are used now
 
     //here, actual instances of classes and sections are stored
     this.lists = {
@@ -287,7 +288,7 @@ User.prototype.loadList = function (listName, callback) {
     if (this.lists[listName]) {
 
         if (this.lists[listName].dataStatus === macros.DATASTATUS_DONE) {
-            return callback()
+            return callback(null, this.lists[listName])
         };
 
         if (this.lists[listName].dataStatus !== macros.DATASTATUS_NOTSTARTED && this.lists[listName].dataStatus !== undefined) {
@@ -297,8 +298,10 @@ User.prototype.loadList = function (listName, callback) {
     };
 
     if (!this.dbData.lists[listName]) {
-        return callback()
+        return callback(null, [])
     };
+
+    this.ensureList(listName)
 
 
     this.lists[listName].dataStatus = macros.DATASTATUS_LOADING
@@ -345,7 +348,7 @@ User.prototype.loadList = function (listName, callback) {
             return callback(err)
         }
         this.lists[listName].dataStatus = macros.DATASTATUS_DONE;
-        callback()
+        callback(null, this.lists[listName])
     }.bind(this))
 };
 
@@ -418,14 +421,30 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
         sectionIds.push(section._id)
     }.bind(this))
 
+    //add the seciton, but make sure to not add duplicate sectin
+    //it could be a different instance of that same section
+    sections.forEach(function (section) {
+        if (_.filter(this.lists[listName].sections, {
+                _id: section._id
+            }).length === 0) {
+            this.lists[listName].sections.push(section)
+        }
+    }.bind(this))
+
+    classes.forEach(function (aClass) {
+        if (_.filter(this.lists[listName].classes, {
+                _id: aClass._id
+            }).length === 0) {
+            this.lists[listName].classes.push(aClass)
+        }
+    }.bind(this))
+
 
     //add any classes given to both this.lists and this.dbData.lists
-    this.lists[listName].classes = _.uniq(this.lists[listName].classes.concat(classes))
     this.dbData.lists[listName].classes = _.uniq(this.dbData.lists[listName].classes.concat(classIds))
 
 
     //add any sections given to both this.lists and this.dbData.lists
-    this.lists[listName].sections = _.uniq(this.lists[listName].sections.concat(sections))
     this.dbData.lists[listName].sections = _.uniq(this.dbData.lists[listName].sections.concat(sectionIds))
 
 
@@ -539,6 +558,15 @@ User.prototype.getListIncludesSection = function (listName, section) {
     }
 };
 
+User.prototype.getList = function (listName) {
+    if (!this.getAuthenticated(section)) {
+        return null;
+    }
+
+    this.ensureList(listName)
+
+    return this.lists[listName]
+};
 
 // User.prototype.setListIncludesSection = function (listName, section) {
 //  if (!this.isAuthAndLoaded(section)) {
@@ -554,6 +582,10 @@ User.prototype.getListIncludesSection = function (listName, section) {
 // };
 
 User.prototype.toggleListContainsSection = function (listName, section, callback) {
+    if (!callback) {
+        callback = function () {}
+    }
+
     if (!this.isAuthAndLoaded(section)) {
         return callback('not loaded');
     }
@@ -580,7 +612,7 @@ User.prototype.toggleListContainsClass = function (listName, aClass, addSections
     if (!callback) {
         callback = function () {}
     }
-    
+
     if (!this.isAuthAndLoaded(aClass)) {
         return callback('not loaded');
     }

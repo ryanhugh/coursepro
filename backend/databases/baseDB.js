@@ -83,6 +83,10 @@ BaseDB.prototype.updateDatabase = function (newData, oldData, callback) {
 		this.table.update({
 			_id: newData._id
 		}, _.cloneDeep(newData), {}, function (err, numReplaced) {
+			if (err) {
+				console.log("ERROR",err);
+				return callback(err)
+			};
 			if (numReplaced !== 1) {
 				console.log('ERROR: updated !==0?', numReplaced, newData);
 			};

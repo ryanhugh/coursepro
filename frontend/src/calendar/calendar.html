@@ -1,23 +1,48 @@
 <style>
-
 .padding {
     height: 100px;
 }
 
 #calendarId {
-    max-width: 750px;
+    max-width: 700px;
     margin: 0 auto;
-    margin-left: 376px;
+    margin-left: 308px;
     display: inline-block;
+    padding-right: 8px;
 }
 
-.calenderSelectSubject {
-    width: 290px;
-    right: 201px;
+.calendarRightPanel {
     top: 85px;
     z-index: 999999;
     display: inline-block;
     vertical-align: top;
+    max-width: 350px;
+}
+
+.calenderSelectSubject {
+    width: 350px;
+    right: 201px;
+}
+
+.calendarRightPanel .panel-body {
+    padding-bottom: 0;
+    padding-top: 2px;
+}
+
+.calendarRightPanel table {
+    margin-bottom: 11px;
+}
+
+.calendarUnpinned {
+    opacity: .4;
+}
+
+.calendarPinned {
+    opacity: .8;
+}
+
+uib-accordion .accordion-toggle {
+    padding: 0 !important;
 }
 </style>
 <div class="padding"></div>
@@ -25,4 +50,78 @@
 
 <div ui-calendar="uiConfig.calendar" class="span8 calendar" ng-model="eventSources" id="calendarId"></div>
 
-<div subject-class-selector class="calenderSelectSubject"></div>
+
+<div class="calendarRightPanel">
+    <uib-accordion close-others="false">
+        <uib-accordion-group is-open="isOpen" ng-repeat="class in classes">
+            <uib-accordion-heading>
+
+                <div  style="position:relative;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;">
+
+
+                <span class="glyphicon" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;vertical-align: top;"></span>
+
+                <span style="display: inline-block;max-width: 290px;">
+
+                &nbsp;&nbsp;{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
+                </span>
+
+                <div class="glyphicon glyphicon-remove" style="opacity:.3;position: absolute;top: 7px;right: 7px;" ng-click="calendar.unpinClass(class)"></div>
+                </div>
+
+            </uib-accordion-heading>
+
+
+            <table class="table table-striped" ng-if="class.sections.length>0">
+                <thead>
+                    <tr>
+
+                        <th>Pin</th>
+                        <th>
+                            <ng-pluralize count="class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
+                        </th>
+
+                        <th>Start</th>
+                        <th>Seats</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="section in class.sections" ng-click="calendar.toggleSectionPinned(section)" style="cursor:pointer">
+
+                        <td>
+                            <div class="glyphicon glyphicon-asterisk" ng-class="calendar.isSectionPinned(section)?'calendarPinned':'calendarUnpinned'"></div>
+                        </td>
+
+
+                        <td>{{section.profs.join(', ')}}</td>
+                        <td>{{section.startTimesStrings.join(", ")}}</td>
+
+                        <td>
+
+                            <!-- don't display the "/" until these are loaded -->
+                            <span ng-if="section.seatsRemaining || section.seatsCapacity">
+                                {{section.seatsRemaining}}/{{section.seatsCapacity}}
+                            </span>
+
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+            <div ng-if="class.crns.length==0">
+                <br>No sections found
+            </div>
+
+
+
+            <!-- body here -->
+        </uib-accordion-group>
+    </uib-accordion>
+
+
+
+    <div subject-class-selector class="calenderSelectSubject"></div>
+
+
+</div>
