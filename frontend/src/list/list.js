@@ -15,10 +15,18 @@ function List() {
 	this.$scope.$on('$routeChangeSuccess', function () {
 
 		//wait for a subject
-		if (!this.$routeParams.subject) {
-			return;
-		};
-		this.go()
+		if (this.$routeParams.subject) {
+			this.$scope.focusSelector = false;
+			this.go()
+		}
+		else {
+			this.$scope.focusSelector = true;
+		}
+
+		setTimeout(function () {
+			this.$scope.$apply();
+		}.bind(this),0)
+ 
 
 	}.bind(this))
 
