@@ -19,8 +19,7 @@ function SelectorsMgr() {
 	window.selectorsMgr = this;
 
 	//these must be made in this order, because they keep references to the next one (except class)
-	// this.class = new Class();
-	// this.subject = new Subject();
+
 	this.term = new Term();
 	this.college = new College();
 
@@ -28,83 +27,75 @@ function SelectorsMgr() {
 	this.selectors = [
 		this.college,
 		this.term,
-		// this.subject, 
-		// this.class/
 	]
 
-	this.$scope.$on('$routeChangeSuccess', function () {
-
-		var params = this.$routeParams;
-		if (_.isEqual(params, {})) {
-
-			//if no route and no value in college, 
-			if (!this.college.getValue()) {
-
-				//if user has values, use those
-
-				var lastSelectedCollege = user.getValue('lastSelectedCollege')
-
-				//what if user has not loaded yet????
-				if (lastSelectedCollege) {
-					// show to dropdown, but not opened
-					this.college.setup({
-						shouldOpen: false,
-						defaultValue: lastSelectedCollege
-					})
-
-
-					//load term too?
-					var lastSelectedTerm = user.getValue('lastSelectedTerm')
-
-					// show to dropdown, but not opened
-					if (lastSelectedTerm) {
-						this.term.setup({
-							shouldOpen: false,
-							defaultValue: lastSelectedTerm
-						})
-
-						// this.subject.setup({
-						// 	shouldOpen: false,
-						// 	defaultValue: this.subject.helpId
-						// })
-					}
-					else {
-						this.term.setup({
-							shouldOpen: false,
-							defaultValue: this.term.helpId
-						})
-					}
-
-
-
-				}
-				else {
-					// show to dropdown, but not opened
-					this.college.setup({
-						shouldOpen: false,
-						defaultValue: this.college.helpId
-					})
-				}
-			};
-			return;
-		};
-
-		var values = [params.host, params.termId, params.subject, params.classId]
-
-		values.forEach(function (value, i) {
-			values[i] = decodeURIComponent(value)
-		}.bind(this))
-
-		selectorsMgr.setSelectors(values, true);
-	}.bind(this));
+	this.$scope.$on('$routeChangeSuccess', this.updateSelectors.bind(this));
+	this.updateSelectors();
 }
-SelectorsMgr.$inject = ['$scope', '$routeParams', '$route', '$location']
 
+SelectorsMgr.$inject = ['$scope', '$routeParams', '$route', '$location']
 
 //prototype constructor
 SelectorsMgr.prototype = Object.create(BaseDirective.prototype);
 SelectorsMgr.prototype.constructor = SelectorsMgr;
 
+SelectorsMgr.prototype.updateSelectors = function () {
+
+	var params = this.$routeParams;
+	if (_.isEqual(params, {})) {
+
+		//if no route and no value in college, 
+		if (!this.college.getValue()) {
+
+			//if user has values, use those
+
+			var lastSelectedCollege = user.getValue('lastSelectedCollege')
+
+			//what if user has not loaded yet????
+			if (lastSelectedCollege) {
+				// show to dropdown, but not opened
+				this.college.setup({
+					shouldOpen: false,
+					defaultValue: lastSelectedCollege
+				})
+
+
+				//load term too?
+				var lastSelectedTerm = user.getValue('lastSelectedTerm')
+
+				// show to dropdown, but not opened
+				if (lastSelectedTerm) {
+					this.term.setup({
+						shouldOpen: false,
+						defaultValue: lastSelectedTerm
+					})
+				}
+				else {
+					this.term.setup({
+						shouldOpen: false,
+						defaultValue: this.term.helpId
+					})
+				}
+			}
+			else {
+				// show to dropdown, but not opened
+				this.college.setup({
+					shouldOpen: false,
+					defaultValue: this.college.helpId
+				})
+			}
+		};
+		return;
+	};
+
+	var values = [params.host, params.termId, params.subject, params.classId]
+
+	values.forEach(function (value, i) {
+		values[i] = decodeURIComponent(value)
+	}.bind(this))
+
+	selectorsMgr.setSelectors(values, true);
+};
 
 SelectorsMgr.prototype.closeAllSelectors = function () {
 	this.selectors.forEach(function (selector) {

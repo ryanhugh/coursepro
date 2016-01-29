@@ -52,7 +52,7 @@ uib-accordion .accordion-toggle {
 
 
 <div class="calendarRightPanel">
-    <uib-accordion close-others="false">
+    <uib-accordion close-others="false" ng-if = "classes.length != 0">
         <uib-accordion-group is-open="isOpen" ng-repeat="class in classes">
             <uib-accordion-heading>
 
@@ -109,8 +109,8 @@ uib-accordion .accordion-toggle {
                     </tr>
                 </tbody>
             </table>
-            <div ng-if="class.crns.length==0">
-                <br>No sections found
+            <div ng-if="class.crns.length==0" style="padding: 10px;">
+                No sections found
             </div>
 
 

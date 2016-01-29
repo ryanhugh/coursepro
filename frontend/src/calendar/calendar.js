@@ -38,7 +38,7 @@ function Calendar($scope) {
 	]
 
 
- 
+
 
 	this.$scope.classes = []
 
@@ -46,8 +46,8 @@ function Calendar($scope) {
 	user.loadList(this.getListName(), function (err, list) {
 		var q = queue();
 
-		q.defer(function (callback) {
-			list.classes.forEach(function (aClass) {
+		list.classes.forEach(function (aClass) {
+			q.defer(function (callback) {
 				aClass.loadSections(function (err) {
 					callback(err)
 				}.bind(this))
@@ -77,7 +77,7 @@ Calendar.$inject = ['$scope']
 
 //current calendar list must be loaded
 Calendar.prototype.updateCalendar = function () {
- 
+
 
 	user.loadList(this.getListName(), function (err, list) {
 		setTimeout(function () {
@@ -101,6 +101,11 @@ Calendar.prototype.updateCalendar = function () {
 
 			sections.forEach(function (section) {
 				section.meetings.forEach(function (meeting) {
+					if (meeting.isExam) {
+						return;
+					};
+
+
 					meeting.timeMoments.forEach(function (event) {
 
 						this.$scope.eventSources[0].push({
@@ -112,6 +117,8 @@ Calendar.prototype.updateCalendar = function () {
 					}.bind(this))
 				}.bind(this))
 			}.bind(this))
+
+			this.$scope.classes = list.classes
 
 			this.$scope.$apply()
 
@@ -134,12 +141,6 @@ Calendar.prototype.addClass = function (aClass) {
 		setTimeout(function () {
 			this.$scope.$apply();
 		}.bind(this), 0)
-
-		return;
-
-		if (aClass.sections.length > 0) {
-			this.addSection(aClass.sections[0])
-		};
 	}.bind(this))
 };
 
@@ -158,9 +159,14 @@ Calendar.prototype.toggleSectionPinned = function (section) {
 };
 
 
-Calendar.prototype.unpinClass = function(aClass) {
-	user.removeFromList(this.getListName(),[aClass],aClass.sections)
+Calendar.prototype.unpinClass = function (aClass) {
+	user.removeFromList(this.getListName(), [aClass], aClass.sections)
 	this.updateCalendar()
+
+	setTimeout(function () {
+		this.$scope.$apply();
+	}.bind(this), 0)
+
 };
 
 // Calendar.prototype.eventRender = function (event, element, view) {

@@ -223,9 +223,9 @@ User.prototype.download = function (callbackOrConfig, callback) {
 
         //copy the attrs to this.dbData
         for (var attrName in user) {
-            if (!_.isEqual(this.dbData[attrName], user[attrName]) && this.dbData[attrName] !== undefined) {
-                console.log("ERROR overrideing value", attrName, this.dbData[attrName], user[attrName]);
-            }
+            // if (!_.isEqual(this.dbData[attrName], user[attrName]) && this.dbData[attrName] !== undefined) {
+            //     console.log("ERROR overrideing value", attrName, this.dbData[attrName], user[attrName]);
+            // }
             this.dbData[attrName] = user[attrName]
         }
 
