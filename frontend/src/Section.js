@@ -207,11 +207,11 @@ Section.prototype.calculateMeetingDates = function () {
 			meeting.times[dayIndex].forEach(function (event) {
 
 				//3 is to set in the second week of 1970
-				var day = parseInt(dayIndex)+3
+				var day = parseInt(dayIndex) + 3
 
 				meeting.timeMoments.push({
-					start: moment.utc(event.start * 1000).add(day,'day'),
-					end: moment.utc(event.end * 1000).add(day,'day'),
+					start: moment.utc(event.start * 1000).add(day, 'day'),
+					end: moment.utc(event.end * 1000).add(day, 'day'),
 				})
 			}.bind(this))
 		}
@@ -224,8 +224,6 @@ Section.prototype.groupSectionTimes = function () {
 		return;
 	}
 	this.profs = []
-	this.locations = []
-
 	this.meetings.forEach(function (meeting) {
 
 
@@ -237,15 +235,9 @@ Section.prototype.groupSectionTimes = function () {
 		}.bind(this))
 
 
-		if (!_(this.locations).includes(meeting.where)) {
-			this.locations.push(meeting.where);
-		}
-
 		meeting.building = meeting.where.replace(/\d+\s*$/i, '').trim()
 
-		if (!_(this.locations).includes(meeting.where)) {
-			this.locations.push(meeting.where)
-		};
+
 	}.bind(this))
 
 	//group the times by start/end time (so can put days underneath)
@@ -263,6 +255,15 @@ Section.prototype.groupSectionTimes = function () {
 	this.createDayStrings();
 	this.calculateStartTimes();
 	this.calculateMeetingDates();
+
+
+	this.locations = []
+
+	this.meetings.forEach(function (meeting) {
+		if (!_(this.locations).includes(meeting.where) && !meeting.isExam) {
+			this.locations.push(meeting.where);
+		}
+	}.bind(this))
 
 	if (this.waitRemaining === 0 && this.waitCapacity === 0) {
 		this.hasWaitList = false;
@@ -328,7 +329,7 @@ Section.prototype.download = function (callback) {
 		//safe to copy all attrs?
 		for (var attrName in serverData) {
 			// if (this[attrName] !== undefined && this[attrName] !== serverData[attrName]) {
-				// elog("ERROR server returned data that was not equal to data here??", this[attrName], serverData[attrName], this, serverData)
+			// elog("ERROR server returned data that was not equal to data here??", this[attrName], serverData[attrName], this, serverData)
 			// }
 
 			this[attrName] = serverData[attrName]

@@ -68,12 +68,9 @@ SubjectClassSelector.prototype.updateSubjects = function () {
 
 		this.$scope.subjects = subjects
 
-
-		// setTimeout(function () {
-		//     this.$scope.$apply()
-		// }.bind(this),0)
-
-
+		setTimeout(function () {
+		    this.$scope.$apply()
+		}.bind(this),0)
 
 	}.bind(this))
 };
@@ -160,8 +157,12 @@ SubjectClassSelector.link = function (scope, element, attrs) {
 	if (attrs.onlySubject === 'false') {
 		attrs.onlySubject = false;
 	}
+	if (attrs.focusSelector === 'false') {
+		attrs.focusSelector = false;
+	}
 
 	scope.onlySubject = attrs.onlySubject
+	scope.focusSelector = attrs.focusSelector
 };
 
 

@@ -29,6 +29,6 @@
 
  -->
 
-<selectize placeholder='Select Subject...' options='subjects' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedSubject" ng-disabled='disable' required='true'></selectize>
+<selectize ng-if = "subjects" placeholder='Select Subject...' options='subjects' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedSubject" ng-focused = "{{focusSelector}}" required='true'></selectize>
 
-<selectize ng-if = "subjectClassSelector.showClassesSelector" placeholder='Pick some things...' options='classes' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedClass" ng-disabled='disable' required='true' id="subjectSelectorId"></selectize>
+<selectize ng-if = "subjectClassSelector.showClassesSelector" placeholder='Select Class...' options='classes' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedClass" required='true' id="subjectSelectorId"></selectize>

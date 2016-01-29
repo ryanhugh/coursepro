@@ -1,6 +1,8 @@
 'use strict';
 var _ = require('lodash')
+var macros = require('./macros')
 var angular = require('angular')
+
 // require('ui-calendar')
 
 

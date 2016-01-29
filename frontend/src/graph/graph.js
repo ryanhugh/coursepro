@@ -37,13 +37,21 @@ function Graph() {
 		path[attrName] = decodeURIComponent(this.$routeParams[attrName])
 	}
 
+	//if given path, load graph
+	if (path.classId && path.subject) {
+		if (_(this.$location.path()).startsWith('/search')) {
+			this.search(path)
+		}
+		else if (_(this.$location.path()).startsWith('/graph')) {
+			this.createGraph(path)
+		}
 
-	if (_(this.$location.path()).startsWith('/search')) {
-		this.search(path)
+		this.$scope.focusSelector = false;
 	}
-	else if (_(this.$location.path()).startsWith('/graph')) {
-		this.createGraph(path)
+	else {
+		this.$scope.focusSelector = true;
 	}
+
 
 	this.$scope.addClass = this.addClass.bind(this)
 }
@@ -58,7 +66,7 @@ Graph.prototype.addClass = function (aClass) {
 	var obj = aClass.getIdentifer().full.obj;
 
 	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classId))
-	// this.createGraph()
+		// this.createGraph()
 };
 
 Graph.prototype.go = function (tree, callback) {

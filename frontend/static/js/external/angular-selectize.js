@@ -3,35 +3,52 @@
  * https://github.com/machineboy2045/angular-selectize
  **/
 
-angular.module('selectize', []).value('selectizeConfig', {}).directive("selectize", ['selectizeConfig', function(selectizeConfig) {
+angular.module('selectize', []).value('selectizeConfig', {}).directive("selectize", ['selectizeConfig', function (selectizeConfig) {
   return {
     restrict: 'EA',
     require: '^ngModel',
-    scope: { ngModel: '=', config: '=?', options: '=?', ngDisabled: '=', ngRequired: '&' },
-    link: function(scope, element, attrs, modelCtrl) {
+    scope: {
+      ngModel: '=',
+      config: '=?',
+      options: '=?',
+      ngDisabled: '=',
+      ngRequired: '&'
+    },
+    link: function (scope, element, attrs, modelCtrl) {
 
       var selectize,
-          settings = angular.extend({}, Selectize.defaults, selectizeConfig, scope.config);
+        settings = angular.extend({}, Selectize.defaults, selectizeConfig, scope.config);
 
       scope.options = scope.options || [];
       scope.config = scope.config || {};
 
-      var isEmpty = function(val) {
+      var isEmpty = function (val) {
         return val === undefined || val === null || !val.length; //support checking empty arrays
       };
 
-      var toggle = function(disabled) {
+      var toggle = function (disabled) {
         disabled ? selectize.disable() : selectize.enable();
       }
+      var focus = function (focused) {
+        if (focused == 'false') {
+          focused = false;
+        };
 
-      var validate = function() {
+        if (focused) {
+          setTimeout(function () {
+            selectize.open()
+          }.bind(this), 0)
+        };
+      }.bind(this)
+
+      var validate = function () {
         var isInvalid = (scope.ngRequired() || attrs.required || settings.required) && isEmpty(scope.ngModel);
         modelCtrl.$setValidity('required', !isInvalid);
       };
 
-      var setSelectizeOptions = function(curr, prev) {
-        angular.forEach(prev, function(opt){
-          if(curr.indexOf(opt) === -1){
+      var setSelectizeOptions = function (curr, prev) {
+        angular.forEach(prev, function (opt) {
+          if (curr.indexOf(opt) === -1) {
             var value = opt[settings.valueField];
             selectize.removeOption(value, true);
           }
@@ -43,7 +60,7 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
         setSelectizeValue();
       }
 
-      var setSelectizeValue = function() {
+      var setSelectizeValue = function () {
         validate();
 
         selectize.$control.toggleClass('ng-valid', modelCtrl.$valid);
@@ -56,20 +73,20 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
         }
       }
 
-      settings.onChange = function(value) {
+      settings.onChange = function (value) {
         var value = angular.copy(selectize.items);
         if (settings.maxItems == 1) {
           value = value[0]
         }
-        modelCtrl.$setViewValue( value );
+        modelCtrl.$setViewValue(value);
 
         if (scope.config.onChange) {
           scope.config.onChange.apply(this, arguments);
         }
       };
 
-      settings.onOptionAdd = function(value, data) {
-        if( scope.options.indexOf(data) === -1 ) {
+      settings.onOptionAdd = function (value, data) {
+        if (scope.options.indexOf(data) === -1) {
           scope.options.push(data);
 
           if (scope.config.onOptionAdd) {
@@ -78,7 +95,7 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
         }
       };
 
-      settings.onInitialize = function() {
+      settings.onInitialize = function () {
         selectize = element[0].selectize;
 
         setSelectizeOptions(scope.options);
@@ -92,11 +109,20 @@ angular.module('selectize', []).value('selectizeConfig', {}).directive("selectiz
         scope.$watchCollection('options', setSelectizeOptions);
         scope.$watch('ngModel', setSelectizeValue);
         scope.$watch('ngDisabled', toggle);
+        scope.$watch('ngFocused', focus);
+
+        setSelectizeValue()
+
+
+        focus(attrs.ngFocused)
+          // if (attrs.ngFocused) {
+          // };
+
       };
 
       element.selectize(settings);
 
-      element.on('$destroy', function() {
+      element.on('$destroy', function () {
         if (selectize) {
           selectize.destroy();
           element = null;
