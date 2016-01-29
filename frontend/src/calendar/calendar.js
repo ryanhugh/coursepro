@@ -61,7 +61,14 @@ function Calendar($scope) {
 
 			this.$scope.classes = list.classes
 
-			this.updateCalendar()
+			if (list.classes.length == 0) {
+				this.$scope.focusSelector = true;
+			}
+			else {
+				this.$scope.focusSelector = false;
+				this.updateCalendar()
+			}
+
 
 			setTimeout(function () {
 				this.$scope.$apply();

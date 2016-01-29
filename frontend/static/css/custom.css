@@ -349,3 +349,9 @@ uib-accordion .accordion-toggle {
     padding-top: 10px;
     padding-bottom: 10px;
 }
+
+
+.noDisplay { 
+	display: none !important;
+}
+

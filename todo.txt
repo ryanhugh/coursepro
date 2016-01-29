@@ -1,7 +1,15 @@
 !!!!
 
+search
+settings -> saved
+help, and graph help
+
 login, selectors, loading spinners, search, share link? settings -> starred
 make subjectClass expand on calender open, maybe move it to just scope instead of attr?
+and put a total credits somewhere
+put credits on there somewhere and lastupdatetime
+and change the view on neu.edu to the icon
+bring add classes on settings to the top
 
 
 to detect mailinator: nslookup for 23.239.11.30 (most of their alts) or 45.33.81.172 (mailinator.com)

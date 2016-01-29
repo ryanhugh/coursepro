@@ -42,8 +42,7 @@ List.prototype = Object.create(BaseDirective.prototype);
 List.prototype.constructor = List;
 
 List.prototype.go = function () {
-
-
+	this.isLoading = true;
 	async.waterfall([
 
 			//fetch the user data
@@ -66,6 +65,7 @@ List.prototype.go = function () {
 			}.bind(this))
 
 			this.$scope.classes = classes
+			this.isLoading = false;
 			this.$scope.$apply()
 
 		}.bind(this))
