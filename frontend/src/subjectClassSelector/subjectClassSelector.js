@@ -13,7 +13,12 @@ function SubjectClassSelector() {
 	this.term = null;
 
 	//code of selected subject
-	this.selectedSubject = null;
+	if (this.$routeParams.subject) {
+		this.selectedSubject = this.$routeParams.subject
+	}
+	else {
+		this.selectedSubject = null;
+	}
 
 	this.selectedSubjectInstance = null;
 
@@ -28,6 +33,16 @@ function SubjectClassSelector() {
 	this.$scope.$watch('subjectClassSelector.selectedSubject', this.onSelectSubject.bind(this))
 
 	this.$scope.$watch('subjectClassSelector.selectedClass', this.onSelectClass.bind(this))
+
+
+	this.$scope.$on('$routeChangeSuccess', function () {
+		if (this.$routeParams.subject) {
+			this.selectedSubject = this.$routeParams.subject
+		}
+		else {
+			this.selectedSubject = null;
+		}
+	}.bind(this))
 }
 
 //called when select a class
@@ -69,8 +84,8 @@ SubjectClassSelector.prototype.updateSubjects = function () {
 		this.$scope.subjects = subjects
 
 		setTimeout(function () {
-		    this.$scope.$apply()
-		}.bind(this),0)
+			this.$scope.$apply()
+		}.bind(this), 0)
 
 	}.bind(this))
 };
@@ -85,12 +100,18 @@ SubjectClassSelector.prototype.onSelectSubject = function () {
 		subject: this.selectedSubject
 	})[0]
 
+	if (!subject) {
+		return;
+		debugger
+	};
+
 	this.selectedSubjectInstance = subject;
 
 	if (this.$scope.onlySubject) {
 
 		setTimeout(function () {
 			if (this.$scope.addSubject) {
+				console.log("called with yay");
 				this.$scope.addSubject(subject)
 			}
 			else {
@@ -167,7 +188,7 @@ SubjectClassSelector.link = function (scope, element, attrs) {
 
 
 
-SubjectClassSelector.$inject = ['$scope']
+SubjectClassSelector.$inject = ['$scope', '$routeParams']
 
 SubjectClassSelector.prototype.SubjectClassSelector = SubjectClassSelector;
 module.exports = SubjectClassSelector;

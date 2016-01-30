@@ -11,6 +11,7 @@ function Search() {
 
 }
 
+// '/search/:host/:termId/:subject?/:searchTerm?'
 
 Search.prototype.search = function(body, callback) {
 

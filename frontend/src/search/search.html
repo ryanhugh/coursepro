@@ -1,29 +1,29 @@
-<!--search -->
-<div class="input-group" id="adv-search">
-    <div class="input-group-btn">
-        <div class="btn-group" role="group">
-            <div class="dropdown dropdown-lg" search-dropdown="#searchDropdown">
-                <button type="button" class="btn btn-default" id="searchIcon" aria-expanded="false" style="background-color: transparent;border: transparent;">
-                    <span class="glyphicon glyphicon-search searchIcon"></span>
-                </button>
+<div class="container">
 
-                <div class="dropdown-menu dropdown-menu-right" role="menu" style="width: 250px;padding-right: 48px;padding-left: 10px;" id="searchDropdown">
-                    <div style="padding-bottom: 5px;">
-                        <span ng-if="!termText || !subjectText"> Select a term and subject
-                            <br> before searching !</span>
-                        <span ng-if="termText && subjectText">Search in {{termText}}
-                            <br> {{subjectText}} ! </span>
-                    </div>
+    <div style="padding-top:70px"></div>
 
-                    <form>
-                        <input class="form-control" type="text" ng-model="search.searchText"></input>
-                        <button type="submit" class="btn btn-primary" ng-click="search.searchFromEntry()">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                        </button>
-                    </form>
 
-                </div>
-            </div>
-        </div>
+    <h2 style="margin:0;display:inline-block">
+        Search
+    </h2>
+
+    <div style="display:inline-block;padding-left: 175px;vertical-align: top;">
+        <form style="white-space: nowrap;width: 221px;display: inline-block;">
+            <input class="form-control" type="text" ng-model="search.searchText" style="display: inline-block;" placeholder="Search for..."></input>
+            <button type="submit" class="btn btn-primary" ng-click="search.onEnter()" style="vertical-align: top;">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+            </button>
+        </form>
     </div>
+
+
+    <div subject-class-selector focus-selector="{{focusSelector}}" only-subject="true" style="width: 257px;display: inline-block;margin-left: 92px;vertical-align: bottom;"></div>
+
+
+    <div class-list></div>
+
+    <div class="spinner-loader" style="margin:0 auto;margin-left: 50%;margin-top: 120px;" ng-class="search.isLoading?'':'noDisplay'"></div>
+
+
+
 </div>

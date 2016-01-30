@@ -1,6 +1,4 @@
 <style type="text/css">
-
-
 .rightIcon {
     float: right;
     padding-right: 7px;
@@ -29,16 +27,12 @@
 
 
 
-<div class="page-header">
-    <h2>
-        Saved Classses
-    </h2>
+<span ng-show="settings.getLoadingHidden()" class="savedText animate">
+    <span ng-if="settings.showLoadingText()">Loading...</span>
+    <span ng-if="!settings.showLoadingText()">All changes saved</span>
+</span>
 
-    <span ng-show="settings.getLoadingHidden()" class="savedText animate">
-        <span ng-if="settings.showLoadingText()">Loading...</span>
-        <span ng-if="!settings.showLoadingText()">All changes saved</span>
-    </span>
-</div>
+<div class="page-header" style="margin-top:0px"></div>
 
 
 <uib-accordion close-others="false">

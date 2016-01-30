@@ -59,7 +59,7 @@ function Graph() {
 Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal']
 
 Graph.isPage = true;
-Graph.urls = ['/graph/:host/:termId/:subject?/:classId?', '/search/:host/:termId/:subject?/:searchTerm?']
+Graph.urls = ['/graph/:host/:termId/:subject?/:classId?']
 
 Graph.prototype.addClass = function (aClass) {
 
@@ -156,88 +156,6 @@ Graph.prototype.showClasses = function (classList, callback) {
 
 
 //search
-
-
-Graph.prototype.search = function ($routeParams) {
-	var value = $routeParams.searchTerm.trim()
-	if (value === '') {
-		return;
-	};
-
-	var value = value.replace(/\s+/g, '').toLowerCase()
-
-
-	//if found a class, open the class tree with the selectorsMgr and dont search for anything
-	// if (selectorsMgr.searchClasses(value)) {
-	// 	this.closeSearchBox();
-	// 	return;
-	// };
-
-
-	ga('send', {
-		'hitType': 'pageview',
-		'page': window.location.href,
-		'title': 'Coursepro.io'
-	});
-
-	console.log('searching for ', value)
-
-	// graph.beforeLoad()
-
-	request({
-		url: '/search',
-		type: 'POST',
-		body: {
-			host: $routeParams.host,
-			termId: $routeParams.termId,
-			subject: $routeParams.subject,
-			value: value
-		}
-	}, function (err, results) {
-		console.log('found ', results.length, ' classes!');
-
-
-		//update the deeplink here
-		if (results.length > 0) {
-			this.showClasses(results, function (err, tree) {
-				if (err) {
-					console.log('ERROR rendering tree...?', err, tree);
-					return;
-				}
-
-				treeMgr.logTree(tree, {
-					type: 'search',
-					host: $routeParams.host,
-					termId: $routeParams.termId,
-					subject: $routeParams.subject,
-					searchQuery: value
-				})
-			});
-		}
-		else {
-			this.classCount = 0
-
-
-			// console.log("FIX MEEEEEEE");
-			// // this.container.innerHTML = '<div style="font-size: 28px;text-align: center;padding-top: 200px;font-weight: 600;">Nothing Found!</div>'
-
-			// treeMgr.logTree({}, {
-			// 	type: 'search',
-			// 	host: $routeParams.host,
-			// 	termId: $routeParams.termId,
-			// 	subject: $routeParams.subject,
-			// 	searchQuery: value
-
-			// })
-		}
-
-		setTimeout(function () {
-			this.$scope.$apply();
-		}.bind(this), 0)
-
-	}.bind(this))
-};
-
 
 
 Graph.prototype.getCollegeName = function () {
