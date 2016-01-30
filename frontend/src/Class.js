@@ -426,26 +426,8 @@ Class.prototype.getHeighestProfCount = function() {
 	return count;
 };
 
-//returns {_id} if has id, else returns {host, termId, subject, classId}
-// Class.prototype.getIdentifer = function () {
-// 	if (this._id) {
-// 		return {
-// 			_id: this._id
-// 		}
-// 	}
-// 	else if (this.host && this.termId && this.subject && this.classId) {
-// 		return {
-// 			host: this.host,
-// 			termId: this.termId,
-// 			subject: this.subject,
-// 			classId: this.classId
-// 		}
-// 	}
-// 	else {
-// 		console.log('ERROR cant get id dont have enough info')
-// 		return null;
-// 	}
-// };
+
+
 
 //is can also be called through treeMgr, which will add class count of the tree
 Class.prototype.logTree = function (body) {

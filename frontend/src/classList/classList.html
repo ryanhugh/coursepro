@@ -23,6 +23,12 @@
     margin-top: -16px;
     color: #888;
 }
+
+.glyphicon-globe {
+    color: black;
+    opacity: .8;
+}
+
 </style>
 
 
@@ -61,6 +67,13 @@
         </uib-accordion-heading>
 
         {{class.desc}}
+
+
+        <div style="padding-top:5px" ng-if = "class.lastUpdateString">Updated {{class.lastUpdateString}}</div>
+
+        <div ng-if ="class.minCredits || class.maxCredits"></div>
+        
+
         <table class="table table-striped" ng-if="class.sections.length>0">
             <thead>
                 <tr>
@@ -75,7 +88,11 @@
                     <th>Open Seats/Total Seats</th>
                     <th ng-if="class.hasWaitList">Open/Total Waitlist Seats</th>
                     <th>Location</th>
-                    <th>URL</th>
+                    <th>
+                        <span uib-tooltip="Link to {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">Link</span>
+                        
+
+                    </th>
                     <th>Email
                         <br>Notifications</th>
                     <th>Saved</th>
@@ -113,7 +130,11 @@
                     </td>
 
                     <td>
-                        <a href="{{section.url}}" target="_blank">View on {{section.host}}</a>
+                        <a href="{{section.url}}" target="_blank">
+
+                            <div class="glyphicon glyphicon-globe"></div>
+
+                        </a>
                     </td>
 
                     <td>
