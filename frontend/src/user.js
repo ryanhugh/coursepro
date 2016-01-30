@@ -154,6 +154,7 @@ User.prototype.sendRequest = function (config, callback) {
     this.activeRequestCount++;
 
     this.lastRequestTime = new Date().getTime()
+    // console.log("resettting time!",this.lastRequestTime);
 
     request(config, function (err, response) {
 

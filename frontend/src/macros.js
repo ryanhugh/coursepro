@@ -25,15 +25,23 @@ function Macros() {
 		console.trace();
 
 		var bodyString;
-		try {
-			bodyString = {
-				msg:JSON.stringify(args)
+
+		var outputString = []
+
+		args.forEach(function (arg) {
+			
+			var str;
+			try {
+				str = JSON.stringify(arg)
 			}
-		}
-		catch (e) {
-			bodyString = {
-				msg: 'circular data'
+			catch (e) {
+				str = 'circular data'
 			}
+			outputString.push(str)
+		}.bind(this))
+
+		bodyString = {
+			msg:outputString.join('')
 		}
 
 		//use a separate calls stack in case this throws an error, it will not affect code that calls this

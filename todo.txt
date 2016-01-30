@@ -1,17 +1,15 @@
 !!!!
 
-search
-settings -> saved
 help, and graph help
-
-login, selectors, loading spinners, search, share link? settings -> starred
-make subjectClass expand on calender open, maybe move it to just scope instead of attr?
+login, selectors, share link? 
 and put a total credits somewhere
-put credits on there somewhere and lastupdatetime
+put credits on there somewhere and lastupdatetime on class list
 and change the view on neu.edu to the icon
 bring add classes on settings to the top
 google analytics errywhere
 classList cant call to settings in classlist.html, make the all changes saved work on all pages
+need to load sections before /remove from all with aclass.sections
+and fix the require case sensitivity for linux
 
 
 

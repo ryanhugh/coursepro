@@ -1,25 +1,25 @@
 <!-- needed for the dropdowns -->
 
-    <style type="text/css">
-    .navBarText {
-        color: #fff;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 15px;
-    }
-    
-    .navBarItem {
-        color: #fff;
-        display: inline-block;
-        z-index: 99999;
-    }
-    
-    .rightNavBarItem {
-        float: right;
-        display: inline-block;
-        margin-left: 31px;
-        margin-top: 14px;
-    }
-    </style>
+<style type="text/css">
+.navBarText {
+    color: #fff;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 15px;
+}
+
+.navBarItem {
+    color: #fff;
+    display: inline-block;
+    z-index: 99999;
+}
+
+.rightNavBarItem {
+    float: right;
+    display: inline-block;
+    margin-left: 31px;
+    margin-top: 14px;
+}
+</style>
 
 
 <div id="navbarContainerid">
@@ -36,10 +36,10 @@
 
 
                 <div class="rightNavBarItem">
-                    <a href="/#/settings">
-                        <div class="glyphicon glyphicon-cog navBarItem" style="color: white"></div>
+                    <a href="/#/saved">
+                        <div class="glyphicon glyphicon-star navBarItem" style="color: white"></div>
                         <div style="position: relative;top: -3px" class="navBarItem navBarText">
-                            Settings
+                            Saved
                         </div>
                     </a>
                 </div>
@@ -54,7 +54,6 @@
                 </div>
 
 
-                <!-- style="display: inline-block;float: right;width: 32px;padding-top: 10px;    position: absolute;right: 0px;    top: 0px; -->
                 <div class="rightNavBarItem">
                     <a href="/#/search/{{navBar.getHost()}}/{{navBar.getTerm()}}">
                         <div class="glyphicon glyphicon-search navBarItem"></div>
@@ -82,6 +81,5 @@
                 </div>
             </div>
         </div>
-        <!--/.nav-collapse -->
     </nav>
 </div>

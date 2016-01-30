@@ -19,6 +19,7 @@ function Settings() {
 	this.alertMsgText = ''
 	this.showAlertMsg = false;
 
+	this.isLoading = true;
 	if (_(this.$location.path()).startsWith('/unsubscribe')) {
 
 		var path = {};
@@ -134,7 +135,7 @@ function Settings() {
 			classes.sort(function (a, b) {
 				return a.compareTo(b)
 			}.bind(this))
-
+			this.isLoading = false;
 
 			this.$scope.classes = classes
 
@@ -148,9 +149,9 @@ function Settings() {
 Settings.isPage = true;
 
 
-Settings.urls = ['/settings', '/unsubscribe/:host/:termId/:subject/:classId']
+Settings.urls = ['/saved', '/unsubscribe/:host/:termId/:subject/:classId']
 
-
+ 
 
 Settings.$inject = ['$scope', '$timeout', '$routeParams', '$location']
 
@@ -175,54 +176,6 @@ Settings.prototype.addClass = function (aClass) {
 
 	//if it is not in this list already, add it
 	user.toggleListContainsClass('saved', aClass)
-};
-
-
-Settings.prototype.getLoadingHidden = function () {
-	var activeRequests = user.activeRequestCount;
-	var timeDiff = new Date().getTime() - user.lastRequestTime;
-
-	if (activeRequests <= 0) {
-
-		//recalculate 100 ms after last update
-		if (timeDiff < 100) {
-			this.$timeout(function () {}, 100 - timeDiff)
-			return false;
-		}
-		else if (timeDiff < 5000) {
-			this.$timeout(function () {}, 5000 - timeDiff)
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	else {
-
-		//recalculate 100 ms after last update
-		if (timeDiff < 100) {
-			this.$timeout(function () {}, 100 - timeDiff)
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-};
-
-
-//show loading if has been loading for 100ms
-//this dosent work if another request is fired (which resets user.lastRequestTime)
-//or if two separate requests were running 100ms apart
-//...but is good enough for now
-Settings.prototype.showLoadingText = function () {
-	var timeDiff = new Date().getTime() - user.lastRequestTime;
-	if (user.activeRequestCount > 0 && timeDiff > 100) {
-		return true;
-	}
-	else {
-		return false;
-	}
 };
 
 

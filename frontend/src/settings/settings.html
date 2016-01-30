@@ -19,11 +19,23 @@
 
 <div class="container">
     <br>
-    <div style="padding-top:41px"></div>
+    
+
+
+    <div style="padding-top:70px"></div>
+
+
+    <h2 style="margin:0;display:inline-block">
+        Saved classes
+    </h2>
+
+
+
     <div ng-show="settings.showAlertMsg" class="alert alert-info animate" role="alert">{{settings.alertMsgText}}</div>
    
 
 
     <div class-list></div>
     <div subject-class-selector></div>
+    <div class="spinner-loader" style="margin:0 auto;margin-left: 50%;margin-top: 120px;" ng-class = "settings.isLoading?'':'noDisplay'"></div>
 </div>
