@@ -52,21 +52,21 @@ uib-accordion .accordion-toggle {
 
 
 <div class="calendarRightPanel">
-    <uib-accordion close-others="false" ng-if = "classes.length != 0">
+    <uib-accordion close-others="false" ng-if="classes.length != 0">
         <uib-accordion-group is-open="isOpen" ng-repeat="class in classes">
             <uib-accordion-heading>
 
-                <div  style="position:relative;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;">
+                <div style="position:relative;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;">
 
 
-                <span class="glyphicon" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;vertical-align: top;"></span>
+                    <span class="glyphicon" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;vertical-align: top;"></span>
 
-                <span style="display: inline-block;max-width: 290px;">
+                    <span style="display: inline-block;max-width: 290px;">
 
-                &nbsp;&nbsp;{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
-                </span>
+                        &nbsp;&nbsp;{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
+                    </span>
 
-                <div class="glyphicon glyphicon-remove" style="opacity:.3;position: absolute;top: 7px;right: 7px;" ng-click="calendar.unpinClass(class)"></div>
+                    <div class="glyphicon glyphicon-remove" style="opacity:.3;position: absolute;top: 7px;right: 7px;" ng-click="calendar.unpinClass(class)"></div>
                 </div>
 
             </uib-accordion-heading>
@@ -121,7 +121,24 @@ uib-accordion .accordion-toggle {
 
 
 
-    <div subject-class-selector focus-selector = "{{focusSelector}}" class="calenderSelectSubject"></div>
+    <div subject-class-selector focus-selector="{{focusSelector}}" class="calenderSelectSubject"></div>
 
 
+</div>
+
+<div style="margin-left: 308px;">
+<span ng-if="maxCredits === minCredits" >
+
+    {{maxCredits}}
+
+    <span ng-if="maxCredits!==1">
+        credits
+    </span>
+
+    <span ng-if="maxCredits===1">
+        credit
+    </span>
+
+</span>
+<span ng-if="maxCredits !== maxCredits">{{minCredits}} to {{maxCredits}} credits</span>
 </div>

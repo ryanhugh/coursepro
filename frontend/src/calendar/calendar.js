@@ -66,8 +66,8 @@ function Calendar($scope) {
 			}
 			else {
 				this.$scope.focusSelector = false;
-				this.updateCalendar()
 			}
+			this.updateCalendar()
 
 
 			setTimeout(function () {
@@ -127,8 +127,27 @@ Calendar.prototype.updateCalendar = function () {
 
 			this.$scope.classes = list.classes
 
-			this.$scope.$apply()
 
+			//update the credits
+			var minCredits = 0;
+			var maxCredits = 0;
+
+			this.$scope.classes.forEach(function (aClass) {
+				if (aClass.minCredits === undefined && aClass.maxCredits === undefined) {
+					return;
+				}
+				aClass.sections.forEach(function (section) {
+					if (this.isSectionPinned(section)) {
+						minCredits += aClass.minCredits;
+						maxCredits += aClass.maxCredits;
+					};
+				}.bind(this))
+			}.bind(this))
+
+			this.$scope.minCredits = minCredits;
+			this.$scope.maxCredits = maxCredits;
+
+			this.$scope.$apply()
 
 		}.bind(this), 0)
 	}.bind(this))
@@ -175,6 +194,7 @@ Calendar.prototype.unpinClass = function (aClass) {
 	}.bind(this), 0)
 
 };
+
 
 // Calendar.prototype.eventRender = function (event, element, view) {
 // 	console.log("i");
