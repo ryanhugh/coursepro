@@ -770,6 +770,7 @@ app.post('/setUserVar', function (req, res) {
 		res.send(JSON.stringify({
 			error: '/setUserVar needs loginKey, name and value as json'
 		}))
+		return;
 	}
 
 	usersDB.setUserVar(req.body.name, req.body.value, req.body.loginKey, function (err, clientMsg) {

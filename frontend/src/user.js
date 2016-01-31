@@ -299,7 +299,10 @@ User.prototype.loadList = function (listName, callback) {
     };
 
     if (!this.dbData.lists[listName]) {
-        return callback(null, [])
+        return callback(null, {
+            classes:[],
+            sections:[]
+        })
     };
 
     this.ensureList(listName)

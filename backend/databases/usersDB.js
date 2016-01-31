@@ -684,6 +684,13 @@ UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectio
 			if (!user) {
 				return callback('no user found')
 			};
+
+			if (!user.lists[listName]) {
+				console.log("Warning: told to remove class from non existend list on user",user.googleId);
+				return callback(null, 'None of these classes and sections are in list ' + listName)
+			};
+
+
 			var originalDoc = _.cloneDeep(user);
 
 			var classRemovedCount = 0;

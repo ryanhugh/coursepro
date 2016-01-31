@@ -44,6 +44,9 @@ function Calendar($scope) {
 
 	this.$scope.addClass = this.addClass.bind(this)
 	user.loadList(this.getListName(), function (err, list) {
+		if (err) {
+			elog(err,'error loading lists')
+		};
 		var q = queue();
 
 		list.classes.forEach(function (aClass) {
@@ -186,12 +189,17 @@ Calendar.prototype.toggleSectionPinned = function (section) {
 
 
 Calendar.prototype.unpinClass = function (aClass) {
-	user.removeFromList(this.getListName(), [aClass], aClass.sections)
-	this.updateCalendar()
+	aClass.loadSections(function (err) {
+		if (err) {
+			elog(err, 'failed to load sections')
+		};
+		user.removeFromList(this.getListName(), [aClass], aClass.sections)
+		this.updateCalendar()
 
-	setTimeout(function () {
-		this.$scope.$apply();
-	}.bind(this), 0)
+		setTimeout(function () {
+			this.$scope.$apply();
+		}.bind(this), 0)
+	}.bind(this))
 
 };
 

@@ -105,19 +105,36 @@ SelectorsMgr.prototype.closeAllSelectors = function () {
 
 SelectorsMgr.prototype.finish = function (callback) {
 
+	// update user and refresh view
+	var collegeVal = this.college.getValue();
+	if (collegeVal) {
+		user.setValue('lastSelectedCollege',collegeVal)
+	}
 
+	var termId = this.term.getValue();
+	if (termId) {
+		user.setValue('lastSelectedTerm',termId)
+	}
+
+	var toUpdate = {}
+
+	if (this.$routeParams.host) {
+		toUpdate.host = collegeVal
+	}
+
+	if (this.$routeParams.termId) {
+		toUpdate.termId = termId
+	};
+
+	this.$route.updateParams(toUpdate)
+
+	// if (toUpdate.host || toUpdate.termId) {
+	this.$route.reload()
+	// }
 
 	setTimeout(function () {
-		this.$scope.$root.$apply()
-			// this.$scope.$apply()
+		this.$scope.$root.$apply() 
 	}.bind(this), 0)
-	return;
-	var host = encodeURIComponent(this.college.getValue())
-	var termId = encodeURIComponent(this.term.getValue())
-	var subject = encodeURIComponent(this.subject.getValue())
-	var classId = encodeURIComponent(this.class.getValue())
-
-	this.$location.path('/graph/' + host + '/' + termId + '/' + subject + '/' + classId)
 }
 
 SelectorsMgr.prototype.setSelectors = function (values, doOpenNext) {

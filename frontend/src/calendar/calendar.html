@@ -4,9 +4,7 @@
 }
 
 #calendarId {
-    max-width: 700px;
     margin: 0 auto;
-    margin-left: 308px;
     display: inline-block;
     padding-right: 8px;
 }
@@ -47,9 +45,29 @@ uib-accordion .accordion-toggle {
 </style>
 <div class="padding"></div>
 
+<div style="display: inline-block;max-width: 700px;margin-left: 423px;">
 
-<div ui-calendar="uiConfig.calendar" class="span8 calendar" ng-model="eventSources" id="calendarId"></div>
+    <div ui-calendar="uiConfig.calendar" class="span8 calendar" ng-model="eventSources" id="calendarId"></div>
 
+
+    <div>
+        <span ng-if="maxCredits === minCredits">
+
+            {{maxCredits}}
+
+            <span ng-if="maxCredits!==1">
+                credits
+            </span>
+
+            <span ng-if="maxCredits===1">
+                credit
+            </span>
+
+        </span>
+        <span ng-if="maxCredits !== maxCredits">{{minCredits}} to {{maxCredits}} credits</span>
+    </div>
+
+</div>
 
 <div class="calendarRightPanel">
     <uib-accordion close-others="false" ng-if="classes.length != 0">
@@ -124,21 +142,4 @@ uib-accordion .accordion-toggle {
     <div subject-class-selector focus-selector="{{focusSelector}}" class="calenderSelectSubject"></div>
 
 
-</div>
-
-<div style="margin-left: 308px;">
-<span ng-if="maxCredits === minCredits" >
-
-    {{maxCredits}}
-
-    <span ng-if="maxCredits!==1">
-        credits
-    </span>
-
-    <span ng-if="maxCredits===1">
-        credit
-    </span>
-
-</span>
-<span ng-if="maxCredits !== maxCredits">{{minCredits}} to {{maxCredits}} credits</span>
 </div>
