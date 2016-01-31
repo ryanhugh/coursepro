@@ -45,101 +45,104 @@ uib-accordion .accordion-toggle {
 </style>
 <div class="padding"></div>
 
-<div style="display: inline-block;max-width: 700px;margin-left: 423px;">
+<div style="margin: 0 auto;max-width: 1055px;">
 
-    <div ui-calendar="uiConfig.calendar" class="span8 calendar" ng-model="eventSources" id="calendarId"></div>
+    <div style="display: inline-block;max-width: 700px;">
+
+        <div ui-calendar="uiConfig.calendar" class="span8 calendar" ng-model="eventSources" id="calendarId"></div>
 
 
-    <div>
-        <span ng-if="maxCredits === minCredits">
+        <div>
+            <span ng-if="maxCredits === minCredits">
 
-            {{maxCredits}}
+                {{maxCredits}}
 
-            <span ng-if="maxCredits!==1">
-                credits
+                <span ng-if="maxCredits!==1">
+                    credits
+                </span>
+
+                <span ng-if="maxCredits===1">
+                    credit
+                </span>
+
             </span>
+            <span ng-if="maxCredits !== maxCredits">{{minCredits}} to {{maxCredits}} credits</span>
+        </div>
 
-            <span ng-if="maxCredits===1">
-                credit
-            </span>
-
-        </span>
-        <span ng-if="maxCredits !== maxCredits">{{minCredits}} to {{maxCredits}} credits</span>
     </div>
 
-</div>
+    <div class="calendarRightPanel">
+        <uib-accordion close-others="false" ng-if="classes.length != 0">
+            <uib-accordion-group is-open="isOpen" ng-repeat="class in classes">
+                <uib-accordion-heading>
 
-<div class="calendarRightPanel">
-    <uib-accordion close-others="false" ng-if="classes.length != 0">
-        <uib-accordion-group is-open="isOpen" ng-repeat="class in classes">
-            <uib-accordion-heading>
-
-                <div style="position:relative;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;">
+                    <div style="position:relative;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;">
 
 
-                    <span class="glyphicon" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;vertical-align: top;"></span>
+                        <span class="glyphicon" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;vertical-align: top;"></span>
 
-                    <span style="display: inline-block;max-width: 290px;">
+                        <span style="display: inline-block;max-width: 290px;">
 
-                        &nbsp;&nbsp;{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
-                    </span>
+                            &nbsp;&nbsp;{{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
+                        </span>
 
-                    <div class="glyphicon glyphicon-remove" style="opacity:.3;position: absolute;top: 7px;right: 7px;" ng-click="calendar.unpinClass(class)"></div>
+                        <div class="glyphicon glyphicon-remove" style="opacity:.3;position: absolute;top: 7px;right: 7px;" ng-click="calendar.unpinClass(class)"></div>
+                    </div>
+
+                </uib-accordion-heading>
+
+
+                <table class="table table-striped" ng-if="class.sections.length>0">
+                    <thead>
+                        <tr>
+
+                            <th>Pin</th>
+                            <th>
+                                <ng-pluralize count="class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
+                            </th>
+
+                            <th>Start</th>
+                            <th>Seats</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="section in class.sections" ng-click="calendar.toggleSectionPinned(section)" style="cursor:pointer">
+
+                            <td>
+                                <div class="glyphicon glyphicon-asterisk" ng-class="calendar.isSectionPinned(section)?'calendarPinned':'calendarUnpinned'"></div>
+                            </td>
+
+
+                            <td>{{section.profs.join(', ')}}</td>
+                            <td>{{section.startTimesStrings.join(", ")}}</td>
+
+                            <td>
+
+                                <!-- don't display the "/" until these are loaded -->
+                                <span ng-if="section.seatsRemaining || section.seatsCapacity">
+                                    {{section.seatsRemaining}}/{{section.seatsCapacity}}
+                                </span>
+
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+                <div ng-if="class.crns.length==0" style="padding: 10px;">
+                    No sections found
                 </div>
 
-            </uib-accordion-heading>
 
 
-            <table class="table table-striped" ng-if="class.sections.length>0">
-                <thead>
-                    <tr>
-
-                        <th>Pin</th>
-                        <th>
-                            <ng-pluralize count="class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
-                        </th>
-
-                        <th>Start</th>
-                        <th>Seats</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="section in class.sections" ng-click="calendar.toggleSectionPinned(section)" style="cursor:pointer">
-
-                        <td>
-                            <div class="glyphicon glyphicon-asterisk" ng-class="calendar.isSectionPinned(section)?'calendarPinned':'calendarUnpinned'"></div>
-                        </td>
-
-
-                        <td>{{section.profs.join(', ')}}</td>
-                        <td>{{section.startTimesStrings.join(", ")}}</td>
-
-                        <td>
-
-                            <!-- don't display the "/" until these are loaded -->
-                            <span ng-if="section.seatsRemaining || section.seatsCapacity">
-                                {{section.seatsRemaining}}/{{section.seatsCapacity}}
-                            </span>
-
-                        </td>
-
-                    </tr>
-                </tbody>
-            </table>
-            <div ng-if="class.crns.length==0" style="padding: 10px;">
-                No sections found
-            </div>
+                <!-- body here -->
+            </uib-accordion-group>
+        </uib-accordion>
 
 
 
-            <!-- body here -->
-        </uib-accordion-group>
-    </uib-accordion>
+        <div subject-class-selector focus-selector="{{focusSelector}}" class="calenderSelectSubject"></div>
 
 
-
-    <div subject-class-selector focus-selector="{{focusSelector}}" class="calenderSelectSubject"></div>
-
-
+    </div>
 </div>

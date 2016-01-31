@@ -12,16 +12,17 @@ function User() {
     //and updated on some events
     // perhaps change vv to dataChangeTrigger + type? no, because there is only 1 state, authenticated+with data, or neither. 
 
-    this.onAuthenticateTriggers = []
+    this.onAuthFinishTriggers = []
 
     //data in the server
     //email and name are copied to this when done loading
     //sections and classes watching, when loaded, are copied to this.watching
     this.dbData = {
-            lists: {},
-            vars: {}
-        }
-        //lastSelectedCollege and lastSelectedTerm are used now
+        lists: {},
+        vars: {}
+    }
+
+    //lastSelectedCollege and lastSelectedTerm are used now
 
     //here, actual instances of classes and sections are stored
     this.lists = {
@@ -46,7 +47,19 @@ function User() {
     if (this.getAuthenticated()) {
         this.download()
     }
+    else {
+        this.loadFromLocalStorage();
+    }
 }
+
+User.prototype.loadFromLocalStorage = function () {
+    if (localStorage.dbData) {
+        this.dbData = JSON.parse(localStorage.dbData)
+    }
+};
+User.prototype.saveToLocalStorage = function () {
+    localStorage.dbData = JSON.stringify(this.dbData)
+};
 
 User.prototype.dataUpdated = function () {
     //save login key to localstorage
@@ -55,17 +68,17 @@ User.prototype.dataUpdated = function () {
     }
 
     //and fire off the triggers
-    this.onAuthenticateTriggers.forEach(function (trigger) {
+    this.onAuthFinishTriggers.forEach(function (trigger) {
         trigger.trigger();
     }.bind(this))
 
     //remove all triggers on success
-    this.onAuthenticateTriggers = []
+    this.onAuthFinishTriggers = []
 };
 
 
 
-//getters and setters for localStorage stuff
+//just returns weather have a login key or not
 User.prototype.getAuthenticated = function () {
     if (localStorage.loginKey) {
         return true;
@@ -75,33 +88,34 @@ User.prototype.getAuthenticated = function () {
     }
 };
 
+// fires when dbData is stabalized
+// if don't have loginKey, fires now
+// else fires when done downloading from server
+// will only fire once
+User.prototype.onAuthFinish = function (name, callback) {
 
-//fired when authenticated
-//fires with an error if google auth faied, and does not remove trigger
-//fires with success if it worked (and /getUser worked), and then removes trigger
-User.prototype.onAuthenticate = function (name, trigger) {
     //lol just fire it now
-    if (this.getAuthenticated()) {
-        trigger();
-        return;
+    // if don't have loginKey or already done loading
+    if (!this.getAuthenticated() || this.dataStatus === macros.DATASTATUS_DONE) {
+        return callback();
     }
     else {
 
-        this.onAuthenticateTriggers.push({
+        this.onAuthFinishTriggers.push({
             name: name,
-            trigger: trigger
+            trigger: callback
         })
 
     }
 
 };
 User.prototype.removeTriggers = function (name) {
-    var triggersToRemove = _.filter(this.onAuthenticateTriggers, {
+    var triggersToRemove = _.filter(this.onAuthFinishTriggers, {
         name: name
     })
 
     triggersToRemove.forEach(function (trigger) {
-        _.pull(this.onAuthenticateTriggers, trigger)
+        _.pull(this.onAuthFinishTriggers, trigger)
     }.bind(this))
 };
 
@@ -110,11 +124,6 @@ User.prototype.removeTriggers = function (name) {
 User.prototype.signedInWithGoogle = function (err, idToken) {
     if (err) {
         console.log("ERROR", err);
-
-        //call all the callbacks
-        this.onAuthenticateTriggers.forEach(function (trigger) {
-            trigger.trigger(err);
-        }.bind(this))
 
         //keep the callbacks when error
         return;
@@ -154,7 +163,7 @@ User.prototype.sendRequest = function (config, callback) {
     this.activeRequestCount++;
 
     this.lastRequestTime = new Date().getTime()
-    // console.log("resettting time!",this.lastRequestTime);
+        // console.log("resettting time!",this.lastRequestTime);
 
     request(config, function (err, response) {
 
@@ -201,19 +210,31 @@ User.prototype.download = function (callbackOrConfig, callback) {
         callback = function () {}
     };
 
+    if (this.dataStatus === macros.DATASTATUS_DONE) {
+        return callback(null,this)
+    };
 
-    if (!this.getAuthenticated() && !config.body.idToken) {
+    if (this.dataStatus === macros.DATASTATUS_LOADING) {
+        elog("user download called while loading!!!");
+    };
+
+
+    if (!this.getAuthenticated() || !config.body || !config.body.idToken) {
         console.log("ERROR not authenticated cant get user data");
         return callback('Cannot get user data without being signed in')
     };
 
     config.url = '/getUser'
+        this.lists[listName].dataStatus = macros.DATASTATUS_DONE;
 
+    this.dataStatus = macros.DATASTATUS_LOADING
     this.sendRequest(config, function (err, user) {
         if (err) {
+            this.dataStatus = macros.DATASTATUS_FAIL;
             console.log('ERROR', err)
             return callback(err)
         }
+        this.dataStatus = macros.DATASTATUS_DONE;
 
         if (!user.loginKey) {
             console.log("didn't get a login key?", user, err)
@@ -292,18 +313,24 @@ User.prototype.loadList = function (listName, callback) {
             return callback(null, this.lists[listName])
         };
 
+        if (this.lists[listName].classes.length != 0 || this.lists[listName].sections.length != 0) {
+            console.log("ERROR user load list called on list ", listName, 'that was not empty');
+            return callback(null, this.lists[listName])
+        };
+
+
         if (this.lists[listName].dataStatus !== macros.DATASTATUS_NOTSTARTED && this.lists[listName].dataStatus !== undefined) {
             elog('loadWatching called when data status was', this.lists[listName].dataStatus)
             return callback('internal error');
         };
     };
 
-    if (!this.dbData.lists[listName]) {
-        return callback(null, {
-            classes:[],
-            sections:[]
-        })
-    };
+    // if (!this.dbData.lists[listName]) {
+    //     return callback(null, {
+    //         classes: [],
+    //         sections: []
+    //     })
+    // };
 
     this.ensureList(listName)
 
@@ -375,7 +402,7 @@ User.prototype.loadAllLists = function (callback) {
 
 
 
-//call load all before this
+//call load all before this 
 User.prototype.getAllClassesInLists = function () {
     var classes = [];
     for (var listName in this.lists) {
@@ -412,6 +439,10 @@ User.prototype.ensureList = function (listName) {
 
 //base add and remove calls
 User.prototype.addToList = function (listName, classes, sections, callback) {
+    if (!callback) {
+        callback = function () {}
+    }
+
     this.ensureList(listName)
 
     var classIds = [];
@@ -451,33 +482,42 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
     //add any sections given to both this.lists and this.dbData.lists
     this.dbData.lists[listName].sections = _.uniq(this.dbData.lists[listName].sections.concat(sectionIds))
 
-
-    this.sendRequest({
-        url: '/addToUserLists',
-        isMsg: true,
-        body: {
-            listName: listName,
-            classes: classIds,
-            sections: sectionIds
-        }
-    }, callback)
+    if (this.getAuthenticated()) {
+        this.sendRequest({
+            url: '/addToUserLists',
+            isMsg: true,
+            body: {
+                listName: listName,
+                classes: classIds,
+                sections: sectionIds
+            }
+        }, callback)
+    }
+    else {
+        this.saveToLocalStorage()
+        return callback()
+    }
 };
 
 //can either be a class or a section
-User.prototype.isAuthAndLoaded = function (instance) {
-    if (!this.getAuthenticated()) {
-        elog("assertAuthAndLoaded called when not authenticated!");
-        return null;
-    }
+// User.prototype.isAuthAndLoaded = function (instance) {
+//     if (!this.getAuthenticated()) {
+//         elog("assertAuthAndLoaded called when not authenticated!");
+//         return null;
+//     }
 
-    if (instance.dataStatus !== macros.DATASTATUS_DONE) {
-        elog('assertAuthAndLoaded given ', instance)
-        return false;
-    };
-    return true;
-};
+//     if (instance.dataStatus !== macros.DATASTATUS_DONE) {
+//         elog('assertAuthAndLoaded given ', instance)
+//         return false;
+//     };
+//     return true;
+// };
 
 User.prototype.removeFromList = function (listName, classes, sections, callback) {
+    if (!callback) {
+        callback = function () {}
+    }
+
     this.ensureList(listName)
 
     var classIds = [];
@@ -516,25 +556,29 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
         _.pull(this.dbData.lists[listName].sections, sectionId)
     }.bind(this))
 
-
-
-    this.sendRequest({
-        url: '/removeFromUserLists',
-        isMsg: true,
-        body: {
-            listName: listName,
-            classes: classIds,
-            sections: sectionIds
-        }
-    }, callback)
+    if (this.getAuthenticated()) {
+        this.sendRequest({
+            url: '/removeFromUserLists',
+            isMsg: true,
+            body: {
+                listName: listName,
+                classes: classIds,
+                sections: sectionIds
+            }
+        }, callback)
+    }
+    else {
+        this.saveToLocalStorage()
+        return callback()
+    }
 };
 
 
 
 User.prototype.getListIncludesClass = function (listName, tree) {
-    if (!this.isAuthAndLoaded(tree)) {
-        return;
-    };
+    // if (!this.isAuthAndLoaded(tree)) {
+    //     return;
+    // };
 
     this.ensureList(listName)
 
@@ -548,9 +592,9 @@ User.prototype.getListIncludesClass = function (listName, tree) {
 
 
 User.prototype.getListIncludesSection = function (listName, section) {
-    if (!this.getAuthenticated(section)) {
-        return null;
-    }
+    // if (!this.getAuthenticated(section)) {
+    //     return null;
+    // }
 
     this.ensureList(listName)
 
@@ -563,9 +607,9 @@ User.prototype.getListIncludesSection = function (listName, section) {
 };
 
 User.prototype.getList = function (listName) {
-    if (!this.getAuthenticated()) {
-        return null;
-    }
+    // if (!this.getAuthenticated()) {
+    //     return null;
+    // }
 
     this.ensureList(listName)
 
@@ -590,9 +634,9 @@ User.prototype.toggleListContainsSection = function (listName, section, callback
         callback = function () {}
     }
 
-    if (!this.isAuthAndLoaded(section)) {
-        return callback('not loaded');
-    }
+    // if (!this.isAuthAndLoaded(section)) {
+    //     return callback('not loaded');
+    // }
 
     //if watching, unwatch it
     if (this.getListIncludesSection(listName, section)) {
@@ -617,9 +661,9 @@ User.prototype.toggleListContainsClass = function (listName, aClass, addSections
         callback = function () {}
     }
 
-    if (!this.getAuthenticated()) {
-        return callback('not authenticated');
-    }
+    // if (!this.getAuthenticated()) {
+    //     return callback('not authenticated');
+    // }
 
     aClass.loadSections(function (err) {
         if (err) {
@@ -648,15 +692,12 @@ User.prototype.toggleListContainsClass = function (listName, aClass, addSections
                 callback(err)
             }.bind(this))
         }
-        
+
     }.bind(this))
 
 };
 
 User.prototype.getValue = function (name) {
-    if (!this.getAuthenticated()) {
-        return null;
-    };
     return this.dbData.vars[name];
 };
 
@@ -668,15 +709,23 @@ User.prototype.setValue = function (name, value, callback) {
 
     this.dbData.vars[name] = value;
 
-    //and tell the server
-    this.sendRequest({
-        url: '/setUserVar',
-        isMsg: true,
-        body: {
-            name: name,
-            value: value
-        }
-    }, callback);
+    if (this.getAuthenticated()) {
+
+        //and tell the server
+        this.sendRequest({
+            url: '/setUserVar',
+            isMsg: true,
+            body: {
+                name: name,
+                value: value
+            }
+        }, callback);
+
+    }
+    else {
+        this.saveToLocalStorage()
+        return callback()
+    }
 
 };
 

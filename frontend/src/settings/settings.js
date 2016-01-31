@@ -56,7 +56,7 @@ function Settings() {
 
 			//fetch the user data
 			function (callback) {
-				user.download(function (err) {
+				user.onAuthFinish('settings',function (err) {
 					callback(err)
 				}.bind(this))
 			}.bind(this),

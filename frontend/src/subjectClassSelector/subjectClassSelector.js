@@ -111,7 +111,6 @@ SubjectClassSelector.prototype.onSelectSubject = function () {
 
 		setTimeout(function () {
 			if (this.$scope.addSubject) {
-				console.log("called with yay");
 				this.$scope.addSubject(subject)
 			}
 			else {
