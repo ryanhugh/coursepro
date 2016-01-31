@@ -50,7 +50,7 @@
             <span list-icon='watching' toggle="class" class="rightIcon"></span>
 
             <!-- link icon -->
-            <span ng-click ="$event.stopPropagation()">
+            <span ng-click="$event.stopPropagation()">
                 <a href="{{class.prettyUrl}}" target="_blank">
                     <span class="glyphicon glyphicon-globe rightIcon" uib-tooltip="View on {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true"></span>
                 </a>
@@ -72,7 +72,26 @@
 
         </uib-accordion-heading>
 
-        {{class.desc}}
+        <div>
+
+            {{class.desc}}
+            <div style="display: inline-block;float: right;padding-right: 6px;padding-top: 9px" ng-if ="class.maxCredits !== undefined || class.minCredits !== undefined">
+                <span ng-if="class.maxCredits === class.minCredits">
+
+                    {{class.maxCredits}}
+
+                    <span ng-if ="class.maxCredits!==1">
+                     credits
+                    </span>
+
+                    <span ng-if ="class.maxCredits===1">
+                     credit
+                    </span>
+
+                </span>
+                <span ng-if="class.maxCredits !== class.maxCredits">{{class.minCredits}} to {{class.maxCredits}} credits</span>
+            </div>
+        </div>
 
 
         <div style="padding-top:5px" ng-if="class.lastUpdateString">Updated {{class.lastUpdateString}}</div>
@@ -80,7 +99,7 @@
         <div ng-if="class.minCredits || class.maxCredits"></div>
 
 
-        <table class="table table-striped" ng-if="class.sections.length>0">
+        <table class="table table-striped" ng-if="class.sections.length>0" style="margin-bottom:0">
             <thead>
                 <tr>
                     <th>

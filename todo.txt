@@ -3,9 +3,6 @@
 help, and graph help
 login, selectors, share link? 
 and put a total credits somewhere on calendar
-put credits on there somewhere on class list
-add class url to accordians
-bring add classes on settings to the top
 google analytics errywhere
 and fix the require case sensitivity for linux
 
