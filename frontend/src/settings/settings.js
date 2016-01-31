@@ -61,24 +61,20 @@ function Settings() {
 				}.bind(this))
 			}.bind(this),
 
-			//fetch class for every section and class _id
+			//fetch all classes in watching and saved
 			function (callback) {
-				user.loadAllLists(function (err) {
-					callback(err)
-				}.bind(this))
-			}.bind(this),
-
-			function (callback) {
-				return callback()
-
 				var q = queue();
 
-				//load all the sections of all the classes being watched
-				user.getAllClassesInLists().forEach(function (aClass) {
-					q.defer(function (callback) {
-						aClass.loadSections(function (err) {
-							callback(err)
-						}.bind(this))
+				q.defer(function (callback) {
+					user.loadList('watching', function (err) {
+						callback(err)
+					}.bind(this))
+
+				}.bind(this))
+
+				q.defer(function (callback) {
+					user.loadList('saved', function (err) {
+						callback(err)
 					}.bind(this))
 				}.bind(this))
 
@@ -86,55 +82,38 @@ function Settings() {
 					callback(err)
 				}.bind(this))
 
-
 			}.bind(this),
-
-			//get a list of hosts -> list of termTexts
-			function (callback) {
-
-				//get a unique list of the term data to make some terms
-				var termDatas = [];
-
-				user.getAllClassesInLists().forEach(function (aClass) {
-					var termData = _.pick(aClass, 'host', 'termId')
-
-					if (_.filter(termDatas, termData).length === 0) {
-						termDatas.push(termData)
-					};
-
-				}.bind(this))
-
-				//make some terms from the term data
-				//get the terms text, so we can say Spring 2016 or Fall 2015 next to the title of the classes
-				async.map(termDatas, function (termData, callback) {
-					Term.create(termData).download(callback)
-				}.bind(this), function (err, terms) {
-					callback(null, terms)
-				}.bind(this))
-			}
 		],
-		function (err, terms) {
+		function (err, terms, classes) {
 			if (err) {
 				console.log('ERROR', err)
 					//don't return
 			}
 
-			var classes = user.getAllClassesInLists();
+			//unique list of classes
+			var classes = [];
 
+			var currentTermId = user.getValue('lastSelectedTerm')
 
-			classes.forEach(function (aClass) {
-
-				//loop through terms and find one that matches
-				for (var i = 0; i < terms.length; i++) {
-					if (_.isEqual(_.pick(aClass, 'host', 'termId'), _.pick(terms[i], 'host', 'termId'))) {
-						aClass.termText = terms[i].text
-					}
+			//merge watching and saved, remove duplicates
+			user.lists['watching'].classes.concat(user.lists['saved'].classes).forEach(function (aClass) {
+				if (currentTermId != aClass.termId) {
+					return;
 				};
+
+				if (_.filter(classes, {
+						_id: aClass._id
+					}).length == 0) {
+
+					classes.push(aClass)
+				}
 			}.bind(this))
 
 			classes.sort(function (a, b) {
 				return a.compareTo(b)
 			}.bind(this))
+
+
 			this.isLoading = false;
 
 			this.$scope.classes = classes
@@ -151,7 +130,7 @@ Settings.isPage = true;
 
 Settings.urls = ['/saved', '/unsubscribe/:host/:termId/:subject/:classId']
 
- 
+
 
 Settings.$inject = ['$scope', '$timeout', '$routeParams', '$location']
 

@@ -560,7 +560,7 @@ User.prototype.getListIncludesSection = function (listName, section) {
 };
 
 User.prototype.getList = function (listName) {
-    if (!this.getAuthenticated(section)) {
+    if (!this.getAuthenticated()) {
         return null;
     }
 
@@ -614,32 +614,40 @@ User.prototype.toggleListContainsClass = function (listName, aClass, addSections
         callback = function () {}
     }
 
-    if (!this.isAuthAndLoaded(aClass)) {
-        return callback('not loaded');
+    if (!this.getAuthenticated()) {
+        return callback('not authenticated');
     }
 
-    //if watching, unwatch it
-    if (this.getListIncludesClass(listName, aClass)) {
+    aClass.loadSections(function (err) {
+        if (err) {
+            return callback(err)
+        }
 
-        //removing a class also removes all of its sections
-        this.removeFromList(listName, [aClass], aClass.sections, function (err) {
-            callback(err)
-        }.bind(this))
+        //if watching, unwatch it
+        if (this.getListIncludesClass(listName, aClass)) {
 
-    }
-    //add it to the watch list
-    //and tell server
-    else {
-        var sectionsToAdd = [];
-        if (addSections) {
-            sectionsToAdd = aClass.sections
-        };
+            //removing a class also removes all of its sections
+            this.removeFromList(listName, [aClass], aClass.sections, function (err) {
+                callback(err)
+            }.bind(this))
+
+        }
+        //add it to the watch list
+        //and tell server
+        else {
+            var sectionsToAdd = [];
+            if (addSections) {
+                sectionsToAdd = aClass.sections
+            };
 
 
-        this.addToList(listName, [aClass], sectionsToAdd, function (err) {
-            callback(err)
-        }.bind(this))
-    }
+            this.addToList(listName, [aClass], sectionsToAdd, function (err) {
+                callback(err)
+            }.bind(this))
+        }
+        
+    }.bind(this))
+
 };
 
 User.prototype.getValue = function (name) {

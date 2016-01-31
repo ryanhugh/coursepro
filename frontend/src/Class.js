@@ -112,7 +112,7 @@ function Class(config) {
 		this.dataStatus = macros.DATASTATUS_NOTSTARTED
 	}
 
-	this.updateSectionInstances();
+	this.postDataProcess();
 
 
 
@@ -311,7 +311,7 @@ Class.prototype.download = function (callback) {
 			for (var attrName in classData) {
 				this[attrName] = classData[attrName]
 			}
-			this.updateSectionInstances();
+			this.postDataProcess();
 
 			//THIS AND THE JAWN BELOW BOTH NEED TO BE RAN AFTER DATA
 			if (this.lastUpdateTime !== undefined) {
@@ -322,9 +322,13 @@ Class.prototype.download = function (callback) {
 	}.bind(this))
 }
 
-Class.prototype.updateSectionInstances = function () {
+Class.prototype.postDataProcess = function () {
 	if (!this.crns) {
 		return;
+	};
+
+	if (!this.prettyUrl && this.url) {
+		this.prettyUrl = this.url;
 	};
 
 	//make sections from crns if they dont exist

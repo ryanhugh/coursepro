@@ -28,7 +28,6 @@
     color: black;
     opacity: .8;
 }
-
 </style>
 
 
@@ -50,6 +49,13 @@
             <span list-icon='saved' toggle="class" class="rightIcon"></span>
             <span list-icon='watching' toggle="class" class="rightIcon"></span>
 
+            <!-- link icon -->
+            <span ng-click ="$event.stopPropagation()">
+                <a href="{{class.prettyUrl}}" target="_blank">
+                    <span class="glyphicon glyphicon-globe rightIcon" uib-tooltip="View on {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true"></span>
+                </a>
+            </span>
+
 
             <a ng-if="class.prereqs.values.length > 0" ng-href="/#/graph/{{class.host}}/{{class.termId}}/{{class.subject}}/{{class.classId}}">
                 <span uib-tooltip="View Prerequisites" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .7;">
@@ -69,10 +75,10 @@
         {{class.desc}}
 
 
-        <div style="padding-top:5px" ng-if = "class.lastUpdateString">Updated {{class.lastUpdateString}}</div>
+        <div style="padding-top:5px" ng-if="class.lastUpdateString">Updated {{class.lastUpdateString}}</div>
 
-        <div ng-if ="class.minCredits || class.maxCredits"></div>
-        
+        <div ng-if="class.minCredits || class.maxCredits"></div>
+
 
         <table class="table table-striped" ng-if="class.sections.length>0">
             <thead>
@@ -88,11 +94,7 @@
                     <th>Open Seats/Total Seats</th>
                     <th ng-if="class.hasWaitList">Open/Total Waitlist Seats</th>
                     <th>Location</th>
-                    <th>
-                        <span uib-tooltip="Link to {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">Link</span>
-                        
-
-                    </th>
+                    <th>Link</th>
                     <th>Email
                         <br>Notifications</th>
                     <th>Saved</th>
@@ -132,7 +134,8 @@
                     <td>
                         <a href="{{section.url}}" target="_blank">
 
-                            <div class="glyphicon glyphicon-globe"></div>
+                            <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                            </div>
 
                         </a>
                     </td>

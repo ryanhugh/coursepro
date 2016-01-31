@@ -7,7 +7,6 @@ put credits on there somewhere on class list
 add class url to accordians
 bring add classes on settings to the top
 google analytics errywhere
-need to load sections before /remove from all with aclass.sections
 and fix the require case sensitivity for linux
 
 
