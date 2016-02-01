@@ -127,6 +127,7 @@ BaseSelector.prototype.setupSelector = function (values, config) {
 	if (config.shouldOpen === undefined) {
 		config.shouldOpen = true;
 	}
+	console.log("setup called on ",this.constructor.name);
 
 	this.values = values;
 	this.reset();

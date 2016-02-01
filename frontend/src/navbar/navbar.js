@@ -2,7 +2,7 @@
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var user = require('../User')
+var user = require('../user')
 
 function NavBar() {
 	BaseDirective.prototype.constructor.apply(this, arguments);

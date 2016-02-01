@@ -94,10 +94,11 @@ function Settings() {
 			var classes = [];
 
 			var currentTermId = user.getValue('lastSelectedTerm')
+			var currentHost = user.getValue('lastSelectedCollege')
 
 			//merge watching and saved, remove duplicates
 			user.lists['watching'].classes.concat(user.lists['saved'].classes).forEach(function (aClass) {
-				if (currentTermId != aClass.termId) {
+				if (currentTermId != aClass.termId || currentHost != aClass.host) {
 					return;
 				};
 

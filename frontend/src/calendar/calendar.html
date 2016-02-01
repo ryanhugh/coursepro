@@ -53,7 +53,7 @@ uib-accordion .accordion-toggle {
 
 
         <div>
-            <span ng-if="maxCredits === minCredits">
+            <span ng-if="minCredits === maxCredits">
 
                 {{maxCredits}}
 
@@ -66,7 +66,7 @@ uib-accordion .accordion-toggle {
                 </span>
 
             </span>
-            <span ng-if="maxCredits !== maxCredits">{{minCredits}} to {{maxCredits}} credits</span>
+            <span ng-if="minCredits !== maxCredits">{{minCredits}} to {{maxCredits}} credits</span>
         </div>
 
     </div>

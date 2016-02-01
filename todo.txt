@@ -1,9 +1,8 @@
 !!!!
 
-for some reason when just making a new list, it duplicates the first class you add? - fix after do login
 
 help, and graph help
-login, selectors, share link? 
+login, share link? 
 google analytics errywhere
 and fix the require case sensitivity for linux
 

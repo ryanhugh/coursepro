@@ -46,26 +46,29 @@
 
             <span class="glyphicon" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span> {{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
 
-            <span list-icon='saved' toggle="class" class="rightIcon"></span>
-            <span list-icon='watching' toggle="class" class="rightIcon"></span>
-
-            <!-- link icon -->
+            <!-- stop event propagation outside the icons -->
             <span ng-click="$event.stopPropagation()">
+
+                <span list-icon='saved' toggle="class" class="rightIcon"></span>
+                <span list-icon='watching' toggle="class" class="rightIcon"></span>
+
+                <!-- link icon -->
                 <a href="{{class.prettyUrl}}" target="_blank">
                     <span class="glyphicon glyphicon-globe rightIcon" uib-tooltip="View on {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true"></span>
                 </a>
-            </span>
 
 
-            <a ng-if="class.prereqs.values.length > 0" ng-href="/#/graph/{{class.host}}/{{class.termId}}/{{class.subject}}/{{class.classId}}">
-                <span uib-tooltip="View Prerequisites" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .7;">
+
+                <a ng-if="class.prereqs.values.length > 0" ng-href="/#/graph/{{class.host}}/{{class.termId}}/{{class.subject}}/{{class.classId}}">
+                    <span uib-tooltip="View Prerequisites" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .7;">
+                        <img src="/images/tree.png">
+                    </span>
+                </a>
+
+
+                <span ng-if="class.prereqs.values.length == 0" uib-tooltip="No prerequisites found" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .4;">
                     <img src="/images/tree.png">
                 </span>
-            </a>
-
-
-            <span ng-if="class.prereqs.values.length == 0" uib-tooltip="No prerequisites found" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .4;">
-                <img src="/images/tree.png">
             </span>
 
 
@@ -75,17 +78,17 @@
         <div>
 
             {{class.desc}}
-            <div style="display: inline-block;float: right;padding-right: 6px;padding-top: 9px" ng-if ="class.maxCredits !== undefined || class.minCredits !== undefined">
+            <div style="display: inline-block;float: right;padding-right: 6px;padding-top: 9px" ng-if="class.maxCredits !== undefined || class.minCredits !== undefined">
                 <span ng-if="class.maxCredits === class.minCredits">
 
                     {{class.maxCredits}}
 
-                    <span ng-if ="class.maxCredits!==1">
-                     credits
+                    <span ng-if="class.maxCredits!==1">
+                        credits
                     </span>
 
-                    <span ng-if ="class.maxCredits===1">
-                     credit
+                    <span ng-if="class.maxCredits===1">
+                        credit
                     </span>
 
                 </span>

@@ -19,13 +19,13 @@ function Calendar($scope) {
 			header: false,
 			defaultDate: '1970-01-06',
 			minTime: '08:00:00',
-			maxTime: '20:00:00',
+			maxTime: '22:00:00',
 			defaultView: 'agendaWeek',
 			allDaySlot: false,
 			weekends: false, //unless there are meetings on weekends
 			columnFormat: 'ddd',
-			height: 550,
-			contentHeight: 550,
+			height: 638,
+			contentHeight: 638,
 			// aspectRatio: 1,
 			// eventRender: this.eventRender.bind(this)
 		}
@@ -93,13 +93,26 @@ Calendar.prototype.updateCalendar = function () {
 		setTimeout(function () {
 
 
-			//remove the old calendarEvents
-			this.$scope.eventSources[0] = []
+
+			var classes = [];
+
+			//filter out ones that don't match this term and host (this is inefficient because it loads all classes, instead of just ones in this term)
+			//sections of other ones are also loaded, so atm pretty slow...
+
+			var host = user.getValue('lastSelectedCollege')
+			var termId = user.getValue('lastSelectedTerm')
+
+			list.classes.forEach(function (aClass) {
+				if (aClass.host === host && aClass.termId === termId) {
+					classes.push(aClass)
+				};
+			}.bind(this))
+
 
 			var sections = []
 
 			//get a list of sections that are pinned
-			list.classes.forEach(function (aClass) {
+			classes.forEach(function (aClass) {
 				aClass.sections.forEach(function (section) {
 					if (this.isSectionPinned(section)) {
 						sections.push(section)
@@ -109,6 +122,10 @@ Calendar.prototype.updateCalendar = function () {
 
 
 
+			//remove the old calendarEvents
+			this.$scope.eventSources[0] = []
+
+			//add all the section's meetings to the calendar
 			sections.forEach(function (section) {
 				section.meetings.forEach(function (meeting) {
 					if (meeting.isExam) {
@@ -128,7 +145,7 @@ Calendar.prototype.updateCalendar = function () {
 				}.bind(this))
 			}.bind(this))
 
-			this.$scope.classes = list.classes
+			this.$scope.classes = classes
 
 
 			//update the credits
@@ -174,7 +191,8 @@ Calendar.prototype.addClass = function (aClass) {
 };
 
 Calendar.prototype.getListName = function () {
-	return (user.getValue('lastSelectedCollege') + '/' + user.getValue('lastSelectedTerm') + '/Primary Schedule').replace(/\./g, '')
+	return 'saved';
+	// return (user.getValue('lastSelectedCollege') + '/' + user.getValue('lastSelectedTerm') + '/Primary Schedule').replace(/\./g, '')
 };
 
 Calendar.prototype.isSectionPinned = function (section) {

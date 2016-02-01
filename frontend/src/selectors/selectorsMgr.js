@@ -88,7 +88,7 @@ SelectorsMgr.prototype.updateSelectors = function () {
 		return;
 	};
 
-	var values = [params.host, params.termId, params.subject, params.classId]
+	var values = [params.host, params.termId]
 
 	values.forEach(function (value, i) {
 		values[i] = decodeURIComponent(value)
@@ -107,33 +107,37 @@ SelectorsMgr.prototype.finish = function (callback) {
 
 	// update user and refresh view
 	var collegeVal = this.college.getValue();
-	if (collegeVal) {
-		user.setValue('lastSelectedCollege',collegeVal)
-	}
-
 	var termId = this.term.getValue();
-	if (termId) {
-		user.setValue('lastSelectedTerm',termId)
-	}
+	if (!collegeVal || !termId) {
+		return;
+	};
+
+	user.setValue('lastSelectedCollege', collegeVal)
+
+	user.setValue('lastSelectedTerm', termId)
 
 	var toUpdate = {}
 
-	if (this.$routeParams.host) {
+
+	//clear out other route Params
+	for (var attrName in this.$routeParams) {
+		toUpdate[attrName] = null
+	}
+
+	if (this.$routeParams.host !== undefined) {
 		toUpdate.host = collegeVal
 	}
 
-	if (this.$routeParams.termId) {
+	if (this.$routeParams.termId !== undefined) {
 		toUpdate.termId = termId
 	};
 
 	this.$route.updateParams(toUpdate)
 
-	// if (toUpdate.host || toUpdate.termId) {
 	this.$route.reload()
-	// }
 
 	setTimeout(function () {
-		this.$scope.$root.$apply() 
+		this.$scope.$root.$apply()
 	}.bind(this), 0)
 }
 
@@ -152,11 +156,13 @@ SelectorsMgr.prototype.setSelectors = function (values, doOpenNext) {
 		//remove anything that isnt a letter, a "/" or a . 
 		value = value.replace(/[^a-z0-9\/\.]/gi, '')
 
+		if (value != this.selectors[index].getValue()) {
 
-		this.selectors[index].setup({
-			defaultValue: value,
-			shouldOpen: false
-		});
+			this.selectors[index].setup({
+				defaultValue: value,
+				shouldOpen: false
+			});
+		};
 
 		//if at end, open next selector or create tree
 		if (index == values.length - 1) {
@@ -174,13 +180,6 @@ SelectorsMgr.prototype.setSelectors = function (values, doOpenNext) {
 					defaultValue: this.selectors[index].helpId
 				})
 			}
-			// else if (doOpenNext) {
-			//  this.finish(function (err) {
-			//      if (err) {
-			//          console.log('error creating tree from selectors', err)
-			//      }
-			//  });
-			// }
 		};
 
 	}.bind(this))
