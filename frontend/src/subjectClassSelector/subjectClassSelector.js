@@ -12,13 +12,17 @@ function SubjectClassSelector() {
 	//term instance
 	this.term = null;
 
-	//code of selected subject
+
 	if (this.$routeParams.subject) {
 		this.selectedSubject = this.$routeParams.subject
 	}
-	else {
-		this.selectedSubject = null;
-	}
+
+
+	this.updateSubjects(function (err) {
+		
+		this.updateFromRoute()
+
+	}.bind(this))
 
 	this.selectedSubjectInstance = null;
 
@@ -28,21 +32,13 @@ function SubjectClassSelector() {
 	//show classes selector when classes are loaded
 	this.showClassesSelector = false;
 
-	this.updateSubjects()
 
-	this.$scope.$watch('subjectClassSelector.selectedSubject', this.onSelectSubject.bind(this))
+	this.$scope.$watch('subjectClassSelector.selectedSubject', this.onSelectSubject.bind(this,undefined))
 
-	this.$scope.$watch('subjectClassSelector.selectedClass', this.onSelectClass.bind(this))
+	this.$scope.$watch('subjectClassSelector.selectedClass', this.onSelectClass.bind(this,undefined))
 
 
-	this.$scope.$on('$routeChangeSuccess', function () {
-		if (this.$routeParams.subject) {
-			this.selectedSubject = this.$routeParams.subject
-		}
-		else {
-			this.selectedSubject = null;
-		}
-	}.bind(this))
+	this.$scope.$on('$routeChangeSuccess', this.updateFromRoute.bind(this))
 }
 
 //called when select a class
@@ -54,11 +50,22 @@ SubjectClassSelector.prototype.reset = function () {
 	this.showClassesSelector = false;
 };
 
+SubjectClassSelector.prototype.updateFromRoute = function () {
+	if (this.$routeParams.subject && !this.$scope.onlySubject) {
+		this.onSelectSubject(false)
+	}
+};
 
-SubjectClassSelector.prototype.updateSubjects = function () {
+SubjectClassSelector.prototype.updateSubjects = function (callback) {
+	if (!callback) {
+		callback = function () {}
+	}
+
 	if (this.$scope.subjects) {
-		return;
+		return callback()
 	};
+
+
 
 	this.term = Term.create({
 		host: user.getValue('lastSelectedCollege'),
@@ -68,7 +75,7 @@ SubjectClassSelector.prototype.updateSubjects = function () {
 	this.term.loadSubjects(function (err) {
 		if (err) {
 			elog("err", err);
-			return;
+			return callback()
 		}
 
 		// console.log("done,", this.term.subjects);
@@ -87,12 +94,18 @@ SubjectClassSelector.prototype.updateSubjects = function () {
 			this.$scope.$apply()
 		}.bind(this), 0)
 
+		return callback()
+
 	}.bind(this))
 };
 
-SubjectClassSelector.prototype.onSelectSubject = function () {
+SubjectClassSelector.prototype.onSelectSubject = function (fireTrigger) {
 	if (!this.selectedSubject) {
 		return;
+	};
+
+	if (fireTrigger === undefined) {
+		fireTrigger = true;
 	};
 
 	//find the selected subject
@@ -101,13 +114,13 @@ SubjectClassSelector.prototype.onSelectSubject = function () {
 	})[0]
 
 	if (!subject) {
-		return;
 		debugger
+		return;
 	};
 
 	this.selectedSubjectInstance = subject;
 
-	if (this.$scope.onlySubject) {
+	if (this.$scope.onlySubject && fireTrigger) {
 
 		setTimeout(function () {
 			if (this.$scope.addSubject) {
@@ -141,15 +154,21 @@ SubjectClassSelector.prototype.onSelectSubject = function () {
 		setTimeout(function () {
 			this.$scope.$apply()
 
-			$("#subjectSelectorId")[0].nextSibling.getElementsByTagName('input')[0].focus()
+			if (fireTrigger) {
+				$("#subjectSelectorId")[0].nextSibling.getElementsByTagName('input')[0].focus()
+			};
 		}.bind(this), 0)
 
 	}.bind(this))
 };
 
-SubjectClassSelector.prototype.onSelectClass = function () {
+SubjectClassSelector.prototype.onSelectClass = function (fireTrigger) {
 	if (!this.selectedSubjectInstance || !this.selectedClass) {
 		return;
+	};
+
+	if (fireTrigger === undefined) {
+		fireTrigger = true;
 	};
 
 
@@ -157,6 +176,11 @@ SubjectClassSelector.prototype.onSelectClass = function () {
 	var aClass = _.filter(this.selectedSubjectInstance.classes, {
 		_id: this.selectedClass
 	})[0]
+
+	if (!fireTrigger) {
+		return;
+	};
+	debugger;
 
 	setTimeout(function () {
 		if (this.$scope.addClass) {
@@ -177,12 +201,18 @@ SubjectClassSelector.link = function (scope, element, attrs) {
 	if (attrs.onlySubject === 'false') {
 		attrs.onlySubject = false;
 	}
+
 	if (attrs.focusSelector === 'false') {
 		attrs.focusSelector = false;
 	}
+	if (attrs.classOnRight === 'false') {
+		attrs.classOnRight = false;
+	};
+
 
 	scope.onlySubject = attrs.onlySubject
 	scope.focusSelector = attrs.focusSelector
+	scope.classOnRight = attrs.classOnRight
 };
 
 

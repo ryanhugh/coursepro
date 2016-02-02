@@ -28,20 +28,6 @@ Search.prototype.searchFromEntry = function () {
 		console.log('error: need to select term first');
 		return;
 	}
-	return;
-
-	var subject = selectorsMgr.subject.getValue();
-	if (!subject) {
-		console.log('error: need to select subject first');
-		return;
-	};
-
-	if (!this.searchText) {
-		console.log('error: empty box')
-		return;
-	};
-
-	this.$location.path('/search/' + encodeURIComponent(host) + '/' + encodeURIComponent(termId) + '/' + encodeURIComponent(subject) + '/' + encodeURIComponent(this.searchText))
 };
 
 

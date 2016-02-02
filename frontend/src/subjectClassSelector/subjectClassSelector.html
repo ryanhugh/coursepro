@@ -9,7 +9,7 @@
  -->
 <!-- 
 <select2 ng-model="subjectClassSelector.selectedSubject" s2-options="val.id as val.text for val in subjects">
-	<option ng-repeat = "subject in subjects" value="{{subject.id}}">{{subject.text}}</option> 
+    <option ng-repeat = "subject in subjects" value="{{subject.id}}">{{subject.text}}</option> 
 </select2><!-- 
 
  
@@ -29,6 +29,15 @@
 
  -->
 
-<selectize ng-if = "subjects" placeholder='Select Subject...' options='subjects' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedSubject" ng-focused = "{{focusSelector}}" required='true'></selectize>
+<style type="text/css">
+.selectize-control {
+    width: 261px;
+    display: inline-block;
+    margin-right: 8px;
+    margin-left: 8px;
+}
+</style>
 
-<selectize ng-if = "subjectClassSelector.showClassesSelector" placeholder='Select Class...' options='classes' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedClass" required='true' id="subjectSelectorId"></selectize>
+<selectize ng-if="subjects" placeholder='Select Subject...' options='subjects' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedSubject" ng-focused="{{focusSelector}}" required='true'></selectize>
+
+<selectize ng-if="subjectClassSelector.showClassesSelector" placeholder='Select Class...' options='classes' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedClass" required='true' id="subjectSelectorId"></selectize>
