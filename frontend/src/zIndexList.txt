@@ -3,6 +3,7 @@
 //3000 modal 
 //2050 .modal-backdrop (the gray behind the model)
 //2000 the dropdowns
+//1750 the subjectClassSelector
 //1500 panel with the mouse over it and an expanded panel
 //1051 the prereq help
 // 999 the tooltips

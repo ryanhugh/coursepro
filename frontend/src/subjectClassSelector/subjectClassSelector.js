@@ -114,7 +114,7 @@ SubjectClassSelector.prototype.onSelectSubject = function (fireTrigger) {
 	})[0]
 
 	if (!subject) {
-		debugger
+		// debugger
 		return;
 	};
 
@@ -180,7 +180,7 @@ SubjectClassSelector.prototype.onSelectClass = function (fireTrigger) {
 	if (!fireTrigger) {
 		return;
 	};
-	debugger;
+	// debugger;
 
 	setTimeout(function () {
 		if (this.$scope.addClass) {

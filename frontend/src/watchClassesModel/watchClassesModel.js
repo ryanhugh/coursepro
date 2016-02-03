@@ -7,10 +7,10 @@ var BaseDirective = require('../BaseDirective')
 var user = require('../user')
 
 
-function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
+function WatchClassesModel() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
-	$scope.model = this;
-	$scope.user = user;
+	this.$scope.model = this;
+	this.$scope.user = user;
 
 	//if not the google sign in button will appear
 	this.subscribeMsg = ''
@@ -36,7 +36,7 @@ function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 		}.bind(this))
 
 		// remove the trigger when this view goes away so the triggers dont stack up
-		$scope.$on("$destroy", function () {
+		this.$scope.$on("$destroy", function () {
 			user.removeTriggers(this.constructor.name);
 		}.bind(this));
 
@@ -47,17 +47,21 @@ function WatchClassesModel($scope, $uibModalInstance, $timeout, tree) {
 
 WatchClassesModel.$inject = ['$scope', '$uibModalInstance', '$timeout', 'tree']
 
-//called from controllers wanting to make and instance of this
-WatchClassesModel.getOpenDetails = function (tree) {
-	return {
+//called from controllers wanting to open this
+WatchClassesModel.open = function (caller, tree) {
+	if (!caller.$uibModal) {
+		elog('tried to open a WatchClassesModel but caller does not have a $uibModal')
+	}
+
+	caller.$uibModal.open({
 		animation: true,
 		templateUrl: directiveMgr.getHTMLPathFromClass(WatchClassesModel),
 		controller: WatchClassesModel,
 		resolve: {
 			tree: tree
 		}
-	}
-}
+	})
+};
 
 WatchClassesModel.prototype.addClassToWatchList = function () {
 	user.addToList('watching', [this.tree], this.tree.sections, function (err, msg) {

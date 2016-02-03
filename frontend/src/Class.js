@@ -440,8 +440,8 @@ Class.prototype.logTree = function (body) {
 		return;
 	}
 
-	if (!this.isClass || this.isString) {
-		elog("ERROR cant log a string or a node")
+	if (!this.host || !this.termId || !this.subject || !this.classId) {
+		elog("ERROR cant log class without host, termid, subject, classId")
 		return;
 	};
 

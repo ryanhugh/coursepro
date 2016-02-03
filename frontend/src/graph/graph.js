@@ -165,7 +165,7 @@ Graph.prototype.getCollegeName = function () {
 
 
 Graph.prototype.openWatchModel = function ($scope) {
-	this.$uibModal.open(WatchClassesModel.getOpenDetails($scope.tree))
+	WatchClassesModel.open(this, $scope.tree)
 };
 
 

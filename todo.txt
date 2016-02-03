@@ -1,6 +1,7 @@
 !!!!
 
-
+saved -> pinned or saved, but standardize
+uglyfing
 help, and graph help
 login, share link? 
 google analytics errywhere

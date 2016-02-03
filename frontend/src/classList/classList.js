@@ -32,21 +32,19 @@ ClassList.prototype.getLoadingHidden = function () {
 	var activeRequests = user.activeRequestCount;
 	var timeDiff = new Date().getTime() - user.lastRequestTime;
 
-	var retVal;
-
 	if (activeRequests <= 0) {
 
 		//recalculate 100 ms after last update
 		if (timeDiff < 100) {
 			this.$timeout(function () {}, 100 - timeDiff)
-			retVal = false;
+			return false;
 		}
 		else if (timeDiff < 5000) {
 			this.$timeout(function () {}, 5000 - timeDiff)
-			retVal = true;
+			return true;
 		}
 		else {
-			retVal = false;
+			return false;
 		}
 	}
 	else {
@@ -54,14 +52,12 @@ ClassList.prototype.getLoadingHidden = function () {
 		//recalculate 100 ms after last update
 		if (timeDiff < 100) {
 			this.$timeout(function () {}, 100 - timeDiff)
-			retVal = false;
+			return false;
 		}
 		else {
-			retVal = true;
+			return true;
 		}
 	}
-	// console.log("returning:", retVal, timeDiff, user.lastRequestTime);
-	return retVal;
 };
 
 

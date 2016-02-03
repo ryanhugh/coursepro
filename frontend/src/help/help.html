@@ -1,0 +1,89 @@
+<!-- prevent flash of uncompiled html on screen -->
+<!-- don't show it until angular renders it -->
+<div style="display:none" ng-style="{display:''}">
+
+    <div class="modal-header">
+        <button type="button" class="close" aria-label="Close" ng-click="help.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Help</h4>
+    </div>
+    <div class="modal-body">
+
+        <div ng-if = "help.path == 'calendar'">
+            The calendar view lets you plan out your saved classes on a weekly calendar. Pin a section of a class on to have it appear on the the calendar. If you close a class, all of the sections in the class are also unpinned.
+
+        </div>
+
+
+        <div ng-if="help.path == 'list'">
+        	The list view shows all the classes in a subject.
+        </div>
+
+        <div ng-if = "help.path == 'search'">
+        	Search through class and section details. <br>
+        	Class data searched: <br>
+                <ul>
+                    <li>Description</li>
+                    <li>Name</li>
+                    <li>Id</li>
+                    <li>Subject</li>
+                </ul>
+
+                Section data Searched: 
+                <ul>
+                    <li>CRN</li>
+                    <li>Locations</li>
+                    <li>Professors</li>
+                </ul>
+
+        </div>
+
+        <div ng-if ="help.path == 'graph'">
+        	The graph view shows class prerequisites and corequisites. <br>
+        	 <br>
+        	<span style="color:red;font-weight: bold;"> RED </span> lines mean you must take ALL of the connected classes. <br>
+
+        	<!-- For  -->
+
+        	<span style="color:blue;font-weight: bold;"> BLUE </span> lines mean you can take ANY of the connected classes. <br>
+ <br>
+        	When in doubt, you can always view the class on your school's site.
+
+
+        </div>
+
+        <div ng-if = "help.path == 'saved'">
+        	The saved view shows all the classes you have saved.
+
+        	If you unpin a class, and refresh the page, it will leave this list. 
+
+
+        </div>
+
+
+        <div ng-if = "path.help == 'homepage'">
+            Welcome to CoursePro.io! This help box will 
+
+        </div>
+
+
+
+        <br>
+        <br>
+
+        Got questions? Like the site? Found a bug? Drop us a line at 
+
+        <a href="mailto:coursepro@coursepro.io" target="_blank">
+            coursepro@coursepro.io
+        </a>
+        !
+
+
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="help.close()">Close</button>
+    </div>
+
+</div>

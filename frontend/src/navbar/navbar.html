@@ -18,6 +18,7 @@
     display: inline-block;
     margin-left: 31px;
     margin-top: 14px;
+    cursor: pointer;
 }
 </style>
 
@@ -34,6 +35,13 @@
 
                 <div selectors-mgr style="display:inline-block"></div>
 
+
+                <div class="rightNavBarItem" ng-click="navBar.openHelp()">
+                    <div class="glyphicon glyphicon-question-sign navBarItem" style="color: white"></div>
+                    <div style="position: relative;top: -3px" class="navBarItem navBarText">
+                        <!-- Help -->
+                    </div>
+                </div>
 
                 <div class="rightNavBarItem">
                     <a href="/#/saved">

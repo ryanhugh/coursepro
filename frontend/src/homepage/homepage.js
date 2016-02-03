@@ -10,7 +10,7 @@ function Homepage() {
 	this.emailMsg = ''
 }
 
-Homepage.$inject = ['$scope', '$location']
+Homepage.$inject = ['$scope']
 Homepage.urls = ['/']
 Homepage.isPage = true
 
