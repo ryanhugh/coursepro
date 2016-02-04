@@ -2,13 +2,33 @@
 var _ = require('lodash');
 var path = require("path");
 var monk = require('monk')
+var fs = require('fs')
 
 var macros = require('../macros')
 
+
+var username; 
+var password;
+
+if (macros.PRODUCTION) {
+	username = 'productionUser'
+	password = fs.readFileSync('/etc/coursepro/mongoDBProductionPassword').toString();
+}
+else {
+	username = 'developmentOnly'
+	password = fs.readFileSync('/etc/coursepro/mongoDBDevelopmentPassword').toString();
+}
+
+if (!password || !username) {
+	console.log("FATAL ERROR unable to open db password file for user",username);
+};
+
+console.log(username,password,macros.DATABASE_URL);
 //all the db files (classes.js, sections.js etc) all share the same database instance,
 //so if it is closed or modified anywhere, it will affect them all
-var database = monk(macros.DATABASE_URL);
+var database = monk(username+':'+password+'@'+macros.DATABASE_URL);
 // var databaseUrl = DATABASEURL_PROD;
+
 
 function BaseDB() {
 
