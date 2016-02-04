@@ -8,7 +8,6 @@ var macros = require('../macros')
 //all the db files (classes.js, sections.js etc) all share the same database instance,
 //so if it is closed or modified anywhere, it will affect them all
 var database = monk(macros.DATABASE_URL);
-// var databaseUrl = DATABASEURL_PROD;
 
 function BaseDB() {
 
