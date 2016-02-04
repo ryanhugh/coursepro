@@ -1,5 +1,7 @@
 !!!!
 
+finish adding exams to class list
+no results on search
 saved -> pinned or saved, but standardize
 uglyfing
 help, and graph help

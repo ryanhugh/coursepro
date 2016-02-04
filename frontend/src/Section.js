@@ -163,9 +163,10 @@ Section.prototype.createDayStrings = function () {
 };
 
 
-Section.prototype.calculateStartTimes = function () {
+Section.prototype.calculateStartAndEndTimes = function () {
 
 	var startTimes = [];
+	var endTimes = [];
 
 	//get all start times that exit and startDate != endDate
 	if (this.meetings) {
@@ -182,6 +183,11 @@ Section.prototype.calculateStartTimes = function () {
 					if (!_(startTimes).includes(start)) {
 						startTimes.push(start)
 					}
+
+					var end = dayTime.end
+					if (!_(endTimes).includes(end)) {
+						endTimes.push(end)
+					}
 				}.bind(this))
 			}
 		}.bind(this))
@@ -193,6 +199,14 @@ Section.prototype.calculateStartTimes = function () {
 	}.bind(this))
 
 	this.startTimesStrings = startStrings
+
+
+	var endStrings = [];
+	endTimes.forEach(function (endTime) {
+		endStrings.push(moment.utc(endTime * 1000).format('h:mm a'))
+	}.bind(this))
+
+	this.endTimesStrings = endStrings
 }
 
 Section.prototype.calculateMeetingDates = function () {
@@ -253,7 +267,7 @@ Section.prototype.groupSectionTimes = function () {
 	this.calculateExams();
 	this.calculateHiddenMeetings();
 	this.createDayStrings();
-	this.calculateStartTimes();
+	this.calculateStartAndEndTimes();
 	this.calculateMeetingDates();
 
 
@@ -272,6 +286,91 @@ Section.prototype.groupSectionTimes = function () {
 		this.hasWaitList = true;
 	}
 }
+
+//returns [true,false,true,false,true] if meeting mon, wed, fri
+Section.prototype.getWeekDaysAsBooleans = function() {
+
+	var retVal = [false,false,false,false,false]
+
+	this.meetings.forEach(function (meeting) {
+		meeting.timeMoments.forEach(function (times) {
+
+			//moment returns from 0 = sunday, 6 = saterday, we need 0 = monday, 4 = friday
+			var index = times.start.day()-1
+			if (index<0 || index>4) {
+				elog('index for meeting on sat or sun?',index)
+				return;
+			}
+
+			retVal[index] = true;
+		}.bind(this))
+	}.bind(this))
+
+	return retVal;
+};
+
+Section.prototype.getWeekDaysAsStringArray = function() {
+	
+	var retVal = [];
+	var daysCovered = [];
+
+	this.meetings.forEach(function (meeting) {
+		if (meeting.isExam) {
+			return;
+		};
+
+
+		meeting.timeMoments.forEach(function (timeMoment) {
+
+			var dayIndex = timeMoment.start.day()
+
+			if (!_(daysCovered).includes(dayIndex)) {
+				daysCovered.push(dayIndex)
+
+				retVal.push(timeMoment.start)
+			};
+		}.bind(this))
+	}.bind(this))
+
+
+	//sort the days
+	retVal.sort(function (a,b) {
+
+		var aUnix = a.unix();
+		var bUnix = b.unix();
+
+		if (aUnix>bUnix) {
+			return 1;
+		}
+		else if (aUnix<bUnix) {
+			return -1;
+		}
+		else {
+			elog('a and b are on the same day???',a.toString(),b.toString())
+			return 0;
+		}
+	}.bind(this))
+
+	retVal.forEach(function (weekDayMoment,index, retVal) {
+		retVal[index] = weekDayMoment.format('dddd')
+	}.bind(this))
+
+	return retVal;
+};
+
+//returns true if has exam, else false
+Section.prototype.hasExam = function() {
+	for (var i = 0; i < this.meetings.length; i++) {
+		if (this.meetings[i].isExam) {
+			return true;
+		}
+	}
+	return false;
+};
+
+
+
+
 
 // // returns the start and end of each meeting in a js date
 // Section.prototype.getDateMeetingTimestamps = function () {

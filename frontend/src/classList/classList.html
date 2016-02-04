@@ -28,6 +28,20 @@
     color: black;
     opacity: .8;
 }
+
+.weekDayBox {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    border: 2px solid #BBBBBB;
+    border-radius: 3px;
+    margin-right: 1px;
+    margin-left: 1px;
+}
+
+.weekDayBoxChecked {
+    background: #888;
+}
 </style>
 
 
@@ -50,7 +64,7 @@
             <span ng-click="$event.stopPropagation()">
 
                 <span list-icon='saved' toggle="class" class="rightIcon"></span>
-                <span list-icon='watching' toggle="class" class="rightIcon"></span>
+                <!-- <span list-icon='watching' toggle="class" class="rightIcon"></span> -->
 
                 <!-- link icon -->
                 <a href="{{class.prettyUrl}}" target="_blank">
@@ -112,13 +126,18 @@
                         <ng-pluralize count="class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
                     </th>
 
-                    <th>Start Time</th>
+                    <th>Weekdays</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Location</th>
+                    <th ng-if = "class.sectionsHaveExam()">Exam start</th>
+                    <th ng-if = "class.sectionsHaveExam()">Exam end</th>
+                    <th ng-if = "class.sectionsHaveExam()">Exam date</th>
                     <th>Open Seats/Total Seats</th>
                     <th ng-if="class.hasWaitList">Open/Total Waitlist Seats</th>
-                    <th>Location</th>
                     <th>Link</th>
-                    <th>Email
-                        <br>Notifications</th>
+                    <!-- <th>Email
+                        <br>Notifications</th> -->
                     <th>Saved</th>
                 </tr>
             </thead>
@@ -126,8 +145,27 @@
                 <tr ng-repeat="section in class.sections">
                     <td>{{section.crn}}</td>
                     <td>{{section.profs.join(', ')}}</td>
+                    <td>
+                        <span ng-if ="section.dataStatus == macros.DATASTATUS_DONE">
+                            <span uib-tooltip="Meets on {{section.getWeekDaysAsStringArray().join(', ')}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                <div class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                </div>
+                            </span>
+                        </span>
+                    </td>
                     <td>{{section.startTimesStrings.join(", ")}}</td>
+                    <td>{{section.endTimesStrings.join(", ")}}</td>
 
+
+                    <td>
+                        <span ng-repeat="location in section.locations">
+                            <span ng-if="location != 'Tba' || section.locations.length <= 1"> {{location}} </span>
+                        </span>
+                    </td>
+
+
+                    <td ng-if = "class.sectionsHaveExam()"></td>
+                    <td ng-if = "class.sectionsHaveExam()"></td>
 
                     <td>
 
@@ -148,12 +186,6 @@
                     </td>
 
                     <td>
-                        <span ng-repeat="location in section.locations">
-                            <span ng-if="location != 'Tba' || section.locations.length <= 1"> {{location}} </span>
-                        </span>
-                    </td>
-
-                    <td>
                         <a href="{{section.url}}" target="_blank">
 
                             <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
@@ -161,10 +193,10 @@
 
                         </a>
                     </td>
-
+<!-- 
                     <td>
                         <span list-icon='watching' toggle="section"></span>
-                    </td>
+                    </td> -->
 
                     <td>
                         <span list-icon='saved' toggle="section"></span>
