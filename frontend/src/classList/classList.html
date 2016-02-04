@@ -13,11 +13,6 @@
     opacity: 0;
 }
 
-.rightIcon {
-    float: right;
-    padding-right: 7px;
-}
-
 .savedText {
     float: right;
     margin-top: -16px;
@@ -133,7 +128,13 @@
                     <th ng-if = "class.sectionsHaveExam()">Exam start</th>
                     <th ng-if = "class.sectionsHaveExam()">Exam end</th>
                     <th ng-if = "class.sectionsHaveExam()">Exam date</th>
-                    <th>Open Seats/Total Seats</th>
+                    <th>
+                        
+                        <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                        Seats
+                        </span>
+
+                    </th>
                     <th ng-if="class.hasWaitList">Open/Total Waitlist Seats</th>
                     <th>Link</th>
                     <!-- <th>Email
@@ -147,7 +148,7 @@
                     <td>{{section.profs.join(', ')}}</td>
                     <td>
                         <span ng-if ="section.dataStatus == macros.DATASTATUS_DONE">
-                            <span uib-tooltip="Meets on {{section.getWeekDaysAsStringArray().join(', ')}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                            <span uib-tooltip="Meets on {{section.getWeekDaysAsStringArray().join(', ')}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
                                 <div class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
                                 </div>
                             </span>
@@ -164,8 +165,9 @@
                     </td>
 
 
-                    <td ng-if = "class.sectionsHaveExam()"></td>
-                    <td ng-if = "class.sectionsHaveExam()"></td>
+                    <td ng-if = "class.sectionsHaveExam()">{{section.getExamMoments().start.format('h:mm a')}}</td>
+                    <td ng-if = "class.sectionsHaveExam()">{{section.getExamMoments().end.format('h:mm a')}}</td>
+                    <td ng-if = "class.sectionsHaveExam()">{{section.getExamMoments().start.format('MMM Do')}}</td>
 
                     <td>
 

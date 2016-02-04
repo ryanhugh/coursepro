@@ -288,17 +288,21 @@ Section.prototype.groupSectionTimes = function () {
 }
 
 //returns [true,false,true,false,true] if meeting mon, wed, fri
-Section.prototype.getWeekDaysAsBooleans = function() {
+Section.prototype.getWeekDaysAsBooleans = function () {
 
-	var retVal = [false,false,false,false,false]
+	var retVal = [false, false, false, false, false]
 
 	this.meetings.forEach(function (meeting) {
+		if (meeting.isExam) {
+			return;
+		};
+
 		meeting.timeMoments.forEach(function (times) {
 
 			//moment returns from 0 = sunday, 6 = saterday, we need 0 = monday, 4 = friday
-			var index = times.start.day()-1
-			if (index<0 || index>4) {
-				elog('index for meeting on sat or sun?',index)
+			var index = times.start.day() - 1
+			if (index < 0 || index > 4) {
+				elog('index for meeting on sat or sun?', index)
 				return;
 			}
 
@@ -309,8 +313,8 @@ Section.prototype.getWeekDaysAsBooleans = function() {
 	return retVal;
 };
 
-Section.prototype.getWeekDaysAsStringArray = function() {
-	
+Section.prototype.getWeekDaysAsStringArray = function () {
+
 	var retVal = [];
 	var daysCovered = [];
 
@@ -334,24 +338,24 @@ Section.prototype.getWeekDaysAsStringArray = function() {
 
 
 	//sort the days
-	retVal.sort(function (a,b) {
+	retVal.sort(function (a, b) {
 
 		var aUnix = a.unix();
 		var bUnix = b.unix();
 
-		if (aUnix>bUnix) {
+		if (aUnix > bUnix) {
 			return 1;
 		}
-		else if (aUnix<bUnix) {
+		else if (aUnix < bUnix) {
 			return -1;
 		}
 		else {
-			elog('a and b are on the same day???',a.toString(),b.toString())
+			elog('a and b are on the same day???', a.toString(), b.toString())
 			return 0;
 		}
 	}.bind(this))
 
-	retVal.forEach(function (weekDayMoment,index, retVal) {
+	retVal.forEach(function (weekDayMoment, index, retVal) {
 		retVal[index] = weekDayMoment.format('dddd')
 	}.bind(this))
 
@@ -359,7 +363,7 @@ Section.prototype.getWeekDaysAsStringArray = function() {
 };
 
 //returns true if has exam, else false
-Section.prototype.hasExam = function() {
+Section.prototype.hasExam = function () {
 	for (var i = 0; i < this.meetings.length; i++) {
 		if (this.meetings[i].isExam) {
 			return true;
@@ -368,6 +372,19 @@ Section.prototype.hasExam = function() {
 	return false;
 };
 
+//returns the {start:end:} moment object of the first exam found
+//else returns null
+Section.prototype.getExamMoments = function () {
+	for (var i = 0; i < this.meetings.length; i++) {
+		var meeting = this.meetings[i]
+		if (meeting.isExam) {
+			if (meeting.timeMoments.length > 0) {
+				return meeting.timeMoments[0];
+			};
+		};
+	};
+	return null;
+};
 
 
 
