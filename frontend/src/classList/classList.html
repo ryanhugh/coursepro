@@ -37,6 +37,11 @@
 .weekDayBoxChecked {
     background: #888;
 }
+
+.accordionChevrons {
+    margin-left: -3px;
+    margin-right: 3px;
+}
 </style>
 
 
@@ -53,7 +58,7 @@
     <uib-accordion-group is-open="isOpen" ng-repeat="class in classes" ng-click="class.loadSections()">
         <uib-accordion-heading>
 
-            <span class="glyphicon" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span> {{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
+            <span class="glyphicon accordionChevrons" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span> {{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
 
             <!-- stop event propagation outside the icons -->
             <span ng-click="$event.stopPropagation()">
@@ -125,13 +130,13 @@
                     <th>Start</th>
                     <th>End</th>
                     <th>Location</th>
-                    <th ng-if = "class.sectionsHaveExam()">Exam start</th>
-                    <th ng-if = "class.sectionsHaveExam()">Exam end</th>
-                    <th ng-if = "class.sectionsHaveExam()">Exam date</th>
+                    <th ng-if="class.sectionsHaveExam()">Exam start</th>
+                    <th ng-if="class.sectionsHaveExam()">Exam end</th>
+                    <th ng-if="class.sectionsHaveExam()">Exam date</th>
                     <th>
-                        
+
                         <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                        Seats
+                            Seats
                         </span>
 
                     </th>
@@ -147,7 +152,7 @@
                     <td>{{section.crn}}</td>
                     <td>{{section.profs.join(', ')}}</td>
                     <td>
-                        <span ng-if ="section.dataStatus == macros.DATASTATUS_DONE">
+                        <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
                             <span uib-tooltip="Meets on {{section.getWeekDaysAsStringArray().join(', ')}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
                                 <div class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
                                 </div>
@@ -165,9 +170,9 @@
                     </td>
 
 
-                    <td ng-if = "class.sectionsHaveExam()">{{section.getExamMoments().start.format('h:mm a')}}</td>
-                    <td ng-if = "class.sectionsHaveExam()">{{section.getExamMoments().end.format('h:mm a')}}</td>
-                    <td ng-if = "class.sectionsHaveExam()">{{section.getExamMoments().start.format('MMM Do')}}</td>
+                    <td ng-if="class.sectionsHaveExam()">{{section.getExamMoments().start.format('h:mm a')}}</td>
+                    <td ng-if="class.sectionsHaveExam()">{{section.getExamMoments().end.format('h:mm a')}}</td>
+                    <td ng-if="class.sectionsHaveExam()">{{section.getExamMoments().start.format('MMM Do')}}</td>
 
                     <td>
 
@@ -195,7 +200,7 @@
 
                         </a>
                     </td>
-<!-- 
+                    <!-- 
                     <td>
                         <span list-icon='watching' toggle="section"></span>
                     </td> -->
