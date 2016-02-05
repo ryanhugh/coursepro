@@ -1,6 +1,6 @@
 !!!!
 
-uglyfing
+uglyfing - the next error and the 404s is because its bases off Function.prototype.name that is changed...
 help, and graph help
 login, share link? 
 and fix the require case sensitivity for linux

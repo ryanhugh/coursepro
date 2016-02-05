@@ -115,7 +115,9 @@ function compileJS(shouldUglify) {
 		if (shouldUglify) {
 			stream = stream.pipe(streamify(uglify({
 				compress: {
-					drop_console: true
+					drop_console: true,
+					// warnings: true,
+					// keep_fnames: true
 				}
 			})));
 		};
@@ -151,7 +153,7 @@ gulp.task('uglifyJS', function () {
 
 
 //main prod starting point
-gulp.task('prod', ['uglifyJS','watchCopyHTML','copyHTML'], function () {
+gulp.task('prod', ['uglifyJS', 'watchCopyHTML', 'copyHTML'], function () {
 	macros.SEND_EMAILS = true;
 	require('./backend/server')
 })
@@ -164,7 +166,7 @@ gulp.task('compressJS', function () {
 });
 
 
-gulp.task('dev', ['compressJS', 'watchCopyHTML','copyHTML'], function () {
+gulp.task('dev', ['compressJS', 'watchCopyHTML', 'copyHTML'], function () {
 	require('./backend/server')
 })
 

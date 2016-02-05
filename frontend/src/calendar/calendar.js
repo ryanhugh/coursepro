@@ -79,7 +79,7 @@ function Calendar($scope) {
 	}.bind(this))
 }
 
-
+Calendar.fnName = 'Calendar'
 Calendar.isPage = true;
 Calendar.$inject = ['$scope']
 

@@ -432,7 +432,7 @@ UsersDB.prototype.getUsersWatchCache = function (callback) {
 			this.classWatchCache.sections = {};
 
 			results.forEach(function (user) {
-				if (!user.lists.watching) {
+				if (!user.lists || !user.lists.watching) {
 					return;
 				};
 

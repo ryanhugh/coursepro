@@ -1,12 +1,12 @@
 'use strict';
 var _ = require('lodash')
 var macros = require('./macros')
-var angular = require('angular')
+// var angular = require('angular')
 
 //max depth for a tree, if it reaches this angular will barf
-var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize','ui.calendar'], function ($rootScopeProvider) {
+var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize', 'ui.calendar'], ['$rootScopeProvider', function ($rootScopeProvider) {
 	$rootScopeProvider.digestTtl(20);
-});
+}]);
 
 
 function DirectiveMgr() {
@@ -34,12 +34,13 @@ function DirectiveMgr() {
 		return;
 	}
 
-	angularModule.config(function ($routeProvider) {
+	angularModule.config(['$routeProvider', function ($routeProvider) {
 		$routeProvider.otherwise({
 			redirectTo: '/'
 		})
-	});
+	}]);
 }
+
 
 
 DirectiveMgr.prototype.calculateName = function (aClass) {
