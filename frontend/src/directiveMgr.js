@@ -62,20 +62,36 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 	//so can go this.fn(), but not here because the instance has not been made yet
 	//if need to override url or directive name, just pass in a config param to this fn
 	var directiveName = this.calculateName(directive)
-	var htmlPath = this.getHTMLPathFromName(directiveName)
-	var urls = '';
-	var priority = 0;
 
-	if (directive.priority) {
-		priority = directive.priority;
+
+	var angularDirective = {}
+
+	if (directive.priority !== undefined) {
+		angularDirective.priority = directive.priority;
+	}
+	else {
+		angularDirective.priority = 0;
 	}
 
-	var scope = true;
-	if (directive.$scope) {
-		scope = directive.$scope
-	};
 
-	//homepage overrides url
+	if (directive.$scope) {
+		angularDirective.scope = directive.$scope
+	}
+	else {
+		angularDirective.scope = true;
+	}
+
+
+
+	if (directive.template !== undefined) {
+		angularDirective.template = directive.template
+	}
+	else {
+		angularDirective.templateUrl = this.getHTMLPathFromName(directiveName)
+	}
+
+	var urls = [];
+	//if its a page, use urls
 	if (directive.isPage) {
 
 		if (directive.urls) {
@@ -86,6 +102,16 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 		}
 	};
 
+	if (directive.link) {
+		angularDirective.link = directive.link.bind(directive)
+	};
+
+
+	angularDirective.controller = directive
+
+
+
+
 	//this should be split up to addPage, addController, and addLink
 	if (directive.isPage) {
 
@@ -93,29 +119,14 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 			function ($routeProvider) {
 				urls.forEach(function (url) {
 
-					$routeProvider.when(url, {
-						templateUrl: htmlPath,
-						controller: directive,
-						priority: priority
-					});
+					$routeProvider.when(url, angularDirective);
 				}.bind(this))
 			}
 		])
 	}
 	else {
 		angularModule.directive(directiveName, function () {
-			var retVal = {
-				templateUrl: htmlPath,
-				scope: scope,
-				controller: directive,
-				priority: priority
-			}
-
-			if (directive.link) {
-				retVal.link = directive.link.bind(directive)
-			}
-
-			return retVal;
+			return angularDirective;
 		}.bind(this))
 	}
 };

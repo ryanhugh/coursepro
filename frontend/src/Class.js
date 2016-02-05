@@ -476,17 +476,11 @@ Class.prototype.loadSections = function (callback) {
 		return callback()
 	};
 
-	// // tried to load sections twice
-	// if (this.sections.length > 0) {
-	// 	console.log('ERROR already have sections??')
-	// 	return callback('already done')
-	// }
 
 	if (!this.isClass || this.isString) {
 		console.log('ERROR cant load sections of !class or string')
 		return callback('!class or string')
 	};
-
 
 
 	if (this.dataStatus === macros.DATASTATUS_FAIL) {

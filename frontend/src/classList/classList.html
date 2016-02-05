@@ -55,7 +55,7 @@
 
 
 <uib-accordion close-others="false">
-    <uib-accordion-group is-open="isOpen" ng-repeat="class in classes" ng-click="class.loadSections()">
+    <uib-accordion-group is-open="isOpen" ng-repeat="class in classes" ng-click="classList.onClick(class,this)">
         <uib-accordion-heading>
 
             <span class="glyphicon accordionChevrons" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span> {{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}

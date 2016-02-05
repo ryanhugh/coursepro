@@ -214,7 +214,7 @@ function GraphPanelExpand($timeout, $document) {
  
 		ga('send', {
 			'hitType': 'pageview',
-			'page': window.location.href + '/openPopup/' + tree.subject + '/' + tree.classId,
+			'page': '/listSections/' + tree.getIdentifer().full.str,
 			'title': 'Coursepro.io'
 		});
 
@@ -232,9 +232,10 @@ function GraphPanelExpand($timeout, $document) {
 
 		ga('send', {
 			'hitType': 'pageview',
-			'page': window.location.href + '/closePopup/' + tree.subject + '/' + tree.classId,
+			'page': '/closePanel/' + tree.getIdentifer().full.str,
 			'title': 'Coursepro.io'
 		});
+
 
 		_.pull(this.openOrder, tree)
 

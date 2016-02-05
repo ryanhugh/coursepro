@@ -57,12 +57,6 @@ Search.prototype.go = function () {
 
 	this.isLoading = true;
 
-	ga('send', {
-		'hitType': 'pageview',
-		'page': window.location.href,
-		'title': 'Coursepro.io'
-	});
-
 	console.log('searching for ', this.searchText)
 
 	request({

@@ -26,6 +26,22 @@ function ClassList() {
 
 ClassList.$inject = ['$scope', '$timeout']
 
+ClassList.prototype.onClick = function (aClass, subScope) {
+	aClass.loadSections()
+
+	//don't submit if just closed accordian
+	if (!subScope.isOpen) {
+		return;
+	};
+
+	ga('send', {
+		'hitType': 'pageview',
+		'page': '/listSections/' + aClass.getIdentifer().full.str,
+		'title': 'Coursepro.io'
+	});
+
+
+};
 
 
 ClassList.prototype.getLoadingHidden = function () {

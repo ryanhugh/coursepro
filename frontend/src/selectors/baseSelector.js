@@ -180,12 +180,6 @@ BaseSelector.prototype.setupSelector = function (values, config) {
 			this.onSelect(newValue);
 		}
 
-		ga('send', {
-			'hitType': 'pageview',
-			'page': window.location.href,
-			'title': 'Coursepro.io'
-		});
-
 		if (this.next) {
 			this.next.setup()
 		}
