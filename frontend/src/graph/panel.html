@@ -3,11 +3,11 @@
 <!-- baseZIndex needs to be set in this scope before included (it is currently set in graphInner.html) -->
 
 
-<div class="treePanelWrapper" ng-style="style" style="z-index:100" graph-linker graph-line-to-parent help>
+<div class="treePanelWrapper" ng-style="style" style="z-index:100" graph-linker graph-line-to-parent>
 
 
     <!-- main panel -->
-    <div class="panel panel-primary treePanel" ng-if="tree.isClass && !tree.hidden" graph-panel-expand panel-close=".closePanel">
+    <div class="panel panel-primary treePanel" ng-if="tree.isClass && !tree.hidden" graph-panel-expand panel-close=".closePanel" help>
 
         <div class="panel-heading">
             <h3 class="panel-title" style="text-align: center;">{{tree.subject}} {{tree.classId}}
@@ -30,7 +30,7 @@
                 <div style="white-space: normal;margin-bottom:10px;line-height:15px">{{tree.desc}}</div>
 
 
-<!-- 
+                <!-- 
                 <div style="text-align: center;margin-bottom: -20px;">
                     <a class="linkToClassWatchModel" ng-click="graph.openWatchModel(this)">Get notified if this class changes
                         <br> or if any seats open up!</a>
@@ -61,7 +61,7 @@
                 <div style="text-align:center;display: inline-block;padding-top:10px;width: 100%;margin-bottom: -10px;">
                     <div style="width: 260px;position: relative;" ng-repeat="section in tree.sections" class="classSection">
 
-                    <div list-icon='saved' toggle='section' style="position: absolute;top: 4px;right: 4px;"></div>
+                        <div list-icon='saved' toggle='section' style="position: absolute;top: 4px;right: 4px;"></div>
 
                         <div style=" text-align: center;margin-bottom: 22px;">
                             <span ng-repeat="meeting in section.meetings" ng-if="!meeting.hidden">

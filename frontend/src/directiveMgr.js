@@ -2,7 +2,7 @@
 var _ = require('lodash')
 var macros = require('./macros')
 var angular = require('angular')
-
+var bootstrap = require('bootstrap')
 var fullcalendar = require('fullcalendar')
 
 //max depth for a tree, if it reaches this angular will barf

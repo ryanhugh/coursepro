@@ -153,7 +153,9 @@
                     <td>{{section.profs.join(', ')}}</td>
                     <td>
                         <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
-                            <span uib-tooltip="{{section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
+
+                            <!-- avoid calculating the string more than once -->
+                            <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip= "{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
                                 <div class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
                                 </div>
                             </span>
