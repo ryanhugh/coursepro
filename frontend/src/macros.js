@@ -1,6 +1,6 @@
 'use strict';
 var request = require('./request')
-// window.jQuery = window.$ = require('jquery')
+window.jQuery = window.$ = require('jquery')
 
 //used just to define constance used mostly in treeMgr, also in render.js
 function Macros() {

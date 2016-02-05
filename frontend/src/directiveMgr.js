@@ -1,7 +1,7 @@
 'use strict';
 var _ = require('lodash')
 var macros = require('./macros')
-// var angular = require('angular')
+var angular = require('angular')
 
 var fullcalendar = require('fullcalendar')
 
