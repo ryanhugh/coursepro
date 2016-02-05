@@ -1,12 +1,9 @@
 !!!!
 
-finish adding exams to class list
-no results on search
-saved -> pinned or saved, but standardize
+google analytics errywhere
 uglyfing
 help, and graph help
 login, share link? 
-google analytics errywhere
 and fix the require case sensitivity for linux
 
 

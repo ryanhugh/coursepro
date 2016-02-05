@@ -211,7 +211,7 @@ function GraphPanelExpand($timeout, $document) {
 		if (tree.$scope.isExpanded) {
 			return;
 		}
-
+ 
 		ga('send', {
 			'hitType': 'pageview',
 			'page': window.location.href + '/openPopup/' + tree.subject + '/' + tree.classId,

@@ -10,11 +10,13 @@
 }
 
 .calendarRightPanel {
+    float:right;
     top: 85px;
     z-index: 999999;
     display: inline-block;
     vertical-align: top;
     max-width: 350px;
+    margin-bottom: 110px;
 }
 
 .calenderSelectSubject {
@@ -53,7 +55,7 @@ uib-accordion .accordion-toggle {
 
 <div style="margin: 0 auto;max-width: 1055px;">
 
-    <div style="display: inline-block;max-width: 700px;">
+    <div style="display: inline-block;max-width: 700px;position:fixed">
 
         <div ui-calendar="uiConfig.calendar" class="span8 calendar" ng-model="eventSources" id="calendarId"></div>
 
@@ -102,7 +104,7 @@ uib-accordion .accordion-toggle {
                     <thead>
                         <tr>
 
-                            <th>Pin</th>
+                            <th>Saved</th>
                             <th>
                                 <ng-pluralize count="class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
                             </th>
@@ -116,7 +118,7 @@ uib-accordion .accordion-toggle {
                         <tr ng-repeat="section in class.sections" ng-click="calendar.toggleSectionPinned(section)" style="cursor:pointer">
 
                             <td>
-                                <div class="glyphicon glyphicon-asterisk" ng-class="calendar.isSectionPinned(section)?'calendarPinned':'calendarUnpinned'"></div>
+                                <div class="glyphicon glyphicon-star" ng-class="calendar.isSectionPinned(section)?'calendarPinned':'calendarUnpinned'"></div>
                             </td>
 
 

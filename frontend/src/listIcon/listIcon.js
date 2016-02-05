@@ -18,7 +18,7 @@ function ListIcon() {
 				false: 'Click to subscribe to email notifications'
 			},
 			saved: {
-				false: 'Click to save for later',
+				false: 'Click to save to calendar',
 				true: 'Click to unsave'
 			}
 		}

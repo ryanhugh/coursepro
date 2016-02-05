@@ -62,7 +62,6 @@ function Calendar($scope) {
 				elog(err)
 			}
 
-			this.$scope.classes = list.classes
 
 			if (list.classes.length == 0) {
 				this.$scope.focusSelector = true;
@@ -181,6 +180,15 @@ Calendar.prototype.addClass = function (aClass) {
 			elog("error", err);
 			return;
 		}
+
+		//dont add a duplicate
+		for (var i = 0; i < this.$scope.classes.length; i++) {
+			if (this.$scope.classes[i]._id == aClass._id) {
+				return;
+			}
+		};
+
+		user.toggleListContainsClass(this.getListName(), aClass)
 
 		this.$scope.classes.push(aClass)
 

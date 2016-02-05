@@ -72,6 +72,12 @@ SubjectClassSelector.prototype.updateSubjects = function (callback) {
 		termId: user.getValue('lastSelectedTerm')
 	})
 
+
+	if (!this.term) {
+		//hopefully its called again with a valid term...
+		return;
+	};
+
 	this.term.loadSubjects(function (err) {
 		if (err) {
 			elog("err", err);
@@ -100,7 +106,7 @@ SubjectClassSelector.prototype.updateSubjects = function (callback) {
 };
 
 SubjectClassSelector.prototype.onSelectSubject = function (fireTrigger) {
-	if (!this.selectedSubject) {
+	if (!this.selectedSubject || !this.term) {
 		return;
 	};
 

@@ -661,10 +661,6 @@ User.prototype.toggleListContainsClass = function (listName, aClass, addSections
         callback = function () {}
     }
 
-    // if (!this.getAuthenticated()) {
-    //     return callback('not authenticated');
-    // }
-
     aClass.loadSections(function (err) {
         if (err) {
             return callback(err)
