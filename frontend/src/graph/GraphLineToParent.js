@@ -170,6 +170,7 @@ function GraphLineToParent($timeout) {
 	return instance;
 }
 
+GraphLineToParent.fnName = 'GraphLineToParent'
 GraphLineToParent.$inject = ['$timeout'];
 
 

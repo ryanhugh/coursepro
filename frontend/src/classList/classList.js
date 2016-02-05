@@ -24,6 +24,7 @@ function ClassList() {
 	}.bind(this))
 }
 
+ClassList.fnName = 'ClassList'
 ClassList.$inject = ['$scope', '$timeout']
 
 ClassList.prototype.onClick = function (aClass, subScope) {
@@ -90,6 +91,7 @@ ClassList.prototype.showLoadingText = function () {
 		return false;
 	}
 };
+
 
 
 

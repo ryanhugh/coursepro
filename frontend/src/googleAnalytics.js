@@ -22,6 +22,7 @@ function GoogleAnalytics() {
 
 }
 
+GoogleAnalytics.fnName = 'GoogleAnalytics'
 GoogleAnalytics.$inject = ['$scope', '$routeParams', '$route', '$location']
 GoogleAnalytics.template = ''
 

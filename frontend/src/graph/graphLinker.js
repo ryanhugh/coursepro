@@ -29,6 +29,7 @@ function GraphLinker() {
 	return instance;
 }
 
+GraphLinker.fnName = 'GraphLinker'
 
 GraphLinker.prototype.GraphLinker = GraphLinker;
 module.exports = GraphLinker;

@@ -40,6 +40,7 @@ function Search() {
 	this.$scope.addSubject = this.addSubject.bind(this)
 }
 
+Search.fnName = 'Search'
 Search.isPage = true;
 Search.$inject = ['$scope', '$routeParams', '$route', '$location']
 Search.urls = ['/search/:host/:termId/:subject?/:searchText?']

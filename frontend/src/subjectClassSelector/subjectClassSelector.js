@@ -41,6 +41,8 @@ function SubjectClassSelector() {
 	this.$scope.$on('$routeChangeSuccess', this.updateFromRoute.bind(this))
 }
 
+SubjectClassSelector.fnName = 'SubjectClassSelector'
+
 //called when select a class
 SubjectClassSelector.prototype.reset = function () {
 

@@ -33,6 +33,7 @@ function SelectorsMgr() {
 	this.updateSelectors();
 }
 
+SelectorsMgr.fnName = 'SelectorsMgr'
 SelectorsMgr.$inject = ['$scope', '$routeParams', '$route', '$location']
 
 //prototype constructor

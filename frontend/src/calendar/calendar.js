@@ -6,7 +6,6 @@ var BaseDirective = require('../BaseDirective')
 
 var user = require('../user')
 
-var fullcalendar = require('fullcalendar')
 var moment = require('moment')
 var queue = require('queue-async')
 

@@ -335,7 +335,7 @@ function GraphPanelExpand($timeout, $document) {
 
 }
 
-
+GraphPanelExpand.fnName = 'GraphPanelExpand'
 GraphPanelExpand.$inject = ['$timeout', '$document'];
 
 

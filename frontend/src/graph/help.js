@@ -330,7 +330,7 @@ function Help($timeout) {
 
 }
 
-
+Help.fnName = 'Help'
 Help.$inject = ['$timeout'];
 
 Help.prototype.Help = Help;

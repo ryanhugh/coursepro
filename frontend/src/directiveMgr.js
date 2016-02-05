@@ -3,6 +3,8 @@ var _ = require('lodash')
 var macros = require('./macros')
 // var angular = require('angular')
 
+var fullcalendar = require('fullcalendar')
+
 //max depth for a tree, if it reaches this angular will barf
 var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize', 'ui.calendar'], ['$rootScopeProvider', function ($rootScopeProvider) {
 	$rootScopeProvider.digestTtl(20);
@@ -44,7 +46,12 @@ function DirectiveMgr() {
 
 
 DirectiveMgr.prototype.calculateName = function (aClass) {
-	return aClass.name[0].toLowerCase() + aClass.name.slice(1)
+	if (!aClass.fnName) {
+		elog("ERROR",aClass,'does not have a fnName');
+		// return nu
+	}
+
+	return aClass.fnName[0].toLowerCase() + aClass.fnName.slice(1)
 };
 
 DirectiveMgr.prototype.getHTMLPathFromClass = function (aClass) {

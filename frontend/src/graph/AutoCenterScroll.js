@@ -59,6 +59,7 @@ function AutoCenterScroll($timeout) {
 	return instance;
 }
 
+AutoCenterScroll.fnName = 'AutoCenterScroll'
 AutoCenterScroll.$inject = ['$timeout'];
 
 

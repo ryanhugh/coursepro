@@ -7,7 +7,6 @@
 *       The calendar will watch any eventSource array and update itself when a change is made.
 *
 */
-var angular = require('angular')
 var moment = require('moment')
 
 angular.module('ui.calendar', [])

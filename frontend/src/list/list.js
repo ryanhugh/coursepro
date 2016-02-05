@@ -33,6 +33,7 @@ function List() {
 	this.$scope.addSubject = this.addSubject.bind(this)
 }
 
+List.fnName = 'List'
 List.isPage = true;
 List.$inject = ['$scope', '$routeParams','$route']
 List.urls = ['/list/:host/:termId/:subject?']

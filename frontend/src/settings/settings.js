@@ -126,13 +126,9 @@ function Settings() {
 	this.$scope.addClass = this.addClass.bind(this)
 }
 
+Settings.fnName = 'Settings'
 Settings.isPage = true;
-
-
 Settings.urls = ['/saved', '/unsubscribe/:host/:termId/:subject/:classId']
-
-
-
 Settings.$inject = ['$scope', '$timeout', '$routeParams', '$location']
 
 //prototype constructor

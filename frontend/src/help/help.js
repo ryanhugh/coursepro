@@ -31,6 +31,7 @@ function Help() {
 	// debugger
 }
 
+Help.fnName = 'Help'
 Help.$inject = ['$scope', '$uibModalInstance','$location','$route','$routeParams']
 
 //called from controllers wanting to open this

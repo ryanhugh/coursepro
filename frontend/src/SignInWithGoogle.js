@@ -37,6 +37,8 @@ function SignInWithGoogle() {
 	return instance;
 }
 
+SignInWithGoogle.fnName = 'SignInWithGoogle'
+
 SignInWithGoogle.prototype.SignInWithGoogle = SignInWithGoogle;
 module.exports = SignInWithGoogle;
 directiveMgr.addLink(SignInWithGoogle)

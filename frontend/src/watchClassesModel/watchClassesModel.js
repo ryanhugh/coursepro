@@ -45,6 +45,7 @@ function WatchClassesModel() {
 	}
 }
 
+WatchClassesModel.fnName = 'WatchClassesModel'
 WatchClassesModel.$inject = ['$scope', '$uibModalInstance', '$timeout', 'tree']
 
 //called from controllers wanting to open this

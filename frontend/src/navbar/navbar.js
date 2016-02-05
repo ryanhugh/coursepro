@@ -15,7 +15,7 @@ function NavBar() {
 
 }
 
-
+NavBar.fnName = 'NavBar'
 NavBar.$inject = ['$scope','$uibModal']
 
 NavBar.prototype.getHost = function() {

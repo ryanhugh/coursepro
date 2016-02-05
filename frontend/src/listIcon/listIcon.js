@@ -116,7 +116,7 @@ function ListIcon() {
 	return instance;
 }
 
-
+ListIcon.fnName = 'ListIcon'
 
 ListIcon.prototype.ListIcon = ListIcon;
 module.exports = ListIcon;
