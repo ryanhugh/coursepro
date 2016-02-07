@@ -1,7 +1,8 @@
 !!!!
 
-help review folder search for pin or pinned or starred
-login, share link? 
+review
+share link
+login,
 and fix the require case sensitivity for linux
 
 
