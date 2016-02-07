@@ -30,6 +30,9 @@ NavBar.prototype.openHelp = function() {
 	Help.open(this)
 };
 
+NavBar.prototype.openSelectors = function() {
+	selectorsMgr.go()
+};
 
 
 NavBar.prototype.NavBar = NavBar;
