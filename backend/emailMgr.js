@@ -60,11 +60,17 @@ function EmailMgr() {
 
 
 EmailMgr.prototype.sendEmail = function (toEmails, subject, html, callback) {
-	this.emailPasswdQueue.awaitAll(function () {
-		if (!callback) {
-			callback = function () {}
-		};
+	if (!callback) {
+		callback = function () {}
+	};
 
+
+	if (toEmails.length === 0) {
+		return callback()
+	};
+
+
+	this.emailPasswdQueue.awaitAll(function () {
 
 		if (!this.transporter) {
 			console.log("WARNING: not sending email because don't have email password", toEmails);
@@ -187,8 +193,8 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newDat
 
 
 	email.push('<br><a href="https://coursepro.io/#' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
-	
-	email.push('<br><br>Want to unsubscribe? <a href="https://coursepro.io/#unsubscribe/' +this.generateDBDataURL(newData) + '">Click here</a>')
+
+	email.push('<br><br>Want to unsubscribe? <a href="https://coursepro.io/#unsubscribe/' + this.generateDBDataURL(newData) + '">Click here</a>')
 
 	this.sendEmail(toEmails, 'A section in ' + newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', email.join(''))
 
@@ -216,7 +222,7 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (toEmails, oldData, newData,
 
 	email.push('<br><a href="https://coursepro.io/#' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
 
-	email.push('<br><br>Want to unsubscribe? <a href="https://coursepro.io/#unsubscribe/' +this.generateDBDataURL(newData) + '">Click here</a>')
+	email.push('<br><br>Want to unsubscribe? <a href="https://coursepro.io/#unsubscribe/' + this.generateDBDataURL(newData) + '">Click here</a>')
 
 	this.sendEmail(toEmails, newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', email.join(''))
 

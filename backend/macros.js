@@ -40,6 +40,9 @@ function setupTargetStates() {
 		}
 		else if (command === 'dev' || command === 'spider') {
 			exports.DEVELOPMENT = true;
+			if (command == 'spider') {
+				exports.SPIDER = true;
+			};
 			return
 		}
 		else if (command === 'tests') {
@@ -105,8 +108,16 @@ else {
 	exports.QUIET_LOGGING = false;
 }
 
+// don't spit out a lot of stuff in normal mode
+if (exports.SPIDER) {
+	exports.QUIET_LOGGING = false;
+}
+else {
+	exports.QUIET_LOGGING = true;
+	
+}
 
-exports.QUIET_LOGGING = true;
+
 
 // exports.SEND_EMAILS = true;
 

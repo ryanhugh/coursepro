@@ -557,7 +557,7 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 				console.log(err)
 				return callback(err)
 			}
-			if (!emails) {
+			if (!emails || emails.length === 0) {
 				return callback();
 			};
 
@@ -686,7 +686,7 @@ UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectio
 			};
 
 			if (!user.lists[listName]) {
-				console.log("Warning: told to remove class from non existend list on user",user.googleId);
+				console.log("Warning: told to remove class from non existend list on user", user.googleId);
 				return callback(null, 'None of these classes and sections are in list ' + listName)
 			};
 

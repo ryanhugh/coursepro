@@ -190,12 +190,12 @@ PageDataMgr.prototype.main = function () {
 
 	// 
 
-	console.log(process)
+	// console.log(process)
 
 	// dbUpdater.updateClassFromMongoId('5683fb2f36b66840e86bab4a',function (err) {
 	// 	console.log("all done!",err)
 	// }.bind(this))
-	return;
+	// return;
 
 
 	// this.createFromURL('https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched')
@@ -233,18 +233,22 @@ PageDataMgr.prototype.main = function () {
 	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched',function (){
 	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201530&subj_in=MATH&crse_in=1252&schd_in=%25',function () {
 
-	this.createFromURL('https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched', function () {
-		console.log('all done!! sju')
+	// this.createFromURL('https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched', function () {
+	// 	console.log('all done!! sju')
+	// }.bind(this))
+
+	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched', function () {
+	// 	console.log('all done!! neu')
+	// }.bind(this))
+
+	this.createFromURL('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched', function () {
+		console.log('all done!! gatech')
 	}.bind(this))
 
-	this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched', function () {
-		console.log('all done!! neu')
-	}.bind(this))
 
-
-	this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched', function() {
-		console.log('all done!! swarthmore')
-	}.bind(this))
+	// this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched', function() {
+	// 	console.log('all done!! swarthmore')
+	// }.bind(this))
 
 
 

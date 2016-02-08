@@ -1,5 +1,9 @@
 !!!!
 
+
+new name?
+make subject class selector absolulte on graph, so moves when scroll down
+
 review
 share link
 login,
