@@ -241,9 +241,13 @@ PageDataMgr.prototype.main = function () {
 	// 	console.log('all done!! neu')
 	// }.bind(this))
 
-	this.createFromURL('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched', function () {
-		console.log('all done!! gatech')
+	this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckschd.p_disp_dyn_sched', function () {
+		console.log('all done!! ccsu')
 	}.bind(this))
+
+	// this.createFromURL('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched', function () {
+	// 	console.log('all done!! gatech')
+	// }.bind(this))
 
 
 	// this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched', function() {

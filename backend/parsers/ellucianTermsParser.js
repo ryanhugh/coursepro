@@ -3,6 +3,7 @@ var domutils = require('domutils');
 var _ = require('lodash');
 var assert = require('assert');
 var fs = require('fs');
+var moment = require('moment')
 
 var pointer = require('../pointer');
 var termsDB = require('../databases/termsDB');
@@ -13,8 +14,8 @@ var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 var ellucianSubjectParser = require('./ellucianSubjectParser');
 
 
-function EllucianTermsParser () {
-	EllucianBaseParser.prototype.constructor.apply(this,arguments);
+function EllucianTermsParser() {
+	EllucianBaseParser.prototype.constructor.apply(this, arguments);
 	this.name = "EllucianTermsParser";
 }
 
@@ -26,56 +27,68 @@ EllucianTermsParser.prototype.constructor = EllucianTermsParser;
 
 
 
-EllucianTermsParser.prototype.getDatabase = function(pageData) {
+EllucianTermsParser.prototype.getDatabase = function (pageData) {
 	return termsDB;
 };
 
 
 EllucianTermsParser.prototype.supportsPage = function (url) {
-	return url.indexOf('bwckschd.p_disp_dyn_sched')>-1;
+	return url.indexOf('bwckschd.p_disp_dyn_sched') > -1;
 };
 
 
-EllucianTermsParser.prototype.minYear = function(){
-	return new Date().getFullYear();
+EllucianTermsParser.prototype.minYear = function () {
+	return moment().subtract(4, 'months').year()
 };
 
-EllucianTermsParser.prototype.isValidTerm = function(termId,text) {
-	
+EllucianTermsParser.prototype.isValidTerm = function (termId, text) {
+
 	var year = text.match(/\d{4}/);
+	var minYear = this.minYear();
+
 	if (!year) {
-		console.log('warning: could not find year for ',text);
-		return false;
+		console.log('warning: could not find year for ', text);
+
+		//if the termId starts with the >= current year, then go
+		var idYear = parseInt(termId.slice(0, 4))
+
+		//if first 4 numbers of id are within 3 years of the year that it was 4 months ago
+		if (idYear + 3 > minYear && idYear - 3 < minYear) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	//skip past years
-	if (parseInt(year)<this.minYear()) {
+	if (parseInt(year) < minYear) {
 		return false;
 	}
 	return true;
 
 };
 
-EllucianTermsParser.prototype.addCollegeName = function(pageData,host) {
-		
+EllucianTermsParser.prototype.addCollegeName = function (pageData, host) {
+
 	//add the college names dep, if it dosent already exist
 	for (var i = 0; i < pageData.deps.length; i++) {
-		var currDep =pageData.deps[i]
+		var currDep = pageData.deps[i]
 		if (currDep.parser == collegeNamesParser && currDep.dbData.host == host) {
 			return;
 		}
 	}
-	
+
 	var newDep = pageData.addDep({
-		url:host,
-		host:host
+		url: host,
+		host: host
 	})
 	newDep.setParser(collegeNamesParser)
 };
 
 
-EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
-	var formData = this.parseTermsPage(pageData.dbData.url,dom);
+EllucianTermsParser.prototype.onEndParsing = function (pageData, dom) {
+	var formData = this.parseTermsPage(pageData.dbData.url, dom);
 	var terms = [];
 
 
@@ -83,17 +96,17 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 
 		//record all the terms and their id's
 		singleRequestPayload.forEach(function (payloadVar) {
-			if (payloadVar.name=='p_term') {
+			if (payloadVar.name == 'p_term') {
 				terms.push({
-					id:payloadVar.value,
-					text:payloadVar.text
+					id: payloadVar.value,
+					text: payloadVar.text
 				});
 			}
 		}.bind(this));
 	}.bind(this));
 
-	if (terms.length===0) {
-		console.log('ERROR, found 0 terms??',pageData.dbData.url);
+	if (terms.length === 0) {
+		console.log('ERROR, found 0 terms??', pageData.dbData.url);
 	};
 
 	terms.forEach(function (term) {
@@ -101,25 +114,25 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 		//calculate host for each entry
 		var host = pointer.getBaseHost(pageData.dbData.url);
 
-		var newTerm = collegeNamesDB.getStaticHost(host,term.text)
+		var newTerm = collegeNamesDB.getStaticHost(host, term.text)
 		if (newTerm) {
 			host = newTerm.host
 			term.text = newTerm.text
 		}
 		else {
-			this.addCollegeName(pageData,host)
+			this.addCollegeName(pageData, host)
 		};
 		term.host = host;
 
 		//add the shorter version of the term string
-		term.shortText = term.text.replace(/Quarter|Semester/gi,'').trim()
+		term.shortText = term.text.replace(/Quarter|Semester/gi, '').trim()
 
 	}.bind(this))
 
 
 
 	pageData.parsingData.duplicateTexts = {};
-	
+
 
 
 	//keep track of texts, and if they are all different with some words removed
@@ -128,8 +141,8 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 
 		if (!pageData.parsingData.duplicateTexts[term.host]) {
 			pageData.parsingData.duplicateTexts[term.host] = {
-				values:[],
-				areAllDifferent:true
+				values: [],
+				areAllDifferent: true
 			}
 		}
 		if (_(pageData.parsingData.duplicateTexts[term.host].values).includes(term.shortText)) {
@@ -160,28 +173,28 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 
 		//if it already exists, just update the description
 		for (var i = 0; i < pageData.deps.length; i++) {
-			var currDep =pageData.deps[i]
-			if (currDep.parser==this && term.id==currDep.dbData.termId) {
-				currDep.setData('text',term.text);
-				currDep.setData('host',term.host);
-				console.log('updating text ',currDep.dbData.text,term.text)
+			var currDep = pageData.deps[i]
+			if (currDep.parser == this && term.id == currDep.dbData.termId) {
+				currDep.setData('text', term.text);
+				currDep.setData('host', term.host);
+				console.log('updating text ', currDep.dbData.text, term.text)
 				return;
 			};
 		};
 
 		//if not, add it
 		var termPageData = pageData.addDep({
-			updatedByParent:true,
-			termId:term.id,
-			text:term.text,
-			host:term.host
+			updatedByParent: true,
+			termId: term.id,
+			text: term.text,
+			host: term.host
 		});
 		termPageData.setParser(this)
 
 
 		//and add the subject dependency
 		var subjectController = termPageData.addDep({
-			url:formData.postURL
+			url: formData.postURL
 		});
 		subjectController.setParser(ellucianSubjectParser)
 
@@ -193,8 +206,8 @@ EllucianTermsParser.prototype.onEndParsing = function(pageData,dom) {
 
 //step 1, select the terms
 //starting url is the terms page
-EllucianTermsParser.prototype.parseTermsPage = function (startingURL,dom) {
-	var parsedForm = this.parseForm(startingURL,dom);
+EllucianTermsParser.prototype.parseTermsPage = function (startingURL, dom) {
+	var parsedForm = this.parseForm(startingURL, dom);
 
 	if (!parsedForm) {
 		console.log('default form data failed');
@@ -207,8 +220,8 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL,dom) {
 	//find the term entry and all the other entries
 	var termEntry;
 	var otherEntries = [];
-	defaultFormData.forEach(function(entry) {
-		if (entry.name=='p_term') {
+	defaultFormData.forEach(function (entry) {
+		if (entry.name == 'p_term') {
 			termEntry = entry;
 		}
 		else {
@@ -220,29 +233,29 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL,dom) {
 
 
 	var requestsData = [];
-	
+
 	//setup an indidual request for each valid entry on the form - includes the term entry and all other other entries
-	termEntry.alts.forEach(function(entry) {
-		if (entry.name!='p_term') {
-			console.log('ERROR: entry was alt of term entry but not same name?',entry);
+	termEntry.alts.forEach(function (entry) {
+		if (entry.name != 'p_term') {
+			console.log('ERROR: entry was alt of term entry but not same name?', entry);
 			return;
 		}
 		entry.text = entry.text.trim()
 
-		if (entry.text.toLowerCase()==='none') {
+		if (entry.text.toLowerCase() === 'none') {
 			return;
 		}
-		entry.text = entry.text.replace(/\(view only\)/gi,'').trim();
+		entry.text = entry.text.replace(/\(view only\)/gi, '').trim();
 
-		entry.text = entry.text.replace(/summer i$/gi,'Summer 1').replace(/summer ii$/gi,'Summer 2')
+		entry.text = entry.text.replace(/summer i$/gi, 'Summer 1').replace(/summer ii$/gi, 'Summer 2')
 
 		//dont process this element on error
-		if (entry.text.length<2) {
-			console.log('warning: empty entry.text on form?',entry,startingURL);
+		if (entry.text.length < 2) {
+			console.log('warning: empty entry.text on form?', entry, startingURL);
 			return;
 		}
-		
-		if (!this.isValidTerm(entry.value,entry.text)) {
+
+		if (!this.isValidTerm(entry.value, entry.text)) {
 			return;
 		}
 
@@ -250,9 +263,9 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL,dom) {
 		var fullRequestData = otherEntries.slice(0);
 
 		fullRequestData.push({
-			name:entry.name,
-			value:entry.value,
-			text:entry.text
+			name: entry.name,
+			value: entry.value,
+			text: entry.text
 		});
 
 		requestsData.push(fullRequestData);
@@ -260,16 +273,16 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL,dom) {
 	}.bind(this));
 
 	return {
-		postURL:parsedForm.postURL,
-		requestsData:requestsData
+		postURL: parsedForm.postURL,
+		requestsData: requestsData
 	};
 };
 
 
-EllucianTermsParser.prototype.getMetadata = function(pageData) {
+EllucianTermsParser.prototype.getMetadata = function (pageData) {
 	console.log('ERROR: getMetadata called for EllucianTermsParser????');
 };
-EllucianTermsParser.prototype.getEmailData = function(pageData) {
+EllucianTermsParser.prototype.getEmailData = function (pageData) {
 	console.log('ERROR: getEmailData called for EllucianTermsParser????');
 };
 
@@ -277,35 +290,45 @@ EllucianTermsParser.prototype.getEmailData = function(pageData) {
 
 
 
-EllucianTermsParser.prototype.tests = function() {
+EllucianTermsParser.prototype.tests = function () {
 	require('../pageDataMgr');
-	
-	fs.readFile('backend/tests/ellucianTermsParser/1.html','utf8',function (err,body) {
-		assert.equal(null,err);
 
-		pointer.handleRequestResponce(body,function (err,dom) {
-			assert.equal(null,err);
+	assert.equal(this.isValidTerm('201630','blah blah 2016'),true)
+	assert.equal(this.isValidTerm('201630','blah blah 2017'),true)
+	assert.equal(this.isValidTerm('201630','blah blah'),true)
+	assert.equal(this.isValidTerm('2016','blah blah'),true)
+	assert.equal(this.isValidTerm('201','blah blah'),false)
+
+	fs.readFile('backend/tests/ellucianTermsParser/1.html', 'utf8', function (err, body) {
+		assert.equal(null, err);
+
+		pointer.handleRequestResponce(body, function (err, dom) {
+			assert.equal(null, err);
 
 			var url = 'https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched';
 
-			var pageData = pageDataMgr.create({dbData:{url:url}});
-			assert.notEqual(null,pageData);
+			var pageData = pageDataMgr.create({
+				dbData: {
+					url: url
+				}
+			});
+			assert.notEqual(null, pageData);
 
-			this.parseDOM(pageData,dom);
-			
-			
-			assert.equal(true,this.supportsPage(url));
+			this.parseDOM(pageData, dom);
+
+
+			assert.equal(true, this.supportsPage(url));
 
 			// console.log(pageData)
 			// console.log(pageData.deps[0].deps[0])
 			// pageData.deps.forEach(function (dep) {
 			// 	console.log(dep.dbData)
 			// })
-			assert.equal(pageData.deps[1].dbData.text,'Spring 2017 Summer 2')
-			assert.equal(pageData.deps[1].dbData.host,'upstate.edu')
-			assert.equal(pageData.deps[1].dbData.updatedByParent,true)
-			assert.equal(pageData.deps[1].dbData.termId,'201611')
-			
+			assert.equal(pageData.deps[1].dbData.text, 'Spring 2017 Summer 2')
+			assert.equal(pageData.deps[1].dbData.host, 'upstate.edu')
+			assert.equal(pageData.deps[1].dbData.updatedByParent, true)
+			assert.equal(pageData.deps[1].dbData.termId, '201611')
+
 			// assert.deepEqual(pageData.dbData,{ url: url,
 			// 	terms:
 			// 	[ { id: '201610', text: 'Spring 2016' },
@@ -313,28 +336,28 @@ EllucianTermsParser.prototype.tests = function() {
 			// 	{ id: '201550', text: 'Summer 2015' },
 			// 	{ id: '201510', text: 'Spring 2015' } ],
 			// 	host: 'upstate.edu' });
-			
-			
+
+
 			// assert.equal(pageData.deps.length,4);
 			// pageData.deps.forEach(function (dep) {
 			// 	assert.equal(dep.parent,pageData);
 			// }.bind(this));
-			
-			
+
+
 			// could add some more stuff
 			// console.log(pageData.deps);
 
-			
+
 
 			console.log('all tests done bro');
-			
+
 		}.bind(this));
 	}.bind(this));
 
 	//make sure a name is defined
 	assert(this.name);
 
-	
+
 };
 
 
@@ -344,7 +367,7 @@ EllucianTermsParser.prototype.tests = function() {
 
 
 
-EllucianTermsParser.prototype.EllucianTermsParser=EllucianTermsParser;
+EllucianTermsParser.prototype.EllucianTermsParser = EllucianTermsParser;
 module.exports = new EllucianTermsParser();
 
 if (require.main === module) {

@@ -1,5 +1,6 @@
 !!!!
 
+courseboard
 
 new name?
 make subject class selector absolulte on graph, so moves when scroll down
