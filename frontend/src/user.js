@@ -1,4 +1,5 @@
 'use strict';
+var _ = require('lodash')
 var queue = require('queue-async')
 var macros = require('./macros')
 
