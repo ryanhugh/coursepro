@@ -1,4 +1,5 @@
 'use strict';
+var _ = require('lodash')
 var moment = require('moment')
 
 var request = require('./request')
