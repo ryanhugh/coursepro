@@ -57,6 +57,8 @@
 <uib-accordion close-others="false">
     <uib-accordion-group is-open="isOpen" ng-repeat="class in classes" ng-click="classList.onClick(class,this)">
         <uib-accordion-heading>
+        	
+        	<div style="display: inline-block;width: 100%;padding-top: 10px;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;">
 
             <span class="glyphicon accordionChevrons" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span> {{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
 
@@ -84,6 +86,7 @@
                     <img src="/images/tree.png">
                 </span>
             </span>
+            </div>
 
 
 

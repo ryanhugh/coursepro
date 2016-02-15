@@ -91,6 +91,7 @@ function ListIcon() {
 
 		//open
 		element.on('click', function (event) {
+	
 
 			if ($scope.toggle == 'section') {
 				user.toggleListContainsSection(listName, $scope.section, function (err) {
@@ -105,6 +106,7 @@ function ListIcon() {
 
 			event.stopPropagation()
 			$scope.$root.$apply()
+			return false;
 		}.bind(this))
 
 	}
