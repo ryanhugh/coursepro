@@ -130,7 +130,7 @@ function GraphPanelExpand($timeout, $document) {
 
 		if ($scope.isExpanded) {
 			$scope.style['box-shadow'] = 'gray 0px 0px 9px'
-			$scope.style.zIndex = 999;
+			$scope.style.zIndex = 1500;
 			$scope.style.cursor = '';
 		}
 		else {
