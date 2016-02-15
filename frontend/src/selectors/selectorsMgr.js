@@ -6,10 +6,10 @@ var BaseDirective = require('../BaseDirective')
 
 var user = require('../user')
 
-var College = require('./College')
-var Term = require('./Term')
-var Subject = require('./Subject')
-var Class = require('./Class')
+var College = require('./college')
+var Term = require('./term')
+// var Subject = require('./subject')
+// var Class = require('./class')
 
 
 function SelectorsMgr() {

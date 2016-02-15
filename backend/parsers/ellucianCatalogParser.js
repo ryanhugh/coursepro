@@ -63,7 +63,7 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 
 	var match = value.match(/.+?\s-\s*(.+)/i);
 	if (!match || match.length<2 || match[1].length<2) {
-		console.log('could not find title!',match,titleLinks[0],value);
+		console.log('could not find title!',match,value,pageData.dbData.url);
 		return;
 	}
 	depData.name = toTitleCase(match[1]);

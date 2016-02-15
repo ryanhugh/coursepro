@@ -16,7 +16,7 @@ var help = require('./help')
 //model
 var Class = require('../Class')
 
-var WatchClassesModel = require('../WatchClassesModel/WatchClassesModel')
+var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
 
 //thing that calls on download tree, treeMgr, render, popup and help
 //manages the page that generates the tree graphs

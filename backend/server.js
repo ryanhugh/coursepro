@@ -99,6 +99,7 @@ app.use(function (req, res, next) {
 //if you didnt go to courespro.io, redirect to coursepro.io (going direcly to ip, etc)
 //this catches lots of robots scanning all ip addresses
 app.use(function (req, res, next) {
+
 	//send redirect request
 	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost']).includes(req.hostname)) {
 

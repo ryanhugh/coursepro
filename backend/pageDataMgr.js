@@ -73,7 +73,6 @@ PageDataMgr.prototype.go = function (pageData, callback) {
 	if (!callback) {
 		callback = function () {};
 	}
-	// console.log('in go',pageData.dbData._id,pageData.dbData)
 
 	if (pageData.dbData.updatedByParent) {
 		return this.finish(pageData, callback);
@@ -89,20 +88,17 @@ PageDataMgr.prototype.go = function (pageData, callback) {
 		console.log('error dont have a url or a db', pageData);
 		return callback('no db');
 	}
-	// console.log('in go2',pageData.dbData._id)
 
 	//main control flow for processing a url
 
 	//load, then continue
 	if (pageData.dbLoadingStatus == pageData.DBLOAD_NONE) {
-		// console.log('in go3',pageData.dbData._id)
 		pageData.loadFromDB(function (err) {
 			if (err) {
 				console.log("error ", err);
 				return callback(err);
 			}
 			else {
-				// console.log('in go4',pageData.dbData._id)
 				return this.processPageAfterDbLoad(pageData, callback);
 			}
 		}.bind(this));
@@ -113,7 +109,6 @@ PageDataMgr.prototype.go = function (pageData, callback) {
 		return callback('internal error')
 	}
 	else if (pageData.dbLoadingStatus == pageData.DBLOAD_DONE) {
-		// console.log('in go5',pageData.dbData._id)
 		return this.processPageAfterDbLoad(pageData, callback);
 	}
 };
@@ -123,27 +118,23 @@ PageDataMgr.prototype.processPageAfterDbLoad = function (pageData, callback) {
 		console.log('started pageData without url and could not find it in db!', pageData);
 		return callback('cant find dep');
 	}
-	// console.log('in go6',pageData.dbData._id)
 
 
 	//if haven't found the parser yet, try again
 	//this will happen when parent loaded this from cache with just an _id
 	if (pageData.dbData.url && !pageData.parser) {
-		// console.log('in go7',pageData.dbData._id)
 		if (!pageData.findSupportingParser()) {
 			console.log('error cant find parser after second try');
 			return callback("NOSUPPORT");
 		}
 	}
 
-	// console.log('in go8',pageData.dbData._id)
 	if (pageData.isUpdated()) {
 		console.log('CACHE HIT!', pageData.dbData.url);
 		this.finish(pageData, callback);
 	}
 	else {
 		pageData.parser.parse(pageData, function (err) {
-			// console.log('in go9',pageData.dbData._id)
 			if (err) {
 				console.log('Error, pagedata parse call failed', err)
 				if (pageData.dbData.lastUpdateTime) {
@@ -162,7 +153,6 @@ PageDataMgr.prototype.processPageAfterDbLoad = function (pageData, callback) {
 
 
 PageDataMgr.prototype.finish = function (pageData, callback) {
-	// console.log('in go10',pageData.dbData._id)
 	pageData.processDeps(function (err) {
 		if (err) {
 			console.log('ERROR processing deps',err)
@@ -241,9 +231,13 @@ PageDataMgr.prototype.main = function () {
 	// 	console.log('all done!! neu')
 	// }.bind(this))
 
-	this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckschd.p_disp_dyn_sched', function () {
-		console.log('all done!! ccsu')
+	this.createFromURL('https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched', function () {
+		console.log('all done!! temple')
 	}.bind(this))
+	
+	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched', function () {
+	// 	console.log('all done!! tntech')
+	// }.bind(this))
 
 	// this.createFromURL('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched', function () {
 	// 	console.log('all done!! gatech')

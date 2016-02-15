@@ -1,6 +1,10 @@
 !!!!
 
-courseboard
+courseboard.io
+
+in the pageData async processing deps, if one fails, the main callback is called before the others are done because thats how async map handels errors
+updated 0 classes [] is running in the background of spider
+
 
 new name?
 make subject class selector absolulte on graph, so moves when scroll down
@@ -31,7 +35,7 @@ need to implement an unsubscribe feature, create a subscriptionsKey that is emai
 
 null ip?
 
-on startup, loop through users data and make sure each row is at minimum the default data
+on startup, loop through users data and make sure eac h row is at minimum the default data
 
 lift up the boxes
 http://localhost/#neu.edu/201630/CS/5310

@@ -7,3 +7,4 @@ gulp
 frontend/logs
 backedn/logs
 ssl
+db_backups
