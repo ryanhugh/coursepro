@@ -1,4 +1,6 @@
 'use strict';
+var _ = require('lodash')
+
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
