@@ -12,23 +12,23 @@ function DownloadTree() {
 }
 
 
-DownloadTree.prototype.fetchFullTreeOnce = function (tree, queue, ignoreClasses) {
+DownloadTree.prototype.fetchFullTreeOnce = function (tree, q, ignoreClasses) {
 	if (ignoreClasses === undefined) {
 		ignoreClasses = [];
 	}
 
 	if (!tree.isClass || tree.isString) {
-		this.fetchSubTrees(tree, queue, ignoreClasses)
+		this.fetchSubTrees(tree, q, ignoreClasses)
 		return;
 	}
 
-	//fire off ajax and add it to queue
+	//fire off ajax and add it to q
 	if (tree.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
 		console.log('skipping tree because data status is already started?')
 		return;
 	}
 
-	queue.defer(function (callback) {
+	q.defer(function (callback) {
 
 		tree.download(function (err) {
 			if (err) {
@@ -37,7 +37,7 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, queue, ignoreClasses)
 			}
 
 			//process this nodes values, already at bottom edge of loaded nodes
-			this.fetchSubTrees(tree, queue, ignoreClasses)
+			this.fetchSubTrees(tree, q, ignoreClasses)
 
 			callback(null, tree)
 
