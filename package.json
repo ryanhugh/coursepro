@@ -35,7 +35,7 @@
     "nodemailer": "latest",
     "nodemailer-smtp-transport": "latest",
     "querystring": "latest",
-    "queue-async": "latest",
+    "queue-async": "1.0.7",
     "reactify": "latest",
     "request": "latest",
     "require-dir": "latest",
