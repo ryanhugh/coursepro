@@ -2,6 +2,7 @@
 var queue = require('queue-async')
 var _ = require('lodash')
 var async = require('async')
+var request = require('./request')
 
 var directiveMgr = require('./directiveMgr')
 var BaseDirective = require('./BaseDirective')
@@ -17,6 +18,20 @@ function GoogleAnalytics() {
 			'page': this.$location.url(),
 			'title': 'Coursepro.io'
 		});
+
+
+	request({
+		url: '/log',
+		body: {
+			url: this.$location.url(),
+		},
+		useCache: false
+	}, function (err, response) {
+		if (err) {
+			elog("ERROR: couldn't log new page :(", err, response, body);
+		}
+	}.bind(this))
+
 
 	}.bind(this));
 
