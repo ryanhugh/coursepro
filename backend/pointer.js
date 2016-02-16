@@ -139,6 +139,7 @@ var throtteling = {
 	'prod-ssb-01.dccc.edu': 100,
 	'telaris.wlu.ca': 400,
 	'myswat.swarthmore.edu': 1000,
+	'bannerweb.upstate.edu': 200,
 	'wl11gp.neu.edu': 2000
 }
 

@@ -312,12 +312,12 @@ uib-accordion .panel-heading {
 	cursor: pointer;
 	padding: 0;
 }
-uib-accordion .accordion-toggle {
-	padding-left: 15px;
-	padding-right: 15px;
-	padding-top: 10px;
-	padding-bottom: 10px;
-}
+/*uib-accordion .accordion-toggle {*/
+	/*padding-left: 15px;*/
+	/*padding-right: 15px;*/
+	/*padding-top: 10px;*/
+	/*padding-bottom: 10px;*/
+/*}*/
 .noDisplay {
 	display: none !important;
 }
