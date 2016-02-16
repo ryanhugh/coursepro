@@ -55,6 +55,7 @@ function GraphPanelExpand($timeout, $document) {
 
 		document.body.style.height = ''
 		document.body.style.width = ''
+		document.body.style.minHeight = ''
 
 
 		//move the panel if it is exending past the top/bottom/left/right of the screen
@@ -95,8 +96,16 @@ function GraphPanelExpand($timeout, $document) {
 				topMargin = this.documentHeight - edgePadding - coords.bottom
 			}
 		}
+		if (topMargin + coords.top<topPadding) {
+			topMargin = topPadding - coords.top
+		};
 		tree.panel.style.marginTop = topMargin + 'px'
 
+		document.body.style.minHeight = (tree.panel.offsetHeight + $(tree.panel).offset().top + topPadding) + 'px'
+
+
+		// if (tree.panel.offsetHeight + $(tree.panel).offset().top >) {
+		// 	}
 
 
 		var minLeftSide = edgePadding;
