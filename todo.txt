@@ -6,6 +6,8 @@ outline around accordian title
 calender accordian padding was doubled
 tried to use server data because had loginKey
 
+do any other npm modules need upating?
+
 
 update queue-async to d3-async
 
