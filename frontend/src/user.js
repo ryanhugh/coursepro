@@ -81,6 +81,10 @@ User.prototype.dataUpdated = function () {
 
 //just returns weather have a login key or not
 User.prototype.getAuthenticated = function () {
+
+	// temp, until get data back in server
+	return false;
+	
 	if (localStorage.loginKey) {
 		return true;
 	}
