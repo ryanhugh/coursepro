@@ -1,10 +1,19 @@
 !!!!
 
-prod issues
-on prod there is a box shadow around the accoridians
-outline around accordian title
-calender accordian padding was doubled
-tried to use server data because had loginKey
+Just made a site that makes it really easy to organize classes at Clemson! Check out CoursePro.io!
+
+http://coursepro.io
+
+Hey! The site shows a bunch of stuffffff
+
+
+It's a site I made over the last c months! It shows class prerequisites, corequisites, class description, section data, and more!
+Let me know whatcha think!! Totally open to ideas/tweaks/etc
+clemson has subject id in subject text (dont show subject id twice in selectors (if stubject etxt starts with id...))
+
+
+
+
 
 do any other npm modules need upating?
 

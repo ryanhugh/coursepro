@@ -100,6 +100,9 @@ def main():
 		
 	if 'url' in line['body']:
 		sys.stdout.write(line['body']['url']+' ')
+
+	if 'type' in line['body'] and line['body']['type']=='addToList':
+		print 'saved classes Old Classes:'+str(line['body']['initClassCount']),'Sections:',str(line['body']['initSectionCount']),'New Classes:',str(line['body']['finalClassCount']),'Sections: ',str(line['body']['finalSectionCount']),
 		
 	print ' ',
 	
