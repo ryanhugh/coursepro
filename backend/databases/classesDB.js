@@ -1,5 +1,5 @@
 'use strict';
-var queue = require('queue-async')
+var queue = require('d3-queue')
 var async = require('async')
 
 

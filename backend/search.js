@@ -1,6 +1,6 @@
 'use search';
 
-var queue = require('queue-async');
+var queue = require('d3-queue');
 var _ = require('lodash')
 
 var subjectsDB = require('./databases/subjectsDB')
