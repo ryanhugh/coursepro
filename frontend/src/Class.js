@@ -2,7 +2,7 @@
 var _ = require('lodash')
 var async = require('async')
 var he = require('he')
-var queue = require('queue-async')
+var queue = require('d3-queue')
 var moment = require('moment')
 
 var macros = require('./macros')

@@ -1,5 +1,13 @@
 !!!!
 
+Todo
+angular html cache thing
+update the packages
+
+do any other npm modules need upating?
+update queue-async to d3-queue
+
+
 https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
 
@@ -19,13 +27,6 @@ clemson has subject id in subject text (dont show subject id twice in selectors 
 
 
 
-do any other npm modules need upating?
-
-
-update queue-async to d3-async
-
-https://localhost/#/graph/neu.edu/201630/ARTF/1104 dosent work on chromebook
-https://localhost/#/graph/neu.edu/201630/ARTG/3460
 
 courseboard.io
 

@@ -1,13 +1,12 @@
 'use strict';
+var moment = require('moment')
+var queue = require('d3-queue')
 
 
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
 var user = require('../user')
-
-var moment = require('moment')
-var queue = require('queue-async')
 
 function Calendar($scope) {
 	BaseDirective.prototype.constructor.apply(this, arguments);

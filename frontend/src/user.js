@@ -1,6 +1,6 @@
 'use strict';
 var _ = require('lodash')
-var queue = require('queue-async')
+var queue = require('d3-queue')
 var macros = require('./macros')
 
 var request = require('./request')
