@@ -8,6 +8,8 @@ var uncss = require('gulp-uncss');
 var addsrc = require('gulp-add-src');
 var streamify = require('gulp-streamify');
 var flatten = require('gulp-flatten');
+var angularTemplates = require('gulp-angular-templates')
+var es = require('event-stream')
 
 // browsify stuff
 var browserify = require('browserify');
@@ -121,8 +123,17 @@ function compileJS(shouldUglify) {
 				}
 			})));
 		};
+		
+		var htmlTemplates = gulp
+			.src('./frontend/src/**/*.html')
+			.pipe(flatten())
+			.pipe(angularTemplates())
+			
+		var uglifiedJSStream = stream;
+		
+		es.merge(htmlTemplates,uglifiedJSStream).pipe(gulp.dest('./frontend/static/js/internal'));
 
-		var output = stream.pipe(gulp.dest('./frontend/static/js/internal'));
+		// var output = 
 		console.log("----Done Rebundling custom JS!----")
 		return output;
 	};
