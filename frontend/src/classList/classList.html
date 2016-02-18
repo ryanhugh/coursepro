@@ -189,12 +189,21 @@
                     </td>
 
 
-                    <td ng-if="section.hasWaitList">
+                    <td ng-if="class.hasWaitList">
 
                         <!-- don't display the "/" until these are loaded -->
                         <span ng-if="section.waitRemaining || section.waitCapacity">
                             {{section.waitRemaining}}/{{section.waitCapacity}}
                         </span>
+
+                        
+                        <!-- don't display the "/" until these are loaded -->
+                        <span ng-if="!section.waitRemaining && !section.waitCapacity">
+                            0/0
+                        </span>
+
+
+
                     </td>
 
                     <td>
