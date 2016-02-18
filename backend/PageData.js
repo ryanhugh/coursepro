@@ -3,7 +3,6 @@ var async = require('async');
 var URI = require('urijs');
 var _ = require('lodash');
 var queue = require("queue-async");
-var clone = require('clone');
 
 var macros = require('./macros')
 
@@ -167,7 +166,7 @@ PageData.prototype.loadFromDB = function (callback) {
 		this.dbLoadingStatus = this.DBLOAD_DONE;
 
 		//original data.dbData and .dbData cant point to the same obj
-		this.originalData.dbData = clone(doc);
+		this.originalData.dbData = _.cloneDeep(doc);
 
 		if (!doc && lookupValues._id) {
 			console.log('error, looked up by id and didnt find anything???', this, lookupValues, this.parent)
