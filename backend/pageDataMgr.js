@@ -231,8 +231,8 @@ PageDataMgr.prototype.main = function () {
 	// 	console.log('all done!! neu')
 	// }.bind(this))
 
-	this.createFromURL('https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched', function () {
-		console.log('all done!! upstate')
+	this.createFromURL('https://ssb.banner.usu.edu/zprod/bwckschd.p_disp_dyn_sched', function () {
+		console.log('all done!! usu')
 	}.bind(this))
 	
 	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched', function () {

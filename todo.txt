@@ -1,10 +1,14 @@
 !!!!
 
+https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
+class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
+
+
 Just made a site that makes it really easy to organize classes at Clemson! Check out CoursePro.io!
 
 http://coursepro.io
 
-Hey! The site shows a bunch of stuffffff
+Hey! The site shows a bunch of stuf
 
 
 It's a site I made over the last c months! It shows class prerequisites, corequisites, class description, section data, and more!
