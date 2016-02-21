@@ -9,6 +9,11 @@ var macros = require('../macros')
 
 
 function Updater() {
+	
+	//don't run when spidering
+	if (macros.SPIDER) {
+		return;
+	}
 
 	//run updater on boot if in production
 	if (macros.PRODUCTION) {
