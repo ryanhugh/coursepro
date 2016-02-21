@@ -95,7 +95,7 @@ function compileJS(shouldUglify) {
 		bundler.ignore('./testsMgr');
 		bundler.ignore('./tests/testsMgr');
 		bundler.ignore('../tests/testsMgr');
-	};
+	}
 
 	bundler = watchify(bundler)
 
@@ -122,7 +122,7 @@ function compileJS(shouldUglify) {
 					// keep_fnames: true
 				}
 			})));
-		};
+		}
 		
 		var htmlTemplates = gulp
 			.src('./frontend/src/**/*.html')
@@ -131,7 +131,7 @@ function compileJS(shouldUglify) {
 			
 		var uglifiedJSStream = stream;
 		
-		es.merge(htmlTemplates,uglifiedJSStream).pipe(gulp.dest('./frontend/static/js/internal'));
+		var output = es.merge(htmlTemplates,uglifiedJSStream).pipe(gulp.dest('./frontend/static/js/internal'));
 
 		// var output = 
 		console.log("----Done Rebundling custom JS!----")

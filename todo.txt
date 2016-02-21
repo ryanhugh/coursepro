@@ -1,16 +1,51 @@
 !!!!
 
-Todo
-angular html cache thing
-update the packages
-
-do any other npm modules need upating?
-update queue-async to d3-queue
+TO TEST
+async-queue -> d3-queue
+updater not running when spider running
+gulpfile including html templates in js
 
 
+TODO SOON
+update the all npm packages
+post on other pages with examples
+
+add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
+and add it to collegeNames somehow (and add the ids for the neu.edu/law)
+
+
+
+ROADMAP
+share link
+login with google
+need to implement an unsubscribe feature, create a subscriptionsKey that is emailed to user and allows control over subscriptions settings
+if login key but server says no user delete login key
+on startup, loop through users data and make sure each row is at minimum the default data
+
+
+LONG ROAD MAP
+node on non 443?
+trace surveys
+student reviews of classes
+add textbook data
+
+
+ODD BUGS
 https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
 
+
+in the pageData async processing deps, if one fails, the main callback is called before the others are done because thats how async map handels errors
+updated 0 classes [] is running in the background of spider
+
+change name?
+courseboard.io
+
+
+
+
+
+LATEST POST 
 
 Just made a site that makes it really easy to organize classes at Clemson! Check out CoursePro.io!
 
@@ -28,48 +63,21 @@ clemson has subject id in subject text (dont show subject id twice in selectors 
 
 
 
-courseboard.io
-
-in the pageData async processing deps, if one fails, the main callback is called before the others are done because thats how async map handels errors
-updated 0 classes [] is running in the background of spider
-
-
-new name?
-make subject class selector absolulte on graph, so moves when scroll down
-
-review
-share link
-login,
-and fix the require case sensitivity for linux
-
-
 
 to detect mailinator: nslookup for 23.239.11.30 (most of their alts) or 45.33.81.172 (mailinator.com)
 
-now changes
-- changing classlist to load sections on click instead of all before. 
-this is making the opening lag and animation goof up because it opens before they are done
-also the $scope.$apply is calling updates on the inner icons which is failing the checks to make sure the sections are loaded
-
-
-before publish:
-login
-class list page, but how would do selectorMgr?
 
 
 
 
-need to implement an unsubscribe feature, create a subscriptionsKey that is emailed to user and allows control over subscriptions settings
 
-null ip?
 
-on startup, loop through users data and make sure eac h row is at minimum the default data
+
+
+
 
 lift up the boxes
 http://localhost/#neu.edu/201630/CS/5310
-
-add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
-and add it to collegeNames somehow (and add the ids for the neu.edu/law)
 
 for the ones that don't have data, put an error or warning or something "No data on neu.edu about this class :/"
 
