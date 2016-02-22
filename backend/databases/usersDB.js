@@ -3,7 +3,7 @@ var _ = require('lodash')
 var assert = require('assert');
 var async = require('async');
 var googleAuthLibrary = require('google-auth-library')
-var queue = require('d3-queue')
+var queue = require('d3-queue').queue;
 var diff = require('deep-diff').diff
 
 var BaseDB = require('./baseDB').BaseDB;

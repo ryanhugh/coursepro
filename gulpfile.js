@@ -4,12 +4,17 @@ var gulp = require('gulp');
 var uglify = require('gulp-uglify');
 var wrap = require("gulp-wrap");
 var concat = require("gulp-concat");
-var uncss = require('gulp-uncss');
+// var uncss = require('gulp-uncss');
 var addsrc = require('gulp-add-src');
 var streamify = require('gulp-streamify');
 var flatten = require('gulp-flatten');
 var angularTemplates = require('gulp-angular-templates')
 var es = require('event-stream')
+var merge = require('merge-stream')
+var rename = require('gulp-rename')
+var merge2 = require('merge2')
+var addStream = require('add-stream');
+var buildTools = require('gulp-build-tools')
 
 // browsify stuff
 var browserify = require('browserify');
@@ -112,7 +117,7 @@ function compileJS(shouldUglify) {
 			this.emit('end');
 		})
 
-		stream = stream.pipe(source('allthejavascript.js'));
+		// stream = stream;
 
 		if (shouldUglify) {
 			stream = stream.pipe(streamify(uglify({
@@ -128,10 +133,15 @@ function compileJS(shouldUglify) {
 			.src('./frontend/src/**/*.html')
 			.pipe(flatten())
 			.pipe(angularTemplates())
+			//.pipe(concat('templates.js'))
 			
 		var uglifiedJSStream = stream;
 		
-		var output = es.merge(htmlTemplates,uglifiedJSStream).pipe(gulp.dest('./frontend/static/js/internal'));
+		// console.log("one:",htmlTemplates,'TWO:',stream);
+		
+		// stream = stream.pipe(source('allthejavascript.js'))
+		
+		var output = buildTools.concat(htmlTemplates,stream).pipe(concat('output.js')).pipe(gulp.dest('./frontend/static/js/internal'));
 
 		// var output = 
 		console.log("----Done Rebundling custom JS!----")

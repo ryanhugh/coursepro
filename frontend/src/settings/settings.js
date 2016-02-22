@@ -1,5 +1,5 @@
 'use strict';
-var queue = require('d3-queue')
+var queue = require('d3-queue').queue;
 var _ = require('lodash')
 var async = require('async')
 var moment = require('moment')

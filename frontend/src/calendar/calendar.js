@@ -1,6 +1,6 @@
 'use strict';
 var moment = require('moment')
-var queue = require('d3-queue')
+var queue = require('d3-queue').queue;
 
 
 var directiveMgr = require('../directiveMgr')
