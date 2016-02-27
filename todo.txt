@@ -1,10 +1,12 @@
 !!!!
 
+
+
 TO TEST
 async-queue -> d3-queue
 updater not running when spider running
 gulpfile including html templates in js
-
+classList showing meets on weekends (and maybe make weekends diff color?)
 
 TODO SOON
 update the all npm packages

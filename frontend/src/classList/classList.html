@@ -159,8 +159,15 @@
 
                             <!-- avoid calculating the string more than once -->
                             <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip= "{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
-                                <div class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                            	
+                                <div ng-if ="!section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans().slice(1,5)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
                                 </div>
+                                
+                                <div ng-if ="section.meetsOnWeekends()"  class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                </div>
+                                
+                                
+                                
                             </span>
                         </span>
                     </td>

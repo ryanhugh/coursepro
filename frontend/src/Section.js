@@ -288,10 +288,29 @@ Section.prototype.groupSectionTimes = function () {
 	}
 }
 
-//returns [true,false,true,false,true] if meeting mon, wed, fri
+Section.prototype.meetsOnWeekends = function () {
+	
+	for (var i = 0;i<this.meetings.length;i++) {
+		var meeting = this.meetings[i];
+		if (meeting.isExam) {
+			continue;
+		}
+		
+		for (var j=0;j<meeting.timeMoments.length;j++) {
+			var time = meeting.timeMoments[j];
+			var index = times.start.day() - 1
+			if (index < 0 || index > 4) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+//returns [false,true,false,true,false,true,false] if meeting mon, wed, fri
 Section.prototype.getWeekDaysAsBooleans = function () {
 
-	var retVal = [false, false, false, false, false]
+	var retVal = [false, false, false, false, false, false, false];
 
 	this.meetings.forEach(function (meeting) {
 		if (meeting.isExam) {
@@ -300,14 +319,8 @@ Section.prototype.getWeekDaysAsBooleans = function () {
 
 		meeting.timeMoments.forEach(function (times) {
 
-			//moment returns from 0 = sunday, 6 = saterday, we need 0 = monday, 4 = friday
-			var index = times.start.day() - 1
-			if (index < 0 || index > 4) {
-				elog('index for meeting on sat or sun?', index)
-				return;
-			}
-
-			retVal[index] = true;
+			retVal[times.start.day()] = true;
+			
 		}.bind(this))
 	}.bind(this))
 
