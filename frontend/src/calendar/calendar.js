@@ -11,7 +11,7 @@ var user = require('../user')
 function Calendar($scope) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
-d
+
 	$scope.uiConfig = {
 		calendar: {
 			header: false,
