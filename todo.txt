@@ -1,14 +1,10 @@
 !!!!
 
-https://docs.angularjs.org/api/ng/service/$exceptionHandler
-
-
 https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
 
 TO TEST
 updater not running when spider running
-classList showing meets on weekends (and maybe make weekends diff color?)
 
 TODO SOON
 update the all npm packages
