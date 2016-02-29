@@ -11,6 +11,24 @@ var angularModule = angular.module('app', [require('angular-route'), require('an
 }]);
 
 
+angularModule.factory('$exceptionHandler', function() {
+  return function(exception, cause) {
+    exception.message += ' (caused by "' + cause + '")';
+
+    //elog that jawn
+    var toLog = {};
+    toLog.stack = exception.stack;
+    toLog.message = exception.message
+    toLog.name = exception.name
+
+    elog(JSON.stringify( toLog))
+
+    throw exception;
+  };
+});
+
+
+
 function DirectiveMgr() {
 
 	//convert the old style urls

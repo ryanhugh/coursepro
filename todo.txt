@@ -2,9 +2,6 @@
 
 https://docs.angularjs.org/api/ng/service/$exceptionHandler
 
-meets on saterdays and throws /logError
-https://coursepro.io/#/search/neu.edu/201630/IA/cyberlaw
-
 
 https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice

@@ -11,7 +11,7 @@ var user = require('../user')
 function Calendar($scope) {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
-
+d
 	$scope.uiConfig = {
 		calendar: {
 			header: false,
@@ -44,6 +44,7 @@ function Calendar($scope) {
 	user.loadList(this.getListName(), function (err, list) {
 		if (err) {
 			elog(err,'error loading lists')
+			return
 		};
 		var q = queue();
 
