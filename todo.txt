@@ -1,6 +1,6 @@
 !!!!
 
-meets on saterdays
+meets on saterdays and throws /logError
 https://coursepro.io/#/search/neu.edu/201630/IA/cyberlaw
 
 
