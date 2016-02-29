@@ -8,7 +8,7 @@ var concat = require("gulp-concat");
 var addsrc = require('gulp-add-src');
 var streamify = require('gulp-streamify');
 var flatten = require('gulp-flatten');
-var angularTemplates = require('gulp-angular-templates')
+var angularTemplates = require('gulp-angular-templatecache')
 var es = require('event-stream')
 var merge = require('merge-stream')
 var rename = require('gulp-rename')
@@ -109,6 +109,8 @@ function compileJS(shouldUglify) {
 	var rebundle = function () {
 		console.log("----Rebundling custom JS!----")
 		var stream = bundler.bundle();
+		
+		
 
 		stream.on('error', function (err) {
 			// print the error (can replace with gulp-util)
@@ -129,23 +131,17 @@ function compileJS(shouldUglify) {
 			})));
 		}
 		
-		var htmlTemplates = gulp
-			.src('./frontend/src/**/*.html')
-			.pipe(flatten())
-			.pipe(angularTemplates())
 			//.pipe(concat('templates.js'))
 			
-		var uglifiedJSStream = stream;
+		// var uglifiedJSStream = stream;
 		
 		// console.log("one:",htmlTemplates,'TWO:',stream);
 		
-		// stream = stream.pipe(source('allthejavascript.js'))
+		stream = stream.pipe(source('allthejavascript.js')).pipe(gulp.dest('./frontend/static/js/internal'))
 		
-		var output = buildTools.concat(htmlTemplates,stream).pipe(concat('output.js')).pipe(gulp.dest('./frontend/static/js/internal'));
-
 		// var output = 
 		console.log("----Done Rebundling custom JS!----")
-		return output;
+		return stream;
 	};
 
 	bundler.on('update', rebundle);
@@ -154,10 +150,20 @@ function compileJS(shouldUglify) {
 
 
 gulp.task('copyHTML', function () {
-	return gulp
-		.src('./frontend/src/**/*.html')
-		.pipe(flatten())
-		.pipe(gulp.dest('./frontend/static/html'));
+	// return gulp
+	// 	.src('./frontend/src/**/*.html')
+	// 	.pipe(flatten())
+	// 	.pipe(gulp.dest('./frontend/static/html'));
+		
+		return gulp
+			.src('./frontend/src/**/*.html')
+			.pipe(flatten())
+			.pipe(angularTemplates({ module:'templates', standalone:true }))
+			// .pipe(streamify(uglify()))
+			.pipe(concat('html.js'))
+			.pipe(gulp.dest('./frontend/static/js/internal'))
+		// var output = es.merge(htmlTemplates,stream).pipe(source('output.js')).pipe(gulp.dest('./frontend/static/js/internal'));
+		// var output = htmlTemplates.pipe(concat('html.js')).pipe(gulp.dest('./frontend/static/js/internal'));
 })
 
 gulp.task('watchCopyHTML', function () {

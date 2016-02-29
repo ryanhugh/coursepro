@@ -302,7 +302,7 @@ Section.prototype.meetsOnWeekends = function () {
 			if (index < 0 || index > 4) {
 				return true;
 			}
-		}
+		} 
 	}
 	return false;
 }

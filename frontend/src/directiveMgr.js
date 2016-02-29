@@ -6,7 +6,7 @@ var bootstrap = require('bootstrap')
 var fullcalendar = require('fullcalendar')
 
 //max depth for a tree, if it reaches this angular will barf
-var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize', 'ui.calendar'], ['$rootScopeProvider', function ($rootScopeProvider) {
+var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize', 'ui.calendar','templates'], ['$rootScopeProvider', function ($rootScopeProvider) {
 	$rootScopeProvider.digestTtl(20);
 }]);
 
@@ -58,8 +58,10 @@ DirectiveMgr.prototype.getHTMLPathFromClass = function (aClass) {
 	return this.getHTMLPathFromName(this.calculateName(aClass));
 };
 
+//keep in sync with the gulpfile that loads up the template caches
+//this is not the URL of the template, they are all in the templateCache (html.js)
 DirectiveMgr.prototype.getHTMLPathFromName = function (directiveName) {
-	return '/html/' + directiveName + '.html';
+	return  directiveName + '.html';
 };
 
 //by default, directive.urls is set to the name of the class with the first letter lowercased eg settings
