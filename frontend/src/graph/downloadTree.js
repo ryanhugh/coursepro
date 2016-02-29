@@ -16,6 +16,12 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 	if (ignoreClasses === undefined) {
 		ignoreClasses = [];
 	}
+	
+	if (!callback) {
+		elog('fetch full tree called without a callback??')
+		debugger;
+		return;
+	}
 
 	if (!tree.isClass || tree.isString) {
 		this.fetchSubTrees(tree, ignoreClasses, callback)
@@ -24,15 +30,14 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 
 	//fire off ajax and add it to q
 	if (tree.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
-		console.log('skipping tree because data status is already started?')
-		return;
+		var msg = 'skipping tree because data status is already started?' + tree.dataStatus
+		elog(msg)
+		return callback(msg)
 	}
-
-	//q.defer(function (callback) {
 
 	tree.download(function (err) {
 		if (err) {
-			console.log(err)
+			elog(err)
 			return callback(err)
 		}
 
@@ -41,7 +46,6 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 			callback(err, tree)
 		}.bind(this))
 
-	//	}.bind(this))
 	}.bind(this));
 }
 
@@ -150,9 +154,8 @@ DownloadTree.prototype.fetchFullTree = function (serverData, callback) {
 	this.tree = tree;
 
 
-	var q = queue()
-	this.fetchFullTreeOnce(tree, q);
-	q.awaitAll(function () {
+	// var q = queue()
+	this.fetchFullTreeOnce(tree, [], function () {
 
 		//another tree was began before this one finished
 		if (this.tree != tree) {

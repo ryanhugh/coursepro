@@ -31,7 +31,7 @@ function ListIcon() {
 
 
 		this.scope = true
-		this.templateUrl = '/html/listIcon.html'
+		this.templateUrl = 'listIcon.html'
 
 	}
 	ListIconInner.prototype.getInList = function ($scope) {

@@ -257,7 +257,7 @@ Class.prototype.download = function (callback) {
 
 
 	if (this.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
-		var errorMsg = 'data status was not not started, and called class.download?'
+		var errorMsg = 'data status was not not started, and called class.download?' + this.dataStatus
 		elog(errorMsg, this)
 		return callback(errorMsg, this)
 	};
@@ -490,6 +490,10 @@ Class.prototype.loadSections = function (callback) {
 	//need to load this class first, then can load sections
 	//if already loaded this class, callback is called immediately
 	this.download(function (err) {
+		if (err) {
+			elog("error download a class" + err)
+			return callback(err)
+		}
 
 		this.sectionsLoadingStatus = macros.DATASTATUS_LOADING;
 
@@ -504,6 +508,12 @@ Class.prototype.loadSections = function (callback) {
 		}.bind(this))
 
 		q.awaitAll(function (err) {
+			if (err) {
+				elog('error loading a class section' + err)
+				return callback(err);
+			}
+			
+			
 			this.sectionsLoadingStatus = macros.DATASTATUS_DONE;
 
 			var hasWaitList = 0;

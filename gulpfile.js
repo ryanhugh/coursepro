@@ -8,6 +8,7 @@ var streamify = require('gulp-streamify');
 var flatten = require('gulp-flatten');
 var angularTemplates = require('gulp-angular-templatecache')
 var htmlmin = require('gulp-htmlmin');
+var rename = require('gulp-rename')
 
 // browsify stuff
 var browserify = require('browserify');
@@ -136,6 +137,9 @@ gulp.task('copyHTML', function () {
 		return gulp
 			.src('./frontend/src/**/*.html')
 			.pipe(flatten())
+			// .pipe(rename({
+			// 	dirname:'html'
+			// }))
 			.pipe(htmlmin({collapseWhitespace: true,removeComments:true}))
 			.pipe(angularTemplates({ module:'templates', standalone:true }))
 			.pipe(concat('html.js'))

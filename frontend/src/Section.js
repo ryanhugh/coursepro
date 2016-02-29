@@ -297,7 +297,7 @@ Section.prototype.meetsOnWeekends = function () {
 		}
 		
 		for (var j=0;j<meeting.timeMoments.length;j++) {
-			var time = meeting.timeMoments[j];
+			var times = meeting.timeMoments[j];
 			var index = times.start.day() - 1
 			if (index < 0 || index > 4) {
 				return true;

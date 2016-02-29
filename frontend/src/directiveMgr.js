@@ -61,7 +61,7 @@ DirectiveMgr.prototype.getHTMLPathFromClass = function (aClass) {
 //keep in sync with the gulpfile that loads up the template caches
 //this is not the URL of the template, they are all in the templateCache (html.js)
 DirectiveMgr.prototype.getHTMLPathFromName = function (directiveName) {
-	return  directiveName + '.html';
+	return   directiveName + '.html';
 };
 
 //by default, directive.urls is set to the name of the class with the first letter lowercased eg settings
