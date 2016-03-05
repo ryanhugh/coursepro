@@ -12,13 +12,29 @@ function BaseData(config) {
     this.dataStatus = macros.DATASTATUS_NOTSTARTED;
 }
 
+BaseData.doObjectsMatchWithKeys = function (keys, a, b) {
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i]
+        if (!a[key] || !b[key] || a[key]!=b[key]) {
+            return false
+        }
+    }
+    return true;
+}
+
+var instanceCache = {}
 
 //in static methods, "this" references the constructor
-BaseData.create = function (config) {
+BaseData.create = function (config,useCache) {
+    if (useCache === undefined) {
+        useCache = true
+    }
+
     if (config instanceof this) {
-        console.log("tried to make instance of ", this.name, ' with an instance of this');
+        elog("tried to make instance of ", this.name, ' with an instance of this');
         return null;
     };
+
 
     if (!this.requiredPath || !this.optionalPath) {
         elog("dont have requiredPath or optionalPath", this, this.prototype);
@@ -26,22 +42,70 @@ BaseData.create = function (config) {
     };
 
 
-    var keys = this.requiredPath.concat(this.optionalPath)
-    for (var i = 0; i < keys.length; i++) {
-        var attrName = keys[i]
-        if (!config[attrName]) {
-            console.log("tried to make", this.name, 'without a ', attrName);
-            return null;
+    //check to see if isValidCreatingData was overriden
+    //if so use it, if not dynamically check keys 
+    if (this.isValidCreatingData) {
+        if (!this.isValidCreatingData(config)) {
+            return null
         };
     }
 
+    //if has _id, it is valid
+    else if (!config._id) {
+
+        var keys = this.requiredPath.concat(this.optionalPath)
+        for (var i = 0; i < keys.length; i++) {
+            var attrName = keys[i]
+            if (!config[attrName]) {
+                elog("ERROR tried to make", this.name, 'without a ', attrName);
+                return null;
+            };
+        }
+    }
+
+    //seach instance cache for matching instance
+    //this was decided to be done linearly in case a instance got more data about itself (such as a call to download)
+    //note that we are not cloning the cacheItem, for speed
+
+    if (instanceCache[this.name] && useCache && 0) {
+
+        var allKeys = this.requiredPath.concat(this.optionalPath);
+
+        for (var i = 0; i < instanceCache[this.name].length; i++) {
+            var cacheItem = instanceCache[this.name][i];
+
+            if (cacheItem._id && config._id) {
+                if (cacheItem._id == config._id) {
+                    // debugger
+                    console.log("returning from cache");
+                    return cacheItem;
+                };
+            }
+            else if(this.doObjectsMatchWithKeys(allKeys,config,cacheItem)) {
+                // debugger
+                console.log("returning from cache");
+                return cacheItem;
+            }
+        };
+    };
 
 
+    //the create instance
     var instance = new this(config);
     if (instance.dataStatus === undefined) {
+        elog("failed to create an instance of " + config, 'with', config)
         return null;
     }
     else {
+
+        //put the instance in the cache
+
+        if (!instanceCache[this.name]) {
+            instanceCache[this.name] = []
+        }
+
+        instanceCache[this.name].push(instance)
+
         return instance
     }
 }
@@ -75,42 +139,42 @@ BaseData.createMany = function (config, callback) {
 
 //returns
 // {
-// 	required: {
-// 		obj: {
-// 			host: 'neu.edu',
-// 			termId: '201630',
-// 			subject: 'CS',
-// 		},
-// 		//if it has the _id, this is _id, if not it is the same as min.obj
-// 		lookup: {
-// 			_id:
-// 		}
-// 		str: 'neu.edu/201630'
-// 	},
+//  required: {
+//      obj: {
+//          host: 'neu.edu',
+//          termId: '201630',
+//          subject: 'CS',
+//      },
+//      //if it has the _id, this is _id, if not it is the same as min.obj
+//      lookup: {
+//          _id:
+//      }
+//      str: 'neu.edu/201630'
+//  },
 
-// 	//if it has the data needed, if not -> null
-// 	optional: {
-// 		obj: {
-// 			classId: '4800',
-// 			termId: '201630'
-// 		},
-// 		lookup: {
-// 			_id: ''
-// 		}
-// 		str: 'neu.edu/201630'
-// 	},
+//  //if it has the data needed, if not -> null
+//  optional: {
+//      obj: {
+//          classId: '4800',
+//          termId: '201630'
+//      },
+//      lookup: {
+//          _id: ''
+//      }
+//      str: 'neu.edu/201630'
+//  },
 
-// 	//optional + required
-// 	full: {
-// 		obj: {
-// 			classId: '4800',
-// 			termId: '201630'
-// 		},
-// 		lookup: {
-// 			_id: ''
-// 		}
-// 		str: 'neu.edu/201630'
-// 	}
+//  //optional + required
+//  full: {
+//      obj: {
+//          classId: '4800',
+//          termId: '201630'
+//      },
+//      lookup: {
+//          _id: ''
+//      }
+//      str: 'neu.edu/201630'
+//  }
 // }
 
 
@@ -229,7 +293,7 @@ BaseData.prototype.download = function (configOrCallback, callback) {
             return callback(err)
         }
         if (results.error) {
-        	debugger
+            debugger
         };
 
         if (config.returnResults) {

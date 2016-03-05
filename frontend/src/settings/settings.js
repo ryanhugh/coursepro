@@ -84,7 +84,7 @@ function Settings() {
 
 			}.bind(this),
 		],
-		function (err, terms, classes) {
+		function (err) {
 			if (err) {
 				console.log('ERROR', err)
 					//don't return

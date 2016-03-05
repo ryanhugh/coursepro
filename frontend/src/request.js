@@ -203,6 +203,8 @@ Request.prototype.fireRequest = function (config, callback) {
 			else {
 				err = 'unknown ajax error'
 			}
+			
+			err +=  'config = '+JSON.stringify(config)
 
 			console.log('error, bad code recievied', xmlhttp.status, err,config)
 

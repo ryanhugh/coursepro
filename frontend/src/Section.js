@@ -57,16 +57,6 @@ Section.requiredPath = ['host', 'termId', 'subject', 'classId']
 Section.optionalPath = ['crn']
 Section.API_ENDPOINT = '/listSections'
 
-Section.create = function (serverData) {
-	var aSection = new Section(serverData);
-	if (aSection.dataStatus === undefined) {
-		console.log('ERROR failed to create new class with data', serverData)
-		return null;
-	}
-	return aSection;
-};
-
-
 
 //creates 7:00 - 9:00 am
 // Thursday, Friday string

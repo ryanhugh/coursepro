@@ -63,10 +63,14 @@ EllucianBaseParser.prototype.createClassListUrl = function(siteURL,termId,subjec
 		return;
 	};
 
+	baseURL = new URI(baseURL);
 
-	var retVal = new URI(baseURL);
-	retVal = new URI('bwckctlg.p_display_courses?term_in='+termId+'&one_subj='+subject+'&sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=').absoluteTo(retVal)
-	return retVal.toString();
+
+	var retVal = new URI('bwckctlg.p_display_courses?sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
+	retVal.setQuery('term_in',termId);
+	retVal.setQuery('one_subj',subject);
+
+	return retVal.absoluteTo(baseURL).toString();
 };
 
 EllucianBaseParser.prototype.createCatalogUrl = function(siteURL,termId,subject,classId) {
@@ -82,9 +86,17 @@ EllucianBaseParser.prototype.createCatalogUrl = function(siteURL,termId,subject,
 		return
 	};
 
-	var retVal = new URI(baseURL);
-	retVal = new URI('bwckctlg.p_disp_course_detail?cat_term_in='+termId+'&subj_code_in='+subject+'&crse_numb_in='+classId).absoluteTo(retVal)
-	return retVal.toString();
+
+	baseURL = new URI(baseURL);
+
+
+	// var retVal = new URI(baseURL);
+	var retVal = new URI('bwckctlg.p_disp_course_detail')
+	retVal.setQuery('cat_term_in',termId);
+	retVal.setQuery('subj_code_in',subject);
+	retVal.setQuery('crse_numb_in',classId);
+
+	return retVal.absoluteTo(baseURL).toString();
 };
 
 EllucianBaseParser.prototype.createClassURL = function(siteURL,termId,subject,classId) {
@@ -94,9 +106,17 @@ EllucianBaseParser.prototype.createClassURL = function(siteURL,termId,subject,cl
 		return;
 	};
 
-	var retVal = new URI(baseURL);
-	retVal = new URI('bwckctlg.p_disp_listcrse?term_in='+termId+'&subj_in='+subject+'&crse_in='+classId+'&schd_in=%25').absoluteTo(retVal)
-	return retVal.toString();
+
+	baseURL = new URI(baseURL);
+
+	// var retVal = new URI(baseURL);
+	var retVal = new URI('bwckctlg.p_disp_listcrse?schd_in=%25')
+
+	retVal.setQuery('term_in',termId);
+	retVal.setQuery('subj_in',subject);
+	retVal.setQuery('crse_in',classId);
+
+	return retVal.absoluteTo(baseURL).toString();
 };
 
 EllucianBaseParser.prototype.sectionURLtoInfo = function(sectionURL) {
@@ -150,6 +170,28 @@ EllucianBaseParser.prototype.tests = function() {
 
 	assert.equal(this.getBaseURL(catagoryURL),'https://prd-wlssb.temple.edu/prod8/');
 	assert.equal(this.getBaseURL(classURL),'https://prd-wlssb.temple.edu/prod8/');
+
+
+
+
+	var url = 'https://banner.uregina.ca/prod/sct/bwckctlg.p_display_courses?sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=&term_in=201620&one_subj=BUS';
+	assert.equal(this.createClassListUrl('https://banner.uregina.ca/prod/sct/bwckctlg.p_disp_course_detail','201620','BUS'), url)
+
+	url = 'https://banner.uregina.ca/prod/sct/bwckctlg.p_display_courses?sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=&term_in=201620&one_subj=EC%26I';
+	assert.equal(this.createClassListUrl('https://banner.uregina.ca/prod/sct/bwckctlg.p_disp_course_detail','201620','EC&I'),url)
+
+
+	url = 'https://banner.uregina.ca/prod/sct/bwckctlg.p_display_courses?sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=&term_in=201620&one_subj=EC%26I';
+	assert.equal(this.createClassListUrl('https://banner.uregina.ca/prod/sct/bwckctlg.p_disp_course_detail','201620','EC&I'),url)
+
+	url = 'https://banner.uregina.ca/prod/sct/bwckctlg.p_disp_course_detail?cat_term_in=201620&subj_code_in=EC%26I&crse_numb_in=050'
+	assert.equal(this.createCatalogUrl('https://banner.uregina.ca/prod/sct/bwckctlg.p_disp_course_detail','201620','EC&I','050'),url)
+
+	
+	url = 'https://banner.uregina.ca/prod/sct/bwckctlg.p_disp_listcrse?schd_in=%25&term_in=201620&subj_in=EC%26I&crse_in=050'
+	assert.equal(this.createClassURL('https://banner.uregina.ca/prod/sct/bwckctlg.p_disp_course_detail','201620','EC&I','050'),url)
+
+
 
 
 	console.log('all tests done bro')

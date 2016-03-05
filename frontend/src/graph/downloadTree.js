@@ -29,8 +29,8 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 	}
 
 	//fire off ajax and add it to q
-	if (tree.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
-		var msg = 'skipping tree because data status is already started?' + tree.dataStatus
+	if (tree.dataStatus === macros.DATASTATUS_LOADING) {
+		var msg = 'skipping tree because data status is loading?' + tree.dataStatus
 		elog(msg)
 		return callback(msg)
 	}

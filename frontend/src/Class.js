@@ -14,15 +14,6 @@ var BaseData = require('./BaseData')
 
 function Class(config) {
 	BaseData.prototype.constructor.apply(this, arguments);
-	if (!(config.host && config.termId && config.subject && config.classId) && !config._id && !config.isString && !(config.isClass === false)) {
-		elog('ERROR need (host termId, subject, classId) or _id or string to make a class', config)
-		return;
-	};
-	if (config instanceof Class) {
-		elog("TRIED to make class from instance of class");
-		return;
-	};
-
 
 	//true, if for instance "AP placement exam, etc"
 	this.isString = false;
@@ -154,26 +145,18 @@ Class.API_ENDPOINT = '/listClasses'
 //abstrat away some of the checks that are the same accross fns here
 
 
+Class.isValidCreatingData = function (config) {
+	if (!(config.host && config.termId && config.subject && config.classId) && !config._id && !config.isString && !(config.isClass === false)) {
+		elog('ERROR need (host termId, subject, classId) or _id or string to make a class', config)
+		return false;
+	};
+	if (config instanceof Class) {
+		elog("TRIED to make class from instance of class");
+		return false;
+	};
+	return true;
 
-Class.create = function (serverData) {
-	var aClass = new Class(serverData);
-	if (aClass.isClass === undefined) {
-		console.log('ERROR failed to create new class with data', serverData)
-		return null;
-	}
-	return aClass;
-}
-
-//both instances and static function download calls go though here
-// Class.download = function (config, callback) {
-// 	if (!(config.body.host && config.body.termId && config.body.subject) && !config.body._id) {
-// 		return callback('need more data Class.download', config)
-// 	};
-
-// 	var configClone = _.cloneDeep(config);
-// 	configClone.url = '/listClasses';
-// 	request(configClone, callback)
-// }.bind(this)
+};
 
 
 
@@ -233,7 +216,7 @@ Class.prototype.convertServerData = function (data) {
 		};
 
 
-		retVal = Class.create(data)
+		retVal = Class.create(data,false)
 
 	}
 
@@ -418,20 +401,20 @@ Class.prototype.getPath = function () {
 	return retVal;
 };
 
-Class.prototype.getHeighestProfCount = function() {
+Class.prototype.getHeighestProfCount = function () {
 	var count = 0;
 
 
 	this.sections.forEach(function (section) {
 		if (section.profs) {
-			count = Math.max(section.profs.length,count)
+			count = Math.max(section.profs.length, count)
 		};
 	}.bind(this))
 	return count;
 };
 
 //returns true if any sections have an exam, else false
-Class.prototype.sectionsHaveExam = function() {
+Class.prototype.sectionsHaveExam = function () {
 	for (var i = 0; i < this.sections.length; i++) {
 		if (this.sections[i].hasExam()) {
 			return true;
@@ -512,8 +495,8 @@ Class.prototype.loadSections = function (callback) {
 				elog('error loading a class section' + err)
 				return callback(err);
 			}
-			
-			
+
+
 			this.sectionsLoadingStatus = macros.DATASTATUS_DONE;
 
 			var hasWaitList = 0;
