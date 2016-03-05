@@ -1,6 +1,7 @@
 !!!!
 
 make the base data cache work
+need some way to call download when a data is loading and have it just return when done
 
 https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
