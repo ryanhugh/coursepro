@@ -3,7 +3,7 @@
     "angular": "^1.4.8",
     "angular-animate": "^1.4.8",
     "angular-route": "^1.4.8",
-    "angular-ui-bootstrap": "1.0.3",
+    "angular-ui-bootstrap": "^1.0.3",
     "async": "^1.5.2",
     "body-parser": "^1.15.0",
     "bootstrap": "^3.3.6",
