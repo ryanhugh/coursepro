@@ -1,52 +1,74 @@
-var urls = require('./tests\\differentCollegeUrls.json')
+// var urls = require('./tests\\differentCollegeUrls.json')
 var https = require('https');
 var URI = require('urijs')
 
-// urls = urls.slice(3,4)
+// https.request('https://:9000',function (res) {
 
-// console.log(urls)
+var options = {
+  hostname: 'bappas2.gram.edu',
+  port: 9000,
+  path: '/pls/gram/bwckschd.p_disp_dyn_sched',
+  method: 'GET'
+};
 
+var req = https.request(options, function(res) {
+  console.log('statusCode: ', res.statusCode);
+  console.log('headers: ', res.headers);
 
-urls.forEach(function(url) {
-
-	var urlParsed = new URI(url)
-	var host = urlParsed.hostname()
-	if (urlParsed.port() && urlParsed.port() != 443) {
-		console.log(host, ': port not 443', urlParsed.port())
-		return
-	};
-	// console.log(host)
-	// return;
-
-	// console.log('')
-
-	try {
-		var options = {
-			host: host,
-			port: 443,
-			method: 'GET',
-			rejectUnauthorized: false
-		};
-		// console.log('trying to send request',options)
+  res.on('data', function(d) {
+    process.stdout.write(d);
+  });
+});
+req.end();
 
 
-		//make sure url dosent include like godadday or 
-		var req = https.request(options, function(res) {
+// return
 
-			// console.log('yay it worked')
-			var cert = res.connection.getPeerCertificate()
+// // urls = urls.slice(3,4)
 
-			//bad: 
-			// == to host (prodssb.mscc.edu)
-			// undefined
-			console.log(host, ':', cert.subject.O);
-			// console.log(JSON.stringify(cert,null,4))
+// // console.log(urls)
 
-		});
-		req.end();
-	}
-	catch (e) {
-		console.log(host, ":", 'error')
-	}
-	// process.exit()
-})
+// urls = ["https://bappas2.gram.edu:9000/pls/gram/bwckschd.p_disp_dyn_sched"]
+// urls.forEach(function(url) {
+
+// 	var urlParsed = new URI(url)
+// 	var host = urlParsed.hostname()
+// 	if (urlParsed.port() && urlParsed.port() != 443 && 0) {
+// 		console.log(host, ': port not 443', urlParsed.port())
+// 		return
+// 	};
+// 	// console.log(host)
+// 	// return;
+
+// 	// console.log('')
+
+// 	try {
+// 		var options = {
+// 			host: host,
+// 			port: 443,
+// 			method: 'GET',
+// 			rejectUnauthorized: false
+// 		};
+// 		// console.log('trying to send request',options)
+
+
+// 		//make sure url dosent include like godadday or 
+// 		var req = https.request(options, function(res) {
+
+// 			// console.log('yay it worked')
+// 			var cert = res.connection.getPeerCertificate()
+
+// 			//bad: 
+// 			// == to host (prodssb.mscc.edu)
+// 			// undefined
+// 			console.log(host, ':', cert.subject.O);
+// 			// console.log(JSON.stringify(cert,null,4))
+
+// 		});
+// 		req.end();
+// 	}
+// 	catch (e) {
+// 		console.log(host, ":", 'error')
+// 	}
+// 	// process.exit()
+// })

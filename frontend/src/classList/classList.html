@@ -57,7 +57,8 @@
 <!-- ng-repeat = "class in ::classes track by class._id" -->
 
 <uib-accordion close-others="false">
-    <div quick-ng-repeat="class in classes" quick-repeat-list="classes" style="padding-top:5px">
+
+    <div quick-ng-repeat="class in ::classes" quick-repeat-list="classes" style="padding-top:5px">
         <uib-accordion-group is-open="isOpen"  ng-click="classList.onClick(class,this)">
             <uib-accordion-heading>
 
