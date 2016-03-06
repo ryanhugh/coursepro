@@ -8,8 +8,8 @@
   "https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched", //works
   "https://ssb.banner.usu.edu/zprod/bwckschd.p_disp_dyn_sched", //works
   "https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckschd.p_disp_dyn_sched", // down atm??
-  "https://banner.uregina.ca/prod/sct/bwckschd.p_disp_dyn_sched",
-  "https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched",
+  "https://banner.uregina.ca/prod/sct/bwckschd.p_disp_dyn_sched", //takes 3 hours, works
+  "https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched", // takes like 22 min, works
   "https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched",
   "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched",
   "https://genisys.regent.edu/pls/prod/bwckschd.p_disp_dyn_sched",

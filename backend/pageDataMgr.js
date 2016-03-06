@@ -232,8 +232,9 @@ PageDataMgr.prototype.main = function () {
 	// }.bind(this))
 
 	// this.createFromURL('https://ssb.banner.usu.edu/zprod/bwckschd.p_disp_dyn_sched', function () {
-	this.createFromURL('https://banner.uregina.ca/prod/sct/bwckschd.p_disp_dyn_sched', function () {
-		console.log('all done!! uregina')
+	// this.createFromURL('https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched', function () {
+	this.createFromURL('https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched', function () {
+		console.log('all done!! tamut')
 	}.bind(this))
 	
 	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched', function () {

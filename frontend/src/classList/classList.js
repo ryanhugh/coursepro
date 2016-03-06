@@ -28,7 +28,16 @@ ClassList.fnName = 'ClassList'
 ClassList.$inject = ['$scope', '$timeout']
 
 ClassList.prototype.onClick = function (aClass, subScope) {
-	aClass.loadSections()
+	aClass.loadSections(function (err) {
+		if (err) {
+			elog(err);
+		}
+		
+		setTimeout(function () {
+			subScope.$apply();
+		}.bind(this),0)
+
+	}.bind(this))
 
 	//don't submit if just closed accordian
 	if (!subScope.isOpen) {
