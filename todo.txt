@@ -1,15 +1,17 @@
 !!!!
 
-make the base data cache work
+make the base data cache not ghetto
 need some way to call download when a data is loading and have it just return when done - test?
 if .create called again with more data, need to update existing instance
+more notes in BaseData.js
+
 
 https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
 
 
 TODO SOON
-post on other pages with examples
+marketing - post on other pages with examples
 
 add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
 and add it to collegeNames somehow (and add the ids for the neu.edu/law)
@@ -22,6 +24,22 @@ login with google
 need to implement an unsubscribe feature, create a subscriptionsKey that is emailed to user and allows control over subscriptions settings
 if login key but server says no user delete login key
 on startup, loop through users data and make sure each row is at minimum the default data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 LONG ROAD MAP
@@ -46,24 +64,6 @@ courseboard.io
 
 
 
-LATEST POST 
-
-Just made a site that makes it really easy to organize classes at Clemson! Check out CoursePro.io!
-
-http://coursepro.io
-
-Hey! The site shows a bunch of stuf
-
-
-It's a site I made over the last c months! It shows class prerequisites, corequisites, class description, section data, and more!
-Let me know whatcha think!! Totally open to ideas/tweaks/etc
-clemson has subject id in subject text (dont show subject id twice in selectors (if stubject etxt starts with id...))
-
-
-
-
-
-
 
 to detect mailinator: nslookup for 23.239.11.30 (most of their alts) or 45.33.81.172 (mailinator.com)
 
@@ -79,8 +79,6 @@ to detect mailinator: nslookup for 23.239.11.30 (most of their alts) or 45.33.81
 
 lift up the boxes
 http://localhost/#neu.edu/201630/CS/5310
-
-for the ones that don't have data, put an error or warning or something "No data on neu.edu about this class :/"
 
 
 any bugs in safari?

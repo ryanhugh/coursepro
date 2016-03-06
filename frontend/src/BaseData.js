@@ -68,6 +68,11 @@ BaseData.create = function (config, useCache) {
 	//seach instance cache for matching instance
 	//this was decided to be done linearly in case a instance got more data about itself (such as a call to download)
 	//note that we are not cloning the cacheItem, for speed
+	
+	//the only time that useCache is true is in class download, because that makes a new instance and 
+	//copied all the attributes, so we dont want to return the old instance that dosent have any attrs 
+	//TODO: clean up the circles of creating instances, and eliminate the !='Class' below.
+	// need good way to separate classes...
 
 	if (instanceCache[this.name] && useCache && 0) {
 
@@ -78,14 +83,10 @@ BaseData.create = function (config, useCache) {
 
 			if (cacheItem._id && config._id) {
 				if (cacheItem._id == config._id) {
-					// debugger
-					console.log("returning from cache");
 					return cacheItem;
 				};
 			} 
 			else if (this.name !='Class' && this.doObjectsMatchWithKeys(allKeys, config, cacheItem)) {
-				// debugger
-				console.log("returning from cache");
 				return cacheItem;
 			}
 		};
@@ -322,14 +323,6 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 			return;
 		}
 
-		if (results.length == 0) {
-			console.log('unable to find subject??', this, config)
-			this.dataStatus = macros.DATASTATUS_FAIL;
-
-			this.downloadCallbacks.forEach(function (configAndCallback) {
-				configAndCallback.callback(null, this)
-			}.bind(this))
-		}
 
 
 
@@ -349,6 +342,21 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 		if (returnResultsTrue > 0 && returnResultsFalse > 0) {
 			elog('return results true and false > 0???', this.downloadCallbacks)
 			returnResultsFalse = 0;
+		}
+		
+		
+		if (results.length == 0) {
+			console.log('unable to find subject??', this, config)
+			this.dataStatus = macros.DATASTATUS_FAIL;
+
+			this.downloadCallbacks.forEach(function (configAndCallback) {
+				if (returnResultsTrue) {
+					configAndCallback.callback(null, results)
+				}
+				else {
+					configAndCallback.callback(null, this)
+				}
+			}.bind(this))
 		}
 
 		//

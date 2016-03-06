@@ -10,8 +10,15 @@
     <div class="panel panel-primary treePanel" ng-if="tree.isClass && !tree.hidden" graph-panel-expand panel-close=".closePanel" help>
 
         <div class="panel-heading">
-            <h3 class="panel-title" style="text-align: center;">{{tree.subject}} {{tree.classId}}
-                <br/> {{tree.name}}</h3>
+            <h3 class="panel-title" style="text-align: center;">
+            	
+            	
+            	<span ng-if ="tree.isString">{{tree.desc}} </span>
+            	
+            	{{tree.subject}} {{tree.classId}}
+                <br/> 
+                {{tree.name}}
+            </h3>
 
             <span ng-show="isExpanded">
                 <span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;cursor: pointer;"></span>

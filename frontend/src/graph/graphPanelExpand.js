@@ -217,7 +217,7 @@ function GraphPanelExpand($timeout, $document) {
 	};
 
 	GraphPanelExpandInner.prototype.openPanel = function (tree, callback) {
-		if (tree.$scope.isExpanded) {
+		if (tree.$scope.isExpanded || tree.isString) {
 			return;
 		}
  

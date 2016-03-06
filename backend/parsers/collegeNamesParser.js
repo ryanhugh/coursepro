@@ -5,6 +5,7 @@ var toTitleCase = require('to-title-case');
 var he = require('he');
 var _ = require('lodash');
 var domutils = require('domutils');
+var assert = require('assert')
 
 
 
@@ -84,6 +85,10 @@ CollegeNamesParser.prototype.standardizeNames = function (startStrip, endStrip, 
 
 	// standardize the case
 	title = toTitleCase(title);
+	
+	
+	// Texas A&M University
+	title = title.replace(' a&m ',' A&M ')
 
 	return title.trim();
 }
@@ -177,7 +182,7 @@ CollegeNamesParser.prototype.hitWhois = function (host, callback, tryCount) {
 	whois.lookup(host, function (err, data) {
 		if (err) {
 
-			if (tryCount < 5) {
+			if (tryCount < 30) {
 
 				setTimeout(function () {
 					this.hitWhois(host, callback, tryCount + 1);
@@ -191,7 +196,7 @@ CollegeNamesParser.prototype.hitWhois = function (host, callback, tryCount) {
 			}
 		}
 
-		var match = data.match(/Registrant:\n[\w\d\s&:']+?(\n|-)/i);
+		var match = data.match(/Registrant:\n[\w\d\s&:']+?(\n)/i);
 
 		if (!match) {
 			console.log('ERROR: whois regex fail', data, host);
@@ -225,6 +230,9 @@ CollegeNamesParser.prototype.getTitle = function (host, callback) {
 
 
 CollegeNamesParser.prototype.go = function () {
+	
+	
+	assert.equal(this.standardizeNames([],[],"Texas A&M University - Texarkana"),"Texas A&M University - Texarkana");
 
 
 	// this.getAll(function (stuff) {
@@ -264,7 +272,9 @@ CollegeNamesParser.prototype.go = function () {
 		// 	this.getTitle('https://wl11gp.neu.edu/udcprod8/twbkwbis.P_GenMenu?name=bmenu.P_MainMnu&msg=WELCOME+Welcome,+Ryan+Hughes,+to+the+WWW+Information+System!Jul+11,+201503%3A33+pm',function (err,title) {
 		// 	this.getTitle('https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched',function (err,title) {
 		// 	this.getTitle('https://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_dyn_sched',function (err,title) {
-		console.log(err, title);
+		assert.equal(err,null)
+		assert.equal(title,'Swarthmore College')
+		console.log('all tests done!')
 	});
 };
 

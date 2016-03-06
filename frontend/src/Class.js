@@ -273,7 +273,7 @@ Class.prototype.download = function (callback) {
 			this.isClass = false;
 
 			if (this.prereqs.values.length != 0 || this.coreqs.values.length != 0) {
-				console.log('ERROR already has prereqs or coreqs in download callback??', this)
+				elog('ERROR already has prereqs or coreqs in download callback??', this)
 				this.prereqs.values = []
 				this.coreqs.values = []
 			};
@@ -461,7 +461,7 @@ Class.prototype.loadSections = function (callback) {
 
 
 	if (!this.isClass || this.isString) {
-		console.log('ERROR cant load sections of !class or string')
+		elog('ERROR cant load sections of !class or string')
 		return callback('!class or string')
 	};
 
