@@ -53,187 +53,198 @@
 
 <div class="page-header" style="margin-top:0px"></div>
 
+<!--  ng-repeat = "class in classes"-->
+<!-- ng-repeat = "class in ::classes track by class._id" -->
 
 <uib-accordion close-others="false">
-    <uib-accordion-group is-open="isOpen" ng-repeat="class in ::classes track by task.id" ng-click="classList.onClick(class,this)">
-        <uib-accordion-heading>
-        	
-        	<div style="display: inline-block;width: 100%;padding-top: 10px;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;">
+    <div quick-ng-repeat="class in classes" quick-repeat-list="classes" style="padding-top:5px">
+        <uib-accordion-group is-open="isOpen"  ng-click="classList.onClick(class,this)">
+            <uib-accordion-heading>
 
-            <span class="glyphicon accordionChevrons" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span> {{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
+                <div style="display: inline-block;width: 100%;padding-top: 10px;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;">
 
-            <!-- stop event propagation outside the icons -->
-            <span ng-click="$event.stopPropagation()">
+                    <span class="glyphicon accordionChevrons" ng-class="isOpen?'glyphicon-chevron-down':'glyphicon-chevron-right'" aria-hidden="true" style="color: gray;"></span> {{class.subject}} {{class.classId}}&nbsp;&nbsp;{{class.name}}
 
-                <span list-icon='saved' toggle="class" class="rightIcon"></span>
-                <!-- <span list-icon='watching' toggle="class" class="rightIcon"></span> -->
+                    <!-- stop event propagation outside the icons -->
+                    <span ng-click="$event.stopPropagation()">
 
-                <!-- link icon -->
-                <a href="{{class.prettyUrl}}" target="_blank">
-                    <span class="glyphicon glyphicon-globe rightIcon" uib-tooltip="View on {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true"></span>
-                </a>
+                        <span list-icon='saved' toggle="class" class="rightIcon"></span>
+                        <!-- <span list-icon='watching' toggle="class" class="rightIcon"></span> -->
 
-
-
-                <a ng-if="class.prereqs.values.length > 0" ng-href="/#/graph/{{class.host}}/{{class.termId}}/{{class.subject}}/{{class.classId}}">
-                    <span uib-tooltip="View Prerequisites" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .7;">
-                        <img src="/images/tree.png">
-                    </span>
-                </a>
-
-
-                <span ng-if="class.prereqs.values.length == 0" uib-tooltip="No prerequisites found" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .4;">
-                    <img src="/images/tree.png">
-                </span>
-            </span>
-            </div>
-
-
-
-        </uib-accordion-heading>
-
-        <div>
-
-            {{class.desc}}
-            <div style="display: inline-block;float: right;padding-right: 6px;padding-top: 9px" ng-if="class.maxCredits !== undefined || class.minCredits !== undefined">
-                <span ng-if="class.maxCredits === class.minCredits">
-
-                    {{class.maxCredits}}
-
-                    <span ng-if="class.maxCredits!==1">
-                        credits
-                    </span>
-
-                    <span ng-if="class.maxCredits===1">
-                        credit
-                    </span>
-
-                </span>
-                <span ng-if="class.maxCredits !== class.maxCredits">{{class.minCredits}} to {{class.maxCredits}} credits</span>
-            </div>
-        </div>
-
-
-        <div style="padding-top:5px" ng-if="class.lastUpdateString">Updated {{class.lastUpdateString}}</div>
-
-        <div ng-if="class.minCredits || class.maxCredits"></div>
-
-
-        <table class="table table-striped" ng-if="class.sections.length>0" style="margin-bottom:0">
-            <thead>
-                <tr>
-                    <th>
-                        <span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body="true">CRN</span>
-                    </th>
-                    <th>
-                        <ng-pluralize count="class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
-                    </th>
-
-                    <th>Weekdays</th>
-                    <th>Start</th>
-                    <th>End</th>
-                    <th>Location</th>
-                    <th ng-if="class.sectionsHaveExam()">Exam start</th>
-                    <th ng-if="class.sectionsHaveExam()">Exam end</th>
-                    <th ng-if="class.sectionsHaveExam()">Exam date</th>
-                    <th>
-
-                        <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                            Seats
-                        </span>
-
-                    </th>
-                    <th ng-if="class.hasWaitList">Open/Total Waitlist Seats</th>
-                    <th>Link</th>
-                    <!-- <th>Email 
-                        <br>Notifications</th> -->
-                    <th>Saved</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="section in class.sections">
-                    <td>{{section.crn}}</td>
-                    <td>{{section.profs.join(', ')}}</td>
-                    <td>
-                        <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
-
-                            <!-- avoid calculating the string more than once -->
-                            <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip= "{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
-                            	
-                                <div ng-if ="!section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
-                                </div>
-                                
-                                <div ng-if ="section.meetsOnWeekends()"  class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
-                                </div>
-                                
-                                
-                                
-                            </span>
-                        </span>
-                    </td>
-                    <td>{{section.startTimesStrings.join(", ")}}</td>
-                    <td>{{section.endTimesStrings.join(", ")}}</td>
-
-
-                    <td>
-                        <span ng-repeat="location in section.locations">
-                            <span ng-if="location != 'Tba' || section.locations.length <= 1"> {{location}} </span>
-                        </span>
-                    </td>
-
-
-                    <td ng-if="class.sectionsHaveExam()">{{section.getExamMoments().start.format('h:mm a')}}</td>
-                    <td ng-if="class.sectionsHaveExam()">{{section.getExamMoments().end.format('h:mm a')}}</td>
-                    <td ng-if="class.sectionsHaveExam()">{{section.getExamMoments().start.format('MMM Do')}}</td>
-
-                    <td>
-
-                        <!-- don't display the "/" until these are loaded -->
-                        <span ng-if="section.seatsRemaining || section.seatsCapacity">
-                            {{section.seatsRemaining}}/{{section.seatsCapacity}}
-                        </span>
-
-                    </td>
-
-
-                    <td ng-if="class.hasWaitList">
-
-                        <!-- don't display the "/" until these are loaded -->
-                        <span ng-if="section.waitRemaining || section.waitCapacity">
-                            {{section.waitRemaining}}/{{section.waitCapacity}}
-                        </span>
-
-                        
-                        <!-- don't display the "/" until these are loaded -->
-                        <span ng-if="!section.waitRemaining && !section.waitCapacity">
-                            0/0
-                        </span>
-
-
-
-                    </td>
-
-                    <td>
-                        <a href="{{section.url}}" target="_blank">
-
-                            <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                            </div>
-
+                        <!-- link icon -->
+                        <a href="{{class.prettyUrl}}" target="_blank">
+                            <span class="glyphicon glyphicon-globe rightIcon" uib-tooltip="View on {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true"></span>
                         </a>
-                    </td>
-                    <!-- 
+
+
+
+                        <a ng-if="class.prereqs.values.length > 0" ng-href="/#/graph/{{class.host}}/{{class.termId}}/{{class.subject}}/{{class.classId}}">
+                            <span uib-tooltip="View Prerequisites" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .7;">
+                                <img src="/images/tree.png">
+                            </span>
+                        </a>
+
+
+                        <span ng-if="class.prereqs.values.length == 0" uib-tooltip="No prerequisites found" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .4;">
+                            <img src="/images/tree.png">
+                        </span>
+                    </span>
+                </div>
+
+
+
+            </uib-accordion-heading>
+
+
+            <!-- this prevents angular from rendering the inside of this until user clicks this accordion -->
+            <!-- then it is rendered, and the element is unwatched, and stays rendered even if it is closed again  -->
+            <div ng-if="::(isOpen||undefined)">
+            <!-- <div ng-if="isOpen"> -->
+
+                <div>
+
+                    {{class.desc}}
+                    <div style="display: inline-block;float: right;padding-right: 6px;padding-top: 9px" ng-if="class.maxCredits !== undefined || class.minCredits !== undefined">
+                        <span ng-if="class.maxCredits === class.minCredits">
+
+                            {{class.maxCredits}}
+
+                            <span ng-if="class.maxCredits!==1">
+                                credits
+                            </span>
+
+                            <span ng-if="class.maxCredits===1">
+                                credit
+                            </span>
+
+                        </span>
+                        <span ng-if="class.maxCredits !== class.maxCredits">{{class.minCredits}} to {{class.maxCredits}} credits</span>
+                    </div>
+                </div>
+
+
+                <div style="padding-top:5px" ng-if="class.lastUpdateString">Updated {{class.lastUpdateString}}</div>
+
+                <div ng-if="class.minCredits || class.maxCredits"></div>
+
+
+                <table class="table table-striped" ng-if="class.sections.length>0" style="margin-bottom:0">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body="true">CRN</span>
+                            </th>
+                            <th>
+                                <ng-pluralize count="class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
+                            </th>
+
+                            <th>Weekdays</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Location</th>
+                            <th ng-if="class.sectionsHaveExam()">Exam start</th>
+                            <th ng-if="class.sectionsHaveExam()">Exam end</th>
+                            <th ng-if="class.sectionsHaveExam()">Exam date</th>
+                            <th>
+
+                                <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                    Seats
+                                </span>
+
+                            </th>
+                            <th ng-if="class.hasWaitList">Open/Total Waitlist Seats</th>
+                            <th>Link</th>
+                            <!-- <th>Email 
+                        <br>Notifications</th> -->
+                            <th>Saved</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="section in class.sections">
+                            <td>{{section.crn}}</td>
+                            <td>{{section.profs.join(', ')}}</td>
+                            <td>
+                                <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
+
+                                    <!-- avoid calculating the string more than once -->
+                                    <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip="{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
+
+                                        <div ng-if="!section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                        </div>
+
+                                        <div ng-if="section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                        </div>
+
+
+
+                                    </span>
+                                </span>
+                            </td>
+                            <td>{{section.startTimesStrings.join(", ")}}</td>
+                            <td>{{section.endTimesStrings.join(", ")}}</td>
+
+
+                            <td>
+                                <span ng-repeat="location in section.locations">
+                                    <span ng-if="location != 'Tba' || section.locations.length <= 1"> {{location}} </span>
+                                </span>
+                            </td>
+
+
+                            <td ng-if="class.sectionsHaveExam()">{{section.getExamMoments().start.format('h:mm a')}}</td>
+                            <td ng-if="class.sectionsHaveExam()">{{section.getExamMoments().end.format('h:mm a')}}</td>
+                            <td ng-if="class.sectionsHaveExam()">{{section.getExamMoments().start.format('MMM Do')}}</td>
+
+                            <td>
+
+                                <!-- don't display the "/" until these are loaded -->
+                                <span ng-if="section.seatsRemaining || section.seatsCapacity">
+                                    {{section.seatsRemaining}}/{{section.seatsCapacity}}
+                                </span>
+
+                            </td>
+
+
+                            <td ng-if="class.hasWaitList">
+
+                                <!-- don't display the "/" until these are loaded -->
+                                <span ng-if="section.waitRemaining || section.waitCapacity">
+                                    {{section.waitRemaining}}/{{section.waitCapacity}}
+                                </span>
+
+
+                                <!-- don't display the "/" until these are loaded -->
+                                <span ng-if="!section.waitRemaining && !section.waitCapacity">
+                                    0/0
+                                </span>
+
+
+
+                            </td>
+
+                            <td>
+                                <a href="{{section.url}}" target="_blank">
+
+                                    <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                    </div>
+
+                                </a>
+                            </td>
+                            <!-- 
                     <td>
                         <span list-icon='watching' toggle="section"></span>
                     </td> -->
 
-                    <td>
-                        <span list-icon='saved' toggle="section"></span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div ng-if="class.crns.length==0">
-            <br>No sections found
-        </div>
-    </uib-accordion-group>
+                            <td>
+                                <span list-icon='saved' toggle="section"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div ng-if="class.crns.length==0">
+                    <br>No sections found
+                </div>
+            </div>
+        </uib-accordion-group>
+    </div>
 </uib-accordion>

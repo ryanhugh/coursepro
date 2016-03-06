@@ -6,7 +6,7 @@ var bootstrap = require('bootstrap')
 var fullcalendar = require('fullcalendar')
 
 //max depth for a tree, if it reaches this angular will barf
-var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize', 'ui.calendar','templates'], ['$rootScopeProvider', function ($rootScopeProvider) {
+var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize', 'ui.calendar','templates','QuickList'], ['$rootScopeProvider', function ($rootScopeProvider) {
 	$rootScopeProvider.digestTtl(20);
 }]);
 

@@ -10,8 +10,8 @@
   "https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckschd.p_disp_dyn_sched", // down atm??
   "https://banner.uregina.ca/prod/sct/bwckschd.p_disp_dyn_sched", //takes 3 hours, works
   "https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched", // takes like 22 min, works
-  "https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched",
-  "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched",
+  "https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched", // collegeName capilization bug and one subject dosent have any results, but works
+  "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched", 
   "https://genisys.regent.edu/pls/prod/bwckschd.p_disp_dyn_sched",
   "https://bappas2.gram.edu:9000/pls/gram/bwckschd.p_disp_dyn_sched",
   "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched",
