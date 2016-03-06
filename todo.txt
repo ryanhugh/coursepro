@@ -1,24 +1,39 @@
 !!!!
 
+
+
+TODO SOON
+0. https://localhost/#/graph/sju.edu/201610/CSC/680
+the error class bottom right needs to expand
+
+
+1. marketing when ok - post on other pages with examples
+
+2. any bugs in safari or firefox?
+3. add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
+and add it to collegeNames somehow (and add the ids for the neu.edu/law)
+
+
+
+4. put base data cache on branch
 make the base data cache not ghetto
 need some way to call download when a data is loading and have it just return when done - test?
 if .create called again with more data, need to update existing instance
 more notes in BaseData.js
 
 
-https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
+5. https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
 
+6. need some way for keys to distignuish between classes - this will help for instance cache and
+a 2500 (hon) should just bring up the (hon) and non hon should just bring up non-hon
 
-TODO SOON
-marketing - post on other pages with examples
 
-add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
-and add it to collegeNames somehow (and add the ids for the neu.edu/law)
-
+7. localhost#/neu.edu/latest/CS/4800
 
 
 ROADMAP
+change name? - courseboard.io
 share link
 login with google
 need to implement an unsubscribe feature, create a subscriptionsKey that is emailed to user and allows control over subscriptions settings
@@ -31,38 +46,19 @@ on startup, loop through users data and make sure each row is at minimum the def
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 LONG ROAD MAP
 node on non 443?
 trace surveys
 student reviews of classes
 add textbook data
+payments for notifications?
+
 
 
 ODD BUGS
-https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
-class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
-
-
 in the pageData async processing deps, if one fails, the main callback is called before the others are done because thats how async map handels errors
 updated 0 classes [] is running in the background of spider
-
-change name?
-courseboard.io
-
-
-
-
+im thining nofix because it shouldn't crash at all...
 
 
 to detect mailinator: nslookup for 23.239.11.30 (most of their alts) or 45.33.81.172 (mailinator.com)
@@ -71,24 +67,9 @@ to detect mailinator: nslookup for 23.239.11.30 (most of their alts) or 45.33.81
 
 
 
-
-
-
-
-
-
-lift up the boxes
-http://localhost/#neu.edu/201630/CS/5310
-
-
-any bugs in safari?
-
-a 2500 (hon) should just bring up the (hon) and non hon should just bring up non-hon
-
-
 settings:
 -- hide/show/both (hon)
--- hide broken classes (classes that don't exist in the db but are listed as a prereq)
+-- hide broken classes (classes that don't exist in the db but are listed as a prereq) (like all the classes that make that warning appear)
 -- hide classes with no sections
 -- maximum number of classes (419 just too much...)
 -- depth max
@@ -113,22 +94,14 @@ star
 
 
 
-does it work in firefox? 
-- stiky note for classes could take
-- odd that tooltips went away, then confused what lines meant
- -- help icon in top right?
-- ignore all graduate classes?
-- hide broken classes (like all the classes that make that warning appear)
--- gear icon with options for ^
 
 
-remove classes that dont have any sections from the dropdown menu
-make it so just the x closes the box
-
-idea for future - browse classes (someone type in what they are intrested in and show big list of descriptions, but only if they are sections)
 
 
-IDEA - localhost#/neu.edu/latest/CS/4800
+
+
+
+
 
 bugged - shouldnt show fundies 2
 http://localhost/#sju.edu/201540/CSC/680
@@ -138,8 +111,6 @@ http://localhost/#neu.edu/201630/CHEM/5622
 
 
 overall todo:
-refactor frontend
-angular?
 payments
 
 
