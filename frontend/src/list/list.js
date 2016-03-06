@@ -65,6 +65,22 @@ List.prototype.go = function () {
 				return a.compareTo(b)
 			}.bind(this))
 
+
+			var length = classes.length;
+
+			for (var i = 0; i < classes.length; i++) {
+				if (_.includes(classes.slice(i+1),classes[i])) {
+					debugger
+				}
+			};
+
+
+			classes = _.uniq(classes)
+
+			if (classes.length!=length) {
+				elog('dupes in classes array???')
+			}
+
 			this.$scope.classes = classes
 			this.isLoading = false;
 			this.$scope.$apply()

@@ -84,7 +84,7 @@ User.prototype.getAuthenticated = function () {
 
 	// temp, until get data back in server
 	return false;
-	
+
 	if (localStorage.loginKey) {
 		return true;
 	}
@@ -448,87 +448,95 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		callback = function () {}
 	}
 
-	this.ensureList(listName)
-
-	var initClassCount = this.lists[listName].classes.length
-	var initSectionCount = this.lists[listName].sections.length
-
-	var classIds = [];
-	classes.forEach(function (aClass) {
-		classIds.push(aClass._id)
-	}.bind(this))
-
-
-	var sectionIds = [];
-	sections.forEach(function (section) {
-		sectionIds.push(section._id)
-	}.bind(this))
-
-	//add the seciton, but make sure to not add duplicate sectin
-	//it could be a different instance of that same section
-	sections.forEach(function (section) {
-		if (_.filter(this.lists[listName].sections, {
-				_id: section._id
-			}).length === 0) {
-			this.lists[listName].sections.push(section)
-		}
-	}.bind(this))
-
-	classes.forEach(function (aClass) {
-		if (_.filter(this.lists[listName].classes, {
-				_id: aClass._id
-			}).length === 0) {
-			this.lists[listName].classes.push(aClass)
-		}
-	}.bind(this))
-
-
-	//add any classes given to both this.lists and this.dbData.lists
-	this.dbData.lists[listName].classes = _.uniq(this.dbData.lists[listName].classes.concat(classIds))
-
-
-	//add any sections given to both this.lists and this.dbData.lists
-	this.dbData.lists[listName].sections = _.uniq(this.dbData.lists[listName].sections.concat(sectionIds))
-
-
-	ga('send', {
-		'hitType': 'pageview',
-		'page': '/addToList/' + listName + '/',
-		'title': 'Coursepro.io'
-	});
-
-
-	request({
-		url: '/log',
-		body: {
-			type: 'addToList',
-			initClassCount: initClassCount,
-			initSectionCount: initSectionCount,
-			finalClassCount: this.lists[listName].classes.length,
-			finalSectionCount: this.lists[listName].sections.length
-		},
-		useCache: false
-	}, function (err, response) {
+	this.loadList(listName, function (err) {
 		if (err) {
-			elog("ERROR: couldn't log addToList :(", err, response, body);
+			return callback(err)
 		}
+
+		this.ensureList(listName)
+
+		var initClassCount = this.lists[listName].classes.length
+		var initSectionCount = this.lists[listName].sections.length
+
+		var classIds = [];
+		classes.forEach(function (aClass) {
+			classIds.push(aClass._id)
+		}.bind(this))
+
+
+		var sectionIds = [];
+		sections.forEach(function (section) {
+			sectionIds.push(section._id)
+		}.bind(this))
+
+		//add the seciton, but make sure to not add duplicate sectin
+		//it could be a different instance of that same section
+		sections.forEach(function (section) {
+			if (_.filter(this.lists[listName].sections, {
+					_id: section._id
+				}).length === 0) {
+				this.lists[listName].sections.push(section)
+			}
+		}.bind(this))
+
+		classes.forEach(function (aClass) {
+			if (_.filter(this.lists[listName].classes, {
+					_id: aClass._id
+				}).length === 0) {
+				this.lists[listName].classes.push(aClass)
+			}
+		}.bind(this))
+
+
+		//add any classes given to both this.lists and this.dbData.lists
+		this.dbData.lists[listName].classes = _.uniq(this.dbData.lists[listName].classes.concat(classIds))
+
+
+		//add any sections given to both this.lists and this.dbData.lists
+		this.dbData.lists[listName].sections = _.uniq(this.dbData.lists[listName].sections.concat(sectionIds))
+
+
+		ga('send', {
+			'hitType': 'pageview',
+			'page': '/addToList/' + listName + '/',
+			'title': 'Coursepro.io'
+		});
+
+
+		request({
+			url: '/log',
+			body: {
+				type: 'addToList',
+				initClassCount: initClassCount,
+				initSectionCount: initSectionCount,
+				finalClassCount: this.lists[listName].classes.length,
+				finalSectionCount: this.lists[listName].sections.length
+			},
+			useCache: false
+		}, function (err, response) {
+			if (err) {
+				elog("ERROR: couldn't log addToList :(", err, response, body);
+			}
+		}.bind(this))
+
+		if (this.getAuthenticated()) {
+			this.sendRequest({
+				url: '/addToUserLists',
+				isMsg: true,
+				body: {
+					listName: listName,
+					classes: classIds,
+					sections: sectionIds
+				}
+			}, callback)
+		}
+		else {
+			this.saveToLocalStorage()
+			return callback()
+		}
+
 	}.bind(this))
 
-	if (this.getAuthenticated()) {
-		this.sendRequest({
-			url: '/addToUserLists',
-			isMsg: true,
-			body: {
-				listName: listName,
-				classes: classIds,
-				sections: sectionIds
-			}
-		}, callback)
-	}
-	else {
-		this.saveToLocalStorage()
-		return callback()
-	}
 };
 
 //can either be a class or a section

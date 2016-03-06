@@ -1,16 +1,14 @@
 !!!!
 
 make the base data cache work
-need some way to call download when a data is loading and have it just return when done
+need some way to call download when a data is loading and have it just return when done - test?
+if .create called again with more data, need to update existing instance
 
 https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
 
-TO TEST
-updater not running when spider running
 
 TODO SOON
-update the all npm packages
 post on other pages with examples
 
 add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
