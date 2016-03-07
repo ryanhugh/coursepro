@@ -22,9 +22,6 @@ if .create called again with more data, need to update existing instance
 more notes in BaseData.js
 
 
-5. https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
-class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
-
 6. need some way for keys to distignuish between classes - this will help for instance cache and
 a 2500 (hon) should just bring up the (hon) and non hon should just bring up non-hon
 
@@ -39,14 +36,25 @@ login with google
 need to implement an unsubscribe feature, create a subscriptionsKey that is emailed to user and allows control over subscriptions settings
 if login key but server says no user delete login key
 on startup, loop through users data and make sure each row is at minimum the default data
+css minifyer
+mobile
+--scrape the hon attribute for hon classes
+--does backend support multiple closing parens for prereq section?
+-----https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201615&subj_code_in=BTC&crse_numb_in=6213
 
 
+
+UNIT TESTS
+make sure every node in tree is loaded (loadingstatus done or fail)
+ -- note from below: is it safe to remove all loading status ==0? how many trees does this affect? how many trees produce erros atm?
+make sure no class has >3 coreqs, and if so make sure there is enought padding between it and above class
 
 
 
 
 
 LONG ROAD MAP
+do a whois on client ip to detect which college they are coming from (will work sometimes) and prefill college
 node on non 443?
 trace surveys
 student reviews of classes
@@ -61,14 +69,14 @@ updated 0 classes [] is running in the background of spider
 im thining nofix because it shouldn't crash at all...
 
 
-to detect mailinator: nslookup for 23.239.11.30 (most of their alts) or 45.33.81.172 (mailinator.com)
-
-
 
 
 
 settings:
 -- hide/show/both (hon)
+------if class is hon and hon coreqs exist, only match those
+------else match all
+------if class is not hon only match non hon
 -- hide broken classes (classes that don't exist in the db but are listed as a prereq) (like all the classes that make that warning appear)
 -- hide classes with no sections
 -- maximum number of classes (419 just too much...)
@@ -97,28 +105,39 @@ star
 
 
 
+----- GRAPH THINGIMAJIGERS
+
+merge coreq prereqs with class prereqs
+
+5. https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
+class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
 
 
+-- the node injection problem: 
+-- this is the problem that the physics labs were coming up
+for instance, how do you chage
+ 
+a    b
+|\   |\
+| \  | \
+c  d c  d
 
+into this (this step is already done in multi-parent)
 
+a    b
+| \ /|
+| / \|
+c    d
 
+and then into this
 
-bugged - shouldnt show fundies 2
-http://localhost/#sju.edu/201540/CSC/680
+a   b
+ \ /
+  o
+ / \
+c   d
 
-tree is 419 big
-http://localhost/#neu.edu/201630/CHEM/5622
-
-
-overall todo:
-payments
-
-
-names to fix:
-
-
-for unit test:
-etc maybe \w+\d
+(assuming everything is "or" for this example)
 
 
 get list of nodes sorted by allParents.length
@@ -130,131 +149,70 @@ there could be cases where:
 a -> b or c
 d -> (b or c) and (i or p)
 so now there is two nodes beneth d, and need to bring a to that
-ex: http://localhost/#neu.edu/201610/EECE/4792
-
-
-add cache control to the js and index, and on error do window.location.reload(), which loads everything again
+ex: https://localhost/#neu.edu/201610/EECE/4792
 
 
 http://localhost/#neu.edu/201610/EEMB/2616
 crashes things in multi-parent
 
 
+also remember the render the panels by layer thing for the multi parent
+-- this was before angularjs
 
-http://localhost/#neu.edu/201610/NRSG/4995
-has some trees that are not fully simplified
-
-supercache to load all CS classes when asked to load all CS4400
-
-treeMgr.js tell server how many nodes loaded when requested a tree
-
-homepage:
-- add a css minifyer to gulp
+---end node injection problem ---
 
 
 
 
-save ip addr range in collegeNames.db, and get that from whois 155.33.x.x
 
-college saved in localstorage
+RANDOM NOTES
 
-can choose % on the left and right instead of px? this would make resize work
-merge seans
+to detect mailinator: nslookup for 23.239.11.30 (most of their alts) or 45.33.81.172 (mailinator.com)
 
+neu ips:
+155.33.x.x
+and there was one other /16 too
 
-mobile version
-only mobile bug now is when render big page, select.js dropdown is set distance from right of page...(when scrolling stays off right side of page)
-
-
-
-
-how much work would it take to make .hidden not need a dummy div?
------------tests:
-if a panel has a lot of coreqs, does it overlapp with the above panel? rn its just a static padding
-test - do any panels overlap that are not coreqs of the same class, or with coreqs class of a given class
-
-is it safe to remove all loading status ==0? how many trees does this affect? how many trees produce erros atm?
-tree.allParents.forEach(function(parentTree){
-				
-				
-				if (parentTree.values) {
-					_.pull(parentTree.values,tree)
-				}
-				if (parentTree.coreqs) {
-					_.pull(parentTree.coreqs.values,tree)
-				}
-				
-			}.bind(this))
-			return;
-		}
-
-
-quick fixes: add padding on the right, add error msg when there is no data and some padding between panels when only 1 prereq and prereq has coreq, eg the
-pic ng sent
-
-
-for tree render thing, make a list of all panels at that level
-for each one:
-	1. find avg of parent panel's indexes
-	2. sort list by the avg index
+tree is 419 big
+https://localhost/#neu.edu/201630/CHEM/5622
 
 
 
-talk to register or not
-schedual builder - wake up at 10, etc
-make it pretty!! for newbs
 
 
-ask for ppl taking classes, then who didnt get perfect
 
 
-todo next:
-explination on landing page
-open up last viewed page when opening site
-
-when refactor frontend, switch to stack instead of recursion?
-
-merge coreq prereqs with class prereqs
 
 
-when doing star, need some way to differentiate between hon and non hon for same host/termId/subject/classId
 
 
---scrape the hon attribute for hon classes
---if class is hon and hon coreqs exist, only match those
---else match all
---if class is not hon only match non hon
 
 
-frontend small things
-spring 2015 SPAN 003 has no desc?
 
 
-does it support multiple )) ? https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201615&subj_code_in=BTC&crse_numb_in=6213
-
-if catalog credits is a range, and the section is in the range, dont override https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201560&crn_in=60983
 
 
-MEDIUM TERM:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 0 - if a page is removed, deps will not update?
 0.5 - make databases optional
 https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201504&subj_in=CPSC&crse_in=081&schd_in=% is not parsed correctly :(
 1. scrape credits from catalog page so have if no sections
-2. dont send the cntrollers to the client
-host: "swarthmore.edu"
-termId: "201502"
-url: "https://myswat.swarthmore.edu/pls/bwckgens.p_proc_term_date"
-pull req on select2 option = document.createElement('option');
-
-      if (option.textContent !== undefined) {
-        option.innerHTML = data.text;
-      } else {
-        option.innerHTML = data.text;
-      }
-    }
-
-    a="International Study&#8313;argentina"
-
 
 3. copy desc from other sections and why do some have same name in same term?
 if there are no sections in an entire subject, remove the subject. and if no sections for entire term, remove term and log something
@@ -289,20 +247,6 @@ scrape rate my prof
 email sign up when spots open up
 courseoff merge
 far future: dashboard
-
-
-BEFORE PUBLIC:
-remove login info from emailmgr.js
-minify js
-remove sending any internal error to client
-
-
-
-if selector is hidden, and then comes back, and same option is selected, callback() not called
-
-some classes dont have crns?
-should store crns?
-
 
 
 
@@ -345,11 +289,6 @@ uri.setSearch({ foo: "bar", goodbye : ["world", "mars"] });
 
 
 
-FRONTEND:
-have an array of examples on script.js
-
-
-
 
 
 TODO:
@@ -368,25 +307,12 @@ https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201612&su
 
 
 
-LATER BUGS:
-
-
-
 PARSERS
 
 
 https://banners.presby.edu/prod/hzskschd.P_ViewSchedule
 uses an old version of the site - different parser needed (easy to write, add later)
-
-
-
-BASEPARSER.JS
-https://bappas2.gram.edu:9000/pls/gram/bwckctlg.p_disp_dyn_ctlg
-nodejs cant access a https over non standard port???
-effcts: needle, https, requests, xmlhttprequest
-works in python and in the browser (chrome)
-use eff.org to test
-update: could access localhost on port 8443 which forwarded from eff.org 443 (so non port 443 works, maybe something wierd with this site+nodejs?) (double check this on remote server)
+this specific college ^ either updated or has a newer version too and has already been scraped
 
 
 
