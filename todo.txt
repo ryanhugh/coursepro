@@ -56,9 +56,14 @@ make sure no class has >3 coreqs, and if so make sure there is enought padding b
 LONG ROAD MAP
 do a whois on client ip to detect which college they are coming from (will work sometimes) and prefill college
 node on non 443?
+----ssl ... .js file has something that showed node could work on 8443 https, idk
+perma cache all old terms in localStorage
 trace surveys
 student reviews of classes
+scrape rate my prof
 add textbook data
+--- http://northeastern.bncollege.com/webapp/wcs/stores/servlet/TBWizardView?storeId=17555&catalogId=10001&langId=-1
+---and i have code for scraping somewhere too, might be in homework repo
 payments for notifications?
 
 
@@ -209,7 +214,7 @@ https://localhost/#neu.edu/201630/CHEM/5622
 
 
 
-0 - if a page is removed, deps will not update?
+0 - if a page is removed, deps will not update? if a section is deleted, will it be removed from the db?
 0.5 - make databases optional
 https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201504&subj_in=CPSC&crse_in=081&schd_in=% is not parsed correctly :(
 1. scrape credits from catalog page so have if no sections
@@ -242,11 +247,8 @@ user accounts -> workplace without prereqs
  - public reviews?
  - private notes?
 scrape trace?
-perma cache all old terms in localStorage
-scrape rate my prof
-email sign up when spots open up
-courseoff merge
-far future: dashboard
+
+
 
 
 
