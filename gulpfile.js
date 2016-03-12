@@ -102,8 +102,8 @@ function compileJS(shouldUglify) {
 	var rebundle = function () {
 		console.log("----Rebundling custom JS!----")
 		var stream = bundler.bundle();
-		
-		
+
+
 
 		stream.on('error', function (err) {
 			// print the error (can replace with gulp-util)
@@ -112,18 +112,30 @@ function compileJS(shouldUglify) {
 			this.emit('end');
 		})
 
+		stream = stream.pipe(source('allthejavascript.js'));
+
 		if (shouldUglify) {
 			stream = stream.pipe(streamify(uglify({
+				options: {
+					ie_proof: false
+				},
 				compress: {
 					drop_console: true,
+					unsafe: true,
+					collapse_vars: true,
+					pure_getters: true,
 					// warnings: true,
 					// keep_fnames: true
 				}
 			})));
 		}
-		stream = stream.pipe(source('allthejavascript.js')).pipe(gulp.dest('./frontend/static/js/internal'))
-		
-		console.log("----Done Rebundling custom JS!----")
+
+		stream = stream.pipe(gulp.dest('./frontend/static/js/internal'));
+
+		stream.on('end', function () {
+			console.log("----Done Rebundling custom JS!----")
+		}.bind(this))
+
 		return stream;
 	};
 
@@ -133,16 +145,22 @@ function compileJS(shouldUglify) {
 
 
 gulp.task('copyHTML', function () {
-		return gulp
-			.src('./frontend/src/**/*.html')
-			.pipe(flatten())
-			// .pipe(rename({
-			// 	dirname:'html'
-			// }))
-			.pipe(htmlmin({collapseWhitespace: true,removeComments:true}))
-			.pipe(angularTemplates({ module:'templates', standalone:true }))
-			.pipe(concat('html.js'))
-			.pipe(gulp.dest('./frontend/static/js/internal'))
+	return gulp
+		.src('./frontend/src/**/*.html')
+		.pipe(flatten())
+		// .pipe(rename({
+		// 	dirname:'html'
+		// }))
+		.pipe(htmlmin({
+			collapseWhitespace: true,
+			removeComments: true
+		}))
+		.pipe(angularTemplates({
+			module: 'templates',
+			standalone: true
+		}))
+		.pipe(concat('html.js'))
+		.pipe(gulp.dest('./frontend/static/js/internal'))
 })
 
 gulp.task('watchCopyHTML', function () {

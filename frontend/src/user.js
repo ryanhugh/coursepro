@@ -460,12 +460,18 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 
 		var classIds = [];
 		classes.forEach(function (aClass) {
+			if (!aClass._id) {
+				elog("Cant save ",aClass,'because it dosent have an _id!')
+			};
 			classIds.push(aClass._id)
 		}.bind(this))
 
 
 		var sectionIds = [];
 		sections.forEach(function (section) {
+			if (!section._id) {
+				elog("Cant save ",section,'because it dosent have an _id!')
+			};
 			sectionIds.push(section._id)
 		}.bind(this))
 

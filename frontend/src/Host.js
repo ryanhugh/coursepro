@@ -1,6 +1,5 @@
 'use strict';
 var macros = require('./macros')
-var request = require('./request')
 var BaseData = require('./BaseData');
 var Term = require('./Term');
 

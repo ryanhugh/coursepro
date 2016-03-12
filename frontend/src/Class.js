@@ -1,6 +1,5 @@
 'use strict';
 var _ = require('lodash')
-var async = require('async')
 var he = require('he')
 var queue = require('d3-queue').queue;
 var moment = require('moment')
@@ -256,7 +255,8 @@ Class.prototype.download = function (callback) {
 	}, function (err, body) {
 		this.dataStatus = macros.DATASTATUS_DONE;
 		if (err) {
-			console.log('http error...', err);
+			elog('http error...', err);
+			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(err)
 		}
 

@@ -1,5 +1,4 @@
 'use strict';
-var moment = require('moment')
 var queue = require('d3-queue').queue;
 
 
