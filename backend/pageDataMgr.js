@@ -233,8 +233,8 @@ PageDataMgr.prototype.main = function () {
 
 	// this.createFromURL('https://ssb.banner.usu.edu/zprod/bwckschd.p_disp_dyn_sched', function () {
 	// this.createFromURL('https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched', function () {
-	this.createFromURL('https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched', function () {
-		console.log('all done!! tamut')
+	this.createFromURL('https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched', function () {
+		console.log('all done!! oakland')
 	}.bind(this))
 	
 	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched', function () {
