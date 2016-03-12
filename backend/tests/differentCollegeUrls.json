@@ -11,6 +11,7 @@
   "https://banner.uregina.ca/prod/sct/bwckschd.p_disp_dyn_sched", //takes 3 hours, works
   "https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched", // takes like 22 min, works
   "https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched", // collegeName capilization bug (fixed) and one subject dosent have any results, but works
+  "https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched", //works
   "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched", 
   "https://genisys.regent.edu/pls/prod/bwckschd.p_disp_dyn_sched",
   "https://bappas2.gram.edu:9000/pls/gram/bwckschd.p_disp_dyn_sched", //dosent work in nodejs!!!!??? works in python, browser, etc
@@ -21,7 +22,6 @@
   "https://xbss-prod.lasalle.edu/PROD/bwckschd.p_disp_dyn_sched",
   "https://hofstraonline.hofstra.edu/pls/HPRO/bwckschd.p_disp_dyn_sched",
   "https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched",
-  "https://ssb.banner.usu.edu/zprod/bwckschd.p_disp_dyn_sched",
   "https://lewisweb.cc.lehigh.edu/PROD/bwckschd.p_disp_dyn_sched",
   "https://myweb.du.edu/mdb/bwckschd.p_disp_dyn_sched",
   "https://ssbprod.rcgc.edu:9000/prod_ssb/bwckschd.p_disp_dyn_sched", // school aparently changed their hostname, it was gcc-ssbprod.gccnj.edu and now for the old domain dns fails now, wayback machine has it working in 2015: https://web.archive.org/web/20150316171359/https://gcc-ssbprod.gccnj.edu:9000/prod_ssb/bwckschd.p_disp_dyn_sched
@@ -46,7 +46,6 @@
   "https://ssb.ship.edu/prod/bwckschd.p_disp_dyn_sched",
   "https://telaris.wlu.ca/ssb_prod/bwckschd.p_disp_dyn_sched",
   "https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_dyn_sched",
-  "https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched",
   "https://banner.drexel.edu/pls/duprod/bwckschd.p_disp_dyn_sched",
   "https://infobear.bridgew.edu/BANP/bwckschd.p_disp_dyn_sched",
   "https://new-sis-app.sph.harvard.edu:9010/prod/bwckschd.p_disp_dyn_sched"
