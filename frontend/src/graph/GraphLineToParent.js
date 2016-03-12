@@ -46,11 +46,8 @@ function GraphLineToParent($timeout) {
 
 		var retVal = {};
 
-
-		var coords = tree.panel.getBoundingClientRect();
-
-		retVal.x = coords.left + tree.panel.offsetWidth / 2 + document.body.scrollLeft;
-		retVal.y = coords.bottom - tree.panel.offsetHeight / 2 + document.body.scrollTop;
+		retVal.x = $(tree.panel).offset().left + tree.panel.offsetWidth / 2;
+		retVal.y = $(tree.panel).offset().top + tree.panel.offsetHeight / 2;
 
 		return retVal;
 
