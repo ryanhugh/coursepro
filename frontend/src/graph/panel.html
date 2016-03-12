@@ -23,9 +23,9 @@
             <span ng-show="isExpanded">
                 <span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;cursor: pointer;"></span>
                 <!-- <div ng-init="class = tree" list-icon='watching' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
-
+ 
                 <!-- was 48 -->
-                <div ng-init="class = tree" list-icon='saved' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div>
+                <div ng-if ="tree.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = tree" list-icon='saved' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div>
 
             </span>
 

@@ -3,10 +3,6 @@
 
 
 TODO SOON
-0. https://localhost/#/graph/sju.edu/201610/CSC/680
-the error class bottom right needs to expand
-
-
 1. marketing when ok - post on other pages with examples
 
 2. any bugs in safari or firefox?

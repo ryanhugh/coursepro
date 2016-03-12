@@ -96,7 +96,7 @@ function GraphPanelExpand($timeout, $document) {
 				topMargin = this.documentHeight - edgePadding - coords.bottom
 			}
 		}
-		if (topMargin + coords.top<topPadding) {
+		if (topMargin + coords.top < topPadding) {
 			topMargin = topPadding - coords.top
 		};
 		tree.panel.style.marginTop = topMargin + 'px'
@@ -168,7 +168,7 @@ function GraphPanelExpand($timeout, $document) {
 		tree.loadSections(function (err) {
 			if (err) {
 				console.log("ERROR", err);
-				return callback(err)
+				// return callback(err)
 			}
 
 			//setTimeout 0 because $scope.$update()
@@ -220,7 +220,7 @@ function GraphPanelExpand($timeout, $document) {
 		if (tree.$scope.isExpanded || tree.isString) {
 			return;
 		}
- 
+
 		ga('send', {
 			'hitType': 'pageview',
 			'page': '/listSections/' + tree.getIdentifer().full.str,
