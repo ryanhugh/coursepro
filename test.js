@@ -1,6 +1,7 @@
 // // var a = require('./parsers/BaseParser')
 // // console.log('fdas'.indexOf)
 var URI = require('urijs');
+var _ = require('lodash')
 var async = require('async');
 // var querystring = require('querystring');f
 var assert = require('assert');
@@ -18,11 +19,91 @@ var dns = require('dns');
 // var title = require('to-title-case');
 var queue = require("queue-async")
 
+fs.readFile('backend/tests/differentCollegeUrls.json', function (err, data) {
+
+	var urls = eval(data.toString('ascii'));
+
+	urls.slice(10,20).forEach(function (url) {
+		var domain = new URI(url).host();
+
+
+
+
+		dns.resolve(domain, 'A', function (err, ips) {
+			console.log(err, ips);
+
+			if (err) {
+				console.log('err:', err);
+				return;
+			};
+
+
+			ips.forEach(function (ip) {
+				async.parallel([
+						function (callback) {
+
+							dns.reverse(ip, function (err, results) {
+								console.log(err, results);
+								callback(err,_(results).includes(domain) );
+
+
+							}.bind(this))
+
+
+						}.bind(this),
+						function (callback) {
+
+							var options = {
+								host: domain,
+								port: 443,
+								method: 'GET'
+							};
+
+							https.request(options, function (res) {
+
+								// subject.CN is domain its issued to, is helpful, but can include *
+								//subjectaltname too
+
+
+								var yay = res.connection.getPeerCertificate().subject.CN == domain
+								console.log('https:',yay,domain);
+								callback(null,yay)
+							}).end();
+
+
+						}.bind(this)
+					],
+					function (err, results) {
+						console.log("done!",_(results).includes(true));
+
+
+
+					}.bind(this))
+
+
+
+
+
+
+
+
+			}.bind(this))
+
+
+
+
+		}.bind(this))
+	}.bind(this))
+
+
+
+}.bind(this))
+
 
 // var MongoClient = require('mongodb').MongoClient;
 
-var db = require('monk')('52.20.189.150/test');
-var test = db.get('test');
+// var db = require('monk')('52.20.189.150/test');
+// var test = db.get('test');
 
 // Connection URL 
 // var url = 'mongodb://52.6.184.210:27017/test';
@@ -32,10 +113,22 @@ var test = db.get('test');
 
 // var test = db.collection('test');
 
-test.find({},function (err,results) {
-	console.log(err,results)
-	db.close()
-}.bind(this))
+// test.find({},function (err,results) {
+// 	console.log(err,results)
+// 	db.close()
+// }.bind(this))
+
+var domain = 'eagles.tamut.edu';
+// var domain = 'google.com';
+
+// dns.lookupService('155.33.27.30', 443, function(err, hostname, service) {
+//   console.log(hostname, service);
+//     // Prints: localhost ssh
+// });
+
+
+
+
 // test.find(function(err, results) {
 // 	console.log(err, results)
 

@@ -12,7 +12,7 @@
   "https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched", // takes like 22 min, works
   "https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched", // collegeName capilization bug (fixed) and one subject dosent have any results, but works
   "https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched", //works
-  "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched", 
+  "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched", //works, takes 3 hours
   "https://genisys.regent.edu/pls/prod/bwckschd.p_disp_dyn_sched",
   "https://bappas2.gram.edu:9000/pls/gram/bwckschd.p_disp_dyn_sched", //dosent work in nodejs!!!!??? works in python, browser, etc
   "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched",

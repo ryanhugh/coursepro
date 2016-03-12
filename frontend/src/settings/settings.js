@@ -149,6 +149,10 @@ Settings.prototype.addClass = function (aClass) {
 
 	this.$scope.classes.push(aClass)
 
+	setTimeout(function () {
+		this.$scope.$apply()
+	}.bind(this))
+
 
 	//if it is not in this list already, add it
 	user.toggleListContainsClass('saved', aClass)

@@ -137,6 +137,12 @@ app.use(function (req, res, next) {
 	next()
 });
 
+//prevent being in an iframe
+app.use(function (req, res, next) {
+	res.setHeader('X-Frame-Options', 'DENY');
+	res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
+	next()
+}.bind(this))
 
 
 // add cache forever to external js libraries
@@ -784,7 +790,7 @@ app.post('/setUserVar', function (req, res) {
 
 		res.send(JSON.stringify({
 			status: 'success',
-			msg:clientMsg
+			msg: clientMsg
 		}));
 
 	}.bind(this))

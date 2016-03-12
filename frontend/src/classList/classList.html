@@ -58,8 +58,9 @@
 
 <uib-accordion close-others="false">
 
-    <div quick-ng-repeat="class in ::classes" quick-repeat-list="classes" style="padding-top:5px">
-        <uib-accordion-group is-open="isOpen"  ng-click="classList.onClick(class,this)">
+    <!-- <div quick-ng-repeat="class in classes" quick-repeat-list="classes" style="padding-top:5px"> -->
+    <div ng-repeat="class in classes" style="padding-top:5px">
+        <uib-accordion-group is-open="isOpen" ng-click="classList.onClick(class,this)">
             <uib-accordion-heading>
 
                 <div style="display: inline-block;width: 100%;padding-top: 10px;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;">
@@ -100,7 +101,7 @@
             <!-- this prevents angular from rendering the inside of this until user clicks this accordion -->
             <!-- then it is rendered, and the element is unwatched, and stays rendered even if it is closed again  -->
             <div ng-if="::(isOpen||undefined)">
-            <!-- <div ng-if="isOpen"> -->
+                <!-- <div ng-if="isOpen"> -->
 
                 <div>
 

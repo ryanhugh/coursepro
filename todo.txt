@@ -5,7 +5,6 @@
 TODO SOON
 1. marketing when ok - post on other pages with examples
 
-2. any bugs in safari or firefox?
 3. add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
 and add it to collegeNames somehow (and add the ids for the neu.edu/law)
 
