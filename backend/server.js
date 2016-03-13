@@ -30,6 +30,7 @@ var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(compress()); // gzip the output
 
+
 function logData(req, info) {
 	if (!info) {
 		info = {};
@@ -132,6 +133,55 @@ app.use(function (req, res, next) {
 })
 
 
+//accepts any type
+function isObjectSanitized (object) {
+	
+	if (_(['number','string','boolean','undefined']).includes(typeof object)) {
+		return true;
+	}
+
+	//this includes arrays and objects
+	else if (typeof object == 'object') {
+
+		for (var attrName in object) {
+
+			//make sure it dosen't start with a $ or contain a '.'
+			if (attrName[0]=='$') {
+				return false;
+			}
+
+			if (_(attrName).includes('.')) {
+				return false;
+			}
+
+			//and recurse
+			if (!isObjectSanitized(object[attrName])) {
+				return false;
+			};
+		}
+	}
+	else {
+		console.log("error type",typeof object,'not whitelisted!!',object);
+		return false
+	}
+	return true;
+}
+
+
+
+//sanitize the input
+app.use(function (req, res, next) {
+	if (!isObjectSanitized(req.body)) {
+		res.status(418)
+		res.setHeader('LEEROOOOOOOOOOOOOOOOOOOOOOY', 'JEEEEEEENKIIIIIIIIIIIIIIINS!!!!');
+		res.send('trolololololol');
+		return;
+	}
+	else {
+		next()
+	}
+}.bind(this))
+
 app.use(function (req, res, next) {
 	logData(req);
 	next()
@@ -157,7 +207,6 @@ app.use(function (req, res, next) {
 	}
 	next()
 });
-
 
 
 app.post('/listColleges', function (req, res) {
