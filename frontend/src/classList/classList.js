@@ -30,42 +30,21 @@ function ClassList() {
 
 		// return;
 		var i;
-		//render 20 to start, infinate scroll more
-		for (var i = 0; i < 20; i++) {
+		//render 20 to start, infinite scroll more
+		for (var i = 0; i < Math.min(20,this.$scope.classes.length); i++) {
 			this.renderedClasses.push(this.$scope.classes[i]);
 		}
 
 		//put the rest in unrendered classes, and move then when need to
 		this.unrenderedClasses = this.$scope.classes.slice(i)
 
-
-		// this.$scope.loadMore = function () {
-		// 	// debugger
-		// 	console.log("load more called");
-		// }.bind(this)
-
-		// this.$scope.images = [1, 2, 3, 4, 5, 6, 7, 8];
-
 		this.$scope.loadMore = function () {
 			var more = this.unrenderedClasses.shift()
-
 			if (more) {
 				this.renderedClasses.push(more)
-
 			};
-
-			return;
-			var last = this.$scope.images[this.$scope.images.length - 1];
-			for (var i = 1; i <= 8; i++) {
-				this.$scope.images.push(last + i);
-			}
 		}.bind(this);
-
-
-
 	}.bind(this))
-
-
 }
 
 ClassList.scope = {
