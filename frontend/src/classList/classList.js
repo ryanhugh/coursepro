@@ -9,15 +9,19 @@ function ClassList() {
 
 	this.$scope.user = user;
 
-	this.renderedClasses = []
-	this.unrenderedClasses = []
 
 	//this is called every time classes changes
 	// 0. before it has loaded
 	// 1. when it loads for the first time
 	// 2. when user adds class (saved.html)
-	this.$scope.$watch('classes', function () {
 
+	this.renderedClasses = []
+	this.unrenderedClasses = []
+
+
+
+
+	this.$scope.$watchCollection('classes', function (newValue, oldValue) {
 		if (!this.$scope.classes) {
 			return;
 		};
@@ -31,6 +35,10 @@ function ClassList() {
 		};
 
 
+		this.renderedClasses = []
+		this.unrenderedClasses = []
+
+
 		var i;
 		//render 20 to start, infinite scroll more
 		for (var i = 0; i < Math.min(20, this.$scope.classes.length); i++) {
@@ -40,7 +48,8 @@ function ClassList() {
 		//put the rest in unrendered classes, and move then when need to
 		this.unrenderedClasses = this.$scope.classes.slice(i)
 
-	}.bind(this))
+	}.bind(this), true)
+
 
 	this.$scope.loadMore = function () {
 		var more = this.unrenderedClasses.shift()
@@ -48,10 +57,6 @@ function ClassList() {
 			this.renderedClasses.push(more)
 		};
 	}.bind(this);
-}
-
-ClassList.scope = {
-	classes: '='
 }
 
 ClassList.fnName = 'ClassList'
