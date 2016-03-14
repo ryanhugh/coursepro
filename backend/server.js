@@ -172,6 +172,14 @@ function isObjectSanitized (object) {
 //sanitize the input
 app.use(function (req, res, next) {
 	if (!isObjectSanitized(req.body)) {
+
+		logData(req, {
+			msg: {
+				summary: 'dropping req due to $inject'
+			}
+		})
+		
+		res.redirect('https://coursepro.io' + req.url);
 		res.status(418)
 		res.setHeader('LEEROOOOOOOOOOOOOOOOOOOOOOY', 'JEEEEEEENKIIIIIIIIIIIIIIINS!!!!');
 		res.send('trolololololol');
