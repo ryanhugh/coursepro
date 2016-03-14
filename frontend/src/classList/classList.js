@@ -9,11 +9,19 @@ function ClassList() {
 
 	this.$scope.user = user;
 
+	this.renderedClasses = []
+	this.unrenderedClasses = []
+
+	//this is called every time classes changes
+	// 0. before it has loaded
+	// 1. when it loads for the first time
+	// 2. when user adds class (saved.html)
 	this.$scope.$watch('classes', function () {
 
 		if (!this.$scope.classes) {
 			return;
 		};
+
 
 		//prefetch if there arnt many classes
 		if (this.$scope.classes.length < 10) {
@@ -23,28 +31,23 @@ function ClassList() {
 		};
 
 
-
-
-		this.renderedClasses = []
-		this.unrenderedClasses = []
-
-		// return;
 		var i;
 		//render 20 to start, infinite scroll more
-		for (var i = 0; i < Math.min(20,this.$scope.classes.length); i++) {
+		for (var i = 0; i < Math.min(20, this.$scope.classes.length); i++) {
 			this.renderedClasses.push(this.$scope.classes[i]);
 		}
 
 		//put the rest in unrendered classes, and move then when need to
 		this.unrenderedClasses = this.$scope.classes.slice(i)
 
-		this.$scope.loadMore = function () {
-			var more = this.unrenderedClasses.shift()
-			if (more) {
-				this.renderedClasses.push(more)
-			};
-		}.bind(this);
 	}.bind(this))
+
+	this.$scope.loadMore = function () {
+		var more = this.unrenderedClasses.shift()
+		if (more) {
+			this.renderedClasses.push(more)
+		};
+	}.bind(this);
 }
 
 ClassList.scope = {
@@ -127,19 +130,6 @@ ClassList.prototype.showLoadingText = function () {
 		return false;
 	}
 };
-
-
-
-// ClassList.link = function (scope, element, attrs) {
-// 	debugger
-// 	if (!attrs.classes) {
-// 		elog("ERROR class list not given classes on attr",scope,element,attrs);
-// 	}
-
-// 	scope.classes = attrs.classes;
-// };
-
-
 
 
 ClassList.prototype.ClassList = ClassList;
