@@ -1,6 +1,9 @@
 !!!!
 
-
+unit tests?
+get notifyer working again?
+merge list, search, starred?
+organize section.js?
 
 TODO SOON
 1. marketing when ok - post on other pages with examples

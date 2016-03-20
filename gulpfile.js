@@ -15,6 +15,7 @@ var source = require('vinyl-source-stream');
 var reactify = require('reactify');
 var watchify = require('watchify')
 var glob = require('glob')
+// var karma = require('karma')
 
 //other stuff
 var _ = require('lodash')
@@ -216,6 +217,12 @@ gulp.task('tests', function () {
 	search.tests();
 });
 
+gulp.task('devm',[], function () {
+  // return karma.server.start({
+  //   configFile: __dirname+'/karma.conf.js',
+  //   singleRun: true
+  // });
+});
 
 
 gulp.task('spider', function () {
