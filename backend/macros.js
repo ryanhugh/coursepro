@@ -49,8 +49,9 @@ function setupTargetStates() {
 			exports.UNIT_TESTS = true;
 		}
 		else {
-			console.log('ERROR Unknown GULP mode ', command, process.argv)
-			process.exit()
+			console.log('WARNING Unknown GULP mode ', command, process.argv)
+			console.log('this is from b macros.js')
+			exports.DEVELOPMENT = true;
 		}
 	}
 	else {

@@ -88,8 +88,6 @@ SubjectClassSelector.prototype.updateSubjects = function (callback) {
 			return callback()
 		}
 
-		// console.log("done,", this.term.subjects);
-
 		var subjects = [];
 		this.term.subjects.forEach(function (subject) {
 			subjects.push({
@@ -124,7 +122,6 @@ SubjectClassSelector.prototype.onSelectSubject = function (fireTrigger) {
 	})[0]
 
 	if (!subject) {
-		// debugger
 		return;
 	};
 
@@ -166,6 +163,7 @@ SubjectClassSelector.prototype.onSelectSubject = function (fireTrigger) {
 
 			if (fireTrigger) {
 				$("#subjectSelectorId")[0].nextSibling.getElementsByTagName('input')[0].focus()
+				console.log($("#subjectSelectorId"));
 			};
 		}.bind(this), 0)
 

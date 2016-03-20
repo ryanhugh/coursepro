@@ -767,6 +767,9 @@ User.prototype.getValue = function (name) {
 	return this.dbData.vars[name];
 };
 
+// lastSelectedCollege
+// lastSelectedTerm
+// are used now
 User.prototype.setValue = function (name, value, callback) {
 	if (!callback) {
 		callback = function () {}

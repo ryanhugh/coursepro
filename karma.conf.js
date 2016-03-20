@@ -1,14 +1,22 @@
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
     files: [
-      'frontend/test.js'
+      'frontend/src/**/*.js',
+      "frontend/static/js/internal/html.js",
+      "frontend/static/js/external/select2.min.js",
+      "frontend/static/js/external/selectize.min.js",
+      "frontend/static/js/external/angular-selectize.js",
+    ],
+    plugins: [
+      'karma-chrome-launcher',
+      'karma-jasmine',
+      'karma-browserify'
     ],
     frameworks: ['browserify', 'jasmine'],
     preprocessors: {
-      'frontend/test.js': ['coverage', 'browserify']
+      'frontend/src/**/*.js': ['browserify']
     },
-    browsers: ['chrome'],
-    reporters: ['coverage', 'spec', 'failed'],
+    browsers: ['Chrome'],
     browserify: {
       debug: true,
     }
