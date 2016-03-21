@@ -79,7 +79,7 @@ SubjectClassSelector.prototype.updateSubjects = function (callback) {
 
 	if (!this.term) {
 		//hopefully its called again with a valid term...
-		return;
+		return callback('invalid term');
 	};
 
 	this.term.loadSubjects(function (err) {
@@ -163,7 +163,6 @@ SubjectClassSelector.prototype.onSelectSubject = function (fireTrigger) {
 
 			if (fireTrigger) {
 				$("#subjectSelectorId")[0].nextSibling.getElementsByTagName('input')[0].focus()
-				console.log($("#subjectSelectorId"));
 			};
 		}.bind(this), 0)
 

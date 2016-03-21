@@ -309,10 +309,10 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 		if (err) {
 			err = 'http error' + err;
 		}
-
-		if (results.error) {
+		else if (results.error) {
 			err = 'results.error' + err
 		}
+		
 		if (err) {
 			elog(err)
 

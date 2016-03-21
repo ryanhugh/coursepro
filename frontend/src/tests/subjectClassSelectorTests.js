@@ -1,12 +1,13 @@
 require('angular-mocks')
 
-require('./macros.js')
-require('./directiveMgr.js')
+require('../macros.js')
+require('../directiveMgr.js')
 
-var user = require('./user')
-var subjectClassSelector = require('./subjectClassSelector/subjectClassSelector')
+var user = require('../user')
+var subjectClassSelector = require('../subjectClassSelector/subjectClassSelector')
 
 
+//this will need mock term and that term needs to have a .subjects that are valid
 
 describe('SubjectClassSelector', function () {
 	//same as the app in directive manager
@@ -36,10 +37,10 @@ describe('SubjectClassSelector', function () {
 			});
 
 			controller.selectedSubject = 'CS'
-			controller.onSelectSubject(true)
-			// $scope.password = 'longerthaneightchars';
-			// $scope.grade();
-			// expect($scope.strength).toEqual('strong');
+			controller.updateSubjects(function () {
+				console.log(controller.term.subjects);
+			}.bind(this))
+ 
 
 
 
