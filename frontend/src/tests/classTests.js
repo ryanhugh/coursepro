@@ -5,102 +5,78 @@ var macros = require('../macros')
 var Class = require('../Class')
 
 
-function ClassTests() {
 
+var testData1 = {
+	"_id": "56b7f43f083f16e42df53037",
+	"desc": "3.000 Lecture hours",
+	"classId": "201",
+	"prettyUrl": "https://ssb.sju.edu/pls/PRODSSB/bwckctlg.p_disp_course_detail?cat_term_in=201610&subj_code_in=JPN&crse_numb_in=201",
+	"name": "Intermediate Japanese I",
+	"url": "https://ssb.sju.edu/pls/PRODSSB/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=JPN&crse_in=201&schd_in=%25",
+	"prereqs": {
+		"type": "and",
+		"values": [
+			"Language Placement JP201"
+		]
+	},
+	"host": "sju.edu",
+	"termId": "201610",
+	"subject": "JPN",
+	"crns": [],
+	"lastUpdateTime": 1454896191862
+}
+
+var testData2 = {
+	"_id": "56b7f4e0083f16e42df54dbe",
+	"desc": "Offers various topics on networks. Prereq. Restricted to students in the College of Computer and Information Science. 4.000 Lecture hours",
+	"classId": "7780",
+	"prettyUrl": "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201630&subj_code_in=CS&crse_numb_in=7780",
+	"name": "Special Topics in Networks",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201630&subj_in=CS&crse_in=7780&schd_in=%25",
+	"host": "neu.edu",
+	"termId": "201630",
+	"subject": "CS",
+	"crns": [],
+	"lastUpdateTime": 1454896352507
 }
 
 
-ClassTests.prototype.go = function () {
+describe('Class', function () {
+
+	describe('$scope.grade', function () {
+		it('ensures you need classId or _id to create class', function () {
+
+			expect(Class.create({
+				host: 'neu.edu',
+				termId: '201630',
+				subject: 'CS'
+			})).toBe(null);
+		});
 
 
-	assert.equal(null, Class.create({
-		host: 'neu.edu',
-		termId: '201630',
-		subject: 'CS'
-	}))
+		it('dfdfd', function () {
+
+			var aClass = Class.create(testData1);
+
+			expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
+			expect(aClass._id).toBe("56b7f43f083f16e42df53037")
+			expect(aClass.prereqs.values[0].isClass).toBe(true)
+			expect(aClass.prereqs.values[0].isString).toBe(true)
+			expect(aClass.prereqs.values[0].desc).toBe("Language Placement JP201")
+
+		});
 
 
-	Class.create({
-		host: 'sju.edu',
-		termId: '201610',
-		subject: 'JPN',
-		classId: '201'
-	}).download(function (err, aClass) {
+		it('dfdfd', function () {
 
-		assert.equal(aClass.dataStatus,macros.DATASTATUS_DONE)
+			var aClass = Class.create(testData2);
 
-		assert.equal("5683ef8c36b66840e8690940", aClass._id)
-		assert.equal(aClass.prereqs.values[0].isClass, true)
-		assert.equal(aClass.prereqs.values[0].isString, true)
-		assert.equal(aClass.prereqs.values[0].desc, "Language Placement JP201")
-	}.bind(this))
+			expect(aClass.prereqs.type).toBe('or')
+			expect(aClass.prereqs.values.length).toBe(0)
+			expect(aClass.coreqs.type).toBe('or')
+			expect(aClass.coreqs.values.length).toBe(0)
 
+		});
+	});
+});
 
-
-	Class.create({
-		_id: '5683f72136b66840e86abe0d'
-	}).download(function (err, aClass) {
-		// console.log(err, aClass)
-
-		assert.equal("1302", aClass.classId)
-		assert.equal("neu.edu", aClass.host)
-		assert.equal("201540", aClass.termId)
-		assert.equal('or', aClass.prereqs.type)
-		assert.equal(0, aClass.prereqs.values.length)
-		assert.equal('or', aClass.coreqs.type)
-		assert.equal(0, aClass.coreqs.values.length)
-
-	}.bind(this))
-
-	Class.create({
-		host: 'neu.edu',
-		termId: '201630',
-		subject: 'CS',
-		classId: '2800'
-	}).download(function (err, aClass) {
-
-		assert.equal(aClass.dataStatus,macros.DATASTATUS_DONE)
-
-		assert.equal("5683f7f636b66840e86b2045", aClass._id)
-		assert.equal("neu.edu", aClass.host)
-		assert.equal("201630", aClass.termId)
-
-		assert.equal(1, aClass.coreqs.values.length)
-		assert.equal('2801', aClass.coreqs.values[0].classId)
-
-		assert.equal('and', aClass.prereqs.type)
-		assert.equal(2, aClass.prereqs.values.length)
-
-		// console.log(err, aClass)
-	}.bind(this))
-
-
-	Class.create({
-		host: 'neu.edu',
-		termId: '201630',
-		subject: 'CS',
-		classId: '2510'
-	}).download(function (err, aClass) {
-
-		assert.equal(aClass.dataStatus,macros.DATASTATUS_DONE)
-
-		assert.equal(undefined, aClass._id)
-		assert.equal("neu.edu", aClass.host)
-		assert.equal("201630", aClass.termId)
-
-		assert.equal(0, aClass.coreqs.values.length)
-		
-		assert.equal('or', aClass.prereqs.type)
-		assert.equal(3, aClass.prereqs.values.length)
-
-		// console.log(err, aClass)
-	}.bind(this))
-
-
-
-};
-
-
-
-ClassTests.prototype.ClassTests = ClassTests
-module.exports = new ClassTests()
