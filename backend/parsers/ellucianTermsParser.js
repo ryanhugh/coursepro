@@ -109,6 +109,12 @@ EllucianTermsParser.prototype.onEndParsing = function (pageData, dom) {
 		console.log('ERROR, found 0 terms??', pageData.dbData.url);
 	};
 
+	var host = pointer.getBaseHost(pageData.dbData.url);
+
+	if (!pageData.dbData.host) {
+		pageData.dbData.host = host;
+	};
+
 	terms.forEach(function (term) {
 
 		//calculate host for each entry
