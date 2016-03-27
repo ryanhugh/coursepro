@@ -26,7 +26,7 @@ function SignInWithGoogle() {
 				user.signedInWithGoogle(null,googleUser.getAuthResponse().id_token)
 			}.bind(this),
 			onfailure: function (err) {
-				console.log('Error signing in with google',err)
+				elog('Error signing in with google',err)
 				user.signedInWithGoogle(err)
 			}.bind(this)
 		});

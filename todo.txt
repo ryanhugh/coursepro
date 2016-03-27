@@ -1,6 +1,10 @@
 !!!!
 
 
+play with hiding private properties?
+ -- nah
+ do something with instance, cache, maybe a branch or remove it or something...
+ user.getauthenticated also has dead code
 
 TODO SOON
 1. marketing when ok - post on other pages with examples
@@ -313,3 +317,67 @@ this specific college ^ either updated or has a newer version too and has alread
 
 
 
+courseoff reverse engieering:
+ - using webpack
+courseoff data structure
+{
+	"course": {
+		"major": {
+			"ident": "ACCT",
+			"term": {
+				"ident": 201601,
+				"university": {
+					"ident": "neu",
+					"name": "Northeastern University",
+					"features": ["seats"],
+					"timezone": "America/New_York",
+					"_terms": [],
+					"_termsIdent": {},
+					"url": "//soc.courseoff.com/neu"
+				},
+				"url": "//soc.courseoff.com/neu/terms/201601"
+			},
+			"url": "//soc.courseoff.com/neu/terms/201601/majors/ACCT"
+		},
+		"ident": "1202",
+		"name": "Financial Accounting in a Global Context",
+		"url": "//soc.courseoff.com/neu/terms/201601/majors/ACCT/courses/1202"
+	},
+	"call_number": "33301",
+	"ident": "03",
+	"credits": 4,
+	"instructor": {
+		"lname": "Goldman",
+		"fname": "William  "
+	},
+	"seats": {
+		"capacity": 40,
+		"actual": 31,
+		"remaining": 9
+	},
+	"seat_time": "2016-02-11T02:43:52.263Z",
+	"timeslots": [{
+		"day": "M",
+		"location": "Dodge Hall 230",
+		"start": 815,
+		"end": 880
+	}, {
+		"day": "W",
+		"location": "Dodge Hall 230",
+		"start": 815,
+		"end": 880
+	}, {
+		"day": "R",
+		"location": "Dodge Hall 230",
+		"start": 815,
+		"end": 880
+	}],
+	"_visible": false,
+	"_checked": false,
+	"url": "//soc.courseoff.com/neu/terms/201601/majors/ACCT/courses/1202/sections/33301",
+	"color": "#f27979",
+	"_callbacks": {
+		"pin": [null, null, null, null, null, null, null, null],
+		"unpin": [null, null, null, null, null, null, null, null]
+	}
+}

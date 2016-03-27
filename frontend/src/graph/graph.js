@@ -1,8 +1,6 @@
 'use strict';
-var moment = require('moment')
 var _ = require('lodash')
 var macros = require('../macros')
-var request = require('../request')
 
 // base angular stuff
 var directiveMgr = require('../directiveMgr')
@@ -11,10 +9,6 @@ var BaseDirective = require('../BaseDirective')
 //tree stuff
 var downloadTree = require('./downloadTree')
 var treeMgr = require('./treeMgr')
-var help = require('./help')
-
-//model
-var Class = require('../Class')
 
 var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
 

@@ -2,7 +2,7 @@
 var async = require('async');
 var URI = require('urijs');
 var _ = require('lodash');
-var queue = require("queue-async");
+var queue = require('d3-queue').queue;
 
 var macros = require('./macros')
 

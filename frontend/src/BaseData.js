@@ -121,7 +121,7 @@ BaseData.createMany = function (config, callback) {
 		body: config
 	}, function (err, results) {
 		if (err) {
-			console.log("error", err);
+			elog("error", err);
 			return callback(err)
 		}
 
@@ -130,7 +130,7 @@ BaseData.createMany = function (config, callback) {
 		results.forEach(function (classData) {
 			var instance = this.create(classData);
 			if (!instance) {
-				console.log("ERROR could not create a class with ", classData);
+				elog("ERROR could not create a class with ", classData);
 				return;
 			}
 			instances.push(instance)
@@ -346,7 +346,7 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 		
 		
 		if (results.length == 0) {
-			console.log('unable to find subject??', this, config)
+			console.log('base data download results.length = 0', this, config)
 			this.dataStatus = macros.DATASTATUS_FAIL;
 
 			this.downloadCallbacks.forEach(function (configAndCallback) {
