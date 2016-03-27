@@ -2,7 +2,7 @@
 var async = require('async');
 var URI = require('urijs');
 var _ = require('lodash');
-var queue = require("queue-async");
+var queue = require('d3-queue').queue;
 
 var macros = require('./macros')
 
@@ -150,7 +150,7 @@ PageData.prototype.loadFromDB = function (callback) {
 		lookupValues.url = this.dbData.url;
 	}
 	else {
-		console.log('error in base db - cant lookup page data wihout url or _id!', this)
+		elog('error in base db - cant lookup page data wihout url or _id!', this)
 		return callback('cant lookup');
 	}
 
@@ -169,7 +169,7 @@ PageData.prototype.loadFromDB = function (callback) {
 		this.originalData.dbData = _.cloneDeep(doc);
 
 		if (!doc && lookupValues._id) {
-			console.log('error, looked up by id and didnt find anything???', this, lookupValues, this.parent)
+			elog('error, looked up by id and didnt find anything???', this, lookupValues, this.parent)
 		};
 
 		var q = queue();
@@ -177,8 +177,7 @@ PageData.prototype.loadFromDB = function (callback) {
 		if (doc) {
 
 			if (this.dbData.deps) {
-				console.log('error, loaded from db and there is already data in the pagedata??', this);
-				console.trace();
+				elog('error, loaded from db and there is already data in the pagedata??', this);
 			}
 
 
@@ -212,7 +211,6 @@ PageData.prototype.loadFromDB = function (callback) {
 		q.awaitAll(function (error, results) {
 
 
-			// console.log('loading from db',this)
 			//log when the main pageData (the top of the tree) is done loading
 			if (!this.parent && macros.VERBOSE) {
 				if (this.parser) {

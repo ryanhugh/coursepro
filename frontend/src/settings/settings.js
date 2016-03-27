@@ -2,7 +2,6 @@
 var queue = require('d3-queue').queue;
 var _ = require('lodash')
 var async = require('async')
-var moment = require('moment')
 
 var request = require('../request')
 var directiveMgr = require('../directiveMgr')
