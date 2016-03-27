@@ -31,6 +31,11 @@ BaseData.create = function (config, useCache) {
 		useCache = true
 	}
 
+	if (!config) {
+		elog('need config to make an object');
+		return null;
+	};
+
 
 	if (config instanceof this) {
 		elog("tried to make instance of ", this.name, ' with an instance of this');

@@ -1,6 +1,4 @@
 'use strict';
-var assert = require('assert')
-
 var macros = require('../macros')
 var Class = require('../Class')
 
@@ -44,14 +42,14 @@ var testData2 = {
 describe('Class', function () {
 
 	describe('$scope.grade', function () {
-		it('ensures you need classId or _id to create class', function () {
+		// it('ensures you need classId or _id to create class', function () {
 
-			expect(Class.create({
-				host: 'neu.edu',
-				termId: '201630',
-				subject: 'CS'
-			})).toBe(null);
-		});
+		// 	expect(Class.create({
+		// 		host: 'neu.edu',
+		// 		termId: '201630',
+		// 		subject: 'CS'
+		// 	})).toBe(null);
+		// });
 
 
 		it('dfdfd', function () {

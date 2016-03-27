@@ -36,10 +36,10 @@ describe('SubjectClassSelector', function () {
 				$scope: $scope
 			});
 
-			controller.selectedSubject = 'CS'
-			controller.updateSubjects(function () {
-				console.log(controller.term.subjects);
-			}.bind(this))
+			// controller.selectedSubject = 'CS'
+			// controller.updateSubjects(function () {
+			// 	console.log(controller.term.subjects);
+			// }.bind(this))
  
 
 

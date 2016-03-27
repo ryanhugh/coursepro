@@ -19,7 +19,10 @@ var dns = require('dns');
 // var title = require('to-title-case');
 var queue = require("queue-async")
 
+require('proxyquire')
+
 fs.readFile('backend/tests/differentCollegeUrls.json', function (err, data) {
+	return;
 
 	var urls = eval(data.toString('ascii'));
 

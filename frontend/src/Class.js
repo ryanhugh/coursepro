@@ -215,7 +215,7 @@ Class.prototype.convertServerData = function (data) {
 		};
 
 
-		retVal = Class.create(data,false)
+		retVal = this.constructor.create(data,false)
 
 	}
 

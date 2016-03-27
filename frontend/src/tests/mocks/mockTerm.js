@@ -1,4 +1,4 @@
-var Term = require('../Term')
+var Term = require('../../Term')
 // var Subject
 
 function mockTerm () {
