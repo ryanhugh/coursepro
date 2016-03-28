@@ -1,0 +1,411 @@
+[{
+	"_id": "56f21f93ea47044a05691b3e",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=11722",
+	"crn": "11722",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Leena Razzaq"],
+		"where": "West Village H 210",
+		"times": {
+			"5": [{
+				"start": 42300,
+				"end": 48300
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2511",
+	"seatsCapacity": 19,
+	"seatsRemaining": 0,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458708371332
+}, {
+	"_id": "56f2203fea47044a05694349",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=16096",
+	"crn": "16096",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Leena Razzaq"],
+		"where": "West Village H 210",
+		"times": {
+			"5": [{
+				"start": 55500,
+				"end": 61500
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2511",
+	"seatsCapacity": 19,
+	"seatsRemaining": 0,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458708543151
+}, {
+	"_id": "56f220d9ea47044a05696720",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=13181",
+	"crn": "13181",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Leena Razzaq"],
+		"where": "West Village H 210",
+		"times": {
+			"5": [{
+				"start": 35400,
+				"end": 41400
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2511",
+	"seatsCapacity": 19,
+	"seatsRemaining": -4,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458708697398
+}, {
+	"_id": "56f223b4ea47044a056a11c1",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=18124",
+	"crn": "18124",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Leena Razzaq"],
+		"where": "West Village H 212",
+		"times": {
+			"5": [{
+				"start": 35400,
+				"end": 41400
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2511",
+	"seatsCapacity": 19,
+	"seatsRemaining": 0,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458709428280
+}, {
+	"_id": "56f2257bea47044a056a7d6c",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=16097",
+	"crn": "16097",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Leena Razzaq"],
+		"where": "West Village H 212",
+		"times": {
+			"5": [{
+				"start": 42300,
+				"end": 48300
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2511",
+	"seatsCapacity": 19,
+	"seatsRemaining": 3,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458709883340
+}, {
+	"_id": "56f225c3ea47044a056a8e63",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15146",
+	"crn": "15146",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Leena Razzaq"],
+		"where": "West Village H 210",
+		"times": {
+			"5": [{
+				"start": 48900,
+				"end": 54900
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2511",
+	"seatsCapacity": 19,
+	"seatsRemaining": 0,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458709955559
+}, {
+	"_id": "56f22986ea47044a056b7f29",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=16094",
+	"crn": "16094",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Leena Razzaq"],
+		"where": "West Village G 102",
+		"times": {
+			"1": [{
+				"start": 48900,
+				"end": 52800
+			}],
+			"3": [{
+				"start": 48900,
+				"end": 52800
+			}],
+			"4": [{
+				"start": 48900,
+				"end": 52800
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2510",
+	"seatsCapacity": 65,
+	"seatsRemaining": 0,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458710918795
+}, {
+	"_id": "56f229a0ea47044a056b88a8",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=10340",
+	"crn": "10340",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Nada Aladdin Jamel Naji"],
+		"where": "Shillman Hall 315",
+		"times": {
+			"1": [{
+				"start": 37800,
+				"end": 41700
+			}],
+			"3": [{
+				"start": 37800,
+				"end": 41700
+			}],
+			"4": [{
+				"start": 37800,
+				"end": 41700
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2510",
+	"seatsCapacity": 49,
+	"seatsRemaining": -1,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458710944313
+}, {
+	"_id": "56f22254ea47044a0569bf8d",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=14492",
+	"crn": "14492",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Leena Razzaq"],
+		"where": "Hurtig Hall 130",
+		"times": {
+			"1": [{
+				"start": 59700,
+				"end": 63600
+			}],
+			"3": [{
+				"start": 59700,
+				"end": 63600
+			}],
+			"4": [{
+				"start": 59700,
+				"end": 63600
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2500",
+	"seatsCapacity": 87,
+	"seatsRemaining": 39,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458709076157
+}, {
+	"_id": "56f22254ea47044a0569bf99",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=10663",
+	"crn": "10663",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Olin Shivers Iii"],
+		"where": "Richards Hall 300",
+		"times": {
+			"1": [{
+				"start": 37800,
+				"end": 41700
+			}],
+			"3": [{
+				"start": 37800,
+				"end": 41700
+			}],
+			"4": [{
+				"start": 37800,
+				"end": 41700
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2500",
+	"seatsCapacity": 87,
+	"seatsRemaining": -3,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458709076196
+}, {
+	"_id": "56f223e7ea47044a056a1d1b",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=11892",
+	"crn": "11892",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Nathaniel Tuck"],
+		"where": "Cargill Hall 097",
+		"times": {
+			"1": [{
+				"start": 48900,
+				"end": 52800
+			}],
+			"3": [{
+				"start": 48900,
+				"end": 52800
+			}],
+			"4": [{
+				"start": 48900,
+				"end": 52800
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2500",
+	"seatsCapacity": 87,
+	"seatsRemaining": 0,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458709479088
+}, {
+	"_id": "56f227fcea47044a056b156f",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=17348",
+	"crn": "17348",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Benjamin Scott Lerner"],
+		"where": "Richards Hall 200",
+		"times": {
+			"1": [{
+				"start": 53400,
+				"end": 59400
+			}],
+			"3": [{
+				"start": 53400,
+				"end": 59400
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2500",
+	"seatsCapacity": 95,
+	"seatsRemaining": 27,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458710524669
+}, {
+	"_id": "56f22817ea47044a056b1c9c",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=13757",
+	"crn": "13757",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Nathaniel Tuck"],
+		"where": "Shillman Hall 105",
+		"times": {
+			"1": [{
+				"start": 59700,
+				"end": 63600
+			}],
+			"3": [{
+				"start": 59700,
+				"end": 63600
+			}],
+			"4": [{
+				"start": 59700,
+				"end": 63600
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2500",
+	"seatsCapacity": 87,
+	"seatsRemaining": 4,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458710551367
+}, {
+	"_id": "56f228bcea47044a056b4699",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=10664",
+	"crn": "10664",
+	"meetings": [{
+		"startDate": 16687,
+		"endDate": 16778,
+		"profs": ["Leena Razzaq"],
+		"where": "Shillman Hall 105",
+		"times": {
+			"1": [{
+				"start": 33300,
+				"end": 37200
+			}],
+			"3": [{
+				"start": 33300,
+				"end": 37200
+			}],
+			"4": [{
+				"start": 33300,
+				"end": 37200
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201610",
+	"subject": "CS",
+	"classId": "2500",
+	"seatsCapacity": 87,
+	"seatsRemaining": 4,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"lastUpdateTime": 1458710716857
+}]

@@ -4,22 +4,15 @@ var mockClass = require('./mocks/mockClass')
 var treeMgr = require('../graph/treeMgr')
 var proxyquire = require('proxyquireify')(require);
 
-// require('../graph/downloadTree')
 var downloadTree = proxyquire('../graph/downloadTree', {
 	'../Class': mockClass,
-	'Class': mockClass
 })
-
-function DownloadTreeTests() {
-
-}
-
 
 
 describe('DownloadTreeTests', function () {
 
-	describe('eh', function () {
-		it('makes sures fetchFullTree is constant on constant data', function () {
+	describe('fetchFullTree', function () {
+		it('makes sure fetchFullTree is constant on constant data', function () {
 
 
 			downloadTree.fetchFullTree({

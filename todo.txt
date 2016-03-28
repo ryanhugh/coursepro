@@ -1,5 +1,8 @@
 !!!!
 
+why are the terms not sorted on the dropdown?
+section is failing tests because it isnt going throught basedata.constructor.download, its direclty hitting request
+
 unit tests?
 get notifyer working again?
 merge list, search, starred?

@@ -1,10 +1,19 @@
+'use strict';
+
 var Term = require('../../Term')
-// var Subject
+var macros = require('../../macros')
+var mockData = require('./mockTermData.json')
+var MockBaseData = require('./MockBaseData')
 
-function mockTerm () {
+
+function MockTerm() {
 	Term.prototype.constructor.apply(this, arguments);
-
-
-
-
 }
+
+macros.inherent(Term, MockTerm);
+macros.inherent(MockBaseData, MockTerm);
+
+MockTerm.mockData = mockData
+
+
+module.exports = MockTerm;

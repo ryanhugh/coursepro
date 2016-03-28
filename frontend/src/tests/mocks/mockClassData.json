@@ -3400,4 +3400,34 @@
 	"lastUpdateTime": 1458710660546,
 	"minCredits": 4,
 	"maxCredits": 4
+}, {
+	"_id": "56b7f43f083f16e42df53037",
+	"desc": "3.000 Lecture hours",
+	"classId": "201",
+	"prettyUrl": "https://ssb.sju.edu/pls/PRODSSB/bwckctlg.p_disp_course_detail?cat_term_in=201610&subj_code_in=JPN&crse_numb_in=201",
+	"name": "Intermediate Japanese I",
+	"url": "https://ssb.sju.edu/pls/PRODSSB/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=JPN&crse_in=201&schd_in=%25",
+	"prereqs": {
+		"type": "and",
+		"values": [
+			"Language Placement JP201"
+		]
+	},
+	"host": "sju.edu",
+	"termId": "201610",
+	"subject": "JPN",
+	"crns": [],
+	"lastUpdateTime": 1454896191862
+}, {
+	"_id": "56b7f4e0083f16e42df54dbe",
+	"desc": "Offers various topics on networks. Prereq. Restricted to students in the College of Computer and Information Science. 4.000 Lecture hours",
+	"classId": "7780",
+	"prettyUrl": "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201630&subj_code_in=CS&crse_numb_in=7780",
+	"name": "Special Topics in Networks",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201630&subj_in=CS&crse_in=7780&schd_in=%25",
+	"host": "neu.edu",
+	"termId": "201630",
+	"subject": "CS",
+	"crns": [],
+	"lastUpdateTime": 1454896352507
 }]

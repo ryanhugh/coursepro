@@ -270,6 +270,9 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 		callback = configOrCallback
 		config = {}
 	}
+	else if (!configOrCallback && !callback) {
+		config = {}
+	}
 
 	//if could get more than 1 with normal keys
 	if (config.returnResults === undefined) {

@@ -4,7 +4,13 @@ require('../macros.js')
 require('../directiveMgr.js')
 
 var user = require('../user')
-var subjectClassSelector = require('../subjectClassSelector/subjectClassSelector')
+var mockTerm = require('./mocks/mockTerm')
+
+var proxyquire = require('proxyquireify')(require);
+var subjectClassSelector = proxyquire('../subjectClassSelector/subjectClassSelector', {
+	'../Term': mockTerm,
+})
+
 
 
 //this will need mock term and that term needs to have a .subjects that are valid

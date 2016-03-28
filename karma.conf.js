@@ -12,6 +12,7 @@ module.exports = function (config) {
     ],
     plugins: [
       'karma-chrome-launcher',
+      'karma-phantomjs-launcher',
       'karma-jasmine',
       'karma-browserify'
     ],
@@ -20,15 +21,12 @@ module.exports = function (config) {
       'frontend/src/**/*.js': ['browserify'],
       'frontend/src/**/*.json': ['browserify']
     },
-    browsers: ['Chrome'],
+    browsers: ['PhantomJS'],
     browserify: {
       debug: true,
       plugin: ['proxyquire-universal'],
       configure: function (bundle) {
         bundle.plugin(proxyquire.plugin)
-          .require(require.resolve('./frontend/src/tests/downloadTree.tests'), {
-            entry: true
-          });
       }
     }
   });

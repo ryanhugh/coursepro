@@ -20,11 +20,11 @@ function SubjectClassSelector() {
 	}
 
 
-	// this.updateSubjects(function (err) {
+	this.updateSubjects(function (err) {
 		
-	// 	this.updateFromRoute()
+		this.updateFromRoute()
 
-	// }.bind(this))
+	}.bind(this))
 
 	this.selectedSubjectInstance = null;
 

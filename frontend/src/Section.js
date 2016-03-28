@@ -279,20 +279,20 @@ Section.prototype.groupSectionTimes = function () {
 }
 
 Section.prototype.meetsOnWeekends = function () {
-	
-	for (var i = 0;i<this.meetings.length;i++) {
+
+	for (var i = 0; i < this.meetings.length; i++) {
 		var meeting = this.meetings[i];
 		if (meeting.isExam) {
 			continue;
 		}
-		
-		for (var j=0;j<meeting.timeMoments.length;j++) {
+
+		for (var j = 0; j < meeting.timeMoments.length; j++) {
 			var times = meeting.timeMoments[j];
 			var index = times.start.day() - 1
 			if (index < 0 || index > 4) {
 				return true;
 			}
-		} 
+		}
 	}
 	return false;
 }
@@ -310,7 +310,7 @@ Section.prototype.getWeekDaysAsBooleans = function () {
 		meeting.timeMoments.forEach(function (times) {
 
 			retVal[times.start.day()] = true;
-			
+
 		}.bind(this))
 	}.bind(this))
 
@@ -410,28 +410,9 @@ Section.prototype.download = function (callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-	if (this.dataStatus == macros.DATASTATUS_DONE) {
-		return callback(null, this)
-	};
-
-	this.dataStatus = macros.DATASTATUS_LOADING;
 
 
-	var lookupValues = this.getIdentifer()
-	var resultsQuery = {}
-
-	if (lookupValues.crn) {
-		resultsQuery.crn = lookupValues.crn
-		lookupValues.crn = undefined
-	}
-
-
-	request({
-		url: '/listSections',
-		type: 'POST',
-		resultsQuery: this.getIdentifer().optional.lookup,
-		body: this.getIdentifer().required.lookup
-	}, function (err, sections) {
+	BaseData.prototype.download.call(this, function (err, sections) {
 		if (err) {
 			console.log("ERROR in list sections", err)
 			this.dataStatus = macros.DATASTATUS_FAIL;
@@ -440,7 +421,7 @@ Section.prototype.download = function (callback) {
 		this.dataStatus = macros.DATASTATUS_DONE;
 
 		if (sections.length > 1) {
-			elog("ERROR have more than 1 section??", lookupValues, resultsQuery, this);
+			elog("ERROR have more than 1 section??", resultsQuery, this);
 		}
 
 		var serverData = sections[0];
