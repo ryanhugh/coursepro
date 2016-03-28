@@ -26,22 +26,22 @@ var macros = require('../macros')
 // 			}]
 // 		},
 // 		"building": "West Village H",
-// 		"groupedTimes": [{
+// 		"groupedTimes": [{ --next
 // 			"times": [{
 // 				"start": 35400,
 // 				"end": 41400
 // 			}],
 // 			"days": ["5"]
 // 		}],
-// 		"timeStrings": [{
+// 		"timeStrings": [{ -- getter from timemoments, todo
 // 			"start": "9:50",
 // 			"end": "11:30 am"
 // 		}],
-// 		"days": ["Friday"],
-// 		"hoursPerWeek": 1.7,
-// 		"isExam": false,
-// 		"hidden": false,
-// 		"dayStrings": {
+// 		"days": ["Friday"], -- geter, todo
+// 		"hoursPerWeek": 1.7, --getter, todo
+// 		"isExam": false, -- getter, todo
+// 		"hidden": false, -- getter, todo and what is this anyway
+// 		"dayStrings": { --getter, todo
 // 			"startDate": "Sep 9th",
 // 			"endDate": "Dec 9th"
 // 		},

@@ -37,16 +37,12 @@ function Section(config) {
 	this.meetings = []
 
 
-	//copy over all given attrs
-	for (var attrName in config) {
-		// if (this[attrName] !== undefined && this[attrName] !== config[attrName]) {
-		// 	console.log('WARNING overriding data with config', attrName, this, config)
-		// }
-		this[attrName] = config[attrName]
-	}
+	//Professors, eg ["Oana Veliche"]
+	this.profs = []
 
+	this.processServerData(config)
 
-
+	//TODO remove this...
 	this.weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 }
 
@@ -82,7 +78,7 @@ Section.prototype.createTimeStrings = function () {
 
 		for (var dayIndex in meeting.times) {
 			if (!this.weekDays[dayIndex]) {
-				console.log('error dayIndex not found?', meeting)
+				elog('error dayIndex not found?', meeting, dayIndex);
 				meeting.days.push('Someday')
 			}
 			else {
@@ -201,34 +197,12 @@ Section.prototype.calculateStartAndEndTimes = function () {
 }
 
 Section.prototype.calculateMeetingDates = function () {
-	if (!this.meetings) {
-		return;
-	}
-
 	this.meetings.forEach(function (meeting) {
-		meeting.timeMoments = [];
-
-		for (var dayIndex in meeting.times) {
-			meeting.times[dayIndex].forEach(function (event) {
-
-				//3 is to set in the second week of 1970
-				var day = parseInt(dayIndex) + 3
-
-				meeting.timeMoments.push({
-					start: moment.utc(event.start * 1000).add(day, 'day'),
-					end: moment.utc(event.end * 1000).add(day, 'day'),
-				})
-			}.bind(this))
-		}
-
 
 	}.bind(this))
 };
 Section.prototype.groupSectionTimes = function () {
-	if (!this.meetings) {
-		return;
-	}
-	this.profs = []
+
 	this.meetings.forEach(function (meeting) {
 
 
@@ -253,13 +227,13 @@ Section.prototype.groupSectionTimes = function () {
 		}
 	}.bind(this))
 
+	this.calculateMeetingDates();
 	this.createTimeStrings()
 	this.calculateHoursPerWeek();
 	this.calculateExams();
 	this.calculateHiddenMeetings();
 	this.createDayStrings();
 	this.calculateStartAndEndTimes();
-	this.calculateMeetingDates();
 
 
 	this.locations = []
@@ -412,47 +386,89 @@ Section.prototype.download = function (callback) {
 	}
 
 
-	BaseData.prototype.download.call(this, function (err, sections) {
+	BaseData.prototype.download.call(this, function (err) {
 		if (err) {
-			console.log("ERROR in list sections", err)
-			this.dataStatus = macros.DATASTATUS_FAIL;
+			console.log("ERROR in list sections", err, this)
+				// this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(err);
 		}
-		this.dataStatus = macros.DATASTATUS_DONE;
+		// this.dataStatus = macros.DATASTATUS_DONE;
 
-		if (sections.length > 1) {
-			elog("ERROR have more than 1 section??", resultsQuery, this);
-		}
+		// if (sections.length > 1) {
+		// 	elog("ERROR have more than 1 section??", resultsQuery, this);
+		// }
 
-		var serverData = sections[0];
+		// var serverData = sections[0];
 
-
-		//safe to copy all attrs?
-		for (var attrName in serverData) {
-			// if (this[attrName] !== undefined && this[attrName] !== serverData[attrName]) {
-			// elog("ERROR server returned data that was not equal to data here??", this[attrName], serverData[attrName], this, serverData)
-			// }
-
-			this[attrName] = serverData[attrName]
-		}
-		this.groupSectionTimes()
+		this.processServerData();
 
 		callback(null, this)
 
 	}.bind(this))
 }
 
+Section.prototype.processServerData = function () {
+
+	//safe to copy all attrs?
+	var newMeetings = [];
+
+	this.meetings.forEach(function (meeting) {
+
+		var newMeeting = {
+			profs: meeting.profs,
+			where: meeting.where,
+			startDate: moment((meeting.startDate + 1) * 24 * 60 * 60 * 1000),
+			endDate: moment((meeting.endDate + 1) * 24 * 60 * 60 * 1000),
+
+			// regex off the room number
+			building: meeting.where.replace(/\d+\s*$/i, '').trim(),
+
+			//these are populated below
+			timeMoments: [],
+			groupedTimes: []
+
+		}
+
+		for (var dayIndex in meeting.times) {
+			meeting.times[dayIndex].forEach(function (event) {
+
+				//3 is to set in the second week of 1970
+				var day = parseInt(dayIndex) + 3
+
+				newMeeting.timeMoments.push({
+					start: moment.utc(event.start * 1000).add(day, 'day'),
+					end: moment.utc(event.end * 1000).add(day, 'day'),
+				})
+			}.bind(this))
+		}
+
+		console.log(_.groupBy(newMeeting.timeMoments, function (event) {
+			var zero = moment(event.start).startOf('day')
+
+			return event.start.diff(zero) + '' + event.end.diff(zero)
+
+
+		}.bind(this)))
+		debugger
+
+
+
+
+	}.bind(this))
+
+
+
+	if (this.dataStatus == macros.DATASTATUS_DONE) {
+		this.groupSectionTimes()
+
+	};
+};
+
 
 Section.prototype.compareTo = function (other) {
 
-	if (!this.meetings && !other.meetings) {
+	if (this.meetings.length == 0 && other.meetings.length === 0) {
 		return 0;
-	}
-	if (!this.meetings || this.meetings.length === 0) {
-		return 1;
-	}
-	if (!other.meetings || other.meetings.length === 0) {
-		return -1;
 	}
 
 	if (this.meetings[0].groupedTimes.length === 0) {

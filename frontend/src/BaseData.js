@@ -323,6 +323,7 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 		
 		if (err) {
 			elog(err)
+			this.dataStatus = macros.DATASTATUS_FAIL;
 
 			//call callbacks
 			this.downloadCallbacks.forEach(function (configAndCallback) {
