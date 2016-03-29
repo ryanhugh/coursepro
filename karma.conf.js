@@ -3,7 +3,6 @@ var proxyquire = require('proxyquireify');
 module.exports = function (config) {
   config.set({
     files: [
-      'frontend/src/tests/main.tests.js',
       'frontend/src/**/*.js',
       'frontend/src/**/*.json',
       "frontend/static/js/internal/html.js",
@@ -19,7 +18,6 @@ module.exports = function (config) {
     ],
     frameworks: ['browserify', 'jasmine'],
     preprocessors: {
-      'frontend/src/tests/main.tests.js': ['browserify'],
       'frontend/src/**/*.js': ['browserify'],
       'frontend/src/**/*.json': ['browserify']
     },

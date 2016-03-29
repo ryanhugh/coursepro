@@ -413,6 +413,7 @@ Section.prototype.processServerData = function () {
 	var newMeetings = [];
 
 	this.meetings.forEach(function (meeting) {
+		return;
 
 		var newMeeting = {
 			profs: meeting.profs,
@@ -451,7 +452,7 @@ Section.prototype.processServerData = function () {
 		}.bind(this)))
 		debugger
 
-
+ 
 
 
 	}.bind(this))
