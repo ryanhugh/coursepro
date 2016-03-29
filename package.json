@@ -43,6 +43,9 @@
     "needle": "^1.0.0",
     "nodemailer": "^2.2.0",
     "nodemailer-smtp-transport": "^2.4.0",
+    "proxyquire": "^1.7.4",
+    "proxyquire-universal": "^1.0.8",
+    "proxyquireify": "^3.1.1",
     "querystring": "^0.2.0",
     "request": "^2.69.0",
     "require-dir": "^0.3.0",
@@ -55,7 +58,6 @@
   "description": "Awesome sauce! Yay!",
   "devDependencies": {
     "karma-chrome-launcher": "^0.2.2",
-    "karma-phantomjs-launcher": "^1.0.0",
-    "phantomjs-prebuilt": "^2.1.7"
+    "karma-phantomjs-launcher": "^1.0.0"
   }
 }
