@@ -6,6 +6,7 @@ var request = require('./request')
 var macros = require('./macros')
 
 var BaseData = require('./BaseData')
+var Meeting = require('./Meeting')
 
 function Section(config) {
 	BaseData.prototype.constructor.apply(this, arguments);
@@ -410,59 +411,18 @@ Section.prototype.download = function (callback) {
 Section.prototype.processServerData = function () {
 
 	//safe to copy all attrs?
-	var newMeetings = [];
+	this.meetings = [];
 
-	this.meetings.forEach(function (meeting) {
-		return;
-
-		var newMeeting = {
-			profs: meeting.profs,
-			where: meeting.where,
-			startDate: moment((meeting.startDate + 1) * 24 * 60 * 60 * 1000),
-			endDate: moment((meeting.endDate + 1) * 24 * 60 * 60 * 1000),
-
-			// regex off the room number
-			building: meeting.where.replace(/\d+\s*$/i, '').trim(),
-
-			//these are populated below
-			timeMoments: [],
-			groupedTimes: []
-
-		}
-
-		for (var dayIndex in meeting.times) {
-			meeting.times[dayIndex].forEach(function (event) {
-
-				//3 is to set in the second week of 1970
-				var day = parseInt(dayIndex) + 3
-
-				newMeeting.timeMoments.push({
-					start: moment.utc(event.start * 1000).add(day, 'day'),
-					end: moment.utc(event.end * 1000).add(day, 'day'),
-				})
-			}.bind(this))
-		}
-
-		console.log(_.groupBy(newMeeting.timeMoments, function (event) {
-			var zero = moment(event.start).startOf('day')
-
-			return event.start.diff(zero) + '' + event.end.diff(zero)
-
-
-		}.bind(this)))
-		debugger
-
- 
-
-
+	this.meetings.forEach(function (serverData) {
+		this.meetings.push(new Meeting(serverData))
 	}.bind(this))
 
 
 
-	if (this.dataStatus == macros.DATASTATUS_DONE) {
-		this.groupSectionTimes()
+	// if (this.dataStatus == macros.DATASTATUS_DONE) {
+	// 	this.groupSectionTimes()
 
-	};
+	// };
 };
 
 
