@@ -12,6 +12,9 @@ function Macros() {
 	this.DATASTATUS_DONE = 2;
 	this.DATASTATUS_FAIL = 3;
 
+	if (window.elog) {
+		return;
+	}
 	//used all over the place for logging erros
 	window.elog = function () {
 
