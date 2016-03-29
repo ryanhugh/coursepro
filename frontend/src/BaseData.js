@@ -261,7 +261,7 @@ BaseData.download = function (config, callback) {
 	}.bind(this))
 }
 
-
+//the only config option right now is returnResults
 BaseData.prototype.download = function (configOrCallback, callback) {
 	var config = configOrCallback;
 

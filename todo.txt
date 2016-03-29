@@ -1,9 +1,10 @@
 !!!!
 
 why are the terms not sorted on the dropdown?
-section is failing tests because it isnt going throught basedata.constructor.download, its direclty hitting request
+put a line between years?
 
 unit tests?
+ - testing errors shouldnt bring up debugger
 get notifyer working again?
 merge list, search, starred?
 organize section.js?
