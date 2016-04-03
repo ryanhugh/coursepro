@@ -416,7 +416,7 @@ Class.prototype.getHeighestProfCount = function () {
 //returns true if any sections have an exam, else false
 Class.prototype.sectionsHaveExam = function () {
 	for (var i = 0; i < this.sections.length; i++) {
-		if (this.sections[i].hasExam()) {
+		if (this.sections[i].getHasExam()) {
 			return true;
 		}
 	}

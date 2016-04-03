@@ -1,4 +1,6 @@
 !!!!
+
+spacing bug if multiple locations on class list
 T b a?
 why are the terms not sorted on the dropdown?
 put a line between years?
