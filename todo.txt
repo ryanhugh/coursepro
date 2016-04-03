@@ -1,7 +1,9 @@
 !!!!
-
+T b a?
 why are the terms not sorted on the dropdown?
 put a line between years?
+
+/logError called "class load failed" if failed to load class and then on a separate call to class.load sections
 
 unit tests?
  - testing errors shouldnt bring up debugger

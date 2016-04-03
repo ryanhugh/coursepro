@@ -203,6 +203,7 @@ Section.prototype.calculateMeetingDates = function () {
 	}.bind(this))
 };
 Section.prototype.groupSectionTimes = function () {
+	return;
 
 	this.meetings.forEach(function (meeting) {
 
@@ -257,36 +258,52 @@ Section.prototype.meetsOnWeekends = function () {
 
 	for (var i = 0; i < this.meetings.length; i++) {
 		var meeting = this.meetings[i];
-		if (meeting.isExam) {
-			continue;
-		}
 
-		for (var j = 0; j < meeting.timeMoments.length; j++) {
-			var times = meeting.timeMoments[j];
-			var index = times.start.day() - 1
-			if (index < 0 || index > 4) {
-				return true;
-			}
-		}
+		if (meeting.getMeetsOnWeekends()) {
+			return true;
+		};
 	}
 	return false;
 }
+
+Section.prototype.getAllMeetingMoments = function(ignoreExams) {
+	if (ignoreExams === undefined) {
+		ignoreExams = true;
+	};
+
+
+	var retVal = [];
+	this.meetings.forEach(function (meeting) {
+		if (ignoreExams && meeting.getIsExam()) {
+			return;
+		}
+
+		retVal = retVal.concat(_.flatten(meeting.times));
+	}.bind(this))
+
+	retVal.sort(function (a, b) {
+		if (a.start.unix()> b.start.unix()) {
+			return 1;
+		}
+		else if (a.start.unix() < b.start.unix()) {
+			return -1;
+		}
+		else {
+			return 0;
+		}
+	}.bind(this))	
+
+	return retVal;
+};
 
 //returns [false,true,false,true,false,true,false] if meeting mon, wed, fri
 Section.prototype.getWeekDaysAsBooleans = function () {
 
 	var retVal = [false, false, false, false, false, false, false];
 
-	this.meetings.forEach(function (meeting) {
-		if (meeting.isExam) {
-			return;
-		};
 
-		meeting.timeMoments.forEach(function (times) {
-
-			retVal[times.start.day()] = true;
-
-		}.bind(this))
+	this.getAllMeetingMoments().forEach(function (time) {
+		retVal[time.start.day()] = true;
 	}.bind(this))
 
 	return retVal;
@@ -295,47 +312,13 @@ Section.prototype.getWeekDaysAsBooleans = function () {
 Section.prototype.getWeekDaysAsStringArray = function () {
 
 	var retVal = [];
-	var daysCovered = [];
 
-	this.meetings.forEach(function (meeting) {
-		if (meeting.isExam) {
+	this.getAllMeetingMoments().forEach(function (time) {
+		var day = time.start.format('dddd');
+		if (_(retVal).includes(day)) {
 			return;
-		};
-
-
-		meeting.timeMoments.forEach(function (timeMoment) {
-
-			var dayIndex = timeMoment.start.day()
-
-			if (!_(daysCovered).includes(dayIndex)) {
-				daysCovered.push(dayIndex)
-
-				retVal.push(timeMoment.start)
-			};
-		}.bind(this))
-	}.bind(this))
-
-
-	//sort the days
-	retVal.sort(function (a, b) {
-
-		var aUnix = a.unix();
-		var bUnix = b.unix();
-
-		if (aUnix > bUnix) {
-			return 1;
 		}
-		else if (aUnix < bUnix) {
-			return -1;
-		}
-		else {
-			elog('a and b are on the same day???', a.toString(), b.toString())
-			return 0;
-		}
-	}.bind(this))
-
-	retVal.forEach(function (weekDayMoment, index, retVal) {
-		retVal[index] = weekDayMoment.format('dddd')
+		retVal.push(day);
 	}.bind(this))
 
 	return retVal;
@@ -344,7 +327,7 @@ Section.prototype.getWeekDaysAsStringArray = function () {
 //returns true if has exam, else false
 Section.prototype.hasExam = function () {
 	for (var i = 0; i < this.meetings.length; i++) {
-		if (this.meetings[i].isExam) {
+		if (this.meetings[i].getIsExam()) {
 			return true;
 		}
 	}
@@ -356,16 +339,80 @@ Section.prototype.hasExam = function () {
 Section.prototype.getExamMoments = function () {
 	for (var i = 0; i < this.meetings.length; i++) {
 		var meeting = this.meetings[i]
-		if (meeting.isExam) {
-			if (meeting.timeMoments.length > 0) {
-				return meeting.timeMoments[0];
+		if (meeting.getIsExam()) {
+			if (meeting.times.length > 0) {
+				return meeting.times[0][0];
 			};
 		};
 	};
 	return null;
 };
 
+Section.prototype.getProfs = function() {
+	var retVal = [];
+	this.meetings.forEach(function (meeting) {
+		meeting.profs.forEach(function (prof) {
+			if (!_(retVal).includes(prof)) {
+				retVal.push(prof);
+			};
+		}.bind(this))
+	}.bind(this))
 
+	return retVal;
+};
+
+Section.prototype.getLocations = function(ignoreExams) {
+	if (ignoreExams === undefined) {
+		ignoreExams = true;
+	};
+
+	var retVal = [];
+	this.meetings.forEach(function (meeting) {
+		if (ignoreExams && meeting.getIsExam()) {
+			return;
+		};
+
+		var where = meeting.where;
+		if (!_(retVal).includes(where)) {
+			retVal.push(where);
+		};
+	}.bind(this))
+	return retVal;
+};
+
+Section.prototype.getUniqueStartTimes = function(ignoreExams) {
+	if (ignoreExams === undefined) {
+		ignoreExams = true;
+	};
+	
+	var retVal = [];
+
+	this.getAllMeetingMoments(ignoreExams).forEach(function (time) {
+		var string = time.start.format('h:mm a');
+		if (!_(retVal).includes(string)) {
+			retVal.push(string)
+		};
+	}.bind(this))
+
+	return retVal;
+};
+
+Section.prototype.getUniqueEndTimes = function(ignoreExams) {
+	if (ignoreExams === undefined) {
+		ignoreExams = true;
+	};
+	
+	var retVal = [];
+
+	this.getAllMeetingMoments(ignoreExams).forEach(function (time) {
+		var string = time.end.format('h:mm a');
+		if (!_(retVal).includes(string)) {
+			retVal.push(string)
+		};
+	}.bind(this))
+
+	return retVal;
+};
 
 
 // // returns the start and end of each meeting in a js date
@@ -411,13 +458,14 @@ Section.prototype.download = function (callback) {
 Section.prototype.processServerData = function () {
 
 	//safe to copy all attrs?
-	this.meetings = [];
+	var newMeetings = []
 
 	this.meetings.forEach(function (serverData) {
-		this.meetings.push(new Meeting(serverData))
+		newMeetings.push(new Meeting(serverData))
 	}.bind(this))
 
 
+	this.meetings = newMeetings;
 
 	// if (this.dataStatus == macros.DATASTATUS_DONE) {
 	// 	this.groupSectionTimes()
@@ -432,23 +480,17 @@ Section.prototype.compareTo = function (other) {
 		return 0;
 	}
 
-	if (this.meetings[0].groupedTimes.length === 0) {
+	if (this.meetings[0].times.length === 0) {
 		return 1;
 	}
-	if (other.meetings[0].groupedTimes.length === 0) {
+	if (other.meetings[0].times.length === 0) {
 		return -1;
 	}
-	if (this.meetings[0].groupedTimes[0].times.length === 0) {
+	if (this.meetings[0].times[0][0].start.unix() < other.meetings[0].times[0][0].start.unix()) {
+		return -1;
+	}
+	if (this.meetings[0].times[0][0].start.unix() > other.meetings[0].times[0][0].start.unix()) {
 		return 1;
-	}
-	if (other.meetings[0].groupedTimes[0].times.length === 0) {
-		return -1;
-	}
-	if (this.meetings[0].groupedTimes[0].times[0].start > other.meetings[0].groupedTimes[0].times[0].start) {
-		return 1;
-	}
-	else if (this.meetings[0].groupedTimes[0].times[0].start < other.meetings[0].groupedTimes[0].times[0].start) {
-		return -1;
 	}
 	else {
 		return 0;

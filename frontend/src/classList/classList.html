@@ -161,7 +161,7 @@
                         <tbody>
                             <tr ng-repeat="section in class.sections">
                                 <td>{{section.crn}}</td>
-                                <td>{{section.profs.join(', ')}}</td>
+                                <td>{{section.getProfs().join(', ')}}</td>
                                 <td>
                                     <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
 
@@ -179,13 +179,21 @@
                                         </span>
                                     </span>
                                 </td>
-                                <td>{{section.startTimesStrings.join(", ")}}</td>
-                                <td>{{section.endTimesStrings.join(", ")}}</td>
+                               <!--  <td>
+                                    <span ng-repeat = ""></span>/
+
+                                </td> -->
+
+
+
+                                <td>{{section.getUniqueStartTimes().join(", ")}}</td>
+                                <td>{{section.getUniqueEndTimes().join(", ")}}</td>
 
 
                                 <td>
-                                    <span ng-repeat="location in section.locations">
+                                    <span ng-repeat="location in section.getLocations()">
                                         <span ng-if="location != 'Tba' || section.locations.length <= 1"> {{location}} </span>
+                                        <span ng-if="!$last">, </span>
                                     </span>
                                 </td>
 

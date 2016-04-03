@@ -13,11 +13,11 @@
             <h3 class="panel-title" style="text-align: center;">
             	
             	
-            	<span ng-if ="tree.isString">{{tree.desc}} </span>
+            	<span ng-if ="tree.isString">{{::tree.desc}} </span>
             	
-            	{{tree.subject}} {{tree.classId}}
+            	{{::tree.subject}} {{::tree.classId}}
                 <br/> 
-                {{tree.name}}
+                {{::tree.name}}
             </h3>
 
             <span ng-show="isExpanded">
@@ -71,36 +71,34 @@
                         <div list-icon='saved' toggle='section' style="position: absolute;top: 4px;right: 4px;"></div>
 
                         <div style=" text-align: center;margin-bottom: 22px;">
-                            <span ng-repeat="meeting in section.meetings" ng-if="!meeting.hidden">
+                            <span ng-repeat="meeting in ::section.meetings" ng-if="!meeting.hidden">
 
 
-                                <span ng-if="meeting.isExam">
+                                <span ng-if="::meeting.getIsExam()">
                                     Exam
                                     <br>
                                 </span>
 
                                 <!-- times, eg 10:30 - 11:35 am -->
-                                <span ng-repeat="timeString in meeting.timeStrings">
-                                    {{timeString.start}} - {{timeString.end}}
-                                </span>
-                                <br ng-if="!meeting.isExam">
+                                <span ng-repeat="time in ::meeting.times">
+                                    {{time[0].start.format('h:mm')}} - {{time[0].end.format('h:mm a')}}
+                                </span>&nbsp;
+
+                                <br ng-if="::!meeting.getIsExam()">
 
                                 <!-- days, eg Monday, Wednesday, Thursday -->
-                                <span ng-repeat="day in meeting.days">
-                                    {{day}}
-                                    <span ng-if="!$last">, </span>
-                                </span>
+                                {{::meeting.getWeekdayStrings().join(',&nbsp;')}}
 
-                                <span ng-if="meeting.isExam">
-                                    {{meeting.dayStrings.startDate}}
+                                <span ng-if="::meeting.getIsExam()">
+                                    {{::meeting.startDate.format('MMM Do')}}
                                 </span>
 
                                 <br>
 
                                 <!-- hr/week jawn, eg 3.3 hours/week -->
-                                {{meeting.hoursPerWeek}}
-                                <span ng-if="meeting.isExam">hours</span>
-                                <span ng-if="!meeting.isExam">hours/week</span>
+                                {{::meeting.getHoursPerWeek()}}
+                                <span ng-if="::meeting.getIsExam()">hours</span>
+                                <span ng-if="::!meeting.getIsExam()">hours/week</span>
 
 
 
@@ -108,13 +106,13 @@
 
                                 <!-- location, eg International Village 019, but with href -->
 
-                                <span ng-switch on="meeting.location.toLowerCase()">
+                                <span ng-switch on="::meeting.location.toLowerCase()">
                                     <span ng-switch-when="tba">location undecided</span>
                                     <span ng-switch-when="">location undecided</span>
                                     <span ng-switch-when="web online">Web Online</span>
                                     <span ng-switch-default>
 
-                                        <a target="_blank" href="http://maps.google.com/?q={{graph.getCollegeName() +' '+ meeting.building}}">{{meeting.where}}</a>
+                                        <a target="_blank" href="http://maps.google.com/?q={{::graph.getCollegeName() +' '+ meeting.getBuilding()}}">{{meeting.where}}</a>
 
                                     </span>
                                 </span>
@@ -127,16 +125,13 @@
                             <div style="display: inline-block;max-width: 50%;">
 
 
-                                <span ng-repeat="prof in section.profs">
-                                    {{prof}}
-                                    <span ng-if="!$last">, </span>
-                                </span>
+                                {{::section.getProfs().join(',&nbsp;')}}
 
 
                                 <br> CRN: {{section.crn}}</div>
-                            <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;" class="rightSectionText"> {{section.seatsRemaining}}/{{section.seatsCapacity}} seats
+                            <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;" class="rightSectionText"> {{::section.seatsRemaining}}/{{::section.seatsCapacity}} seats
                                 <br>
-                                <a target="_blank" href="{{section.url}}">View on {{section.host}}</a>
+                                <a target="_blank" href="{{::section.url}}">View on {{::section.host}}</a>
                             </div>
                         </div>
                     </div>
@@ -146,21 +141,21 @@
 
             </div>
 
-            <div ng-if="tree.dataStatus === macros.DATASTATUS_FAIL">
+            <div ng-if="::tree.dataStatus === macros.DATASTATUS_FAIL">
 
                 0 sections this term
                 <div style="white-space: normal;">
                     <br>Couldn't find any class info on
-                    <br> {{tree.host}} :( </div>
+                    <br> {{::tree.host}} :( </div>
             </div>
         </div>
 
 
-
+        <!-- !isExpanded must be watching (no ::) -->
         <div ng-if="!isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
-            <div ng-if="tree.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
+            <div ng-if="::tree.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
 
-            <ng-pluralize ng-if="tree.dataStatus!==macros.DATASTATUS_FAIL" count="tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
+            <ng-pluralize ng-if="::tree.dataStatus!==macros.DATASTATUS_FAIL" count="::tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
         </div>
 
 
