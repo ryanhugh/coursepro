@@ -42,9 +42,6 @@ function Section(config) {
 	this.profs = []
 
 	this.processServerData(config)
-
-	//TODO remove this...
-	this.weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 }
 
 macros.inherent(BaseData, Section)
