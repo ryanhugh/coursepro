@@ -1,9 +1,14 @@
 'use strict';
 
-var Class = require('../../Class')
 var macros = require('../../macros')
 var mockData = require('./mockClassData.json')
 var MockBaseData = require('./MockBaseData')
+
+var proxyquire = require('proxyquireify')(require);
+
+var Class = proxyquire('../../Class', {
+	'./BaseData': MockBaseData, 
+})
 
 
 function MockClass() {
@@ -11,7 +16,6 @@ function MockClass() {
 }
 
 macros.inherent(Class, MockClass);
-macros.inherent(MockBaseData, MockClass);
 
 MockClass.mockData = mockData
 

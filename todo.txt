@@ -1,5 +1,15 @@
 !!!!
 
+jasmine coffeescript
+angular coffeescript
+lodash coffeescript
+ctrl-shift c for color picker
+
+
+
+
+
+
 spacing bug if multiple locations on class list
 T b a?
 why are the terms not sorted on the dropdown?

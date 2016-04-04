@@ -10,11 +10,6 @@ var Meeting = require('./Meeting')
 
 function Section(config) {
 	BaseData.prototype.constructor.apply(this, arguments);
-	if (!config._id && !(config.host && config.termId && config.subject && config.classId && config.crn)) {
-		elog('ERROR section needs host, termId, subject, classId, crn or _id', config)
-	};
-
-
 
 	//loading status is done if any sign that has data
 	if (config.dataStatus !== undefined) {
@@ -23,23 +18,14 @@ function Section(config) {
 	else if (this.lastUpdateTime !== undefined || this.meetings) {
 		this.dataStatus = macros.DATASTATUS_DONE
 	}
-	else {
-		this.dataStatus = macros.DATASTATUS_NOTSTARTED
-	}
-
-	//start times of all non-exam meetings
-	this.startTimesStrings = []
 
 	//pointer to the class instance that contains this
-	this.classInstance = null;
+	this.classInstance = config.classInstance;
 
 	//seperate reasons to meet: eg Lecture or Lab.
 	//each of these then has times, and days
+	//instances of Meeting
 	this.meetings = []
-
-
-	//Professors, eg ["Oana Veliche"]
-	this.profs = []
 
 	this.processServerData(config)
 }
@@ -50,6 +36,14 @@ macros.inherent(BaseData, Section)
 Section.requiredPath = ['host', 'termId', 'subject', 'classId']
 Section.optionalPath = ['crn']
 Section.API_ENDPOINT = '/listSections'
+
+Section.isValidCreatingData = function (config) {
+	if (!config.classInstance) {
+		elog("tried to create a Section without a classInstance", config)
+		return false;
+	};
+	return BaseData.isValidCreatingData.apply(this, arguments);
+}
 
 Section.prototype.meetsOnWeekends = function () {
 
@@ -63,7 +57,7 @@ Section.prototype.meetsOnWeekends = function () {
 	return false;
 }
 
-Section.prototype.getAllMeetingMoments = function(ignoreExams) {
+Section.prototype.getAllMeetingMoments = function (ignoreExams) {
 	if (ignoreExams === undefined) {
 		ignoreExams = true;
 	};
@@ -79,7 +73,7 @@ Section.prototype.getAllMeetingMoments = function(ignoreExams) {
 	}.bind(this))
 
 	retVal.sort(function (a, b) {
-		if (a.start.unix()> b.start.unix()) {
+		if (a.start.unix() > b.start.unix()) {
 			return 1;
 		}
 		else if (a.start.unix() < b.start.unix()) {
@@ -88,7 +82,7 @@ Section.prototype.getAllMeetingMoments = function(ignoreExams) {
 		else {
 			return 0;
 		}
-	}.bind(this))	
+	}.bind(this))
 
 	return retVal;
 };
@@ -145,7 +139,7 @@ Section.prototype.getExamMoments = function () {
 	return null;
 };
 
-Section.prototype.getProfs = function() {
+Section.prototype.getProfs = function () {
 	var retVal = [];
 	this.meetings.forEach(function (meeting) {
 		meeting.profs.forEach(function (prof) {
@@ -158,7 +152,7 @@ Section.prototype.getProfs = function() {
 	return retVal;
 };
 
-Section.prototype.getLocations = function(ignoreExams) {
+Section.prototype.getLocations = function (ignoreExams) {
 	if (ignoreExams === undefined) {
 		ignoreExams = true;
 	};
@@ -177,11 +171,11 @@ Section.prototype.getLocations = function(ignoreExams) {
 	return retVal;
 };
 
-Section.prototype.getUniqueStartTimes = function(ignoreExams) {
+Section.prototype.getUniqueStartTimes = function (ignoreExams) {
 	if (ignoreExams === undefined) {
 		ignoreExams = true;
 	};
-	
+
 	var retVal = [];
 
 	this.getAllMeetingMoments(ignoreExams).forEach(function (time) {
@@ -194,11 +188,11 @@ Section.prototype.getUniqueStartTimes = function(ignoreExams) {
 	return retVal;
 };
 
-Section.prototype.getUniqueEndTimes = function(ignoreExams) {
+Section.prototype.getUniqueEndTimes = function (ignoreExams) {
 	if (ignoreExams === undefined) {
 		ignoreExams = true;
 	};
-	
+
 	var retVal = [];
 
 	this.getAllMeetingMoments(ignoreExams).forEach(function (time) {

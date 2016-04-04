@@ -1,5 +1,6 @@
 'use strict';
 var Section = require('./mocks/mockSection')
+var Class = require('./mocks/mockClass')
 var macros = require('../macros')
 
 
@@ -70,10 +71,13 @@ var macros = require('../macros')
 
 
 // it should either be 1. hidden, or have a times[0][0] that has > 0 length
-
-
-
 describe('Section', function () {
+
+	var aClass = Class.create({
+		_id:'56f21d4fea47044a05689083'
+	})
+	aClass.download()
+
 
 	describe('.create', function () {
 		it('ensures you need a lot of stuff or _id to create Section', function () {
@@ -83,32 +87,55 @@ describe('Section', function () {
 				termId: '201630',
 				subject: 'CS'
 			})).toBe(null);
+
+
+			//check for _id
+
+			//and one that works
+
 		});
 	});
 
 
-	describe('createTimeStrings', function () {
-		it('createTimeStrings does something', function () {
-
+	describe('.meetsOnWeekends', function () {
+		it('works', function () {
 
 			var section = Section.create({
-				_id:'56f223b4ea47044a056a11c1'
-			})
+				_id: '56f21f93ea47044a05691b3e',
+				classInstance: aClass
+			});
 
 			section.download();
 
-
-			expect(section.meetings[0].dayStrings.startDate).toBe('Sep 9th')
-			expect(section.meetings[0].days[0]).toBe("Friday")
-			expect(section.meetings[0].days.length).toBe(1)
-
-
-			// expect(section.meetings[0].timeStrings[0].start).toBe("9:50")
-			// expect(section.meetings[0].timeStrings[0].end).toBe("11:30 am")
-			// expect(section.meetings[0].timeStrings.length).toBe(1)
-
+			expect(section.meetsOnWeekends()).toBe(false);
 		});
 	});
+
+
+
+
+	// describe('createTimeStrings', function () {
+	// 	it('createTimeStrings does something', function () {
+
+
+	// 		var section = Section.create({
+	// 			_id:'56f223b4ea47044a056a11c1'
+	// 		})
+
+	// 		section.download();
+
+
+	// 		expect(section.meetings[0].dayStrings.startDate).toBe('Sep 9th')
+	// 		expect(section.meetings[0].days[0]).toBe("Friday")
+	// 		expect(section.meetings[0].days.length).toBe(1)
+
+
+	// 		// expect(section.meetings[0].timeStrings[0].start).toBe("9:50")
+	// 		// expect(section.meetings[0].timeStrings[0].end).toBe("11:30 am")
+	// 		// expect(section.meetings[0].timeStrings.length).toBe(1)
+
+	// 	});
+	// });
  
 
 });

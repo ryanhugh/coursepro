@@ -3,13 +3,12 @@ var macros = require('./macros')
 var request = require('./request')
 
 function BaseData(config) {
+	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
 
 	for (var attrName in config) {
 		this[attrName] = config[attrName]
 	}
 
-
-	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
 	this.downloadCallbacks = []
 }
 
@@ -22,6 +21,21 @@ BaseData.doObjectsMatchWithKeys = function (keys, a, b) {
 	}
 	return true;
 }
+
+BaseData.isValidCreatingData = function (config) {
+	if (config._id) {
+		return true;
+	}
+
+	var keys = this.requiredPath.concat(this.optionalPath)
+	for (var i = 0; i < keys.length; i++) {
+		var attrName = keys[i]
+		if (!config[attrName]) {
+			return false;
+		};
+	}
+	return true;
+};
 
 var instanceCache = {}
 
@@ -51,29 +65,15 @@ BaseData.create = function (config, useCache) {
 
 	//check to see if isValidCreatingData was overriden
 	//if so use it, if not dynamically check keys 
-	if (this.isValidCreatingData) {
-		if (!this.isValidCreatingData(config)) {
-			return null
-		};
-	}
-
-	//if has _id, it is valid
-	else if (!config._id) {
-
-		var keys = this.requiredPath.concat(this.optionalPath)
-		for (var i = 0; i < keys.length; i++) {
-			var attrName = keys[i]
-			if (!config[attrName]) {
-				elog("ERROR tried to make", this.name, 'without a ', attrName);
-				return null;
-			};
-		}
-	}
+	if (!this.isValidCreatingData(config)) {
+		elog("ERROR tried to make", this.name, 'with invalid data: ', config);
+		return null
+	};
 
 	//seach instance cache for matching instance
 	//this was decided to be done linearly in case a instance got more data about itself (such as a call to download)
 	//note that we are not cloning the cacheItem, for speed
-	
+
 	//the only time that useCache is true is in class download, because that makes a new instance and 
 	//copied all the attributes, so we dont want to return the old instance that dosent have any attrs 
 	//TODO: clean up the circles of creating instances, and eliminate the !='Class' below.
@@ -90,8 +90,8 @@ BaseData.create = function (config, useCache) {
 				if (cacheItem._id == config._id) {
 					return cacheItem;
 				};
-			} 
-			else if (this.name !='Class' && this.doObjectsMatchWithKeys(allKeys, config, cacheItem)) {
+			}
+			else if (this.name != 'Class' && this.doObjectsMatchWithKeys(allKeys, config, cacheItem)) {
 				return cacheItem;
 			}
 		};
@@ -117,6 +117,8 @@ BaseData.create = function (config, useCache) {
 		return instance
 	}
 }
+
+
 
 
 BaseData.createMany = function (config, callback) {
@@ -320,7 +322,7 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 		else if (results.error) {
 			err = 'results.error' + err
 		}
-		
+
 		if (err) {
 			elog(err)
 			this.dataStatus = macros.DATASTATUS_FAIL;
@@ -352,8 +354,8 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 			elog('return results true and false > 0???', this.downloadCallbacks)
 			returnResultsFalse = 0;
 		}
-		
-		
+
+
 		if (results.length == 0) {
 			console.log('base data download results.length = 0', this, config)
 			this.dataStatus = macros.DATASTATUS_FAIL;
@@ -380,7 +382,7 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 			for (var attrName in serverData) {
 				this[attrName] = serverData[attrName]
 			}
-			
+
 		}
 
 

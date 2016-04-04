@@ -28,6 +28,7 @@ module.exports = function (config) {
       configure: function (bundle) {
         bundle.plugin(proxyquire.plugin)
       }
-    }
+    },
+    logLevel:config.LOG_WARN
   });
 };

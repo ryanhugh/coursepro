@@ -145,16 +145,11 @@ Class.API_ENDPOINT = '/listClasses'
 
 
 Class.isValidCreatingData = function (config) {
-	if (!(config.host && config.termId && config.subject && config.classId) && !config._id && !config.isString && !(config.isClass === false)) {
-		elog('ERROR need (host termId, subject, classId) or _id or string to make a class', config)
-		return false;
+	if (config.isString || config.isClass === false) {
+		return true;
 	};
-	if (config instanceof Class) {
-		elog("TRIED to make class from instance of class");
-		return false;
-	};
-	return true;
 
+	return BaseData.isValidCreatingData.apply(this, arguments);
 };
 
 
