@@ -6,7 +6,7 @@ lodash coffeescript
 ctrl-shift c for color picker
 
 
-
+karma-failed-reporter is better than nothing
 
 
 

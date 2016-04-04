@@ -14,7 +14,10 @@ module.exports = function (config) {
       'karma-chrome-launcher',
       'karma-phantomjs-launcher',
       'karma-jasmine',
-      'karma-browserify'
+      'karma-browserify',
+      'karma-logcapture-reporter',
+      'karma-mocha-reporter',
+
     ],
     frameworks: ['browserify', 'jasmine'],
     preprocessors: {
@@ -29,6 +32,27 @@ module.exports = function (config) {
         bundle.plugin(proxyquire.plugin)
       }
     },
-    logLevel:config.LOG_WARN
+    reporters: ['logcapture', 'progress', 'mocha'],
+    client: {
+      captureConsole: true
+    },
+    // reporters: ['spec'],
+    specReporter: {
+      maxLogLines: 8, // limit number of lines logged per test 
+      suppressErrorSummary: true, // do not print error summary 
+      suppressFailed: true, // do not print information about failed tests 
+      suppressPassed: true, // do not print information about passed tests 
+      suppressSkipped: true, // do not print information about skipped tests 
+      showSpecTiming: false // print the time elapsed for each spec 
+    },
+     mochaReporter: {
+      // colors: {
+      //   success: 'blue',
+      //   info: 'bgGreen',
+      //   warning: 'cyan',
+      //   error: 'bgRed'
+      // }
+      output: 'minimal'
+    },
   });
 };
