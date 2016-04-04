@@ -8,6 +8,7 @@ var streamify = require('gulp-streamify');
 var flatten = require('gulp-flatten');
 var angularTemplates = require('gulp-angular-templatecache')
 var htmlmin = require('gulp-htmlmin');
+var notify = require("gulp-notify");
 
 // browsify stuff
 var browserify = require('browserify');
@@ -67,7 +68,7 @@ function compileJS(shouldUglify) {
 			filesToProccess.push(file)
 		};
 	})
-	
+
 	console.log('Processing:', filesToProccess)
 
 
@@ -105,6 +106,11 @@ function compileJS(shouldUglify) {
 			// end this stream
 			this.emit('end');
 		})
+
+		stream.on("error", notify.onError({
+			message: 'Error: <%= error.message %>',
+			sound: false // deactivate sound?
+		}))
 
 		stream = stream.pipe(source('allthejavascript.js'));
 

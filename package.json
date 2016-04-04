@@ -57,6 +57,7 @@
   },
   "description": "Awesome sauce! Yay!",
   "devDependencies": {
+    "gulp-notify": "^2.2.0",
     "karma-chrome-launcher": "^0.2.2",
     "karma-phantomjs-launcher": "^1.0.0"
   }
