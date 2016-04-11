@@ -74,7 +74,7 @@ var macros = require('../macros')
 describe('Section', function () {
 
 	var aClass = Class.create({
-		_id:'56f21d4fea47044a05689083'
+		_id: '56f21d4fea47044a05689083'
 	})
 	aClass.download()
 
@@ -82,26 +82,83 @@ describe('Section', function () {
 	describe('.create', function () {
 		it('ensures you need a lot of stuff or _id to create Section', function () {
 
+			// works with keys
+			expect(Section.create({
+				host: 'neu.edu',
+				termId: '201630',
+				subject: 'CS',
+				classId: '2511',
+				crn: '11722',
+				classInstance: aClass
+			})).not.toBe(null);
+
+			//dosent work
 			expect(Section.create({
 				host: 'neu.edu',
 				termId: '201630',
 				subject: 'CS'
 			})).toBe(null);
 
+			//dosent work, missing classInstance
+			var section = Section.create({
+				_id: '56f21f93ea47044a05691b3e'
+			});
 
-			//check for _id
+			expect(section).toBe(null);
 
-			//and one that works
+			//works with _id
+			var section = Section.create({
+				_id: '56f21f93ea47044a05691b3e',
+				classInstance: aClass
+			});
+
+			expect(section).not.toBe(null);
 
 		});
 	});
 
 
 	describe('.meetsOnWeekends', function () {
-		it('works', function () {
+		it('false when meetin only on weekdays', function () {
 
 			var section = Section.create({
 				_id: '56f21f93ea47044a05691b3e',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			expect(section.meetsOnWeekends()).toBe(false);
+
+
+		});
+		it('true when meeting on sat', function () {
+
+			var section = Section.create({
+				_id: '56f2203fea47044a05694349',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			expect(section.meetsOnWeekends()).toBe(true);
+
+
+		});
+		it('true when meeting on sun', function () {
+			var section = Section.create({
+				_id: '56f220d9ea47044a05696720',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			expect(section.meetsOnWeekends()).toBe(true);
+
+		});
+		it('true when not meeting', function () {
+			var section = Section.create({
+				_id: '56f223b4ea47044a056a11c1',
 				classInstance: aClass
 			});
 
@@ -113,35 +170,176 @@ describe('Section', function () {
 
 
 
+	describe('.getAllMeetingMoments', function () {
+		it('works', function () {
 
-	// describe('createTimeStrings', function () {
-	// 	it('createTimeStrings does something', function () {
+			var section = Section.create({
+				_id: '56f223b4ea47044a056a11c1',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			expect(section.getAllMeetingMoments().length).toBe(0);
+
+			var section = Section.create({
+				_id: '56f21f93ea47044a05691b3e',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			var a = section.getAllMeetingMoments()[0];
+
+			//11 45 am
+			expect(a.start.unix()).toBe(733500);
+			expect(a.end.unix()).toBe(739500);
+			expect(section.getAllMeetingMoments().length).toBe(1);
+		});
+	});
+
+	describe('.getWeekDaysAsBooleans', function () {
+		it('works', function () {
+
+			var section = Section.create({
+				_id: '56f223b4ea47044a056a11c1',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			expect(_(section.getWeekDaysAsBooleans()).includes(true)).toBe(false);
+
+		});
+
+		it('work2s', function () {
+
+			var section = Section.create({
+				_id: '56f22254ea47044a0569bf99',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			var theList = section.getWeekDaysAsBooleans();
+
+			expect(theList.length).toBe(7);
+			expect(theList[0]).toBe(false);
+			expect(theList[1]).toBe(true);
+			expect(theList[2]).toBe(false);
+			expect(theList[3]).toBe(true);
+			expect(theList[4]).toBe(true);
+			expect(theList[5]).toBe(false);
+			expect(theList[6]).toBe(false);
+		});
+	});
+
+	describe('.getWeekDaysAsStringArray', function () {
+		it('works1', function () {
+
+			var section = Section.create({
+				_id: '56f223b4ea47044a056a11c1',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			var theList = section.getWeekDaysAsStringArray();
+
+			expect(theList.length).toBe(0);
+
+		});
+		it('works2', function () {
+
+			var section = Section.create({
+				_id: '56f22254ea47044a0569bf99',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			var theList = section.getWeekDaysAsStringArray();
+
+			expect(theList.length).toBe(3);
+			expect(theList[0]).toBe('Monday');
+			expect(theList[1]).toBe('Wednesday');
+			expect(theList[2]).toBe('Thursday');
+		});
+	});
+
+	describe('.getHasExam', function () {
+		it('works', function () {
+			var section = Section.create({
+				_id: '56f223b4ea47044a056a11c1',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			var theList = section.getWeekDaysAsStringArray();
+
+			expect(section.getHasExam()).toBe(false);
+			
+			var section = Section.create({
+				_id: '56f2203fea47044a05694349',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			var theList = section.getWeekDaysAsStringArray();
+
+			expect(section.getHasExam()).toBe(true);
+		});
+	});
+	describe('.getHasExam', function () {
+		it('works', function () {
+			var section = Section.create({
+				_id: '56f223b4ea47044a056a11c1',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			expect(section.getExamMoments()).toBe(null);
+
+			var section = Section.create({
+				_id: '56f2203fea47044a05694349',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			var examTimes = section.getExamMoments();
+
+			expect(examTimes.start.unix()).toBe(833100);
+			expect(examTimes.end.unix()).toBe(839100);
+		});
+	});
 
 
-	// 		var section = Section.create({
-	// 			_id:'56f223b4ea47044a056a11c1'
-	// 		})
 
-	// 		section.download();
+	describe('.getProfs', function () {
+		it('works', function () {
+			var section = Section.create({
+				_id: '56f223b4ea47044a056a11c1',
+				classInstance: aClass
+			});
+
+			section.download();
+
+			expect(section.getProfs()[0]).toBe("Bob Jones");
+			expect(section.getProfs()[1]).toBe("Leena Razzaq");
+			expect(section.getProfs().length).toBe(2);
+		});
+	});
 
 
-	// 		expect(section.meetings[0].dayStrings.startDate).toBe('Sep 9th')
-	// 		expect(section.meetings[0].days[0]).toBe("Friday")
-	// 		expect(section.meetings[0].days.length).toBe(1)
-
-
-	// 		// expect(section.meetings[0].timeStrings[0].start).toBe("9:50")
-	// 		// expect(section.meetings[0].timeStrings[0].end).toBe("11:30 am")
-	// 		// expect(section.meetings[0].timeStrings.length).toBe(1)
-
-	// 	});
-	// });
- 
 
 });
 
 
- 
+
 // var popup = require('../graph/popup')
 // var assert = require('assert')
 

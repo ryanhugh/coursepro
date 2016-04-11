@@ -139,6 +139,7 @@ Section.prototype.getExamMoments = function () {
 	return null;
 };
 
+// Unique list of all professors in all meetings, sorted alphabetically
 Section.prototype.getProfs = function () {
 	var retVal = [];
 	this.meetings.forEach(function (meeting) {
@@ -148,6 +149,8 @@ Section.prototype.getProfs = function () {
 			};
 		}.bind(this))
 	}.bind(this))
+
+	retVal.sort();
 
 	return retVal;
 };

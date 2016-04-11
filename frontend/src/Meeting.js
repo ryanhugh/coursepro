@@ -11,6 +11,7 @@ function Meeting(serverData) {
 	};
 
 	this.profs = serverData.profs;
+	this.profs.sort();
 	this.where = serverData.where;
 
 	//beginning of the day that the class starts/ends
