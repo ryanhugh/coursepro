@@ -103,6 +103,9 @@ exports.DB_REFRESH_INTERVAL = 1800000
 if (exports.PRODUCTION) {
 	exports.SEND_EMAILS = true;
 	exports.QUIET_LOGGING = true;
+
+	//so express dosent spit out trace backs to the user
+	process.env.NODE_ENV='production';
 }
 else {
 	exports.SEND_EMAILS = false

@@ -134,9 +134,9 @@ app.use(function (req, res, next) {
 
 
 //accepts any type
-function isObjectSanitized (object) {
-	
-	if (_(['number','string','boolean','undefined']).includes(typeof object)) {
+function isObjectSanitized(object) {
+
+	if (_(['number', 'string', 'boolean', 'undefined']).includes(typeof object)) {
 		return true;
 	}
 
@@ -146,7 +146,7 @@ function isObjectSanitized (object) {
 		for (var attrName in object) {
 
 			//make sure it dosen't start with a $ or contain a '.'
-			if (attrName[0]=='$') {
+			if (attrName[0] == '$') {
 				return false;
 			}
 
@@ -161,7 +161,7 @@ function isObjectSanitized (object) {
 		}
 	}
 	else {
-		console.log("error type",typeof object,'not whitelisted!!',object);
+		console.log("error type", typeof object, 'not whitelisted!!', object);
 		return false
 	}
 	return true;
@@ -178,7 +178,7 @@ app.use(function (req, res, next) {
 				summary: 'dropping req due to $inject'
 			}
 		})
-		
+
 		res.redirect('https://coursepro.io' + req.url);
 		res.status(418)
 		res.setHeader('LEEROOOOOOOOOOOOOOOOOOOOOOY', 'JEEEEEEENKIIIIIIIIIIIIIIINS!!!!');
@@ -200,7 +200,7 @@ app.use(function (req, res, next) {
 	res.setHeader('X-Frame-Options', 'DENY');
 	res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
 	res.setHeader("X-XSS-Protection", "1; mode=block");
-	res.setHeader("X-Content-Type-Options: nosniff");
+	res.setHeader("X-Content-Type-Options", "nosniff");
 	next()
 }.bind(this))
 

@@ -5,6 +5,7 @@ angular coffeescript
 lodash coffeescript
 ctrl-shift c for color picker
 
+clear out db at beginning of spider? also need to remove neu.edu/law stuff
 
 karma-failed-reporter is better than nothing
 
