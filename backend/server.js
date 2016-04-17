@@ -134,6 +134,7 @@ app.use(function (req, res, next) {
 
 
 //accepts any type
+// http://stackoverflow.com/questions/9759972/what-characters-are-not-allowed-in-mongodb-field-names
 function isObjectSanitized (object) {
 	
 	if (_(['number','string','boolean','undefined']).includes(typeof object)) {
@@ -694,6 +695,14 @@ app.post('/addToUserLists', function (req, res) {
 	if (!req.body.loginKey || !req.body.listName || !req.body.classes || !req.body.sections) {
 		res.send(JSON.stringify({
 			error: 'addIdsToLists needs loginKey as json and listName'
+		}))
+		return;
+	};
+
+	// string listname and alphanumeric listname 
+	if ((typeof req.body.listName != 'string') || !req.body.listName.match(/^[a-zA-Z0-9]+$/i)) {
+		res.send(JSON.stringify({
+			error: 'nizzy nizzy'
 		}))
 		return;
 	};

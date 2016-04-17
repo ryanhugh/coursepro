@@ -21,7 +21,8 @@ var queue = require("queue-async")
 
 // var MongoClient = require('mongodb').MongoClient;
 
-var db = require('monk')('52.20.189.150/test');
+var db = require('monk')('developmentOnly'+'passwordjflaksjflsajfl ds'+'@52.20.189.150/coursepro_dev');
+// var database = monk;
 var test = db.get('test');
 
 // Connection URL 
@@ -32,10 +33,49 @@ var test = db.get('test');
 
 // var test = db.collection('test');
 
-test.find({},function (err,results) {
-	console.log(err,results)
-	db.close()
-}.bind(this))
+// test.find({},function (err,results) {
+// 	console.log(err,results)
+// 	db.close()
+// }.bind(this))
+
+// console.log(test,test.__proto__);
+
+test.findAndModify({
+			_id: '123456789012345678901234'
+		}, {w:9}, {multi:false,"new":true}, function (err, numReplaced) {
+
+			console.log(err,numReplaced,arguments.length);
+
+			// if (err) {
+			// 	console.log("ERROR",err);
+			// 	return callback(err)
+			// };
+			// if (numReplaced !== 1) {
+			// 	console.log('ERROR: updated !==0?', numReplaced, newData);
+			// };
+			// callback(null, newData);
+		}.bind(this));
+
+// test.insert({
+// 			_id: '123456789012345678901234',
+// 			w:4
+// 		}, function (err, numReplaced) {
+
+// 			console.log(err,numReplaced,arguments.length);
+
+// 			// if (err) {
+// 			// 	console.log("ERROR",err);
+// 			// 	return callback(err)
+// 			// };
+// 			// if (numReplaced !== 1) {
+// 			// 	console.log('ERROR: updated !==0?', numReplaced, newData);
+// 			// };
+// 			// callback(null, newData);
+// 		}.bind(this));
+
+
+console.log(test.updateOne)
+
 // test.find(function(err, results) {
 // 	console.log(err, results)
 

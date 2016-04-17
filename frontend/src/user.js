@@ -20,22 +20,23 @@ function User() {
 	//sections and classes watching, when loaded, are copied to this.watching
 	this.dbData = {
 		lists: {},
-		vars: {}
+		vars: {},
+		// loginKey:'' // generated when login with google
 	}
 
 	//lastSelectedCollege and lastSelectedTerm are used now
 
 	//here, actual instances of classes and sections are stored
 	this.lists = {
-		watching: {
-			classes: [],
-			sections: [],
-			dataStatus: macros.DATASTATUS_NOTSTARTED
-		},
-		saved: {
-			classes: [],
-			sections: []
-		}
+		// watching: {
+		// 	classes: [],
+		// 	sections: [],
+		// 	dataStatus: macros.DATASTATUS_NOTSTARTED
+		// },
+		// saved: {
+		// 	classes: [],
+		// 	sections: []
+		// }
 	}
 
 	//this is incremented for each request, and decreased for every completed request
@@ -44,54 +45,67 @@ function User() {
 	//timestamp of last networking request
 	this.lastRequestTime = 0;
 
-	//download data from server on init, if have loginKey
-	if (this.getAuthenticated()) {
-		this.download()
+	// the status of downloading the data from the server. If don't have login key, this stays at not started. 
+	this.dataStatus = macros.DATASTATUS_NOTSTARTED
+
+	// load data
+	// everything comes from localstorage.dbData if don't have login key, else everything except loginKey comes from server.
+	// three cases:
+	// 1. have login key -> download data
+	// 2. have localstorage -> load this.dbData = localData
+	// 3. have nothing -> this.dbData = ... (above)
+
+	if (localStorage.dbData) {
+		var localData = JSON.parse(localStorage.dbData);
+
+		if (localData.loginKey) {
+
+			// cool, user logged in with google before, download the rest of the data from the server
+			this.dbData.loginKey = localData.loginKey
+			this.dbData.vars = localData.vars
+			this.download()
+		}
+
+		// valid local data
+		else {
+			this.dbData = localData;
+		}
 	}
-	else {
-		this.loadFromLocalStorage();
-	}
+	window.user = this
+
 }
 
-User.prototype.loadFromLocalStorage = function () {
-	if (localStorage.dbData) {
-		this.dbData = JSON.parse(localStorage.dbData)
-	}
-};
-User.prototype.saveToLocalStorage = function () {
+
+User.prototype.saveData = function () {
+	//save all dbData to localStorage
 	localStorage.dbData = JSON.stringify(this.dbData)
-};
-
-User.prototype.dataUpdated = function () {
-	//save login key to localstorage
-	if (this.dbData.loginKey) {
-		localStorage.loginKey = this.dbData.loginKey
-	}
-
-	//and fire off the triggers
-	this.onAuthFinishTriggers.forEach(function (trigger) {
-		trigger.trigger();
-	}.bind(this))
-
-	//remove all triggers on success
-	this.onAuthFinishTriggers = []
 };
 
 
 
 //just returns weather have a login key or not
 User.prototype.getAuthenticated = function () {
-
-	// temp, until get data back in server
-	return false;
-	
-	if (localStorage.loginKey) {
+	if (this.dbData.loginKey) {
 		return true;
 	}
 	else {
 		return false;
 	}
 };
+
+// same as below but only fires when finished logging in with google
+User.prototype.onAuthenticate = function (name, callback) {
+	if (this.dataStatus === macros.DATASTATUS_DONE) {
+		return callback();
+	}
+	else {
+		this.onAuthFinishTriggers.push({
+			name: name,
+			trigger: callback
+		})
+	}
+};
+
 
 // fires when dbData is stabalized
 // if don't have loginKey, fires now
@@ -159,11 +173,15 @@ User.prototype.sendRequest = function (config, callback) {
 
 	config.type = 'POST'
 	config.useCache = false;
-	config.auth = true;
 
 	if (config.tree) {
 		config.body = config.tree.getIdentifer().full.obj;
 	}
+	if (!config.body) {
+		config.body = {}
+	}
+	config.body.loginKey = this.dbData.loginKey;
+
 
 	this.activeRequestCount++;
 
@@ -224,13 +242,12 @@ User.prototype.download = function (callbackOrConfig, callback) {
 	};
 
 
-	if (!this.getAuthenticated() || !config.body || !config.body.idToken) {
+	if (!this.getAuthenticated() && (!config.body || !config.body.idToken)) {
 		console.log("ERROR not authenticated cant get user data");
 		return callback('Cannot get user data without being signed in')
 	};
 
 	config.url = '/getUser'
-	this.lists[listName].dataStatus = macros.DATASTATUS_DONE;
 
 	this.dataStatus = macros.DATASTATUS_LOADING
 	this.sendRequest(config, function (err, user) {
@@ -246,20 +263,53 @@ User.prototype.download = function (callbackOrConfig, callback) {
 			return callback('error')
 		}
 
+		// this.dbData.loginKey = user.loginKey;
+		// this.dbData.email = user.email;
 
+		// Keep a reference to the local lists, and add them after the serverLists have been downloaded
+		var localLists = this.lists;
+		var localVars = this.dbData.vars;
 
 		//copy the attrs to this.dbData
 		for (var attrName in user) {
-			// if (!_.isEqual(this.dbData[attrName], user[attrName]) && this.dbData[attrName] !== undefined) {
-			//     console.log("ERROR overrideing value", attrName, this.dbData[attrName], user[attrName]);
-			// }
 			this.dbData[attrName] = user[attrName]
 		}
 
-		this.dataUpdated()
+		// reset lists, because we just changed this.dbData.lists and we need to reload any lists
+		this.lists = {}
 
+		var q = queue();
 
-		return callback(null, this)
+		// Merge the lists and don't call download callback until server has localLists. 
+		for (var listName in localLists) {
+			q.defer(function (callback) {
+				this.addToList(listName, localLists[listName].classes, localLists[listName].sections, callback);
+			}.bind(this));
+		}
+
+		//Merge the vars
+		for (var varName in localVars) {
+			if (this.dbData.vars[varName] && this.dbData.vars[varName] != localVars[varName]) {
+				elog('remove var '+varName+'already exists and is set to '+this.dbData.vars[varName],'not overrideing to ',localVars[varName])
+			}
+			else {
+				this.dbData.vars[varName] = localVars[varName]
+			}
+		}
+
+		//and fire off the triggers
+		this.onAuthFinishTriggers.forEach(function (trigger) {
+			trigger.trigger();
+		}.bind(this))
+
+		//remove all triggers on success
+		this.onAuthFinishTriggers = []
+
+		this.saveData()
+
+		q.awaitAll(function (err) {
+			return callback(err, this)
+		}.bind(this))
 	}.bind(this))
 };
 
@@ -329,62 +379,56 @@ User.prototype.loadList = function (listName, callback) {
 			return callback('internal error');
 		};
 	};
-
-	// if (!this.dbData.lists[listName]) {
-	//     return callback(null, {
-	//         classes: [],
-	//         sections: []
-	//     })
-	// };
-
 	this.ensureList(listName)
 
 
 	this.lists[listName].dataStatus = macros.DATASTATUS_LOADING
 
+	// wait data downloaded from server to run this
+	this.onAuthFinish(this.constructor.name, function () {
+		var q = queue()
 
-	var q = queue()
+		//fetch all the class data from the _id's in the user watch list
+		this.dbData.lists[listName].classes.forEach(function (classMongoId) {
+			q.defer(function (callback) {
+				Class.create({
+					_id: classMongoId
+				}).download(function (err, aClass) {
+					if (err) {
+						return callback(err)
+					}
 
-	//fetch all the class data from the _id's in the user watch list
-	this.dbData.lists[listName].classes.forEach(function (classMongoId) {
-		q.defer(function (callback) {
-			Class.create({
-				_id: classMongoId
-			}).download(function (err, aClass) {
-				if (err) {
-					return callback(err)
-				}
-
-				this.lists[listName].classes.push(aClass);
-				callback()
+					this.lists[listName].classes.push(aClass);
+					callback()
+				}.bind(this))
 			}.bind(this))
 		}.bind(this))
-	}.bind(this))
 
 
-	//same thing for the sections
-	this.dbData.lists[listName].sections.forEach(function (sectionMongoId) {
-		q.defer(function (callback) {
-			Section.create({
-				_id: sectionMongoId
-			}).download(function (err, section) {
-				if (err) {
-					return callback(err)
-				}
-				this.lists[listName].sections.push(section)
-				callback()
+		//same thing for the sections
+		this.dbData.lists[listName].sections.forEach(function (sectionMongoId) {
+			q.defer(function (callback) {
+				Section.create({
+					_id: sectionMongoId
+				}).download(function (err, section) {
+					if (err) {
+						return callback(err)
+					}
+					this.lists[listName].sections.push(section)
+					callback()
+				}.bind(this))
 			}.bind(this))
 		}.bind(this))
-	}.bind(this))
 
-	q.awaitAll(function (err) {
-		if (err) {
-			this.lists[listName].dataStatus = macros.DATASTATUS_FAIL;
-			elog(err, 'when loading watching classes')
-			return callback(err)
-		}
-		this.lists[listName].dataStatus = macros.DATASTATUS_DONE;
-		callback(null, this.lists[listName])
+		q.awaitAll(function (err) {
+			if (err) {
+				this.lists[listName].dataStatus = macros.DATASTATUS_FAIL;
+				elog(err, 'when loading ', listName, ' classes+sections')
+				return callback(err)
+			}
+			this.lists[listName].dataStatus = macros.DATASTATUS_DONE;
+			callback(null, this.lists[listName])
+		}.bind(this))
 	}.bind(this))
 };
 
@@ -430,7 +474,8 @@ User.prototype.ensureList = function (listName) {
 	if (!this.lists[listName]) {
 		this.lists[listName] = {
 			classes: [],
-			sections: []
+			sections: [],
+			dataStatus: macros.DATASTATUS_NOTSTARTED
 		}
 	};
 	if (!this.dbData.lists[listName]) {
@@ -448,10 +493,15 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		callback = function () {}
 	}
 
+	if (classes.length == 0 && sections.length == 0) {
+		console.log("addto lists called with no classes or section");
+		return callback()
+	};
+
 	this.ensureList(listName)
 
-	var initClassCount = this.lists[listName].classes.length
-	var initSectionCount = this.lists[listName].sections.length
+	var initClassCount = this.dbData.lists[listName].classes.length
+	var initSectionCount = this.dbData.lists[listName].sections.length
 
 	var classIds = [];
 	classes.forEach(function (aClass) {
@@ -464,23 +514,29 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		sectionIds.push(section._id)
 	}.bind(this))
 
-	//add the seciton, but make sure to not add duplicate sectin
+	// add to this.lists if this.lists is done downloading
+	//add the section, but make sure to not add duplicate section
 	//it could be a different instance of that same section
-	sections.forEach(function (section) {
-		if (_.filter(this.lists[listName].sections, {
-				_id: section._id
-			}).length === 0) {
-			this.lists[listName].sections.push(section)
-		}
-	}.bind(this))
+	if (this.lists[listName].dataStatus == macros.DATASTATUS_DONE) {
+		sections.forEach(function (section) {
+			if (_.filter(this.lists[listName].sections, {
+					_id: section._id
+				}).length === 0) {
+				this.lists[listName].sections.push(section)
+			}
+		}.bind(this))
 
-	classes.forEach(function (aClass) {
-		if (_.filter(this.lists[listName].classes, {
-				_id: aClass._id
-			}).length === 0) {
-			this.lists[listName].classes.push(aClass)
-		}
-	}.bind(this))
+		classes.forEach(function (aClass) {
+			if (_.filter(this.lists[listName].classes, {
+					_id: aClass._id
+				}).length === 0) {
+				this.lists[listName].classes.push(aClass)
+			}
+		}.bind(this))
+	}
+	else if (this.lists[listName].dataStatus == macros.DATASTATUS_LOADING) {
+		elog('told to add to list that was loading', classes, sections, listName, this.dbData.lists);
+	}
 
 
 	//add any classes given to both this.lists and this.dbData.lists
@@ -497,6 +553,8 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		'title': 'Coursepro.io'
 	});
 
+	var finalClassCount = this.dbData.lists[listName].classes.length;
+	var finalSectionCount = this.dbData.lists[listName].sections.length;
 
 	request({
 		url: '/log',
@@ -504,8 +562,8 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 			type: 'addToList',
 			initClassCount: initClassCount,
 			initSectionCount: initSectionCount,
-			finalClassCount: this.lists[listName].classes.length,
-			finalSectionCount: this.lists[listName].sections.length
+			finalClassCount: finalClassCount,
+			finalSectionCount: finalSectionCount
 		},
 		useCache: false
 	}, function (err, response) {
@@ -513,6 +571,11 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 			elog("ERROR: couldn't log addToList :(", err, response, body);
 		}
 	}.bind(this))
+
+	if (initClassCount == finalClassCount && initSectionCount == finalSectionCount) {
+		console.log("warning only added classes that already existed");
+		return callback()
+	};
 
 	if (this.getAuthenticated()) {
 		this.sendRequest({
@@ -526,7 +589,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		}, callback)
 	}
 	else {
-		this.saveToLocalStorage()
+		this.saveData()
 		return callback()
 	}
 };
@@ -627,7 +690,7 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 		}, callback)
 	}
 	else {
-		this.saveToLocalStorage()
+		this.saveData()
 		return callback()
 	}
 };
@@ -775,7 +838,7 @@ User.prototype.setValue = function (name, value, callback) {
 
 	}
 	else {
-		this.saveToLocalStorage()
+		this.saveData()
 		return callback()
 	}
 

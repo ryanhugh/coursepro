@@ -609,68 +609,110 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 
 
 UsersDB.prototype.addIdsToLists = function (listName, classMongoIds, sectionMongoIds, loginKey, callback) {
-	// http://stackoverflow.com/questions/9759972/what-characters-are-not-allowed-in-mongodb-field-names
-	if (_(listName).includes('.') || listName[0] == '$') {
-		return callback('invalid list name', listName)
-	};
+
+	var toAddToSet = {};
+	toAddToSet["lists." + listName + ".classes"] = {
+		$each: classMongoIds
+	}
+
+	toAddToSet["lists." + listName + ".sections"] = {
+		$each: sectionMongoIds
+	}
 
 
-	this.find({
-			loginKey: loginKey
-		}, {},
-		function (err, user) {
-			if (err) {
-				return callback(err)
-			}
-			if (!user) {
-				return callback('no user found')
-			};
-			var originalDoc = _.cloneDeep(user);
+	this.table.findAndModify({
+		loginKey: loginKey
+	}, {
+		$addToSet: toAddToSet
+	}, {
+		"new": true
+	}, function (err, user) {
+		if (err) {
+			return callback(err)
+		}
 
-			//create the list if it does not exist
-			if (!user.lists[listName]) {
-				user.lists[listName] = {
-					classes: [],
-					sections: []
-				}
-			};
+		if (!user) {
+			return callback('no user found')
+		};
 
-			if (listName == 'watching' && user.lists[listName].classes.length + classMongoIds.length > 10) {
-				console.log("user", user.email, 'is already watching to many classes', user.lists[listName].classes, classMongoIds)
-				return callback(null, 'Can\'t watch more classes because too many classes are being watched. The current limit is 10 classes.')
-			}
+		console.log('tried to add ', classMongoIds.length, ' and ', sectionMongoIds.length, ' to user ', user.email, 'list', listName);
+		console.log('list now has ', user.lists[listName].classes.length, 'classes and ', user.lists[listName].sections.length, 'sections');
 
-			var numClassesAdded = 0;
-			classMongoIds.forEach(function (classMongoId) {
-				if (!_(user.lists[listName].classes).includes(classMongoId)) {
-					numClassesAdded++;
-					user.lists[listName].classes.push(classMongoId)
-				}
-			}.bind(this))
+		callback();
+	}.bind(this));
+
+	// this.find({
+	// 		loginKey: loginKey
+	// 	}, {},
+	// 	function (err, user) {
+	// 		if (err) {
+	// 			return callback(err)
+	// 		}
+	// 		if (!user) {
+	// 			return callback('no user found')
+	// 		};
+	// 		var originalDoc = _.cloneDeep(user);
+
+	// 		//create the list if it does not exist
+	// 		if (!user.lists[listName]) {
+	// 			user.lists[listName] = {
+	// 				classes: [],
+	// 				sections: []
+	// 			}
+	// 		};
+
+	// 		if (listName == 'watching' && user.lists[listName].classes.length + classMongoIds.length > 10) {
+	// 			console.log("user", user.email, 'is already watching to many classes', user.lists[listName].classes, classMongoIds)
+	// 			return callback(null, 'Can\'t watch more classes because too many classes are being watched. The current limit is 10 classes.')
+	// 		}
+
+	// 		var numClassesAdded = 0;
+	// 		classMongoIds.forEach(function (classMongoId) {
+	// 			if (!_(user.lists[listName].classes).includes(classMongoId)) {
+	// 				numClassesAdded++;
+	// 				user.lists[listName].classes.push(classMongoId)
+	// 			}
+	// 		}.bind(this))
 
 
-			var numSectionsAdded = 0;
-			sectionMongoIds.forEach(function (sectionMongoId) {
-				if (!_(user.lists[listName].sections).includes(sectionMongoId)) {
-					numSectionsAdded++;
-					user.lists[listName].sections.push(sectionMongoId)
-				}
-			}.bind(this))
+	// 		var numSectionsAdded = 0;
+	// 		sectionMongoIds.forEach(function (sectionMongoId) {
+	// 			if (!_(user.lists[listName].sections).includes(sectionMongoId)) {
+	// 				numSectionsAdded++;
+	// 				user.lists[listName].sections.push(sectionMongoId)
+	// 			}
+	// 		}.bind(this))
 
-			if (numClassesAdded === 0 && numSectionsAdded === 0) {
-				console.log('user ', user.email, 'already has all these ids in list', listName)
-				return callback(null, 'All these classes and sections are already in list ' + listName)
-			};
-
-
-			console.log('added ', numClassesAdded, ' and ', numSectionsAdded, ' to user ', user.email, 'list', listName);
+	// 		if (numClassesAdded === 0 && numSectionsAdded === 0) {
+	// 			console.log('user ', user.email, 'already has all these ids in list', listName)
+	// 			return callback(null, 'All these classes and sections are already in list ' + listName)
+	// 		};
 
 
-			this.updateDatabase(user, originalDoc, function (err, newDoc) {
-				return callback(err)
-			}.bind(this))
+	// 		console.log('added ', numClassesAdded, ' and ', numSectionsAdded, ' to user ', user.email, 'list', listName);
+	// 		console.log('list now has ', user.lists[listName].classes.length, 'classes and ', user.lists[listName].sections.length, 'sections');
 
-		}.bind(this))
+	// 		var totalSections = 0;
+	// 		for (var listName_temp in user.lists) {
+	// 			totalSections += user.lists[listName_temp].sections.length
+	// 		}
+
+	// 		console.log("on output user has ", totalSections, 'sections across all lists!');
+
+	// 		var totalSectionsOriginal = 0;
+	// 		for (var listName_temp in originalDoc.lists) {
+	// 			totalSectionsOriginal += originalDoc.lists[listName_temp].sections.length
+	// 		}
+
+	// 		console.log("on input user has ", totalSectionsOriginal, 'sections across all lists!');
+
+
+
+	// 		this.updateDatabase(user, originalDoc, function (err, newDoc) {
+	// 			return callback(err)
+	// 		}.bind(this))
+
+	// 	}.bind(this))
 };
 
 UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectionMongoIds, loginKey, callback) {
