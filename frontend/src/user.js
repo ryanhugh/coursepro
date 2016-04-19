@@ -290,10 +290,14 @@ User.prototype.download = function (callbackOrConfig, callback) {
 		//Merge the vars
 		for (var varName in localVars) {
 			if (this.dbData.vars[varName] && this.dbData.vars[varName] != localVars[varName]) {
-				elog('remove var '+varName+'already exists and is set to '+this.dbData.vars[varName],'not overrideing to ',localVars[varName])
+				elog('remove var ' + varName + 'already exists and is set to ' + this.dbData.vars[varName], 'not overrideing to ', localVars[varName])
 			}
 			else {
-				this.dbData.vars[varName] = localVars[varName]
+				q.defer(function (callback) {
+					this.setValue(varName, localVars[varName], function (err) {
+						callback(err)
+					}.bind(this))
+				}.bind(this))
 			}
 		}
 
