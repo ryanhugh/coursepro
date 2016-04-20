@@ -132,6 +132,18 @@ app.use(function (req, res, next) {
 	}
 })
 
+// accepts any type, requires a-zA-Z0-9
+function isAlphaNumeric (string) {
+	if (typeof req.body.listName != 'string') {
+		return false;
+	};
+	if (req.body.listName.match(/^[a-zA-Z0-9]+$/i)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 
 //accepts any type
 // http://stackoverflow.com/questions/9759972/what-characters-are-not-allowed-in-mongodb-field-names
@@ -700,7 +712,7 @@ app.post('/addToUserLists', function (req, res) {
 	};
 
 	// string listname and alphanumeric listname 
-	if ((typeof req.body.listName != 'string') || !req.body.listName.match(/^[a-zA-Z0-9]+$/i)) {
+	if (!isAlphaNumeric(req.body.listName)) {
 		res.send(JSON.stringify({
 			error: 'nizzy nizzy'
 		}))
@@ -839,6 +851,15 @@ app.post('/setUserVar', function (req, res) {
 		}))
 		return;
 	}
+
+	// string listname and alphanumeric listname 
+	if (!isAlphaNumeric(req.body.listName)) {
+		res.send(JSON.stringify({
+			error: 'nizzy nizzy'
+		}))
+		return;
+	};
+
 
 	usersDB.setUserVar(req.body.name, req.body.value, req.body.loginKey, function (err, clientMsg) {
 		if (err) {
