@@ -364,8 +364,7 @@ User.prototype.loadList = function (listName, callback) {
 		callback = function () {}
 	};
 
-	//add check for dataStatus
-
+	// if the list already exists, do some checks to make sure its in a valid state
 	if (this.lists[listName]) {
 
 		if (this.lists[listName].dataStatus === macros.DATASTATUS_DONE) {
@@ -383,8 +382,8 @@ User.prototype.loadList = function (listName, callback) {
 			return callback('internal error');
 		};
 	};
-	this.ensureList(listName)
 
+	this.ensureList(listName)
 
 	this.lists[listName].dataStatus = macros.DATASTATUS_LOADING
 

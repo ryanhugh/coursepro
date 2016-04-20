@@ -211,9 +211,10 @@ UsersDB.prototype.subscribeForEverything = function (userData, callback) {
 		var originalDoc = _.cloneDeep(doc);
 		var sendThanksEmail = false;
 
+		// var updateQuery = {};
 
 		if (doc) {
-
+			// updateQuery._id = doc._id;
 			if (!doc.subscriptions.everything) {
 				sendThanksEmail = true;
 			}
@@ -225,6 +226,7 @@ UsersDB.prototype.subscribeForEverything = function (userData, callback) {
 
 		}
 		else {
+			// updateQuery.email = userData.email;
 
 			//insert new user to db
 			sendThanksEmail = true;
@@ -240,6 +242,14 @@ UsersDB.prototype.subscribeForEverything = function (userData, callback) {
 		if (sendThanksEmail) {
 			emailMgr.sendThanksForRegistering(userData.email);
 		}
+
+		// this woulnt work if user not in db, need createBaseSchema and upsert if not in at all
+		// this.table.update(updateQuery, {
+		// 	$set: {
+		// 		"subscriptions.everything": true,
+		// 		"email":userData.email
+		// 	}
+		// })
 
 		this.updateDatabase(doc, originalDoc, function (err, newDoc) {
 			if (err) {
