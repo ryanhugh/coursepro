@@ -268,9 +268,7 @@ UsersDB.prototype.unsubscribe = function (userData, callback) {
 		$set: {
 			"subscriptions.everything": false
 		}
-	}, {
-		"new": true
-	}, function (err, user) {
+	}, {}, function (err, user) {
 		if (err) {
 			return callback(err)
 		}
