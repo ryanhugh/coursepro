@@ -51,9 +51,6 @@ function UsersDB() {
 
 }
 
-// NEED TO DO BACKEND UPDATE FOR VARS TOO NOW THAT THEY ARE BEING MERGED!!
-
-
 // things to store now:
 // email (required)
 //loginKey = string, required when authorized = true
@@ -701,12 +698,6 @@ UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectio
 		console.log(user.email, ' removed', classRemovedCount, ' classes and ', sectionRemovedCount, ' sections from list', listName)
 
 		return callback(null, 'Successfully removed ' + classRemovedCount + ' classes and ' + sectionRemovedCount + ' sections.')
-
-
-		console.log('tried to remove ', classMongoIds.length, 'classes and ', sectionMongoIds.length, ' sections from user ', user.email, 'list', listName);
-		console.log('list now has ', user.lists[listName].classes.length, 'classes and ', user.lists[listName].sections.length, 'sections');
-
-		callback();
 	}.bind(this));
 
 
