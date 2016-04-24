@@ -30,7 +30,6 @@ function UsersDB() {
 	BaseDB.prototype.constructor.apply(this, arguments);
 
 	this.usersSchema = {
-		ips: [],
 		email: '',
 		subscriptions: {},
 		authenticated: false,
@@ -57,7 +56,6 @@ function UsersDB() {
 // authorized = true or false/undefined, determins if a user has proven to be this user
 //googleId = string, present when authorized = true
 
-// ips = [] #going to be used for neat location graphs and automatically determining which college people go to maybe
 // subscriptions = {everything:true,specificColleges:['neu.edu','neu.edu/cps','sju.edu'],somethingelse:true}. at min it is {}
 //right now the only one that is used is [everything]
 
@@ -214,26 +212,18 @@ UsersDB.prototype.subscribeForEverything = function (userData, callback) {
 		// var updateQuery = {};
 
 		if (doc) {
-			// updateQuery._id = doc._id;
 			if (!doc.subscriptions.everything) {
 				sendThanksEmail = true;
-			}
-			if (!_(doc.ips).includes(userData.ip)) {
-				doc.ips.push(userData.ip)
 			}
 
 			doc.subscriptions.everything = true
 
 		}
 		else {
-			// updateQuery.email = userData.email;
 
 			//insert new user to db
 			sendThanksEmail = true;
-
 			doc = this.createBaseUserData()
-
-			doc.ips.push(userData.ip)
 			doc.email = userData.email
 			doc.subscriptions.everything = true;
 
@@ -889,7 +879,6 @@ UsersDB.prototype.loadTestData = function (callback) {
 
 	this.table.insert({
 			"_id": "567c58302d8576e482f04e82",
-			"ips": ["::1"],
 			"email": "rysquash@gmail.com",
 			"subscriptions": {},
 			"authenticated": true,

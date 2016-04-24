@@ -1,4 +1,29 @@
 !!!!
+db.collegeNames.remove({host:'neu.edu'})
+db.term.remove({host:'neu.edu'})
+db.subjects.remove({host:'neu.edu'})
+db.links.remove({host:'neu.edu'})
+db.classes.remove({host:'neu.edu'})
+db.sections.remove({host:'neu.edu'})
+
+db.collegeNames.remove({host:'neu.edu/law'})
+db.term.remove({host:'neu.edu/law'})
+db.subjects.remove({host:'neu.edu/law'})
+db.links.remove({host:'neu.edu/law'})
+db.classes.remove({host:'neu.edu/law'})
+db.sections.remove({host:'neu.edu/law'})
+
+db.collegeNames.remove({host:'neu.edu/cps'})
+db.term.remove({host:'neu.edu/cps'})
+db.subjects.remove({host:'neu.edu/cps'})
+db.links.remove({host:'neu.edu/cps'})
+db.classes.remove({host:'neu.edu/cps'})
+db.sections.remove({host:'neu.edu/cps'})
+
+update everything/all classes and not switch out id? or maybe store keys in localStorage and not ids?
+queue.max on neu, etc
+
+
 
 https://coursepro.io/#/graph/clemson.edu/201601/AVS/2060
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
