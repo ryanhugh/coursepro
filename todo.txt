@@ -1,3 +1,5 @@
+https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465
+
 !!!!
 db.collegeNames.remove({host:'neu.edu'})
 db.term.remove({host:'neu.edu'})

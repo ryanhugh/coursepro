@@ -576,8 +576,8 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 	}.bind(this))
 
 	if (initClassCount == finalClassCount && initSectionCount == finalSectionCount) {
-		console.log("warning only added classes that already existed");
-		return callback()
+		console.log("warning only added classes that already existed, still telling server");
+		// return callback()
 	};
 
 	if (this.getAuthenticated()) {
