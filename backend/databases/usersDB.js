@@ -194,9 +194,13 @@ UsersDB.prototype.find = function (userData, config, callback) {
 		return;
 	}
 
+	if (!config.skipValidation) {
+		userData = this.getQuery(userData)
+	}
+
 
 	//check for at least one of them is handled by this call
-	BaseDB.prototype.find.call(this, this.getQuery(userData), config, function (err, doc) {
+	BaseDB.prototype.find.call(this, userData, config, function (err, doc) {
 		if (err) {
 			console.log('lookupUser error on this.find', err);
 			return callback(err)
