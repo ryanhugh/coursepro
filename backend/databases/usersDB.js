@@ -62,9 +62,6 @@ function UsersDB() {
 
 //watching = {
 // this does not go down on unwatch
-// watchCount : {
-// termId:int
-// }
 // classes:[_ids of classes]
 // sections:[_ids of sections]
 // } (at min {})
@@ -118,6 +115,61 @@ UsersDB.prototype.ensureDefaultSchema = function () {
 };
 
 
+UsersDB.prototype.getQuery = function (userData) {
+	//only use one of the keys for each row, in this order
+	if (userData._id) {
+		return {
+			_id: userData._id
+		}
+	}
+	else if (userData.googleId) {
+		return {
+			googleId: userData.googleId
+		}
+	}
+	else if (userData.loginKey) {
+		return {
+			loginKey: userData.loginKey
+		}
+	}
+	else if (userData.email) {
+		return {
+			email: userData.email
+		}
+	}
+	else {
+		console.log("ERROR UsersDB userData had no info", userData);
+		console.trace();
+	}
+	return {};
+};
+
+
+
+// TODO: adds some stuff to monk update
+// query: queries in this order: _id, googleId, loginKey, email
+// config: shouldBeOnlyOne (not sure how this is going to work). maybe just run a find() to get count before the update? and some way to disable the debug mode
+// might be able to do this.table.driver.count
+
+UsersDB.prototype.update = function (userData, updateQuery, config, callback) {
+	var query = getQuery(userData);
+	if (!config) {
+		config = {}
+	};
+	if (config.shouldBeOnlyOne === undefined) {
+		config.shouldBeOnlyOne = true;
+	};
+	if (userData.idToken) {
+		console.log("Error id token on userDB.update?", userData, updateQuery)
+		console.trace()
+		userData.idToken = undefined
+	}
+
+	this.constructor.update(query, updateQuery, config, function (err, docs) {
+		callback(err, docs)
+	}.bind(this))
+};
+
 
 //looks up user in database, and ensures that user is same authentication level as the found user in db
 //also changes the default to only look up one user, unlike the BaseDB
@@ -142,25 +194,9 @@ UsersDB.prototype.find = function (userData, config, callback) {
 		return;
 	}
 
-	//only use one of the keys for each row, in this order
-	var lookupValues = {};
-	if (userData._id) {
-		lookupValues._id = userData._id
-	}
-	else if (userData.googleId) {
-		lookupValues.googleId = userData.googleId;
-	}
-	else if (userData.loginKey) {
-		lookupValues.loginKey = userData.loginKey;
-	}
-	else if (userData.email) {
-		lookupValues.email = userData.email;
-	}
-	//valid lookup terms is checked above
-
 
 	//check for at least one of them is handled by this call
-	BaseDB.prototype.find.call(this, lookupValues, config, function (err, doc) {
+	BaseDB.prototype.find.call(this, this.getQuery(userData), config, function (err, doc) {
 		if (err) {
 			console.log('lookupUser error on this.find', err);
 			return callback(err)
@@ -169,7 +205,7 @@ UsersDB.prototype.find = function (userData, config, callback) {
 		if (!doc) {
 			return callback(null, null);
 		}
-		if (lookupValues._id || lookupValues.googleId) {
+		if (userData._id || userData.googleId) {
 			return callback(null, doc);
 		};
 
@@ -193,6 +229,9 @@ UsersDB.prototype.find = function (userData, config, callback) {
 	}.bind(this));
 };
 
+
+
+
 UsersDB.prototype.subscribeForEverything = function (userData, callback) {
 
 	if (!userData.email || !userData.ip) {
@@ -209,14 +248,29 @@ UsersDB.prototype.subscribeForEverything = function (userData, callback) {
 		var originalDoc = _.cloneDeep(doc);
 		var sendThanksEmail = false;
 
-		// var updateQuery = {};
-
 		if (doc) {
 			if (!doc.subscriptions.everything) {
 				sendThanksEmail = true;
 			}
 
 			doc.subscriptions.everything = true
+
+			this.table.update(this.getQuery(userData), {
+				$set: {
+					"subscriptions.everything": true
+				}
+			}, {}, function (err, user) {
+				if (err) {
+					return callback(err)
+				}
+
+				if (!user) {
+					return callback('no user found')
+				};
+
+				console.log("unsubscribed ", user.email, 'from everything');
+				return callback(null, 'Successfully unsubscribed.')
+			}.bind(this));
 
 		}
 		else {
@@ -226,6 +280,8 @@ UsersDB.prototype.subscribeForEverything = function (userData, callback) {
 			doc = this.createBaseUserData()
 			doc.email = userData.email
 			doc.subscriptions.everything = true;
+
+
 
 		}
 
@@ -259,9 +315,7 @@ UsersDB.prototype.unsubscribe = function (userData, callback) {
 		return callback('unsubscribe without loginKey is not implemented!');
 	}
 
-	this.table.findAndModify({
-		loginKey: loginKey
-	}, {
+	this.update(userData, {
 		$set: {
 			"subscriptions.everything": false
 		}
@@ -667,37 +721,34 @@ UsersDB.prototype.addIdsToLists = function (listName, classMongoIds, sectionMong
 
 UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectionMongoIds, loginKey, callback) {
 	var toPull = {};
-	toPull["lists." + listName + ".classes"] = {
-		$each: classMongoIds
-	}
-
-	toPull["lists." + listName + ".sections"] = {
-		$each: sectionMongoIds
-	}
+	toPull["lists." + listName + ".classes"] = classMongoIds
+	toPull["lists." + listName + ".sections"] = sectionMongoIds
 
 	this.table.findAndModify({
 		loginKey: loginKey
 	}, {
-		$pull: toPull
+		$pullAll: toPull
 	}, {
 		"new": true
 	}, function (err, user) {
-		if (err) {
-			return callback(err)
-		}
+		setTimeout(function () {
+			if (err) {
+				return callback(err)
+			}
 
-		if (!user) {
-			return callback('no user found')
-		};
+			if (!user) {
+				return callback('no user found')
+			};
 
-		if (!user.lists[listName]) {
-			console.log("Warning: told to remove class from non existend list on user", user.googleId);
-			return callback(null, 'None of these classes and sections are in list ' + listName)
-		};
+			if (!user.lists[listName]) {
+				console.log("Warning: told to remove class from non existend list on user", user.googleId);
+				return callback(null, 'None of these classes and sections are in list ' + listName)
+			};
 
-		console.log(user.email, ' removed', classRemovedCount, ' classes and ', sectionRemovedCount, ' sections from list', listName)
+			console.log(user.email, 'tried removed', classMongoIds.length, ' classes and ', sectionMongoIds.length, ' sections from list', listName)
 
-		return callback(null, 'Successfully removed ' + classRemovedCount + ' classes and ' + sectionRemovedCount + ' sections.')
+			return callback(null, 'Successfully removed ' + classMongoIds.length + ' classes and ' + sectionMongoIds.length + ' sections.')
+		}.bind(this), 0)
 	}.bind(this));
 
 
@@ -799,13 +850,14 @@ UsersDB.prototype.setUserVar = function (name, value, loginKey, callback) {
 		return callback('invalid value')
 	};
 
+	var toSet = {};
+
+	toSet["vars." + name] = value;
+
 	this.table.findAndModify({
 		loginKey: loginKey
 	}, {
-		$set: {
-			"vars." + name,
-			value
-		}
+		$set: toSet
 	}, {
 		"new": true
 	}, function (err, user) {

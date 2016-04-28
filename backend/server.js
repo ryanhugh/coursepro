@@ -134,10 +134,10 @@ app.use(function (req, res, next) {
 
 // accepts any type, requires a-zA-Z0-9
 function isAlphaNumeric (string) {
-	if (typeof req.body.listName != 'string') {
+	if (typeof string != 'string') {
 		return false;
 	};
-	if (req.body.listName.match(/^[a-zA-Z0-9]+$/i)) {
+	if (string.match(/^[a-zA-Z0-9]+$/i)) {
 		return true;
 	}
 	else {
