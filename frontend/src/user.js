@@ -521,8 +521,6 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 			classIds.push(aClass._id)
 		}.bind(this))
 
-
-<<<<<<< HEAD
 		var sectionIds = [];
 		sections.forEach(function (section) {
 			if (!section._id) {
@@ -540,31 +538,6 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				this.lists[listName].sections.push(section)
 			}
 		}.bind(this))
-=======
-	// add to this.lists if this.lists is done downloading
-	//add the section, but make sure to not add duplicate section
-	//it could be a different instance of that same section
-	if (this.lists[listName].dataStatus == macros.DATASTATUS_DONE) {
-		sections.forEach(function (section) {
-			if (_.filter(this.lists[listName].sections, {
-					_id: section._id
-				}).length === 0) {
-				this.lists[listName].sections.push(section)
-			}
-		}.bind(this))
-
-		classes.forEach(function (aClass) {
-			if (_.filter(this.lists[listName].classes, {
-					_id: aClass._id
-				}).length === 0) {
-				this.lists[listName].classes.push(aClass)
-			}
-		}.bind(this))
-	}
-	else if (this.lists[listName].dataStatus == macros.DATASTATUS_LOADING) {
-		elog('told to add to list that was loading', classes, sections, listName, this.dbData.lists);
-	}
->>>>>>> prod
 
 		classes.forEach(function (aClass) {
 			if (_.filter(this.lists[listName].classes, {
