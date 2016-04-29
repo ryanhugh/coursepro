@@ -7,7 +7,7 @@ var fs = require('fs')
 var macros = require('../macros')
 
 
-var username; 
+var username;
 var password;
 
 if (macros.PRODUCTION) {
@@ -20,12 +20,12 @@ else {
 }
 
 if (!password || !username) {
-	console.log("FATAL ERROR unable to open db password file for user",username);
+	console.log("FATAL ERROR unable to open db password file for user", username);
 };
 
 //all the db files (classes.js, sections.js etc) all share the same database instance,
 //so if it is closed or modified anywhere, it will affect them all
-var database = monk(username+':'+password+'@'+macros.DATABASE_URL);
+var database = monk(username + ':' + password + '@' + macros.DATABASE_URL);
 
 
 function BaseDB() {
@@ -57,7 +57,7 @@ BaseDB.prototype.shouldUpdateDB = function (newData, oldData) {
 		if (!_.isEqual(newData[attrName], oldData[attrName])) {
 
 			//only print lastupdate time if in verbose mode
-			if (attrName!='lastUpdateTime' || macros.VERBOSE) {
+			if (attrName != 'lastUpdateTime' || macros.VERBOSE) {
 				console.log('updating db because of change in', attrName)
 			};
 
@@ -102,7 +102,7 @@ BaseDB.prototype.updateDatabase = function (newData, oldData, callback) {
 			_id: newData._id
 		}, _.cloneDeep(newData), {}, function (err, numReplaced) {
 			if (err) {
-				console.log("ERROR",err);
+				console.log("ERROR", err);
 				return callback(err)
 			};
 			if (numReplaced !== 1) {
@@ -133,7 +133,7 @@ BaseDB.prototype.updateDatabase = function (newData, oldData, callback) {
 BaseDB.prototype.removeInternalFields = function (doc) {
 	var retVal = {};
 	for (var attrName in doc) {
-		if (!_(['ips', 'deps', 'updatedByParent','googleId']).includes(attrName)) {
+		if (!_(['ips', 'deps', 'updatedByParent', 'googleId']).includes(attrName)) {
 			retVal[attrName] = doc[attrName];
 		}
 	}
@@ -144,7 +144,7 @@ BaseDB.prototype.removeInternalFields = function (doc) {
 
 // interval
 BaseDB.prototype.onInterval = function () {
-	console.log('ERROR onInterval called on baseDB which was not overriden', this.constructor.name);
+	console.log('ERROR onInterval called on BaseDB which was not overriden', this.constructor.name);
 	this.stopUpdates();
 };
 
@@ -167,25 +167,85 @@ BaseDB.prototype.stopUpdates = function () {
 };
 
 
-
 //api search
+// help functions across update,find, etc
 
+//checks to see if lookup values are valid
+// does not modify values
 BaseDB.prototype.isValidLookupValues = function (lookupValues) {
+	if (lookupValues._id && lookupValues._id.length != 24) {
+		console.log('_id is included and is not 24 chars long, and therefore is invalid ', lookupValues._id, lookupValues._id.length)
+		console.log('more stuff', _.cloneDeep(lookupValues._id))
+		return false;
+	};
+
 	if (lookupValues._id || lookupValues.url) {
 		return true;
 	}
 	return false;
 };
 
+// ran on a query before the query is sent to monk
+// can modify a query
+// changes the _id to a string if it is not already
+BaseDB.prototype.standardizeQuery = function (query) {
+	if (query._id && typeof (query._id) != 'string') {
+		console.log('chaning id of ', query._id, 'to a string', _.cloneDeep(query._id))
+		query._id = query._id.toString()
+	};
+	return query;
+};
+
 BaseDB.prototype.getStaticValues = function () {
 	return [];
 };
 
+
+
+// same thing as monk.Collection.update, but with more stuff and return the updated rows
+// but has no geruntee that something else didnt modify the row between the set and the get
 // config:
 // shouldBeOnlyOne: true/false (default false) returns a doc or null, logs warning if multiple found
-// skipValidation: true/false (default false) skips the query validation, eg with this on you can dump the enitre db instead of being limited to listing only subjects of a term and classes of a subject
-//used for search
-// sanitize: true/false (default false) removes internal fields that the front end shouldn't see sanitize
+// skipValidation: true/false (default false) skips the query validation, eg with this on you can dump the enitre db 
+//     instead of being limited to listing only subjects of a term and classes of a subject
+//     used for search and when users db is updating
+// sanitize (find only): true/false (default false) removes internal fields that the front end shouldn't see sanitize
+BaseDB.prototype.update = function (query, updateQuery, config, callback) {
+	if (!query || !updateQuery || !config || !callback) {
+		console.log("ERROR update given invalid options")
+		console.trace();
+	}
+
+	if (!config.shouldBeOnlyOne) {
+		config.shouldBeOnlyOne = false;
+	};
+
+	if (!config.skipValidation && !this.isValidLookupValues(lookupValues)) {
+		console.log('invalid terms in ' + this.constructor.name + ' ', lookupValues);
+		return callback('invalid search')
+	};
+
+	lookupValues = this.standardizeQuery(lookupValues);
+
+	// keep the original config for the find below
+	var mongoConfig = {};
+
+	for (var attrName in config) {
+
+		// don't copy over custom properties
+		if (_(['shouldBeOnlyOne', 'skipValidation', 'sanitize']).includes(attrName)) {
+			continue;
+		}
+
+		mongoConfig[attrName] = config[attrName]
+	}
+
+	this.table.update(query, updateQuery, mongoConfig, function (err, changeCount) {
+		this.find(query, config, function (err, docs) {
+			callback(err, docs);
+		}.bind(this))
+	}.bind(this))
+};
 
 
 BaseDB.prototype.find = function (lookupValues, config, callback) {
@@ -198,16 +258,8 @@ BaseDB.prototype.find = function (lookupValues, config, callback) {
 		return callback('invalid search')
 	};
 
-	if (lookupValues._id && typeof (lookupValues._id) != 'string') {
-		console.log('chaning id of ',lookupValues._id,'to a string',_.cloneDeep(lookupValues._id))
-		lookupValues._id = lookupValues._id.toString()
-	};
+	lookupValues = this.standardizeQuery(lookupValues);
 
-	if (lookupValues._id && lookupValues._id.length != 24) {
-		console.log('_id is included and is not 24 chars long, and therefore is invalid ', lookupValues._id, lookupValues._id.length)
-		console.log('more stuff', _.cloneDeep(lookupValues._id))
-		return callback('_id is included and is not 24 chars long, and therefore is invalid ' + lookupValues._id + lookupValues._id.length)
-	};
 
 	this.table.find(lookupValues, function (err, docs) {
 

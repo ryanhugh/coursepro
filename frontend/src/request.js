@@ -182,9 +182,9 @@ Request.prototype.fireRequest = function (config, callback) {
 		body.userId = localStorage.userId;
 	}
 
-	if (config.auth && localStorage.loginKey && config.type == 'POST') {
-		body.loginKey = localStorage.loginKey
-	};
+	// if (config.auth && localStorage.loginKey && config.type == 'POST') {
+	// 	body.loginKey = localStorage.loginKey
+	// };
 
 
 	var xmlhttp = new XMLHttpRequest();

@@ -102,8 +102,9 @@ fs.readFile('backend/tests/differentCollegeUrls.json', function (err, data) {
 
 // var MongoClient = require('mongodb').MongoClient;
 
-// var db = require('monk')('52.20.189.150/test');
-// var test = db.get('test');
+var db = require('monk')('developmentOnly'+'passwordjflaksjflsajfl ds'+'@52.20.189.150/coursepro_dev');
+// var database = monk;
+var test = db.get('test');
 
 // Connection URL 
 // var url = 'mongodb://52.6.184.210:27017/test';
@@ -118,15 +119,43 @@ fs.readFile('backend/tests/differentCollegeUrls.json', function (err, data) {
 // 	db.close()
 // }.bind(this))
 
-var domain = 'eagles.tamut.edu';
-// var domain = 'google.com';
+// console.log(test,test.__proto__);
 
-// dns.lookupService('155.33.27.30', 443, function(err, hostname, service) {
-//   console.log(hostname, service);
-//     // Prints: localhost ssh
-// });
+test.findAndModify({
+			_id: '123456789012345678901234'
+		}, {w:9}, {multi:false,"new":true}, function (err, numReplaced) {
+
+			console.log(err,numReplaced,arguments.length);
+
+			// if (err) {
+			// 	console.log("ERROR",err);
+			// 	return callback(err)
+			// };
+			// if (numReplaced !== 1) {
+			// 	console.log('ERROR: updated !==0?', numReplaced, newData);
+			// };
+			// callback(null, newData);
+		}.bind(this));
+
+// test.insert({
+// 			_id: '123456789012345678901234',
+// 			w:4
+// 		}, function (err, numReplaced) {
+
+// 			console.log(err,numReplaced,arguments.length);
+
+// 			// if (err) {
+// 			// 	console.log("ERROR",err);
+// 			// 	return callback(err)
+// 			// };
+// 			// if (numReplaced !== 1) {
+// 			// 	console.log('ERROR: updated !==0?', numReplaced, newData);
+// 			// };
+// 			// callback(null, newData);
+// 		}.bind(this));
 
 
+console.log(test.updateOne)
 
 
 // test.find(function(err, results) {
