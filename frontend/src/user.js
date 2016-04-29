@@ -495,25 +495,20 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-
-<<<<<<< HEAD
-	this.loadList(listName, function (err) {
-		if (err) {
-			return callback(err)
-		}
-
-		this.ensureList(listName)
-=======
+	
 	if (classes.length == 0 && sections.length == 0) {
 		console.log("addto lists called with no classes or section");
 		return callback()
 	};
 
+	this.loadList(listName, function (err) {
+		if (err) {
+			return callback(err)
+		}
+
+
 	this.ensureList(listName)
 
-	var initClassCount = this.dbData.lists[listName].classes.length
-	var initSectionCount = this.dbData.lists[listName].sections.length
->>>>>>> prod
 
 		var initClassCount = this.lists[listName].classes.length
 		var initSectionCount = this.lists[listName].sections.length
