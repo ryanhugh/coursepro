@@ -27,6 +27,9 @@ function User() {
 	//lastSelectedCollege and lastSelectedTerm are used now
 
 	//here, actual instances of classes and sections are stored
+	// 2 key inveriants:
+	//   1. if a section in a list, the class is in the same list
+	//   2. if a class is not a list, none of that classes sections are either
 	this.lists = {
 		// watching: {
 		// 	classes: [],
@@ -383,13 +386,13 @@ User.prototype.loadList = function (listName, callback) {
 		};
 	};
 
-	this.ensureList(listName)
-
-	this.lists[listName].dataStatus = macros.DATASTATUS_LOADING
-
 	// wait data downloaded from server to run this
 	this.onAuthFinish(this.constructor.name, function () {
 		var q = queue()
+
+		this.ensureList(listName)
+
+		this.lists[listName].dataStatus = macros.DATASTATUS_LOADING
 
 		//fetch all the class data from the _id's in the user watch list
 		this.dbData.lists[listName].classes.forEach(function (classMongoId) {
@@ -775,10 +778,33 @@ User.prototype.toggleListContainsSection = function (listName, section, callback
 	//add it to the watch list
 	//and tell server
 	else {
-		this.addToList(listName, [section.classInstance], [section], function (err) {
-			callback(err)
+
+		var classInstance;
+		var keys = section.getIdentifer().required.obj;
+		this.lists[listName].classes.forEach(function  (aClass) {
+
+			for (var keyName in keys) {
+				if (aClass[keyName]!=section[keyName]) {
+					return;
+				}
+			}
+			if (!_(aClass.crns).includes(section.crn)) {
+				return;
+			}
+			if (classInstance) {
+				elog('multiple saved classes have this section?',classInstance,aClass,section);
+			}
+			classInstance = aClass
 		}.bind(this))
 
+
+
+
+		this.addToList(listName, [classInstance], [section], function (err) {
+			callback(err)
+		}.bind(this))
+		return;
+		// Class.create(section.getIdentifer().required.obj).download(function (err, aClass) {}.bind(this))
 	}
 };
 

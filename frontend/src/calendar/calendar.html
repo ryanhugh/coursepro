@@ -10,7 +10,7 @@
 }
 
 .calendarRightPanel {
-    float:right;
+    float: right;
     top: 85px;
     z-index: 999999;
     display: inline-block;
@@ -25,12 +25,11 @@
 }
 
 .calendarRightPanel .panel-body {
-    padding-bottom: 0;
-    padding-top: 2px;
+    padding: 0;
 }
 
 .calendarRightPanel table {
-    margin-bottom: 11px;
+    margin-bottom: 0px;
 }
 
 .calendarUnpinned {
@@ -44,11 +43,12 @@
 uib-accordion .accordion-toggle {
     padding: 0 !important;
 }
+
 .selectize-control {
     width: 350px !important;
     /*display: inline-block;*/
-    margin-right: 0 !important; 
-    margin-left: 0 !important; 
+    margin-right: 0 !important;
+    margin-left: 0 !important;
 }
 </style>
 <div class="padding"></div>
@@ -117,13 +117,13 @@ uib-accordion .accordion-toggle {
                     <tbody>
                         <tr ng-repeat="section in class.sections" ng-click="calendar.toggleSectionPinned(section)" style="cursor:pointer">
 
-                            <td>
+                            <td align="center">
                                 <div class="glyphicon glyphicon-star" ng-class="calendar.isSectionPinned(section)?'calendarPinned':'calendarUnpinned'"></div>
                             </td>
 
 
-                            <td>{{section.profs.join(', ')}}</td>
-                            <td>{{section.startTimesStrings.join(", ")}}</td>
+                            <td>{{section.getProfs().join(', ')}}</td>
+                            <td style="white-space: nowrap;">{{section.getUniqueStartTimes(true).join(", ")}}</td>
 
                             <td>
 

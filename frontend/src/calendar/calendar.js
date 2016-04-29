@@ -42,7 +42,7 @@ function Calendar($scope) {
 	this.$scope.addClass = this.addClass.bind(this)
 	user.loadList(this.getListName(), function (err, list) {
 		if (err) {
-			elog(err,'error loading lists')
+			elog(err, 'error loading lists')
 			return
 		};
 		var q = queue();
@@ -87,86 +87,80 @@ Calendar.prototype.updateCalendar = function () {
 
 
 	user.loadList(this.getListName(), function (err, list) {
-		setTimeout(function () {
 
+		var classes = [];
 
+		//filter out ones that don't match this term and host (this is inefficient because it loads all classes, instead of just ones in this term)
+		//sections of other ones are also loaded, so atm pretty slow...
 
-			var classes = [];
+		var host = user.getValue('lastSelectedCollege')
+		var termId = user.getValue('lastSelectedTerm')
 
-			//filter out ones that don't match this term and host (this is inefficient because it loads all classes, instead of just ones in this term)
-			//sections of other ones are also loaded, so atm pretty slow...
+		list.classes.forEach(function (aClass) {
+			if (aClass.host === host && aClass.termId === termId) {
+				classes.push(aClass)
+			};
+		}.bind(this))
 
-			var host = user.getValue('lastSelectedCollege')
-			var termId = user.getValue('lastSelectedTerm')
+		//remove the old calendarEvents
+		this.$scope.eventSources[0] = []
 
-			list.classes.forEach(function (aClass) {
-				if (aClass.host === host && aClass.termId === termId) {
-					classes.push(aClass)
-				};
-			}.bind(this))
+		var sections = []
 
+		//find all sections that are pinned and add them to the calendar
+		classes.forEach(function (aClass) {
+			aClass.sections.forEach(function (section) {
 
-			var sections = []
+				if (!this.isSectionPinned(section)) {
+					return;
+				}
 
-			//get a list of sections that are pinned
-			classes.forEach(function (aClass) {
-				aClass.sections.forEach(function (section) {
-					if (this.isSectionPinned(section)) {
-						sections.push(section)
-					};
-				}.bind(this))
-			}.bind(this))
-
-
-
-			//remove the old calendarEvents
-			this.$scope.eventSources[0] = []
-
-			//add all the section's meetings to the calendar
-			sections.forEach(function (section) {
 				section.meetings.forEach(function (meeting) {
 					if (meeting.isExam) {
 						return;
 					};
 
-
-					meeting.timeMoments.forEach(function (event) {
+					//add all the section's meetings to the calendar
+					_.flatten(meeting.times).forEach(function (event) {
 
 						this.$scope.eventSources[0].push({
-							title: section.classInstance.name,
+							title: aClass.name,
 							start: event.start.format(),
 							end: event.end.format()
 						})
-
 					}.bind(this))
 				}.bind(this))
 			}.bind(this))
+		}.bind(this))
 
-			this.$scope.classes = classes
 
 
-			//update the credits
-			var minCredits = 0;
-			var maxCredits = 0;
+		this.$scope.classes = classes
 
-			this.$scope.classes.forEach(function (aClass) {
-				if (aClass.minCredits === undefined && aClass.maxCredits === undefined) {
-					return;
-				}
-				aClass.sections.forEach(function (section) {
-					if (this.isSectionPinned(section)) {
-						minCredits += aClass.minCredits;
-						maxCredits += aClass.maxCredits;
-					};
-				}.bind(this))
+
+		//update the credits
+		var minCredits = 0;
+		var maxCredits = 0;
+
+		this.$scope.classes.forEach(function (aClass) {
+			if (aClass.minCredits === undefined && aClass.maxCredits === undefined) {
+				return;
+			}
+			aClass.sections.forEach(function (section) {
+				if (this.isSectionPinned(section)) {
+					minCredits += aClass.minCredits;
+					maxCredits += aClass.maxCredits;
+				};
 			}.bind(this))
+		}.bind(this))
 
-			this.$scope.minCredits = minCredits;
-			this.$scope.maxCredits = maxCredits;
+		this.$scope.minCredits = minCredits;
+		this.$scope.maxCredits = maxCredits;
 
+		setTimeout(function () {
 			this.$scope.$apply()
-
 		}.bind(this), 0)
+
 	}.bind(this))
 };
 
