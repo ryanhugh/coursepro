@@ -3,7 +3,6 @@ var URI = require('urijs');
 var domutils = require('domutils');
 var moment = require('moment');
 var he = require('he');
-var toTitleCase = require('to-title-case');
 var _ = require('lodash');
 var fs = require('fs');
 var assert = require('assert');
@@ -174,7 +173,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 		}
 
 
-		var className = toTitleCase(match[1]);
+		var className = this.toTitleCase(match[1]);
 
 		// if it matches the hardcoded classes that have fixed names, change it
 		if (this.classNameTranslation[className]) {
@@ -340,7 +339,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 					prof = "TBA";
 				}
 				else {
-					prof = toTitleCase(prof);
+					prof = this.toTitleCase(prof);
 				}
 
 				if (!sectionStartingData.meetings[index].profs) {
@@ -352,7 +351,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 			}.bind(this));
 
 			//parse the location
-			sectionStartingData.meetings[index].where = toTitleCase(tableData.where[i]);
+			sectionStartingData.meetings[index].where = this.toTitleCase(tableData.where[i]);
 
 			//start time and end time of class each day
 			var times = this.parseTimeStamps(tableData.time[i], tableData.days[i]);
@@ -474,7 +473,6 @@ EllucianClassParser.prototype.getEmailData = function (pageData) {
 
 EllucianClassParser.prototype.tests = function () {
 	require('../pageDataMgr')
-
 
 
 	//sections have different names

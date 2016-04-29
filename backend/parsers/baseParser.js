@@ -5,6 +5,7 @@ var URI = require('urijs');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var fs = require('fs');
+var toTitleCase = require('to-title-case');
 
 var macros = require('../macros')
 var pointer = require('../pointer');
@@ -258,8 +259,20 @@ BaseParser.prototype.parseForm = function (url,dom) {
 	};
 }
 
+// Used for college names, professor names, class names and locations
+// odd cases: "TBA", Texas A&M University
+BaseParser.prototype.toTitleCase = function(string) {
+	if (string === "TBA") {
+		return string
+	}
 
+	string = toTitleCase(string)
 
+	// Texas A&M University
+	string = string.replace(' a&m ',' A&M ')
+
+	return string.trim()
+};
 
 
 
@@ -280,13 +293,15 @@ BaseParser.prototype.getOptionallyPlural = function(num) {
 
 BaseParser.prototype.tests = function () {
 
+	assert.equal(this.toTitleCase('TBA'), 'TBA');
+	assert.equal(this.toTitleCase('Texas A&M University'), 'Texas A&M University');
 
 	//make sure other classes have tests
 	assert.equal(this.constructor.name,'BaseParser','you need to ovveride .tests()!');
 
 
 	fs.readFile('backend/tests/baseParser/1.html','utf8',function (err,body) {
-		console.log(process.cwd())
+		// console.log(process.cwd())
 		assert.equal(null,err);
 
 		pointer.handleRequestResponce(body,function (err,dom) {

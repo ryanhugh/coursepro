@@ -1,7 +1,6 @@
 'use strict';
 
 var whois = require('whois')
-var toTitleCase = require('to-title-case');
 var he = require('he');
 var _ = require('lodash');
 var domutils = require('domutils');
@@ -84,11 +83,7 @@ CollegeNamesParser.prototype.standardizeNames = function (startStrip, endStrip, 
 
 
 	// standardize the case
-	title = toTitleCase(title);
-	
-	
-	// Texas A&M University
-	title = title.replace(' a&m ',' A&M ')
+	title = this.toTitleCase(title);
 
 	return title.trim();
 }

@@ -5,7 +5,6 @@ var he = require('he');
 var _ = require('lodash');
 var assert = require('assert');
 var fs = require('fs')
-var toTitleCase = require('to-title-case');
 
 var pointer = require('../pointer');
 var linksDB = require('../databases/linksDB')
@@ -66,7 +65,7 @@ EllucianCatalogParser.prototype.parseClass = function(pageData,element) {
 		console.log('could not find title!',match,value,pageData.dbData.url);
 		return;
 	}
-	depData.name = toTitleCase(match[1]);
+	depData.name = this.toTitleCase(match[1]);
 
 
 
