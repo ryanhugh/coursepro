@@ -495,7 +495,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-	
+
 	if (classes.length == 0 && sections.length == 0) {
 		console.log("addto lists called with no classes or section");
 		return callback()
@@ -507,16 +507,13 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		}
 
 
-	this.ensureList(listName)
-
-
 		var initClassCount = this.lists[listName].classes.length
 		var initSectionCount = this.lists[listName].sections.length
 
 		var classIds = [];
 		classes.forEach(function (aClass) {
 			if (!aClass._id) {
-				elog("Cant save ",aClass,'because it dosent have an _id!')
+				elog("Cant save ", aClass, 'because it dosent have an _id!')
 			};
 			classIds.push(aClass._id)
 		}.bind(this))
@@ -524,7 +521,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		var sectionIds = [];
 		sections.forEach(function (section) {
 			if (!section._id) {
-				elog("Cant save ",section,'because it dosent have an _id!')
+				elog("Cant save ", section, 'because it dosent have an _id!')
 			};
 			sectionIds.push(section._id)
 		}.bind(this))
@@ -556,51 +553,52 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		this.dbData.lists[listName].sections = _.uniq(this.dbData.lists[listName].sections.concat(sectionIds))
 
 
-	ga('send', {
-		'hitType': 'pageview',
-		'page': '/addToList/' + listName + '/',
-		'title': 'Coursepro.io'
-	});
+		ga('send', {
+			'hitType': 'pageview',
+			'page': '/addToList/' + listName + '/',
+			'title': 'Coursepro.io'
+		});
 
-	var finalClassCount = this.dbData.lists[listName].classes.length;
-	var finalSectionCount = this.dbData.lists[listName].sections.length;
+		var finalClassCount = this.dbData.lists[listName].classes.length;
+		var finalSectionCount = this.dbData.lists[listName].sections.length;
 
-	request({
-		url: '/log',
-		body: {
-			type: 'addToList',
-			initClassCount: initClassCount,
-			initSectionCount: initSectionCount,
-			finalClassCount: finalClassCount,
-			finalSectionCount: finalSectionCount
-		},
-		useCache: false
-	}, function (err, response) {
-		if (err) {
-			elog("ERROR: couldn't log addToList :(", err, response, body);
-		}
-	}.bind(this))
-
-	if (initClassCount == finalClassCount && initSectionCount == finalSectionCount) {
-		console.log("warning only added classes that already existed, still telling server");
-		// return callback()
-	};
-
-	if (this.getAuthenticated()) {
-		this.sendRequest({
-			url: '/addToUserLists',
-			isMsg: true,
+		request({
+			url: '/log',
 			body: {
-				listName: listName,
-				classes: classIds,
-				sections: sectionIds
+				type: 'addToList',
+				initClassCount: initClassCount,
+				initSectionCount: initSectionCount,
+				finalClassCount: finalClassCount,
+				finalSectionCount: finalSectionCount
+			},
+			useCache: false
+		}, function (err, response) {
+			if (err) {
+				elog("ERROR: couldn't log addToList :(", err, response, body);
 			}
-		}, callback)
-	}
-	else {
-		this.saveData()
-		return callback()
-	}
+		}.bind(this))
+
+		if (initClassCount == finalClassCount && initSectionCount == finalSectionCount) {
+			console.log("warning only added classes that already existed, still telling server");
+			// return callback()
+		};
+
+		if (this.getAuthenticated()) {
+			this.sendRequest({
+				url: '/addToUserLists',
+				isMsg: true,
+				body: {
+					listName: listName,
+					classes: classIds,
+					sections: sectionIds
+				}
+			}, callback)
+		}
+		else {
+			this.saveData()
+			return callback()
+		}
+	}.bind(this));
 };
 
 //can either be a class or a section
