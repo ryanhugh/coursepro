@@ -320,19 +320,12 @@ Class.prototype.postDataProcess = function () {
 				subject: this.subject,
 				classId: this.classId,
 				crn: crn,
-				classInstance: this
 			})
 
 			this.sections.push(section)
 		}.bind(this))
 
 	};
-
-
-
-	this.sections.forEach(function (section) {
-		section.classInstance = this;
-	}.bind(this))
 };
 
 //this is used for panels i think and for class list (settings)

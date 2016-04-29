@@ -1,6 +1,5 @@
 'use strict';
 var BaseSelector = require('./baseSelector').BaseSelector;
-// var classInstance = require('./class')
 
 
 function Subject () {
