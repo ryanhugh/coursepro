@@ -105,8 +105,6 @@ Calendar.prototype.updateCalendar = function () {
 		//remove the old calendarEvents
 		this.$scope.eventSources[0] = []
 
-		var sections = []
-
 		//find all sections that are pinned and add them to the calendar
 		classes.forEach(function (aClass) {
 			aClass.sections.forEach(function (section) {

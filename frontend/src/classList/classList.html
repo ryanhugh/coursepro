@@ -154,20 +154,21 @@
             <tbody>
                 <tr ng-repeat="section in class.sections">
                     <td>{{section.crn}}</td>
-                    <td>{{section.profs.join(', ')}}</td>
+                    <td>{{section.getProfs().join(', ')}}</td>
                     <td>
                         <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
 
                             <!-- avoid calculating the string more than once -->
                             <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip="{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
-                                <div class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+
+                                <div ng-if="section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                </div>
+
+                                <div ng-if="!section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
                                 </div>
                             </span>
                         </span>
                     </td>
-                    <td>{{section.startTimesStrings.join(", ")}}</td>
-                    <td>{{section.endTimesStrings.join(", ")}}</td>
-
 
                     <td>{{section.getUniqueStartTimes().join(", ")}}</td>
                     <td>{{section.getUniqueEndTimes().join(", ")}}</td>
@@ -225,7 +226,7 @@
                     </td> -->
 
                     <td>
-                        <span list-icon='saved' toggle="section"></span>
+                        <span list-icon='saved' toggle="section" style="padding-left: 11px;"></span>
                     </td>
                 </tr>
             </tbody>
