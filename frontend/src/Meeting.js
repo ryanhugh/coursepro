@@ -14,6 +14,11 @@ function Meeting(serverData) {
 	this.profs.sort();
 	this.where = serverData.where;
 
+	// if without spaces and case insensitive is tba, make it TBA
+	if (this.where.replace(/\s/gi,'').toUpperCase() == 'TBA') {
+		this.where = "TBA"
+	}
+
 	//beginning of the day that the class starts/ends
 	this.startDate = moment((serverData.startDate + 1) * 24 * 60 * 60 * 1000);
 	this.endDate = moment((serverData.endDate + 1) * 24 * 60 * 60 * 1000);
