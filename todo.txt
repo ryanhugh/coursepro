@@ -1,5 +1,8 @@
 !!!!
 
+split this into backend and frontend?
+finish section.tests.js
+
 jasmine coffeescript
 angular coffeescript
 lodash coffeescript
