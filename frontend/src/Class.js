@@ -145,16 +145,11 @@ Class.API_ENDPOINT = '/listClasses'
 
 
 Class.isValidCreatingData = function (config) {
-	if (!(config.host && config.termId && config.subject && config.classId) && !config._id && !config.isString && !(config.isClass === false)) {
-		elog('ERROR need (host termId, subject, classId) or _id or string to make a class', config)
-		return false;
+	if (config.isString || config.isClass === false) {
+		return true;
 	};
-	if (config instanceof Class) {
-		elog("TRIED to make class from instance of class");
-		return false;
-	};
-	return true;
 
+	return BaseData.isValidCreatingData.apply(this, arguments);
 };
 
 
@@ -215,7 +210,7 @@ Class.prototype.convertServerData = function (data) {
 		};
 
 
-		retVal = Class.create(data,false)
+		retVal = this.constructor.create(data,false)
 
 	}
 
@@ -416,7 +411,7 @@ Class.prototype.getHeighestProfCount = function () {
 //returns true if any sections have an exam, else false
 Class.prototype.sectionsHaveExam = function () {
 	for (var i = 0; i < this.sections.length; i++) {
-		if (this.sections[i].hasExam()) {
+		if (this.sections[i].getHasExam()) {
 			return true;
 		}
 	}

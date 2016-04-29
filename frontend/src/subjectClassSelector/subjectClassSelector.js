@@ -79,7 +79,7 @@ SubjectClassSelector.prototype.updateSubjects = function (callback) {
 
 	if (!this.term) {
 		//hopefully its called again with a valid term...
-		return;
+		return callback('invalid term');
 	};
 
 	this.term.loadSubjects(function (err) {
@@ -87,8 +87,6 @@ SubjectClassSelector.prototype.updateSubjects = function (callback) {
 			elog("err", err);
 			return callback()
 		}
-
-		// console.log("done,", this.term.subjects);
 
 		var subjects = [];
 		this.term.subjects.forEach(function (subject) {
@@ -124,7 +122,6 @@ SubjectClassSelector.prototype.onSelectSubject = function (fireTrigger) {
 	})[0]
 
 	if (!subject) {
-		// debugger
 		return;
 	};
 

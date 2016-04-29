@@ -56,11 +56,38 @@ make it so it can scrape )) from prereqs section --
 find a better way to abstract this.table.update in userdb?
 
 
+split this into backend and frontend?
+finish section.tests.js
+
+jasmine coffeescript
+angular coffeescript
+lodash coffeescript
+ctrl-shift c for color picker
+
+clear out db at beginning of spider? also need to remove neu.edu/law stuff
+
+karma-failed-reporter is better than nothing
+
+
+
+spacing bug if multiple locations on class list
+T b a?
+why are the terms not sorted on the dropdown?
+put a line between years?
+
+/logError called "class load failed" if failed to load class and then on a separate call to class.load sections
+
+unit tests?
+ - testing errors shouldnt bring up debugger
+get notifyer working again?
+merge list, search, starred?
+organize section.js?
 
 play with hiding private properties?
  -- nah
  do something with instance, cache, maybe a branch or remove it or something...
  user.getauthenticated also has dead code
+
 
 TODO SOON
 1. marketing when ok - post on other pages with examples

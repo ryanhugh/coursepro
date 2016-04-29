@@ -119,8 +119,6 @@
 
         <div style="padding-top:5px" ng-if="class.lastUpdateString">Updated {{class.lastUpdateString}}</div>
 
-        <div ng-if="class.minCredits || class.maxCredits"></div>
-
 
         <table class="table table-striped" ng-if="class.sections.length>0" style="margin-bottom:0">
             <thead>
@@ -171,9 +169,13 @@
                     <td>{{section.endTimesStrings.join(", ")}}</td>
 
 
+                    <td>{{section.getUniqueStartTimes().join(", ")}}</td>
+                    <td>{{section.getUniqueEndTimes().join(", ")}}</td>
+
                     <td>
-                        <span ng-repeat="location in section.locations">
+                        <span ng-repeat="location in section.getLocations()">
                             <span ng-if="location != 'Tba' || section.locations.length <= 1"> {{location}} </span>
+                            <span ng-if="!$last">, </span>
                         </span>
                     </td>
 

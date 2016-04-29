@@ -5,17 +5,17 @@ var Host = require('../Host')
 
 // var se
 // var emailMgrTests = require('./emailMgrTests')
-var helpTests = require('./helpTests')
+// var helpTests = require('./help.tests')
 // var popupTests = require('./popupTests')
-var classTests = require('./classTests')
-var downloadTreeTests = require('./downloadTreeTests')
+var classTests = require('./class.tests')
+var downloadTreeTests = require('./downloadTree.tests')
 
 var baseSelector = require('../selectors/baseSelector')
 
 function TestsMgr() {
 	this.tests = [
-		helpTests
-	]
+		
+	] 
 
 	this.host = null;
 	this.termId = null;

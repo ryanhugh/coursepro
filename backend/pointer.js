@@ -173,7 +173,9 @@ Pointer.prototype.request = function (url, options, callback, tryCount) {
 
 			//most sites just give a ECONNRESET or ETIMEDOUT, but dccc also gives a EPROTO and ECONNREFUSED...
 			if (tryCount < this.maxRetryCount) {
-				console.log('info, got a ', error.code, ' but trying again', tryCount, this.openRequests, url)
+				if (tryCount % 10 == 0) {
+					console.log('info, got a ', error.code, ' but trying again', tryCount, this.openRequests, url)
+				};
 				return this.tryAgain(url, options, callback, tryCount);
 			}
 			else {

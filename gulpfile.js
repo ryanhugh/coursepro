@@ -8,13 +8,14 @@ var streamify = require('gulp-streamify');
 var flatten = require('gulp-flatten');
 var angularTemplates = require('gulp-angular-templatecache')
 var htmlmin = require('gulp-htmlmin');
+var notify = require("gulp-notify");
 
 // browsify stuff
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
-var reactify = require('reactify');
 var watchify = require('watchify')
 var glob = require('glob')
+var karma = require('karma')
 
 //other stuff
 var _ = require('lodash')
@@ -62,16 +63,12 @@ function compileJS(shouldUglify) {
 
 
 	var filesToProccess = [];
-	if (shouldUglify) {
-		files.forEach(function (file) {
-			if (!_(file).includes('tests')) {
-				filesToProccess.push(file)
-			};
-		})
-	}
-	else {
-		filesToProccess = files;
-	}
+	files.forEach(function (file) {
+		if (!_(file).includes('tests')) {
+			filesToProccess.push(file)
+		};
+	})
+
 	console.log('Processing:', filesToProccess)
 
 
@@ -97,8 +94,6 @@ function compileJS(shouldUglify) {
 
 	bundler = watchify(bundler)
 
-	bundler.transform(reactify);
-
 	var rebundle = function () {
 		console.log("----Rebundling custom JS!----")
 		var stream = bundler.bundle();
@@ -111,6 +106,11 @@ function compileJS(shouldUglify) {
 			// end this stream
 			this.emit('end');
 		})
+
+		stream.on("error", notify.onError({
+			message: 'Error: <%= error.message %>',
+			sound: false // deactivate sound?
+		}))
 
 		stream = stream.pipe(source('allthejavascript.js'));
 
@@ -216,6 +216,14 @@ gulp.task('tests', function () {
 	search.tests();
 });
 
+gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
+	new karma.Server({
+		configFile: __dirname + '/karma.conf.js',
+	}, function (exitCode) {
+		console.log('ERROR Karma has exited with ' + exitCode)
+		process.exit()
+	}.bind(this)).start();
+});
 
 
 gulp.task('spider', function () {

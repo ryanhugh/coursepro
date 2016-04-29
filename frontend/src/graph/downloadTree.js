@@ -154,7 +154,6 @@ DownloadTree.prototype.fetchFullTree = function (serverData, callback) {
 	this.tree = tree;
 
 
-	// var q = queue()
 	this.fetchFullTreeOnce(tree, [], function () {
 
 		//another tree was began before this one finished

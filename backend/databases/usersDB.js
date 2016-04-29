@@ -50,6 +50,23 @@ function UsersDB() {
 
 }
 
+// April 11, schema example:  (this is same as above)
+// {
+// 	"ips": [],
+// 	"email": "rysquash@gmail.com",
+// 	"subscriptions": {},
+// 	"authenticated": true,
+// 	"lists": {
+// 		"watching": {
+// 			"classes": ["56f2259aea47044a056a8463"],
+// 			"sections": ["56f221bdea47044a05699c39", "56f22599ea47044a056a845b", "56f22156ea47044a056983e5"]
+// 		}
+// 	},
+// 	"name": "Ryan Hughes",
+// 	"updatedByParent": false
+// }
+
+
 // things to store now:
 // email (required)
 //loginKey = string, required when authorized = true

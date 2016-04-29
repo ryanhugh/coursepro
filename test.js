@@ -19,7 +19,22 @@ var dns = require('dns');
 // var title = require('to-title-case');
 var queue = require("queue-async")
 
+require('proxyquire')
+
+
+function stacktrace() { 
+	console.log(arguments.callee);
+	return;
+  function st2(f) {
+    return !f ? [] : 
+        st2(f.caller).concat([f.toString().split('(')[0].substring(9) + '(' + [].slice.call(f.arguments).join(',') + ')']);
+  }
+  return st2(arguments.callee.caller);
+}
+console.log(stacktrace());
+
 fs.readFile('backend/tests/differentCollegeUrls.json', function (err, data) {
+	return;
 
 	var urls = eval(data.toString('ascii'));
 

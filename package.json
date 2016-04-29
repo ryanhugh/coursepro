@@ -2,6 +2,7 @@
   "dependencies": {
     "angular": "^1.4.8",
     "angular-animate": "^1.4.8",
+    "angular-mocks": "^1.5.2",
     "angular-route": "^1.4.8",
     "angular-ui-bootstrap": "^1.0.3",
     "async": "^1.5.2",
@@ -28,7 +29,13 @@
     "gulp-wrap": "^0.11.0",
     "he": "^0.5.0",
     "htmlparser2": "^3.9.0",
+    "jasmine": "^2.4.1",
+    "jasmine-core": "^2.4.1",
     "jquery": "^2.2.0",
+    "karma": "^0.13.22",
+    "karma-browserify": "^5.0.3",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-jasmine": "^0.3.8",
     "lodash": "^4.0.0",
     "moment": "^2.11.2",
     "mongodb": "^1.4.39",
@@ -36,8 +43,10 @@
     "needle": "^1.0.0",
     "nodemailer": "^2.2.0",
     "nodemailer-smtp-transport": "^2.4.0",
+    "proxyquire": "^1.7.4",
+    "proxyquire-universal": "^1.0.8",
+    "proxyquireify": "^3.1.1",
     "querystring": "^0.2.0",
-    "reactify": "^1.1.1",
     "request": "^2.69.0",
     "require-dir": "^0.3.0",
     "to-title-case": "^1.0.0",
@@ -46,5 +55,10 @@
     "watchify": "^3.7.0",
     "whois": "^2.1.5"
   },
-  "description": "Awesome sauce! Yay!"
+  "description": "Awesome sauce! Yay!",
+  "devDependencies": {
+    "gulp-notify": "^2.2.0",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-phantomjs-launcher": "^1.0.0"
+  }
 }

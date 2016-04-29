@@ -49,8 +49,9 @@ function setupTargetStates() {
 			exports.UNIT_TESTS = true;
 		}
 		else {
-			console.log('ERROR Unknown GULP mode ', command, process.argv)
-			process.exit()
+			console.log('WARNING Unknown GULP mode ', command, process.argv)
+			console.log('this is from b macros.js')
+			exports.DEVELOPMENT = true;
 		}
 	}
 	else {
@@ -102,6 +103,9 @@ exports.DB_REFRESH_INTERVAL = 1800000
 if (exports.PRODUCTION) {
 	exports.SEND_EMAILS = true;
 	exports.QUIET_LOGGING = true;
+
+	//so express dosent spit out trace backs to the user
+	process.env.NODE_ENV='production';
 }
 else {
 	exports.SEND_EMAILS = false
