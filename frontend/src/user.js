@@ -556,17 +556,12 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		this.dbData.lists[listName].sections = _.uniq(this.dbData.lists[listName].sections.concat(sectionIds))
 
 
-<<<<<<< HEAD
-		ga('send', {
-			'hitType': 'pageview',
-			'page': '/addToList/' + listName + '/',
-			'title': 'Coursepro.io'
-		});
+	ga('send', {
+		'hitType': 'pageview',
+		'page': '/addToList/' + listName + '/',
+		'title': 'Coursepro.io'
+	});
 
-
-		request({
-			url: '/log',
-=======
 	var finalClassCount = this.dbData.lists[listName].classes.length;
 	var finalSectionCount = this.dbData.lists[listName].sections.length;
 
@@ -595,48 +590,17 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		this.sendRequest({
 			url: '/addToUserLists',
 			isMsg: true,
->>>>>>> prod
 			body: {
-				type: 'addToList',
-				initClassCount: initClassCount,
-				initSectionCount: initSectionCount,
-				finalClassCount: this.lists[listName].classes.length,
-				finalSectionCount: this.lists[listName].sections.length
-			},
-			useCache: false
-		}, function (err, response) {
-			if (err) {
-				elog("ERROR: couldn't log addToList :(", err, response, body);
+				listName: listName,
+				classes: classIds,
+				sections: sectionIds
 			}
-<<<<<<< HEAD
-		}.bind(this))
-
-		if (this.getAuthenticated()) {
-			this.sendRequest({
-				url: '/addToUserLists',
-				isMsg: true,
-				body: {
-					listName: listName,
-					classes: classIds,
-					sections: sectionIds
-				}
-			}, callback)
-		}
-		else {
-			this.saveToLocalStorage()
-			return callback()
-		}
-
-	}.bind(this))
-
-=======
 		}, callback)
 	}
 	else {
 		this.saveData()
 		return callback()
 	}
->>>>>>> prod
 };
 
 //can either be a class or a section
