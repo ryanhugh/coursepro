@@ -74,14 +74,11 @@
                     </a>
 
 
-
                     <a ng-if="class.prereqs.values.length > 0" ng-href="/#/graph/{{class.host}}/{{class.termId}}/{{class.subject}}/{{class.classId}}">
                         <span uib-tooltip="View Prerequisites" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .7;">
                             <img src="/images/tree.png">
                         </span>
                     </a>
-
-
 
                     <a ng-if="class.prereqs.values.length == 0" ng-href="/#/graph/{{class.host}}/{{class.termId}}/{{class.subject}}/{{class.classId}}">
                         <span uib-tooltip="No prerequisites found" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="float: right;padding-right: 6px;margin-top: -2px;opacity: .4;">
@@ -165,6 +162,7 @@
                                 </div>
 
                                 <div ng-if="!section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+
                                 </div>
                             </span>
                         </span>
