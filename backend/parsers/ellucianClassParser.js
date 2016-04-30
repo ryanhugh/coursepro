@@ -227,7 +227,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 				for (var attrName in pageData.dbData) {
 
 					//dont copy over some attributes
-					if (_(['name', 'updatedByParent', 'url', '_id', 'crns', 'lastUpdateTime']).includes(attrName)) {
+					if (_(['name', 'updatedByParent', 'url', '_id', 'crns']).includes(attrName)) {
 						continue;
 					}
 
