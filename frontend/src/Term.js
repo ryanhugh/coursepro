@@ -10,10 +10,8 @@ function Term(config) {
 	//populated on .loadSubjects
 	this.subjects = []
 
-	// console.log(config);
 	this.host = config.host
 	this.termId = config.termId
-
 }
 
 macros.inherent(BaseData, Term)
