@@ -26,24 +26,7 @@ function EllucianClassParser() {
 
 	//name and deps are optional, but if there is no deps there is nowhere to parse name...
 
-	this.classNameTranslation = {
-
-		// math
-		'Calculus 3 for Sci/engr (hon)': 'Calculus 3 for Science and Engineering (hon)',
-		'Calculus 3 for Sci/engr(hon)': 'Calculus 3 for Science and Engineering (hon)',
-		'Calculus 2 for Sci/engr (hon)': 'Calculus 2 for Science and Engineering (hon)',
-		'Calculus 1 for Sci/engr (hon)': 'Calculus 1 for Science and Engineering (hon)',
-		'Calculus 1for Sci/engr (hon)': 'Calculus 1 for Science and Engineering (hon)',
-		"Calc for Business/econ (hon)": 'Calculus for Business and Economics (hon)',
-		'Calc & Diff Eq - Biol 1(hon)': 'Calculus and Differential Equations for Biology 1 (hon)',
-
-		// econ
-		'Principles of Microecon (hon)': 'Principles of Microeconomics (hon)',
-
-		// cs
-		'Fundamental of Com Sci1': 'Fundamentals of Computer Science 1',
-		'Fundamentals of Com Sci1 (hon)': 'Fundamentals of Computer Science 1 (hon)'
-	}
+	
 }
 
 
@@ -173,16 +156,9 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 		}
 
 
-		var className = this.toTitleCase(match[1]);
-		if (className != match[1]) {
-			console.log('warning, toTitleCase changed class name from',match[1],'to',className);
-		}
-
-		// if it matches the hardcoded classes that have fixed names, change it
-		if (this.classNameTranslation[className]) {
-			console.log('INFO: fixed class name', className, '-->', this.classNameTranslation[className])
-			className = this.classNameTranslation[className]
-		}
+		
+		var className = this.standardizeClassName(match[1]);
+		
 
 		//name was already set to something different, make another db entry for this class
 		if (pageData.parsingData.name && className != pageData.parsingData.name) {

@@ -65,7 +65,7 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 		console.log('could not find title!', match, value, pageData.dbData.url);
 		return;
 	}
-	depData.name = this.toTitleCase(match[1]);
+	depData.name = this.standardizeClassName(match[1]);
 
 
 
