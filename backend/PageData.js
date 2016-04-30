@@ -51,10 +51,8 @@ function PageData(startingData) {
 
 	this.parent = startingData.parent;
 
-	if (startingData.dbData) {
-		for (var attrName in startingData.dbData) {
-			this.setData(attrName, startingData.dbData[attrName]);
-		}
+	for (var attrName in startingData.dbData) {
+		this.setData(attrName, startingData.dbData[attrName]);
 	}
 }
 
