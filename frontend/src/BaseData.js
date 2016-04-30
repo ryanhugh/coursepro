@@ -142,6 +142,13 @@ BaseData.createMany = function (config, callback) {
 			}
 			instances.push(instance)
 		}.bind(this))
+		
+		
+		instances.sort(function(a,b){
+			return a.compareTo(b);
+		}.bind(this));
+		
+		
 		return callback(null, instances)
 	}.bind(this))
 }

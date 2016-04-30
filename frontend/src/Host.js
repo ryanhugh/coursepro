@@ -9,7 +9,9 @@ function Host(config) {
 
 	//populated on .loadSubjects
 	this.terms = []
-
+	
+	//
+	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
 }
 
 macros.inherent(BaseData, Host)
@@ -36,5 +38,25 @@ Host.prototype.loadTerms = function (callback) {
 		}.bind(this))
 	}.bind(this))
 };
+
+// Sort by title, and then by host
+Host.prototype.compareTo = function(other){
+	if (other.title < this.title) {
+		return 1;
+	}
+	else if (other.title > this.title) {
+		return -1;
+	}
+	else if (other.title < this.title) {
+		return 1;
+	}
+	else if (other.title > this.title) {
+		return -1;
+	}
+	else {
+		elog('comparing to a Host that is identical to this one??')
+		return 0;
+	}
+}
 
 module.exports = Host
