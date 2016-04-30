@@ -227,14 +227,14 @@ PageDataMgr.prototype.main = function () {
 	// 	console.log('all done!! sju')
 	// }.bind(this))
 
-	this.createFromURL('https://ui2web4.apps.uillinois.edu/BANPROD4/bwckschd.p_disp_dyn_sched', function () {
+	this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched', function () {
 		// 	console.log('all done!! neu')
 		// }.bind(this))
 
 		// this.createFromURL('https://ssb.banner.usu.edu/zprod/bwckschd.p_disp_dyn_sched', function () {
 		// this.createFromURL('https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched', function () {
 		// this.createFromURL('https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched', function () {
-		console.log('all done!! neu')
+		console.log('all done!! yay')
 	}.bind(this))
 
 	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched', function () {

@@ -259,6 +259,18 @@ BaseParser.prototype.parseForm = function (url,dom) {
 	};
 }
 
+
+// no great npm module found so far
+// https://www.npmjs.com/package/case
+// https://www.npmjs.com/package/change-case
+// https://www.npmjs.com/package/slang
+// https://www.npmjs.com/package/to-title-case -- currently using this one, its ok not great
+// var a = require("change-case").title
+
+// console.log(a('texas a&m university'));
+// console.log(a('something something'))
+// console.log(a('2Nd year spanish'))
+
 // Used for college names, professor names, class names and locations
 // odd cases: "TBA", Texas A&M University
 BaseParser.prototype.toTitleCase = function(string) {
@@ -268,8 +280,27 @@ BaseParser.prototype.toTitleCase = function(string) {
 
 	string = toTitleCase(string)
 
+
+	var correctParts = [
 	// Texas A&M University
-	string = string.replace(' a&m ',' A&M ')
+	' A&M ',
+	'1st',
+	// 2nd Year Japanese
+	'2nd',
+	'3rd',
+	'4th',
+	'5th',
+	'6th',
+	'7th',
+	'8th',
+	'9th',
+	'10th',
+	]
+
+	correctParts.forEach(function (subString) {
+		string = string.replace(new RegExp(subString,'gi'),subString);
+	}.bind(this))
+
 
 	return string.trim()
 };
@@ -295,6 +326,7 @@ BaseParser.prototype.tests = function () {
 
 	assert.equal(this.toTitleCase('TBA'), 'TBA');
 	assert.equal(this.toTitleCase('Texas A&M University'), 'Texas A&M University');
+	assert.equal(this.toTitleCase('2nd Year Japanese'), '2nd Year Japanese');
 
 	//make sure other classes have tests
 	assert.equal(this.constructor.name,'BaseParser','you need to ovveride .tests()!');

@@ -174,6 +174,9 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 
 
 		var className = this.toTitleCase(match[1]);
+		if (className != match[1]) {
+			console.log('warning, toTitleCase changed class name from',match[1],'to',className);
+		}
 
 		// if it matches the hardcoded classes that have fixed names, change it
 		if (this.classNameTranslation[className]) {
