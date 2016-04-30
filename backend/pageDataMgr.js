@@ -155,7 +155,7 @@ PageDataMgr.prototype.processPageAfterDbLoad = function (pageData, callback) {
 PageDataMgr.prototype.finish = function (pageData, callback) {
 	pageData.processDeps(function (err) {
 		if (err) {
-			console.log('ERROR processing deps',err)
+			console.log('ERROR processing deps', err)
 			return callback(err)
 		}
 
@@ -228,15 +228,15 @@ PageDataMgr.prototype.main = function () {
 	// }.bind(this))
 
 	this.createFromURL('https://ui2web4.apps.uillinois.edu/BANPROD4/bwckschd.p_disp_dyn_sched', function () {
-	// 	console.log('all done!! neu')
-	// }.bind(this))
+		// 	console.log('all done!! neu')
+		// }.bind(this))
 
-	// this.createFromURL('https://ssb.banner.usu.edu/zprod/bwckschd.p_disp_dyn_sched', function () {
-	// this.createFromURL('https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched', function () {
-	// this.createFromURL('https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched', function () {
+		// this.createFromURL('https://ssb.banner.usu.edu/zprod/bwckschd.p_disp_dyn_sched', function () {
+		// this.createFromURL('https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched', function () {
+		// this.createFromURL('https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched', function () {
 		console.log('all done!! neu')
 	}.bind(this))
-	
+
 	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched', function () {
 	// 	console.log('all done!! tntech')
 	// }.bind(this))
@@ -275,6 +275,22 @@ PageDataMgr.prototype.main = function () {
 };
 
 PageDataMgr.prototype.tests = function () {
+
+	// loads a page data and all of its dependencies. doesent modify the db at all
+	// might need to change databaseName to coursepro_dev in bmacros
+	var pageData = new PageData({
+		dbData: {
+			url: 'https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched',
+			// url: 'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched',
+		}
+	})
+	pageData.findSupportingParser()
+
+	pageData.loadFromDB(function (arg) {
+		console.log(arguments, 'HEREE', pageData, pageData.deps)
+	}.bind(this))
+
+
 
 	//a class with no links to sections
 	// https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=AC&crse_in=507&schd_in=HY

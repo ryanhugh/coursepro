@@ -291,7 +291,8 @@ app.post('/listSubjects', function (req, res) {
 		termId: req.body.termId
 	}, {
 		shouldBeOnlyOne: false,
-		sanitize: true
+		sanitize: true,
+		removeSubjectControllers: true
 	}, function (err, subjects) {
 		if (err) {
 			console.log(err)

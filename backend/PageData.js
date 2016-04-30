@@ -11,6 +11,11 @@ var macros = require('./macros')
 //baseParser.js (for deps)
 //datamgr.js (for auto updates)
 function PageData(startingData) {
+	if (!startingData.dbData) {
+		console.log('ERROR pageData needs a dbData')
+		console.trace();
+		return null;
+	}
 	if (!startingData.dbData.url && !startingData.dbData._id && !startingData.dbData.updatedByParent) {
 		console.log('page data needs a url or an _id or an updater id!', startingData);
 		console.trace();
@@ -169,7 +174,7 @@ PageData.prototype.loadFromDB = function (callback) {
 		this.originalData.dbData = _.cloneDeep(doc);
 
 		if (!doc && lookupValues._id) {
-			console.log('error, looked up by id and didnt find anything???', this, lookupValues, this.parent)
+			console.log('error, looked up by id and didnt find anything???', this, lookupValues, this.database, this.parent)
 		};
 
 		var q = queue();
@@ -442,9 +447,11 @@ PageData.prototype.tests = function () {
 
 
 if (require.main === module) {
+	// require('./pageDataMgr')
 
 	// console.log(new PageData('https://google.google.com:9000/jfdsajfk').getUrlStart())
-	console.log(new PageData('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr='))
+	// console.log(new PageData('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=COM&sel_crse_strt=507&sel_crse_end=507&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr='))
+
 
 	// var a = new PageData("https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201536&crn_in=23361");
 

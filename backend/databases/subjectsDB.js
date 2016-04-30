@@ -25,25 +25,37 @@ SubjectsDB.prototype.isValidLookupValues = function (lookupValues) {
 	}
 };
 
-
+// config.removeSubjectControllers deterims whether to remove controller page data rows from the db 
+// (these just have a large number of deps and no subject.subject)
 SubjectsDB.prototype.find = function (lookupValues, config, callback) {
+	if (config.removeSubjectControllers === undefined) {
+		config.removeSubjectControllers = false;
+	}
+
+
 	BaseDB.prototype.find.call(this, lookupValues, config, function (err, results) {
 		if (err) {
 			return callback(err)
 		};
 
+		if (!config.removeSubjectControllers) {
+			return callback(null, results)
+		}
 
 		//remove any subjects that are not actually subjects, and dont have a subject.subject
 		//this needs to work for config.shouldBeOnlyOne both on and off
 		if (config.shouldBeOnlyOne) {
 
+			// if shouldBeOnlyOne is true BaseDB.find will return one object or null
+			var subject = results;
+
 			//if given null, return null
 			//also return null if not given valid value
-			if (!results) {
+			if (!subject) {
 				return callback(null, null);
 			}
 
-			var subject = results;
+			// make sure we have a valid subject, and not a subject controller
 			if (subject.subject) {
 				return callback(null, subject)
 			}
