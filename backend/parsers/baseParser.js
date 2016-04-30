@@ -322,6 +322,10 @@ BaseParser.prototype.standardizeClassName = function (inputName) {
 	outputName = outputName.replace(/\s*Business\/econ\s*/gi,' Business and Economics ')
 	outputName = outputName.replace(/\s*Calc & Diff Eq\s*/gi,' Calculus and Differential Equations ')
 	outputName = outputName.replace(/\s+Biol\s+/gi,' Biology ')
+
+	// https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?schd_in=%25&term_in=201602&subj_in=PEAC&crse_in=003
+	// Crisis Resolution in Mdl East
+	outputName = outputName.replace(/\s+Mdl\s+/gi,' Middle ')
 	outputName = outputName.replace(/\s+Microecon\s+/gi,' Microeconomics ')
 	outputName = outputName.replace(/\s*Com Sci(\d)\s*/gi,' Computer Science $1 ')
 
