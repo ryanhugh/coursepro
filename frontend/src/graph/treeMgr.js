@@ -1,5 +1,6 @@
 'use strict';
-var macros = require('../macros')
+var macros = require('../macros');
+var _ = require('lodash')
 
 function TreeMgr() {
 
@@ -239,6 +240,88 @@ TreeMgr.prototype.getFirstLayer = function (tree) {
 		return values;
 	}
 };
+
+
+//for every node in the tree
+//if there exists a class later in classList that is not equal to it (could have same depth, classList is sorted by depth)
+//node becomes the node found (set parent's values)
+TreeMgr.prototype.mergeDuplicateClasses = function(tree,classList) {
+
+
+	//breath first search down the tree
+	var stack = [tree];
+
+	var currTree;
+	while ((currTree = stack.shift())) {
+
+		if (!currTree.isClass) {
+			stack = stack.concat(currTree.prereqs.values)
+			continue;
+		}
+
+
+		var matchingClasses = _.where(classList, {
+			_id:currTree._id
+		});
+		
+		//at minimum this tree exists in the classList, so it should be at least 1
+		if (matchingClasses.length === 0) {
+			console.log('ERROR: no matching classes?!?');
+		}
+		
+		var lowestTree = matchingClasses[matchingClasses.length-1];
+
+		
+		
+		//if tree not the lowest tree, replace
+		if (currTree !== lowestTree) {
+			
+			//switch all references to currTree to lowestTree
+			currTree.allParents.forEach(function(parentTree) {
+				
+				if (!_(parentTree.prereqs.values).includes(currTree)) {
+					console.log('error parent does not include subtree');
+				}
+				
+				//remove the tree
+				_.pull(parentTree.prereqs.values,currTree);
+				
+				//and add the new lowest tree if it is not already part of the values
+				if (!_(parentTree.prereqs.values).includes(lowestTree)) {
+					parentTree.prereqs.values.push(lowestTree);
+				}
+				
+				if (!_(lowestTree.allParents).includes(parentTree)) {
+					lowestTree.allParents.push(parentTree)
+				}
+
+				if (_(parentTree.prereqs.values).includes(currTree)) {
+					console.log("ERROR something bad yo")
+					debugger
+				}
+
+			}.bind(this));
+			//
+
+			//currTree's values need to point to lowestTree
+			currTree.prereqs.values.forEach(function (subTree) {
+
+				//remove the node to be removed
+				_.pull(subTree.allParents,currTree)
+
+				//and add its replacement, the lowest tree, if it is not already there
+				if (!_(subTree.allParents).includes(lowestTree)) {
+					subTree.allParents.push(lowestTree)
+				}
+			}.bind(this))
+		}
+
+		//if two duplicated trees exist, we dont want to process both of their prereqs
+		//so only process the one that is last in the classList array
+		stack = stack.concat(currTree.prereqs.values)
+	}
+}
+
 
 
 
