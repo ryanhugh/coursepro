@@ -146,7 +146,7 @@ Pointer.prototype.request = function (url, options, callback) {
 
 	var q = infinateQueue;
 
-	var currentHostname = new URI(url).hostname();
+	var currentHostname = urlParsed.hostname();
 
 	if (throtteling[currentHostname] !== undefined) {
 		q = throtteling[currentHostname]
