@@ -203,9 +203,6 @@ Pointer.prototype.request = function (url, options, callback) {
 		}.bind(this))
 
 
-
-
-
 	}.bind(this))
 
 };

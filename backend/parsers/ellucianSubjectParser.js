@@ -9,8 +9,8 @@ var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 var ellucianClassListParser = require('./ellucianClassListParser');
 
 
-function EllucianSubjectParser () {
-	EllucianBaseParser.prototype.constructor.apply(this,arguments);
+function EllucianSubjectParser() {
+	EllucianBaseParser.prototype.constructor.apply(this, arguments);
 	this.name = "EllucianSubjectParser";
 }
 
@@ -21,14 +21,14 @@ EllucianSubjectParser.prototype.constructor = EllucianSubjectParser;
 
 
 EllucianSubjectParser.prototype.supportsPage = function (url) {
-	return url.indexOf('bwckgens.p_proc_term_date')>-1;
+	return url.indexOf('bwckgens.p_proc_term_date') > -1;
 };
 
-EllucianSubjectParser.prototype.getDatabase = function(pageData) {
+EllucianSubjectParser.prototype.getDatabase = function (pageData) {
 	return subjectsDB;
 };
 
-EllucianSubjectParser.prototype.getPointerConfig = function(pageData) {
+EllucianSubjectParser.prototype.getPointerConfig = function (pageData) {
 	var config = EllucianBaseParser.prototype.getPointerConfig.apply(this, arguments);
 	if (!pageData.dbData.termId) {
 		console.log('in pointer config and dont have termId!!!');
@@ -36,7 +36,7 @@ EllucianSubjectParser.prototype.getPointerConfig = function(pageData) {
 		return;
 	}
 
-	config.payload = 'p_calling_proc=bwckschd.p_disp_dyn_sched&p_term='+pageData.dbData.termId
+	config.payload = 'p_calling_proc=bwckschd.p_disp_dyn_sched&p_term=' + pageData.dbData.termId
 	config.headers = {
 		'Content-Type': 'application/x-www-form-urlencoded'
 	}
@@ -45,36 +45,36 @@ EllucianSubjectParser.prototype.getPointerConfig = function(pageData) {
 
 
 
-EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
+EllucianSubjectParser.prototype.onEndParsing = function (pageData, dom) {
 
 	//parse the form data
-	var formData = this.parseSearchPage(pageData.dbData.url,dom);
+	var formData = this.parseSearchPage(pageData.dbData.url, dom);
 	var subjects = [];
 
 	formData.payloads.forEach(function (payloadVar) {
-		if (payloadVar.name!='sel_subj') {
+		if (payloadVar.name != 'sel_subj') {
 			return;
 		}
 
-		if (!payloadVar.text || payloadVar.text==='') {
+		if (!payloadVar.text || payloadVar.text === '') {
 			return;
 		}
 
-		if (!payloadVar.value || payloadVar.value==='') {
+		if (!payloadVar.value || payloadVar.value === '') {
 			return;
 		}
 
 		//record all the subjects and their id's
-		if (payloadVar.name=='sel_subj') {
+		if (payloadVar.name == 'sel_subj') {
 			subjects.push({
-				id:payloadVar.value,
-				text:payloadVar.text
+				id: payloadVar.value,
+				text: payloadVar.text
 			});
 		}
 	}.bind(this));
 
-	if (subjects.length===0) {
-		console.log('ERROR, found 0 subjects??',pageData.dbData.url);
+	if (subjects.length === 0) {
+		console.log('ERROR, found 0 subjects??', pageData.dbData.url);
 	}
 
 
@@ -84,25 +84,25 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 
 		//if it already exists, just update the description
 		for (var i = 0; i < pageData.deps.length; i++) {
-			if (subject.id==pageData.deps[i].dbData.subject) {
-				pageData.deps[i].setData('text',subject.text);
-				console.log('updating text ',pageData.deps[i].dbData.text,subject.text)
+			if (subject.id == pageData.deps[i].dbData.subject) {
+				pageData.deps[i].setData('text', subject.text);
+				console.log('updating text ', pageData.deps[i].dbData.text, subject.text)
 				return;
 			};
 		};
 
 		//if not, add it
 		var subjectPageData = pageData.addDep({
-			updatedByParent:true,
-			subject:subject.id,
-			text:subject.text
+			updatedByParent: true,
+			subject: subject.id,
+			text: subject.text
 		});
 		subjectPageData.setParser(this)
 
 
 		//and add the subject dependency
 		var catalogPageData = subjectPageData.addDep({
-			url:this.createClassListUrl(pageData.dbData.url,pageData.dbData.termId,subject.id)
+			url: this.createClassListUrl(pageData.dbData.url, pageData.dbData.termId, subject.id)
 		});
 		catalogPageData.setParser(ellucianClassListParser)
 
@@ -110,41 +110,41 @@ EllucianSubjectParser.prototype.onEndParsing = function(pageData,dom) {
 };
 
 
-EllucianSubjectParser.prototype.parseSearchPage = function (startingURL,dom) {
-	
+EllucianSubjectParser.prototype.parseSearchPage = function (startingURL, dom) {
 
-	var parsedForm = this.parseForm(startingURL,dom);
+
+	var parsedForm = this.parseForm(startingURL, dom);
 
 	//remove sel_subj = ''
 	var payloads = [];
 
 	//if there is an all given on the other pages, use those (and don't pick every option)
 	//some sites have a limit of 2000 parameters per request, and picking every option sometimes exceeds that
-	var allOptionsFound =[];
+	var allOptionsFound = [];
 
-	parsedForm.payloads.forEach(function(entry) {
-		if (entry.name=='sel_subj' && entry.value=='%'){
+	parsedForm.payloads.forEach(function (entry) {
+		if (entry.name == 'sel_subj' && entry.value == '%') {
 			return;
 		}
-		else if (entry.value=='%') {
+		else if (entry.value == '%') {
 			allOptionsFound.push(entry.name);
 		}
 		payloads.push(entry);
 	}.bind(this));
 
 
-	var finalPayloads=[];
+	var finalPayloads = [];
 
 	//loop through again to make sure not includes any values which have an all set
 	payloads.forEach(function (entry) {
-		if (allOptionsFound.indexOf(entry.name)<0 || entry.value=='%' || entry.value=='dummy') {
+		if (allOptionsFound.indexOf(entry.name) < 0 || entry.value == '%' || entry.value == 'dummy') {
 			finalPayloads.push(entry);
 		}
 	}.bind(this));
 
 	return {
-		postURL:parsedForm.postURL,
-		payloads:finalPayloads
+		postURL: parsedForm.postURL,
+		payloads: finalPayloads
 	};
 };
 
@@ -153,10 +153,10 @@ EllucianSubjectParser.prototype.parseSearchPage = function (startingURL,dom) {
 
 
 
-EllucianSubjectParser.prototype.getMetadata = function(pageData) {
+EllucianSubjectParser.prototype.getMetadata = function (pageData) {
 	console.log('ERROR: getMetadata called for EllucianSubjectParser????');
 };
-EllucianSubjectParser.prototype.getEmailData = function(pageData) {
+EllucianSubjectParser.prototype.getEmailData = function (pageData) {
 	console.log('ERROR: getEmailData called for EllucianSubjectParser????');
 };
 
@@ -164,26 +164,28 @@ EllucianSubjectParser.prototype.getEmailData = function(pageData) {
 
 
 
-EllucianSubjectParser.prototype.tests = function(){
+EllucianSubjectParser.prototype.tests = function () {
 	require('../pageDataMgr')
 
-	fs.readFile('backend/tests/ellucianSubjectParser/1.html','utf8',function (err,body) {
-		assert.equal(null,err);
+	fs.readFile('backend/tests/ellucianSubjectParser/1.html', 'utf8', function (err, body) {
+		assert.equal(null, err);
 
-		pointer.handleRequestResponce(body,function (err,dom) {
-			assert.equal(null,err);
+		pointer.handleRequestResponce(body, function (err, dom) {
+			assert.equal(null, err);
 
 			var url = 'https://bannerweb.upstate.edu/isis/bwckgens.p_proc_term_date';
 
-			assert.equal(true,this.supportsPage(url));
+			assert.equal(true, this.supportsPage(url));
 
-			var pageData = pageDataMgr.create({dbData:{
-				url:url
-			}});
+			var pageData = pageDataMgr.create({
+				dbData: {
+					url: url
+				}
+			});
 
-			assert.notEqual(null,pageData);
+			assert.notEqual(null, pageData);
 
-			this.parseDOM(pageData,dom);
+			this.parseDOM(pageData, dom);
 
 
 			// console.log(pageData.deps)
@@ -227,12 +229,12 @@ EllucianSubjectParser.prototype.tests = function(){
 			console.log('all tests done bro');
 
 		}.bind(this));
-	}.bind(this));//
+	}.bind(this)); //
 };
 
 
 
-EllucianSubjectParser.prototype.EllucianSubjectParser=EllucianSubjectParser;
+EllucianSubjectParser.prototype.EllucianSubjectParser = EllucianSubjectParser;
 module.exports = new EllucianSubjectParser();
 
 if (require.main === module) {
