@@ -179,36 +179,6 @@ EllucianCatalogParser.prototype.parseElement = function(pageData,element) {
 
 
 
-EllucianCatalogParser.prototype.getMetadata = function(pageData) {
-	if (pageData.deps.length==0) {
-		console.log("Warning: 0 sections of ",pageData.dbData.url,'found in get getMetadata')
-		return {
-			clientString:"0 sections found!"
-		};
-	}
-	else {
-		return ellucianClassParser.getMetadata(pageData.deps[0]);
-	}
-}
-
-
-
-//email stuff
-
-
-EllucianCatalogParser.prototype.getEmailData = function(pageData) {
-	if (pageData.deps.length==0) {
-		console.log("Warning: 0 sections of ",pageData.dbData.url,'found in email')
-		return null;
-	}
-	else {
-		return ellucianClassParser.getEmailData(pageData.deps[0]);
-	}
-};
-
-
-
-
 EllucianCatalogParser.prototype.tests = function() {
 	require('../pageDataMgr')
 

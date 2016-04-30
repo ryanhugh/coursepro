@@ -298,11 +298,6 @@ PageData.prototype.processDeps = function (callback) {
 };
 
 
-PageData.prototype.getClientString = function () {
-	return this.parser.getMetadata(this).clientString;
-};
-
-
 PageData.prototype.getUrlStart = function () {
 	var urlParsed = new URI(this.dbData.url);
 	return urlParsed.scheme() + '://' + urlParsed.host();

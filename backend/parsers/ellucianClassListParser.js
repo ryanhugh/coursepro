@@ -93,20 +93,6 @@ EllucianClassListParser.prototype.parseElement = function(pageData,element) {
 
 
 
-EllucianClassListParser.prototype.getMetadata = function(pageData) {
-	console.log('error metadata for class list parser is not written!!!!!')
-	return {clientString:'not coded yet'};
-}
-
-
-
-//email stuff
-EllucianClassListParser.prototype.getEmailData = function(pageData) {
-	console.log('error getEmailData for class list parser is not written!!!!!')
-	return null;
-};
-
-
 
 EllucianClassListParser.prototype.tests = function() {
 	require('../pageDataMgr')

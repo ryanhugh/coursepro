@@ -149,41 +149,7 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 };
 
 
-EllucianSectionParser.prototype.getMetadata = function(pageData) {
-	return {
-		clientString:pageData.dbData.seatsRemaining + ' open seats found in '+ pageData.dbData.name + ' ('+pageData.dbData.seatsCapacity + ' total seats)'
-	};
-};
 
-
-
-//email stuff
-
-
-EllucianSectionParser.prototype.getEmailData = function(pageData) {
-	var newData = pageData.dbData;
-	var oldData = pageData.originalData.dbData;
-	if (!oldData) {
-		return;
-	}
-
-	var newSeatsOpen;
-	// spot opened on wait list
-	if (newData.waitRemaining>oldData.waitRemaining && newData.waitRemaining>0) {
-		newSeatsOpen = (newData.waitRemaining-oldData.waitRemaining);
-		return {
-			title:newSeatsOpen + ' seat'+this.getOptionallyPlural(newSeatsOpen)+' opened on wait list for '+newData.name+'!'
-		};
-	}
-
-	//spot opened on class
-	if (newData.seatsRemaining>oldData.seatsRemaining && newData.seatsRemaining>0) {
-		newSeatsOpen = (newData.seatsRemaining-oldData.seatsRemaining);
-		return {
-			title:newSeatsOpen + ' seat'+this.getOptionallyPlural(newSeatsOpen)+' opened for '+newData.name+'!'
-		};
-	}
-};
 
 
 

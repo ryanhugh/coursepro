@@ -285,15 +285,6 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL, dom) {
 };
 
 
-EllucianTermsParser.prototype.getMetadata = function (pageData) {
-	console.log('ERROR: getMetadata called for EllucianTermsParser????');
-};
-EllucianTermsParser.prototype.getEmailData = function (pageData) {
-	console.log('ERROR: getEmailData called for EllucianTermsParser????');
-};
-
-
-
 
 
 EllucianTermsParser.prototype.tests = function () {

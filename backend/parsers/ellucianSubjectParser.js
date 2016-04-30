@@ -152,18 +152,6 @@ EllucianSubjectParser.prototype.parseSearchPage = function (startingURL, dom) {
 
 
 
-
-EllucianSubjectParser.prototype.getMetadata = function (pageData) {
-	console.log('ERROR: getMetadata called for EllucianSubjectParser????');
-};
-EllucianSubjectParser.prototype.getEmailData = function (pageData) {
-	console.log('ERROR: getEmailData called for EllucianSubjectParser????');
-};
-
-
-
-
-
 EllucianSubjectParser.prototype.tests = function () {
 	require('../pageDataMgr')
 
