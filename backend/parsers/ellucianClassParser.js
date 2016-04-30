@@ -156,7 +156,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 		}
 
 
-		
+
 		var className = this.standardizeClassName(match[1]);
 		
 
@@ -332,6 +332,10 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 			//parse the location
 			sectionStartingData.meetings[index].where = this.toTitleCase(tableData.where[i]);
 
+			// and the type of meeting (eg, final exam, lecture, etc)
+			sectionStartingData.meetings[index].type = this.toTitleCase(tableData.type[i]);
+
+
 			//start time and end time of class each day
 			var times = this.parseTimeStamps(tableData.time[i], tableData.days[i]);
 
@@ -358,7 +362,6 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 	var sectionPageData = classToAddSectionTo.addDep(sectionStartingData);
 	sectionPageData.setParser(ellucianSectionParser);
 };
-
 
 
 EllucianClassParser.prototype.onBeginParsing = function (pageData) {

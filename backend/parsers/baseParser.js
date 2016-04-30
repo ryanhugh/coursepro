@@ -317,12 +317,18 @@ BaseParser.prototype.standardizeClassName = function (inputName) {
 
 	//regex the name to clean it up a bit
 	// perhaps could do like abbreviations for subject and find dividers or something
+	// would be dope if could convert roman numerals to numbers
 	outputName = outputName.replace(/\s*Sci\/engr\s*/gi,' Science and Engineering ')
 	outputName = outputName.replace(/\s*Business\/econ\s*/gi,' Business and Economics ')
 	outputName = outputName.replace(/\s*Calc & Diff Eq\s*/gi,' Calculus and Differential Equations ')
 	outputName = outputName.replace(/\s+Biol\s+/gi,' Biology ')
 	outputName = outputName.replace(/\s+Microecon\s+/gi,' Microeconomics ')
 	outputName = outputName.replace(/\s*Com Sci(\d)\s*/gi,' Computer Science $1 ')
+
+	// https://myswat.swarthmore.edu/pls/bwckschd.p_disp_detail_sched?term_in=201602&crn_in=25454
+	// BMC: General Chemistry II 
+	outputName = outputName.replace(/\s+ii(\s+|$)/gi,' II ')
+	outputName = outputName.replace(/bmc:/i,'BMC:')
 
 	outputName = outputName.replace(/Calculus (\d)for/gi,'Calculus $1 for')
 	outputName = outputName.replace(/Calc for/gi,'Calculus for')
@@ -354,7 +360,8 @@ BaseParser.prototype.tests = function () {
 
 	assert.equal(this.toTitleCase('TBA'), 'TBA');
 	assert.equal(this.toTitleCase('Texas A&M University'), 'Texas A&M University');
-	assert.equal(this.toTitleCase('2nd Year Japanese'), '2nd Year Japanese');
+	assert.equal(this.standardizeClassName('2nd Year Japanese'), '2nd Year Japanese');
+	assert.equal(this.standardizeClassName('Bmc: General Chemistry Ii'), 'BMC: General Chemistry II');
 
 
 	var classNameTranslation = {
