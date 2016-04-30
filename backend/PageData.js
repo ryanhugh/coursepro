@@ -150,7 +150,7 @@ PageData.prototype.loadFromDB = function (callback) {
 		lookupValues.url = this.dbData.url;
 	}
 	else {
-		elog('error in base db - cant lookup page data wihout url or _id!', this)
+		console.log('error in base db - cant lookup page data wihout url or _id!', this)
 		return callback('cant lookup');
 	}
 
@@ -169,7 +169,7 @@ PageData.prototype.loadFromDB = function (callback) {
 		this.originalData.dbData = _.cloneDeep(doc);
 
 		if (!doc && lookupValues._id) {
-			elog('error, looked up by id and didnt find anything???', this, lookupValues, this.parent)
+			console.log('error, looked up by id and didnt find anything???', this, lookupValues, this.parent)
 		};
 
 		var q = queue();
@@ -177,7 +177,7 @@ PageData.prototype.loadFromDB = function (callback) {
 		if (doc) {
 
 			if (this.dbData.deps) {
-				elog('error, loaded from db and there is already data in the pagedata??', this);
+				console.log('error, loaded from db and there is already data in the pagedata??', this);
 			}
 
 

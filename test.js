@@ -22,104 +22,120 @@ var queue = require("queue-async")
 require('proxyquire')
 
 
-function stacktrace() { 
-	console.log(arguments.callee);
-	return;
-  function st2(f) {
-    return !f ? [] : 
-        st2(f.caller).concat([f.toString().split('(')[0].substring(9) + '(' + [].slice.call(f.arguments).join(',') + ')']);
-  }
-  return st2(arguments.callee.caller);
-}
-console.log(stacktrace());
+var count = 0;
 
-fs.readFile('backend/tests/differentCollegeUrls.json', function (err, data) {
-	return;
+// try calling apiMethod 3 times, waiting 200 ms between each retry
+async.retry({times: 3, interval: 2000000}, function (callback) {
+	count++
+	console.log('count is ',count)
+	if (count<2) {
+		callback('no')
+	}
+	else {
+		callback(null,'yes')
+	}
+}.bind(this), function(err, result) {
+    console.log("fjdsalfjl");
+});
 
-	var urls = eval(data.toString('ascii'));
+// function stacktrace() { 
+// 	console.log(arguments.callee);
+// 	return;
+//   function st2(f) {
+//     return !f ? [] : 
+//         st2(f.caller).concat([f.toString().split('(')[0].substring(9) + '(' + [].slice.call(f.arguments).join(',') + ')']);
+//   }
+//   return st2(arguments.callee.caller);
+// }
+// console.log(stacktrace());
 
-	urls.slice(10,20).forEach(function (url) {
-		var domain = new URI(url).host();
+// fs.readFile('backend/tests/differentCollegeUrls.json', function (err, data) {
+// 	return;
 
+// 	var urls = eval(data.toString('ascii'));
 
-
-
-		dns.resolve(domain, 'A', function (err, ips) {
-			console.log(err, ips);
-
-			if (err) {
-				console.log('err:', err);
-				return;
-			};
-
-
-			ips.forEach(function (ip) {
-				async.parallel([
-						function (callback) {
-
-							dns.reverse(ip, function (err, results) {
-								console.log(err, results);
-								callback(err,_(results).includes(domain) );
-
-
-							}.bind(this))
-
-
-						}.bind(this),
-						function (callback) {
-
-							var options = {
-								host: domain,
-								port: 443,
-								method: 'GET'
-							};
-
-							https.request(options, function (res) {
-
-								// subject.CN is domain its issued to, is helpful, but can include *
-								//subjectaltname too
-
-
-								var yay = res.connection.getPeerCertificate().subject.CN == domain
-								console.log('https:',yay,domain);
-								callback(null,yay)
-							}).end();
-
-
-						}.bind(this)
-					],
-					function (err, results) {
-						console.log("done!",_(results).includes(true));
-
-
-
-					}.bind(this))
+// 	urls.slice(10,20).forEach(function (url) {
+// 		var domain = new URI(url).host();
 
 
 
 
+// 		dns.resolve(domain, 'A', function (err, ips) {
+// 			console.log(err, ips);
+
+// 			if (err) {
+// 				console.log('err:', err);
+// 				return;
+// 			};
+
+
+// 			ips.forEach(function (ip) {
+// 				async.parallel([
+// 						function (callback) {
+
+// 							dns.reverse(ip, function (err, results) {
+// 								console.log(err, results);
+// 								callback(err,_(results).includes(domain) );
+
+
+// 							}.bind(this))
+
+
+// 						}.bind(this),
+// 						function (callback) {
+
+// 							var options = {
+// 								host: domain,
+// 								port: 443,
+// 								method: 'GET'
+// 							};
+
+// 							https.request(options, function (res) {
+
+// 								// subject.CN is domain its issued to, is helpful, but can include *
+// 								//subjectaltname too
+
+
+// 								var yay = res.connection.getPeerCertificate().subject.CN == domain
+// 								console.log('https:',yay,domain);
+// 								callback(null,yay)
+// 							}).end();
+
+
+// 						}.bind(this)
+// 					],
+// 					function (err, results) {
+// 						console.log("done!",_(results).includes(true));
+
+
+
+// 					}.bind(this))
 
 
 
 
-			}.bind(this))
 
 
 
 
-		}.bind(this))
-	}.bind(this))
+// 			}.bind(this))
 
 
 
-}.bind(this))
+
+// 		}.bind(this))
+// 	}.bind(this))
 
 
-// var MongoClient = require('mongodb').MongoClient;
 
-var db = require('monk')('developmentOnly'+'passwordjflaksjflsajfl ds'+'@52.20.189.150/coursepro_dev');
-// var database = monk;
-var test = db.get('test');
+// }.bind(this))
+
+
+// // var MongoClient = require('mongodb').MongoClient;
+
+// var db = require('monk')('developmentOnly'+'passwordjflaksjflsajfl ds'+'@52.20.189.150/coursepro_dev');
+// // var database = monk;
+// var test = db.get('test');
 
 // Connection URL 
 // var url = 'mongodb://52.6.184.210:27017/test';
@@ -136,21 +152,21 @@ var test = db.get('test');
 
 // console.log(test,test.__proto__);
 
-test.findAndModify({
-			_id: '123456789012345678901234'
-		}, {w:9}, {multi:false,"new":true}, function (err, numReplaced) {
+// test.findAndModify({
+// 			_id: '123456789012345678901234'
+// 		}, {w:9}, {multi:false,"new":true}, function (err, numReplaced) {
 
-			console.log(err,numReplaced,arguments.length);
+// 			console.log(err,numReplaced,arguments.length);
 
-			// if (err) {
-			// 	console.log("ERROR",err);
-			// 	return callback(err)
-			// };
-			// if (numReplaced !== 1) {
-			// 	console.log('ERROR: updated !==0?', numReplaced, newData);
-			// };
-			// callback(null, newData);
-		}.bind(this));
+// 			// if (err) {
+// 			// 	console.log("ERROR",err);
+// 			// 	return callback(err)
+// 			// };
+// 			// if (numReplaced !== 1) {
+// 			// 	console.log('ERROR: updated !==0?', numReplaced, newData);
+// 			// };
+// 			// callback(null, newData);
+// 		}.bind(this));
 
 // test.insert({
 // 			_id: '123456789012345678901234',
@@ -170,7 +186,7 @@ test.findAndModify({
 // 		}.bind(this));
 
 
-console.log(test.updateOne)
+// console.log(test.updateOne)
 
 
 // test.find(function(err, results) {

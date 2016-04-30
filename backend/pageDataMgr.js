@@ -227,7 +227,7 @@ PageDataMgr.prototype.main = function () {
 	// 	console.log('all done!! sju')
 	// }.bind(this))
 
-	this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched', function () {
+	this.createFromURL('https://ui2web4.apps.uillinois.edu/BANPROD4/bwckschd.p_disp_dyn_sched', function () {
 	// 	console.log('all done!! neu')
 	// }.bind(this))
 
