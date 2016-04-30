@@ -367,27 +367,27 @@ User.prototype.loadList = function (listName, callback) {
 		callback = function () {}
 	};
 
-	// if the list already exists, do some checks to make sure its in a valid state
-	if (this.lists[listName]) {
-
-		if (this.lists[listName].dataStatus === macros.DATASTATUS_DONE) {
-			return callback(null, this.lists[listName])
-		};
-
-		if (this.lists[listName].classes.length != 0 || this.lists[listName].sections.length != 0) {
-			console.log("ERROR user load list called on list ", listName, 'that was not empty');
-			return callback(null, this.lists[listName])
-		};
-
-
-		if (this.lists[listName].dataStatus !== macros.DATASTATUS_NOTSTARTED && this.lists[listName].dataStatus !== undefined) {
-			elog('loadWatching called when data status was', this.lists[listName].dataStatus)
-			return callback('internal error');
-		};
-	};
-
 	// wait data downloaded from server to run this
 	this.onAuthFinish(this.constructor.name, function () {
+		// if the list already exists, do some checks to make sure its in a valid state
+		if (this.lists[listName]) {
+
+			if (this.lists[listName].dataStatus === macros.DATASTATUS_DONE) {
+				return callback(null, this.lists[listName])
+			};
+
+			if (this.lists[listName].classes.length != 0 || this.lists[listName].sections.length != 0) {
+				console.log("ERROR user load list called on list ", listName, 'that was not empty');
+				return callback(null, this.lists[listName])
+			};
+
+
+			if (this.lists[listName].dataStatus !== macros.DATASTATUS_NOTSTARTED && this.lists[listName].dataStatus !== undefined) {
+				elog('loadWatching called when data status was', this.lists[listName].dataStatus)
+				return callback('internal error');
+			};
+		};
+		
 		var q = queue()
 
 		this.ensureList(listName)
