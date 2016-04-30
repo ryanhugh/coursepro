@@ -3,12 +3,11 @@
 var macros = require('../../macros')
 var BaseData = require('../../BaseData')
 
+// Now, the mock data classes inherent from their respective real class, which inherents from mock base data, which inherents from base data. 
+// eg, mockClass -> Class -> MockBaseData -> BaseData. 
 
-//Now, the main data classes inherent from the normal data class and this class second,
-// which sets up everything correcly
-// another way to do it would be to have them proxirequire basedata when including their original class,
-// and point it towards mock base data --doing it this way now, the other way override prototype.download on the second inheretance, and makeing a mock without 
-// inhereting from the real thing didnt work
+//Before this I tried having the mock classes inherent from their respective class and mockBaseData, but there were conflicts with static methods 
+//with the second inherent overriding the first instead of the first calling the second.
 
 
 function MockBaseData() {

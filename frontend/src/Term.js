@@ -58,6 +58,7 @@ Term.prototype.compareTo = function(other){
 	}
 	else {
 		elog('two terms had the same id ???',this, other);
+		return 0;
 	}
 }
 

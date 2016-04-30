@@ -54,7 +54,7 @@ Subject.prototype.compareTo = function(other) {
 		return 1;
 	}
 	else {
-		console.log("warning subjects are same??",this,other);
+		elog("subjects are same??",this,other);
 		return 0;
 	}
 };
