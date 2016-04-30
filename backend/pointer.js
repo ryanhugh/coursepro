@@ -157,7 +157,7 @@ Pointer.prototype.request = function (url, options, callback) {
 
 		async.retry({
 			times: this.maxRetryCount,
-			// interval: 20000 + parseInt(Math.random() * 15000)
+			interval: 20000 + parseInt(Math.random() * 15000)
 		}, function (callback) {
 			this.openRequests++;
 			this.fireRequest(url, options, function (err, response, body) {
