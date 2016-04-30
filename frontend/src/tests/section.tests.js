@@ -14,7 +14,6 @@ var macros = require('../macros')
 // 		}
 // 	}],
 // 	"startTimesStrings": ["9:50 am"],
-// 	"classInstance": null,
 // 	"meetings": [{
 // 		"startDate": 16687,
 // 		"endDate": 16778,
@@ -89,7 +88,6 @@ describe('Section', function () {
 				subject: 'CS',
 				classId: '2511',
 				crn: '11722',
-				classInstance: aClass
 			})).not.toBe(null);
 
 			//dosent work
@@ -99,17 +97,9 @@ describe('Section', function () {
 				subject: 'CS'
 			})).toBe(null);
 
-			//dosent work, missing classInstance
-			var section = Section.create({
-				_id: '56f21f93ea47044a05691b3e'
-			});
-
-			expect(section).toBe(null);
-
 			//works with _id
 			var section = Section.create({
 				_id: '56f21f93ea47044a05691b3e',
-				classInstance: aClass
 			});
 
 			expect(section).not.toBe(null);
@@ -123,7 +113,6 @@ describe('Section', function () {
 
 			var section = Section.create({
 				_id: '56f21f93ea47044a05691b3e',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -136,7 +125,6 @@ describe('Section', function () {
 
 			var section = Section.create({
 				_id: '56f2203fea47044a05694349',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -148,7 +136,6 @@ describe('Section', function () {
 		it('true when meeting on sun', function () {
 			var section = Section.create({
 				_id: '56f220d9ea47044a05696720',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -159,7 +146,6 @@ describe('Section', function () {
 		it('true when not meeting', function () {
 			var section = Section.create({
 				_id: '56f223b4ea47044a056a11c1',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -175,7 +161,6 @@ describe('Section', function () {
 
 			var section = Section.create({
 				_id: '56f223b4ea47044a056a11c1',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -184,7 +169,6 @@ describe('Section', function () {
 
 			var section = Section.create({
 				_id: '56f21f93ea47044a05691b3e',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -203,7 +187,6 @@ describe('Section', function () {
 
 			var section = Section.create({
 				_id: '56f223b4ea47044a056a11c1',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -216,7 +199,6 @@ describe('Section', function () {
 
 			var section = Section.create({
 				_id: '56f22254ea47044a0569bf99',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -239,7 +221,6 @@ describe('Section', function () {
 
 			var section = Section.create({
 				_id: '56f223b4ea47044a056a11c1',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -253,7 +234,6 @@ describe('Section', function () {
 
 			var section = Section.create({
 				_id: '56f22254ea47044a0569bf99',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -271,7 +251,6 @@ describe('Section', function () {
 		it('works', function () {
 			var section = Section.create({
 				_id: '56f223b4ea47044a056a11c1',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -282,7 +261,6 @@ describe('Section', function () {
 			
 			var section = Section.create({
 				_id: '56f2203fea47044a05694349',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -296,7 +274,6 @@ describe('Section', function () {
 		it('works', function () {
 			var section = Section.create({
 				_id: '56f223b4ea47044a056a11c1',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -305,7 +282,6 @@ describe('Section', function () {
 
 			var section = Section.create({
 				_id: '56f2203fea47044a05694349',
-				classInstance: aClass
 			});
 
 			section.download();
@@ -323,7 +299,6 @@ describe('Section', function () {
 		it('works', function () {
 			var section = Section.create({
 				_id: '56f223b4ea47044a056a11c1',
-				classInstance: aClass
 			});
 
 			section.download();

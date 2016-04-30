@@ -19,9 +19,6 @@ function Section(config) {
 		this.dataStatus = macros.DATASTATUS_DONE
 	}
 
-	//pointer to the class instance that contains this
-	// this.classInstance = config.classInstance;
-
 	//seperate reasons to meet: eg Lecture or Lab.
 	//each of these then has times, and days
 	//instances of Meeting
@@ -36,14 +33,6 @@ macros.inherent(BaseData, Section)
 Section.requiredPath = ['host', 'termId', 'subject', 'classId']
 Section.optionalPath = ['crn']
 Section.API_ENDPOINT = '/listSections'
-
-// Section.isValidCreatingData = function (config) {
-// 	// if (!config.classInstance) {
-// 	// 	elog("tried to create a Section without a classInstance", config)
-// 	// 	return false;
-// 	// };
-// 	return BaseData.isValidCreatingData.apply(this, arguments);
-// }
 
 Section.prototype.meetsOnWeekends = function () {
 
