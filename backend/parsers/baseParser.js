@@ -384,7 +384,8 @@ BaseParser.prototype.tests = function () {
 
 		// cs
 		'Fundamental of Com Sci1': 'Fundamentals of Computer Science 1',
-		'Fundamentals of Com Sci1 (hon)': 'Fundamentals of Computer Science 1 (hon)'
+		'Fundamentals of Com Sci1 (hon)': 'Fundamentals of Computer Science 1 (hon)',
+		'Crisis Resolution in Mdl East': 'Crisis Resolution in Middle East'
 	}
 
 	for (var oldName in classNameTranslation) {
