@@ -67,7 +67,7 @@ var macros = require('../macros')
 // 	"locations": ["West Village H 212"],
 // 	"hasWaitList": false
 // }
-
+ 
 
 // it should either be 1. hidden, or have a times[0][0] that has > 0 length
 describe('Section', function () {

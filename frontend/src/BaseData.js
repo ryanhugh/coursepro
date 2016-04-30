@@ -410,6 +410,9 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 	}.bind(this))
 };
 
-
+// needs to be overriden
+BaseData.prototype.compareTo = function() {
+	elog("BaseData compare to called!!")
+};
 
 module.exports = BaseData
