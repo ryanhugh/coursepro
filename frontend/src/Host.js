@@ -10,7 +10,6 @@ function Host(config) {
 	//populated on .loadSubjects
 	this.terms = []
 	
-	//
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
 }
 
@@ -47,10 +46,10 @@ Host.prototype.compareTo = function(other){
 	else if (other.title > this.title) {
 		return -1;
 	}
-	else if (other.title < this.title) {
+	else if (other.host < this.host) {
 		return 1;
 	}
-	else if (other.title > this.title) {
+	else if (other.host > this.host) {
 		return -1;
 	}
 	else {

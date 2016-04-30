@@ -44,4 +44,22 @@ Term.prototype.loadSubjects = function (callback) {
 	}.bind(this))
 };
 
+
+// Sort by title, and then by host
+Term.prototype.compareTo = function(other){
+	var thisParsed = parseInt(this.termId)
+	var otherParsed = parseInt(other.termId)
+
+	if (thisParsed < otherParsed) {
+		return 1;
+	}
+	else if (thisParsed > otherParsed) {
+		return -1;
+	}
+	else {
+		elog('two terms had the same id ???',this, other);
+	}
+}
+
+
 module.exports = Term

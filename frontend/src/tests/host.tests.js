@@ -1,7 +1,6 @@
 'use strict';
-// var Class = require('./mocks/mockClass') // NEED TO MAKE A MOCK HOST
+var Host = require('./mocks/mockHost')
 var macros = require('../macros')
-var Host = require('../Host')
 
 describe('Host', function () {
 
@@ -19,5 +18,33 @@ describe('Host', function () {
 			
 			expect(hosts[0].host).toBe('neu.edu');
 		});
+
+		it('works', function () {
+
+			var hosts = [
+				new Host({host:'neu.edu',title:'ZZZZZ'}),
+				new Host({host:'aaaa',   title:'ZZZZZ'})
+			];
+			
+			hosts.sort(function(a,b){
+				return a.compareTo(b);
+			})
+			
+			expect(hosts[0].host).toBe('aaaa');
+		});
 	});
+
+
+	describe('.download', function () {
+		it('works', function () {
+
+			var host = new Host({host:'neu.edu'});
+
+			host.download();
+
+			expect(host.title).toBe('Northeastern University')
+
+		});
+	});
+
 });

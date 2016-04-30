@@ -1,9 +1,14 @@
 'use strict';
 
-var Term = require('../../Term')
 var macros = require('../../macros')
 var mockData = require('./mockTermData.json')
 var MockBaseData = require('./MockBaseData')
+
+var proxyquire = require('proxyquireify')(require);
+
+var Term = proxyquire('../../Term', {
+	'./BaseData': MockBaseData, 
+})
 
 
 function MockTerm() {
@@ -11,9 +16,7 @@ function MockTerm() {
 }
 
 macros.inherent(Term, MockTerm);
-macros.inherent(MockBaseData, MockTerm);
 
 MockTerm.mockData = mockData
-
 
 module.exports = MockTerm;
