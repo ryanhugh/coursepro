@@ -86,7 +86,6 @@ EllucianSubjectParser.prototype.onEndParsing = function (pageData, dom) {
 		for (var i = 0; i < pageData.deps.length; i++) {
 			if (subject.id == pageData.deps[i].dbData.subject) {
 				pageData.deps[i].setData('text', subject.text);
-				console.log('updating text ', pageData.deps[i].dbData.text, subject.text)
 				return;
 			};
 		};

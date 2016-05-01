@@ -22,12 +22,23 @@ var queue = require("queue-async")
 require('proxyquire')
 
 var linksDB = require('./backend/databases/linksDB')
+var termsDB = require('./backend/databases/termsDB')
 
 linksDB.find({url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=&term_in=201602&one_subj=PPOL'},{},function (err, docs) {
-	console.log(err,docs);
+	console.log(err,docs[0]);
 }.bind(this))
 
+// termsDB.find({_id:'56b7ee63ef27facc18db0ff1'},{},function (err, docs) {
+// 	console.log(docs[0],'1');
+// }.bind(this))
+
+// termsDB.find({_id:'57259c0e01c30bab5e8b3fb8'},{},function (err, docs) {
+// 	console.log(docs[0],'YOO2');
+// }.bind(this))
+
 var count = 0;
+
+// 57259c0e01c30bab5e8b3fb8
 
 // elog()
 // console.log(new Error('elog Trace').stack)
