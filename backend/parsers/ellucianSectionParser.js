@@ -16,14 +16,14 @@ var ellucianRequisitesParser = require('./ellucianRequisitesParser');
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
 
 
-function EllucianSectionParser () {
-	EllucianBaseParser.prototype.constructor.apply(this,arguments);
+function EllucianSectionParser() {
+	EllucianBaseParser.prototype.constructor.apply(this, arguments);
 
 	this.name = 'EllucianSectionParser';
 
 	this.requiredAttrs = [
-	"seatsCapacity",
-	"seatsRemaining"
+		"seatsCapacity",
+		"seatsRemaining"
 	];
 
 	//minCredits and maxCredits are optional
@@ -36,26 +36,26 @@ EllucianSectionParser.prototype.constructor = EllucianSectionParser;
 
 
 EllucianSectionParser.prototype.supportsPage = function (url) {
-	return url.indexOf('bwckschd.p_disp_detail_sched')>-1;
+	return url.indexOf('bwckschd.p_disp_detail_sched') > -1;
 };
 
-EllucianSectionParser.prototype.getDatabase = function(pageData) {
+EllucianSectionParser.prototype.getDatabase = function (pageData) {
 	return sectionDB;
 };
 
 
 
-EllucianSectionParser.prototype.parseElement = function(pageData,element) {
-	if (element.type!='tag') {
+EllucianSectionParser.prototype.parseElement = function (pageData, element) {
+	if (element.type != 'tag') {
 		return;
 	}
 
 
-	if (element.name == 'table' && element.attribs.class=='datadisplaytable' && element.parent.name=='td' && _(element.attribs.summary).includes("seating")) {
+	if (element.name == 'table' && element.attribs.class == 'datadisplaytable' && element.parent.name == 'td' && _(element.attribs.summary).includes("seating")) {
 		var tableData = this.parseTable(element);
 
-		if (!tableData || tableData._rowCount===0 || !tableData.capacity || !tableData.actual || !tableData.remaining) {
-			console.log('ERROR: invalid table in section parser',tableData,pageData.dbData.url);
+		if (!tableData || tableData._rowCount === 0 || !tableData.capacity || !tableData.actual || !tableData.remaining) {
+			console.log('ERROR: invalid table in section parser', tableData, pageData.dbData.url);
 			return;
 		}
 
@@ -64,26 +64,26 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 		var seatsActual = parseInt(tableData.actual[0]);
 		var seatsRemaining = parseInt(tableData.remaining[0]);
 
-		if (seatsActual+seatsRemaining!=seatsCapacity) {
-			console.log('warning, actual + remaining != capacity',seatsCapacity,seatsActual,seatsRemaining,pageData.dbData.url);
+		if (seatsActual + seatsRemaining != seatsCapacity) {
+			console.log('warning, actual + remaining != capacity', seatsCapacity, seatsActual, seatsRemaining, pageData.dbData.url);
 		}
 
-		pageData.setData('seatsCapacity',seatsCapacity);
-		pageData.setData('seatsRemaining',seatsRemaining);
+		pageData.setData('seatsCapacity', seatsCapacity);
+		pageData.setData('seatsRemaining', seatsRemaining);
 
 
-		if (tableData._rowCount>1) {
+		if (tableData._rowCount > 1) {
 
 			var waitCapacity = parseInt(tableData.capacity[1]);
 			var waitActual = parseInt(tableData.actual[1]);
 			var waitRemaining = parseInt(tableData.remaining[1]);
 
 			if (waitActual + waitRemaining != waitCapacity) {
-				console.log('warning, wait actual + remaining != capacity',waitCapacity,waitActual,waitRemaining,pageData.dbData.url);
+				console.log('warning, wait actual + remaining != capacity', waitCapacity, waitActual, waitRemaining, pageData.dbData.url);
 			}
 
-			pageData.setData('waitCapacity',waitCapacity);
-			pageData.setData('waitRemaining',waitRemaining);
+			pageData.setData('waitCapacity', waitCapacity);
+			pageData.setData('waitRemaining', waitRemaining);
 		}
 
 
@@ -93,14 +93,14 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 
 
 		//find co and pre reqs and restrictions
-		var prereqs =ellucianRequisitesParser.parseRequirementSection(pageData,element.parent.children,'prerequisites');
+		var prereqs = ellucianRequisitesParser.parseRequirementSection(pageData, element.parent.children, 'prerequisites');
 		if (prereqs) {
-			pageData.setParentData('prereqs',prereqs);
+			pageData.setParentData('prereqs', prereqs);
 		}
 
-		var coreqs =ellucianRequisitesParser.parseRequirementSection(pageData,element.parent.children,'corequisites');
+		var coreqs = ellucianRequisitesParser.parseRequirementSection(pageData, element.parent.children, 'corequisites');
 		if (coreqs) {
-			pageData.setParentData('coreqs',coreqs);
+			pageData.setParentData('coreqs', coreqs);
 		}
 
 
@@ -122,13 +122,13 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 				minCredits = maxCredits;
 			}
 
-			if (minCredits>maxCredits) {
-				console.log('error, min credits>max credits...',containsCreditsText,pageData.dbData.url);
-				minCredits=maxCredits;
+			if (minCredits > maxCredits) {
+				console.log('error, min credits>max credits...', containsCreditsText, pageData.dbData.url);
+				minCredits = maxCredits;
 			}
 
-			pageData.setParentData('minCredits',minCredits);
-			pageData.setParentData('maxCredits',maxCredits);
+			pageData.setParentData('minCredits', minCredits);
+			pageData.setParentData('maxCredits', maxCredits);
 			return;
 		}
 
@@ -138,13 +138,13 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 		if (creditsMatch) {
 
 			var credits = parseFloat(creditsMatch[1]);
-			pageData.setParentData('minCredits',credits);
-			pageData.setParentData('maxCredits',credits);
+			pageData.setParentData('minCredits', credits);
+			pageData.setParentData('maxCredits', credits);
 
 			return;
 		}
 
-		console.log('warning, nothing matchied credits',pageData.dbData.url,containsCreditsText);
+		console.log('warning, nothing matchied credits', pageData.dbData.url, containsCreditsText);
 	}
 };
 
@@ -154,130 +154,118 @@ EllucianSectionParser.prototype.parseElement = function(pageData,element) {
 
 
 
-EllucianSectionParser.prototype.tests = function() {
+EllucianSectionParser.prototype.tests = function () {
 	require('../pageDataMgr');
 
 
-	function DummyParent (){
+	function DummyParent() {
 		this.data = {};
 	}
 
-	DummyParent.prototype.setData = function (name,value) {
-		this.data[name]=value;
+	DummyParent.prototype.setData = function (name, value) {
+		this.data[name] = value;
 	};
 
 
 
 	//the pre and co requs html here has been modified
 	//this contains the same pre requs as prereqs10
-	fs.readFile('backend/tests/ellucianSectionParser/1.html','utf8',function (err,body) {
-		assert.equal(null,err);
+	fs.readFile('backend/tests/ellucianSectionParser/1.html', 'utf8', function (err, body) {
+		assert.equal(null, err);
 
-		pointer.handleRequestResponce(body,function (err,dom) {
-			assert.equal(null,err);
+		pointer.handleRequestResponce(body, function (err, dom) {
+			assert.equal(null, err);
 
 			var url = 'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633';
 
-			assert.equal(true,this.supportsPage(url));
+			assert.equal(true, this.supportsPage(url));
 
 			var dummyParent = new DummyParent();
 
-			var pageData = pageDataMgr.create({dbData:{url:url},parent:dummyParent});
+			var pageData = pageDataMgr.create({
+				dbData: {
+					url: url
+				},
+				parent: dummyParent
+			});
 
-			assert.notEqual(null,pageData);
+			assert.notEqual(null, pageData);
 
-			this.parseDOM(pageData,dom);
+			this.parseDOM(pageData, dom);
 
 
-			assert.deepEqual(pageData.dbData,{
+			assert.deepEqual(pageData.dbData, {
 				url: url,
 				seatsCapacity: 32,
 				seatsRemaining: 0,
 				waitCapacity: 0,
-				waitRemaining: 0},JSON.stringify(pageData.dbData));
+				waitRemaining: 0
+			}, JSON.stringify(pageData.dbData));
 
-			assert.equal(pageData.parent.data.minCredits,3)
-			assert.equal(pageData.parent.data.maxCredits,3)
+			assert.equal(pageData.parent.data.minCredits, 3)
+			assert.equal(pageData.parent.data.maxCredits, 3)
 
 
-			assert.deepEqual(pageData.parent.data.prereqs,{
+			assert.deepEqual(pageData.parent.data.prereqs, {
 				"type": "and",
-				"values": [
-				{
+				"values": [{
 					"type": "or",
-					"values": [
-					{
+					"values": [{
 						"classId": "1601",
 						"termId": "201508",
 						"subject": "AE"
-					},
-					{
+					}, {
 						"classId": "1350",
 						"termId": "201508",
 						"subject": "AE"
-					}
-					]
-				},
-				{
+					}]
+				}, {
 					"type": "or",
-					"values": [
-					{
+					"values": [{
 						"classId": "2212",
 						"termId": "201508",
 						"subject": "PHYS"
-					},
-					{
+					}, {
 						"classId": "2232",
 						"termId": "201508",
 						"subject": "PHYS"
-					}
-					]
-				},
-				{
+					}]
+				}, {
 					"type": "or",
-					"values": [
-					{
+					"values": [{
 						"classId": "2401",
 						"termId": "201508",
 						"subject": "MATH"
-					},
-					{
+					}, {
 						"classId": "2411",
 						"termId": "201508",
 						"subject": "MATH"
-					},
-					{
+					}, {
 						"classId": "24X1",
 						"termId": "201508",
 						"subject": "MATH"
-					},
-					{
+					}, {
 						"classId": "2551",
 						"termId": "201508",
 						"subject": "MATH"
-					},
-					{
+					}, {
 						"classId": "2561",
 						"termId": "201508",
 						"subject": "MATH"
-					},
-					{
+					}, {
 						"classId": "2X51",
 						"termId": "201508",
 						"subject": "MATH"
-					}
-					]
-				},
-				{
+					}]
+				}, {
 					"classId": "2001",
 					"termId": "201508",
 					"subject": "COE"
-				}
-				]
+				}]
 			});
 
 			//
-			assert.deepEqual(pageData.parent.data.coreqs,{
+			assert.deepEqual(pageData.parent.data.coreqs, {
 				"type": "and",
 				"values": [{
 					classId: '2161',
@@ -287,188 +275,170 @@ EllucianSectionParser.prototype.tests = function() {
 			});
 
 		}.bind(this));
-	}.bind(this));//
+	}.bind(this)); //
 
 
 	//
-	fs.readFile('backend/tests/ellucianSectionParser/many non linked.html','utf8',function (err,body) {
-		assert.equal(null,err);
+	fs.readFile('backend/tests/ellucianSectionParser/many non linked.html', 'utf8', function (err, body) {
+		assert.equal(null, err);
 
-		pointer.handleRequestResponce(body,function (err,dom) {
-			assert.equal(null,err);
+		pointer.handleRequestResponce(body, function (err, dom) {
+			assert.equal(null, err);
 
 			var url = 'http://test.hostname.com/PROD/';
 
-			var pageData = pageDataMgr.create({dbData:{url:url}});
+			var pageData = pageDataMgr.create({
+				dbData: {
+					url: url
+				}
+			});
 
-			var prereqs =ellucianRequisitesParser.parseRequirementSection(pageData,dom,'prerequisites');
+			var prereqs = ellucianRequisitesParser.parseRequirementSection(pageData, dom, 'prerequisites');
 
-			assert.deepEqual(prereqs,{
+			assert.deepEqual(prereqs, {
 				"type": "or",
-				"values": [
-				{
+				"values": [{
 					"type": "and",
-					"values": [
-					{
+					"values": [{
 						"classId": "050",
 						"termId": "201509",
 						"subject": "ENG"
-					},
-					{
+					}, {
 						"classId": "040",
 						"termId": "201509",
 						"subject": "MAT"
-					}
+					}]
+				}, {
+					"type": "and",
+					"values": [{
+							"classId": "050",
+							"termId": "201509",
+							"subject": "ENG"
+						},
+						"Arith - Place Test 06"
 					]
-				},
-				{
+				}, {
+					"type": "and",
+					"values": [{
+							"classId": "050",
+							"termId": "201509",
+							"subject": "ENG"
+						},
+						"Arith - Quick Screen Place 06"
+					]
+				}, {
+					"type": "and",
+					"values": [{
+							"classId": "050",
+							"termId": "201509",
+							"subject": "ENG"
+						},
+						"Accuplacer (AR) 067"
+					]
+				}, {
+					"type": "and",
+					"values": [{
+							"classId": "050",
+							"termId": "201509",
+							"subject": "ENG"
+						},
+						"Accuplacer (EA) 040"
+					]
+				}, {
 					"type": "and",
 					"values": [
-					{
-						"classId": "050",
-						"termId": "201509",
-						"subject": "ENG"
-					},
-					"Arith - Place Test 06"
+						"Eng - Place Test 03",
+						"Arith - Place Test 06"
 					]
-				},
-				{
+				}, {
 					"type": "and",
 					"values": [
-					{
-						"classId": "050",
-						"termId": "201509",
-						"subject": "ENG"
-					},
-					"Arith - Quick Screen Place 06"
+						"Eng - Place Test 03",
+						"Arith - Quick Screen Place 06"
 					]
-				},
-				{
+				}, {
 					"type": "and",
 					"values": [
-					{
-						"classId": "050",
-						"termId": "201509",
-						"subject": "ENG"
-					},
-					"Accuplacer (AR) 067"
+						"Eng - Place Test 03",
+						"Accuplacer (AR) 067"
 					]
-				},
-				{
+				}, {
 					"type": "and",
 					"values": [
-					{
-						"classId": "050",
-						"termId": "201509",
-						"subject": "ENG"
-					},
-					"Accuplacer (EA) 040"
+						"Eng - Place Test 03",
+						"Accuplacer (EA) 040"
 					]
-				},
-				{
+				}, {
 					"type": "and",
 					"values": [
-					"Eng - Place Test 03",
-					"Arith - Place Test 06"
+						"Eng - Place Test 03", {
+							"classId": "040",
+							"termId": "201509",
+							"subject": "MAT"
+						}
 					]
-				},
-				{
+				}, {
 					"type": "and",
 					"values": [
-					"Eng - Place Test 03",
-					"Arith - Quick Screen Place 06"
+						"Eng - Quick Screen Place 03",
+						"Arith - Place Test 06"
 					]
-				},
-				{
+				}, {
 					"type": "and",
 					"values": [
-					"Eng - Place Test 03",
-					"Accuplacer (AR) 067"
+						"Eng - Quick Screen Place 03",
+						"Arith - Quick Screen Place 06"
 					]
-				},
-				{
+				}, {
 					"type": "and",
 					"values": [
-					"Eng - Place Test 03",
-					"Accuplacer (EA) 040"
+						"Eng - Quick Screen Place 03",
+						"Accuplacer (AR) 067"
 					]
-				},
-				{
+				}, {
 					"type": "and",
 					"values": [
-					"Eng - Place Test 03",
-					{
-						"classId": "040",
-						"termId": "201509",
-						"subject": "MAT"
-					}
+						"Eng - Quick Screen Place 03",
+						"Accuplacer (EA) 040"
 					]
-				},
-				{
+				}, {
 					"type": "and",
 					"values": [
-					"Eng - Quick Screen Place 03",
-					"Arith - Place Test 06"
+						"Eng - Quick Screen Place 03", {
+							"classId": "040",
+							"termId": "201509",
+							"subject": "MAT"
+						}
 					]
-				},
-				{
-					"type": "and",
-					"values": [
-					"Eng - Quick Screen Place 03",
-					"Arith - Quick Screen Place 06"
-					]
-				},
-				{
-					"type": "and",
-					"values": [
-					"Eng - Quick Screen Place 03",
-					"Accuplacer (AR) 067"
-					]
-				},
-				{
-					"type": "and",
-					"values": [
-					"Eng - Quick Screen Place 03",
-					"Accuplacer (EA) 040"
-					]
-				},
-				{
-					"type": "and",
-					"values": [
-					"Eng - Quick Screen Place 03",
-					{
-						"classId": "040",
-						"termId": "201509",
-						"subject": "MAT"
-					}
-					]
-				},
-				{
+				}, {
 					"classId": "100",
 					"termId": "201509",
 					"subject": "ENG"
-				}
-				]
+				}]
 			});
 
-		}.bind(this));//
-	}.bind(this));//
+		}.bind(this)); //
+	}.bind(this)); //
 
 	//
-	fs.readFile('backend/tests/ellucianSectionParser/blacklistedstring.html','utf8',function (err,body) {
-		assert.equal(null,err);
+	fs.readFile('backend/tests/ellucianSectionParser/blacklistedstring.html', 'utf8', function (err, body) {
+		assert.equal(null, err);
 
-		pointer.handleRequestResponce(body,function (err,dom) {
-			assert.equal(null,err);
+		pointer.handleRequestResponce(body, function (err, dom) {
+			assert.equal(null, err);
 
 			var url = 'http://test.hostname.com/PROD/';
 
-			var pageData = pageDataMgr.create({dbData:{url:url}});
+			var pageData = pageDataMgr.create({
+				dbData: {
+					url: url
+				}
+			});
 
-			this.parseDOM(pageData,dom);
+			this.parseDOM(pageData, dom);
 
 			// var prereqs =ellucianRequisitesParser.parseRequirementSection(pageData,dom,'prerequisites');
-			console.log(JSON.stringify(pageData.dbData,null,2));
+			console.log(JSON.stringify(pageData.dbData, null, 2));
 		}.bind(this));
 	}.bind(this));
 
@@ -479,7 +449,7 @@ EllucianSectionParser.prototype.tests = function() {
 
 
 //this allows subclassing, http://bites.goodeggs.com/posts/export-this/ (Mongoose section)
-EllucianSectionParser.prototype.EllucianSectionParser=EllucianSectionParser;
+EllucianSectionParser.prototype.EllucianSectionParser = EllucianSectionParser;
 module.exports = new EllucianSectionParser();
 
 if (require.main === module) {
