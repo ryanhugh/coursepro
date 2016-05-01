@@ -416,8 +416,8 @@ PageData.prototype.setData = function (name, value) {
 	if (this.dbData[name] !== undefined && !_.isEqual(this.dbData[name], value)) {
 
 		//only log change in last update time if in verbose mode
-		if (name!='lastUpdateTime' || macros.VERBOSE) {
-			console.log('warning, overriding pageData.dbData.' + name + ' with new data existing:', JSON.stringify(this.dbData[name]), JSON.stringify(value))
+		if (name != 'lastUpdateTime' || macros.VERBOSE) {
+			console.log('warning, overriding pageData.dbData.' + name + ' from:', JSON.stringify(this.dbData[name]), 'to:', JSON.stringify(value))
 		}
 	}
 
