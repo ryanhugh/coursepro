@@ -264,7 +264,6 @@ EllucianSectionParser.prototype.tests = function () {
 				}]
 			});
 
-			//
 			assert.deepEqual(pageData.parent.data.coreqs, {
 				"type": "and",
 				"values": [{
@@ -275,10 +274,9 @@ EllucianSectionParser.prototype.tests = function () {
 			});
 
 		}.bind(this));
-	}.bind(this)); //
+	}.bind(this));
 
 
-	//
 	fs.readFile('backend/tests/ellucianSectionParser/many non linked.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
 
