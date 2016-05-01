@@ -6,7 +6,7 @@ var URI = require('urijs');
 var _ = require('lodash');
 var assert = require('assert');
 
-
+var pointer = require('../pointer')
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
 function EllucianRequisitesParser() {
@@ -182,16 +182,16 @@ EllucianRequisitesParser.prototype.convertStringToJSON = function (text) {
 		element = element.trim();
 
 		//all of the grouping parens will be at end or start of element string
-		if (_(element).startsWith('(')) {
-			element = element.slice(1);
+		while (_(element).startsWith('(')) {
+			element = element.slice(1).trim();
 			retVal.push('[');
 		}
 
 		//ending bracket needs to be checked here, but inserted after url/text parsed
-		var insertEndBracket = false;
-		if (_(element).endsWith(')')) {
-			element = element.slice(0, element.length - 1);
-			insertEndBracket = true;
+		var endBracketToInsertCount = 0;
+		while (_(element).endsWith(')')) {
+			element = element.slice(0, element.length - 1).trim();
+			endBracketToInsertCount++;
 		}
 
 
@@ -205,7 +205,7 @@ EllucianRequisitesParser.prototype.convertStringToJSON = function (text) {
 			retVal.push('"' + element.trim() + '",');
 		}
 
-		if (insertEndBracket) {
+		for (var i = 0; i < endBracketToInsertCount; i++) {
 			retVal.push('],');
 		}
 
@@ -408,6 +408,7 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 
 
 EllucianRequisitesParser.prototype.tests = function () {
+	require('../pageDataMgr')
 
 
 	//this is now just CATAOG URL WITH 234 INFRONT OF IT
@@ -505,27 +506,57 @@ EllucianRequisitesParser.prototype.tests = function () {
 
 
 
-	//
+
 	fs.readFile('backend/tests/ellucianRequisitesParser/1.html', 'utf8', function (err, body) {
-		// console.log(err);
 		assert.equal(null, err);
 
-		// pointer.handleRequestResponce(body,function (err,dom) {
-		// 	assert.equal(null,err);
+		var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201555&subj_code_in=PMC&crse_numb_in=6212'
 
-		// 	var url = 'http://test.hostname.com/PROD/';
+		var pageData = pageDataMgr.create({
+			dbData: {
+				url: url
+			}
+		});
 
-		// 	var pageData = pageDataMgr.create({dbData:{url:url}});
 
-		// 	this.parseDOM(pageData,dom);
+		pointer.handleRequestResponce(body, function (err, dom) {
+			assert.equal(null, err);
 
-		// 	// var prereqs =ellucianRequisitesParser.parseRequirementSection(pageData,dom,'prerequisites');
-		// 	console.log(JSON.stringify(pageData.dbData,null,2));
-		// }.bind(this));
+			var prereqs = this.parseRequirementSection(pageData, dom[0].children, 'prerequisites');
+
+			assert.deepEqual(prereqs, {
+				"type": "or",
+				"values": [{
+					"classId": "6000",
+					"termId": "201555",
+					"subject": "PJM"
+				}, {
+					"type": "and",
+					"values": [{
+						"classId": "6210",
+						"termId": "201555",
+						"subject": "BTC"
+					}, {
+						"classId": "6100",
+						"termId": "201555",
+						"subject": "RGA"
+					}, {
+						"type": "or",
+						"values": [{
+							"classId": "6201",
+							"termId": "201555",
+							"subject": "RGA"
+						}, {
+							"classId": "6202",
+							"termId": "201555",
+							"subject": "RGA"
+						}]
+					}]
+				}]
+			})
+
+		}.bind(this))
 	}.bind(this));
-
-
-
 
 };
 
