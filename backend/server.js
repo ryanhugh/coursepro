@@ -263,7 +263,8 @@ app.post('/listTerms', function (req, res) {
 		host: req.body.host
 	}, {
 		shouldBeOnlyOne: false,
-		sanitize: true
+		sanitize: true,
+		removeControllers: true
 	}, function (err, terms) {
 		if (err) {
 			res.status(500);
@@ -292,7 +293,7 @@ app.post('/listSubjects', function (req, res) {
 	}, {
 		shouldBeOnlyOne: false,
 		sanitize: true,
-		removeSubjectControllers: true
+		removeControllers: true
 	}, function (err, subjects) {
 		if (err) {
 			console.log(err)

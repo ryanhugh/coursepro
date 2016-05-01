@@ -25,11 +25,11 @@ SubjectsDB.prototype.isValidLookupValues = function (lookupValues) {
 	}
 };
 
-// config.removeSubjectControllers deterims whether to remove controller page data rows from the db 
+// config.removeControllers deterims whether to remove controller page data rows from the db 
 // (these just have a large number of deps and no subject.subject)
 SubjectsDB.prototype.find = function (lookupValues, config, callback) {
-	if (config.removeSubjectControllers === undefined) {
-		config.removeSubjectControllers = false;
+	if (config.removeControllers === undefined) {
+		config.removeControllers = false;
 	}
 
 
@@ -38,7 +38,7 @@ SubjectsDB.prototype.find = function (lookupValues, config, callback) {
 			return callback(err)
 		};
 
-		if (!config.removeSubjectControllers) {
+		if (!config.removeControllers) {
 			return callback(null, results)
 		}
 
