@@ -18,8 +18,7 @@ function DatabaseTests() {
 
 DatabaseTests.prototype.go = function () {
 	if (!macros.UNIT_TESTS) {
-		console.log('wtf database tests called when db not in tests mode')
-		console.trace()
+		elog('wtf database tests called when db not in tests mode')
 		return;
 	};
 

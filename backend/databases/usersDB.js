@@ -155,8 +155,7 @@ UsersDB.prototype.getQuery = function (userData) {
 		}
 	}
 	else {
-		console.log("ERROR UsersDB userData had no info", userData);
-		console.trace();
+		elog("ERROR UsersDB userData had no info", userData);
 	}
 	return {};
 };
@@ -177,8 +176,7 @@ UsersDB.prototype.update = function (userData, updateQuery, config, callback) {
 		config.shouldBeOnlyOne = true;
 	};
 	if (userData.idToken) {
-		console.log("Error id token on userDB.update?", userData, updateQuery)
-		console.trace()
+		elog("Error id token on userDB.update?", userData, updateQuery)
 		userData.idToken = undefined
 	}
 
@@ -201,8 +199,7 @@ UsersDB.prototype.find = function (userData, config, callback) {
 	if (userData.idToken) {
 
 		if (_.keys(userData).length !== 1) {
-			console.log("WARNING ignoring more than idToken on user find", userData, config);
-			console.trace();
+			elog("WARNING ignoring more than idToken on user find", userData, config);
 		};
 
 		this.authenticateUser(userData.idToken, function (err, doc) {

@@ -99,7 +99,7 @@ BaseParser.prototype.parseDOM = function (pageData, dom) {
 //regardless if its part of the header or the first row of the body
 BaseParser.prototype.parseTable = function (table) {
 	if (table.name != 'table') {
-		console.trace('parse table was not given a table..')
+		elog('parse table was not given a table..')
 		return;
 	};
 
@@ -108,7 +108,7 @@ BaseParser.prototype.parseTable = function (table) {
 	var rows = domutils.getElementsByTagName('tr', table);
 
 	if (rows.length === 0) {
-		console.trace('zero rows???')
+		elog('zero rows???')
 		return;
 	};
 
@@ -470,7 +470,7 @@ BaseParser.prototype.tests = function () {
 
 		pointer.handleRequestResponce(fileJSON.body, function (err, dom) {
 			if (err) {
-				console.trace(err);
+				elog(err);
 			}
 
 			if (this.constructor.name == "BaseParser") {

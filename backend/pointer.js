@@ -55,7 +55,7 @@ Pointer.prototype.fireRequest = function (url, options, callback) {
 
 
 		if (!needleConfig.headers['Content-Type']) {
-			console.trace('ERROR:content type not given for request!')
+			elog('ERROR:content type not given for request!')
 			return callback('no content type for post')
 		};
 
@@ -81,8 +81,7 @@ Pointer.prototype.fireRequest = function (url, options, callback) {
 Pointer.prototype.getBaseHost = function (url) {
 	var homepage = new URI(url).hostname();
 	if (!homepage || homepage == '') {
-		console.log('ERROR: could not find homepage of', url);
-		console.trace();
+		elog('ERROR: could not find homepage of', url);
 		return;
 	}
 

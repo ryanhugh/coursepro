@@ -12,13 +12,11 @@ var macros = require('./macros')
 //datamgr.js (for auto updates)
 function PageData(startingData) {
 	if (!startingData.dbData) {
-		console.log('ERROR pageData needs a dbData')
-		console.trace();
+		elog('ERROR pageData needs a dbData')
 		return null;
 	}
 	if (!startingData.dbData.url && !startingData.dbData._id && !startingData.dbData.updatedByParent) {
-		console.log('page data needs a url or an _id or an updater id!', startingData);
-		console.trace();
+		elog('page data needs a url or an _id or an updater id!', startingData);
 		return null;
 	}
 
@@ -78,8 +76,7 @@ PageData.prototype.DBLOAD_DONE = 2;
 // parsername is optionall, used when loading from db
 PageData.prototype.findSupportingParser = function (parserName) {
 	if (this.parser) {
-		console.log('error, told to find a parser but already have one???', this)
-		console.trace();
+		elog('error, told to find a parser but already have one???', this)
 		return true;
 	}
 	if (!this.dbData.url && !parserName) {
@@ -108,8 +105,7 @@ PageData.prototype.setParser = function (parser) {
 	}
 
 	if (this.parser) {
-		console.log('error, tried to set parser, already have a parser', this.parser.constructor.name, parser.constructor.name);
-		console.trace();
+		elog('error, tried to set parser, already have a parser', this.parser.constructor.name, parser.constructor.name);
 		return false;
 	}
 
@@ -310,8 +306,7 @@ PageData.prototype.getUrlStart = function () {
 
 PageData.prototype.addDep = function (depData) {
 	if (!depData) {
-		console.log('Error:Tried to add invalid depdata??', depData);
-		console.trace()
+		elog('Error:Tried to add invalid depdata??', depData);
 		return null;
 	}
 
@@ -408,14 +403,12 @@ PageData.prototype.setData = function (name, value) {
 
 
 	if (_(['deps']).includes(name)) {
-		console.log('ERROR: html set tried to override', name);
-		console.trace()
+		elog('ERROR: html set tried to override', name);
 		return;
 	}
 
 	if (_(['_id']).includes(name) && this.dbData[name] !== undefined) {
-		console.log('ERROR: cant override', name, ' from value ', this.dbData[name], 'to value ', value)
-		console.trace()
+		elog('ERROR: cant override', name, ' from value ', this.dbData[name], 'to value ', value)
 		return;
 	}
 

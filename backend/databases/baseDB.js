@@ -63,8 +63,7 @@ BaseDB.prototype.shouldUpdateDB = function (newData, oldData) {
 
 			//this should not happen
 			if (attrName == '_id' && newData[attrName] != oldData[attrName]) {
-				console.log('id changed on data?', newData, oldData)
-				console.trace()
+				elog('id changed on data?', newData, oldData)
 				newData[attrName] = oldData[attrName]
 			};
 			return true;
@@ -212,8 +211,7 @@ BaseDB.prototype.getStaticValues = function () {
 // sanitize (find only): true/false (default false) removes internal fields that the front end shouldn't see sanitize
 BaseDB.prototype.update = function (query, updateQuery, config, callback) {
 	if (!query || !updateQuery || !config || !callback) {
-		console.log("ERROR update given invalid options")
-		console.trace();
+		elog("ERROR update given invalid options")
 	}
 
 	if (!config.shouldBeOnlyOne) {

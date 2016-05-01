@@ -185,8 +185,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 				// console.log('creating a new dep entry',pageData.deps.length);
 
 				if (pageData.dbData.desc === undefined) {
-					console.log('wtf desc is undefined??')
-					console.trace();
+					elog('wtf desc is undefined??')
 				};
 
 				dbAltEntry = pageData.addDep({
@@ -227,8 +226,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 
 		sectionStartingData.crn = sectionURLParsed.crn;
 		if (!classToAddSectionTo.parsingData.crns) {
-			console.log('ERROR class parsing data has no crns attr??!?!??', classToAddSectionTo)
-			console.trace()
+			elog('ERROR class parsing data has no crns attr??!?!??', classToAddSectionTo)
 			return;
 		};
 		classToAddSectionTo.parsingData.crns.push(sectionURLParsed.crn);

@@ -300,7 +300,7 @@ PageDataMgr.prototype.tests = function () {
 	//THIS WILL RUN FULL COLLEGE PARSRS IT LOOKS LIKE
 	fs.readFile('backend/tests/differentCollegeUrls.json', 'utf8', function (err, body) {
 		if (err) {
-			console.trace(err)
+			elog(err)
 			return;
 		}
 
@@ -330,7 +330,7 @@ PageDataMgr.prototype.tests = function () {
 
 	fs.readFile('backend/tests/' + this.constructor.name + '/toparse3.json', 'utf8', function (err, body) {
 		if (err) {
-			console.trace(err)
+			elog(err)
 			return;
 		};
 

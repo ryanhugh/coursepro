@@ -18,25 +18,28 @@ var https = require('https');
 var dns = require('dns');
 // var title = require('to-title-case');
 var queue = require("queue-async")
-
+// var macros = require('./macros')
 require('proxyquire')
 
 
 var count = 0;
 
+// elog()
+console.log(new Error('elog Trace').stack)
+
 // try calling apiMethod 3 times, waiting 200 ms between each retry
-async.retry({times: 3, interval: 2000000}, function (callback) {
-	count++
-	console.log('count is ',count)
-	if (count<2) {
-		callback('no')
-	}
-	else {
-		callback(null,'yes')
-	}
-}.bind(this), function(err, result) {
-    console.log("fjdsalfjl");
-});
+// async.retry({times: 3, interval: 2000000}, function (callback) {
+// 	count++
+// 	console.log('count is ',count)
+// 	if (count<2) {
+// 		callback('no')
+// 	}
+// 	else {
+// 		callback(null,'yes')
+// 	}
+// }.bind(this), function(err, result) {
+//     console.log("fjdsalfjl");
+// });
 
 // function stacktrace() { 
 // 	console.log(arguments.callee);

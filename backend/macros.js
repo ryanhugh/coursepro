@@ -22,6 +22,11 @@ function fixCWD() {
 }
 fixCWD();
 
+GLOBAL.elog = function () {
+	console.log.apply(console,arguments)
+	console.log(new Error('elog Trace').stack)
+}.bind(this)
+
 
 //setup different targets
 function setupTargetStates() {

@@ -81,8 +81,7 @@ EllucianBaseParser.prototype.createCatalogUrl = function(siteURL,termId,subject,
 	};
 
 	if (classId===undefined) {
-		console.log('error need class id for catalog url')
-		console.trace()
+		elog('error need class id for catalog url')
 		return
 	};
 
