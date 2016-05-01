@@ -7,12 +7,10 @@ var _ = require('lodash');
 var assert = require('assert');
 
 
-var sectionDB = require('../databases/sectionsDB');
-var pointer = require('../pointer');
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
-function EllucianRequisitesParser () {
-	EllucianBaseParser.prototype.constructor.apply(this,arguments);
+function EllucianRequisitesParser() {
+	EllucianBaseParser.prototype.constructor.apply(this, arguments);
 
 	this.name = 'EllucianRequisitesParser';
 }
@@ -27,8 +25,8 @@ EllucianRequisitesParser.prototype.supportsPage = function (url) {
 	return false;
 };
 
-EllucianRequisitesParser.prototype.getDatabase = function(pageData) {
-	console.log('requistes parser get db was called??')
+EllucianRequisitesParser.prototype.getDatabase = function (pageData) {
+	elog('requistes parser get db was called??')
 	return null;
 };
 
@@ -36,16 +34,16 @@ EllucianRequisitesParser.prototype.getDatabase = function(pageData) {
 //follow the order of operations (and before or)
 //and group a (something and something or something) to ((something and something) or something)
 //unnecesary groupings are undone by simplifyRequirements
-EllucianRequisitesParser.prototype.groupRequirementsByAnd = function(data) {
+EllucianRequisitesParser.prototype.groupRequirementsByAnd = function (data) {
 	var retVal = [];
 
 	for (var i = 0; i < data.length; i++) {
-		if (i+2>=data.length) {
+		if (i + 2 >= data.length) {
 			retVal.push(data[i]);
 			continue;
 		}
 
-		if (data[i+1]=='and' && data.length>3){
+		if (data[i + 1] == 'and' && data.length > 3) {
 			var beforeAnd;
 			if (Array.isArray(data[i])) {
 				beforeAnd = this.groupRequirementsByAnd(data[i]);
@@ -55,15 +53,15 @@ EllucianRequisitesParser.prototype.groupRequirementsByAnd = function(data) {
 			}
 
 			var afterAnd;
-			if (Array.isArray(data[i+2])) {
-				afterAnd = this.groupRequirementsByAnd(data[i+2]);
+			if (Array.isArray(data[i + 2])) {
+				afterAnd = this.groupRequirementsByAnd(data[i + 2]);
 			}
 			else {
-				afterAnd = data[i+2];
+				afterAnd = data[i + 2];
 			}
 
-			retVal.push([beforeAnd,'and',afterAnd]);
-			i+=2;
+			retVal.push([beforeAnd, 'and', afterAnd]);
+			i += 2;
 			continue;
 		}
 		else {
@@ -78,11 +76,11 @@ EllucianRequisitesParser.prototype.groupRequirementsByAnd = function(data) {
 //this is given the output of formatRequirements, where data.type and data.values exist
 // if there is an or embedded in another or, merge them (and and's too)
 //and if there is a subvalue of only 1 len, merge that too
-EllucianRequisitesParser.prototype.simplifyRequirements = function(data) {
+EllucianRequisitesParser.prototype.simplifyRequirements = function (data) {
 
 	var retVal = {
-		type:data.type,
-		values:[]
+		type: data.type,
+		values: []
 	};
 
 	data.values.forEach(function (subData) {
@@ -99,7 +97,7 @@ EllucianRequisitesParser.prototype.simplifyRequirements = function(data) {
 		}
 
 		//if only contains 1 value, merge
-		else if (subData.values.length==1) {
+		else if (subData.values.length == 1) {
 			retVal.values.push(subData.values[0]);
 		}
 
@@ -114,37 +112,37 @@ EllucianRequisitesParser.prototype.simplifyRequirements = function(data) {
 
 
 //converts the ['','and',''] to {type:and,values:'',''}
-EllucianRequisitesParser.prototype.formatRequirements = function(data) {
+EllucianRequisitesParser.prototype.formatRequirements = function (data) {
 	var retVal = {
-		type:'and',
-		values:[]
+		type: 'and',
+		values: []
 	};
 
-	data.forEach(function (val,index) {
+	data.forEach(function (val, index) {
 		if (Array.isArray(val)) {
 
 			var subValues = this.formatRequirements(val);
-			
+
 			//found another array, convert sub array and add it to retval
 			if (!subValues) {
-				console.log('warning could not parse sub values',data,val);
+				console.log('warning could not parse sub values', data, val);
 			}
 			else {
 				retVal.values.push(subValues);
 			}
 		}
-		else if (val=='or' || val=='and'){
-			if (index===0) {
-				console.log('warning, divider found at index 0??',data);
+		else if (val == 'or' || val == 'and') {
+			if (index === 0) {
+				console.log('warning, divider found at index 0??', data);
 			}
-			retVal.type=val;
+			retVal.type = val;
 		}
 		else {
 			retVal.values.push(val);
 		}
 	}.bind(this));
 
-	if (retVal.values.length===0) {
+	if (retVal.values.length === 0) {
 		return null;
 	}
 
@@ -153,19 +151,19 @@ EllucianRequisitesParser.prototype.formatRequirements = function(data) {
 
 
 //splits a string by and/or and to json string (uparsed)
-EllucianRequisitesParser.prototype.convertStringToJSON = function(text) {
+EllucianRequisitesParser.prototype.convertStringToJSON = function (text) {
 	var elements = [];
 
 	//split the string by dividers " and " and " or "
-	text.split(' or ').forEach(function (splitByOr,index,arr) {
-		splitByOr.split(' and ').forEach(function (splitByAnd,index,arr) {
+	text.split(' or ').forEach(function (splitByOr, index, arr) {
+		splitByOr.split(' and ').forEach(function (splitByAnd, index, arr) {
 			elements.push(splitByAnd);
-			if (index!=arr.length-1) {
+			if (index != arr.length - 1) {
 				elements.push('and');
 			}
 		}.bind(this));
 
-		if (index!=arr.length-1) {
+		if (index != arr.length - 1) {
 			elements.push('or');
 		}
 	}.bind(this));
@@ -177,8 +175,8 @@ EllucianRequisitesParser.prototype.convertStringToJSON = function(text) {
 	//each element has quotes put around it, and comma after it
 	elements.forEach(function (element) {
 		//just put quotes around the dividers
-		if (element=='and' || element=='or') {
-			retVal.push('"'+element+'",');
+		if (element == 'and' || element == 'or') {
+			retVal.push('"' + element + '",');
 			return;
 		}
 		element = element.trim();
@@ -192,7 +190,7 @@ EllucianRequisitesParser.prototype.convertStringToJSON = function(text) {
 		//ending bracket needs to be checked here, but inserted after url/text parsed
 		var insertEndBracket = false;
 		if (_(element).endsWith(')')) {
-			element = element.slice(0,element.length-1);
+			element = element.slice(0, element.length - 1);
 			insertEndBracket = true;
 		}
 
@@ -200,11 +198,11 @@ EllucianRequisitesParser.prototype.convertStringToJSON = function(text) {
 		//match the url if it is there
 		var match = element.match(/\@\#\$"(.*?)"/i);
 		if (_(element).includes('@#$') && match) {
-			retVal.push('"@#$'+match[1]+'",');
+			retVal.push('"@#$' + match[1] + '",');
 		}
 		//just add all of the text
 		else {
-			retVal.push('"'+element.trim()+'",');
+			retVal.push('"' + element.trim() + '",');
 		}
 
 		if (insertEndBracket) {
@@ -215,13 +213,13 @@ EllucianRequisitesParser.prototype.convertStringToJSON = function(text) {
 	}.bind(this));
 
 	//clean up invalid syntax
-	var retValText = '['+retVal.join("")+']';
-	retValText = retValText.replace(/,\]/gi,']').replace(/\[,/gi,'[').replace(/",+"/gi,'","').replace(/\n|\r/gi,'');
+	var retValText = '[' + retVal.join("") + ']';
+	retValText = retValText.replace(/,\]/gi, ']').replace(/\[,/gi, '[').replace(/",+"/gi, '","').replace(/\n|\r/gi, '');
 
 	return retValText;
 };
 
-EllucianRequisitesParser.prototype.removeBlacklistedStrings = function(data) {
+EllucianRequisitesParser.prototype.removeBlacklistedStrings = function (data) {
 	if (!data.values) {
 		console.log('js error need values in removeBlacklistedStrings')
 		return data
@@ -230,7 +228,7 @@ EllucianRequisitesParser.prototype.removeBlacklistedStrings = function(data) {
 	var newValues = [];
 
 	data.values.forEach(function (subData) {
-		if ((typeof subData)=='string') {
+		if ((typeof subData) == 'string') {
 			if (!subData.match(/\s*Pre-?req for \w+\s*\d+\s*\d+\s*$/gi)) {
 				newValues.push(subData)
 			}
@@ -246,21 +244,21 @@ EllucianRequisitesParser.prototype.removeBlacklistedStrings = function(data) {
 
 };
 
-EllucianRequisitesParser.prototype.convertClassListURLs = function(pageData,data) {
+EllucianRequisitesParser.prototype.convertClassListURLs = function (pageData, data) {
 	if ((typeof data) == 'string') {
 
 		//urls will start with this
 		if (_(data).startsWith('@#$')) {
 			var classInfo = this.classListURLtoClassInfo(data.slice(3));
 			if (!classInfo) {
-				console.log('error thought was url, but wasent',data);
+				console.log('error thought was url, but wasent', data);
 				return data;
 			}
 
 			//don't need to keep termId if its the same as this class
-			if (classInfo.termId===pageData.dbData.termId) {
+			if (classInfo.termId === pageData.dbData.termId) {
 				delete classInfo.termId;
- 			};
+			};
 
 
 			return classInfo;
@@ -270,17 +268,17 @@ EllucianRequisitesParser.prototype.convertClassListURLs = function(pageData,data
 		}
 	}
 	else {
-		data.values.forEach(function (subData,index) {
-			data.values[index]=this.convertClassListURLs(pageData,subData);
+		data.values.forEach(function (subData, index) {
+			data.values[index] = this.convertClassListURLs(pageData, subData);
 		}.bind(this));
 		return data;
 	}
 };
 
 
-EllucianRequisitesParser.prototype.parseRequirementSection = function(pageData,classDetails,sectionName) {
-	var elements =[];
-	var i=0;
+EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData, classDetails, sectionName) {
+	var elements = [];
+	var i = 0;
 
 	//skip all elements until the section
 	for (; i < classDetails.length; i++) {
@@ -292,31 +290,31 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function(pageData,c
 
 	//add all text/elements until next element
 	for (; i < classDetails.length; i++) {
-		if (classDetails[i].type=='tag'){
-			if (classDetails[i].name=='br') {
+		if (classDetails[i].type == 'tag') {
+			if (classDetails[i].name == 'br') {
 				continue;
 			}
-			else if (classDetails[i].name=='a'){
+			else if (classDetails[i].name == 'a') {
 
 				var elementText = domutils.getText(classDetails[i]);
-				if (elementText.trim()==='') {
-					console.log('warning, not matching ',sectionName,' with no text in the link',pageData.dbData.url);
+				if (elementText.trim() === '') {
+					console.log('warning, not matching ', sectionName, ' with no text in the link', pageData.dbData.url);
 					continue;
 				}
 
 				var classListUrl = he.decode(classDetails[i].attribs.href);
-				if (!classListUrl || classListUrl==='') {
-					console.log('error could not get classListUrl',classListUrl,classDetails[i].attribs,pageData.dbData.url);
+				if (!classListUrl || classListUrl === '') {
+					console.log('error could not get classListUrl', classListUrl, classDetails[i].attribs, pageData.dbData.url);
 					continue;
 				}
 
 				classListUrl = new URI(classListUrl).absoluteTo(pageData.dbData.url).toString();
 				if (!classListUrl) {
-					console.log('error could not find classListUrl url',classListUrl,classDetails[i],classDetails[i].attribs.href);
+					console.log('error could not find classListUrl url', classListUrl, classDetails[i], classDetails[i].attribs.href);
 					continue;
 				};
 
-				elements.push('@#$"'+classListUrl+'"');
+				elements.push('@#$"' + classListUrl + '"');
 			}
 			else {
 				break;
@@ -324,103 +322,114 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function(pageData,c
 		}
 		else {
 			var urlText = domutils.getOuterHTML(classDetails[i]);
-			if (urlText==='') {
+			if (urlText === '') {
 				continue;
 			}
 			if (_(urlText).includes('@#$')) {
-				console.log('warning @#$ used to designate url was found in string?!?',pageData.dbData.url);
-				urlText = urlText.replace(/\@\#\$/gi,'');
+				console.log('warning @#$ used to designate url was found in string?!?', pageData.dbData.url);
+				urlText = urlText.replace(/\@\#\$/gi, '');
 			}
 			elements.push(urlText);
 		}
 	}
 
 	//no section given, or invalid section, or page does not list any pre/co reqs
-	if (elements.length===0) {
+	if (elements.length === 0) {
 		return;
 	}
-	
 
-	var text =  elements.join("").trim();
-	if (text==='') {
-		console.log('warning, found elements, but no links or and or',elements);
+
+	var text = elements.join("").trim();
+	if (text === '') {
+		console.log('warning, found elements, but no links or and or', elements);
 		return;
 	}
-	text=this.convertStringToJSON(text);
+	text = this.convertStringToJSON(text);
 
 	//parse the new json
-	try{
+	try {
 		text = JSON.parse(text);
 	}
-	catch (err){
+	catch (err) {
 
 
 		//maybe there are more starting than ending...
 		var openingBrackedCount = (text.match(/\[/g) || []).length;
 		var closingBrackedCount = (text.match(/\]/g) || []).length;
-		
-		if (openingBrackedCount>closingBrackedCount && _(text).startsWith('[')) {
+
+		if (openingBrackedCount > closingBrackedCount && _(text).startsWith('[')) {
 			text = text.slice(1);
-			try{
+			try {
 				text = JSON.parse(text);
 			}
-			catch (err){
-				console.log('error, tried to remove [ from beginning, didnt work',text,elements);
+			catch (err) {
+				console.log('error, tried to remove [ from beginning, didnt work', text, elements);
 				return;
 			}
 
 		}
-		else if (closingBrackedCount>openingBrackedCount && _(text).endsWith(']')) {
-			text = text.slice(0,text.length-1);
-			try{
+		else if (closingBrackedCount > openingBrackedCount && _(text).endsWith(']')) {
+			text = text.slice(0, text.length - 1);
+			try {
 				text = JSON.parse(text);
 			}
-			catch (err){
-				console.log('error, tried to remove ] from end, didnt work',text,elements);
+			catch (err) {
+				console.log('error, tried to remove ] from end, didnt work', text, elements);
 				return;
 			}
 		}
 		else {
 
-			console.log('ERROR: unabled to parse formed json string',err,text,elements,pageData.dbData.url);
+			console.log('ERROR: unabled to parse formed json string', err, text, elements, pageData.dbData.url);
 			return;
 		}
 	}
 
-	if (text.length==1 && Array.isArray(text[0])) {
-		text=text[0];
+	if (text.length == 1 && Array.isArray(text[0])) {
+		text = text[0];
 	}
 
 
 
 	text = this.groupRequirementsByAnd(text);
 
-	text=this.formatRequirements(text);
+	text = this.formatRequirements(text);
 	if (!text) {
-		console.log('error formatting requirements, ',pageData.dbData.url,elements);
+		console.log('error formatting requirements, ', pageData.dbData.url, elements);
 		return;
 	}
 	text = this.removeBlacklistedStrings(text);
-	text=this.simplifyRequirements(text);
-	text = this.convertClassListURLs(pageData,text);
+	text = this.simplifyRequirements(text);
+	text = this.convertClassListURLs(pageData, text);
 
 	return text;
 };
 
 
 
-EllucianRequisitesParser.prototype.tests = function() {
-	
+EllucianRequisitesParser.prototype.tests = function () {
+
 
 	//this is now just CATAOG URL WITH 234 INFRONT OF IT
 	//make this pretty too
 	var input = '(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'
 
-	assert.deepEqual(this.convertStringToJSON(input),'[["@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",["Eng - Place (Test) 03","and","Nelson Denny Total 081","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]');
+	assert.deepEqual(this.convertStringToJSON(input), '[["@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",["Eng - Place (Test) 03","and","Nelson Denny Total 081","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]');
 
 
 	//make this pretty print
-	assert.deepEqual(this.formatRequirements([["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"],"or",["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","or","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]]),{"type":"or","values":[{"type":"or","values":["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]},{"type":"or","values":["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25","https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]}]});
+	assert.deepEqual(this.formatRequirements([
+		["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25", "or", "https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"], "or", ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25", "or", "https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]
+	]), {
+		"type": "or",
+		"values": [{
+			"type": "or",
+			"values": ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25", "https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]
+		}, {
+			"type": "or",
+			"values": ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25", "https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]
+		}]
+	});
 
 	//unmatched paren
 	assert.deepEqual(this.convertStringToJSON('( Eng - Place Test 03 and  Accuplacer (Reading) 071 and Collegiate Credit level'),
@@ -428,67 +437,92 @@ EllucianRequisitesParser.prototype.tests = function() {
 
 
 	assert.deepEqual(this.simplifyRequirements({
-		type:'or',
-		values:[
-		{
-			type:'or',
-			values:['1',{
-				type:'or',
-				values:['6']
+		type: 'or',
+		values: [{
+			type: 'or',
+			values: ['1', {
+				type: 'or',
+				values: ['6']
 			}]
-		},
-		{
-			type:'or',
-			values:['1',{
-				type:'or',
-				values:[{
-					type:'or',
-					values:['1',{
-						type:'or',
-						values:['6']
+		}, {
+			type: 'or',
+			values: ['1', {
+				type: 'or',
+				values: [{
+					type: 'or',
+					values: ['1', {
+						type: 'or',
+						values: ['6']
 					}]
-				},
-				{
-					type:'or',
-					values:['1',{
-						type:'or',
-						values:['6']
+				}, {
+					type: 'or',
+					values: ['1', {
+						type: 'or',
+						values: ['6']
 					}]
 				}]
 			}]
-		}
-		]
-	}),{ type: 'or', values: [ '1', '6', '1', '1', '6', '1', '6' ] });
+		}]
+	}), {
+		type: 'or',
+		values: ['1', '6', '1', '1', '6', '1', '6']
+	});
 
 
 
 
 	assert.deepEqual(this.groupRequirementsByAnd(
-		[ 'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1011&schd_in=%25',
-		'or',
-		'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCH&crse_in=101&schd_in=%25' ,
-		'and',
-		'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25',
-		'or',
-		'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25' ,'or','link here']),
-	
-	[ 'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1011&schd_in=%25',
-	'or',
-	[ 'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCH&crse_in=101&schd_in=%25',
-	'and',
-	'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25' ],
-	'or',
-	'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25',
-	'or',
-	'link here' ]);
+			['https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1011&schd_in=%25',
+				'or',
+				'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCH&crse_in=101&schd_in=%25',
+				'and',
+				'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25',
+				'or',
+				'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25', 'or', 'link here'
+			]),
+
+		['https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1011&schd_in=%25',
+			'or', ['https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCH&crse_in=101&schd_in=%25',
+				'and',
+				'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25'
+			],
+			'or',
+			'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25',
+			'or',
+			'link here'
+		]);
 
 	assert.deepEqual(this.removeBlacklistedStrings({
-		type:'and',
-		values:[
-		'hi','Pre-req for Math 015 1']
-	}),{ type: 'and', values: [ 'hi' ] })
+		type: 'and',
+		values: [
+			'hi', 'Pre-req for Math 015 1'
+		]
+	}), {
+		type: 'and',
+		values: ['hi']
+	})
 
 
+
+
+	//
+	fs.readFile('backend/tests/ellucianRequisitesParser/1.html', 'utf8', function (err, body) {
+		// console.log(err);
+		assert.equal(null, err);
+
+		// pointer.handleRequestResponce(body,function (err,dom) {
+		// 	assert.equal(null,err);
+
+		// 	var url = 'http://test.hostname.com/PROD/';
+
+		// 	var pageData = pageDataMgr.create({dbData:{url:url}});
+
+		// 	this.parseDOM(pageData,dom);
+
+		// 	// var prereqs =ellucianRequisitesParser.parseRequirementSection(pageData,dom,'prerequisites');
+		// 	console.log(JSON.stringify(pageData.dbData,null,2));
+		// }.bind(this));
+	}.bind(this));
 
 
 
@@ -509,7 +543,7 @@ EllucianRequisitesParser.prototype.tests = function() {
 
 
 //this allows subclassing, http://bites.goodeggs.com/posts/export-this/ (Mongoose section)
-EllucianRequisitesParser.prototype.EllucianRequisitesParser=EllucianRequisitesParser;
+EllucianRequisitesParser.prototype.EllucianRequisitesParser = EllucianRequisitesParser;
 module.exports = new EllucianRequisitesParser();
 
 if (require.main === module) {

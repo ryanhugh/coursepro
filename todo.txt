@@ -47,7 +47,7 @@ db.classes.remove({host:'neu.edu/cps'})
 db.sections.remove({host:'neu.edu/cps'})
 
 update everything/all classes and not switch out id? or maybe store keys in localStorage and not ids?
-queue.max on neu, etc
+queue.max on neu, etc -- done
 make it so it can scrape )) from prereqs section -- 
 find a better way to abstract this.table.update in userdb?
 
