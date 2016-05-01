@@ -116,7 +116,6 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 		return;
 	}
 
-	// console.log(element.children)
 	//find co and pre reqs and restrictions
 	var prereqs = ellucianRequisitesParser.parseRequirementSection(pageData, element.children, 'prerequisites');
 	if (prereqs) {

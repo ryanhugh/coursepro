@@ -55,4 +55,48 @@ describe('Class', function () {
 
 		});
 	});
+
+
+	describe('.compareTo', function () {
+		it('ensures you need classId or _id to create class', function () {
+
+			var classes = [
+				Class.create({
+					host: 'neu.edu',
+					termId: '201630',
+					subject: 'BIOL',
+					classId: '020',
+					title:'Animal Physiology'
+				}),
+
+				Class.create({
+					host: 'neu.edu',
+					termId: '201630',
+					subject: 'BIOL',
+					classId: '020A',
+					title:'Attchm: Animal Physiology'
+				}),
+
+				Class.create({
+					host: 'neu.edu',
+					termId: '201630',
+					subject: 'BIOL',
+					classId: '020',
+					title:'Animal Physiology- Lab'
+				})
+			]
+
+			classes.sort(function  (a,b) {
+				return a.compareTo(b)
+			}.bind(this))
+
+
+			expect(classes[0].title).toBe('Animal Physiology')
+			expect(classes[1].title).toBe('Animal Physiology- Lab')
+			expect(classes[2].title).toBe('Attchm: Animal Physiology')
+
+		});
+
+	});
+
 });

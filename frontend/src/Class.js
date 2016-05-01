@@ -360,6 +360,13 @@ Class.prototype.compareTo = function (otherClass) {
 		return -1;
 	}
 
+	else if (this.title > otherClass.title) {
+		return 1;
+	}
+	else  if (this.title < otherClass.title) {
+		return -1;
+	}
+
 	//this is possible if there are (hon) and non hon classes of same subject classId
 	return 0
 };
