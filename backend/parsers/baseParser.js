@@ -326,6 +326,9 @@ BaseParser.prototype.standardizeClassName = function (inputName) {
 	// https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?schd_in=%25&term_in=201602&subj_in=PEAC&crse_in=003
 	// Crisis Resolution in Mdl East
 	outputName = outputName.replace(/\s+Mdl\s+/gi,' Middle ')
+	
+	// 2nd Yr Mandarin Chinese
+	outputName = outputName.replace(/\s+Yr\s+/gi,' Year ')
 	outputName = outputName.replace(/\s+Microecon\s+/gi,' Microeconomics ')
 	outputName = outputName.replace(/\s*Com Sci(\d)\s*/gi,' Computer Science $1 ')
 
