@@ -26,7 +26,7 @@ function EllucianClassParser() {
 
 	//name and deps are optional, but if there is no deps there is nowhere to parse name...
 
-	
+
 }
 
 
@@ -158,7 +158,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 
 
 		var className = this.standardizeClassName(match[1]);
-		
+
 
 		//name was already set to something different, make another db entry for this class
 		if (pageData.parsingData.name && className != pageData.parsingData.name) {
@@ -205,7 +205,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 				for (var attrName in pageData.dbData) {
 
 					//dont copy over some attributes
-					if (_(['name', 'updatedByParent', 'url', '_id', 'crns']).includes(attrName)) {
+					if (_(['name', 'updatedByParent', 'url', '_id', 'crns', 'deps']).includes(attrName)) {
 						continue;
 					}
 

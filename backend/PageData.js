@@ -401,6 +401,10 @@ PageData.prototype.setData = function (name, value) {
 		return;
 	}
 
+	if (name == 'url' && new URI(this.dbData.url).equals(new URI(value))) {
+		return;
+	}
+
 
 	if (_(['deps']).includes(name)) {
 		elog('ERROR: html set tried to override', name);
@@ -414,6 +418,7 @@ PageData.prototype.setData = function (name, value) {
 
 	// if there was an old value, and new value is different, log warning
 	if (this.dbData[name] !== undefined && !_.isEqual(this.dbData[name], value)) {
+
 
 		//only log change in last update time if in verbose mode
 		if (name != 'lastUpdateTime' || macros.VERBOSE) {
