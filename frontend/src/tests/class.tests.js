@@ -58,7 +58,7 @@ describe('Class', function () {
 
 
 	describe('.compareTo', function () {
-		it('ensures you need classId or _id to create class', function () {
+		it('sorts by title if all else fails', function () {
 
 			var classes = [
 				Class.create({
