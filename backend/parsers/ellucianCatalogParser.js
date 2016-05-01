@@ -132,7 +132,9 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 	//update existing dep
 	for (var i = 0; i < pageData.deps.length; i++) {
 		var currDep = pageData.deps[i]
-		if (currDep.dbData.url == depData.url && currDep.parser == ellucianClassParser) {
+
+		//make sure classId and parser are the same
+		if (currDep.dbData.classId == depData.classId && currDep.parser == ellucianClassParser) {
 			for (var attrName in depData) {
 				currDep.setData(attrName, depData[attrName])
 			}

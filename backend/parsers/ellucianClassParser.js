@@ -350,7 +350,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 	//if section dependency already exists, just add the data
 	for (var i = 0; i < classToAddSectionTo.deps.length; i++) {
 		var currDep = classToAddSectionTo.deps[i];
-		if (currDep.dbData.url == sectionStartingData.url) {
+		if (currDep.dbData.crn == sectionStartingData.crn) {
 			for (var attrName in sectionStartingData) {
 				currDep.setData(attrName, sectionStartingData[attrName])
 			}

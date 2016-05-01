@@ -3,6 +3,10 @@ https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not i
 max number of simultanous classes wawtching???
 
 
+// //update existing dep in CATALOG PARSER MAKE SURE IT WORKS and aIS IT POSSIBLE TO ADD A CLASS CODE??
+
+
+
 // NEED TO ADD A DID FIND THIS RUN or somethign to each parsing data and then delete the controller.dep unless it was found
 
 !!!!
