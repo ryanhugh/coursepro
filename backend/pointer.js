@@ -193,7 +193,12 @@ Pointer.prototype.request = function (url, options, callback) {
 				};
 
 				if (!macros.QUIET_LOGGING) {
-					console.log('Parsed', body.length, 'from ', url);
+					if (options.payload) {
+						console.log('Parsed', body.length, 'from ', url, 'with payload:', options.payload);
+					}
+					else {
+						console.log('Parsed', body.length, 'from ', url);
+					}
 				};
 
 				return callback(null, dom)

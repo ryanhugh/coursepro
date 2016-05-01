@@ -21,11 +21,16 @@ var queue = require("queue-async")
 // var macros = require('./macros')
 require('proxyquire')
 
+var linksDB = require('./backend/databases/linksDB')
+
+linksDB.find({url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=&term_in=201602&one_subj=PPOL'},{},function (err, docs) {
+	console.log(err,docs);
+}.bind(this))
 
 var count = 0;
 
 // elog()
-console.log(new Error('elog Trace').stack)
+// console.log(new Error('elog Trace').stack)
 
 // try calling apiMethod 3 times, waiting 200 ms between each retry
 // async.retry({times: 3, interval: 2000000}, function (callback) {

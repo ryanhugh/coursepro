@@ -183,7 +183,6 @@ EllucianTermsParser.prototype.onEndParsing = function (pageData, dom) {
 			if (currDep.parser == this && term.id == currDep.dbData.termId) {
 				currDep.setData('text', term.text);
 				currDep.setData('host', term.host);
-				console.log('updating text ', currDep.dbData.text, term.text)
 				return;
 			};
 		};
@@ -290,11 +289,11 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL, dom) {
 EllucianTermsParser.prototype.tests = function () {
 	require('../pageDataMgr');
 
-	assert.equal(this.isValidTerm('201630','blah blah 2016'),true)
-	assert.equal(this.isValidTerm('201630','blah blah 2017'),true)
-	assert.equal(this.isValidTerm('201630','blah blah'),true)
-	assert.equal(this.isValidTerm('2016','blah blah'),true)
-	assert.equal(this.isValidTerm('201','blah blah'),false)
+	assert.equal(this.isValidTerm('201630', 'blah blah 2016'), true)
+	assert.equal(this.isValidTerm('201630', 'blah blah 2017'), true)
+	assert.equal(this.isValidTerm('201630', 'blah blah'), true)
+	assert.equal(this.isValidTerm('2016', 'blah blah'), true)
+	assert.equal(this.isValidTerm('201', 'blah blah'), false)
 
 	fs.readFile('backend/tests/ellucianTermsParser/1.html', 'utf8', function (err, body) {
 		assert.equal(null, err);

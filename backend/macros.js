@@ -82,6 +82,7 @@ else if (exports.DEVELOPMENT) {
 }
 else if (exports.UNIT_TESTS) {
 	databaseName = 'coursepro_tests'
+	databaseName = 'coursepro_dev'
 }
 
 exports.DATABASE_URL = databaseIp + '/' + databaseName;
