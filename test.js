@@ -17,16 +17,18 @@ var http = require('http');
 var https = require('https');
 var dns = require('dns');
 // var title = require('to-title-case');
-var queue = require("queue-async")
+// var queue = require("queue-async")
+
+var queue = require('d3-queue').queue;
 // var macros = require('./macros')
 require('proxyquire')
 
 var linksDB = require('./backend/databases/linksDB')
 var termsDB = require('./backend/databases/termsDB')
 
-linksDB.find({url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=&term_in=201602&one_subj=PPOL'},{},function (err, docs) {
-	console.log(err,docs[0]);
-}.bind(this))
+// linksDB.find({url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=&term_in=201602&one_subj=PPOL'},{},function (err, docs) {
+// 	console.log(err,docs[0]);
+// }.bind(this))
 
 // termsDB.find({_id:'56b7ee63ef27facc18db0ff1'},{},function (err, docs) {
 // 	console.log(docs[0],'1');
@@ -35,6 +37,43 @@ linksDB.find({url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?
 // termsDB.find({_id:'57259c0e01c30bab5e8b3fb8'},{},function (err, docs) {
 // 	console.log(docs[0],'YOO2');
 // }.bind(this))
+
+
+function Test () {
+	this.q = 3
+
+	this.slowwww = async.memoize(function(callback) {
+		setTimeout(function () {
+			console.log(this,this.q);
+			callback()
+		}.bind(this),200);
+	}.bind(this));
+}
+
+
+var a = new Test();
+
+a.slowwww = a.slowwww.bind(a)
+
+a.slowwww(function () {
+	console.log("done once!");
+}.bind(this))
+
+a.slowwww(function () {
+	console.log("done twice!");
+}.bind(this))
+
+// var q = queue()
+
+// q.awaitAll(function function_name (argument) {
+// 	// body...
+// }.bind(this))
+
+// q.awaitAll(function function_name (argument) {
+// 	// body...
+// }.bind(this))
+
+
 
 var count = 0;
 

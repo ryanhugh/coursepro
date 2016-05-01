@@ -2,6 +2,7 @@
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 var fs = require('fs')
+var async = require('async')
 var _ = require('lodash')
 var queue = require('d3-queue').queue;
 
@@ -33,9 +34,8 @@ function EmailMgr() {
 
 	this.fromEmail = 'notifications@coursepro.io'
 
-	this.emailPasswdQueue = queue()
 
-	this.emailPasswdQueue.defer(function (callback) {
+	this.loadEmailPassword = async.memoize(function (callback) {
 		fs.readFile('/etc/coursepro/emailPasswd', 'utf8', function (err, password) {
 			if (err) {
 				console.log('ERROR opening email password, disabling email mgr')
@@ -43,6 +43,10 @@ function EmailMgr() {
 			}
 
 			password = password.trim();
+
+			if (this.transporter) {
+				console.log("ERROR this.transporter already existed?");
+			}
 
 			this.transporter = nodemailer.createTransport(smtpTransport({
 				host: 'mail.gandi.net',
@@ -56,6 +60,7 @@ function EmailMgr() {
 
 		}.bind(this))
 	}.bind(this))
+	this.loadEmailPassword(_.noop)
 }
 
 
@@ -70,7 +75,7 @@ EmailMgr.prototype.sendEmail = function (toEmails, subject, html, callback) {
 	};
 
 
-	this.emailPasswdQueue.awaitAll(function () {
+	this.loadEmailPassword(function () {
 
 		if (!this.transporter) {
 			console.log("WARNING: not sending email because don't have email password", toEmails);
@@ -231,6 +236,8 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (toEmails, oldData, newData,
 EmailMgr.prototype.tests = function () {
 
 	this.sendEmail(['rysquash@gmail.com'], 'CS 4800 was changed - CoursePro.io', 'Number of open seats in the class changed<br><br><a href="https://coursepro.io/#neu.edu/201630/ENGW/1111/">View on CoursePro.io</a>')
+	this.loadEmailPassword(_.noop)
+	this.loadEmailPassword(_.noop)
 }
 
 

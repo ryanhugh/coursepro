@@ -2,6 +2,9 @@ https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not i
 
 max number of simultanous classes wawtching???
 
+3RD party bugs
+nodejs https on that one college that isnt 443?
+d3-queue for multiple awaitall? error messages?
 
 
 HONORS NOTES
