@@ -367,6 +367,10 @@ BaseParser.prototype.splitEndings = function (name) {
 
 		// remove the endings
 		name = name.slice(0, name.indexOf(subString)).trim();
+		
+		if (subString.length <= 5) {
+			subString = subString.toLowerCase()
+		}
 
 		endings.push(subString)
 	}
@@ -399,19 +403,23 @@ BaseParser.prototype.standardizeClassName = function (originalName, possibleMatc
 		possibleMatches[i] = possibleMatches[i].trim().replace(/\s+/gi, ' ')
 		possibleMatches[i] = this.simplifySymbols(possibleMatches[i])
 	}
-
-	// if input is in possible matches, done
-	if (_(possibleMatches).includes(originalName) || possibleMatches.length === 0) {
-		return originalName;
-	}
-
+	
+	
 	var name = originalName;
 
 	var nameSplit = this.splitEndings(name)
 	name = nameSplit.name;
 	var endings = nameSplit.endings;
 
+	// if input is in possible matches, done
+	if (_(possibleMatches).includes(originalName) || possibleMatches.length === 0) {
+		return (name + ' '+endings.join(' ')).trim();
+	}
+
+
 	// remove symbols and whitespace, just for comparing
+	// ok to mess with name from here on out, 
+	// but might return originalName or possibleMatch so don't mess with them
 	name = name.replace(/[^0-9a-zA-Z]/gi, '')
 
 
@@ -442,7 +450,7 @@ BaseParser.prototype.standardizeClassName = function (originalName, possibleMatc
 
 		// huzzah! a match!
 		if (nameIndex == name.length) {
-
+			
 			// add the endings back on, but only if possible match dosent include them
 			for (var j = 0; j < endings.length; j++) {
 				if (!_(possibleMatch).includes(endings[j])) {
@@ -545,6 +553,9 @@ BaseParser.prototype.tests = function () {
 	var goodName = 'Co-op Work Experience - cj'
 	assert.equal(this.standardizeClassName(badName, ['hihfdsjal', possibleMatch]), goodName);
 
+	assert.equal(this.standardizeClassName('hi    (yo)'), 'hi (yo)');
+	
+	assert.equal(this.standardizeClassName('hi (HON)'), 'hi (hon)');
 
 
 	var name = 'St: Wireless Sensor Networks'
