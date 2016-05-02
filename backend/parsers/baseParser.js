@@ -428,6 +428,7 @@ BaseParser.prototype.splitEndings = function (name) {
 
 // dosent work for
 // https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%25&term_in=201710&subj_in=JRNL&crse_in=1150
+// Interpreting the Day’s News vs Interptng the Day's News
 BaseParser.prototype.fixClassName2 = function (originalName, possibleMatches) {
 
 	// trim all inputs and replace 2+ spaces for 1
