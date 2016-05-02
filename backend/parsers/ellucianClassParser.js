@@ -162,9 +162,20 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 		}
 
 		//get a list of all class names for the class name fixer
-		var possibleClassNameMatches = [pageData.parsingData.name]
+		var possibleClassNameMatches = []
+		if (pageData.parsingData.name) {
+			possibleClassNameMatches.push(pageData.parsingData.name)
+		}
+		
+		
 		pageData.deps.forEach(function (dep) {
-			possibleClassNameMatches.push(dep.dbData.name)
+			if (!dep.dbData.name) {
+				elog("ERROR, dep dosen't have a name?",dep)
+			}
+			else {
+				possibleClassNameMatches.push(dep.dbData.name)
+				
+			}
 		}.bind(this))
 
 		className = this.standardizeClassName(className,possibleClassNameMatches);
@@ -357,7 +368,13 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 	//if section dependency already exists, just add the data
 	for (var i = 0; i < classToAddSectionTo.deps.length; i++) {
 		var currDep = classToAddSectionTo.deps[i];
-		if (currDep.dbData.crn == sectionStartingData.crn) {
+		
+		if (new URI(currDep.dbData.url).equals(new URI(sectionStartingData.url))) {
+			if (currDep.dbData.crn != sectionStartingData.crn) {
+				console.log("Warning urls matched but crns did not?",currDep, sectionStartingData)
+			}
+			
+			
 			for (var attrName in sectionStartingData) {
 				currDep.setData(attrName, sectionStartingData[attrName])
 			}
@@ -425,6 +442,59 @@ EllucianClassParser.prototype.onEndParsing = function (pageData) {
 
 EllucianClassParser.prototype.tests = function () {
 	require('../pageDataMgr')
+	
+	
+	fs.readFile('backend/tests/ellucianClassParser/1.html', 'utf8', function (err, body) {
+		assert.equal(null, err);
+
+		pointer.handleRequestResponce(body, function (err, dom) {
+			assert.equal(null, err);
+
+			//set up variables
+			var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2160&schd_in=LEC';
+			var pageData = pageDataMgr.create({
+				dbData: {
+					url: url,
+					desc: '',
+					classId: '2160'
+				}
+			});
+			assert.notEqual(null, pageData);
+
+			pageData.deps = [pageDataMgr.create({
+				dbData: {
+					url: 'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633',
+				}
+			})]
+			pageData.deps[0].parser = ellucianSectionParser;
+			pageData.deps[0].parent = pageData;
+
+			//main parse
+			this.parseDOM(pageData, dom);
+
+
+			assert.equal(true, this.supportsPage(url));
+
+
+			assert.deepEqual(pageData.dbData, {
+				url: url,
+				classId: '2160',
+				desc: '',
+				name: 'Embedded Design Enabling Robotics',
+				crns: ['15633', '15636', '15639', '16102', '17800', '17799']
+			}, JSON.stringify(pageData.dbData));
+			
+			console.log(pageData.deps,'HIIIIIII')
+
+			assert.equal(pageData.deps.length, 6);
+			pageData.deps.forEach(function (dep) {
+				assert.equal(dep.parent, pageData);
+				assert.equal(dep.parser, ellucianSectionParser)
+			}.bind(this));
+
+		}.bind(this));
+	}.bind(this));
+	return;
 
 
 	//sections have different names
@@ -470,16 +540,18 @@ EllucianClassParser.prototype.tests = function () {
 			assert.equal(pageData.deps[1].parser, this);
 			// console.log(pageData.deps[0].dbData)
 			assert.deepEqual(pageData.deps[1].dbData.crns, ['24601', '24603', '25363'], JSON.stringify(pageData.deps[1].dbData));
-			assert.equal(pageData.deps[1].dbData.name, 'Thermodyn/stat Mechanics - Lab');
+			assert.equal(pageData.deps[1].dbData.name, 'Thermodyn/Stat Mechanics - Lab');
 			assert.equal(pageData.deps[1].deps.length, 3);
 			assert.equal(pageData.deps[1].deps[0].parser, ellucianSectionParser);
 			assert.equal(pageData.deps[1].deps[1].parser, ellucianSectionParser);
 			assert.equal(pageData.deps[1].deps[2].parser, ellucianSectionParser);
 
-			assert.deepEqual(pageData.deps[1].deps[0].dbData, {
-				"url": "https://myswat.swarthmore.edu/pls/bwckschd.p_disp_detail_sched?term_in=201502&crn_in=24601",
-				"crn": '24601',
-				"meetings": [{
+			
+			assert.equal(new URI(pageData.deps[1].deps[0].dbData.url).equals(new URI("https://myswat.swarthmore.edu/pls/bwckschd.p_disp_detail_sched?term_in=201502&crn_in=24601")),true);
+			assert.equal(pageData.deps[1].deps[0].dbData.crn,"24601");
+			assert.equal(pageData.deps[1].deps[0].dbData.meetings.length,1);
+			
+			assert.deepEqual(pageData.deps[1].deps[0].dbData.meetings[0],{
 					"startDate": 16454,
 					"endDate": 16500,
 					"profs": [
@@ -492,65 +564,16 @@ EllucianClassParser.prototype.tests = function () {
 							"start": 47700,
 							"end": 58500
 						}]
-					}
-				}],
-				"classId": "013"
-			});
-
-
-		}.bind(this));
-	}.bind(this)); //
-
-	//
-	fs.readFile('backend/tests/ellucianClassParser/1.html', 'utf8', function (err, body) {
-		assert.equal(null, err);
-
-		pointer.handleRequestResponce(body, function (err, dom) {
-			assert.equal(null, err);
-
-			//set up variables
-			var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2160&schd_in=LEC';
-			var pageData = pageDataMgr.create({
-				dbData: {
-					url: url,
-					desc: '',
-					classId: '2160'
-				}
-			});
-			assert.notEqual(null, pageData);
-
-			pageData.deps = [pageDataMgr.create({
-				dbData: {
-					url: 'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633'
-				}
-			})]
-			pageData.deps[0].parser = ellucianSectionParser;
-			pageData.deps[0].parent = pageData;
-
-			//main parse
-			this.parseDOM(pageData, dom);
-
-
-			assert.equal(true, this.supportsPage(url));
-
-
-			assert.deepEqual(pageData.dbData, {
-				url: url,
-				classId: '2160',
-				desc: '',
-				name: 'Embedded Design Enabling Robotics',
-				crns: ['15633', '15636', '15639', '16102', '17800', '17799']
-			}, JSON.stringify(pageData.dbData));
-
-			assert.equal(pageData.deps.length, 6);
-			pageData.deps.forEach(function (dep) {
-				assert.equal(dep.parent, pageData);
-				assert.equal(dep.parser, ellucianSectionParser)
-			}.bind(this));
+					},
+					"type":"Class"
+				});
+			
+			
 
 		}.bind(this));
-	}.bind(this));
+	}.bind(this)); 
 
+	
 
 	fs.readFile('backend/tests/ellucianClassParser/3.html', 'utf8', function (err, body) {
 		assert.equal(null, err);

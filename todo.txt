@@ -9,6 +9,8 @@ queue.max on neu, etc -- done
 make it so it can scrape )) from prereqs section -- done
 last update time should copy down to class deps of class deps -- done
 
+safe to lookup docs by url in backend?
+
 
 
 3RD party bugs
