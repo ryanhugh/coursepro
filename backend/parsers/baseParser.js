@@ -261,6 +261,31 @@ BaseParser.prototype.parseForm = function (url, dom) {
 }
 
 
+// http://dan.hersam.com/tools/smart-quotes.html
+BaseParser.prototype.simplifySymbols = function(s) {
+
+    // Codes can be found here:
+    // http://en.wikipedia.org/wiki/Windows-1252#Codepage_layout
+    s = s.replace( /\u2018|\u2019|\u201A|\uFFFD/g, "'" );
+    s = s.replace( /\u201c|\u201d|\u201e/g, '"' );
+    s = s.replace( /\u02C6/g, '^' );
+    s = s.replace( /\u2039/g, '<' );
+    s = s.replace( /\u203A/g, '>' );
+    s = s.replace( /\u2013/g, '-' );
+    s = s.replace( /\u2014/g, '--' );
+    s = s.replace( /\u2026/g, '...' );
+    s = s.replace( /\u00A9/g, '(c)' );
+    s = s.replace( /\u00AE/g, '(r)' );
+    s = s.replace( /\u2122/g, 'TM' );
+    s = s.replace( /\u00BC/g, '1/4' );
+    s = s.replace( /\u00BD/g, '1/2' );
+    s = s.replace( /\u00BE/g, '3/4' );
+    s = s.replace(/[\u02DC|\u00A0]/g, " ");
+    return s;
+}
+
+
+
 // no great npm module found so far
 // https://www.npmjs.com/package/case
 // https://www.npmjs.com/package/change-case
@@ -278,6 +303,7 @@ BaseParser.prototype.toTitleCase = function (string) {
 	if (string === "TBA") {
 		return string
 	}
+	string = this.simplifySymbols(string)
 
 	string = toTitleCase(string)
 
@@ -291,7 +317,7 @@ BaseParser.prototype.toTitleCase = function (string) {
 		'3rd',
 		'4th',
 		'5th',
-		'6th',
+		'6th', // THESE CAN BE REMOVED
 		'7th',
 		'8th',
 		'9th',
@@ -350,7 +376,6 @@ BaseParser.prototype.standardizeClassName = function (inputName) {
 BaseParser.prototype.splitEndings = function (name) {
 	name = name.trim()
 
-
 	var endings = [];
 	// --Lab at the end is also an ending
 	var match = name.match(/\-+\s*[\w\d]+$/i)
@@ -362,7 +387,7 @@ BaseParser.prototype.splitEndings = function (name) {
 
 		// standardize to one dash
 		while (_(dashEnding).startsWith('-')) {
-			dashEnding = dashEnding.slice(1)
+			dashEnding = dashEnding.slice(1).trim()
 		}
 
 		endings.push('- '+dashEnding.trim())
@@ -396,12 +421,22 @@ BaseParser.prototype.splitEndings = function (name) {
 	};
 };
 
+
+
+// fixes a class name based on others that it could be an abbriation of
+// also cleans up whitespace and odd characters
+
+// dosent work for
+// https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%25&term_in=201710&subj_in=JRNL&crse_in=1150
 BaseParser.prototype.fixClassName2 = function (originalName, possibleMatches) {
 
 	// trim all inputs and replace 2+ spaces for 1
 	originalName = originalName.trim().replace(/\s+/gi, ' ')
+	originalName = this.simplifySymbols(originalName)
+
 	for (var i = 0; i < possibleMatches.length; i++) {
 		possibleMatches[i] = possibleMatches[i].trim().replace(/\s+/gi, ' ')
+		possibleMatches[i] = this.simplifySymbols(possibleMatches[i])
 	}
 
 	// if input is in possible matches, done
@@ -415,8 +450,8 @@ BaseParser.prototype.fixClassName2 = function (originalName, possibleMatches) {
 	name = nameSplit.name;
 	var endings = nameSplit.endings;
 
-	// remove symbols
-	name = name.replace(/[^0-9a-z]/gi, '')
+	// remove symbols and whitespace, just for comparing
+	name = name.replace(/[^0-9a-zA-Z]/gi, '')
 
 
 
