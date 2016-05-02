@@ -2,7 +2,14 @@ https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not i
 
 max number of simultanous classes wawtching???
 
-NEED TO STANDARDIZE ENDINGS REGARDLESS IF changing the rest of string
+
+TO TEST
+class name stuff -- done
+queue.max on neu, etc -- done
+make it so it can scrape )) from prereqs section -- done
+last update time should copy down to class deps of class deps -- done
+
+
 
 3RD party bugs
 nodejs https on that one college that isnt 443?
@@ -57,8 +64,6 @@ db.classes.remove({host:'neu.edu/cps'})
 db.sections.remove({host:'neu.edu/cps'})
 
 update everything/all classes and not switch out id? or maybe store keys in localStorage and not ids?
-queue.max on neu, etc -- done
-make it so it can scrape )) from prereqs section -- 
 find a better way to abstract this.table.update in userdb?
 
 

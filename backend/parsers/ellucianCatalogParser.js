@@ -85,6 +85,20 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 	element = rows[0]
 
 
+	//get credits from element.parent.text here
+	
+	//grab credits
+	var text = domutils.getText(element.parent)
+	var creditsParsed = this.parseCredits(text);
+	
+	if (creditsParsed) {
+		depData.maxCredits = creditsParsed.maxCredits;
+		depData.minCredits = creditsParsed.minCredits;
+	}
+	else {
+		console.log('warning, nothing matchied credits', pageData.dbData.url, text);
+	}
+	
 
 	//desc
 	//list all texts between this and next element, not including <br> or <i>
@@ -133,7 +147,7 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 		var currDep = pageData.deps[i]
 
 		//make sure classId and parser are the same
-		if (currDep.dbData.classId == depData.classId && currDep.parser == ellucianClassParser) {
+		if (new URI(currDep.dbData.url).equals(new URI(depData.url)) && currDep.parser == ellucianClassParser) {
 			for (var attrName in depData) {
 				currDep.setData(attrName, depData[attrName])
 			}
@@ -211,11 +225,11 @@ EllucianCatalogParser.prototype.tests = function () {
 			assert.equal(pageData.deps.length, 1);
 			assert.equal(pageData.deps[0].dbData.desc, 'Uses the Gauss-Jordan elimination algorithm to analyze and find bases for subspaces such as the image and kernel of a linear transformation. Covers the geometry of linear transformations: orthogonality, the Gram-Schmidt process, rotation matrices, and least squares fit. Examines diagonalization and similarity, and the spectral theorem and the singular value decomposition. Is primarily for math and science majors; applications are drawn from many technical fields. Computation is aided by the use of software such as Maple or MATLAB, and graphing calculators. Prereq. MATH 1242, MATH 1252, MATH 1342, or CS 2800. 4.000 Lecture hours', pageData.deps[0].dbData.desc)
 			assert.equal(pageData.deps[0].dbData.classId, '2331');
-			assert.equal(pageData.deps[0].dbData.url, classURL)
+			assert.equal(new URI(pageData.deps[0].dbData.url).equals(new URI(classURL)),true,'classurl != depData url!');
 
 		}.bind(this));
 	}.bind(this)); //
-	// return
+	// return;
 
 	fs.readFile('backend/tests/ellucianCatalogParser/1.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
@@ -241,7 +255,7 @@ EllucianCatalogParser.prototype.tests = function () {
 			//add a dep to test updating deps
 			pageData.deps = [pageDataMgr.create({
 				dbData: {
-					url: classURL
+					url: classURL,
 				}
 			})];
 			pageData.deps[0].parser = ellucianClassParser
@@ -254,12 +268,16 @@ EllucianCatalogParser.prototype.tests = function () {
 
 			assert.equal(pageData.deps[0].dbData.desc, "Topics in Poetry and Prosody Irregular Prereqs.: None Detailed and systematic study of poetic form, including versification, rhetorical tropes, diction, and tone. May be organized by period, subject matter, genre, or critical method. May be repeated with different topics for up to 6 credits. 3.000 Lecture hours", pageData.deps[0].dbData.desc);
 			assert.equal(pageData.deps[0].dbData.url, classURL);
+			assert.equal(new URI(pageData.deps[0].dbData.url).equals(new URI(classURL)),true,'classurl != depData url!');
 			assert.equal(pageData.deps[0].dbData.classId, "522");
 			assert.equal(pageData.deps[0].dbData.prettyUrl, url);
+			assert.equal(new URI(pageData.deps[0].dbData.prettyUrl).equals(new URI(url)),true,'classurl != depData url!');
 
 
 		}.bind(this));
 	}.bind(this)); //
+	
+	// return;
 
 	//
 	fs.readFile('backend/tests/ellucianCatalogParser/2.html', 'utf8', function (err, body) {
@@ -288,7 +306,7 @@ EllucianCatalogParser.prototype.tests = function () {
 			assert.equal(pageData.deps.length, 1);
 			assert.equal(pageData.deps[0].dbData.desc, 'ELECTIVE DESCRIPTION: Physical exams are provided to newly resettled refugees by care teams comprised of students, residents, and faculty physicians. For many refugees, the care is their first encounter with mainstream medicine. MS-2 coordinators manage clinic operations while MS 1-4 volunteers provide the care service and gain experience in physical exam skills and cross-cultural communication. 0.000 Lab hours');
 			assert.equal(pageData.deps[0].dbData.classId, "2064");
-			assert.equal(pageData.deps[0].dbData.url, 'https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201580&subj_in=MDCN&crse_in=2064&schd_in=%25')
+			assert.equal(new URI(pageData.deps[0].dbData.url).equals(new URI('https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_listcrse?term_in=201580&subj_in=MDCN&crse_in=2064&schd_in=%25')),true,'classurl != depData url!');
 
 
 		}.bind(this));
@@ -324,7 +342,8 @@ EllucianCatalogParser.prototype.tests = function () {
 			assert.equal(pageData.deps.length, 1);
 			assert.equal(pageData.deps[0].dbData.desc, 'Current internet, social media, and mobile media marketing theories , strategies, tools and practices. Includes study of communication methods used by professionals in journalism, film, television, advertising, public relations, and related professions to brand, promote, and distribute products and services. Web-based production lab included. Cross-listed with JRN 507.', pageData.deps[0].dbData.desc)
 			assert.equal(pageData.deps[0].dbData.classId, '507');
-			assert.equal(pageData.deps[0].dbData.url, classURL)
+			// assert.equal(pageData.deps[0].dbData.url, classURL)
+			assert.equal(new URI(pageData.deps[0].dbData.url).equals(new URI(classURL)),true,'classurl != depData url!');
 
 		}.bind(this));
 	}.bind(this)); //

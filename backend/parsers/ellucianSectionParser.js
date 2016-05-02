@@ -106,45 +106,17 @@ EllucianSectionParser.prototype.parseElement = function (pageData, element) {
 
 
 		//grab credits
-		var containsCreditsText = domutils.getText(element.parent);
-
-		//should match 3.000 Credits  or 1.000 TO 21.000 Credits
-		var creditsMatch = containsCreditsText.match(/(?:\d(:?.\d*)?\s*to\s*)?(\d+(:?.\d*)?)\s*credits/i);
-		if (creditsMatch) {
-			var maxCredits = parseFloat(creditsMatch[2]);
-			var minCredits;
-
-			//sometimes a range is given,
-			if (creditsMatch[1]) {
-				minCredits = parseFloat(creditsMatch[1]);
-			}
-			else {
-				minCredits = maxCredits;
-			}
-
-			if (minCredits > maxCredits) {
-				console.log('error, min credits>max credits...', containsCreditsText, pageData.dbData.url);
-				minCredits = maxCredits;
-			}
-
-			pageData.setParentData('minCredits', minCredits);
-			pageData.setParentData('maxCredits', maxCredits);
-			return;
+		var text = domutils.getText(element.parent)
+		var creditsParsed = this.parseCredits(text);
+		
+		if (creditsParsed) {
+			pageData.setParentData('maxCredits',creditsParsed.maxCredits);
+			pageData.setParentData('minCredits',creditsParsed.minCredits);
+		}
+		else {
+			console.log('warning, nothing matchied credits', pageData.dbData.url, text);
 		}
 
-
-		//Credit Hours: 3.000
-		creditsMatch = containsCreditsText.match(/credits?\s*(?:hours?)?:?\s*(\d+(:?.\d*)?)/i);
-		if (creditsMatch) {
-
-			var credits = parseFloat(creditsMatch[1]);
-			pageData.setParentData('minCredits', credits);
-			pageData.setParentData('maxCredits', credits);
-
-			return;
-		}
-
-		console.log('warning, nothing matchied credits', pageData.dbData.url, containsCreditsText);
 	}
 };
 

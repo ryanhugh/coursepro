@@ -150,8 +150,11 @@ EllucianBaseParser.prototype.getBaseURL = function(url) {
 
 	console.log('ERROR: given url does not contain a split from');
 	return null;
-
 };
+
+
+
+
 
 
 EllucianBaseParser.prototype.tests = function() {

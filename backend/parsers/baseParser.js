@@ -261,6 +261,52 @@ BaseParser.prototype.parseForm = function (url, dom) {
 }
 
 
+BaseParser.prototype.parseCredits = function(containsCreditsText) {
+	
+	
+	//should match 3.000 Credits  or 1.000 TO 21.000 Credits
+	var creditsMatch = containsCreditsText.match(/(?:\d(:?.\d*)?\s*to\s*)?(\d+(:?.\d*)?)\s*credits/i);
+	if (creditsMatch) {
+		var maxCredits = parseFloat(creditsMatch[2]);
+		var minCredits;
+
+		//sometimes a range is given,
+		if (creditsMatch[1]) {
+			minCredits = parseFloat(creditsMatch[1]);
+		}
+		else {
+			minCredits = maxCredits;
+		}
+
+		if (minCredits > maxCredits) {
+			console.log('error, min credits>max credits...', containsCreditsText);
+			minCredits = maxCredits;
+		}
+
+		return {
+			minCredits: minCredits,
+			maxCredits: maxCredits
+		}
+	}
+
+
+	//Credit Hours: 3.000
+	creditsMatch = containsCreditsText.match(/credits?\s*(?:hours?)?:?\s*(\d+(:?.\d*)?)/i);
+	if (creditsMatch) {
+
+		var credits = parseFloat(creditsMatch[1]);
+	
+		return {
+			minCredits: credits,
+			maxCredits: credits
+		}
+	}
+
+	return null;
+}
+
+
+
 // http://dan.hersam.com/tools/smart-quotes.html
 BaseParser.prototype.simplifySymbols = function (s) {
 
