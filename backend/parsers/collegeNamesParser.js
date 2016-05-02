@@ -56,12 +56,6 @@ CollegeNamesParser.prototype.parse = function (pageData, callback) {
 
 CollegeNamesParser.prototype.standardizeNames = function (startStrip, endStrip, title) {
 
-
-	//get rid of newlines and replace large sections of whitespace with one space
-	title = title.replace(/\n/g, ' ').replace(/\r/g, ' ').replace(/\s+/g, ' ');
-
-
-
 	//remove stuff from the beginning
 	startStrip.forEach(function (str) {
 		if (title.toLowerCase().indexOf(str) === 0) {
@@ -128,9 +122,6 @@ CollegeNamesParser.prototype.hitPage = function (host, callback) {
 				}
 				title = he.decode(title);
 
-
-				//get rid of newlines and replace large sections of whitespace with one space
-				title = title.replace(/\n/g, '').replace(/\r/g, '').replace(/\s+/g, ' ');
 
 				//strip off any description from the end
 				title = title.match(/[\w\d\s&]+/i);

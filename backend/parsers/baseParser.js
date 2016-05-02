@@ -356,6 +356,9 @@ BaseParser.prototype.toTitleCase = function (originalString, warningStr) {
 
 
 	var string = this.simplifySymbols(originalString)
+	
+	//get rid of newlines and replace large sections of whitespace with one space
+	string = string.replace(/\n/g, ' ').replace(/\r/g, ' ').replace(/\s+/g, ' ');
 
 	// string = toTitleCase(string)
 
