@@ -2,6 +2,8 @@ https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not i
 
 max number of simultanous classes wawtching???
 
+NEED TO STANDARDIZE ENDINGS REGARDLESS IF changing the rest of string
+
 3RD party bugs
 nodejs https on that one college that isnt 443?
 d3-queue for multiple awaitall? error messages?

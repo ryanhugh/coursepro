@@ -540,6 +540,12 @@ BaseParser.prototype.tests = function () {
 	assert.equal(this.standardizeClassName(badName, ['hihfdsjal', possibleMatch]), goodName);
 
 
+	var badName = 'Co-op Work Experience--cj'
+	var possibleMatch = 'Co-op Work Experience-as'
+	var goodName = 'Co-op Work Experience - cj'
+	assert.equal(this.standardizeClassName(badName, ['hihfdsjal', possibleMatch]), goodName);
+
+
 
 	var name = 'St: Wireless Sensor Networks'
 	assert.equal(this.standardizeClassName(name, ['St: Intro. to Multiferroics']), name);
