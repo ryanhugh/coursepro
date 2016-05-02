@@ -262,26 +262,26 @@ BaseParser.prototype.parseForm = function (url, dom) {
 
 
 // http://dan.hersam.com/tools/smart-quotes.html
-BaseParser.prototype.simplifySymbols = function(s) {
+BaseParser.prototype.simplifySymbols = function (s) {
 
-    // Codes can be found here:
-    // http://en.wikipedia.org/wiki/Windows-1252#Codepage_layout
-    s = s.replace( /\u2018|\u2019|\u201A|\uFFFD/g, "'" );
-    s = s.replace( /\u201c|\u201d|\u201e/g, '"' );
-    s = s.replace( /\u02C6/g, '^' );
-    s = s.replace( /\u2039/g, '<' );
-    s = s.replace( /\u203A/g, '>' );
-    s = s.replace( /\u2013/g, '-' );
-    s = s.replace( /\u2014/g, '--' );
-    s = s.replace( /\u2026/g, '...' );
-    s = s.replace( /\u00A9/g, '(c)' );
-    s = s.replace( /\u00AE/g, '(r)' );
-    s = s.replace( /\u2122/g, 'TM' );
-    s = s.replace( /\u00BC/g, '1/4' );
-    s = s.replace( /\u00BD/g, '1/2' );
-    s = s.replace( /\u00BE/g, '3/4' );
-    s = s.replace(/[\u02DC|\u00A0]/g, " ");
-    return s;
+	// Codes can be found here:
+	// http://en.wikipedia.org/wiki/Windows-1252#Codepage_layout
+	s = s.replace(/\u2018|\u2019|\u201A|\uFFFD/g, "'");
+	s = s.replace(/\u201c|\u201d|\u201e/g, '"');
+	s = s.replace(/\u02C6/g, '^');
+	s = s.replace(/\u2039/g, '<');
+	s = s.replace(/\u203A/g, '>');
+	s = s.replace(/\u2013/g, '-');
+	s = s.replace(/\u2014/g, '--');
+	s = s.replace(/\u2026/g, '...');
+	s = s.replace(/\u00A9/g, '(c)');
+	s = s.replace(/\u00AE/g, '(r)');
+	s = s.replace(/\u2122/g, 'TM');
+	s = s.replace(/\u00BC/g, '1/4');
+	s = s.replace(/\u00BD/g, '1/2');
+	s = s.replace(/\u00BE/g, '3/4');
+	s = s.replace(/[\u02DC|\u00A0]/g, " ");
+	return s;
 }
 
 
@@ -299,10 +299,16 @@ BaseParser.prototype.simplifySymbols = function(s) {
 
 // Used for college names, professor names, class names and locations
 // odd cases: "TBA", Texas A&M University
-BaseParser.prototype.toTitleCase = function (string) {
+BaseParser.prototype.toTitleCase = function (string, warningStr) {
 	if (string === "TBA") {
 		return string
 	}
+
+	if (string.toLowerCase() == string || string.toUpperCase() == string) {
+		console.log("Warning: string is all upper or all lower case", string, warningStr);
+	}
+
+
 	string = this.simplifySymbols(string)
 
 	string = toTitleCase(string)
@@ -390,7 +396,7 @@ BaseParser.prototype.splitEndings = function (name) {
 			dashEnding = dashEnding.slice(1).trim()
 		}
 
-		endings.push('- '+dashEnding.trim())
+		endings.push('- ' + dashEnding.trim())
 	}
 
 	// remove things in parens at the end

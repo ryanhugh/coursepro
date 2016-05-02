@@ -155,10 +155,13 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 			return;
 		}
 
+		var className = match[1];
 
+		if (className == className.toLowerCase() || className == className.toUpperCase()) {
+			console.log("Warning: class name is all upper or lower case", className, pageData.dbData.url);
+		}
 
-		var className = this.standardizeClassName(match[1]);
-
+		className = this.standardizeClassName(className);
 
 		//name was already set to something different, make another db entry for this class
 		if (pageData.parsingData.name && className != pageData.parsingData.name) {
@@ -318,23 +321,21 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 					prof = "TBA";
 				}
 				else {
-					prof = this.toTitleCase(prof);
+					prof = this.toTitleCase(prof, pageData.dbData.url);
 				}
 
 				if (!sectionStartingData.meetings[index].profs) {
-					sectionStartingData.meetings[index].profs = [prof];
+					sectionStartingData.meetings[index].profs = [];
 				}
-				else {
-					sectionStartingData.meetings[index].profs.push(prof);
-				}
+				sectionStartingData.meetings[index].profs.push(prof);
+
 			}.bind(this));
 
 			//parse the location
-			sectionStartingData.meetings[index].where = this.toTitleCase(tableData.where[i]);
+			sectionStartingData.meetings[index].where = this.toTitleCase(tableData.where[i], pageData.dbData.url);
 
 			// and the type of meeting (eg, final exam, lecture, etc)
-			sectionStartingData.meetings[index].type = this.toTitleCase(tableData.type[i]);
-
+			sectionStartingData.meetings[index].type = this.toTitleCase(tableData.type[i],pageData.dbData.url);
 
 			//start time and end time of class each day
 			var times = this.parseTimeStamps(tableData.time[i], tableData.days[i]);
