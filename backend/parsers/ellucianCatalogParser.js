@@ -198,7 +198,7 @@ EllucianCatalogParser.prototype.tests = function () {
 	require('../pageDataMgr')
 
 
-	//
+	
 	fs.readFile('backend/tests/ellucianCatalogParser/5.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
 
@@ -228,8 +228,8 @@ EllucianCatalogParser.prototype.tests = function () {
 			assert.equal(new URI(pageData.deps[0].dbData.url).equals(new URI(classURL)),true,'classurl != depData url!');
 
 		}.bind(this));
-	}.bind(this)); //
-	// return;
+	}.bind(this)); 
+	
 
 	fs.readFile('backend/tests/ellucianCatalogParser/1.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
@@ -275,11 +275,11 @@ EllucianCatalogParser.prototype.tests = function () {
 
 
 		}.bind(this));
-	}.bind(this)); //
+	}.bind(this)); 
 	
-	// return;
-
-	//
+	
+	
+	
 	fs.readFile('backend/tests/ellucianCatalogParser/2.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
 
@@ -310,11 +310,11 @@ EllucianCatalogParser.prototype.tests = function () {
 
 
 		}.bind(this));
-	}.bind(this)); //
+	}.bind(this)); 
 
 
 
-	//
+	
 	fs.readFile('backend/tests/ellucianCatalogParser/3.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
 
@@ -342,15 +342,11 @@ EllucianCatalogParser.prototype.tests = function () {
 			assert.equal(pageData.deps.length, 1);
 			assert.equal(pageData.deps[0].dbData.desc, 'Current internet, social media, and mobile media marketing theories , strategies, tools and practices. Includes study of communication methods used by professionals in journalism, film, television, advertising, public relations, and related professions to brand, promote, and distribute products and services. Web-based production lab included. Cross-listed with JRN 507.', pageData.deps[0].dbData.desc)
 			assert.equal(pageData.deps[0].dbData.classId, '507');
-			// assert.equal(pageData.deps[0].dbData.url, classURL)
 			assert.equal(new URI(pageData.deps[0].dbData.url).equals(new URI(classURL)),true,'classurl != depData url!');
 
 		}.bind(this));
-	}.bind(this)); //
-
-	//
-
-	//
+	}.bind(this)); 
+	
 	console.log('all tests done bro');
 
 };
