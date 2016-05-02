@@ -192,6 +192,7 @@ UsersDB.prototype.find = function (userData, config, callback) {
 	if (!config) {
 		config = {}
 	};
+
 	if (config.shouldBeOnlyOne === undefined) {
 		config.shouldBeOnlyOne = true;
 	};

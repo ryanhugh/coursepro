@@ -169,8 +169,12 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 		
 		
 		pageData.deps.forEach(function (dep) {
+			if (dep.parser != this) {
+				return;
+			}
+			
 			if (!dep.dbData.name) {
-				elog("ERROR, dep dosen't have a name?",dep)
+				elog("ERROR, dep dosen't have a name?",pageData.deps)
 			}
 			else {
 				possibleClassNameMatches.push(dep.dbData.name)
@@ -179,6 +183,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 		}.bind(this))
 
 		className = this.standardizeClassName(className,possibleClassNameMatches);
+		
 
 		//name was already set to something different, make another db entry for this class
 		if (pageData.parsingData.name && className != pageData.parsingData.name) {
@@ -237,6 +242,13 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 				dbAltEntry.setParser(this);
 
 			}
+			
+			
+			if (!dbAltEntry.dbData.name) {
+				console.log(dbAltEntry.dbData)
+				throw new Error('hiiii',dbAltEntry.dbData)
+			}
+
 
 			classToAddSectionTo = dbAltEntry;
 
@@ -381,7 +393,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 			return;
 		}
 	};
-
+	
 	//else create one
 	var sectionPageData = classToAddSectionTo.addDep(sectionStartingData);
 	sectionPageData.setParser(ellucianSectionParser);
@@ -456,7 +468,8 @@ EllucianClassParser.prototype.tests = function () {
 				dbData: {
 					url: url,
 					desc: '',
-					classId: '2160'
+					classId: '2160',
+					name:'Embedded Design Enabling Robotics'
 				}
 			});
 			assert.notEqual(null, pageData);
@@ -464,6 +477,7 @@ EllucianClassParser.prototype.tests = function () {
 			pageData.deps = [pageDataMgr.create({
 				dbData: {
 					url: 'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633',
+					crn:"15633"
 				}
 			})]
 			pageData.deps[0].parser = ellucianSectionParser;
@@ -484,7 +498,6 @@ EllucianClassParser.prototype.tests = function () {
 				crns: ['15633', '15636', '15639', '16102', '17800', '17799']
 			}, JSON.stringify(pageData.dbData));
 			
-			console.log(pageData.deps,'HIIIIIII')
 
 			assert.equal(pageData.deps.length, 6);
 			pageData.deps.forEach(function (dep) {
@@ -494,7 +507,7 @@ EllucianClassParser.prototype.tests = function () {
 
 		}.bind(this));
 	}.bind(this));
-	return;
+	// return;
 
 
 	//sections have different names
@@ -556,7 +569,7 @@ EllucianClassParser.prototype.tests = function () {
 					"endDate": 16500,
 					"profs": [
 						"Peter J Collings",
-						"Maryann Hickman Klassen"
+						"MaryAnn Hickman Klassen"
 					],
 					"where": "Science Center L44",
 					"times": {
@@ -641,126 +654,24 @@ EllucianClassParser.prototype.tests = function () {
 				url: url,
 				desc: '',
 				classId: '2041',
-				name: 'The Evolution of U.s. Aerospace Power Ii',
+				name: 'The Evolution of U.S. Aerospace Power II',
 				crns: ['12090']
 			});
 
 			assert.equal(pageData.deps.length, 1);
-			assert.equal(pageData.deps[0].parent, pageData);
-			assert.equal(pageData.deps[0].parser, ellucianSectionParser)
+			
+			var dep = pageData.deps[0];
+			
+			assert.equal(dep.parent, pageData);
+			assert.equal(dep.parser, ellucianSectionParser)
 
-			assert.deepEqual(pageData.deps[0].dbData, {
-				"url": "https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=12090",
-				"crn": "12090",
-				"meetings": [{
-					"startDate": 16457,
-					"endDate": 16457,
-					"profs": [
-						"Nicholas a Vallera"
-					],
-					"where": "Tba",
-					"times": {
-						"4": [{
-							"start": 21600,
-							"end": 27600
-						}]
-					}
-				}, {
-					"startDate": 16471,
-					"endDate": 16471,
-					"profs": [
-						"Nicholas a Vallera"
-					],
-					"where": "Tba",
-					"times": {
-						"4": [{
-							"start": 21600,
-							"end": 27600
-						}]
-					}
-				}, {
-					"startDate": 16485,
-					"endDate": 16485,
-					"profs": [
-						"Nicholas a Vallera"
-					],
-					"where": "Tba",
-					"times": {
-						"4": [{
-							"start": 21600,
-							"end": 27600
-						}]
-					}
-				}, {
-					"startDate": 16499,
-					"endDate": 16499,
-					"profs": [
-						"Nicholas a Vallera"
-					],
-					"where": "Tba",
-					"times": {
-						"4": [{
-							"start": 21600,
-							"end": 27600
-						}]
-					}
-				}, {
-					"startDate": 16513,
-					"endDate": 16513,
-					"profs": [
-						"Nicholas a Vallera"
-					],
-					"where": "Tba",
-					"times": {
-						"4": [{
-							"start": 21600,
-							"end": 27600
-						}]
-					}
-				}, {
-					"startDate": 16527,
-					"endDate": 16527,
-					"profs": [
-						"Nicholas a Vallera"
-					],
-					"where": "Tba",
-					"times": {
-						"4": [{
-							"start": 21600,
-							"end": 27600
-						}]
-					}
-				}, {
-					"startDate": 16541,
-					"endDate": 16541,
-					"profs": [
-						"Nicholas a Vallera"
-					],
-					"where": "Tba",
-					"times": {
-						"4": [{
-							"start": 21600,
-							"end": 27600
-						}]
-					}
-				}, {
-					"startDate": 16555,
-					"endDate": 16555,
-					"profs": [
-						"Nicholas a Vallera"
-					],
-					"where": "Tba",
-					"times": {
-						"4": [{
-							"start": 21600,
-							"end": 27600
-						}]
-					}
-				}],
-				"classId": "2041"
-			})
-
-			//
+			assert.equal(new URI(dep.dbData.url).equals(new URI("https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=12090")),true);
+			assert.equal(dep.dbData.crn,"12090");
+			assert.equal(dep.dbData.classId,"2041");
+			assert.deepEqual(dep.dbData.meetings,[{"startDate":16457,"endDate":16457,"profs":["Nicholas A Vallera"],"where":"TBA","type":"Class","times":{"4":[{"start":21600,"end":27600}]}},{"startDate":16471,"endDate":16471,"profs":["Nicholas A Vallera"],"where":"TBA","type":"Class","times":{"4":[{"start":21600,"end":27600}]}},{"startDate":16485,"endDate":16485,"profs":["Nicholas A Vallera"],"where":"TBA","type":"Class","times":{"4":[{"start":21600,"end":27600}]}},{"startDate":16499,"endDate":16499,"profs":["Nicholas A Vallera"],"where":"TBA","type":"Class","times":{"4":[{"start":21600,"end":27600}]}},{"startDate":16513,"endDate":16513,"profs":["Nicholas A Vallera"],"where":"TBA","type":"Class","times":{"4":[{"start":21600,"end":27600}]}},{"startDate":16527,"endDate":16527,"profs":["Nicholas A Vallera"],"where":"TBA","type":"Class","times":{"4":[{"start":21600,"end":27600}]}},{"startDate":16541,"endDate":16541,"profs":["Nicholas A Vallera"],"where":"TBA","type":"Class","times":{"4":[{"start":21600,"end":27600}]}},{"startDate":16555,"endDate":16555,"profs":["Nicholas A Vallera"],"where":"TBA","type":"Class","times":{"4":[{"start":21600,"end":27600}]}}]);
+			
+		
+		
 			console.log('all tests done bro');
 
 		}.bind(this));
@@ -790,14 +701,12 @@ EllucianClassParser.prototype.tests = function () {
 
 			assert.equal(true, this.supportsPage(url));
 
-
-			assert.deepEqual(pageData.dbData, {
-				url: url,
-				classId: '245',
-				desc: '',
-				name: 'Cancelled',
-				crns: ['12291']
-			});
+			assert.equal(pageData.dbData.url,url);
+			assert.equal(pageData.dbData.classId,'245')
+			assert.equal(pageData.dbData.desc,'')
+			assert.equal(pageData.dbData.name,'CANCELLED')
+			assert.equal(pageData.dbData.crns.length,1)
+			assert.equal(pageData.dbData.crns[0],'12291')
 
 			assert.equal(pageData.deps.length, 1);
 			pageData.deps.forEach(function (dep) {

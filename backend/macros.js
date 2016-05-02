@@ -66,8 +66,6 @@ function setupTargetStates() {
 }
 setupTargetStates()
 
-exports.PRODUCTION = true;
-
 //setup database ip and mongo db name
 var databaseIp = '52.20.189.150'
 

@@ -343,21 +343,21 @@ BaseParser.prototype.simplifySymbols = function (s) {
 // console.log(a('something something'))
 // console.log(a('2Nd year spanish'))
 
-// Used for college names, professor names, class names and locations
+// Used for college names, professor names and locations
 // odd cases: "TBA", Texas A&M University
-BaseParser.prototype.toTitleCase = function (string, warningStr) {
-	if (string === "TBA") {
-		return string
+BaseParser.prototype.toTitleCase = function (originalString, warningStr) {
+	if (originalString === "TBA") {
+		return originalString
 	}
 
-	if (string.toLowerCase() == string || string.toUpperCase() == string) {
-		console.log("Warning: string is all upper or all lower case", string, warningStr);
+	if (originalString.toLowerCase() == originalString || originalString.toUpperCase() == originalString) {
+		console.log("Warning: originalString is all upper or all lower case", originalString, warningStr);
 	}
 
 
-	string = this.simplifySymbols(string)
+	var string = this.simplifySymbols(originalString)
 
-	string = toTitleCase(string)
+	// string = toTitleCase(string)
 
 
 	var correctParts = [
@@ -368,7 +368,12 @@ BaseParser.prototype.toTitleCase = function (string, warningStr) {
 	correctParts.forEach(function (subString) {
 		string = string.replace(new RegExp(subString, 'gi'), subString);
 	}.bind(this))
+	
+	string = string.trim()
 
+	if (string != originalString.trim()) {
+		console.log('Warning: changing from ',originalString,'to',string,'at',warningStr);
+	}
 
 	return string.trim()
 };
