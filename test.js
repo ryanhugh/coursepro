@@ -23,12 +23,46 @@ var queue = require('d3-queue').queue;
 // var macros = require('./macros')
 require('proxyquire')
 
-var linksDB = require('./backend/databases/linksDB')
+var classesDB = require('./backend/databases/classesDB')
 var termsDB = require('./backend/databases/termsDB')
 
-// linksDB.find({url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_display_courses?sel_crse_strt=&sel_crse_end=&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=&term_in=201602&one_subj=PPOL'},{},function (err, docs) {
-// 	console.log(err,docs[0]);
-// }.bind(this))
+var dups = []
+
+classesDB.find({host:'neu.edu'},{skipValidation:true},function (err, docs) {
+	// console.log(err,docs[0]);
+
+	for (var i = 0; i < docs.length; i++) {
+		var currClass = docs[i];
+
+		for (var j = i+1; j < docs.length; j++) {
+			var matchClass = docs[j];
+
+			if (matchClass.host != currClass.host) {
+				continue;
+			}
+			
+			if (matchClass.termId != currClass.termId) {
+				continue;
+			}
+			
+			if (matchClass.subject != currClass.subject) {
+				continue;
+			}
+
+			if (matchClass.classId != currClass.classId) {
+				continue;
+			}
+
+			console.log('Name change',currClass.name, 'to:',matchClass.name,'   ',currClass.url)
+
+
+			// docs[j]
+
+
+		}
+	}
+
+}.bind(this))
 
 // termsDB.find({_id:'56b7ee63ef27facc18db0ff1'},{},function (err, docs) {
 // 	console.log(docs[0],'1');
@@ -39,29 +73,29 @@ var termsDB = require('./backend/databases/termsDB')
 // }.bind(this))
 
 
-function Test () {
-	this.q = 3
+// function Test () {
+// 	this.q = 3
 
-	this.slowwww = async.memoize(function(callback) {
-		setTimeout(function () {
-			console.log(this,this.q);
-			callback()
-		}.bind(this),200);
-	}.bind(this));
-}
+// 	this.slowwww = async.memoize(function(callback) {
+// 		setTimeout(function () {
+// 			console.log(this,this.q);
+// 			callback()
+// 		}.bind(this),200);
+// 	}.bind(this));
+// }
 
 
-var a = new Test();
+// var a = new Test();
 
-a.slowwww = a.slowwww.bind(a)
+// a.slowwww = a.slowwww.bind(a)
 
-a.slowwww(function () {
-	console.log("done once!");
-}.bind(this))
+// a.slowwww(function () {
+// 	console.log("done once!");
+// }.bind(this))
 
-a.slowwww(function () {
-	console.log("done twice!");
-}.bind(this))
+// a.slowwww(function () {
+// 	console.log("done twice!");
+// }.bind(this))
 
 // var q = queue()
 

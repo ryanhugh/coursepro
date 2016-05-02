@@ -17,6 +17,14 @@ neu has it in attributes, as different sections in same class
 https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201710&subj_in=CS&crse_in=1800&schd_in=LEC
 
 
+TITLE NOTES
+some derp names swathmore.log
+in swath, would work but need to look into (1) (w) stuff more 
+need to keep '-lab' at the end and standardize spacing around dash
+
+
+
+
 // //update existing dep in CATALOG PARSER MAKE SURE IT WORKS and aIS IT POSSIBLE TO ADD A CLASS CODE??
 
 

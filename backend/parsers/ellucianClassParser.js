@@ -163,7 +163,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 		//name was already set to something different, make another db entry for this class
 		if (pageData.parsingData.name && className != pageData.parsingData.name) {
 
-			console.log("Name: '" + pageData.parsingData.name + "'!='" + className + '"');
+			console.log("['Warning name change base:', '" + pageData.parsingData.name + "','" + className + "']");
 
 
 			var dbAltEntry = null;

@@ -2,6 +2,7 @@
 var request = require('request');
 var assert = require('assert');
 var URI = require('urijs');
+var _ = require('lodash');
 var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var fs = require('fs');
@@ -318,33 +319,148 @@ BaseParser.prototype.standardizeClassName = function (inputName) {
 	//regex the name to clean it up a bit
 	// perhaps could do like abbreviations for subject and find dividers or something
 	// would be dope if could convert roman numerals to numbers
-	outputName = outputName.replace(/\s*Sci\/engr\s*/gi,' Science and Engineering ')
-	outputName = outputName.replace(/\s*Business\/econ\s*/gi,' Business and Economics ')
-	outputName = outputName.replace(/\s*Calc & Diff Eq\s*/gi,' Calculus and Differential Equations ')
-	outputName = outputName.replace(/\s+Biol\s+/gi,' Biology ')
+	outputName = outputName.replace(/\s*Sci\/engr\s*/gi, ' Science and Engineering ')
+	outputName = outputName.replace(/\s*Business\/econ\s*/gi, ' Business and Economics ')
+	outputName = outputName.replace(/\s*Calc & Diff Eq\s*/gi, ' Calculus and Differential Equations ')
+	outputName = outputName.replace(/\s+Biol\s+/gi, ' Biology ')
 
 	// https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?schd_in=%25&term_in=201602&subj_in=PEAC&crse_in=003
 	// Crisis Resolution in Mdl East
-	outputName = outputName.replace(/\s+Mdl\s+/gi,' Middle ')
-	
+	outputName = outputName.replace(/\s+Mdl\s+/gi, ' Middle ')
+
 	// 2nd Yr Mandarin Chinese
-	outputName = outputName.replace(/\s+Yr\s+/gi,' Year ')
-	outputName = outputName.replace(/\s+Microecon\s+/gi,' Microeconomics ')
-	outputName = outputName.replace(/\s*Com Sci(\d)\s*/gi,' Computer Science $1 ')
+	outputName = outputName.replace(/\s+Yr\s+/gi, ' Year ')
+	outputName = outputName.replace(/\s+Microecon\s+/gi, ' Microeconomics ')
+	outputName = outputName.replace(/\s*Com Sci(\d)\s*/gi, ' Computer Science $1 ')
 
 	// https://myswat.swarthmore.edu/pls/bwckschd.p_disp_detail_sched?term_in=201602&crn_in=25454
 	// BMC: General Chemistry II 
-	outputName = outputName.replace(/\s+ii(\s+|$)/gi,' II ')
-	outputName = outputName.replace(/bmc:/i,'BMC:')
+	outputName = outputName.replace(/\s+ii(\s+|$)/gi, ' II ')
+	outputName = outputName.replace(/bmc:/i, 'BMC:')
 
-	outputName = outputName.replace(/Calculus (\d)for/gi,'Calculus $1 for')
-	outputName = outputName.replace(/Calc for/gi,'Calculus for')
+	outputName = outputName.replace(/Calculus (\d)for/gi, 'Calculus $1 for')
+	outputName = outputName.replace(/Calc for/gi, 'Calculus for')
 
-	outputName = outputName.replace('Fundamental of Computer','Fundamentals of Computer')
+	outputName = outputName.replace('Fundamental of Computer', 'Fundamentals of Computer')
 
 	return outputName.trim()
-
 };
+
+// 'something something (hon)' -> 'something something' and ['(hon)']
+BaseParser.prototype.splitEndings = function (name) {
+	name = name.trim()
+
+
+	var endings = [];
+	// --Lab at the end is also an ending
+	var match = name.match(/\-+\s*[\w\d]+$/i)
+	if (match) {
+		var dashEnding = match[0]
+
+		//remove it from name
+		name = name.slice(0, name.indexOf(dashEnding)).trim();
+
+		// standardize to one dash
+		while (_(dashEnding).startsWith('-')) {
+			dashEnding = dashEnding.slice(1)
+		}
+
+		endings.push('- '+dashEnding.trim())
+	}
+
+	// remove things in parens at the end
+	// Intro to the Study Engr (hon)
+	while (_(name).endsWith(')')) {
+
+		//find the name at the end
+		var match = name.match(/\([\w\d]+\)$/i);
+		if (!match) {
+			break;
+		}
+
+		var subString = match[0];
+
+		if (!_(name).endsWith(subString)) {
+			console.log("Warning: string dosent end with match??", originalName, possibleMatches);
+			break;
+		}
+
+		// remove the endings
+		name = name.slice(0, name.indexOf(subString)).trim();
+
+		endings.push(subString)
+	}
+	return {
+		name: name,
+		endings: endings
+	};
+};
+
+BaseParser.prototype.fixClassName2 = function (originalName, possibleMatches) {
+
+	// trim all inputs and replace 2+ spaces for 1
+	originalName = originalName.trim().replace(/\s+/gi, ' ')
+	for (var i = 0; i < possibleMatches.length; i++) {
+		possibleMatches[i] = possibleMatches[i].trim().replace(/\s+/gi, ' ')
+	}
+
+	// if input is in possible matches, done
+	if (_(possibleMatches).includes(originalName)) {
+		return originalName;
+	}
+
+	var name = originalName;
+
+	var nameSplit = this.splitEndings(name)
+	name = nameSplit.name;
+	var endings = nameSplit.endings;
+
+	// remove symbols
+	name = name.replace(/[^0-9a-z]/gi, '')
+
+
+
+
+
+	// see if name is an abbrivation of the possible matches
+	// eg "phys for engrs" = "Physics for Engineers"
+	for (var i = 0; i < possibleMatches.length; i++) {
+		var possibleMatch = this.splitEndings(possibleMatches[i]).name
+
+		// loop through possibleMatch and name at the same time
+		// and when a character matches, continue.
+		// if name is an in-order subset of possible match the nameIndex will be name.length at the end
+		var nameIndex = 0;
+		for (var matchIndex = 0; matchIndex < possibleMatch.length; matchIndex++) {
+
+			if (possibleMatch[matchIndex].toLowerCase() == name[nameIndex].toLowerCase()) {
+				nameIndex++;
+			}
+
+			// done!
+			if (nameIndex >= name.length) {
+				break;
+			}
+		}
+
+
+		// huzzah! a match!
+		if (nameIndex == name.length) {
+
+			// add the endings back on, but only if possible match dosent include them
+			for (var j = 0; j < endings.length; j++) {
+				if (!_(possibleMatch).includes(endings[j])) {
+					possibleMatch += ' ' + endings[j]
+					possibleMatch = possibleMatch.trim()
+				}
+			}
+
+			return possibleMatch
+		}
+	}
+	return originalName;
+};
+
 
 
 
@@ -370,6 +486,11 @@ BaseParser.prototype.tests = function () {
 	assert.equal(this.standardizeClassName('2nd Year Japanese'), '2nd Year Japanese');
 	assert.equal(this.standardizeClassName('Bmc: General Chemistry Ii'), 'BMC: General Chemistry II');
 
+	var goodName = 'Interactive Learning Seminar for Physics 1151'
+	assert.equal(this.fixClassName2('Int. Learn for Phys 1151', [goodName]), goodName);
+
+	var goodName = 'Connections and Decisions'
+	assert.equal(this.fixClassName2('Connections & Decisions', ['hihfdsjal', goodName]), goodName);
 
 	var classNameTranslation = {
 
@@ -392,9 +513,52 @@ BaseParser.prototype.tests = function () {
 	}
 
 	for (var oldName in classNameTranslation) {
-		assert.equal(this.standardizeClassName(oldName),classNameTranslation[oldName])
+		assert.equal(this.standardizeClassName(oldName), classNameTranslation[oldName])
 	}
 
+
+
+	for (var badName in classNameTranslation) {
+		var goodName = classNameTranslation[badName]
+		assert.equal(this.fixClassName2(badName, ['hihfdsjal', goodName]), goodName);
+	}
+
+
+	// additional tests just for the new name standardizer
+	classNameTranslation = {
+		'Foundations of Psych': 'Foundations of Psychology',
+		'Arch,infrastructure&city ': 'Architecture, Infrastructure, and the City',
+		'Principles of Macroecon    (hon)   ': 'Principles of Macroeconomics (hon)',
+	}
+
+
+	for (var badName in classNameTranslation) {
+		var goodName = classNameTranslation[badName]
+		assert.equal(this.fixClassName2(badName, ['hihfdsjal', goodName]), goodName);
+	}
+
+
+	var badName = 'Dif Eq & Lin Alg Fr Engr'
+	var possibleMatch = 'Differential Equations and Linear Algebra for Engineering (hon)'
+	var goodName = 'Differential Equations and Linear Algebra for Engineering'
+	assert.equal(this.fixClassName2(badName, ['hihfdsjal', possibleMatch]), goodName);
+
+
+	var badName = 'General Phys I- Lab'
+	var possibleMatch = 'General Physics I'
+	var goodName = 'General Physics I - Lab'
+	assert.equal(this.fixClassName2(badName, ['hihfdsjal', possibleMatch]), goodName);
+
+
+
+	var name = 'St: Wireless Sensor Networks'
+	assert.equal(this.fixClassName2(name, ['St: Intro. to Multiferroics']), name);
+
+
+
+
+
+	return;
 
 
 
