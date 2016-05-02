@@ -161,7 +161,13 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 			console.log("Warning: class name is all upper or lower case", className, pageData.dbData.url);
 		}
 
-		className = this.standardizeClassName(className);
+		//get a list of all class names for the class name fixer
+		var possibleClassNameMatches = [pageData.parsingData.name]
+		pageData.deps.forEach(function (dep) {
+			possibleClassNameMatches.push(dep.dbData.name)
+		}.bind(this))
+
+		className = this.standardizeClassName(className,possibleClassNameMatches);
 
 		//name was already set to something different, make another db entry for this class
 		if (pageData.parsingData.name && className != pageData.parsingData.name) {

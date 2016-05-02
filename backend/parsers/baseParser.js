@@ -317,17 +317,6 @@ BaseParser.prototype.toTitleCase = function (string, warningStr) {
 	var correctParts = [
 		// Texas A&M University
 		' A&M ',
-		'1st',
-		// 2nd Year Japanese
-		'2nd',
-		'3rd',
-		'4th',
-		'5th',
-		'6th', // THESE CAN BE REMOVED
-		'7th',
-		'8th',
-		'9th',
-		'10th',
 	]
 
 	correctParts.forEach(function (subString) {
@@ -336,46 +325,6 @@ BaseParser.prototype.toTitleCase = function (string, warningStr) {
 
 
 	return string.trim()
-};
-
-BaseParser.prototype.standardizeClassName = function (inputName) {
-	var outputName = this.toTitleCase(inputName);
-
-	if (outputName != inputName) {
-		console.log('warning, toTitleCase changed class name from', inputName, 'to', outputName);
-	}
-
-	outputName = outputName.replace('Calc & Diff Eq - Biol 1(hon)', 'Calculus and Differential Equations for Biology 1 (hon)')
-
-
-	//regex the name to clean it up a bit
-	// perhaps could do like abbreviations for subject and find dividers or something
-	// would be dope if could convert roman numerals to numbers
-	outputName = outputName.replace(/\s*Sci\/engr\s*/gi, ' Science and Engineering ')
-	outputName = outputName.replace(/\s*Business\/econ\s*/gi, ' Business and Economics ')
-	outputName = outputName.replace(/\s*Calc & Diff Eq\s*/gi, ' Calculus and Differential Equations ')
-	outputName = outputName.replace(/\s+Biol\s+/gi, ' Biology ')
-
-	// https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?schd_in=%25&term_in=201602&subj_in=PEAC&crse_in=003
-	// Crisis Resolution in Mdl East
-	outputName = outputName.replace(/\s+Mdl\s+/gi, ' Middle ')
-
-	// 2nd Yr Mandarin Chinese
-	outputName = outputName.replace(/\s+Yr\s+/gi, ' Year ')
-	outputName = outputName.replace(/\s+Microecon\s+/gi, ' Microeconomics ')
-	outputName = outputName.replace(/\s*Com Sci(\d)\s*/gi, ' Computer Science $1 ')
-
-	// https://myswat.swarthmore.edu/pls/bwckschd.p_disp_detail_sched?term_in=201602&crn_in=25454
-	// BMC: General Chemistry II 
-	outputName = outputName.replace(/\s+ii(\s+|$)/gi, ' II ')
-	outputName = outputName.replace(/bmc:/i, 'BMC:')
-
-	outputName = outputName.replace(/Calculus (\d)for/gi, 'Calculus $1 for')
-	outputName = outputName.replace(/Calc for/gi, 'Calculus for')
-
-	outputName = outputName.replace('Fundamental of Computer', 'Fundamentals of Computer')
-
-	return outputName.trim()
 };
 
 // 'something something (hon)' -> 'something something' and ['(hon)']
@@ -435,7 +384,12 @@ BaseParser.prototype.splitEndings = function (name) {
 // dosent work for
 // https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%25&term_in=201710&subj_in=JRNL&crse_in=1150
 // Interpreting the Day’s News vs Interptng the Day's News
-BaseParser.prototype.fixClassName2 = function (originalName, possibleMatches) {
+BaseParser.prototype.standardizeClassName = function (originalName, possibleMatches) {
+
+	// can't do much here, it was called from category. just fix small stuff
+	if (possibleMatches === undefined) {
+		possibleMatches = []
+	}
 
 	// trim all inputs and replace 2+ spaces for 1
 	originalName = originalName.trim().replace(/\s+/gi, ' ')
@@ -447,7 +401,7 @@ BaseParser.prototype.fixClassName2 = function (originalName, possibleMatches) {
 	}
 
 	// if input is in possible matches, done
-	if (_(possibleMatches).includes(originalName)) {
+	if (_(possibleMatches).includes(originalName) || possibleMatches.length === 0) {
 		return originalName;
 	}
 
@@ -526,13 +480,13 @@ BaseParser.prototype.tests = function () {
 	assert.equal(this.toTitleCase('TBA'), 'TBA');
 	assert.equal(this.toTitleCase('Texas A&M University'), 'Texas A&M University');
 	assert.equal(this.standardizeClassName('2nd Year Japanese'), '2nd Year Japanese');
-	assert.equal(this.standardizeClassName('Bmc: General Chemistry Ii'), 'BMC: General Chemistry II');
+	assert.equal(this.standardizeClassName('BMC: General Chemistry II'), 'BMC: General Chemistry II');
 
 	var goodName = 'Interactive Learning Seminar for Physics 1151'
-	assert.equal(this.fixClassName2('Int. Learn for Phys 1151', [goodName]), goodName);
+	assert.equal(this.standardizeClassName('Int. Learn for Phys 1151', [goodName]), goodName);
 
 	var goodName = 'Connections and Decisions'
-	assert.equal(this.fixClassName2('Connections & Decisions', ['hihfdsjal', goodName]), goodName);
+	assert.equal(this.standardizeClassName('Connections & Decisions', ['hihfdsjal', goodName]), goodName);
 
 	var classNameTranslation = {
 
@@ -554,15 +508,9 @@ BaseParser.prototype.tests = function () {
 		'Crisis Resolution in Mdl East': 'Crisis Resolution in Middle East'
 	}
 
-	for (var oldName in classNameTranslation) {
-		assert.equal(this.standardizeClassName(oldName), classNameTranslation[oldName])
-	}
-
-
-
 	for (var badName in classNameTranslation) {
 		var goodName = classNameTranslation[badName]
-		assert.equal(this.fixClassName2(badName, ['hihfdsjal', goodName]), goodName);
+		assert.equal(this.standardizeClassName(badName, ['hihfdsjal', goodName]), goodName);
 	}
 
 
@@ -576,25 +524,25 @@ BaseParser.prototype.tests = function () {
 
 	for (var badName in classNameTranslation) {
 		var goodName = classNameTranslation[badName]
-		assert.equal(this.fixClassName2(badName, ['hihfdsjal', goodName]), goodName);
+		assert.equal(this.standardizeClassName(badName, ['hihfdsjal', goodName]), goodName);
 	}
 
 
 	var badName = 'Dif Eq & Lin Alg Fr Engr'
 	var possibleMatch = 'Differential Equations and Linear Algebra for Engineering (hon)'
 	var goodName = 'Differential Equations and Linear Algebra for Engineering'
-	assert.equal(this.fixClassName2(badName, ['hihfdsjal', possibleMatch]), goodName);
+	assert.equal(this.standardizeClassName(badName, ['hihfdsjal', possibleMatch]), goodName);
 
 
 	var badName = 'General Phys I- Lab'
 	var possibleMatch = 'General Physics I'
 	var goodName = 'General Physics I - Lab'
-	assert.equal(this.fixClassName2(badName, ['hihfdsjal', possibleMatch]), goodName);
+	assert.equal(this.standardizeClassName(badName, ['hihfdsjal', possibleMatch]), goodName);
 
 
 
 	var name = 'St: Wireless Sensor Networks'
-	assert.equal(this.fixClassName2(name, ['St: Intro. to Multiferroics']), name);
+	assert.equal(this.standardizeClassName(name, ['St: Intro. to Multiferroics']), name);
 
 
 
