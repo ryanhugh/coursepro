@@ -9,7 +9,8 @@ queue.max on neu, etc -- done
 make it so it can scrape )) from prereqs section -- done
 last update time should copy down to class deps of class deps -- done
 
-safe to lookup docs by url in backend?
+safe to lookup docs by url in backend? - ehhh
+backend unit test framework
 
 
 
@@ -91,9 +92,7 @@ put a line between years?
 
 unit tests?
  - testing errors shouldnt bring up debugger
-get notifyer working again?
 merge list, search, starred?
-organize section.js?
 
 play with hiding private properties?
  -- nah
