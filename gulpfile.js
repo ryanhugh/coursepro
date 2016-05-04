@@ -9,6 +9,7 @@ var flatten = require('gulp-flatten');
 var angularTemplates = require('gulp-angular-templatecache')
 var htmlmin = require('gulp-htmlmin');
 var notify = require("gulp-notify");
+var jasmine = require('gulp-jasmine');
 
 // browsify stuff
 var browserify = require('browserify');
@@ -224,6 +225,15 @@ gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 		process.exit()
 	}.bind(this)).start();
 });
+
+
+ 
+gulp.task('btest', function() {
+	gulp.src('backend/**/*.tests.js')
+		// gulp-jasmine works on filepaths so you can't have any plugins before it 
+		.pipe(jasmine())
+	}
+);
 
 
 gulp.task('spider', function () {
