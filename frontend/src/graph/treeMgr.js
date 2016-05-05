@@ -323,6 +323,133 @@ TreeMgr.prototype.mergeDuplicateClasses = function(tree,classList) {
 }
 
 
+// returns all of a tree's prereq's parents, dups removed
+TreeMgr.prototype.getNeighbors = function(tree) {
+	
+	var retVal = [];
+	tree.prereqs.values.forEach(function(subTree) {
+		subTree.allParents.forEach(function(neighborTree){
+			if (!_(retVal).includes(neighborTree)) {
+				retVal.push(neighborTree)
+			}
+			
+		}.bind(this))
+	}.bind(this))
+	return retVal;
+}
+
+
+TreeMgr.prototype.groupByCommonPrereqs = function(tree) {
+	
+		
+	//find the list of nodes again, many were removed above ^^
+	var flatClassList = this.findFlattenedPrereqs(tree).sort(function (a,b) {
+		if (!a.allParents) {
+			return 1;
+		}
+		if (!b.allParents) {
+			return -1;
+		}
+		if (a.allParents.length<b.allParents.length) {
+			return 1;
+		}
+		else if (a.allParents.length>b.allParents.length) {
+			return -1;
+		}
+		else {
+			return 0;
+		}
+	}.bind(this));
+	
+	flatClassList = _.uniq(flatClassList)
+	
+	
+	if (flatClassList.length<2) {
+		return;
+	}
+		
+	// make sure allparents exist on both of these nodes!
+	var toSimplify = _.intersection(flatClassList[0].allParents,flatClassList[1].allParents,flatClassList[2].allParents)
+	
+	//SHOULD ALL PARENTS BE SORTED???
+	//need to find all nodes where all parents is equal to or superset of parents found
+	//need to make sure this ^ is valid
+	var result = _.filter(flatClassList, function (node) {
+		if (!node.allParents) {
+			return false;
+		}
+		
+		
+		
+		//ensure that this node hass all the matched parents
+		for (var i=0;i<toSimplify.length;i++) {
+			if (!_(node.allParents).contains(toSimplify[i])) {
+				return false;
+			}
+		}
+		return true;
+	}.bind(this));
+	
+	var linesRemoved = toSimplify.length * result.length - toSimplify.length - result.length;
+	
+	// this transform will add lines, dont do it
+	if (linesRemoved < 0 || toSimplify.length < 2 || result.length < 2) {
+		return;
+	}
+	
+	console.log('all matching nodes:',result)
+	
+	var newNode = {
+		isClass:false,
+		_id:Math.random(),
+		allParents:toSimplify,
+		prereqs: {
+			type:'or',//TODO FIXXX
+			values:result
+		},
+		coreqs:{
+			type:'or',
+			values:[]
+		}
+	}
+	
+	toSimplify.forEach(function(parent) {
+		
+		//remove any .values in result
+		result.forEach(function(newChild) {
+			_.pull(parent.prereqs.values,newChild)
+		}.bind(this))
+		
+		parent.prereqs.values.push(newNode);
+	}.bind(this))
+	
+	
+	result.forEach(function(newChild){
+		
+		toSimplify.forEach(function(parent) {
+			_.pull(newChild.allParents,parent);
+		}.bind(this))
+		
+		newChild.allParents.push(newNode);
+		
+	}.bind(this))
+	
+	
+	//PRETTY sure everything would have to be same type (or vs and)
+	
+	//for every parent:
+		//any values in result remove
+		//add newNode
+
+	//for every child:
+		//remove any parent in toSimplify
+		//add newNode
+
+
+	
+	
+}
+
 
 
 TreeMgr.prototype.addDepthLevel = function (tree, depth) {
