@@ -31,3 +31,21 @@ describe('DownloadTreeTests', function () {
 		});
 	});
 });
+
+
+function setsAreEqual(as, bs) {
+    if (as.size !== bs.size) return false;
+    for (var a of as) if (!bs.has(a)) return false;
+    return true;
+}
+
+describe('TreeMgr', function () {
+
+	describe('.getSubsets', function () {
+		it('works', function () {
+
+			setsAreEqual(new Set([[],[1],[2],[3],[1,2],[2,3],[1,3],[1,2,3]]),treeMgr.getSubsets([1,2,3]))
+
+		});
+	});
+});
