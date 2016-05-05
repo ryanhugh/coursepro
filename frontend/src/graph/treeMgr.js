@@ -338,74 +338,78 @@ TreeMgr.prototype.getNeighbors = function(tree) {
 	return retVal;
 }
 
+TreeMgr.prototype.getSubsets = function(bigSet) {
+	var loopTo = (1<<bigSet.length);
+	var retVal = [];
+	for (var i=0;i<loopTo;i++) {
+		var smallSet = [];
+		
+		for (var j=0;j<bigSet.length;j++) {
+			if (1<<j & i) {
+				smallSet.push(bigSet[j])
+			}
+		}
+		retVal.push(smallSet)
+	}
+	return retVal;
+}
+
 
 TreeMgr.prototype.groupByCommonPrereqs = function(tree) {
 	
-		
-	//find the list of nodes again, many were removed above ^^
-	var flatClassList = this.findFlattenedPrereqs(tree).sort(function (a,b) {
-		if (!a.allParents) {
-			return 1;
-		}
-		if (!b.allParents) {
-			return -1;
-		}
-		if (a.allParents.length<b.allParents.length) {
-			return 1;
-		}
-		else if (a.allParents.length>b.allParents.length) {
-			return -1;
-		}
-		else {
-			return 0;
-		}
-	}.bind(this));
+	var parents = this.getNeighbors(tree);
 	
-	flatClassList = _.uniq(flatClassList)
-	
-	
-	if (flatClassList.length<2) {
-		return;
-	}
+	var maxScore=0;
+	var matchParents = [];
+	var matchChildren = [];
+	this.getSubsets(parents).forEach(function(thisParentsSet){
 		
-	// make sure allparents exist on both of these nodes!
-	var toSimplify = _.intersection(flatClassList[0].allParents,flatClassList[1].allParents,flatClassList[2].allParents)
-	
-	//SHOULD ALL PARENTS BE SORTED???
-	//need to find all nodes where all parents is equal to or superset of parents found
-	//need to make sure this ^ is valid
-	var result = _.filter(flatClassList, function (node) {
-		if (!node.allParents) {
-			return false;
+		if (thisParentsSet.length < 2) {
+			return;
 		}
-		
-		
-		
-		//ensure that this node hass all the matched parents
-		for (var i=0;i<toSimplify.length;i++) {
-			if (!_(node.allParents).contains(toSimplify[i])) {
+	
+		// find the children which these parents share
+		var children = _.filter(tree.prereqs.values, function (child) {
+			if (!child.allParents) {
 				return false;
 			}
+			
+			
+			
+			//ensure that this child hass all the matched parents
+			for (var i=0;i<thisParentsSet.length;i++) {
+				if (!_(child.allParents).contains(thisParentsSet[i])) {
+					return false;
+				}
+			}
+			return true;
+		}.bind(this));
+		
+		//calculate the score of this set
+		var linesRemoved = parents.length * children.length - parents.length - children.length;
+		
+		if (linesRemoved>maxScore) {
+			matchParents = parents;
+			matchChildren = children;
+			console.log('new max with ',parents, children)
 		}
-		return true;
 	}.bind(this));
 	
-	var linesRemoved = toSimplify.length * result.length - toSimplify.length - result.length;
-	
+		
 	// this transform will add lines, dont do it
-	if (linesRemoved < 0 || toSimplify.length < 2 || result.length < 2) {
+	if (linesRemoved < 0 || matchParents.length < 2 || matchChildren.length < 2) {
 		return;
 	}
 	
-	console.log('all matching nodes:',result)
+	console.log('all matching nodes:',matchChildren)
 	
 	var newNode = {
 		isClass:false,
 		_id:Math.random(),
-		allParents:toSimplify,
+		allParents:matchParents,
 		prereqs: {
 			type:'or',//TODO FIXXX
-			values:result
+			values:matchChildren
 		},
 		coreqs:{
 			type:'or',
@@ -413,10 +417,10 @@ TreeMgr.prototype.groupByCommonPrereqs = function(tree) {
 		}
 	}
 	
-	toSimplify.forEach(function(parent) {
+	matchParents.forEach(function(parent) {
 		
-		//remove any .values in result
-		result.forEach(function(newChild) {
+		//remove any .values in matchChildren
+		matchChildren.forEach(function(newChild) {
 			_.pull(parent.prereqs.values,newChild)
 		}.bind(this))
 		
@@ -424,9 +428,9 @@ TreeMgr.prototype.groupByCommonPrereqs = function(tree) {
 	}.bind(this))
 	
 	
-	result.forEach(function(newChild){
+	matchChildren.forEach(function(newChild){
 		
-		toSimplify.forEach(function(parent) {
+		matchParents.forEach(function(parent) {
 			_.pull(newChild.allParents,parent);
 		}.bind(this))
 		
@@ -438,7 +442,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function(tree) {
 	//PRETTY sure everything would have to be same type (or vs and)
 	
 	//for every parent:
-		//any values in result remove
+		//any values in matchChildren remove
 		//add newNode
 
 	//for every child:
