@@ -9,9 +9,22 @@ queue.max on neu, etc -- done
 make it so it can scrape )) from prereqs section -- done
 -----https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201615&subj_code_in=BTC&crse_numb_in=6213
 last update time should copy down to class deps of class deps -- done
+get has wait list on section -- done
+why are the terms not sorted on the dropdown? -- done
 
+
+LOOKING INTO
 safe to lookup docs by url in backend? - ehhh
 backend unit test framework
+ - does jasmine have a way to only log on fail?
+the node injection graph thing
+
+
+
+
+
+
+
 
 
 
@@ -86,7 +99,7 @@ karma-failed-reporter is better than nothing
 
 
 spacing bug if multiple locations on class list
-why are the terms not sorted on the dropdown?
+
 put a line between years?
 
 /logError called "class load failed" if failed to load class and then on a separate call to class.load sections
