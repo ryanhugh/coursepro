@@ -270,7 +270,7 @@ describe('Section', function () {
 			expect(section.getHasExam()).toBe(true);
 		});
 	});
-	describe('.getHasExam', function () {
+	describe('.getExamMoments', function () {
 		it('works', function () {
 			var section = Section.create({
 				_id: '56f223b4ea47044a056a11c1',
@@ -310,138 +310,80 @@ describe('Section', function () {
 	});
 
 
+	describe('.getLocations', function () {
+		it('works', function () {
+			var section = Section.create({
+				_id: '56f2203fea47044a05694349',
+			});
+
+			section.download();
+			var locations = section.getLocations()
+			expect(locations.length).toBe(1);
+			expect(locations[0]).toBe("West Village H 210");
+		});
+	});
+
+
+
+	describe('.getUniqueStartTimes', function () {
+		it('works', function () {
+			var section = Section.create({
+				_id: '56f22254ea47044a0569bf8d',
+			});
+
+			section.download();
+			var times = section.getUniqueStartTimes()
+			expect(times.length).toBe(1);
+			expect(times[0]).toBe("4:35 pm");
+			
+			times = section.getUniqueStartTimes(false)
+			expect(times.length).toBe(2);
+			expect(times[0]).toBe("4:35 pm");
+			expect(times[1]).toBe("4:40 pm");
+		});
+	});
+
+
+	describe('.getUniqueEndTimes', function () {
+		it('works', function () {
+			var section = Section.create({
+				_id: '56f22254ea47044a0569bf8d',
+			});
+
+			section.download();
+			var times = section.getUniqueEndTimes()
+			expect(times.length).toBe(1);
+			expect(times[0]).toBe("5:40 pm");
+			
+			times = section.getUniqueEndTimes(false)
+			expect(times.length).toBe(2);
+			expect(times[0]).toBe("5:40 pm");
+			expect(times[1]).toBe("7:26 pm");
+		});
+	});
+
+	describe('.getHasWaitList', function () {
+		it('works', function () {
+			var section = Section.create({
+				_id: '56f22254ea47044a0569bf8d',
+			});
+
+			section.download();
+			expect(section.getHasWaitList(),false);
+			
+		});
+		
+		it('has a wait list when wait remaining > 0', function () {
+			var section = Section.create({
+				_id: '56f21f93ea47044a05691b3e',
+			});
+
+			section.download();
+			expect(section.getHasWaitList(),true);
+			
+		});
+	});
 
 });
 
 
-
-// var popup = require('../graph/popup')
-// var assert = require('assert')
-
-function PopupTests() {
-
-	this.input = [{
-		"startDate": 16811,
-		"endDate": 16911,
-		"profs": [
-			"Leena Razzaq"
-		],
-		"where": "West Village H 212",
-		"times": {
-			"2": [{
-				"start": 62100,
-				"end": 68100
-			}]
-		},
-		"groupedTimes": [{
-			"times": [{
-				"start": 62100,
-				"end": 68100
-			}],
-			"days": [
-				"2"
-			]
-		}]
-	}]
-
-
-	this.input2 = {
-		"startDate": 16687,
-		"endDate": 16778,
-		"profs": [
-			"Ravi Sundaram"
-		],
-		"where": "Churchill Hall 103",
-		"times": {
-			"1": [{
-				"start": 42300,
-				"end": 48300
-			}],
-			"4": [{
-				"start": 42300,
-				"end": 48300
-			}]
-		},
-		"groupedTimes": []
-	}
-
-
-	this.input3 = [{
-		"startDate": 16687,
-		"endDate": 16687,
-		"profs": [
-			"Ravi Sundaram"
-		],
-		"where": "Churchill Hall 103",
-		"times": {
-			"1": [{
-				"start": 42300,
-				"end": 48300
-			}],
-			"4": [{
-				"start": 42300,
-				"end": 48300
-			}]
-		},
-		"groupedTimes": []
-	}]
-
-
-
-}
-
-
-PopupTests.prototype.testcreateTimeStrings = function () {
-
-	var input = _.cloneDeep(this.input)
-	popup.createTimeStrings(input)
-
-	assert.equal("Tuesday", input[0].dayString)
-	assert.equal("5:15 - 6:55 pm", input[0].timeString)
-};
-
-PopupTests.prototype.testcalculateHoursPerWeek = function () {
-
-	var input = _.cloneDeep(this.input)
-	popup.calculateHoursPerWeek(input)
-	assert.equal(1.7, input[0].hoursPerWeek)
-};
-
-
-
-PopupTests.prototype.testaddtogroupedtiems = function () {
-
-	var input = _.cloneDeep(this.input2)
-	popup.addTimestoGroupedTimes(input, "1")
-
-	assert.deepEqual(input.groupedTimes[0].times, input.times[1])
-	assert.deepEqual(input.groupedTimes[0].days, ["1"])
-};
-
-PopupTests.prototype.testcalculateExams = function () {
-
-
-	var input = _.cloneDeep(this.input2)
-	popup.calculateExams([input]);
-	assert.equal(input.isExam, false);
-
-
-	input = _.cloneDeep(this.input3)
-	popup.calculateExams(input);
-	assert.equal(input[0].isExam, true)
-};
-
-
-PopupTests.prototype.go = function () {
-	this.testcreateTimeStrings()
-	this.testcalculateHoursPerWeek()
-	this.testaddtogroupedtiems()
-	this.testcalculateExams()
-
-	console.log('done')
-};
-
-
-
-// PopupTests.prototype.PopupTests = PopupTests;
-// module.exports = new PopupTests();

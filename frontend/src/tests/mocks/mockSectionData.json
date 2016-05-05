@@ -20,8 +20,8 @@
 	"classId": "2511",
 	"seatsCapacity": 19,
 	"seatsRemaining": 0,
-	"waitCapacity": 0,
-	"waitRemaining": 0,
+	"waitCapacity": 5,
+	"waitRemaining": 2,
 	"lastUpdateTime": 1458708371332
 }, {
 	"_id": "56f2203fea47044a05694349",
@@ -42,7 +42,7 @@
 		"startDate": 16687,
 		"endDate": 16687,
 		"profs": ["Leena Razzaq"],
-		"where": "West Village H 210",
+		"where": "West Village H exam location",
 		"times": {
 			"6": [{
 				"start": 55500,
@@ -241,6 +241,18 @@
 			"4": [{
 				"start": 59700,
 				"end": 63600
+			}]
+		}
+	},
+	{
+		"startDate": 16778,
+		"endDate": 16778,
+		"profs": ["Leena Razzaq"],
+		"where": "Hurtig Hall 130",
+		"times": {
+			"1": [{
+				"start": 60000,
+				"end": 70000
 			}]
 		}
 	}],

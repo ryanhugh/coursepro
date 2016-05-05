@@ -197,6 +197,14 @@ Section.prototype.getUniqueEndTimes = function (ignoreExams) {
 	return retVal;
 };
 
+Section.prototype.getHasWaitList = function(){
+	if (this.waitCapacity > 0 || this.waitRemaining>0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 
 
 

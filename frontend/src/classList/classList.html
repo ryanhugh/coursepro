@@ -143,7 +143,7 @@
                                 </span>
 
                             </th>
-                            <th ng-if="class.hasWaitList">Open/Total Waitlist Seats</th>
+                            <th ng-if="class.getHasWaitList()">Open/Total Waitlist Seats</th>
                             <th>Link</th>
                             <!-- <th>Email
                         <br>Notifications</th> -->
@@ -195,7 +195,7 @@
                             </td>
 
 
-                            <td ng-if="class.hasWaitList">
+                            <td ng-if="class.getHasWaitList()">
 
                                 <!-- don't display the "/" until these are loaded -->
                                 <span ng-if="section.waitRemaining || section.waitCapacity">

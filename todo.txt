@@ -7,6 +7,7 @@ TO TEST
 class name stuff -- done
 queue.max on neu, etc -- done
 make it so it can scrape )) from prereqs section -- done
+-----https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201615&subj_code_in=BTC&crse_numb_in=6213
 last update time should copy down to class deps of class deps -- done
 
 safe to lookup docs by url in backend? - ehhh
@@ -132,8 +133,7 @@ on startup, loop through users data and make sure each row is at minimum the def
 css minifyer
 mobile
 --scrape the hon attribute for hon classes
---does backend support multiple closing parens for prereq section?
------https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201615&subj_code_in=BTC&crse_numb_in=6213
+
 
 
 
