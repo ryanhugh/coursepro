@@ -13,6 +13,7 @@
     "d3-queue": "^2.0.2",
     "deep-diff": "^0.3.3",
     "domutils": "^1.5.1",
+    "es6-collections": "^0.5.6",
     "express": "^4.13.4",
     "fullcalendar": "^2.6.0",
     "glob": "^7.0.0",

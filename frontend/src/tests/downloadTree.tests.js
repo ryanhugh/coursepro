@@ -3,6 +3,7 @@
 var mockClass = require('./mocks/mockClass')
 var treeMgr = require('../graph/treeMgr')
 var proxyquire = require('proxyquireify')(require);
+var something = require('es6-collections')
 
 var downloadTree = proxyquire('../graph/downloadTree', {
 	'../Class': mockClass,
@@ -35,7 +36,12 @@ describe('DownloadTreeTests', function () {
 
 function setsAreEqual(as, bs) {
     if (as.size !== bs.size) return false;
-    for (var a of as) if (!bs.has(a)) return false;
+    var values = Array.from(as)
+    for (var i = 0; i < values.length; i++) {
+    	if (!bs.has(values[i])) {
+    		return false;
+    	}
+    }
     return true;
 }
 
