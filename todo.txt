@@ -22,7 +22,6 @@ backend unit test framework
 async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj)
 angular debug mode off
 the node injection graph thing
-mvoe karam file int frontend -- done
 for node injection, make sure all same type and do overlapping set of names to find node name
 
 
