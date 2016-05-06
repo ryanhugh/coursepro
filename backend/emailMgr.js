@@ -84,7 +84,7 @@ EmailMgr.prototype.sendEmail = function (toEmails, subject, html, callback) {
 			return;
 		}
 
-		if (!macros.SEND_EMAILS) {
+		if (!macros.PRODUCTION) {
 			console.log('Not sending email to ', toEmails, ' because not in PRODUCTION mode');
 			console.log(subject)
 			console.log(html)

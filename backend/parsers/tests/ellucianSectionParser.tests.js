@@ -1,4 +1,4 @@
-var ellucianSectionParser = require('../ellucianSectionParser')
+// var ellucianSectionParser = require('../ellucianSectionParser')
 
 
 // it should either be 1. hidden, or have a times[0][0] that has > 0 length
@@ -8,7 +8,7 @@ describe('EllucianSectionParser', function () {
 		// return;
 		it('exists', function (done) {
 			
-			expect(ellucianSectionParser).not.toBe(null);
+			// expect(ellucianSectionParser).not.toBe(null);
 			console.log("one running")
 			setTimeout(function(){
 			console.log("one done")
@@ -23,7 +23,7 @@ describe('EllucianSectionParser', function () {
 		
 		it('exists22', function () {
 			
-			expect(ellucianSectionParser).not.toBe(null);
+			// expect(ellucianSectionParser).not.toBe(null);
 				console.log('2 running')
 			expect(1).toBe(1);
 				console.log('2 fail')

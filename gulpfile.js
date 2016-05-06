@@ -25,16 +25,16 @@ var karma = require('karma')
 var _ = require('lodash')
 
 // custom stuff
-var macros = require('./backend/macros')
-var pointer = require('./backend/pointer');
-var emailMgr = require('./backend/emailMgr')
-var pageDataMgr = require('./backend/pageDataMgr')
-var search = require('./backend/search')
+// var macros = require('./backend/macros')
+// var pointer = require('./backend/pointer');
+// var emailMgr = require('./backend/emailMgr')
+// var pageDataMgr = 
+// var search = require('./backend/search')
 
-// parsers and databases
-var requireDir = require('require-dir');
-var parsers = requireDir('./backend/parsers');
-var databases = requireDir('./backend/databases');
+// // parsers and databases
+// var requireDir = require('require-dir');
+// var parsers = requireDir('./backend/parsers');
+// var databases = requireDir('./backend/databases');
 
 
 //this is not used atm
@@ -182,7 +182,6 @@ gulp.task('uglifyJS', function () {
 
 //main prod starting point
 gulp.task('prod', ['uglifyJS', 'watchCopyHTML', 'copyHTML'], function () {
-	macros.SEND_EMAILS = true;
 	require('./backend/server')
 })
 
@@ -241,5 +240,5 @@ gulp.task('btest', function () {
 
 
 gulp.task('spider', function () {
-	pageDataMgr.main()
+	require('./backend/pageDataMgr').main()
 });

@@ -1,5 +1,6 @@
 'use strict';
 var util = require('util')
+var baseDB = require('./databases/baseDB')
 
 var noopTimer = {
   start: function () {},
@@ -46,6 +47,7 @@ function ConsoleReporter() {
   };
 
   this.jasmineDone = function (result) {
+    baseDB.close();
     printNewline();
     printNewline();
     if (failedSpecs.length > 0) {

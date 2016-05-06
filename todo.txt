@@ -16,13 +16,14 @@ why are the terms not sorted on the dropdown? -- done
 LOOKING INTO
 safe to lookup docs by url in backend? - ehhh
 backend unit test framework
- - does jasmine have a way to only log on fail?
+ - does jasmine have a way to only log on fail? -- done
+ - lazyload for gulp modules, or autoretry
+ - somehow prevnet monk from keeping the connection open
 async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj)
 angular debug mode off
 the node injection graph thing
 mvoe karam file int frontend
 for node injection, make sure all same type and do overlapping set of names to find node name
-
 
 
 
