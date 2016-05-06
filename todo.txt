@@ -19,6 +19,7 @@ backend unit test framework
  - does jasmine have a way to only log on fail? -- done
  - lazyload for gulp modules, or autoretry
  - somehow prevnet monk from keeping the connection open -- done
+ - can run them individually with jasmine-node ellucianSectionParser.tests.js  --matchall
 async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj)
 angular debug mode off
 the node injection graph thing
