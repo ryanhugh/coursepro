@@ -201,27 +201,27 @@ gulp.task('dev', ['compressJS', 'watchCopyHTML', 'copyHTML'], function () {
 //other
 
 // when frontend tests work, add them here
-gulp.task('tests', function () {
+// gulp.task('tests', function () {
 
-	//run all of the parser tests
-	for (var parserName in parsers) {
-		parsers[parserName].tests();
-	}
+// 	//run all of the parser tests
+// 	for (var parserName in parsers) {
+// 		parsers[parserName].tests();
+// 	}
 
-	//run all of the db tests
-	for (var databaseName in databases) {
-		databases[databaseName].tests();
-	}
+// 	//run all of the db tests
+// 	for (var databaseName in databases) {
+// 		databases[databaseName].tests();
+// 	}
 
-	pointer.tests();
-	emailMgr.tests();
-	pageDataMgr.tests();
-	search.tests();
-});
+// 	pointer.tests();
+// 	emailMgr.tests();
+// 	pageDataMgr.tests();
+// 	search.tests();
+// });
 
 gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 	new karma.Server({
-		configFile: __dirname + '/karma.conf.js',
+		configFile: __dirname + '/frontend/karma.conf.js',
 	}, function (exitCode) {
 		console.log('ERROR Karma has exited with ' + exitCode)
 		process.exit()
@@ -230,13 +230,20 @@ gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 
 
 
-gulp.task('btest', function () {
+
+gulp.task('btestRun', function () {
 	gulp.src('backend/**/*.tests.js')
 		// gulp-jasmine works on filepaths so you can't have any plugins before it 
 		.pipe(jasmine({
 			reporter: new jasmineReporter()
 		}))
 });
+
+gulp.task('btest',['btestRun'],function () {
+	gulp.watch(['backend/**/*.tests.js'], ['btestRun']);
+});
+
+
 
 
 gulp.task('spider', function () {

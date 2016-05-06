@@ -3,12 +3,12 @@ var proxyquire = require('proxyquireify');
 module.exports = function (config) {
   config.set({
     files: [
-      'frontend/src/**/*.js',
-      'frontend/src/**/*.json',
-      "frontend/static/js/internal/html.js",
-      "frontend/static/js/external/select2.min.js",
-      "frontend/static/js/external/selectize.min.js",
-      "frontend/static/js/external/angular-selectize.js",
+      'src/**/*.js',
+      'src/**/*.json',
+      "static/js/internal/html.js",
+      "static/js/external/select2.min.js",
+      "static/js/external/selectize.min.js",
+      "static/js/external/angular-selectize.js",
     ],
     plugins: [
       'karma-chrome-launcher',
@@ -21,8 +21,8 @@ module.exports = function (config) {
     ],
     frameworks: ['browserify', 'jasmine'],
     preprocessors: {
-      'frontend/src/**/*.js': ['browserify'],
-      'frontend/src/**/*.json': ['browserify']
+      'src/**/*.js': ['browserify'],
+      'src/**/*.json': ['browserify']
     },
     browsers: ['PhantomJS'],
     browserify: {
