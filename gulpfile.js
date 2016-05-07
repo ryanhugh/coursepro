@@ -65,8 +65,12 @@ function onError(err) {
 		} 
 	}
 
+
 	// print the error (can replace with gulp-util)
 	console.log(err.message);
+	if (err.stack) {
+		console.log(err.stack);
+	}
 	notify.onError({
 		message: 'Error: <%= error.message %>',
 		sound: false // deactivate sound?
@@ -245,6 +249,7 @@ gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 
 // if u want to u can run individual test files with
 // jasmine-node ellucianSectionParser.tests.js  --matchall
+// also don't compare pageDatas directly with expect(pageData).toEqual, it will cause jasmine to eat up all yo ram and crash
 gulp.task('btestRun', function () {
 	var files = glob.sync('backend/**/*.js');
 

@@ -1,6 +1,15 @@
 'use strict';
 
-var whois = require('whois')
+var macros = require('../macros')
+var whois;
+
+if (macros.UNIT_TESTS) {
+	whois = require('./tests/mockWhois')
+}
+else {
+	whois = require('whois')
+}
+
 var he = require('he');
 var _ = require('lodash');
 var domutils = require('domutils');
@@ -213,61 +222,11 @@ CollegeNamesParser.prototype.getTitle = function (host, callback) {
 
 }
 
+CollegeNamesParser.prototype.go = function() {
 
 
-CollegeNamesParser.prototype.go = function () {
-	
-	
-	assert.equal(this.standardizeNames([],[],"Texas A&M University - Texarkana"),"Texas A&M University - Texarkana");
-
-
-	// this.getAll(function (stuff) {
-	// 	console.log(stuff)
-	// })
-	// return;
-	// this.hitPage('neu.edu',function (err,title) {
-	// 	console.log(err,title)
-	// })
-
-	// return;
-
-
-	// //this reads from the file and gets all the names
-	// fs.readFile('../tests/differentCollegeUrls.json','utf8',function (err,body) {
-
-	// 	JSON.parse(body).forEach(function(url){
-
-	// 		this.getTitle(url,function (err,title) {
-	// 			if  (err) {
-	// 				console.log('TEST: ',err,title,url);
-	// 			}
-	// 			else {
-	// 				console.log('GOOD:',title,url);
-	// 			}
-
-
-
-	// 		}.bind(this));
-	// 	}.bind(this));
-	// }.bind(this));
-
-
-
-	//
-	this.getTitle('swarthmore.edu', function (err, title) {
-		// 	this.getTitle('https://wl11gp.neu.edu/udcprod8/twbkwbis.P_GenMenu?name=bmenu.P_MainMnu&msg=WELCOME+Welcome,+Ryan+Hughes,+to+the+WWW+Information+System!Jul+11,+201503%3A33+pm',function (err,title) {
-		// 	this.getTitle('https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched',function (err,title) {
-		// 	this.getTitle('https://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_dyn_sched',function (err,title) {
-		assert.equal(err,null)
-		assert.equal(title,'Swarthmore College')
-		console.log('all tests done!')
-	});
 };
 
-
-CollegeNamesParser.prototype.tests = function () {
-
-}
 
 
 

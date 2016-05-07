@@ -346,10 +346,8 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 		console.log('warning, found elements, but no links or and or', elements);
 		return;
 	}
-	console.log(text);
 	text = this.convertStringToJSON(text);
 
-	console.log(text);
 	//parse the new json
 	try {
 		text = JSON.parse(text);

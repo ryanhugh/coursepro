@@ -219,7 +219,7 @@ PageData.prototype.loadFromDB = function (callback) {
 					console.log('info pageData with no parent done loading!')
 				}
 			};
-			return callback();
+			return callback(null);
 		}.bind(this));
 
 	}.bind(this));

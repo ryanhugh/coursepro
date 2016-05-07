@@ -98,35 +98,6 @@ EllucianClassListParser.prototype.tests = function () {
 	require('../pageDataMgr')
 
 
-	//
-	fs.readFile('backend/tests/ellucianClassListParser/2.html', 'utf8', function (err, body) {
-		assert.equal(null, err);
-
-		pointer.handleRequestResponce(body, function (err, dom) {
-			assert.equal(null, err);
-
-			var url = 'https://bannerweb.upstate.edu/isis/bwckctlg.p_display_courses?term_in=201580&one_subj=MDCN&sel_crse_strt=2064&sel_crse_end=2064&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=';
-
-			var catalogURL = "https://bannerweb.upstate.edu/isis/bwckctlg.p_disp_course_detail?cat_term_in=201580&subj_code_in=MDCN&crse_numb_in=2064";
-
-			assert.equal(true, this.supportsPage(url));
-
-			var pageData = pageDataMgr.create({
-				dbData: {
-					url: url,
-					subject: 'MATH',
-					termId: '201504'
-				}
-			});
-
-			this.parseDOM(pageData, dom);
-
-			assert.equal(pageData.deps.length, 1);
-			assert.equal(pageData.deps[0].dbData.url, catalogURL)
-
-		}.bind(this));
-	}.bind(this)); //
-
 
 };
 

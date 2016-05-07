@@ -345,7 +345,7 @@ it('removeBlacklistedStrings', function () {
 
 
 
-it('works with ))', function () {
+it('works with ))', function (done) {
 
 
 	fs.readFile('backend/tests/ellucianRequisitesParser/1.html', 'utf8', function (err, body) {
@@ -395,7 +395,7 @@ it('works with ))', function () {
 					}]
 				}]
 			})
-
+			done()
 		})
 	});
 });

@@ -61,7 +61,8 @@ function setupTargetStates() {
 		}
 	}
 	else {
-		exports.UNIT_TESTS = true;
+		console.log("Not running from gulp, setting to dev mode")
+		exports.DEVELOPMENT = true;
 		return;
 	}
 }

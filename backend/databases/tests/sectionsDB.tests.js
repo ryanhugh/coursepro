@@ -1,5 +1,8 @@
 var sectionsDB = require('../sectionsDB')
 var PageData = require('../../PageData')
+var ellucianTermsParser = require('../../parsers/ellucianTermsParser')
+var collegeNamesParser = require('../../parsers/collegeNamesParser')
+var ellucianSubjectParser = require('../../parsers/ellucianSubjectParser')
 require('../../pageDataMgr')
 
 // it should either be 1. hidden, or have a times[0][0] that has > 0 length
@@ -8,8 +11,8 @@ describe('sectionsDB', function () {
 	describe('thing', function () {
 
 		it('exists', function (done) {
- 
-			sectionsDB.find({   
+
+			sectionsDB.find({
 				_id: '5726589dd4a30537f9139302'
 			}, {}, function (err, docs) {
 
@@ -25,8 +28,8 @@ describe('sectionsDB', function () {
 						"profs": ["Kelly Mcconville"],
 						"where": "Science Center L32",
 						"type": "Class",
-						"times": { 
-							"2": [{ 
+						"times": {
+							"2": [{
 								"start": 30600,
 								"end": 35100
 							}],
@@ -55,7 +58,7 @@ describe('sectionsDB', function () {
 				done()
 			}.bind(this))
 		});
-	});   
+	});
 
 
 	describe('thing2', function () {
@@ -68,9 +71,30 @@ describe('sectionsDB', function () {
 			pageData.findSupportingParser()
 
 			pageData.loadFromDB(function (err) {
-				expect(!!err).toBe(false)
-				console.log(arguments, 'DONE!!!',err)
-				// expect(1).toBe(3)
+				expect(err).toBe(null)
+
+
+				expect(pageData.deps.length).toBe(2)
+				expect(pageData.parser).toBe(ellucianTermsParser)
+				expect(pageData.deps[0].parser).toBe(collegeNamesParser)
+				expect(pageData.deps[1].parser).toBe(ellucianTermsParser)
+
+
+				var termData = pageData.deps[1]
+
+
+				expect(termData.dbData.updatedByParent).toBe(true)
+				expect(termData.dbData.text).toBe('Spring 2016')
+				expect(termData.dbData.host).toBe('swarthmore.edu')
+				expect(termData.deps.length).toBe(1)
+
+				var subjectController = termData.deps[0];
+
+				expect(subjectController.parser).toBe(ellucianSubjectParser)
+
+				expect(subjectController.deps.length).toBe(2)
+
+				// this could go on for a while, this test loads a ton of stuff
 				done()
 			}.bind(this))
 
