@@ -1,6 +1,4 @@
 var ellucianSectionParser = require('../ellucianSectionParser')
-require('../../pageDataMgr');
-var MockPageData = require('../../MockPageData')
 var fs = require('fs')
 var baseParser = require('../baseParser')
 var pointer = require('../../pointer')

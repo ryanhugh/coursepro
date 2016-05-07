@@ -1,6 +1,5 @@
 var ellucianCatalogParser = require('../ellucianCatalogParser')
 var ellucianClassParser = require('../ellucianClassParser')
-require('../../pageDataMgr');
 var PageData = require('../../PageData')
 var MockPageData = require('../../MockPageData')
 var fs = require('fs')
