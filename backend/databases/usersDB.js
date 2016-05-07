@@ -350,37 +350,6 @@ UsersDB.prototype.unsubscribe = function (userData, callback) {
 		console.log("unsubscribed ", user.email, 'from everything');
 		return callback(null, 'Successfully unsubscribed.')
 	}.bind(this));
-
-	// this.find({
-	// 	loginKey: userData.loginKey
-	// }, {}, function (err, userDBData) {
-	// 	if (err) {
-	// 		console.log('nedb error couldnt find user with id ', userData, err);
-	// 		return callback(err);
-	// 	}
-
-	// 	var originalUserDBData = _.cloneDeep(userDBData);
-
-	// 	if (!userDBData) {
-	// 		console.log('tried to unsubscribe user that didn\'t exist ...', userData);
-	// 		return callback(JSON.stringify({
-	// 			error: 'user not found'
-	// 		}));
-	// 	}
-
-	// 	//turn off the subscriptions, but don't remove the email
-	// 	userDBData.subscriptions.everything = false;
-
-	// 	this.updateDatabase(userDBData, originalUserDBData, function (err, newDoc) {
-	// 		if (err) {
-	// 			console.log('update db error', err);
-	// 			return callback(err);
-	// 		}
-
-	// 		return callback();
-
-	// 	}.bind(this))
-	// }.bind(this))
 }
 
 UsersDB.prototype.randomString = function (length) {
@@ -795,86 +764,7 @@ UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectio
 			return callback(null, 'Successfully removed ' + classMongoIds.length + ' classes and ' + sectionMongoIds.length + ' sections.')
 		}.bind(this), 0)
 	}.bind(this));
-
-
-	// this.find({
-	// 		loginKey: loginKey
-	// 	}, {},
-	// 	function (err, user) {
-	// 		if (err) {
-	// 			return callback(err)
-	// 		}
-	// 		if (!user) {
-	// 			return callback('no user found')
-	// 		};
-
-	// 		if (!user.lists[listName]) {
-	// 			console.log("Warning: told to remove class from non existend list on user", user.googleId);
-	// 			return callback(null, 'None of these classes and sections are in list ' + listName)
-	// 		};
-
-
-	// 		var originalDoc = _.cloneDeep(user);
-
-	// 		var classRemovedCount = 0;
-
-	// 		//remove the classes
-	// 		classMongoIds.forEach(function (classMongoId) {
-	// 			if (_(user.lists[listName].classes).includes(classMongoId)) {
-	// 				classRemovedCount++;
-	// 			}
-
-	// 			_.pull(user.lists[listName].classes, classMongoId)
-
-	// 		}.bind(this))
-
-
-	// 		var sectionRemovedCount = 0;
-
-	// 		sectionMongoIds.forEach(function (sectionMongoId) {
-	// 			if (_(user.lists[listName].sections).includes(sectionMongoId)) {
-	// 				sectionRemovedCount++;
-	// 			}
-
-	// 			_.pull(user.lists[listName].sections, sectionMongoId)
-	// 		}.bind(this))
-
-	// 		console.log(user.email, ' removed', classRemovedCount, ' classes and ', sectionRemovedCount, ' sections from list', listName)
-
-	// 		if (classRemovedCount == 0 && sectionRemovedCount == 0) {
-	// 			return callback(null, 'None of these classes and sections are in list ' + listName)
-	// 		}
-
-	// 		this.updateDatabase(user, originalDoc, function (err, newDoc) {
-	// 			if (err) {
-	// 				console.log('ERROR', err)
-	// 				return callback(err)
-	// 			}
-
-	// 			return callback(null, 'Successfully removed ' + classRemovedCount + ' classes and ' + sectionRemovedCount + ' sections.')
-	// 		}.bind(this))
-	// 	}.bind(this))
 }
-
-
-// UsersDB.prototype.getUserWatchList = function (loginKey, callback) {
-// 	this.find({
-// 			loginKey: loginKey
-// 		}, {},
-// 		function (err, user) {
-// 			if (err) {
-// 				console.log("ERROR getting user watch list,", loginKey)
-// 				return callback(err)
-// 			}
-// 			if (!user) {
-// 				console.log('ERROR couldnt get user watch list of user that dosent exist')
-// 				return callback(null, null)
-// 			};
-
-// 			return callback(null, user.lists.watching)
-
-// 		}.bind(this))
-// };
 
 // make sure name is alphanumeric! (theres a check in server.js)
 UsersDB.prototype.setUserVar = function (name, value, loginKey, callback) {
@@ -919,56 +809,6 @@ UsersDB.prototype.setUserVar = function (name, value, loginKey, callback) {
 		return callback(null, 'Successfully set ' + name + ' to ' + value + '.')
 	}.bind(this));
 
-	// return;
-	// this.find({
-	// 	loginKey: loginKey
-	// }, {}, function (err, user) {
-	// 	if (err) {
-	// 		return callback(err)
-	// 	}
-
-	// 	if (!user) {
-	// 		console.log("no user found in set user var");
-	// 		return callback()
-	// 	}
-
-	// 	//some verification on the value and name
-	// 	if (typeof name != 'string' && name.length > 50) {
-	// 		console.log("invalid name/user given", name, value);
-	// 		return callback('invalid name')
-	// 	}
-
-	// 	if (!_(['string', 'boolean']).includes(typeof value)) {
-	// 		console.log("invalid name/user given", name, value);
-	// 		return callback('invalid value')
-	// 	};
-
-	// 	if (typeof value == 'string' && value.length > 50) {
-	// 		console.log("invalid name/user given", name, value);
-	// 		return callback('invalid value')
-	// 	};
-
-	// 	var originalDoc = _.cloneDeep(user);
-
-	// 	if (!user.vars) {
-	// 		user.vars = {}
-	// 	};
-
-	// 	user.vars[name] = value;
-
-
-	// 	this.updateDatabase(user, originalDoc, function (err, newDoc) {
-	// 		if (err) {
-	// 			console.log('ERROR', err)
-	// 			return callback(err)
-	// 		}
-
-	// 		return callback(null, 'Successfully set ' + name + ' to ' + value + '.')
-	// 	}.bind(this))
-
-
-
-	// }.bind(this))
 };
 
 

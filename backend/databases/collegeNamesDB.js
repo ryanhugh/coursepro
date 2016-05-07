@@ -75,48 +75,9 @@ CollegeNamesDB.prototype.getStaticValues = function(lookupValues,config) {
 };
 
 
-
-
 CollegeNamesDB.prototype.isValidLookupValues = function(lookupValues) {
 	return true;
 };
-
-
-// //no callback, could easily add one
-// CollegeNamesDB.prototype.addToDB= function (homepage,title) {
-
-//   //add to db if not already in db
-//   this.find({homepage:homepage},{
-// 	 	shouldBeOnlyOne:true,
-// 	 	sanatize:false
-// 	 },function (err,doc) {
-
-//   	if (doc) {
-//   		console.log('Warning: not inserting',homepage,'because it already exists');
-//   		return;
-//   	}
-
-//   	this.db.insert({
-//   		homepage:homepage,
-//   		title:title
-//   	});
-
-//   }.bind(this));
-// }
-
-
-
-
-
-
-CollegeNamesDB.prototype.tests = function() {
-	BaseDB.prototype.tests.call(this);
-	var a = this.getStaticHost('neu.edu','Law othertext')
-	assert.equal(a.host,'neu.edu/law')
-	assert.equal(a.text,'othertext')
-};
-
-
 
 
 
