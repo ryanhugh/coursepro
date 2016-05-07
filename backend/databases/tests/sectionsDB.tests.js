@@ -51,9 +51,6 @@ describe('sectionsDB', function () {
 					"deps": {},
 					"updatedByParent": false
 				})
-				console.log(err, docs);
-
-
 
 				done()
 			}.bind(this))
