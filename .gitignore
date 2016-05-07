@@ -5,6 +5,7 @@ node_modules
 *.log
 gulp
 frontend/logs
-backedn/logs
+backend/logs
 ssl
 db_backups
+test.js

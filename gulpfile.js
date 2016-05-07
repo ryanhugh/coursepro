@@ -1,24 +1,5 @@
 'use strict';
-
-if (typeof Proxy != 'undefined') {
-	var _require = require;
-	require = function (moduleName) {
-		var module;
-		return new Proxy(function () {
-			if (!module) {
-				module = _require(moduleName)
-			}
-			return module.apply(this, arguments)
-		}, {
-			get: function (target, name) {
-				if (!module) {
-					module = _require(moduleName)
-				}
-				return module[name];
-			}
-		})
-	};
-}
+var require = require('./lazyRequire')
 
 // gulp stuff
 var gulp = require('gulp');
