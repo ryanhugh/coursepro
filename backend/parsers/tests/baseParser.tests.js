@@ -142,3 +142,45 @@ it('parseTable should work 2', function (done) {
 	});
 
 });
+
+
+
+var text = "\n" +
+"    1.000 TO     2.000 Credit hours\n" +
+"\n" +
+"\n" +
+"Levels: Undergraduate Transcript\n" +
+"\n" +
+"Schedule Types: Research Project\n" +
+"\n" +
+"\n" +
+"Non-Divisional Division\n" +
+"\n" +
+"Cognitive Science Department\n" +
+"\n" +
+"\n" +
+"\n" +
+"\n" 
+
+it('credit test', function() {
+	var a = baseParser.parseCredits(text)
+	expect(a.minCredits).toBe(1)
+	expect(a.maxCredits).toBe(2)
+
+	var a = baseParser.parseCredits('3 to 5 credits')
+	expect(a.minCredits).toBe(3)
+	expect(a.maxCredits).toBe(5)
+
+	// min cant be greater than max
+	var a = baseParser.parseCredits('8 to 5 credit hours')
+	expect(a.minCredits).toBe(5)
+	expect(a.maxCredits).toBe(5)
+
+
+	// min cant be greater than max
+	var a = baseParser.parseCredits('Credit Hours: 8.000')
+	expect(a.minCredits).toBe(8)
+	expect(a.maxCredits).toBe(8)
+
+
+});

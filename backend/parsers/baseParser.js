@@ -265,9 +265,9 @@ BaseParser.prototype.parseCredits = function(containsCreditsText) {
 	
 	
 	//should match 3.000 Credits  or 1.000 TO 21.000 Credits
-	var creditsMatch = containsCreditsText.match(/(?:\d(:?.\d*)?\s*to\s*)?(\d+(:?.\d*)?)\s*credits/i);
+	var creditsMatch = containsCreditsText.match(/(?:(\d(:?.\d*)?)\s*to\s*)?(\d+(:?.\d*)?)\s*credit(:?s| hours)/i);
 	if (creditsMatch) {
-		var maxCredits = parseFloat(creditsMatch[2]);
+		var maxCredits = parseFloat(creditsMatch[3]);
 		var minCredits;
 
 		//sometimes a range is given,
