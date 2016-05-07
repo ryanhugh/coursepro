@@ -1,68 +1,124 @@
 // // var a = require('./parsers/BaseParser')
 // // console.log('fdas'.indexOf)
-var URI = require('urijs');
-var _ = require('lodash')
-var async = require('async');
-// var querystring = require('querystring');f
-var assert = require('assert');
-var needle = require('needle');
-var fs = require('fs');
-// var he = require('he');
-var htmlparser = require('htmlparser2');
-var domutils = require('domutils');
+// var URI = require('urijs');
+// var _ = require('lodash')
+// var async = require('async');
+// // var querystring = require('querystring');f
+// var assert = require('assert');
+// var needle = require('needle');
+// var fs = require('fs');
+// // var he = require('he');
+// var htmlparser = require('htmlparser2');
+// var domutils = require('domutils');
 
 // var XMLHttpRequest = require('XMLHttpRequest').XMLHttpRequest
 // // var BaseParser = require('./BaseParser');
-var http = require('http');
-var https = require('https');
-var dns = require('dns');
-// var title = require('to-title-case');
-// var queue = require("queue-async")
+// var http = require('http');
+// var https = require('https');
+// var dns = require('dns');
+// // var title = require('to-title-case');
+// // var queue = require("queue-async")
 
-var queue = require('d3-queue').queue;
-// var macros = require('./macros')
-require('proxyquire')
+// var queue = require('d3-queue').queue;
+// // var macros = require('./macros')
+// require('proxyquire')
 
-var classesDB = require('./backend/databases/classesDB')
-var termsDB = require('./backend/databases/termsDB')
-
-var dups = []
-
-classesDB.find({host:'neu.edu'},{skipValidation:true},function (err, docs) {
-	// console.log(err,docs[0]);
-
-	for (var i = 0; i < docs.length; i++) {
-		var currClass = docs[i];
-
-		for (var j = i+1; j < docs.length; j++) {
-			var matchClass = docs[j];
-
-			if (matchClass.host != currClass.host) {
-				continue;
-			}
-			
-			if (matchClass.termId != currClass.termId) {
-				continue;
-			}
-			
-			if (matchClass.subject != currClass.subject) {
-				continue;
-			}
-
-			if (matchClass.classId != currClass.classId) {
-				continue;
-			}
-
-			console.log('Name change',currClass.name, 'to:',matchClass.name,'   ',currClass.url)
+// var classesDB = require('./backend/databases/classesDB')
+// var termsDB = require('./backend/databases/termsDB')
 
 
-			// docs[j]
+// var lazy_require = function (lib, name) {
+// 	if (!name) name = lib;
+// 	console.log(name,lib);
+// 	var a = {};
+// 	a.__defineGetter__(name, function () {
+// 		console.log(name)
+// 		throw new Error
+// 		return require(lib)
+// 	});
+// 	return a;
+// }
 
 
+// var jasmine = require('gulp-jasmine');
+
+var _require = require;
+var require = function (moduleName) {
+	var module;
+	return new Proxy(function () {
+		if (!module) {
+			module = _require(moduleName)
 		}
-	}
+		return module.apply(this, arguments)
+	}, {
+		get: function (target, name) {
+			if (!module) {
+				module = _require(moduleName)
+			}
+			return module[name];
+		}
+	})
+};
 
-}.bind(this))
+
+var a = require('./test2')
+// var a = require('./test2')
+console.log(a)
+
+// console.log("[before] obj.foo = " + obj.foo);
+// obj.foo = "bar";
+// console.log("[after] obj.foo = " + obj.foo);
+// lazy_require('lodash')
+
+// console.log('yo')
+// lazy_require('./test2');
+// console.log(this['./test2'])
+
+
+// console.log(b)
+// console.log(fs.readFileSync('test.js'))
+
+// var wow = require('./test2');
+// console.log(wow.readFileSync('test.js'))
+
+
+// var dups = []
+
+// classesDB.find({host:'neu.edu'},{skipValidation:true},function (err, docs) {
+// 	// console.log(err,docs[0]);
+
+// 	for (var i = 0; i < docs.length; i++) {
+// 		var currClass = docs[i];
+
+// 		for (var j = i+1; j < docs.length; j++) {
+// 			var matchClass = docs[j];
+
+// 			if (matchClass.host != currClass.host) {
+// 				continue;
+// 			}
+
+// 			if (matchClass.termId != currClass.termId) {
+// 				continue;
+// 			}
+
+// 			if (matchClass.subject != currClass.subject) {
+// 				continue;
+// 			}
+
+// 			if (matchClass.classId != currClass.classId) {
+// 				continue;
+// 			}
+
+// 			console.log('Name change',currClass.name, 'to:',matchClass.name,'   ',currClass.url)
+
+
+// 			// docs[j]
+
+
+// 		}
+// 	}
+
+// }.bind(this))
 
 // termsDB.find({_id:'56b7ee63ef27facc18db0ff1'},{},function (err, docs) {
 // 	console.log(docs[0],'1');

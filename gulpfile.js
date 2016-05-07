@@ -1,4 +1,27 @@
 'use strict';
+
+
+
+var _require = require;
+var require = function (moduleName) {
+	var module;
+	return new Proxy(function () {
+		if (!module) {
+			module = _require(moduleName)
+		}
+		return module.apply(this, arguments)
+	}, {
+		get: function (target, name) {
+			if (!module) {
+				module = _require(moduleName)
+			}
+			return module[name];
+		}
+	})
+};
+
+
+
 // gulp stuff
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
@@ -230,17 +253,17 @@ gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 
 
 
-
+// if u want to u can run individual test files with
+// jasmine-node ellucianSectionParser.tests.js  --matchall
 gulp.task('btestRun', function () {
-	gulp.src('backend/**/*.tests.js')
-		// gulp-jasmine works on filepaths so you can't have any plugins before it 
-		.pipe(jasmine({
-			reporter: new jasmineReporter()
-		}))
+	// gulp-jasmine works on filepaths so you can't have any plugins before it 
+	gulp.src('backend/**/*.tests.js').pipe(jasmine({
+		reporter: new jasmineReporter()
+	}))
 });
 
-gulp.task('btest',['btestRun'],function () {
-	gulp.watch(['backend/**/*.tests.js'], ['btestRun']);
+gulp.task('btest', ['btestRun'], function () {
+	// gulp.watch(['backend/**/*.tests.js'], ['btestRun']);
 });
 
 

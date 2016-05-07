@@ -1,6 +1,7 @@
 https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
 
 max number of simultanous classes wawtching???
+v5.10.1
 
 
 TO TEST
@@ -17,9 +18,8 @@ LOOKING INTO
 safe to lookup docs by url in backend? - ehhh
 backend unit test framework
  - does jasmine have a way to only log on fail? -- done
- - lazyload for gulp modules, or autoretry
+ 
  - somehow prevnet monk from keeping the connection open -- done
- - can run them individually with jasmine-node ellucianSectionParser.tests.js  --matchall
 async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj)
 angular debug mode off
 the node injection graph thing
@@ -424,7 +424,7 @@ https://banners.presby.edu/prod/hzskschd.P_ViewSchedule
 uses an old version of the site - different parser needed (easy to write, add later)
 this specific college ^ either updated or has a newer version too and has already been scraped
 
-
+- lazyload for gulp modules? -- emascript6 only...
 
 courseoff reverse engieering:
  - using webpack
