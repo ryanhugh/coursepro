@@ -9,7 +9,7 @@ var URI = require('urijs')
 
 it('should behave...', function(done) {
 	
-	fs.readFile('backend/tests/ellucianClassListParser/2.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianClassListParser/2.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 
 		pointer.handleRequestResponce(body, function (err, dom) {

@@ -14,7 +14,7 @@ var URI = require('urijs')
 it('should work', function (done) {
 
 
-	fs.readFile('backend/tests/ellucianSubjectParser/1.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianSubjectParser/1.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 
 		pointer.handleRequestResponce(body, function (err, dom) {

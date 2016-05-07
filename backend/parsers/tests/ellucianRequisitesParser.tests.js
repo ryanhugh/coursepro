@@ -5,7 +5,7 @@ var pointer = require('../../pointer')
 
 
 it('should load a bunch of string prereqs from many on linked.html', function (done) {
-	fs.readFile('backend/tests/ellucianSectionParser/many non linked.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianSectionParser/many non linked.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 
 		pointer.handleRequestResponce(body, function (err, dom) {
@@ -150,7 +150,7 @@ it('should load a bunch of string prereqs from many on linked.html', function (d
 
 
 it('should filter out prereqs that just say they are prereqs', function (done) {
-	fs.readFile('backend/tests/ellucianSectionParser/blacklistedstring.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianSectionParser/blacklistedstring.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 
 		pointer.handleRequestResponce(body, function (err, dom) {
@@ -348,7 +348,7 @@ it('removeBlacklistedStrings', function () {
 it('works with ))', function (done) {
 
 
-	fs.readFile('backend/tests/ellucianRequisitesParser/1.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianRequisitesParser/1.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 
 		var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201555&subj_code_in=PMC&crse_numb_in=6212'

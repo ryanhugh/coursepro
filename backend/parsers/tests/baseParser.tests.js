@@ -96,7 +96,7 @@ it('standardizeClassName', function () {
 it('parseTable', function (done) {
 
 
-	fs.readFile('backend/tests/baseParser/1.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/baseParser/1.html', 'utf8', function (err, body) {
 		// console.log(process.cwd())
 		expect(err).toBe(null);
 
@@ -124,7 +124,7 @@ it('parseTable', function (done) {
 it('parseTable should work 2', function (done) {
 
 
-	fs.readFile('backend/tests/baseParser/3.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/baseParser/3.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 		var fileJSON = JSON.parse(body);
 

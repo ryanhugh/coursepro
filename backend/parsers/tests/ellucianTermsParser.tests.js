@@ -24,7 +24,7 @@ it('isValidTerm should work', function () {
 
 it('should behave...', function (done) {
 
-	fs.readFile('backend/tests/ellucianTermsParser/1.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianTermsParser/1.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 
 		pointer.handleRequestResponce(body, function (err, dom) {

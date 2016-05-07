@@ -456,7 +456,7 @@ EllucianClassParser.prototype.tests = function () {
 	require('../pageDataMgr')
 	
 	
-	fs.readFile('backend/tests/ellucianClassParser/1.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianClassParser/1.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
 
 		pointer.handleRequestResponce(body, function (err, dom) {
@@ -511,7 +511,7 @@ EllucianClassParser.prototype.tests = function () {
 
 
 	//sections have different names
-	fs.readFile('backend/tests/ellucianClassParser/multiname.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianClassParser/multiname.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
 		pointer.handleRequestResponce(body, function (err, dom) {
 			assert.equal(null, err);
@@ -588,7 +588,7 @@ EllucianClassParser.prototype.tests = function () {
 
 	
 
-	fs.readFile('backend/tests/ellucianClassParser/3.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianClassParser/3.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
 		pointer.handleRequestResponce(body, function (err, dom) {
 			assert.equal(null, err);
@@ -627,7 +627,7 @@ EllucianClassParser.prototype.tests = function () {
 	}.bind(this));
 
 	//lots of different meetings
-	fs.readFile('backend/tests/ellucianClassParser/4.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianClassParser/4.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
 
 		pointer.handleRequestResponce(body, function (err, dom) {
@@ -679,7 +679,7 @@ EllucianClassParser.prototype.tests = function () {
 
 
 	//cancelled - something was weird with this one not sure what it was
-	fs.readFile('backend/tests/ellucianClassParser/6.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianClassParser/6.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
 		pointer.handleRequestResponce(body, function (err, dom) {
 			assert.equal(null, err);
@@ -720,7 +720,7 @@ EllucianClassParser.prototype.tests = function () {
 
 
 	//make sure this.classNameTranslation works
-	fs.readFile('backend/tests/ellucianClassParser/rename.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianClassParser/rename.html', 'utf8', function (err, body) {
 		assert.equal(null, err);
 		pointer.handleRequestResponce(body, function (err, dom) {
 			assert.equal(null, err);

@@ -12,7 +12,7 @@ var URI = require('urijs')
 it('parse DESCRIPTION', function (done) {
 
 
-	fs.readFile('backend/tests/ellucianCatalogParser/5.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianCatalogParser/5.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 
 		pointer.handleRequestResponce(body, function (err, dom) {
@@ -47,7 +47,7 @@ it('parse DESCRIPTION', function (done) {
 
 it('can add to existing dep', function(done) {
 	
-	fs.readFile('backend/tests/ellucianCatalogParser/1.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianCatalogParser/1.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 		pointer.handleRequestResponce(body, function (err, dom) {
 			expect(err).toBe(null);
@@ -99,7 +99,7 @@ it('can add to existing dep', function(done) {
 it('can parse desc', function(done) {
 	
 
-	fs.readFile('backend/tests/ellucianCatalogParser/2.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianCatalogParser/2.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 
 		pointer.handleRequestResponce(body, function (err, dom) {
@@ -136,7 +136,7 @@ it('can parse desc', function(done) {
 it('should behave...', function(done) {
 	
 
-	fs.readFile('backend/tests/ellucianCatalogParser/3.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianCatalogParser/3.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 
 		pointer.handleRequestResponce(body, function (err, dom) {

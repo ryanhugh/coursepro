@@ -4,7 +4,7 @@ var _ = require('lodash')
 
 function MockTable(tableName) {
 	this.dataIdMap = {}
-	this.rows = require('./mockData/' + tableName + '.json')
+	this.rows = require('./data/' + tableName + '.json')
 	for (var i = 0; i < this.rows.length; i++) {
 		this.dataIdMap[this.rows[i]._id] = this.rows[i]
 	}

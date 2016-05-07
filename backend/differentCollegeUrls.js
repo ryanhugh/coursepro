@@ -1,4 +1,4 @@
-["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched", //works
+module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched", //works
   "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched", //works
   "https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched", //works
   "https://ssb.ccsu.edu/pls/ssb_cPROD/bwckschd.p_disp_dyn_sched", //works

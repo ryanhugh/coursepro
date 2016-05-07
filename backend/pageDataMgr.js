@@ -274,80 +274,6 @@ PageDataMgr.prototype.main = function () {
 	// return;
 };
 
-PageDataMgr.prototype.tests = function () {
-
-	// loads a page data and all of its dependencies. doesent modify the db at all
-	// might need to change databaseName to coursepro_dev in bmacros
-	var pageData = new PageData({
-		dbData: {
-			url: 'https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched',
-			// url: 'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched',
-		}
-	})
-	pageData.findSupportingParser()
-
-	pageData.loadFromDB(function (arg) {
-		console.log(arguments, 'HEREE', pageData, pageData.deps)
-	}.bind(this))
-
-
-
-	//a class with no links to sections
-	// https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=AC&crse_in=507&schd_in=HY
-
-	return;
-
-	//THIS WILL RUN FULL COLLEGE PARSRS IT LOOKS LIKE
-	fs.readFile('backend/tests/differentCollegeUrls.json', 'utf8', function (err, body) {
-		if (err) {
-			elog(err)
-			return;
-		}
-
-
-		var urls = JSON.parse(body);
-
-		for (var i = 0; i < Math.min(10, urls.length); i++) {
-			this.createFromURL(urls[i]);
-		}
-
-	}.bind(this));
-	return;
-
-
-
-	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.createFromURL('https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201612&subj_in=ALHS&crse_in=1127&schd_in=C')
-	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_display_courses?term_in=201610&one_subj=EECE&sel_crse_strt=2160&sel_crse_end=2160&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.createFromURL('https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckctlg.p_display_courses')
-	// this.createFromURL('https://genisys.regent.edu/pls/prod/bwckctlg.p_display_courses?term_in=201610&one_subj=CTV&sel_crse_strt=580&sel_crse_end=580&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.createFromURL('https://prd-wlssb.temple.edu/prod8/bwckctlg.p_display_courses?term_in=201503&one_subj=ANTH&sel_crse_strt=2764&sel_crse_end=2764&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// this.createFromURL('https://tturedss1.tntech.edu/pls/PROD/bwckctlg.p_display_courses?term_in=201580&one_subj=ACCT&sel_crse_strt=1010&sel_crse_end=1010&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
-	// return;
-
-	// https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_detail_sched?term_in=201503&crn_in=6610
-
-
-	fs.readFile('backend/tests/' + this.constructor.name + '/toparse3.json', 'utf8', function (err, body) {
-		if (err) {
-			elog(err)
-			return;
-		};
-
-
-		var urls = JSON.parse(body);
-
-
-		for (var i = 0; i < Math.min(10000, urls.length); i++) {
-			this.createFromURL(urls[i]);
-		}
-
-
-		// this.createFromURL(urls[4]);
-
-	}.bind(this));
-};
-
 
 
 var instance = new PageDataMgr();
@@ -355,7 +281,7 @@ var instance = new PageDataMgr();
 
 
 PageDataMgr.prototype.PageDataMgr = PageDataMgr;
-global.pageDataMgr = instance;
+global.pageDataMgr = instance; 
 module.exports = instance
 
 

@@ -9,7 +9,7 @@ it('parse prereqs and coreqs and seat data from 1.html', function(done) {
 
 	//the pre and co requs html here has been modified
 	//this contains the same pre requs as prereqs10
-	fs.readFile('backend/tests/ellucianSectionParser/1.html', 'utf8', function (err, body) {
+	fs.readFile('backend/parsers/tests/data/ellucianSectionParser/1.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 
 		pointer.handleRequestResponce(body, function (err, dom) {
