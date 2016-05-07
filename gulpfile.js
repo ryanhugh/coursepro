@@ -27,17 +27,6 @@ var karma = require('karma')
 var _ = require('lodash')
 var path = require('path')
 
-// custom stuff
-// var macros = require('./backend/macros')
-// var pointer = require('./backend/pointer');
-// var emailMgr = require('./backend/emailMgr')
-// var pageDataMgr = 
-// var search = require('./backend/search')
-
-// // parsers and databases
-// var requireDir = require('require-dir');
-// var parsers = requireDir('./backend/parsers');
-// var databases = requireDir('./backend/databases');
 
 
 //this is not used atm
@@ -112,11 +101,6 @@ function compileJS(shouldUglify) {
 		fullPaths: false
 	});
 
-	if (shouldUglify) {
-		bundler.ignore('./testsMgr');
-		bundler.ignore('./tests/testsMgr');
-		bundler.ignore('../tests/testsMgr');
-	}
 
 	bundler = watchify(bundler)
 
@@ -214,26 +198,7 @@ gulp.task('dev', ['compressJS', 'watchCopyHTML', 'copyHTML'], function () {
 })
 
 
-//other
 
-// when frontend tests work, add them here
-// gulp.task('tests', function () {
-
-// 	//run all of the parser tests
-// 	for (var parserName in parsers) {
-// 		parsers[parserName].tests();
-// 	}
-
-// 	//run all of the db tests
-// 	for (var databaseName in databases) {
-// 		databases[databaseName].tests();
-// 	}
-
-// 	pointer.tests();
-// 	emailMgr.tests();
-// 	pageDataMgr.tests();
-// 	search.tests();
-// });
 
 gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 	new karma.Server({
