@@ -3,7 +3,6 @@ var URI = require('urijs');
 var domutils = require('domutils');
 var he = require('he');
 var _ = require('lodash');
-var assert = require('assert');
 var fs = require('fs')
 
 var pointer = require('../pointer');

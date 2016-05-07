@@ -3,7 +3,6 @@
 var _ = require('lodash');
 var he = require('he');
 var fs = require('fs');
-var assert = require('assert');
 var URI = require('urijs');
 
 var pointer = require('../pointer');

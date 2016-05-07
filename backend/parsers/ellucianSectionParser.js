@@ -4,7 +4,6 @@ var fs = require('fs');
 var he = require('he');
 var URI = require('urijs');
 var _ = require('lodash');
-var assert = require('assert');
 
 
 var sectionDB = require('../databases/sectionsDB');

@@ -1,6 +1,5 @@
 'use strict';
 var URI = require('urijs')
-var assert = require('assert')
 var BaseParser = require('./baseParser').BaseParser;
 
 

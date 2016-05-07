@@ -1,7 +1,6 @@
 'use strict';
 var URI = require('urijs');
 var fs = require('fs');
-var assert = require('assert');
 
 var pointer = require('../pointer');
 var subjectsDB = require('../databases/subjectsDB');

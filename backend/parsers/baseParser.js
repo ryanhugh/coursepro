@@ -1,6 +1,5 @@
 'use strict';
 var request = require('request');
-var assert = require('assert');
 var URI = require('urijs');
 var _ = require('lodash');
 var htmlparser = require('htmlparser2');

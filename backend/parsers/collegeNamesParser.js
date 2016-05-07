@@ -13,7 +13,6 @@ else {
 var he = require('he');
 var _ = require('lodash');
 var domutils = require('domutils');
-var assert = require('assert')
 
 
 

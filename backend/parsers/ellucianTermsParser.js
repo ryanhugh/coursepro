@@ -1,7 +1,6 @@
 'use strict';
 var domutils = require('domutils');
 var _ = require('lodash');
-var assert = require('assert');
 var fs = require('fs');
 var moment = require('moment')
 

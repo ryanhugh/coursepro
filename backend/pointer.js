@@ -4,7 +4,6 @@ var htmlparser = require('htmlparser2');
 var domutils = require('domutils');
 var _ = require('lodash');
 var URI = require('urijs');
-var assert = require('assert');
 var queue = require('d3-queue').queue;
 var async = require('async')
 
@@ -129,7 +128,6 @@ var throtteling = {
 var infinateQueue = queue();
 
 
-//try count is internal use only
 Pointer.prototype.request = function (url, options, callback) {
 	if (!options) {
 		options = {}
@@ -211,19 +209,6 @@ Pointer.prototype.request = function (url, options, callback) {
 
 };
 
-
-
-Pointer.prototype.tests = function () {
-	assert.equal(this.payloadJSONtoString([{
-		name: 'name',
-		value: 'value'
-	}, {
-		name: 'name2',
-		value: 'value2'
-	}]), 'name=value&name2=value2');
-
-	console.log('all tests done bro')
-};
 
 
 
