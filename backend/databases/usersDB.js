@@ -730,28 +730,36 @@ UsersDB.prototype.addIdsToLists = function (listName, classMongoIds, sectionMong
 		};
 
 		console.log('tried to add ', classMongoIds.length, ' and ', sectionMongoIds.length, ' to user ', user.email, 'list', listName);
-		console.log('list used to have ', user.lists[listName].classes.length, 'classes and ', user.lists[listName].sections.length, 'sections');
+		console.log(user);
+
 
 		var didChangeUser = false;
-		classMongoIds.forEach(function (mongoId) {
-			if (!_(user.lists[listName].classes).includes(mongoId)) {
-				didChangeUser = true;
-			}
-		}.bind(this))
+		if (user.lists[listName]) {
+			console.log('list used to have ', user.lists[listName].classes.length, 'classes and ', user.lists[listName].sections.length, 'sections');
 
-		sectionMongoIds.forEach(function (mongoId) {
-			if (!_(user.lists[listName].sections).includes(mongoId)) {
-				didChangeUser = true;
-			}
-		}.bind(this))
+			classMongoIds.forEach(function (mongoId) {
+				if (!_(user.lists[listName].classes).includes(mongoId)) {
+					didChangeUser = true;
+				}
+			}.bind(this))
 
+			sectionMongoIds.forEach(function (mongoId) {
+				if (!_(user.lists[listName].sections).includes(mongoId)) {
+					didChangeUser = true;
+				}
+			}.bind(this))
+		}
+		else {
+			console.log('lists did not exist before now');
+			didChangeUser = true
+		}
 
 		if (!didChangeUser) {
 			console.log('user ', user.email, 'is already watching class and sections', classMongoIds, sectionMongoIds)
 			return callback(null, 'All these classes and sections are already being watched.')
 		}
 		else {
-			callback();
+			return callback();
 		}
 	}.bind(this));
 };

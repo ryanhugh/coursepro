@@ -1,7 +1,7 @@
 'use strict';
 var _ = require('lodash');
 var path = require("path");
-// var monk = require('monk')
+var monk = require('monk')
 var fs = require('fs')
 
 var macros = require('../macros')

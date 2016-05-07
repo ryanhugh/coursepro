@@ -60,8 +60,8 @@ describe('sectionsDB', function () {
 
 		});
 
-
 		it('should behave...', function (done) {
+			jasmine.DEFAULT_TIMEOUT_INTERVAL = 9999999999999
 			var pageData = new PageData({
 				dbData: {
 					url: 'https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched',
