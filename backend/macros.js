@@ -50,12 +50,13 @@ function setupTargetStates() {
 			};
 			return
 		}
-		else if (command === 'tests') {
+		else if (command === 'ftest' || command === 'btest') {
 			exports.UNIT_TESTS = true;
 		}
 		else {
 			console.log('WARNING Unknown GULP mode ', command, process.argv)
 			console.log('this is from b macros.js')
+			console.log('setting to DEVELOPMENT mode!')
 			exports.DEVELOPMENT = true;
 		}
 	}
