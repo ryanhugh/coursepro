@@ -444,9 +444,9 @@ app.post('/spider', function (req, res) {
 	console.log('Spidering ', req.body.url);
 
 
-	pageDataMgr.createFromURL(req.body.url, function () {
-		console.log('all done!! sju')
-	}.bind(this))
+	// pageDataMgr.createFromURL(req.body.url, function () {
+	// 	console.log('all done!! sju')
+	// }.bind(this))
 
 	return res.send('running!');
 

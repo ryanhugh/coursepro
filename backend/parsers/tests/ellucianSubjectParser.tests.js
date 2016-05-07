@@ -1,9 +1,9 @@
 var ellucianCatalogParser = require('../ellucianCatalogParser')
 var ellucianSubjectParser = require('../ellucianSubjectParser')
-require('../../pageDataMgr');
 var MockPageData = require('../../MockPageData')
 var fs = require('fs')
 var pointer = require('../../pointer')
+var PageData = require('../../PageData')
 var URI = require('urijs')
 
 
@@ -24,7 +24,7 @@ it('should work', function (done) {
 
 			expect(true).toBe(ellucianSubjectParser.supportsPage(url));
 
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url
 				}

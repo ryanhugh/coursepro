@@ -1,5 +1,4 @@
 var collegeNamesParser = require('../collegeNamesParser')
-require('../../pageDataMgr');
 var MockPageData = require('../../MockPageData')
 var fs = require('fs')
 var baseParser = require('../baseParser')

@@ -3,7 +3,7 @@ var _ = require('lodash')
 
 var usersDB = require('./usersDB')
 var classesDB = require('./classesDB')
-
+var PageData = require('../PageData')
 var macros = require('../macros')
 
 
@@ -29,7 +29,7 @@ Updater.prototype.updateClassFromMongoId = function (classMongoId, callback) {
 		callback = function () {}
 	};
 
-	var pageData = pageDataMgr.create({
+	var pageData = PageData.create({
 		dbData: {
 			_id: classMongoId
 

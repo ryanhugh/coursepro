@@ -4,6 +4,7 @@ require('../../pageDataMgr');
 var MockPageData = require('../../MockPageData')
 var fs = require('fs')
 var pointer = require('../../pointer')
+var PageData = require('../../PageData')
 var URI = require('urijs')
 
 
@@ -32,7 +33,7 @@ it('should behave...', function (done) {
 
 			var url = 'https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched';
 
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url
 				}

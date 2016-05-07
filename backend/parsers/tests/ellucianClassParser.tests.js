@@ -1,9 +1,9 @@
 var ellucianClassParser = require('../ellucianClassParser')
 var ellucianSectionParser = require('../ellucianSectionParser')
 require('../../pageDataMgr');
-var MockPageData = require('../../MockPageData')
 var fs = require('fs')
 var pointer = require('../../pointer')
+var PageData = require('../../PageData')
 var URI = require('urijs')
 
 
@@ -17,7 +17,7 @@ it('can find an existing dep and parse crns', function (done) {
 
 			//set up variables
 			var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=EECE&crse_in=2160&schd_in=LEC';
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					desc: '',
@@ -26,7 +26,7 @@ it('can find an existing dep and parse crns', function (done) {
 				}
 			});
 
-			pageData.deps = [pageDataMgr.create({
+			pageData.deps = [PageData.create({
 				dbData: {
 					url: 'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201610&crn_in=15633',
 					crn: "15633"
@@ -74,7 +74,7 @@ it('should parse a bunch of deps', function (done) {
 
 			//set up variables -- ellucianClassParser url might not be correct
 			var url = 'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201502&subj_in=PHYS&crse_in=013&schd_in=LE';
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					desc: '',
@@ -148,7 +148,7 @@ it('should parse a bunch of crns', function (done) {
 
 			//set up variables
 			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=ACCT&crse_in=2102&schd_in=BAS';
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					desc: '',
@@ -193,7 +193,7 @@ it('should parse a bunch of meetings', function (done) {
 
 			//set up variables
 			var url = 'https://prd-wlssb.temple.edu/prod8/bwckctlg.p_disp_listcrse?term_in=201503&subj_in=AIRF&crse_in=2041&schd_in=BAS';
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					desc: '',
@@ -338,7 +338,7 @@ it('can parse CANCELLED', function (done) {
 
 			//set up variables
 			var url = 'https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=ANTH&crse_in=245&schd_in=LE';
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					desc: '',
@@ -381,7 +381,7 @@ it('name translatin works', function (done) {
 
 			//set up variables
 			var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201610&subj_in=CS&crse_in=2500&schd_in=LEC';
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					desc: '',

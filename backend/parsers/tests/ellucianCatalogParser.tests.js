@@ -1,6 +1,7 @@
 var ellucianCatalogParser = require('../ellucianCatalogParser')
 var ellucianClassParser = require('../ellucianClassParser')
 require('../../pageDataMgr');
+var PageData = require('../../PageData')
 var MockPageData = require('../../MockPageData')
 var fs = require('fs')
 var pointer = require('../../pointer')
@@ -25,7 +26,7 @@ it('parse DESCRIPTION', function (done) {
 
 			expect(true).toBe(ellucianCatalogParser.supportsPage(url));
 
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					subject: 'MATH',
@@ -60,7 +61,7 @@ it('can add to existing dep', function(done) {
 
 			expect(true).toBe(ellucianCatalogParser.supportsPage(url));
 
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					subject: 'AIRF',
@@ -69,7 +70,7 @@ it('can add to existing dep', function(done) {
 			});
 
 			//add a dep to test updating deps
-			pageData.deps = [pageDataMgr.create({
+			pageData.deps = [PageData.create({
 				dbData: {
 					url: classURL,
 				}
@@ -112,7 +113,7 @@ it('can parse desc', function(done) {
 
 			expect(true).toBe(ellucianCatalogParser.supportsPage(url));
 
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					subject: 'MDCN',
@@ -149,7 +150,7 @@ it('should behave...', function(done) {
 
 			expect(true, ellucianCatalogParser.supportsPage(url));
 
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					subject: 'COM',

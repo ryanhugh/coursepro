@@ -2,7 +2,6 @@
 var async = require('async');
 var fs = require('fs');
 var _ = require('lodash');
-var PageData = require('./PageData');
 
 
 var requireDir = require('require-dir');
@@ -17,8 +16,6 @@ var parsers = [];
 //create a list of parser objects
 for (var parserName in parsersClasses) {
 	var parser = parsersClasses[parserName]
-
-
 
 	if (!parser.name) {
 		console.log(parser)
@@ -40,29 +37,8 @@ function PageDataMgr() {
 }
 
 
-PageDataMgr.prototype.createFromURL = function (url, callback) {
-	var pageData = this.create({
-		dbData: {
-			url: url
-		}
-	});
-	pageDataMgr.go(pageData, callback);
-};
-
 PageDataMgr.prototype.getParsers = function () {
 	return parsers;
-};
-
-
-PageDataMgr.prototype.create = function (startingData) {
-
-	var pageData = new PageData(startingData);
-	if (!pageData.dbData) {
-		console.log('ERROR could not create a pagedata!');
-		return null;
-	}
-	return pageData;
-
 };
 
 
@@ -176,9 +152,8 @@ PageDataMgr.prototype.finish = function (pageData, callback) {
 
 
 PageDataMgr.prototype.main = function () {
+	var PageData = require('./PageData')
 
-
-	// 
 
 	// console.log(process)
 
@@ -227,7 +202,7 @@ PageDataMgr.prototype.main = function () {
 	// 	console.log('all done!! sju')
 	// }.bind(this))
 
-	this.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched', function () {
+	this.go(PageData.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'), function () {
 		// 	console.log('all done!! neu')
 		// }.bind(this))
 

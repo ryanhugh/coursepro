@@ -26,7 +26,7 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://myweb.du.edu/mdb/bwckschd.p_disp_dyn_sched",
   "https://ssbprod.rcgc.edu:9000/prod_ssb/bwckschd.p_disp_dyn_sched", // school aparently changed their hostname, it was gcc-ssbprod.gccnj.edu and now for the old domain dns fails now, wayback machine has it working in 2015: https://web.archive.org/web/20150316171359/https://gcc-ssbprod.gccnj.edu:9000/prod_ssb/bwckschd.p_disp_dyn_sched
   "https://pssb.stockton.edu/prod/bwckschd.p_disp_dyn_sched", //was port 9000, now is 443
-  "https://jweb.kettering.edu/cku1/xhwschedule.P_SelectSubject",
+  "https://jweb.kettering.edu/cku1/bwckschd.p_disp_dyn_sched",
   "https://www8.unm.edu/pls/banp/bwckschd.p_disp_dyn_sched",
   "https://banssbprod.xavier.edu:8099/PROD/bwckschd.p_disp_dyn_sched",
   "https://appprod.udayton.edu:9000/prod/bwckschd.p_disp_dyn_sched",

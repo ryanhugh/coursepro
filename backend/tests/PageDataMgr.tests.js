@@ -50,14 +50,18 @@ it('parse a bunch of urls and not crash', function () {
 
 	var urls = require('../differentCollegeUrls')
 
-	for (var i = 0; i < Math.min(10, urls.length); i++) {
-		var pageData = pageDataMgr.create({
+	for (var i = 0; i < urls.length; i++) {
+		var pageData = PageData.create({
 			dbData: {
 				url: urls[i]
 			}
 		})
 
 		pageData.findSupportingParser()
+		if (pageData.parser != ellucianTermsParser) {
+			console.log(pageDataMgr);
+
+		}
 		expect(pageData.parser).toBe(ellucianTermsParser)
 	}
 });
@@ -70,8 +74,8 @@ it('parse some other urls too', function (done) {
 
 		var urls = JSON.parse(body)
 
-		for (var i = 0; i < Math.min(10, urls.length); i++) {
-			var pageData = pageDataMgr.create({
+		for (var i = 0; i < urls.length; i++) {
+			var pageData = PageData.create({
 				dbData: {
 					url: urls[i]
 				}

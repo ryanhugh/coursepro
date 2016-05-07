@@ -2,6 +2,7 @@ var ellucianRequisitesParser = require('../ellucianRequisitesParser')
 require('../../pageDataMgr');
 var fs = require('fs')
 var pointer = require('../../pointer')
+var PageData = require('../../PageData')
 
 
 it('should load a bunch of string prereqs from many on linked.html', function (done) {
@@ -13,7 +14,7 @@ it('should load a bunch of string prereqs from many on linked.html', function (d
 
 			var url = 'http://test.hostname.com/PROD/';
 
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url
 				}
@@ -158,7 +159,7 @@ it('should filter out prereqs that just say they are prereqs', function (done) {
 
 			var url = 'http://test.hostname.com/PROD/';
 
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url
 				}
@@ -353,7 +354,7 @@ it('works with ))', function (done) {
 
 		var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201555&subj_code_in=PMC&crse_numb_in=6212'
 
-		var pageData = pageDataMgr.create({
+		var pageData = PageData.create({
 			dbData: {
 				url: url
 			}

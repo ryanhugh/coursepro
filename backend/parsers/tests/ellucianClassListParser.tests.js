@@ -3,6 +3,7 @@ var ellucianClassParser = require('../ellucianClassParser')
 var ellucianClassListParser = require('../ellucianClassListParser')
 require('../../pageDataMgr');
 var MockPageData = require('../../MockPageData')
+var PageData = require('../../PageData')
 var fs = require('fs')
 var pointer = require('../../pointer')
 var URI = require('urijs')
@@ -21,7 +22,7 @@ it('should behave...', function(done) {
 
 			expect(true).toBe(ellucianClassListParser.supportsPage(url));
 
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url,
 					subject: 'MATH',

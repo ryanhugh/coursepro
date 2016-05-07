@@ -1,8 +1,9 @@
 var ellucianSectionParser = require('../ellucianSectionParser')
-require('../../pageDataMgr');
+// require('../../pageDataMgr');
 var MockPageData = require('../../MockPageData')
 var fs = require('fs')
 var pointer = require('../../pointer')
+var PageData = require('../../PageData')
 
 
 it('parse prereqs and coreqs and seat data from 1.html', function(done) {
@@ -21,7 +22,7 @@ it('parse prereqs and coreqs and seat data from 1.html', function(done) {
 
 			var dummyParent = new MockPageData();
 
-			var pageData = pageDataMgr.create({
+			var pageData = PageData.create({
 				dbData: {
 					url: url
 				},

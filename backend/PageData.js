@@ -5,6 +5,7 @@ var _ = require('lodash');
 var queue = require('d3-queue').queue;
 
 var macros = require('./macros')
+// pageDataMgr needs to be here, but cannot be required due to circular dependencies...
 
 //this is called in 3 places
 //server.js
@@ -72,6 +73,26 @@ PageData.prototype.DBLOAD_RUNNING = 1;
 PageData.prototype.DBLOAD_DONE = 2;
 
 
+PageData.create = function (startingData) {
+
+	var pageData = new PageData(startingData);
+	if (!pageData.dbData) {
+		console.log('ERROR could not create a pagedata!');
+		return null;
+	}
+	return pageData;
+
+};
+
+
+PageData.prototype.createFromURL = function (url, callback) {
+	return this.create({
+		dbData: {
+			url: url
+		}
+	});
+};
+
 
 // parsername is optionall, used when loading from db
 PageData.prototype.findSupportingParser = function (parserName) {
@@ -83,7 +104,6 @@ PageData.prototype.findSupportingParser = function (parserName) {
 		console.log('error cant find parser without url and name');
 		return false;
 	}
-
 
 	var parsers = pageDataMgr.getParsers();
 
@@ -372,7 +392,7 @@ PageData.prototype.addDep = function (depData) {
 
 
 	//create the dep, add it to the array and return it
-	var dep = pageDataMgr.create(startingData);
+	var dep = this.constructor.create(startingData);
 	if (!dep) {
 		console.log('could not create dep in add dep!')
 		return;
