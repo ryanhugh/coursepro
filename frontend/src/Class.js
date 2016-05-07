@@ -360,10 +360,10 @@ Class.prototype.compareTo = function (otherClass) {
 		return -1;
 	}
 
-	else if (this.title > otherClass.title) {
+	else if (this.name > otherClass.name) {
 		return 1;
 	}
-	else  if (this.title < otherClass.title) {
+	else  if (this.name < otherClass.name) {
 		return -1;
 	}
 

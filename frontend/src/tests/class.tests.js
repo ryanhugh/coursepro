@@ -58,7 +58,7 @@ describe('Class', function () {
 
 
 	describe('.compareTo', function () {
-		it('sorts by title if all else fails', function () {
+		it('sorts by name if all else fails', function () {
 
 			var classes = [
 				Class.create({
@@ -66,7 +66,7 @@ describe('Class', function () {
 					termId: '201630',
 					subject: 'BIOL',
 					classId: '020',
-					title:'Animal Physiology'
+					name:'Animal Physiology'
 				}),
 
 				Class.create({
@@ -74,7 +74,7 @@ describe('Class', function () {
 					termId: '201630',
 					subject: 'BIOL',
 					classId: '020A',
-					title:'Attchm: Animal Physiology'
+					name:'Attchm: Animal Physiology'
 				}),
 
 				Class.create({
@@ -82,7 +82,7 @@ describe('Class', function () {
 					termId: '201630',
 					subject: 'BIOL',
 					classId: '020',
-					title:'Animal Physiology- Lab'
+					name:'Animal Physiology- Lab'
 				})
 			]
 
@@ -91,9 +91,53 @@ describe('Class', function () {
 			}.bind(this))
 
 
-			expect(classes[0].title).toBe('Animal Physiology')
-			expect(classes[1].title).toBe('Animal Physiology- Lab')
-			expect(classes[2].title).toBe('Attchm: Animal Physiology')
+			expect(classes[0].name).toBe('Animal Physiology')
+			expect(classes[1].name).toBe('Animal Physiology- Lab')
+			expect(classes[2].name).toBe('Attchm: Animal Physiology')
+
+		});
+
+		it('another sorts by name', function() {
+			
+
+			var classes = [
+
+				Class.create({
+					host: 'neu.edu',
+					termId: '201630',
+					subject: 'MATH',
+					classId: '006B',
+					name:'Calculus IIB'
+				}),
+
+				Class.create({
+					host: 'neu.edu',
+					termId: '201630',
+					subject: 'MATH',
+					classId: '006C',
+					name:'Calculus IIC'
+				}),
+
+				Class.create({
+					host: 'neu.edu',
+					termId: '201630',
+					subject: 'MATH',
+					classId: '006A',
+					name:'Calculus IIA'
+				}),
+			]
+
+			classes.sort(function  (a,b) {
+				return a.compareTo(b)
+			}.bind(this))
+
+
+			expect(classes[0].name).toBe('Calculus IIA')
+			expect(classes[1].name).toBe('Calculus IIB')
+			expect(classes[2].name).toBe('Calculus IIC')
+			// expect(classes[1].name).toBe('Animal Physiology- Lab')
+			// expect(classes[2].name).toBe('Attchm: Animal Physiology')
+
 
 		});
 

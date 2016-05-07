@@ -88,6 +88,8 @@ it('standardizeClassName', function () {
 	var name = 'St: Wireless Sensor Networks'
 	expect(baseParser.standardizeClassName(name, ['St: Intro. to Multiferroics'])).toBe(name);
 
+	expect(baseParser.standardizeClassName('Directed Reading', ['Dir Rdg:'])).toBe('Directed Reading');
+
 
 
 });
@@ -184,3 +186,8 @@ it('credit test', function() {
 
 
 });
+
+it('simplifySymbols', function() {
+	var a = baseParser.simplifySymbols('‚‚‚„„„')
+	expect(a).toBe('\'\'\'"""')
+});		
