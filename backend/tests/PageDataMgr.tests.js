@@ -8,44 +8,42 @@ var ellucianClassListParser = require('../parsers/ellucianClassListParser')
 var fs = require('fs')
 
 
-describe('some massive tests', function () {
-	it('should behave...', function (done) {
-		var pageData = new PageData({
-			dbData: {
-				url: 'https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched',
-			}
-		})
-		pageData.findSupportingParser()
+it('should behave...', function (done) {
+	var pageData = new PageData({
+		dbData: {
+			url: 'https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched',
+		}
+	})
+	pageData.findSupportingParser()
 
-		pageData.loadFromDB(function (err) {
-			expect(err).toBe(null)
-
-
-			expect(pageData.deps.length).toBe(2)
-			expect(pageData.parser).toBe(ellucianTermsParser)
-			expect(pageData.deps[0].parser).toBe(collegeNamesParser)
-			expect(pageData.deps[1].parser).toBe(ellucianTermsParser)
+	pageData.loadFromDB(function (err) {
+		expect(err).toBe(null)
 
 
-			var termData = pageData.deps[1]
+		expect(pageData.deps.length).toBe(2)
+		expect(pageData.parser).toBe(ellucianTermsParser)
+		expect(pageData.deps[0].parser).toBe(collegeNamesParser)
+		expect(pageData.deps[1].parser).toBe(ellucianTermsParser)
 
 
-			expect(termData.dbData.updatedByParent).toBe(true)
-			expect(termData.dbData.text).toBe('Spring 2016')
-			expect(termData.dbData.host).toBe('swarthmore.edu')
-			expect(termData.deps.length).toBe(1)
+		var termData = pageData.deps[1]
 
-			var subjectController = termData.deps[0];
 
-			expect(subjectController.parser).toBe(ellucianSubjectParser)
+		expect(termData.dbData.updatedByParent).toBe(true)
+		expect(termData.dbData.text).toBe('Spring 2016')
+		expect(termData.dbData.host).toBe('swarthmore.edu')
+		expect(termData.deps.length).toBe(1)
 
-			expect(subjectController.deps.length).toBe(2)
+		var subjectController = termData.deps[0];
 
-			// this could go on for a while, this test loads a ton of stuff
-			done()
-		}.bind(this))
+		expect(subjectController.parser).toBe(ellucianSubjectParser)
 
-	});
+		expect(subjectController.deps.length).toBe(2)
+
+		// this could go on for a while, this test loads a ton of stuff
+		done()
+	}.bind(this))
+
 });
 
 it('parse a bunch of urls and not crash', function () {
@@ -65,8 +63,8 @@ it('parse a bunch of urls and not crash', function () {
 });
 
 
-it('parse some other urls too', function(done) {
-	
+it('parse some other urls too', function (done) {
+
 	fs.readFile('backend/parsers/tests/data/pageDataMgr/toparse.json', 'utf8', function (err, body) {
 		expect(err).toBe(null);
 

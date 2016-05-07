@@ -1,5 +1,6 @@
 'use strict';
 var fs = require('fs')
+var _ = require('lodash')
 
 
 //change the current working directory to the directory with package.json
@@ -30,6 +31,26 @@ global.elog = function () {
 
 //setup different targets
 function setupTargetStates() {
+
+	var mode;
+	process.argv.slice(2).forEach(function (command) {
+		if (!mode) {
+			mode = command;
+			return;
+		}
+
+		else if (_(mode).endsWith('test') && _(command).endsWith('test')) {
+			return;
+		}
+		else {
+			// cannot be both macros.PRODUCTION and macros.DEVELOPMENT, etc
+			// run in mutltiple terminals (separate gulp processes) for this to work
+			console.log(mode, command);
+			elog('Cannot run multiple commands at the same time, cant be both macros.DEVELOPMENT and macros.UNIT_TESTS, etc!!!!')
+			process.exit()
+		}
+
+	}.bind(this))
 
 	//there are three modes this can be ran in
 	//prod (macros.PRODUCTION and db = coursepro_prod) gulp prod

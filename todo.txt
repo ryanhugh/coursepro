@@ -34,6 +34,7 @@ gulp-jasmine has a bug not deleting enough files from cache
 holy crap nodev6 is bad. gulp watch dosent work and npm install dosent work on armhf
 ---dont upgrade to nodev6 until this is fixed https://github.com/gulpjs/gulp/issues/1571
 ----v5.10.1
+async.retry and jasmine.clock
 
 HONORS NOTES
 swathmore and sju have "honors" in title 

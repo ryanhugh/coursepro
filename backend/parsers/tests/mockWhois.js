@@ -1,7 +1,7 @@
 'use strict';
 
 function MockWhois() {
-
+	this.tryCount = {}
 }
 
 
@@ -79,6 +79,12 @@ var neuData = "database contains ONLY .EDU domains. \n" +
 
 
 MockWhois.prototype.lookup = function (host, callback) {
+	// the whois fails a lot, so here lets say it fails the first time
+	if (!this.tryCount[host]) {
+		this.tryCount[host] = 1
+		return callback('lololol')
+	}
+
 
 	if (host == 'neu.edu') {
 		return callback(null, neuData)

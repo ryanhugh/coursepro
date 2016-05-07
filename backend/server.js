@@ -118,7 +118,7 @@ app.use(function (req, res, next) {
 
 // add cache forever to external js libraries
 app.use(function (req, res, next) {
-	if (req.protocol == 'http') {
+	if (req.protocol == 'http' && !_(req.connection.remoteAddress).includes('127.0.0.1') && req.connection.remoteAddress != '::1') {
 		logData(req, {
 			msg: {
 				summary: 'http -> https redirect'

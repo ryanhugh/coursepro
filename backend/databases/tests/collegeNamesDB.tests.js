@@ -5,3 +5,4 @@ it('getStaticHost works for neu/law', function() {
 	expect(a.host).toBe('neu.edu/law')
 	expect(a.text).toBe('othertext')
 });
+
