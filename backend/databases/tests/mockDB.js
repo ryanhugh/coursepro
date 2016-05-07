@@ -3,7 +3,12 @@ var macros = require('../../macros')
 var _ = require('lodash')
 
 function MockTable(tableName) {
-	this.data = require('./mockData/' + tableName + '.json')
+	this.dataIdMap = {}
+	this.rows = require('./mockData/' + tableName + '.json')
+	for (var i = 0; i < this.rows.length; i++) {
+		this.dataIdMap[this.rows[i]._id] = this.rows[i]
+	}
+	this.tableName = tableName
 }
 
 
@@ -35,33 +40,41 @@ MockTable.prototype.findDiff = function (src, dest) {
 	}.bind(this))
 
 	return retVal;
-}
-
+} 
 
 
 MockTable.prototype.find = function (lookup, callback) {
-	var retVal = [];
-	this.data.forEach(function (row) {
-		var diff = this.findDiff(lookup, row);
-		if (diff.different.length == 0 && diff.srcOnly.length == 0) {
-			retVal.push(row)
+	if (lookup._id) {
+		if (this.dataIdMap[lookup._id]) {
+			return callback(null, [this.dataIdMap[lookup._id]]);
 		}
-	}.bind(this))
-	callback(null, retVal)
+		else {
+			return callback(null, [])
+		}
+	}
+	else {
+		var retVal = [];
+		this.rows.forEach(function (row) {
+			var diff = this.findDiff(lookup, row);
+			if (diff.different.length == 0 && diff.srcOnly.length == 0) {
+				retVal.push(row) 
+			}
+		}.bind(this))
+		callback(null, retVal)
+	}
 };
 
 MockTable.prototype.update = function () {
 	elog('mock table has no update!!')
 };
 
-
+ 
 
 function MockDB() {
 
 }
 
 MockDB.prototype.get = function (tableName) {
-	// console.log('hifdjlafjladsjk');
 	return new MockTable(tableName);
 };
 MockDB.prototype.close = function () {

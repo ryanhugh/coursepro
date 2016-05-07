@@ -24,7 +24,7 @@ safe to lookup docs by url in backend? - ehhh
  
  - somehow prevnet monk from keeping the connection open -- done
 async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj)
-angular debug mode off
+angular debug mode off -- done
 the node injection graph thing
 for node injection, make sure all same type and do overlapping set of names to find node name
 
@@ -40,6 +40,7 @@ can remove testsMgr from gulpfile?
 3RD party bugs
 nodejs https on that one college that isnt 443?
 d3-queue for multiple awaitall? error messages?
+gulp-jasmine has a bug not deleting enough files from cache
 
 
 HONORS NOTES

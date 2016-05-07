@@ -1,97 +1,971 @@
-[{"_id":"57265921d4a30537f91397ee","updatedByParent":true,"subject":"GSST","text":"Gender and Sexuality Studies","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265921d4a30537f91397ec"]}},
-{"_id":"57265927d4a30537f913983c","updatedByParent":true,"subject":"INTP","text":"Interpretation Theory","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265927d4a30537f913983a"]}},
-{"_id":"57265935d4a30537f9139962","updatedByParent":true,"subject":"GREK","text":"Greek","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["57265935d4a30537f9139961"]}},
-{"_id":"57265953d4a30537f9139ba6","updatedByParent":true,"subject":"LATN","text":"Latin","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265953d4a30537f9139ba5"]}},
-{"_id":"5726597fd4a30537f913a1f3","updatedByParent":true,"subject":"FMST","text":"Film and Media Studies","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["5726597fd4a30537f913a1e1"]}},
-{"_id":"5726597fd4a30537f913a233","updatedByParent":true,"subject":"ASTR","text":"Astronomy","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["5726597fd4a30537f913a229"]}},
-{"_id":"57265983d4a30537f913a47b","updatedByParent":true,"subject":"ARAB","text":"Arabic","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265983d4a30537f913a469"]}},
-{"_id":"57265985d4a30537f913a5f6","updatedByParent":true,"subject":"LATN","text":"Latin","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["57265985d4a30537f913a5a9"]}},
-{"_id":"57265991d4a30537f913acff","updatedByParent":true,"subject":"PPOL","text":"Public Policy","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265991d4a30537f913acf2"]}},
-{"_id":"57265993d4a30537f913aebd","updatedByParent":true,"subject":"OCST","text":"Off Campus Study","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265993d4a30537f913ae8b"]}},
-{"_id":"57265993d4a30537f913aee2","updatedByParent":true,"subject":"LALS","text":"Latin American\u0026Latino Studies","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265993d4a30537f913aeaa"]}},
-{"_id":"57265994d4a30537f913af93","updatedByParent":true,"subject":"GMST","text":"German Studies","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265994d4a30537f913af79"]}},
-{"_id":"57265995d4a30537f913afba","updatedByParent":true,"subject":"COGS","text":"Cognitive Science","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265995d4a30537f913afaa"]}},
-{"_id":"57265995d4a30537f913aff2","updatedByParent":true,"subject":"ISLM","text":"Islamic Studies","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["57265995d4a30537f913afde"]}},
-{"_id":"57265998d4a30537f913b1c6","updatedByParent":true,"subject":"CLST","text":"Classical Studies","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265998d4a30537f913b1a9"]}},
-{"_id":"5726599cd4a30537f913b492","updatedByParent":true,"subject":"ANTH","text":"Anthropology","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["5726599cd4a30537f913b47c"]}},
-{"_id":"572659a7d4a30537f913bbd2","updatedByParent":true,"subject":"STAT","text":"Statistics","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659a7d4a30537f913bb9b"]}},
-{"_id":"572659aad4a30537f913bdd6","updatedByParent":true,"subject":"JPNS","text":"Japanese","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659a9d4a30537f913bd8d"]}},
-{"_id":"572659c1d4a30537f913ce59","updatedByParent":true,"subject":"ARAB","text":"Arabic","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659c0d4a30537f913cd5b"]}},
-{"_id":"572659c7d4a30537f913d30b","updatedByParent":true,"subject":"BLST","text":"Black Studies","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659c6d4a30537f913d294"]}},
-{"_id":"572659c7d4a30537f913d37e","updatedByParent":true,"subject":"EDUC","text":"Educational Studies","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659c7d4a30537f913d34c"]}},
-{"_id":"572659c8d4a30537f913d4bf","updatedByParent":true,"subject":"ARTH","text":"Art History","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659c7d4a30537f913d3c3"]}},
-{"_id":"572659cbd4a30537f913d801","updatedByParent":true,"subject":"PSYC","text":"Psychology","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659cad4a30537f913d72d"]}},
-{"_id":"572659ccd4a30537f913d895","updatedByParent":true,"subject":"PHIL","text":"Philosophy","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659ccd4a30537f913d87f"]}},
-{"_id":"572659ccd4a30537f913d8c9","updatedByParent":true,"subject":"LALS","text":"Latin American\u0026Latino Studies","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659ccd4a30537f913d8b5"]}},
-{"_id":"572659ccd4a30537f913d8ed","updatedByParent":true,"subject":"MATH","text":"Mathematics","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659ccd4a30537f913d8db"]}},
-{"_id":"572659ccd4a30537f913d8fc","updatedByParent":true,"subject":"INTP","text":"Interpretation Theory","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659c8d4a30537f913d4aa"]}},
-{"_id":"572659cdd4a30537f913d9b0","updatedByParent":true,"subject":"GMST","text":"German Studies","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659cdd4a30537f913d99b"]}},
-{"_id":"572659cdd4a30537f913d9b6","updatedByParent":true,"subject":"COGS","text":"Cognitive Science","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659cbd4a30537f913d7e9"]}},
-{"_id":"572659cdd4a30537f913d9d5","updatedByParent":true,"subject":"DANC","text":"Dance","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659cdd4a30537f913d9c0"]}},
-{"_id":"572659cdd4a30537f913d9fc","updatedByParent":true,"subject":"PEAC","text":"Peace and Conflict Studies","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659cdd4a30537f913d9e9"]}},
-{"_id":"572659cdd4a30537f913da00","updatedByParent":true,"subject":"SOCI","text":"Sociology","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659cdd4a30537f913d9a4"]}},
-{"_id":"572659cdd4a30537f913da04","updatedByParent":true,"subject":"PEAC","text":"Peace and Conflict Studies","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659cdd4a30537f913d9c7"]}},
-{"_id":"572659cdd4a30537f913da06","updatedByParent":true,"subject":"STAT","text":"Statistics","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659cdd4a30537f913d9d6"]}},
-{"_id":"572659cdd4a30537f913da07","updatedByParent":true,"subject":"RUSS","text":"Russian","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659cdd4a30537f913d9ea"]}},
-{"_id":"572659cdd4a30537f913da0c","updatedByParent":true,"subject":"ARTH","text":"Art History","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659cdd4a30537f913d9fb"]}},
-{"_id":"572659cdd4a30537f913da0d","updatedByParent":true,"subject":"FMST","text":"Film and Media Studies","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659cdd4a30537f913d9ff"]}},
-{"_id":"572659cdd4a30537f913da0f","updatedByParent":true,"subject":"ECON","text":"Economics","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659cdd4a30537f913d9fe"]}},
-{"_id":"572659ced4a30537f913da12","updatedByParent":true,"subject":"CHIN","text":"Chinese","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659cdd4a30537f913da09"]}},
-{"_id":"572659ced4a30537f913da14","updatedByParent":true,"subject":"RUSS","text":"Russian","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659cdd4a30537f913da08"]}},
-{"_id":"572659ced4a30537f913da18","updatedByParent":true,"subject":"ANTH","text":"Anthropology","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659ced4a30537f913da13"]}},
-{"_id":"572659ced4a30537f913da19","updatedByParent":true,"subject":"ENGR","text":"Engineering","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659ced4a30537f913da15"]}},
-{"_id":"572659ced4a30537f913da24","updatedByParent":true,"subject":"PHED","text":"Physical Education","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659ced4a30537f913da1e"]}},
-{"_id":"572659cfd4a30537f913da49","updatedByParent":true,"subject":"ENVS","text":"Environmental Studies","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659cfd4a30537f913da42"]}},
-{"_id":"572659cfd4a30537f913da4a","updatedByParent":true,"subject":"ANCH","text":"Ancient History","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659cfd4a30537f913da47"]}},
-{"_id":"572659cfd4a30537f913da53","updatedByParent":true,"subject":"JPNS","text":"Japanese","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659cfd4a30537f913da52"]}},
-{"_id":"572659d0d4a30537f913da64","updatedByParent":true,"subject":"CHEM","text":"Chemistry","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659d0d4a30537f913da61"]}},
-{"_id":"572659d1d4a30537f913da80","updatedByParent":true,"subject":"FREN","text":"French","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659d1d4a30537f913da7f"]}},
-{"_id":"572659d3d4a30537f913daa3","updatedByParent":true,"subject":"OCST","text":"Off Campus Study","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659d2d4a30537f913daa0"]}},
-{"_id":"572659d3d4a30537f913daa6","updatedByParent":true,"subject":"HIST","text":"History","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659d2d4a30537f913daa2"]}},
-{"_id":"572659d3d4a30537f913dac0","updatedByParent":true,"subject":"BIOL","text":"Biology","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659d3d4a30537f913daba"]}},
-{"_id":"572659d3d4a30537f913dac1","updatedByParent":true,"subject":"SOCI","text":"Sociology","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659d3d4a30537f913dabb"]}},
-{"_id":"572659d3d4a30537f913dac5","updatedByParent":true,"subject":"FREN","text":"French","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659d3d4a30537f913dac3"]}},
-{"_id":"572659d3d4a30537f913dac9","updatedByParent":true,"subject":"CHEM","text":"Chemistry","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659d3d4a30537f913dac7"]}},
-{"_id":"572659d4d4a30537f913dad9","updatedByParent":true,"subject":"LING","text":"Linguistics","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659d4d4a30537f913dad8"]}},
-{"_id":"572659d6d4a30537f913dae9","updatedByParent":true,"subject":"PHYS","text":"Physics","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659d6d4a30537f913dae8"]}},
-{"_id":"572659d7d4a30537f913daf8","updatedByParent":true,"subject":"CLST","text":"Classical Studies","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659d7d4a30537f913daf1"]}},
-{"_id":"572659d8d4a30537f913dafe","updatedByParent":true,"subject":"PHYS","text":"Physics","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659d8d4a30537f913dafd"]}},
-{"_id":"572659d9d4a30537f913db0b","updatedByParent":true,"subject":"ASTR","text":"Astronomy","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659d9d4a30537f913db08"]}},
-{"_id":"572659d9d4a30537f913db0c","updatedByParent":true,"subject":"STUA","text":"Studio Arts","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659d9d4a30537f913db09"]}},
-{"_id":"572659dad4a30537f913db16","updatedByParent":true,"subject":"PSYC","text":"Psychology","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659d9d4a30537f913db15"]}},
-{"_id":"572659dad4a30537f913db1d","updatedByParent":true,"subject":"THEA","text":"Theater","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659dad4a30537f913db1a"]}},
-{"_id":"572659dbd4a30537f913db2d","updatedByParent":true,"subject":"MATH","text":"Mathematics","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659dbd4a30537f913db2a"]}},
-{"_id":"572659dbd4a30537f913db2e","updatedByParent":true,"subject":"RELG","text":"Religion","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659dbd4a30537f913db2c"]}},
-{"_id":"572659dcd4a30537f913db37","updatedByParent":true,"subject":"BIOL","text":"Biology","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659dbd4a30537f913db35"]}},
-{"_id":"572659dcd4a30537f913db38","updatedByParent":true,"subject":"MUSI","text":"Music","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659dbd4a30537f913db36"]}},
-{"_id":"572659dcd4a30537f913db52","updatedByParent":true,"subject":"SPAN","text":"Spanish","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659dcd4a30537f913db4d"]}},
-{"_id":"572659dcd4a30537f913db56","updatedByParent":true,"subject":"PHIL","text":"Philosophy","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659dcd4a30537f913db51"]}},
-{"_id":"572659dcd4a30537f913db5e","updatedByParent":true,"subject":"DANC","text":"Dance","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659dcd4a30537f913db5c"]}},
-{"_id":"572659ddd4a30537f913db6c","updatedByParent":true,"subject":"ANCH","text":"Ancient History","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659ddd4a30537f913db6b"]}},
-{"_id":"572659ded4a30537f913db7c","updatedByParent":true,"subject":"ENGL","text":"English Literature","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659ded4a30537f913db7b"]}},
-{"_id":"572659dfd4a30537f913db89","updatedByParent":true,"subject":"ECON","text":"Economics","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659dfd4a30537f913db87"]}},
-{"_id":"572659dfd4a30537f913db8a","updatedByParent":true,"subject":"MUSI","text":"Music","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659dfd4a30537f913db86"]}},
-{"_id":"572659dfd4a30537f913db92","updatedByParent":true,"subject":"CPSC","text":"Computer Science","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659dfd4a30537f913db91"]}},
-{"_id":"572659e0d4a30537f913db9a","updatedByParent":true,"subject":"THEA","text":"Theater","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659e0d4a30537f913db98"]}},
-{"_id":"572659e0d4a30537f913db9e","updatedByParent":true,"subject":"GSST","text":"Gender and Sexuality Studies","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659e0d4a30537f913db9c"]}},
-{"_id":"572659e1d4a30537f913dbab","updatedByParent":true,"subject":"ENVS","text":"Environmental Studies","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659e1d4a30537f913dba8"]}},
-{"_id":"572659e1d4a30537f913dbb3","updatedByParent":true,"subject":"EDUC","text":"Educational Studies","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659e1d4a30537f913dbb2"]}},
-{"_id":"572659e2d4a30537f913dbbb","updatedByParent":true,"subject":"STUA","text":"Studio Arts","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659e2d4a30537f913dbba"]}},
-{"_id":"572659e2d4a30537f913dbc0","updatedByParent":true,"subject":"LING","text":"Linguistics","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659e2d4a30537f913dbbe"]}},
-{"_id":"572659e6d4a30537f913dbd1","updatedByParent":true,"subject":"LITR","text":"Literature","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659e5d4a30537f913dbd0"]}},
-{"_id":"572659e6d4a30537f913dbd8","updatedByParent":true,"subject":"SOAN","text":"Sociology \u0026 Anthropology","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659e6d4a30537f913dbd7"]}},
-{"_id":"572659e9d4a30537f913dbe9","updatedByParent":true,"subject":"LITR","text":"Literature","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659e9d4a30537f913dbe7"]}},
-{"_id":"572659ebd4a30537f913dbf5","updatedByParent":true,"subject":"ENGL","text":"English Literature","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659ebd4a30537f913dbf3"]}},
-{"_id":"572659ecd4a30537f913dbf8","updatedByParent":true,"subject":"POLS","text":"Political Science","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659ecd4a30537f913dbf7"]}},
-{"_id":"572659ecd4a30537f913dbfc","updatedByParent":true,"subject":"SOAN","text":"Sociology \u0026 Anthropology","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659ecd4a30537f913dbfb"]}},
-{"_id":"572659edd4a30537f913dc02","updatedByParent":true,"subject":"CPSC","text":"Computer Science","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659edd4a30537f913dc01"]}},
-{"_id":"572659efd4a30537f913dc07","updatedByParent":true,"subject":"SPAN","text":"Spanish","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["572659efd4a30537f913dc06"]}},
-{"_id":"572659f0d4a30537f913dc0e","updatedByParent":true,"subject":"PHED","text":"Physical Education","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659f0d4a30537f913dc0c"]}},
-{"_id":"572659f0d4a30537f913dc10","updatedByParent":true,"subject":"HIST","text":"History","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659f0d4a30537f913dc0f"]}},
-{"_id":"572659f4d4a30537f913dc14","updatedByParent":true,"subject":"CHIN","text":"Chinese","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["572659f4d4a30537f913dc13"]}},
-{"_id":"57265a08d4a30537f913dc1a","updatedByParent":true,"subject":"GREK","text":"Greek","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265a07d4a30537f913dc19"]}},
-{"_id":"57265a09d4a30537f913dc20","updatedByParent":true,"subject":"ENGR","text":"Engineering","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265a09d4a30537f913dc1f"]}},
-{"_id":"57265a88d4a30537f913dc24","updatedByParent":true,"subject":"RELG","text":"Religion","host":"swarthmore.edu","termId":"201604","deps":{"EllucianClassListParser":["57265a88d4a30537f913dc23"]}},
-{"_id":"57265a88d4a30537f913dc25","url":"https://myswat.swarthmore.edu/pls/bwckgens.p_proc_term_date","host":"swarthmore.edu","termId":"201604","lastUpdateTime":1.462130832635e+12,"deps":{"EllucianSubjectParser":["57265935d4a30537f9139962","57265985d4a30537f913a5f6","57265995d4a30537f913aff2","572659c1d4a30537f913ce59","572659ccd4a30537f913d8c9","572659ccd4a30537f913d8fc","572659cdd4a30537f913d9b0","572659cdd4a30537f913d9b6","572659cdd4a30537f913da00","572659cdd4a30537f913da04","572659cdd4a30537f913da06","572659cdd4a30537f913da0c","572659cdd4a30537f913da0d","572659ced4a30537f913da14","572659ced4a30537f913da18","572659ced4a30537f913da19","572659cfd4a30537f913da4a","572659cfd4a30537f913da53","572659d0d4a30537f913da64","572659d3d4a30537f913daa3","572659d3d4a30537f913dac0","572659d3d4a30537f913dac5","572659d4d4a30537f913dad9","572659d6d4a30537f913dae9","572659d7d4a30537f913daf8","572659d9d4a30537f913db0b","572659dad4a30537f913db16","572659dad4a30537f913db1d","572659dbd4a30537f913db2d","572659dcd4a30537f913db38","572659dcd4a30537f913db52","572659dcd4a30537f913db56","572659dcd4a30537f913db5e","572659dfd4a30537f913db89","572659e0d4a30537f913db9e","572659e1d4a30537f913dbab","572659e1d4a30537f913dbb3","572659e2d4a30537f913dbbb","572659e6d4a30537f913dbd1","572659ebd4a30537f913dbf5","572659ecd4a30537f913dbf8","572659ecd4a30537f913dbfc","572659edd4a30537f913dc02","572659f0d4a30537f913dc0e","572659f0d4a30537f913dc10","572659f4d4a30537f913dc14","57265a88d4a30537f913dc24"]},"updatedByParent":false},
-{"_id":"57265a89d4a30537f913dc2b","updatedByParent":true,"subject":"POLS","text":"Political Science","host":"swarthmore.edu","termId":"201602","deps":{"EllucianClassListParser":["57265a89d4a30537f913dc2a"]}},
-{"_id":"57265a89d4a30537f913dc2c","url":"https://myswat.swarthmore.edu/pls/bwckgens.p_proc_term_date","host":"swarthmore.edu","termId":"201602","lastUpdateTime":1.462130832431e+12,"deps":{"EllucianSubjectParser":["57265921d4a30537f91397ee","57265927d4a30537f913983c","57265953d4a30537f9139ba6","5726597fd4a30537f913a1f3","5726597fd4a30537f913a233","57265983d4a30537f913a47b","57265991d4a30537f913acff","57265993d4a30537f913aee2","57265993d4a30537f913aebd","57265994d4a30537f913af93","57265995d4a30537f913afba","57265998d4a30537f913b1c6","5726599cd4a30537f913b492","572659a7d4a30537f913bbd2","572659aad4a30537f913bdd6","572659c7d4a30537f913d30b","572659c8d4a30537f913d4bf","572659cbd4a30537f913d801","572659c7d4a30537f913d37e","572659ccd4a30537f913d8ed","572659ccd4a30537f913d895","572659cdd4a30537f913d9d5","572659cdd4a30537f913d9fc","572659cdd4a30537f913da07","572659cdd4a30537f913da0f","572659ced4a30537f913da12","572659ced4a30537f913da24","572659cfd4a30537f913da49","572659d1d4a30537f913da80","572659d3d4a30537f913daa6","572659d3d4a30537f913dac1","572659d3d4a30537f913dac9","572659d8d4a30537f913dafe","572659d9d4a30537f913db0c","572659dbd4a30537f913db2e","572659dcd4a30537f913db37","572659ddd4a30537f913db6c","572659ded4a30537f913db7c","572659dfd4a30537f913db8a","572659dfd4a30537f913db92","572659e0d4a30537f913db9a","572659e2d4a30537f913dbc0","572659e6d4a30537f913dbd8","572659e9d4a30537f913dbe9","572659efd4a30537f913dc07","57265a08d4a30537f913dc1a","57265a09d4a30537f913dc20","57265a89d4a30537f913dc2b"]},"updatedByParent":false}]
+[{
+	"_id": "57265921d4a30537f91397ee",
+	"updatedByParent": true,
+	"subject": "GSST",
+	"text": "Gender and Sexuality Studies",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265921d4a30537f91397ec"]
+	}
+}, {
+	"_id": "57265927d4a30537f913983c",
+	"updatedByParent": true,
+	"subject": "INTP",
+	"text": "Interpretation Theory",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265927d4a30537f913983a"]
+	}
+}, {
+	"_id": "57265935d4a30537f9139962",
+	"updatedByParent": true,
+	"subject": "GREK",
+	"text": "Greek",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["57265935d4a30537f9139961"]
+	}
+}, {
+	"_id": "57265953d4a30537f9139ba6",
+	"updatedByParent": true,
+	"subject": "LATN",
+	"text": "Latin",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265953d4a30537f9139ba5"]
+	}
+}, {
+	"_id": "5726597fd4a30537f913a1f3",
+	"updatedByParent": true,
+	"subject": "FMST",
+	"text": "Film and Media Studies",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["5726597fd4a30537f913a1e1"]
+	}
+}, {
+	"_id": "5726597fd4a30537f913a233",
+	"updatedByParent": true,
+	"subject": "ASTR",
+	"text": "Astronomy",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["5726597fd4a30537f913a229"]
+	}
+}, {
+	"_id": "57265983d4a30537f913a47b",
+	"updatedByParent": true,
+	"subject": "ARAB",
+	"text": "Arabic",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265983d4a30537f913a469"]
+	}
+}, {
+	"_id": "57265985d4a30537f913a5f6",
+	"updatedByParent": true,
+	"subject": "LATN",
+	"text": "Latin",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["57265985d4a30537f913a5a9"]
+	}
+}, {
+	"_id": "57265991d4a30537f913acff",
+	"updatedByParent": true,
+	"subject": "PPOL",
+	"text": "Public Policy",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265991d4a30537f913acf2"]
+	}
+}, {
+	"_id": "57265993d4a30537f913aebd",
+	"updatedByParent": true,
+	"subject": "OCST",
+	"text": "Off Campus Study",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265993d4a30537f913ae8b"]
+	}
+}, {
+	"_id": "57265993d4a30537f913aee2",
+	"updatedByParent": true,
+	"subject": "LALS",
+	"text": "Latin American\u0026Latino Studies",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265993d4a30537f913aeaa"]
+	}
+}, {
+	"_id": "57265994d4a30537f913af93",
+	"updatedByParent": true,
+	"subject": "GMST",
+	"text": "German Studies",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265994d4a30537f913af79"]
+	}
+}, {
+	"_id": "57265995d4a30537f913afba",
+	"updatedByParent": true,
+	"subject": "COGS",
+	"text": "Cognitive Science",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265995d4a30537f913afaa"]
+	}
+}, {
+	"_id": "57265995d4a30537f913aff2",
+	"updatedByParent": true,
+	"subject": "ISLM",
+	"text": "Islamic Studies",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["57265995d4a30537f913afde"]
+	}
+}, {
+	"_id": "57265998d4a30537f913b1c6",
+	"updatedByParent": true,
+	"subject": "CLST",
+	"text": "Classical Studies",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265998d4a30537f913b1a9"]
+	}
+}, {
+	"_id": "5726599cd4a30537f913b492",
+	"updatedByParent": true,
+	"subject": "ANTH",
+	"text": "Anthropology",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["5726599cd4a30537f913b47c"]
+	}
+}, {
+	"_id": "572659a7d4a30537f913bbd2",
+	"updatedByParent": true,
+	"subject": "STAT",
+	"text": "Statistics",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659a7d4a30537f913bb9b"]
+	}
+}, {
+	"_id": "572659aad4a30537f913bdd6",
+	"updatedByParent": true,
+	"subject": "JPNS",
+	"text": "Japanese",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659a9d4a30537f913bd8d"]
+	}
+}, {
+	"_id": "572659c1d4a30537f913ce59",
+	"updatedByParent": true,
+	"subject": "ARAB",
+	"text": "Arabic",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659c0d4a30537f913cd5b"]
+	}
+}, {
+	"_id": "572659c7d4a30537f913d30b",
+	"updatedByParent": true,
+	"subject": "BLST",
+	"text": "Black Studies",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659c6d4a30537f913d294"]
+	}
+}, {
+	"_id": "572659c7d4a30537f913d37e",
+	"updatedByParent": true,
+	"subject": "EDUC",
+	"text": "Educational Studies",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659c7d4a30537f913d34c"]
+	}
+}, {
+	"_id": "572659c8d4a30537f913d4bf",
+	"updatedByParent": true,
+	"subject": "ARTH",
+	"text": "Art History",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659c7d4a30537f913d3c3"]
+	}
+}, {
+	"_id": "572659cbd4a30537f913d801",
+	"updatedByParent": true,
+	"subject": "PSYC",
+	"text": "Psychology",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659cad4a30537f913d72d"]
+	}
+}, {
+	"_id": "572659ccd4a30537f913d895",
+	"updatedByParent": true,
+	"subject": "PHIL",
+	"text": "Philosophy",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659ccd4a30537f913d87f"]
+	}
+}, {
+	"_id": "572659ccd4a30537f913d8c9",
+	"updatedByParent": true,
+	"subject": "LALS",
+	"text": "Latin American\u0026Latino Studies",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659ccd4a30537f913d8b5"]
+	}
+}, {
+	"_id": "572659ccd4a30537f913d8ed",
+	"updatedByParent": true,
+	"subject": "MATH",
+	"text": "Mathematics",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659ccd4a30537f913d8db"]
+	}
+}, {
+	"_id": "572659ccd4a30537f913d8fc",
+	"updatedByParent": true,
+	"subject": "INTP",
+	"text": "Interpretation Theory",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659c8d4a30537f913d4aa"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913d9b0",
+	"updatedByParent": true,
+	"subject": "GMST",
+	"text": "German Studies",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913d99b"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913d9b6",
+	"updatedByParent": true,
+	"subject": "COGS",
+	"text": "Cognitive Science",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659cbd4a30537f913d7e9"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913d9d5",
+	"updatedByParent": true,
+	"subject": "DANC",
+	"text": "Dance",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913d9c0"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913d9fc",
+	"updatedByParent": true,
+	"subject": "PEAC",
+	"text": "Peace and Conflict Studies",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913d9e9"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913da00",
+	"updatedByParent": true,
+	"subject": "SOCI",
+	"text": "Sociology",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913d9a4"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913da04",
+	"updatedByParent": true,
+	"subject": "PEAC",
+	"text": "Peace and Conflict Studies",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913d9c7"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913da06",
+	"updatedByParent": true,
+	"subject": "STAT",
+	"text": "Statistics",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913d9d6"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913da07",
+	"updatedByParent": true,
+	"subject": "RUSS",
+	"text": "Russian",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913d9ea"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913da0c",
+	"updatedByParent": true,
+	"subject": "ARTH",
+	"text": "Art History",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913d9fb"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913da0d",
+	"updatedByParent": true,
+	"subject": "FMST",
+	"text": "Film and Media Studies",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913d9ff"]
+	}
+}, {
+	"_id": "572659cdd4a30537f913da0f",
+	"updatedByParent": true,
+	"subject": "ECON",
+	"text": "Economics",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913d9fe"]
+	}
+}, {
+	"_id": "572659ced4a30537f913da12",
+	"updatedByParent": true,
+	"subject": "CHIN",
+	"text": "Chinese",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913da09"]
+	}
+}, {
+	"_id": "572659ced4a30537f913da14",
+	"updatedByParent": true,
+	"subject": "RUSS",
+	"text": "Russian",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659cdd4a30537f913da08"]
+	}
+}, {
+	"_id": "572659ced4a30537f913da18",
+	"updatedByParent": true,
+	"subject": "ANTH",
+	"text": "Anthropology",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659ced4a30537f913da13"]
+	}
+}, {
+	"_id": "572659ced4a30537f913da19",
+	"updatedByParent": true,
+	"subject": "ENGR",
+	"text": "Engineering",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659ced4a30537f913da15"]
+	}
+}, {
+	"_id": "572659ced4a30537f913da24",
+	"updatedByParent": true,
+	"subject": "PHED",
+	"text": "Physical Education",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659ced4a30537f913da1e"]
+	}
+}, {
+	"_id": "572659cfd4a30537f913da49",
+	"updatedByParent": true,
+	"subject": "ENVS",
+	"text": "Environmental Studies",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659cfd4a30537f913da42"]
+	}
+}, {
+	"_id": "572659cfd4a30537f913da4a",
+	"updatedByParent": true,
+	"subject": "ANCH",
+	"text": "Ancient History",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659cfd4a30537f913da47"]
+	}
+}, {
+	"_id": "572659cfd4a30537f913da53",
+	"updatedByParent": true,
+	"subject": "JPNS",
+	"text": "Japanese",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659cfd4a30537f913da52"]
+	}
+}, {
+	"_id": "572659d0d4a30537f913da64",
+	"updatedByParent": true,
+	"subject": "CHEM",
+	"text": "Chemistry",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659d0d4a30537f913da61"]
+	}
+}, {
+	"_id": "572659d1d4a30537f913da80",
+	"updatedByParent": true,
+	"subject": "FREN",
+	"text": "French",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659d1d4a30537f913da7f"]
+	}
+}, {
+	"_id": "572659d3d4a30537f913daa3",
+	"updatedByParent": true,
+	"subject": "OCST",
+	"text": "Off Campus Study",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659d2d4a30537f913daa0"]
+	}
+}, {
+	"_id": "572659d3d4a30537f913daa6",
+	"updatedByParent": true,
+	"subject": "HIST",
+	"text": "History",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659d2d4a30537f913daa2"]
+	}
+}, {
+	"_id": "572659d3d4a30537f913dac0",
+	"updatedByParent": true,
+	"subject": "BIOL",
+	"text": "Biology",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659d3d4a30537f913daba"]
+	}
+}, {
+	"_id": "572659d3d4a30537f913dac1",
+	"updatedByParent": true,
+	"subject": "SOCI",
+	"text": "Sociology",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659d3d4a30537f913dabb"]
+	}
+}, {
+	"_id": "572659d3d4a30537f913dac5",
+	"updatedByParent": true,
+	"subject": "FREN",
+	"text": "French",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659d3d4a30537f913dac3"]
+	}
+}, {
+	"_id": "572659d3d4a30537f913dac9",
+	"updatedByParent": true,
+	"subject": "CHEM",
+	"text": "Chemistry",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659d3d4a30537f913dac7"]
+	}
+}, {
+	"_id": "572659d4d4a30537f913dad9",
+	"updatedByParent": true,
+	"subject": "LING",
+	"text": "Linguistics",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659d4d4a30537f913dad8"]
+	}
+}, {
+	"_id": "572659d6d4a30537f913dae9",
+	"updatedByParent": true,
+	"subject": "PHYS",
+	"text": "Physics",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659d6d4a30537f913dae8"]
+	}
+}, {
+	"_id": "572659d7d4a30537f913daf8",
+	"updatedByParent": true,
+	"subject": "CLST",
+	"text": "Classical Studies",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659d7d4a30537f913daf1"]
+	}
+}, {
+	"_id": "572659d8d4a30537f913dafe",
+	"updatedByParent": true,
+	"subject": "PHYS",
+	"text": "Physics",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659d8d4a30537f913dafd"]
+	}
+}, {
+	"_id": "572659d9d4a30537f913db0b",
+	"updatedByParent": true,
+	"subject": "ASTR",
+	"text": "Astronomy",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659d9d4a30537f913db08"]
+	}
+}, {
+	"_id": "572659d9d4a30537f913db0c",
+	"updatedByParent": true,
+	"subject": "STUA",
+	"text": "Studio Arts",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659d9d4a30537f913db09"]
+	}
+}, {
+	"_id": "572659dad4a30537f913db16",
+	"updatedByParent": true,
+	"subject": "PSYC",
+	"text": "Psychology",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659d9d4a30537f913db15"]
+	}
+}, {
+	"_id": "572659dad4a30537f913db1d",
+	"updatedByParent": true,
+	"subject": "THEA",
+	"text": "Theater",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659dad4a30537f913db1a"]
+	}
+}, {
+	"_id": "572659dbd4a30537f913db2d",
+	"updatedByParent": true,
+	"subject": "MATH",
+	"text": "Mathematics",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659dbd4a30537f913db2a"]
+	}
+}, {
+	"_id": "572659dbd4a30537f913db2e",
+	"updatedByParent": true,
+	"subject": "RELG",
+	"text": "Religion",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659dbd4a30537f913db2c"]
+	}
+}, {
+	"_id": "572659dcd4a30537f913db37",
+	"updatedByParent": true,
+	"subject": "BIOL",
+	"text": "Biology",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659dbd4a30537f913db35"]
+	}
+}, {
+	"_id": "572659dcd4a30537f913db38",
+	"updatedByParent": true,
+	"subject": "MUSI",
+	"text": "Music",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659dbd4a30537f913db36"]
+	}
+}, {
+	"_id": "572659dcd4a30537f913db52",
+	"updatedByParent": true,
+	"subject": "SPAN",
+	"text": "Spanish",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659dcd4a30537f913db4d"]
+	}
+}, {
+	"_id": "572659dcd4a30537f913db56",
+	"updatedByParent": true,
+	"subject": "PHIL",
+	"text": "Philosophy",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659dcd4a30537f913db51"]
+	}
+}, {
+	"_id": "572659dcd4a30537f913db5e",
+	"updatedByParent": true,
+	"subject": "DANC",
+	"text": "Dance",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659dcd4a30537f913db5c"]
+	}
+}, {
+	"_id": "572659ddd4a30537f913db6c",
+	"updatedByParent": true,
+	"subject": "ANCH",
+	"text": "Ancient History",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659ddd4a30537f913db6b"]
+	}
+}, {
+	"_id": "572659ded4a30537f913db7c",
+	"updatedByParent": true,
+	"subject": "ENGL",
+	"text": "English Literature",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659ded4a30537f913db7b"]
+	}
+}, {
+	"_id": "572659dfd4a30537f913db89",
+	"updatedByParent": true,
+	"subject": "ECON",
+	"text": "Economics",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659dfd4a30537f913db87"]
+	}
+}, {
+	"_id": "572659dfd4a30537f913db8a",
+	"updatedByParent": true,
+	"subject": "MUSI",
+	"text": "Music",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659dfd4a30537f913db86"]
+	}
+}, {
+	"_id": "572659dfd4a30537f913db92",
+	"updatedByParent": true,
+	"subject": "CPSC",
+	"text": "Computer Science",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659dfd4a30537f913db91"]
+	}
+}, {
+	"_id": "572659e0d4a30537f913db9a",
+	"updatedByParent": true,
+	"subject": "THEA",
+	"text": "Theater",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659e0d4a30537f913db98"]
+	}
+}, {
+	"_id": "572659e0d4a30537f913db9e",
+	"updatedByParent": true,
+	"subject": "GSST",
+	"text": "Gender and Sexuality Studies",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659e0d4a30537f913db9c"]
+	}
+}, {
+	"_id": "572659e1d4a30537f913dbab",
+	"updatedByParent": true,
+	"subject": "ENVS",
+	"text": "Environmental Studies",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659e1d4a30537f913dba8"]
+	}
+}, {
+	"_id": "572659e1d4a30537f913dbb3",
+	"updatedByParent": true,
+	"subject": "EDUC",
+	"text": "Educational Studies",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659e1d4a30537f913dbb2"]
+	}
+}, {
+	"_id": "572659e2d4a30537f913dbbb",
+	"updatedByParent": true,
+	"subject": "STUA",
+	"text": "Studio Arts",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659e2d4a30537f913dbba"]
+	}
+}, {
+	"_id": "572659e2d4a30537f913dbc0",
+	"updatedByParent": true,
+	"subject": "LING",
+	"text": "Linguistics",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659e2d4a30537f913dbbe"]
+	}
+}, {
+	"_id": "572659e6d4a30537f913dbd1",
+	"updatedByParent": true,
+	"subject": "LITR",
+	"text": "Literature",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659e5d4a30537f913dbd0"]
+	}
+}, {
+	"_id": "572659e6d4a30537f913dbd8",
+	"updatedByParent": true,
+	"subject": "SOAN",
+	"text": "Sociology \u0026 Anthropology",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659e6d4a30537f913dbd7"]
+	}
+}, {
+	"_id": "572659e9d4a30537f913dbe9",
+	"updatedByParent": true,
+	"subject": "LITR",
+	"text": "Literature",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659e9d4a30537f913dbe7"]
+	}
+}, {
+	"_id": "572659ebd4a30537f913dbf5",
+	"updatedByParent": true,
+	"subject": "ENGL",
+	"text": "English Literature",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659ebd4a30537f913dbf3"]
+	}
+}, {
+	"_id": "572659ecd4a30537f913dbf8",
+	"updatedByParent": true,
+	"subject": "POLS",
+	"text": "Political Science",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659ecd4a30537f913dbf7"]
+	}
+}, {
+	"_id": "572659ecd4a30537f913dbfc",
+	"updatedByParent": true,
+	"subject": "SOAN",
+	"text": "Sociology \u0026 Anthropology",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659ecd4a30537f913dbfb"]
+	}
+}, {
+	"_id": "572659edd4a30537f913dc02",
+	"updatedByParent": true,
+	"subject": "CPSC",
+	"text": "Computer Science",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659edd4a30537f913dc01"]
+	}
+}, {
+	"_id": "572659efd4a30537f913dc07",
+	"updatedByParent": true,
+	"subject": "SPAN",
+	"text": "Spanish",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["572659efd4a30537f913dc06"]
+	}
+}, {
+	"_id": "572659f0d4a30537f913dc0e",
+	"updatedByParent": true,
+	"subject": "PHED",
+	"text": "Physical Education",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659f0d4a30537f913dc0c"]
+	}
+}, {
+	"_id": "572659f0d4a30537f913dc10",
+	"updatedByParent": true,
+	"subject": "HIST",
+	"text": "History",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659f0d4a30537f913dc0f"]
+	}
+}, {
+	"_id": "572659f4d4a30537f913dc14",
+	"updatedByParent": true,
+	"subject": "CHIN",
+	"text": "Chinese",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["572659f4d4a30537f913dc13"]
+	}
+}, {
+	"_id": "57265a08d4a30537f913dc1a",
+	"updatedByParent": true,
+	"subject": "GREK",
+	"text": "Greek",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265a07d4a30537f913dc19"]
+	}
+}, {
+	"_id": "57265a09d4a30537f913dc20",
+	"updatedByParent": true,
+	"subject": "ENGR",
+	"text": "Engineering",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265a09d4a30537f913dc1f"]
+	}
+}, {
+	"_id": "57265a88d4a30537f913dc24",
+	"updatedByParent": true,
+	"subject": "RELG",
+	"text": "Religion",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"deps": {
+		"EllucianClassListParser": ["57265a88d4a30537f913dc23"]
+	}
+}, {
+	"_id": "57265a88d4a30537f913dc25",
+	"url": "https://myswat.swarthmore.edu/pls/bwckgens.p_proc_term_date",
+	"host": "swarthmore.edu",
+	"termId": "201604",
+	"lastUpdateTime": 1.462130832635e+12,
+	"deps": {
+		"EllucianSubjectParser": ["57265935d4a30537f9139962", "57265985d4a30537f913a5f6", "57265995d4a30537f913aff2", "572659c1d4a30537f913ce59", "572659ccd4a30537f913d8c9", "572659ccd4a30537f913d8fc", "572659cdd4a30537f913d9b0", "572659cdd4a30537f913d9b6", "572659cdd4a30537f913da00", "572659cdd4a30537f913da04", "572659cdd4a30537f913da06", "572659cdd4a30537f913da0c", "572659cdd4a30537f913da0d", "572659ced4a30537f913da14", "572659ced4a30537f913da18", "572659ced4a30537f913da19", "572659cfd4a30537f913da4a", "572659cfd4a30537f913da53", "572659d0d4a30537f913da64", "572659d3d4a30537f913daa3", "572659d3d4a30537f913dac0", "572659d3d4a30537f913dac5", "572659d4d4a30537f913dad9", "572659d6d4a30537f913dae9", "572659d7d4a30537f913daf8", "572659d9d4a30537f913db0b", "572659dad4a30537f913db16", "572659dad4a30537f913db1d", "572659dbd4a30537f913db2d", "572659dcd4a30537f913db38", "572659dcd4a30537f913db52", "572659dcd4a30537f913db56", "572659dcd4a30537f913db5e", "572659dfd4a30537f913db89", "572659e0d4a30537f913db9e", "572659e1d4a30537f913dbab", "572659e1d4a30537f913dbb3", "572659e2d4a30537f913dbbb", "572659e6d4a30537f913dbd1", "572659ebd4a30537f913dbf5", "572659ecd4a30537f913dbf8", "572659ecd4a30537f913dbfc", "572659edd4a30537f913dc02", "572659f0d4a30537f913dc0e", "572659f0d4a30537f913dc10", "572659f4d4a30537f913dc14", "57265a88d4a30537f913dc24"]
+	},
+	"updatedByParent": false
+}, {
+	"_id": "57265a89d4a30537f913dc2b",
+	"updatedByParent": true,
+	"subject": "POLS",
+	"text": "Political Science",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"deps": {
+		"EllucianClassListParser": ["57265a89d4a30537f913dc2a"]
+	}
+}, {
+	"_id": "57265a89d4a30537f913dc2c",
+	"url": "https://myswat.swarthmore.edu/pls/bwckgens.p_proc_term_date",
+	"host": "swarthmore.edu",
+	"termId": "201602",
+	"lastUpdateTime": 1.462130832431e+12,
+	"deps": {
+		"EllucianSubjectParser": ["57265a09d4a30537f913dc20", "57265a89d4a30537f913dc2b"]
+	},
+	"updatedByParent": false
+}]

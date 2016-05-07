@@ -6,7 +6,6 @@ var fs = require('fs')
 
 var macros = require('../macros')
 
-
 var username;
 var password;
 var database;
@@ -30,7 +29,7 @@ if (macros.PRODUCTION || macros.DEVELOPMENT) {
 	database = monk(username + ':' + password + '@' + macros.DATABASE_URL);
 }
 else if (macros.UNIT_TESTS) {
-	database = require('./tests/mockDB')
+	database = require('./tests/mockDB');
 }
 
 function BaseDB() {

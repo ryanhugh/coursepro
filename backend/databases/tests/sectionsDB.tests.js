@@ -8,8 +8,8 @@ describe('sectionsDB', function () {
 	describe('thing', function () {
 
 		it('exists', function (done) {
-
-			sectionsDB.find({
+ 
+			sectionsDB.find({   
 				_id: '5726589dd4a30537f9139302'
 			}, {}, function (err, docs) {
 
@@ -25,8 +25,8 @@ describe('sectionsDB', function () {
 						"profs": ["Kelly Mcconville"],
 						"where": "Science Center L32",
 						"type": "Class",
-						"times": {
-							"2": [{
+						"times": { 
+							"2": [{ 
 								"start": 30600,
 								"end": 35100
 							}],
@@ -49,34 +49,32 @@ describe('sectionsDB', function () {
 					"updatedByParent": false
 				})
 				console.log(err, docs);
-				console.log("DONE!!!!");
+				console.log("222222!!!!");
 
 
 
 				done()
 			}.bind(this))
-
-
-
 		});
+	});   
 
+
+	describe('thing2', function () {
 		it('should behave...', function (done) {
-			jasmine.DEFAULT_TIMEOUT_INTERVAL = 9999999999999
 			var pageData = new PageData({
 				dbData: {
 					url: 'https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched',
-					// url: 'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched',
 				}
 			})
 			pageData.findSupportingParser()
 
-			pageData.loadFromDB(function (arg) {
-				expect(1).toBe(3)
-				console.log(arguments, 'HEREE', pageData, pageData.deps)
+			pageData.loadFromDB(function (err) {
+				expect(!!err).toBe(false)
+				console.log(arguments, 'DONE!!!',err)
+				// expect(1).toBe(3)
 				done()
 			}.bind(this))
 
 		});
-
 	});
 });
