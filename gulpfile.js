@@ -1,26 +1,24 @@
 'use strict';
 
-
-
-var _require = require;
-var require = function (moduleName) {
-	var module;
-	return new Proxy(function () {
-		if (!module) {
-			module = _require(moduleName)
-		}
-		return module.apply(this, arguments)
-	}, {
-		get: function (target, name) {
+if (typeof Proxy != 'undefined') {
+	var _require = require;
+	require = function (moduleName) {
+		var module;
+		return new Proxy(function () {
 			if (!module) {
 				module = _require(moduleName)
 			}
-			return module[name];
-		}
-	})
-};
-
-
+			return module.apply(this, arguments)
+		}, {
+			get: function (target, name) {
+				if (!module) {
+					module = _require(moduleName)
+				}
+				return module[name];
+			}
+		})
+	};
+}
 
 // gulp stuff
 var gulp = require('gulp');

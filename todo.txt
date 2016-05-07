@@ -25,6 +25,7 @@ angular debug mode off
 the node injection graph thing
 for node injection, make sure all same type and do overlapping set of names to find node name
 
+can remove testsMgr from gulpfile?
 
 
 

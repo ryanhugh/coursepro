@@ -41,7 +41,6 @@
 
 
 // var jasmine = require('gulp-jasmine');
-
 var _require = require;
 var require = function (moduleName) {
 	var module;
@@ -60,13 +59,11 @@ var require = function (moduleName) {
 	})
 };
 
-console.log('yoooo')
-exports.d=3
-
-var a = require('./test2')
-// var a = require('./test2')
-console.log(a)
-
+console.log('Before require');
+var a = require('./module')
+console.log('After require');
+console.log(a.d)
+console.log('After log module');
 // console.log("[before] obj.foo = " + obj.foo);
 // obj.foo = "bar";
 // console.log("[after] obj.foo = " + obj.foo);
