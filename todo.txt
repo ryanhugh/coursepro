@@ -1,6 +1,8 @@
 https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
 
 max number of simultanous classes wawtching???
+
+dont upgrade to nodev6 until this is fixed https://github.com/gulpjs/gulp/issues/1571
 v5.10.1
 
 
@@ -15,8 +17,9 @@ why are the terms not sorted on the dropdown? -- done
 
 
 LOOKING INTO
-safe to lookup docs by url in backend? - ehhh
 backend unit test framework
+
+safe to lookup docs by url in backend? - ehhh
  - does jasmine have a way to only log on fail? -- done
  
  - somehow prevnet monk from keeping the connection open -- done
@@ -26,6 +29,9 @@ the node injection graph thing
 for node injection, make sure all same type and do overlapping set of names to find node name
 
 can remove testsMgr from gulpfile?
+
+
+
 
 
 

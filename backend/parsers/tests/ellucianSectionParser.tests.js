@@ -5,32 +5,28 @@ var ellucianSectionParser = require('../ellucianSectionParser')
 describe('EllucianSectionParser', function () {
 
 	describe('thing', function () {
-		// return;
+		
 		it('exists', function (done) {
-			
+
 			expect(ellucianSectionParser).not.toBe(null);
 			console.log("one running")
-			setTimeout(function(){
-			console.log("one done")
-				// console.log(jasmine.getEnv())
+			setTimeout(function () {
+				console.log("one done")
 				done()
-				
-				// console.log(jasmine.getEnv())
-				
-			},1000)
+			}, 1000)
 
-		});	
-		
-		it('exists22', function () {
-			
-			expect(ellucianSectionParser).not.toBe(null);
-				console.log('2 running')
-			expect(1).toBe(1);
-				console.log('2 fail')
-			
-			
 		});
-		
-		  
+
+		it('exists22', function () {
+
+			expect(ellucianSectionParser).not.toBe(null);
+			console.log('2 running')
+			expect(1).toBe(1);
+			console.log('2 fail')
+
+
+		});
+
+
 	});
 });

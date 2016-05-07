@@ -47,7 +47,12 @@ function ConsoleReporter() {
   };
 
   this.jasmineDone = function (result) {
-    baseDB.close();
+    try {
+      baseDB.close();
+    }
+    catch (e) {
+      console.log('In jasmineReporter.js: ',e);
+    }
     printNewline();
     printNewline();
     if (failedSpecs.length > 0) {
@@ -101,27 +106,28 @@ function ConsoleReporter() {
     onComplete(failureCount === 0);
   };
 
-
+  // NOTE: if a spec fails an expect().toBe after it called done, it will cause some other spec error to be logged :/
+  // the stack still goes where it should
   var _consoleLog = console.log.bind(console)
-  var logs = []
-  this.specStarted = function () {
-    logs = [];
+  var logs = {}
+  this.specStarted = function (spec) {
+    logs[spec.id] = []
 
     console.log = function () {
       var args = Array.prototype.slice.call(arguments);
-      logs.push(args)
+      logs[spec.id].push(args)
     }
   }
 
   this.specDone = function (result) {
     console.log = _consoleLog;
-    // console.log("yooooo",spec.failedExpectations)
 
     if (result.failedExpectations.length > 0) {
-      logs.forEach(function (log) {
+      logs[result.id].forEach(function (log) {
         console.log.apply(console, log)
       })
     }
+    logs[result.id] = undefined
 
     specCount++;
 

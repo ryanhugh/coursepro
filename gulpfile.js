@@ -235,6 +235,7 @@ gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 // if u want to u can run individual test files with
 // jasmine-node ellucianSectionParser.tests.js  --matchall
 gulp.task('btestRun', function () {
+	console.log("RRUNNING BTESTRUN");
 	// gulp-jasmine works on filepaths so you can't have any plugins before it 
 	gulp.src('backend/**/*.tests.js').pipe(jasmine({
 		reporter: new jasmineReporter()
@@ -242,7 +243,7 @@ gulp.task('btestRun', function () {
 });
 
 gulp.task('btest', ['btestRun'], function () {
-	// gulp.watch(['backend/**/*.tests.js'], ['btestRun']);
+	gulp.watch(['backend/**/*.tests.js'], ['btestRun']);
 });
 
 
