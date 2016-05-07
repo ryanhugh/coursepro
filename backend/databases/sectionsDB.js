@@ -44,48 +44,6 @@ SectionsDB.prototype.updateDatabase = function (newData, oldData, callback) {
 	BaseDB.prototype.updateDatabase.call(this, newData, oldData, callback);
 }
 
-
-SectionsDB.prototype.loadTestData = function (callback) {
-
-	async.map([{
-			"_id": "567ae748817bd7005fd103a5",
-			"url": "https://myswat.swarthmore.edu/pls/bwckschd.p_disp_detail_sched?term_in=201602&crn_in=25115",
-			"crn": "25115",
-			"meetings": [{
-				"startDate": 16819,
-				"endDate": 16935,
-				"profs": ["TBA"],
-				"where": "Tba"
-			}],
-			"host": "swarthmore.edu",
-			"termId": "201602",
-			"subject": "CLST",
-			"classId": "098",
-			"seatsCapacity": 999,
-			"seatsRemaining": 995,
-			"waitCapacity": 0,
-			"waitRemaining": 0,
-			"lastUpdateTime": 1450895176965,
-			"deps": {},
-			"updatedByParent": false
-		}],
-		function (classData, callback) {
-			this.table.insert(classData, function (err, newDoc) {
-				callback(err)
-			}.bind(this))
-		}.bind(this),
-		function (err) {
-			if (err) {
-				console.log('error inserting in load test data in classesdb??')
-				return callback(err);
-			}
-
-			callback()
-		}.bind(this))
-};
-
-
-
 SectionsDB.prototype.SectionsDB = SectionsDB;
 module.exports = new SectionsDB();
 

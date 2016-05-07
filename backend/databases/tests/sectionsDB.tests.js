@@ -49,7 +49,6 @@ describe('sectionsDB', function () {
 					"updatedByParent": false
 				})
 				console.log(err, docs);
-				console.log("222222!!!!");
 
 
 

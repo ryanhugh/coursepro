@@ -972,49 +972,6 @@ UsersDB.prototype.setUserVar = function (name, value, loginKey, callback) {
 };
 
 
-UsersDB.prototype.loadTestData = function (callback) {
-
-	this.table.insert({
-			"_id": "567c58302d8576e482f04e82",
-			"email": "rysquash@gmail.com",
-			"subscriptions": {},
-			"authenticated": true,
-			"watching": {
-				"watchCount": {},
-				"classes": ['567ae73c817bd7005fd101ce', 'hiii'],
-				"sections": ['567ae748817bd7005fd103a5', 'hiii']
-			},
-			"loginKey": "YTWi",
-			"loginKeyCreationDate": 1450989615999,
-			"name": "Ryan H",
-			"googleId": "42",
-			"updatedByParent": false
-		},
-		function (err, newDoc) {
-			callback(err);
-		}.bind(this))
-};
-
-//this function is not ran! yet
-UsersDB.prototype.tests = function (callback) {
-	return callback()
-		// console.log('running the thng thdfasjfklj')
-
-
-	// this.find({}, {
-	// 	shouldBeOnlyOne: false,
-	// 	skipValidation: true
-	// }, function (err, results) {
-	// 	console.log(results)
-	// }.bind(this))
-
-	// this.getUsersWatchCache(function (err, data) {
-	// 	console.log(err, JSON.stringify(data))
-	// 	callback()
-	// 		// this.close()
-	// }.bind(this))
-
-};
 
 
 UsersDB.prototype.UsersDB = UsersDB;

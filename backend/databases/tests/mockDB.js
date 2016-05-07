@@ -39,7 +39,7 @@ MockTable.prototype.findDiff = function (src, dest) {
 	}.bind(this))
 
 	return retVal;
-} 
+}
 
 
 MockTable.prototype.find = function (lookup, callback) {
@@ -56,18 +56,69 @@ MockTable.prototype.find = function (lookup, callback) {
 		this.rows.forEach(function (row) {
 			var diff = this.findDiff(lookup, row);
 			if (diff.different.length == 0 && diff.srcOnly.length == 0) {
-				retVal.push(row) 
+				retVal.push(row)
 			}
 		}.bind(this))
 		callback(null, retVal)
 	}
 };
 
-MockTable.prototype.update = function () {
-	elog('mock table has no update!!')
+
+// this dosen't support mongo $$$ jawns
+MockTable.prototype.update = function (query, newDoc, config, callback) {
+	if (_.keys(config).length != 0) {
+		console.warn("UNKNown key", config)
+		console.trace()
+	}
+
+	if (query._id) {
+		this.dataIdMap[query._id] = newDoc;
+	}
+
+	this.find(query, function (err, docs) {
+		if (docs.length > 1) {
+			console.warn('ERROR where is >1 doc being updated at once')
+			console.trace()
+			return callback(null, docs.length)
+		}
+
+		if (docs.length === 0) {
+			return callback(null, docs.length)
+		}
+
+		// var ids = [];
+		// docs.forEach(function (foundDoc) {
+		// 	ids.push(foundDoc._id)
+		// }.bind(this))
+
+		// only supports 1 rn
+
+		var id = docs[0]._id;
+		this.dataIdMap[id] = newDoc
+
+		for (var i = 0; i < this.rows.length; i++) {
+			if (this.rows[i]._id == id) {
+				this.rows[i] = newDoc
+				return callback(null, docs.length)
+			}
+		}
+	}.bind(this))
 };
 
- 
+MockTable.prototype.insert = function (newDoc, callback) {
+	if (newDoc._id) {
+		console.warn('ERROR newdoc has a _id??')
+		console.trace()
+	}
+
+	var newDoc = _.cloneDeep(newDoc);
+
+	newDoc._id = Math.random() + ''
+	this.dataIdMap[newDoc._id] = newDoc;
+	this.rows.push(newDoc)
+};
+
+
 
 function MockDB() {
 

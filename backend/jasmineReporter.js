@@ -120,12 +120,19 @@ function ConsoleReporter() {
 
     console.log = function () {
       var args = Array.prototype.slice.call(arguments);
+      if (!logs[spec.id]) {
+        logs[spec.id] = []
+      }
       logs[spec.id].push(args)
     }
   }
 
   this.specDone = function (result) {
     console.log = _consoleLog;
+
+    if (!logs[result.id]) {
+        logs[result.id] = []
+      }
 
     if (result.failedExpectations.length > 0) {
       logs[result.id].forEach(function (log) {

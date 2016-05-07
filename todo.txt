@@ -21,7 +21,6 @@ backend unit test framework
 
 safe to lookup docs by url in backend? - ehhh
  - does jasmine have a way to only log on fail? -- done
- 
  - somehow prevnet monk from keeping the connection open -- done
 async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj)
 angular debug mode off -- done
