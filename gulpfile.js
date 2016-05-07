@@ -58,6 +58,13 @@ gulp.task('watchUglifyCSS', function () {
 
 
 function onError(err) {
+
+	if (!err.message) {
+		err = {
+			message:err
+		} 
+	}
+
 	// print the error (can replace with gulp-util)
 	console.log(err.message);
 	notify.onError({
@@ -229,6 +236,7 @@ gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 		configFile: __dirname + '/frontend/karma.conf.js',
 	}, function (exitCode) {
 		console.log('ERROR Karma has exited with ' + exitCode)
+		onError('KARMA has crashed!!!!');
 		process.exit()
 	}.bind(this)).start();
 });
