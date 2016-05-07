@@ -429,7 +429,14 @@ app.post('/search', function (req, res) {
 })
 
 
+// this is disabled for now just because it slows down the server too much
+// it does work, might be used in future
+// these are curl script to use it
+// curl -H "Content-Type: application/json" -X POST -d '{"url":"https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched"}' http://localhost/spider
+// curl -H "Content-Type: application/json" -X POST -d '{"url":"https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched"}' http://localhost/spider
+// curl -H "Content-Type: application/json" -X POST -d '{"url":"https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched"}' http://localhost/spider
 app.post('/spider', function (req, res) {
+	return res.send('404, yo');
 	if (!_(req.connection.remoteAddress).includes('127.0.0.1') && req.connection.remoteAddress != '::1') {
 		return res.send('404, yo'); // ;)
 	}

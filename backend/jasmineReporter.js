@@ -2,6 +2,11 @@
 var util = require('util')
 var baseDB = require('./databases/baseDB')
 
+// copied from node_modules\jasmine\lib\reporters\console_reporter.js, with some changes
+// dosent log . F or * as its runnign the tests
+// closes the db connection when its done
+
+
 var noopTimer = {
   start: function () {},
   elapsed: function () {
