@@ -323,17 +323,6 @@ BaseDB.prototype.close = function () {
 
 
 
-BaseDB.prototype.loadTestData = function (callback) {
-	console.log('ERROR loadTestData called on ', this.constructor.name, ' which did not override basedb!');
-	return callback()
-};
-
-
-BaseDB.prototype.tests = function (callback) {
-	return callback()
-
-};
-
 
 
 BaseDB.prototype.BaseDB = BaseDB;
