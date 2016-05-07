@@ -152,6 +152,9 @@ EllucianRequisitesParser.prototype.formatRequirements = function (data) {
 
 //splits a string by and/or and to json string (uparsed)
 EllucianRequisitesParser.prototype.convertStringToJSON = function (text) {
+
+	text = text.replace(/[\n\r\s]+/gi,' ')
+
 	var elements = [];
 
 	//split the string by dividers " and " and " or "
@@ -167,7 +170,6 @@ EllucianRequisitesParser.prototype.convertStringToJSON = function (text) {
 			elements.push('or');
 		}
 	}.bind(this));
-
 
 	var retVal = [];
 
@@ -344,8 +346,10 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 		console.log('warning, found elements, but no links or and or', elements);
 		return;
 	}
+	console.log(text);
 	text = this.convertStringToJSON(text);
 
+	console.log(text);
 	//parse the new json
 	try {
 		text = JSON.parse(text);
@@ -404,171 +408,6 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 
 	return text;
 };
-
-
-
-EllucianRequisitesParser.prototype.tests = function () {
-	require('../pageDataMgr')
-
-
-	//this is now just CATAOG URL WITH 234 INFRONT OF IT
-	//make this pretty too
-	var input = '(Collegiate (Credit) level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25" Minimum Grade of P and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P) or ( Eng - Place (Test) 03 and  Nelson Denny Total 081 and Collegiate Credit level  @#$"https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25" Minimum Grade of P)'
-
-	assert.deepEqual(this.convertStringToJSON(input), '[["@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=ENG&crse_in=050&schd_in=%25","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=REA&crse_in=050&schd_in=%25","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"],"or",["Eng - Place (Test) 03","and","Nelson Denny Total 081","and","@#$https://google.com/PROD/bwckctlg.p_disp_listcrse?term_in=201509&subj_in=MAT&crse_in=060&schd_in=%25"]]');
-
-
-	//make this pretty print
-	assert.deepEqual(this.formatRequirements([
-		["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25", "or", "https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"], "or", ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25", "or", "https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]
-	]), {
-		"type": "or",
-		"values": [{
-			"type": "or",
-			"values": ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25", "https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]
-		}, {
-			"type": "or",
-			"values": ["https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WELD&crse_in=1152&schd_in=%25", "https://www2.augustatech.edu/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201614&subj_in=WLD&crse_in=152&schd_in=%25"]
-		}]
-	});
-
-	//unmatched paren
-	assert.deepEqual(this.convertStringToJSON('( Eng - Place Test 03 and  Accuplacer (Reading) 071 and Collegiate Credit level'),
-		'[["Eng - Place Test 03","and","Accuplacer (Reading) 071","and","Collegiate Credit level"]');
-
-
-	assert.deepEqual(this.simplifyRequirements({
-		type: 'or',
-		values: [{
-			type: 'or',
-			values: ['1', {
-				type: 'or',
-				values: ['6']
-			}]
-		}, {
-			type: 'or',
-			values: ['1', {
-				type: 'or',
-				values: [{
-					type: 'or',
-					values: ['1', {
-						type: 'or',
-						values: ['6']
-					}]
-				}, {
-					type: 'or',
-					values: ['1', {
-						type: 'or',
-						values: ['6']
-					}]
-				}]
-			}]
-		}]
-	}), {
-		type: 'or',
-		values: ['1', '6', '1', '1', '6', '1', '6']
-	});
-
-
-
-
-	assert.deepEqual(this.groupRequirementsByAnd(
-			['https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1011&schd_in=%25',
-				'or',
-				'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCH&crse_in=101&schd_in=%25',
-				'and',
-				'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25',
-				'or',
-				'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25', 'or', 'link here'
-			]),
-
-		['https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1011&schd_in=%25',
-			'or', ['https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCH&crse_in=101&schd_in=%25',
-				'and',
-				'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25'
-			],
-			'or',
-			'https://google.com/pls/ban8/bwckctlg.p_disp_listcrse?term_in=201516&subj_in=MCHT&crse_in=1012&schd_in=%25',
-			'or',
-			'link here'
-		]);
-
-	assert.deepEqual(this.removeBlacklistedStrings({
-		type: 'and',
-		values: [
-			'hi', 'Pre-req for Math 015 1'
-		]
-	}), {
-		type: 'and',
-		values: ['hi']
-	})
-
-
-
-
-
-	fs.readFile('backend/tests/ellucianRequisitesParser/1.html', 'utf8', function (err, body) {
-		assert.equal(null, err);
-
-		var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201555&subj_code_in=PMC&crse_numb_in=6212'
-
-		var pageData = pageDataMgr.create({
-			dbData: {
-				url: url
-			}
-		});
-
-
-		pointer.handleRequestResponce(body, function (err, dom) {
-			assert.equal(null, err);
-
-			var prereqs = this.parseRequirementSection(pageData, dom[0].children, 'prerequisites');
-
-			assert.deepEqual(prereqs, {
-				"type": "or",
-				"values": [{
-					"classId": "6000",
-					"termId": "201555",
-					"subject": "PJM"
-				}, {
-					"type": "and",
-					"values": [{
-						"classId": "6210",
-						"termId": "201555",
-						"subject": "BTC"
-					}, {
-						"classId": "6100",
-						"termId": "201555",
-						"subject": "RGA"
-					}, {
-						"type": "or",
-						"values": [{
-							"classId": "6201",
-							"termId": "201555",
-							"subject": "RGA"
-						}, {
-							"classId": "6202",
-							"termId": "201555",
-							"subject": "RGA"
-						}]
-					}]
-				}]
-			})
-
-		}.bind(this))
-	}.bind(this));
-
-};
-
-
-
-
-
-
-
-
-
-
 
 
 
