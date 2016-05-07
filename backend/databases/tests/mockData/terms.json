@@ -1,4 +1,3 @@
 [{"_id":"57265a88d4a30537f913dc27","updatedByParent":true,"termId":"201604","text":"Fall 2016","host":"swarthmore.edu","deps":{"EllucianSubjectParser":["57265a88d4a30537f913dc25"]}},
 {"_id":"57265a89d4a30537f913dc2d","updatedByParent":true,"termId":"201602","text":"Spring 2016","host":"swarthmore.edu","deps":{"EllucianSubjectParser":["57265a89d4a30537f913dc2c"]}},
-{"_id":"57265a89d4a30537f913dc2e","url":"https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched","host":"swarthmore.edu","lastUpdateTime":1.462130831844e+12,"deps":{"CollegeNamesParser":["57265890d4a30537f91392a9"],"EllucianTermsParser":["57265a88d4a30537f913dc27","57265a89d4a30537f913dc2d"]},"updatedByParent":false},
-]
+{"_id":"57265a89d4a30537f913dc2e","url":"https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched","host":"swarthmore.edu","lastUpdateTime":1.462130831844e+12,"deps":{"CollegeNamesParser":["57265890d4a30537f91392a9"],"EllucianTermsParser":["57265a88d4a30537f913dc27","57265a89d4a30537f913dc2d"]},"updatedByParent":false}]
