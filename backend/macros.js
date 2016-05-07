@@ -9,7 +9,7 @@ function fixCWD() {
 
 	while (1) {
 		try {
-			fs.statSync('package.json');
+			fs.statSync('.git');
 		}
 		catch (e) {
 
