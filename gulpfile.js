@@ -57,6 +57,14 @@ gulp.task('watchUglifyCSS', function () {
 });
 
 
+function onError(err) {
+	// print the error (can replace with gulp-util)
+	console.log(err.message);
+	notify.onError({
+		message: 'Error: <%= error.message %>',
+		sound: false // deactivate sound?
+	})(err);
+}
 
 //javascript
 
@@ -108,16 +116,10 @@ function compileJS(shouldUglify) {
 
 
 		stream.on('error', function (err) {
-			// print the error (can replace with gulp-util)
-			console.log(err.message);
+			onError(err);
 			// end this stream
 			this.emit('end');
 		})
-
-		stream.on("error", notify.onError({
-			message: 'Error: <%= error.message %>',
-			sound: false // deactivate sound?
-		}))
 
 		stream = stream.pipe(source('allthejavascript.js'));
 
@@ -244,9 +246,15 @@ gulp.task('btestRun', function () {
 	}.bind(this))
 
 	// gulp-jasmine works on filepaths so you can't have any plugins before it 
-	gulp.src('backend/**/*.tests.js').pipe(jasmine({
+	gulp.src('backend/**/*.tests.js')
+
+	.pipe(jasmine({
 		reporter: new jasmineReporter()
 	}))
+	.on('error', function (err) {
+		onError(err);
+		this.emit('end');
+	})
 });
 
 gulp.task('btest', ['btestRun'], function () {

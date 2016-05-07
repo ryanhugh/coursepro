@@ -11,7 +11,6 @@ function MockTable(tableName) {
 	this.tableName = tableName
 }
 
-
 // copeid from frontend request.js
 MockTable.prototype.findDiff = function (src, dest) {
 
