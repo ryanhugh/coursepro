@@ -60,6 +60,8 @@ var require = function (moduleName) {
 	})
 };
 
+console.log('yoooo')
+exports.d=3
 
 var a = require('./test2')
 // var a = require('./test2')
