@@ -154,11 +154,15 @@ d3.json("/thing2.json", function(error, graph) {
   //   node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   // });
 
+var multiplyer = 1;
+// setTimeout(function () {
+//   multiplyer = 10
+// }.bind(this),6000)
   
 var yDelta = 150
 force.on("tick", function(e) {
 
-    var ky = e.alpha;
+    var ky = e.alpha *  multiplyer;
     links.forEach(function(d, i) {
       d.target.y += (d.target.depth * yDelta - d.target.y) * 5 * ky;
       if (d.target.y<50) {

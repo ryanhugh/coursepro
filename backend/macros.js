@@ -71,7 +71,7 @@ function setupTargetStates() {
 			};
 			return
 		}
-		else if (command === 'ftest' || command === 'btest') {
+		else if (_(command).includes('test')) {
 			exports.UNIT_TESTS = true;
 		}
 		else {

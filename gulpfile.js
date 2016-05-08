@@ -239,6 +239,9 @@ gulp.task('btest', ['btestRun'], function () {
 	gulp.watch(['backend/**/*.js'], ['btestRun']);
 });
 
+gulp.task('test', ['btest','ftest'], function () {
+});
+
 
 
 
