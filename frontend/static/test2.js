@@ -6,7 +6,7 @@
  var fill = d3.scale.category10();
 
  var force = d3.layout.force()
- 	.charge(-20000)
+ 	.charge(-18000)
  	.gravity(0.2)
  	.linkDistance(5)
  	.size([width, height])
@@ -21,7 +21,7 @@
  		.data(graph.links)
  		.enter().append("line")
  		.attr("class", "link")
- 		.style("stroke-width", 2);
+ 		.style("stroke-width", 4);
 
 
  	var node = svg.selectAll(".node")
