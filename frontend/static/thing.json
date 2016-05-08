@@ -2,7 +2,9 @@
     "nodes": [{
         "_id": "572e948914907ce51d0c3956",
         "name": "Basic Differential Equations",
-        "group": 0
+        "group": 0,
+        "x":200,
+        "y":50
     }, {
         "_id": "572e94d914907ce51d0c5e2a",
         "name": "Several Variable Calculus",

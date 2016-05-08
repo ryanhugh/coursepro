@@ -32,16 +32,22 @@ foreignObject {
     <script>
 
 var width = 2000,
-    height = 900;
+    height = 2000;
 
 var color = d3.scale.category20();
 
-var force = d3.layout.force()
-    .linkDistance(50)
-    .linkStrength(2)
-    .charge(-500)
-    .gravity(0)
-    .theta(0)
+// var force = d3.layout.force()
+    // .linkDistance(50)
+    // .linkStrength(2)
+    // .charge(-500)
+    // .gravity(0)
+    // .theta(0)
+    // .size([width, height]);
+
+    var force = d3.layout.force()
+    .gravity(.2)
+    .friction(.4)
+    .charge(-8000)
     .size([width, height]);
 
 var svg = d3.select("body").append("svg")
@@ -59,6 +65,7 @@ d3.json("/thing.json", function(error, graph) {
   nodes.forEach(function (node, index) {
     node.xGoal = Math.random()*1000;
     node.yGoal = node.group*100
+    node.depth = node.group+1
   }.bind(this))
 
   graph.links.forEach(function(link) {
@@ -126,15 +133,65 @@ d3.json("/thing.json", function(error, graph) {
 
   }.bind(this),50)
 
-  force.on("tick", function(e) {
+  // force.on("tick", function(e) {
 
 
 
-    // link.attr("d", function(d) {
-    //   return "M" + d[0].x + "," + d[0].y
-    //       + "S" + d[1].x + "," + d[1].y
-    //       + " " + d[2].x + "," + d[2].y;
-    // });
+  //   // link.attr("d", function(d) {
+  //   //   return "M" + d[0].x + "," + d[0].y
+  //   //       + "S" + d[1].x + "," + d[1].y
+  //   //       + " " + d[2].x + "," + d[2].y;
+  //   // });
+
+  //    link.attr("x1", function(d) { return d[0].x+125/2; })
+  //       .attr("y1", function(d) { return d[0].y+25; })
+  //       .attr("x2", function(d) { return d[2].x+125/2; })
+  //       .attr("y2", function(d) { return d[2].y+25; });
+
+
+
+
+  //   node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+  // });
+
+  
+var yDelta = 150
+force.on("tick", function(e) {
+
+    var ky = e.alpha;
+    links.forEach(function(d, i) {
+      d.target.y += (d.target.depth * yDelta - d.target.y) * 5 * ky;
+      if (d.target.y<50) {
+        d.target.y = 50
+      }
+    });
+    nodes.forEach(function(d, i) {
+        if(d.children) {
+            if(i>0) {
+                var childrenSumX = 0;
+                d.children.forEach(function(d, i) {
+                    childrenSumX += d.x;
+                });
+                var childrenCount = d.children.length;
+                d.x += ((childrenSumX/childrenCount) - d.x) * 5 * ky;
+            }
+            else {
+                d.x += (width/2 - d.x) * 5 * ky;
+            };
+        };
+        if (d.y<50) {
+          d.y=50
+        }
+        if (d.depth == 1) {
+          d.y=50
+        }
+    });
+
+    // link.attr("x1", function(d) { return d[0].x; })
+    //     .attr("y1", function(d) { return d[0].y; })
+    //     .attr("x2", function(d) { return d[2].x; })
+    //     .attr("y2", function(d) { return d[2].y; });
+
 
      link.attr("x1", function(d) { return d[0].x+125/2; })
         .attr("y1", function(d) { return d[0].y+25; })
@@ -142,10 +199,13 @@ d3.json("/thing.json", function(error, graph) {
         .attr("y2", function(d) { return d[2].y+25; });
 
 
-
+    // node.attr("cx", function(d) { return d.x; })
+        // .attr("cy", function(d) { return d.y; });
 
     node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-  });
+});
+
+
 });
 
 
