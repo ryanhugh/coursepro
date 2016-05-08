@@ -1,0 +1,64 @@
+{
+    "nodes": [{
+        "name": "Hnrs Several Variable Calculus"
+    }, {
+        "name": "FYS: Linear Algebra Honors Sem"
+    }, {}, {
+        "name": "FYS: Linear Algebra - Honors"
+    }, {
+        "name": "Linear Algebra Honors Course"
+    }, {
+        "name": "FYS: Linear Algebra - Honors"
+    }, {
+        "name": "Linear Algebra - Honors"
+    }, {
+        "name": "FurtherTpcs:Single VarCalculus"
+    }, {
+        "name": "Calculus I"
+    }, {
+        "name": "Elem Single Variable Calculus"
+    }, {
+        "name": "Adv Tpcs: Single Vari Calculus"
+    }],
+    "links": [{
+        "source": 0,
+        "target": 1,
+        "value": 4
+    }, {
+        "source": 0,
+        "target": 3,
+        "value": 4
+    }, {
+        "source": 0,
+        "target": 4,
+        "value": 4
+    }, {
+        "source": 0,
+        "target": 5,
+        "value": 4
+    }, {
+        "source": 0,
+        "target": 6,
+        "value": 4
+    }, {
+        "source": 1,
+        "target": 2,
+        "value": 4
+    }, {
+        "source": 6,
+        "target": 7,
+        "value": 4
+    }, {
+        "source": 6,
+        "target": 10,
+        "value": 4
+    }, {
+        "source": 7,
+        "target": 8,
+        "value": 4
+    }, {
+        "source": 7,
+        "target": 9,
+        "value": 4
+    }]
+}

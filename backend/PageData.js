@@ -85,7 +85,7 @@ PageData.create = function (startingData) {
 };
 
 
-PageData.prototype.createFromURL = function (url, callback) {
+PageData.createFromURL = function (url, callback) {
 	return this.create({
 		dbData: {
 			url: url

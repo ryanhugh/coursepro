@@ -245,7 +245,7 @@ TreeMgr.prototype.getFirstLayer = function (tree) {
 //for every node in the tree
 //if there exists a class later in classList that is not equal to it (could have same depth, classList is sorted by depth)
 //node becomes the node found (set parent's values)
-TreeMgr.prototype.mergeDuplicateClasses = function(tree,classList) {
+TreeMgr.prototype.mergeDuplicateClasses = function (tree, classList) {
 
 
 	//breath first search down the tree
@@ -261,36 +261,36 @@ TreeMgr.prototype.mergeDuplicateClasses = function(tree,classList) {
 
 
 		var matchingClasses = _.where(classList, {
-			_id:currTree._id
+			_id: currTree._id
 		});
-		
+
 		//at minimum this tree exists in the classList, so it should be at least 1
 		if (matchingClasses.length === 0) {
 			console.log('ERROR: no matching classes?!?');
 		}
-		
-		var lowestTree = matchingClasses[matchingClasses.length-1];
 
-		
-		
+		var lowestTree = matchingClasses[matchingClasses.length - 1];
+
+
+
 		//if tree not the lowest tree, replace
 		if (currTree !== lowestTree) {
-			
+
 			//switch all references to currTree to lowestTree
-			currTree.allParents.forEach(function(parentTree) {
-				
+			currTree.allParents.forEach(function (parentTree) {
+
 				if (!_(parentTree.prereqs.values).includes(currTree)) {
 					console.log('error parent does not include subtree');
 				}
-				
+
 				//remove the tree
-				_.pull(parentTree.prereqs.values,currTree);
-				
+				_.pull(parentTree.prereqs.values, currTree);
+
 				//and add the new lowest tree if it is not already part of the values
 				if (!_(parentTree.prereqs.values).includes(lowestTree)) {
 					parentTree.prereqs.values.push(lowestTree);
 				}
-				
+
 				if (!_(lowestTree.allParents).includes(parentTree)) {
 					lowestTree.allParents.push(parentTree)
 				}
@@ -307,7 +307,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function(tree,classList) {
 			currTree.prereqs.values.forEach(function (subTree) {
 
 				//remove the node to be removed
-				_.pull(subTree.allParents,currTree)
+				_.pull(subTree.allParents, currTree)
 
 				//and add its replacement, the lowest tree, if it is not already there
 				if (!_(subTree.allParents).includes(lowestTree)) {
@@ -324,28 +324,28 @@ TreeMgr.prototype.mergeDuplicateClasses = function(tree,classList) {
 
 
 // returns all of a tree's prereq's parents, dups removed
-TreeMgr.prototype.getNeighbors = function(tree) {
-	
+TreeMgr.prototype.getNeighbors = function (tree) {
+
 	var retVal = [];
-	tree.prereqs.values.forEach(function(subTree) {
-		subTree.allParents.forEach(function(neighborTree){
+	tree.prereqs.values.forEach(function (subTree) {
+		subTree.allParents.forEach(function (neighborTree) {
 			if (!_(retVal).includes(neighborTree)) {
 				retVal.push(neighborTree)
 			}
-			
+
 		}.bind(this))
 	}.bind(this))
 	return retVal;
 }
 
-TreeMgr.prototype.getSubsets = function(bigSet) {
-	var loopTo = (1<<bigSet.length);
+TreeMgr.prototype.getSubsets = function (bigSet) {
+	var loopTo = (1 << bigSet.length);
 	var retVal = [];
-	for (var i=0;i<loopTo;i++) {
+	for (var i = 0; i < loopTo; i++) {
 		var smallSet = [];
-		
-		for (var j=0;j<bigSet.length;j++) {
-			if (1<<j & i) {
+
+		for (var j = 0; j < bigSet.length; j++) {
+			if (1 << j & i) {
 				smallSet.push(bigSet[j])
 			}
 		}
@@ -355,103 +355,108 @@ TreeMgr.prototype.getSubsets = function(bigSet) {
 }
 
 
-TreeMgr.prototype.groupByCommonPrereqs = function(tree) {
-	
+TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
+
 	var parents = this.getNeighbors(tree);
-	
-	var maxScore=0;
+
+	var maxScore = 0;
 	var matchParents = [];
 	var matchChildren = [];
-	this.getSubsets(parents).forEach(function(thisParentsSet){
-		
+	this.getSubsets(parents).forEach(function (thisParentsSet) {
+
 		if (thisParentsSet.length < 2) {
 			return;
 		}
-	
+
 		// find the children which these parents share
 		var children = _.filter(tree.prereqs.values, function (child) {
 			if (!child.allParents) {
 				return false;
 			}
-			
-			
-			
-			//ensure that this child hass all the matched parents
-			for (var i=0;i<thisParentsSet.length;i++) {
+
+
+
+			//ensure that this child has all the matched parents
+			for (var i = 0; i < thisParentsSet.length; i++) {
 				if (!_(child.allParents).contains(thisParentsSet[i])) {
 					return false;
 				}
 			}
 			return true;
 		}.bind(this));
-		
+
 		//calculate the score of this set
 		var linesRemoved = parents.length * children.length - parents.length - children.length;
-		
-		if (linesRemoved>maxScore) {
+
+		if (linesRemoved > maxScore) {
 			matchParents = parents;
 			matchChildren = children;
-			console.log('new max with ',parents, children)
+			console.log('new max with ', parents, children)
 		}
 	}.bind(this));
-	
-		
+
+
 	// this transform will add lines, dont do it
 	if (linesRemoved < 0 || matchParents.length < 2 || matchChildren.length < 2) {
 		return;
 	}
-	
-	console.log('all matching nodes:',matchChildren)
-	
+
+	console.log('all matching nodes:', matchChildren)
+
 	var newNode = {
-		isClass:false,
-		_id:Math.random(),
-		allParents:matchParents,
+		isClass: false,
+		_id: Math.random(),
+		allParents: matchParents,
 		prereqs: {
-			type:'or',//TODO FIXXX
-			values:matchChildren
+			type: 'or', //TODO FIXXX
+			values: matchChildren
 		},
-		coreqs:{
-			type:'or',
-			values:[]
+		coreqs: {
+			type: 'or',
+			values: []
 		}
 	}
-	
-	matchParents.forEach(function(parent) {
-		
+
+	matchParents.forEach(function (parent) {
+
 		//remove any .values in matchChildren
-		matchChildren.forEach(function(newChild) {
-			_.pull(parent.prereqs.values,newChild)
+		matchChildren.forEach(function (newChild) {
+			_.pull(parent.prereqs.values, newChild)
 		}.bind(this))
-		
+
 		parent.prereqs.values.push(newNode);
 	}.bind(this))
-	
-	
-	matchChildren.forEach(function(newChild){
-		
-		matchParents.forEach(function(parent) {
-			_.pull(newChild.allParents,parent);
+
+
+	matchChildren.forEach(function (newChild) {
+
+		matchParents.forEach(function (parent) {
+			_.pull(newChild.allParents, parent);
 		}.bind(this))
-		
+
 		newChild.allParents.push(newNode);
-		
+
 	}.bind(this))
-	
-	
+
+
+	tree.prereqs.values.forEach(function (subTree) {
+		this.groupByCommonPrereqs(subTree);
+	}.bind(this));
+
+
 	//PRETTY sure everything would have to be same type (or vs and)
-	
+
 	//for every parent:
-		//any values in matchChildren remove
-		//add newNode
+	//any values in matchChildren remove
+	//add newNode
 
 	//for every child:
-		//remove any parent in toSimplify
-		//add newNode
+	//remove any parent in toSimplify
+	//add newNode
 
 
-	
-	
+
+
 }
 
 
@@ -468,15 +473,16 @@ TreeMgr.prototype.addDepthLevel = function (tree, depth) {
 }
 
 // only recurses on nodes and not classes - finds a list of classes
-TreeMgr.prototype.findFlattendClassList = function (tree) {
+// if allNodes is set, use all nodes instead of just classes
+TreeMgr.prototype.findFlattendClassList = function (tree, allNodes) {
 	var retVal = [];
-	if (tree.isClass) {
+	if (tree.isClass || allNodes) {
 		retVal.push(tree);
 	}
 
-	if (!tree.isClass) {
+	if (!tree.isClass || allNodes) {
 		tree.prereqs.values.forEach(function (subTree) {
-			retVal = retVal.concat(this.findFlattendClassList(subTree));
+			retVal = retVal.concat(this.findFlattendClassList(subTree, allNodes));
 		}.bind(this))
 	};
 	return retVal;
@@ -489,7 +495,7 @@ TreeMgr.prototype.flattenCoreqs = function (tree) {
 		var flatCoreqs = [];
 
 		tree.coreqs.values.forEach(function (subTree) {
-			flatCoreqs = flatCoreqs.concat(this.findFlattendClassList(subTree));
+			flatCoreqs = flatCoreqs.concat(this.findFlattendClassList(subTree, false));
 		}.bind(this));
 
 		flatCoreqs.forEach(function (subTree, index) {
@@ -576,10 +582,10 @@ TreeMgr.prototype.logTree = function (tree, body) {
 	tree.logTree(body)
 
 };
-TreeMgr.prototype.defaultToOr = function(tree) {
-	
+TreeMgr.prototype.defaultToOr = function (tree) {
+
 	//if this class is a coreq to another class, remove its coreqs
-	if (tree.prereqs.length<2) {
+	if (tree.prereqs.length < 2) {
 		tree.prereqs.type = 'or'
 	}
 
@@ -592,6 +598,41 @@ TreeMgr.prototype.defaultToOr = function(tree) {
 		this.defaultToOr(subTree);
 	}.bind(this));
 };
+
+
+TreeMgr.prototype.getd3JSON = function (tree) {
+	var nodes = this.findFlattendClassList(tree, true);
+	var connections = {}
+
+	nodes.forEach(function (node, nodeIndex) {
+		node.prereqs.values.forEach(function (subTree) {
+			var key = [node._id, subTree._id].sort().join('')
+
+			if (connections[key]) {
+				return;
+			}
+			else {
+				connections[key] = {
+					"source": nodeIndex,
+					"target": nodes.indexOf(subTree),
+					"value": 4
+				}
+			}
+		}.bind(this))
+	}.bind(this))
+
+	var outputNodes = []
+	nodes.forEach(function (node) {
+		outputNodes.push({
+			name:node.name
+		})
+	}.bind(this))
+
+	console.log(JSON.stringify(outputNodes));
+	console.log(JSON.stringify(_.values(connections)));
+
+};
+
 
 
 
@@ -627,8 +668,11 @@ TreeMgr.prototype.go = function (tree) {
 	if (!tree.isClass) {
 		tree.hidden = true;
 	};
-
 }
 
 TreeMgr.prototype.TreeMgr = TreeMgr;
 module.exports = new TreeMgr();
+
+
+console.warn('test line here')
+window.treeMgr = module.exports
