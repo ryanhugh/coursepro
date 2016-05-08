@@ -2,115 +2,115 @@
 	"nodes": [{
 		"_id": "572e948914907ce51d0c3956",
 		"name": "Basic Differential Equations",
-		"group": 0
+		"level": 0
 	}, {
 		"_id": "572e94d914907ce51d0c5e2a",
 		"name": "Several Variable Calculus",
-		"group": 1
+		"level": 1
 	}, {
 		"_id": "0.97148570226024390.9721566890183011",
 		"name": "filler",
-		"group": 2
+		"level": 2
 	}, {
 		"_id": "0.21984018344633016",
 		"name": "superman",
-		"group": 4
+		"level": 4
 	}, {
 		"_id": "572e949714907ce51d0c3a8f",
 		"name": "FYS: Single Vari Calculus Sem",
-		"group": 5
+		"level": 5
 	}, {
 		"_id": "0.44921114761108380.3217182917693435",
 		"name": "filler",
-		"group": 6
+		"level": 6
 	}, {
 		"_id": "572e94e914907ce51d0c6a2c",
 		"name": "Adv Tpcs: Single Vari Calculus",
-		"group": 5
+		"level": 5
 	}, {
 		"_id": "572e950c14907ce51d0c755b",
 		"name": "FurtherTpcs:Single VarCalculus",
-		"group": 5
+		"level": 5
 	}, {
 		"_id": "0.872899490019011",
 		"name": "superman",
-		"group": 6
+		"level": 6
 	}, {
 		"_id": "572e949e14907ce51d0c3c16",
 		"name": "Calculus I",
-		"group": 7
+		"level": 7
 	}, {
 		"_id": "572e94ea14907ce51d0c6b17",
 		"name": "Elem Single Variable Calculus",
-		"group": 7
+		"level": 7
 	}, {
 		"_id": "0.258175151808378360.39738581221459035",
 		"name": "filler",
-		"group": 2
+		"level": 2
 	}, {
 		"_id": "572e94e514907ce51d0c66f3",
 		"name": "Linear Algebra",
-		"group": 3
+		"level": 3
 	}, {
 		"_id": "572e94d014907ce51d0c583b",
 		"name": "Calculus IIA",
-		"group": 4
+		"level": 4
 	}, {
 		"_id": "572e946e14907ce51d0c3735",
 		"name": "Calculus IIB",
-		"group": 4
+		"level": 4
 	}, {
 		"_id": "572e949f14907ce51d0c3c68",
 		"name": "Calculus IIC",
-		"group": 4
+		"level": 4
 	}, {
 		"_id": "572e94a114907ce51d0c3d55",
 		"name": "Postcalculus",
-		"group": 4
+		"level": 4
 	}, {
 		"_id": "572e949814907ce51d0c3ac8",
 		"name": "Brf Survey-Calculus thru2nd Yr",
-		"group": 4
+		"level": 4
 	}, {
 		"_id": "572e949514907ce51d0c3a75",
 		"name": "FYS: Linear Algebra Honors Sem",
-		"group": 3
+		"level": 3
 	}, {
 		"_id": "0.46851125504090960.31123498332823885",
 		"name": "filler",
-		"group": 4
+		"level": 4
 	}, {
 		"_id": "572e94d114907ce51d0c58e0",
 		"name": "Linear Algebra - Honors",
-		"group": 3
+		"level": 3
 	}, {
 		"_id": "572e94e314907ce51d0c65d2",
 		"name": "Basic Several Vari Calculus",
-		"group": 1
+		"level": 1
 	}, {
 		"_id": "572e947914907ce51d0c383b",
 		"name": "Several Variable Calc Honors",
-		"group": 1
+		"level": 1
 	}, {
 		"_id": "572e949a14907ce51d0c3b13",
 		"name": "Several Variable Calculus",
-		"group": 1
+		"level": 1
 	}, {
 		"_id": "572e94f614907ce51d0c7402",
 		"name": "Hnrs Several Variable Calculus",
-		"group": 1
+		"level": 1
 	}, {
 		"_id": "572e94ad14907ce51d0c4455",
 		"name": "FYS: Linear Algebra - Honors",
-		"group": 2
+		"level": 2
 	}, {
 		"_id": "572e947414907ce51d0c37e6",
 		"name": "Linear Algebra Honors Course",
-		"group": 2
+		"level": 2
 	}, {
 		"_id": "572e949b14907ce51d0c3b57",
 		"name": "FYS: Linear Algebra - Honors",
-		"group": 2
+		"level": 2
 	}],
 	"links": [{
 		"source": 0,
