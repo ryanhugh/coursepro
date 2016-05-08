@@ -1,31 +1,47 @@
-
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-
-.node {
-  stroke: #fff;
-  stroke-width: 1.5px;
+/*.node {
+    stroke: #fff;
+    stroke-width: 1.5px;
 }
 
 .link {
-  fill: none;
-  stroke: #bbb;
+    fill: none;
+    stroke: #bbb;
+}*/
+
+.link {
+    stroke: #ccc;
+    stroke-width: 4px;
 }
 
-</style>
-<body>
-<script src="//d3js.org/d3.v3.min.js"></script>
-<script>
+.node text {
+    pointer-events: none;
+    font: 10px sans-serif;
+}
 
-var width = 960,
-    height = 500;
+foreignObject {
+    transform: translate(-50%, -50%);
+}
+</style>
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+<body>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script>
+
+var width = 2000,
+    height = 900;
 
 var color = d3.scale.category20();
 
 var force = d3.layout.force()
-    .linkDistance(10)
+    .linkDistance(50)
     .linkStrength(2)
+    .charge(-500)
+    .gravity(0)
+    .theta(0)
     .size([width, height]);
 
 var svg = d3.select("body").append("svg")
@@ -38,6 +54,12 @@ d3.json("/thing.json", function(error, graph) {
   var nodes = graph.nodes.slice(),
       links = [],
       bilinks = [];
+
+
+  nodes.forEach(function (node, index) {
+    node.xGoal = Math.random()*1000;
+    node.yGoal = node.group*100
+  }.bind(this))
 
   graph.links.forEach(function(link) {
     var s = nodes[link.source],
@@ -55,30 +77,110 @@ d3.json("/thing.json", function(error, graph) {
 
   var link = svg.selectAll(".link")
       .data(bilinks)
-    .enter().append("path")
+    .enter().append("line")
       .attr("class", "link");
+
+
 
   var node = svg.selectAll(".node")
       .data(graph.nodes)
-    .enter().append("circle")
+    .enter().append("g")
       .attr("class", "node")
-      .attr("r", 5)
-      .style("fill", function(d) { return color(d.group); })
+      .attr("width", "125")
+      .attr("height", "50")
       .call(force.drag);
 
-  node.append("title")
-      .text(function(d) { return d.name; });
+  // node.append("image")
+  //     .attr("xlink:href", "https://github.com/favicon.ico")
+  //     .attr("x", -8)
+  //     .attr("y", -8)
+  //     .attr("width", 16)
+  //     .attr("height", 16);
 
-  force.on("tick", function() {
-    link.attr("d", function(d) {
-      return "M" + d[0].x + "," + d[0].y
-          + "S" + d[1].x + "," + d[1].y
-          + " " + d[2].x + "," + d[2].y;
+  // node.append("text")
+  //     .attr("dx", 12)
+  //     .attr("dy", ".35em")
+  //     .text(function(d) { return d.name });
+
+  node.html('<foreignObject width="125" height="50" style="    transform: translate(-50%,-50%);"><div class="panel panel-primary"> <div class="panel-heading"> <h3 class="panel-title">Panel title</h3> </div> <div class="panel-body"> Panel content </div> </div></foreignObject>')
+
+
+  for (var i = 0; i < node[0].length; i++) {
+    node[0][i].querySelector('.panel-title').innerText = nodes[i].name
+  }
+
+  // force.on("tick", function() {
+  //   link.attr("x1", function(d) { return d.source.x; })
+  //       .attr("y1", function(d) { return d.source.y; })
+  //       .attr("x2", function(d) { return d.target.x; })
+  //       .attr("y2", function(d) { return d.target.y; });
+        
+
+  setInterval(function () {
+    
+    // Push nodes toward their designated focus.
+    nodes.forEach(function(o, i) {
+      // o.y += (o.yGoal+50 - o.y) * .01;
+      // o.x += (o.xGoal - o.x) * e.alpha*.01;
     });
-    node.attr("transform", function(d) {
-      return "translate(" + d.x + "," + d.y + ")";
-    });
+
+  }.bind(this),50)
+
+  force.on("tick", function(e) {
+
+
+
+    // link.attr("d", function(d) {
+    //   return "M" + d[0].x + "," + d[0].y
+    //       + "S" + d[1].x + "," + d[1].y
+    //       + " " + d[2].x + "," + d[2].y;
+    // });
+
+     link.attr("x1", function(d) { return d[0].x+125/2; })
+        .attr("y1", function(d) { return d[0].y+25; })
+        .attr("x2", function(d) { return d[2].x+125/2; })
+        .attr("y2", function(d) { return d[2].y+25; });
+
+
+
+
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   });
 });
 
+
+//   var node = svg.selectAll(".node")
+//       .data(graph.nodes)
+//     .enter().append("circle")
+//       .attr("class", "node")
+//       .attr("r", 5)
+//       .style("fill", function(d) { return color(d.group); })
+//       .call(force.drag);
+
+//   // node.append("title")
+//   //     .text(function(d) { return d.name; });
+
+
+//   node.append("text")
+//       .attr("dx", 12)
+//       .attr("dy", ".35em")
+//       .text(function(d) { return d.name });
+
+
+//   force.on("tick", function() {
+//     link.attr("d", function(d) {
+//       return "M" + d[0].x + "," + d[0].y
+//           + "S" + d[1].x + "," + d[1].y
+//           + " " + d[2].x + "," + d[2].y;
+//     });
+//     node.attr("transform", function(d) {
+//       return "translate(" + d.x + "," + d.y + ")";
+//     });
+//   });
+// });
+
 </script>
+
+    <!-- <div class="panel panel-primary"> <div class="panel-heading"> <h3 class="panel-title">Panel title</h3> </div> <div class="panel-body"> Panel content </div> </div>
+
+ -->

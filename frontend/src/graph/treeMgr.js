@@ -245,8 +245,16 @@ TreeMgr.prototype.getFirstLayer = function (tree) {
 //for every node in the tree
 //if there exists a class later in classList that is not equal to it (could have same depth, classList is sorted by depth)
 //node becomes the node found (set parent's values)
-TreeMgr.prototype.mergeDuplicateClasses = function (tree, classList) {
-
+TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
+	var classList = this.findFlattendClassList(tree, true).sort(function (a,b) {
+		if (a.depth < b.depth) {
+			return -1;
+		}
+		else if (a.depth > b.depth) {
+			return 1
+		}
+		return 0;
+	}.bind(this))
 
 	//breath first search down the tree
 	var stack = [tree];
@@ -260,7 +268,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree, classList) {
 		}
 
 
-		var matchingClasses = _.where(classList, {
+		var matchingClasses = _.filter(classList, {
 			_id: currTree._id
 		});
 
@@ -301,19 +309,27 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree, classList) {
 				}
 
 			}.bind(this));
-			//
 
 			//currTree's values need to point to lowestTree
-			currTree.prereqs.values.forEach(function (subTree) {
+			// currTree.prereqs.values.forEach(function (subTree) {
 
 				//remove the node to be removed
-				_.pull(subTree.allParents, currTree)
+				// _.pull(subTree.allParents, currTree)
 
 				//and add its replacement, the lowest tree, if it is not already there
-				if (!_(subTree.allParents).includes(lowestTree)) {
-					subTree.allParents.push(lowestTree)
-				}
-			}.bind(this))
+				// if (!_(subTree.allParents).includes(lowestTree)) {
+				// 	subTree.allParents.push(lowestTree)
+				// }
+			// }.bind(this))
+
+			currTree.prereqs.values = []
+			currTree.coreqs.values = []
+			currTree.allParents.values = []
+			currTree.depth = 99
+			currTree.name = 'DELETED'
+
+
+			// return;
 		}
 
 		//if two duplicated trees exist, we dont want to process both of their prereqs
@@ -485,6 +501,7 @@ TreeMgr.prototype.findFlattendClassList = function (tree, allNodes) {
 			retVal = retVal.concat(this.findFlattendClassList(subTree, allNodes));
 		}.bind(this))
 	};
+	retVal = _.uniq(retVal)
 	return retVal;
 }
 
@@ -607,10 +624,19 @@ TreeMgr.prototype.getd3JSON = function (tree) {
 
 	nodes.forEach(function (node, nodeIndex) {
 		node.prereqs.values.forEach(function (subTree) {
+			if (!_(subTree.allParents).includes(node)) {
+				console.log("ERROR ");
+				debugger
+			}
+			if (subTree._id == '572e949714907ce51d0c3a8f') {
+				debugger
+			}
+
+
 			var subTreeIndex = nodes.indexOf(subTree)
 			var key = [node._id, nodeIndex, subTree._id, subTreeIndex].sort().join('')
 
-			console.log(key, node, subTree);
+			// console.log(key, node, subTree);
 			if (!counts[key]) {
 				counts[key] = 0
 			}
@@ -632,23 +658,30 @@ TreeMgr.prototype.getd3JSON = function (tree) {
 
 	var outputNodes = []
 	nodes.forEach(function (node) {
+
+		var newValue = {
+			_id: node._id
+		}
+
 		if (node.name) {
-			outputNodes.push({
-				name: node.name,
-				_id: node._id
-			})
+			newValue.name = node.name
 		}
 		else {
-			outputNodes.push({
-				name: 'filler',
-				_id: node._id
-			})
+			newValue.name = 'filler'
 		}
+
+		newValue.group = node.depth
+
+		outputNodes.push(newValue)
+
+
 	}.bind(this))
 	console.log(_.values(counts));
 
-	console.log(JSON.stringify(outputNodes));
-	console.log(JSON.stringify(_.values(connections)));
+	console.log(JSON.stringify({
+		"nodes": outputNodes,
+		"links": _.values(connections)
+	}));
 
 };
 
@@ -680,11 +713,17 @@ TreeMgr.prototype.go = function (tree) {
 	this.addAllParentRelations(tree);
 
 
-	this.addLowestParent(tree);
 
 	this.defaultToOr(tree);
 
+	// this.mergeDuplicateClasses(tree)
+
+
+	this.addLowestParent(tree);
+
 	this.getd3JSON(tree)
+
+
 
 	if (!tree.isClass) {
 		tree.hidden = true;
