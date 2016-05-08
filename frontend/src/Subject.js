@@ -34,10 +34,6 @@ Subject.prototype.loadClasses = function (callback) {
 				return callback(err)
 			}
 
-			classes.sort(function (a,b) {
-				return a.compareTo(b)
-			}.bind(this))
-
 			this.classes = classes
 			callback()
 

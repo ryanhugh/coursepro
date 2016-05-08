@@ -1,6 +1,7 @@
 'use strict';
 var Term = require('./mocks/mockTerm')
 var macros = require('../macros')
+var _ = require('lodash')
 
 describe('Term', function () {
 
@@ -26,7 +27,7 @@ describe('Term', function () {
 
 			var term = new Term({host:'neu.edu',termId:'201630'})
 
-			term.download();
+			term.download(_.noop);
 
 			console.log(term)
 			expect(term.text).toBe('Spring 2016')

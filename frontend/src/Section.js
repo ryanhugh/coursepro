@@ -212,13 +212,12 @@ Section.prototype.getHasWaitList = function(){
 // Network methods
 
 
-Section.prototype.download = function (callback) {
+Section.prototype.internalDownload = function (callback) {
 	if (!callback) {
 		callback = function () {}
 	}
 
-
-	BaseData.prototype.download.call(this, function (err) {
+	BaseData.prototype.internalDownload.call(this, function (err) {
 		if (err) {
 			console.log("ERROR in list sections", err, this)
 			return callback(err);

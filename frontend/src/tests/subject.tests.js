@@ -1,6 +1,7 @@
 'use strict';
 var Subject = require('./mocks/mockSubject')
 var macros = require('../macros')
+var _ = require('lodash')
 
 describe('Subject', function () {
 
@@ -30,16 +31,16 @@ describe('Subject', function () {
 	describe('.download', function () {
 		it('works', function () {
 
-			var host = new Subject({
+			var subject = new Subject({
 				_id: '56f22160ea47044a0569872b'
 			});
 
-			host.download();
+			subject.download(_.noop);
 
-			expect(host.subject).toBe("GENS");
-			expect(host.text).toBe("General Studies");
-			expect(host.host).toBe("neu.edu");
-			expect(host.termId).toBe("201710");
+			expect(subject.subject).toBe("GENS");
+			expect(subject.text).toBe("General Studies");
+			expect(subject.host).toBe("neu.edu");
+			expect(subject.termId).toBe("201710");
 
 		});
 	});

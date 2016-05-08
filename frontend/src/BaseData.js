@@ -1,6 +1,7 @@
 'use strict';
 var macros = require('./macros')
 var request = require('./request')
+var async = require('async')
 
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
@@ -10,6 +11,25 @@ function BaseData(config) {
 	}
 
 	this.downloadCallbacks = []
+
+	var downloadConfig;
+	// var _download = this.download.bind(this);
+	this.download = async.memoize(function (configOrCallback, callback) {
+		if (typeof configOrCallback == 'object') {
+			if (downloadConfig) {
+				if (!_.isEqual(downloadConfig, configOrCallback)) {
+					elog('CONIFG must be the same between download calls of' + this.constructor.name)
+					return;
+				}
+			}
+			else {
+				downloadConfig = configOrCallback
+			}
+		}
+		this.internalDownload(configOrCallback, callback)
+	}.bind(this))
+
+
 }
 
 BaseData.doObjectsMatchWithKeys = function (keys, a, b) {
@@ -142,13 +162,13 @@ BaseData.createMany = function (config, callback) {
 			}
 			instances.push(instance)
 		}.bind(this))
-		
-		
-		instances.sort(function(a,b){
+
+
+		instances.sort(function (a, b) {
 			return a.compareTo(b);
 		}.bind(this));
-		
-		
+
+
 		return callback(null, instances)
 	}.bind(this))
 }
@@ -271,7 +291,8 @@ BaseData.download = function (config, callback) {
 }
 
 //the only config option right now is returnResults
-BaseData.prototype.download = function (configOrCallback, callback) {
+// config must be the same between calls, enfored in the constructor
+BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 	var config = configOrCallback;
 
 	//switch if config not given
@@ -377,7 +398,7 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 			}.bind(this))
 		}
 
-		//
+
 		if (returnResultsFalse) {
 
 			var serverData = results[0];
@@ -411,7 +432,7 @@ BaseData.prototype.download = function (configOrCallback, callback) {
 };
 
 // needs to be overriden
-BaseData.prototype.compareTo = function() {
+BaseData.prototype.compareTo = function () {
 	elog("BaseData compare to called!!")
 };
 

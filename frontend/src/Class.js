@@ -222,10 +222,11 @@ Class.prototype.convertServerData = function (data) {
 	return retVal;
 }
 
-Class.prototype.download = function (callback) {
+Class.prototype.internalDownload = function (callback) {
 	if (!callback) {
 		callback = function () {}
 	}
+
 
 	//already loaded
 	if (this.dataStatus === macros.DATASTATUS_DONE) {
@@ -245,7 +246,7 @@ Class.prototype.download = function (callback) {
 	};
 
 
-	BaseData.prototype.download.call(this, {
+	BaseData.prototype.internalDownload.call(this, {
 		returnResults: true
 	}, function (err, body) {
 		this.dataStatus = macros.DATASTATUS_DONE;

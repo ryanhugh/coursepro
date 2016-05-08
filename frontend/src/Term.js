@@ -31,9 +31,6 @@ Term.prototype.loadSubjects = function (callback) {
 			if (err) {
 				return callback(err)
 			}
-			subjects.sort(function (a,b) {
-				return a.compareTo(b)
-			}.bind(this))
 
 			this.subjects = subjects
 			callback()

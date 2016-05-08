@@ -1,6 +1,7 @@
 'use strict';
 var Host = require('./mocks/mockHost')
 var macros = require('../macros')
+var _ = require('lodash')
 
 describe('Host', function () {
 
@@ -40,7 +41,10 @@ describe('Host', function () {
 
 			var host = new Host({host:'neu.edu'});
 
-			host.download();
+			host.download(_.noop);
+			host.download(_.noop);
+			host.download(_.noop);
+			host.download(_.noop);
 
 			expect(host.title).toBe('Northeastern University')
 

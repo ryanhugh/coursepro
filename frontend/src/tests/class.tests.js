@@ -1,6 +1,7 @@
 'use strict';
 var Class = require('./mocks/mockClass')
 var macros = require('../macros')
+var _ = require('lodash')
 
 describe('Class', function () {
 
@@ -26,7 +27,8 @@ describe('Class', function () {
 
 			expect(aClass.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
 
-			aClass.download()
+			aClass.download(_.noop)
+			aClass.download(_.noop)
 
 			expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
 			expect(aClass._id).toBe("56b7f43f083f16e42df53037")
@@ -46,7 +48,7 @@ describe('Class', function () {
 				"subject": "CS",
 			});
 
-			aClass.download()
+			aClass.download(_.noop)
 
 			expect(aClass.prereqs.type).toBe('or')
 			expect(aClass.prereqs.values.length).toBe(0)

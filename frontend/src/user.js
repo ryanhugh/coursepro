@@ -66,7 +66,7 @@ function User() {
 			// cool, user logged in with google before, download the rest of the data from the server
 			this.dbData.loginKey = localData.loginKey
 			this.dbData.vars = localData.vars
-			this.download()
+			this.download(_.noop)
 		}
 
 		// valid local data
