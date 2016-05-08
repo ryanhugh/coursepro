@@ -1,92 +1,157 @@
 {
     "nodes": [{
-        "name": "Basic Differential Equations"
+        "name": "Basic Differential Equations",
+        "_id": "572e948914907ce51d0c3956"
     }, {
-        "name": "Several Variable Calculus"
-    }, {}, {
-        "name": "FYS: Single Vari Calculus Sem"
-    }, {}, {
-        "name": "Adv Tpcs: Single Vari Calculus"
+        "name": "Several Variable Calculus",
+        "_id": "572e94d914907ce51d0c5e2a"
     }, {
-        "name": "FurtherTpcs:Single VarCalculus"
+        "name": "filler",
+        "_id": "0.95443567283860010.9384191987528772"
     }, {
-        "name": "Calculus I"
+        "name": "FYS: Single Vari Calculus Sem",
+        "_id": "572e949714907ce51d0c3a8f"
     }, {
-        "name": "Elem Single Variable Calculus"
-    }, {}, {
-        "name": "Linear Algebra"
+        "name": "filler",
+        "_id": "0.96115800942212640.8796069164621074"
     }, {
-        "name": "FurtherTpcs:Single VarCalculus"
+        "name": "Adv Tpcs: Single Vari Calculus",
+        "_id": "572e94e914907ce51d0c6a2c"
     }, {
-        "name": "Calculus I"
+        "name": "FurtherTpcs:Single VarCalculus",
+        "_id": "572e950c14907ce51d0c755b"
     }, {
-        "name": "Elem Single Variable Calculus"
+        "name": "Calculus I",
+        "_id": "572e949e14907ce51d0c3c16"
     }, {
-        "name": "FYS: Single Vari Calculus Sem"
-    }, {}, {
-        "name": "Calculus IIA"
+        "name": "Elem Single Variable Calculus",
+        "_id": "572e94ea14907ce51d0c6b17"
     }, {
-        "name": "Calculus IIB"
+        "name": "filler",
+        "_id": "0.156422627048544480.018447288683055563"
     }, {
-        "name": "Calculus IIC"
+        "name": "Linear Algebra",
+        "_id": "572e94e514907ce51d0c66f3"
     }, {
-        "name": "Postcalculus"
+        "name": "FurtherTpcs:Single VarCalculus",
+        "_id": "572e950c14907ce51d0c755b"
     }, {
-        "name": "Adv Tpcs: Single Vari Calculus"
+        "name": "Calculus I",
+        "_id": "572e949e14907ce51d0c3c16"
     }, {
-        "name": "Brf Survey-Calculus thru2nd Yr"
+        "name": "Elem Single Variable Calculus",
+        "_id": "572e94ea14907ce51d0c6b17"
     }, {
-        "name": "Calculus I"
+        "name": "FYS: Single Vari Calculus Sem",
+        "_id": "572e949714907ce51d0c3a8f"
     }, {
-        "name": "Elem Single Variable Calculus"
+        "name": "filler",
+        "_id": "0.27447627814614940.45083536254032675"
     }, {
-        "name": "FYS: Linear Algebra Honors Sem"
-    }, {}, {
-        "name": "Linear Algebra - Honors"
+        "name": "Calculus IIA",
+        "_id": "572e94d014907ce51d0c583b"
     }, {
-        "name": "FurtherTpcs:Single VarCalculus"
+        "name": "Calculus IIB",
+        "_id": "572e946e14907ce51d0c3735"
     }, {
-        "name": "Calculus I"
+        "name": "Calculus IIC",
+        "_id": "572e949f14907ce51d0c3c68"
     }, {
-        "name": "Elem Single Variable Calculus"
+        "name": "Postcalculus",
+        "_id": "572e94a114907ce51d0c3d55"
     }, {
-        "name": "Adv Tpcs: Single Vari Calculus"
+        "name": "Adv Tpcs: Single Vari Calculus",
+        "_id": "572e94e914907ce51d0c6a2c"
     }, {
-        "name": "Basic Several Vari Calculus"
+        "name": "Brf Survey-Calculus thru2nd Yr",
+        "_id": "572e949814907ce51d0c3ac8"
     }, {
-        "name": "FYS: Single Vari Calculus Sem"
-    }, {}, {
-        "name": "Adv Tpcs: Single Vari Calculus"
+        "name": "Calculus I",
+        "_id": "572e949e14907ce51d0c3c16"
     }, {
-        "name": "FurtherTpcs:Single VarCalculus"
+        "name": "Elem Single Variable Calculus",
+        "_id": "572e94ea14907ce51d0c6b17"
     }, {
-        "name": "Calculus I"
+        "name": "FYS: Linear Algebra Honors Sem",
+        "_id": "572e949514907ce51d0c3a75"
     }, {
-        "name": "Elem Single Variable Calculus"
+        "name": "filler",
+        "_id": "0.027827477238981270.221013741012549"
     }, {
-        "name": "Several Variable Calc Honors"
+        "name": "Linear Algebra - Honors",
+        "_id": "572e94d114907ce51d0c58e0"
     }, {
-        "name": "Several Variable Calculus"
+        "name": "FurtherTpcs:Single VarCalculus",
+        "_id": "572e950c14907ce51d0c755b"
     }, {
-        "name": "Hnrs Several Variable Calculus"
+        "name": "Calculus I",
+        "_id": "572e949e14907ce51d0c3c16"
     }, {
-        "name": "FYS: Linear Algebra Honors Sem"
-    }, {}, {
-        "name": "FYS: Linear Algebra - Honors"
+        "name": "Elem Single Variable Calculus",
+        "_id": "572e94ea14907ce51d0c6b17"
     }, {
-        "name": "Linear Algebra Honors Course"
+        "name": "Adv Tpcs: Single Vari Calculus",
+        "_id": "572e94e914907ce51d0c6a2c"
     }, {
-        "name": "FYS: Linear Algebra - Honors"
+        "name": "Basic Several Vari Calculus",
+        "_id": "572e94e314907ce51d0c65d2"
     }, {
-        "name": "Linear Algebra - Honors"
+        "name": "FYS: Single Vari Calculus Sem",
+        "_id": "572e949714907ce51d0c3a8f"
     }, {
-        "name": "FurtherTpcs:Single VarCalculus"
+        "name": "filler",
+        "_id": "0.15737983496502460.877069942517094"
     }, {
-        "name": "Calculus I"
+        "name": "Adv Tpcs: Single Vari Calculus",
+        "_id": "572e94e914907ce51d0c6a2c"
     }, {
-        "name": "Elem Single Variable Calculus"
+        "name": "FurtherTpcs:Single VarCalculus",
+        "_id": "572e950c14907ce51d0c755b"
     }, {
-        "name": "Adv Tpcs: Single Vari Calculus"
+        "name": "Calculus I",
+        "_id": "572e949e14907ce51d0c3c16"
+    }, {
+        "name": "Elem Single Variable Calculus",
+        "_id": "572e94ea14907ce51d0c6b17"
+    }, {
+        "name": "Several Variable Calc Honors",
+        "_id": "572e947914907ce51d0c383b"
+    }, {
+        "name": "Several Variable Calculus",
+        "_id": "572e949a14907ce51d0c3b13"
+    }, {
+        "name": "Hnrs Several Variable Calculus",
+        "_id": "572e94f614907ce51d0c7402"
+    }, {
+        "name": "FYS: Linear Algebra Honors Sem",
+        "_id": "572e949514907ce51d0c3a75"
+    }, {
+        "name": "filler",
+        "_id": "0.79243060968276070.5666710456848012"
+    }, {
+        "name": "FYS: Linear Algebra - Honors",
+        "_id": "572e94ad14907ce51d0c4455"
+    }, {
+        "name": "Linear Algebra Honors Course",
+        "_id": "572e947414907ce51d0c37e6"
+    }, {
+        "name": "FYS: Linear Algebra - Honors",
+        "_id": "572e949b14907ce51d0c3b57"
+    }, {
+        "name": "Linear Algebra - Honors",
+        "_id": "572e94d114907ce51d0c58e0"
+    }, {
+        "name": "FurtherTpcs:Single VarCalculus",
+        "_id": "572e950c14907ce51d0c755b"
+    }, {
+        "name": "Calculus I",
+        "_id": "572e949e14907ce51d0c3c16"
+    }, {
+        "name": "Elem Single Variable Calculus",
+        "_id": "572e94ea14907ce51d0c6b17"
+    }, {
+        "name": "Adv Tpcs: Single Vari Calculus",
+        "_id": "572e94e914907ce51d0c6a2c"
     }],
     "links": [{
         "source": 0,
@@ -113,6 +178,10 @@
         "target": 2,
         "value": 4
     }, {
+        "source": 1,
+        "target": 9,
+        "value": 4
+    }, {
         "source": 2,
         "target": 3,
         "value": 4
@@ -123,6 +192,10 @@
     }, {
         "source": 2,
         "target": 6,
+        "value": 4
+    }, {
+        "source": 3,
+        "target": 4,
         "value": 4
     }, {
         "source": 6,
@@ -177,6 +250,18 @@
         "target": 21,
         "value": 4
     }, {
+        "source": 11,
+        "target": 12,
+        "value": 4
+    }, {
+        "source": 11,
+        "target": 13,
+        "value": 4
+    }, {
+        "source": 14,
+        "target": 15,
+        "value": 4
+    }, {
         "source": 21,
         "target": 22,
         "value": 4
@@ -185,12 +270,24 @@
         "target": 23,
         "value": 4
     }, {
+        "source": 24,
+        "target": 25,
+        "value": 4
+    }, {
         "source": 26,
         "target": 27,
         "value": 4
     }, {
         "source": 26,
         "target": 30,
+        "value": 4
+    }, {
+        "source": 27,
+        "target": 28,
+        "value": 4
+    }, {
+        "source": 27,
+        "target": 29,
         "value": 4
     }, {
         "source": 31,
@@ -203,6 +300,18 @@
     }, {
         "source": 31,
         "target": 35,
+        "value": 4
+    }, {
+        "source": 32,
+        "target": 33,
+        "value": 4
+    }, {
+        "source": 35,
+        "target": 36,
+        "value": 4
+    }, {
+        "source": 35,
+        "target": 37,
         "value": 4
     }, {
         "source": 40,
@@ -223,6 +332,26 @@
     }, {
         "source": 40,
         "target": 46,
+        "value": 4
+    }, {
+        "source": 41,
+        "target": 42,
+        "value": 4
+    }, {
+        "source": 46,
+        "target": 47,
+        "value": 4
+    }, {
+        "source": 46,
+        "target": 50,
+        "value": 4
+    }, {
+        "source": 47,
+        "target": 48,
+        "value": 4
+    }, {
+        "source": 47,
+        "target": 49,
         "value": 4
     }]
 }

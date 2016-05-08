@@ -185,7 +185,8 @@ Class.prototype.convertServerData = function (data) {
 			data = {
 				isClass: true,
 				isString: true,
-				desc: data
+				desc: data,
+				_id: Math.random() + '' + Math.random()
 			}
 		}
 		//given a branch in the prereqs
@@ -194,7 +195,8 @@ Class.prototype.convertServerData = function (data) {
 			//HOW DO WE KNOW TO APPEND TO PREREQS?
 			data = {
 				prereqs: data,
-				isClass: false
+				isClass: false,
+				_id: Math.random() + '' + Math.random()
 			}
 		}
 
@@ -210,7 +212,7 @@ Class.prototype.convertServerData = function (data) {
 		};
 
 
-		retVal = this.constructor.create(data,false)
+		retVal = this.constructor.create(data, false)
 
 	}
 
@@ -274,7 +276,7 @@ Class.prototype.internalDownload = function (callback) {
 				this.coreqs.values = []
 			};
 
-
+			this._id = Math.random() + '' + Math.random()
 
 			body.forEach(function (classData) {
 				this.prereqs.values.push(this.convertServerData(classData))
@@ -364,7 +366,7 @@ Class.prototype.compareTo = function (otherClass) {
 	else if (this.name > otherClass.name) {
 		return 1;
 	}
-	else  if (this.name < otherClass.name) {
+	else if (this.name < otherClass.name) {
 		return -1;
 	}
 

@@ -603,30 +603,49 @@ TreeMgr.prototype.defaultToOr = function (tree) {
 TreeMgr.prototype.getd3JSON = function (tree) {
 	var nodes = this.findFlattendClassList(tree, true);
 	var connections = {}
+	var counts = {}
 
 	nodes.forEach(function (node, nodeIndex) {
 		node.prereqs.values.forEach(function (subTree) {
-			var key = [node._id, subTree._id].sort().join('')
+			var subTreeIndex = nodes.indexOf(subTree)
+			var key = [node._id, nodeIndex, subTree._id, subTreeIndex].sort().join('')
 
-			if (connections[key]) {
-				return;
+			console.log(key, node, subTree);
+			if (!counts[key]) {
+				counts[key] = 0
 			}
-			else {
-				connections[key] = {
-					"source": nodeIndex,
-					"target": nodes.indexOf(subTree),
-					"value": 4
+			counts[key]++
+
+				if (connections[key]) {
+					console.log("duplicate link between ", node, subTree);
+					return;
 				}
-			}
+				else {
+					connections[key] = {
+						"source": nodeIndex,
+						"target": subTreeIndex,
+						"value": 4
+					}
+				}
 		}.bind(this))
 	}.bind(this))
 
 	var outputNodes = []
 	nodes.forEach(function (node) {
-		outputNodes.push({
-			name:node.name
-		})
+		if (node.name) {
+			outputNodes.push({
+				name: node.name,
+				_id: node._id
+			})
+		}
+		else {
+			outputNodes.push({
+				name: 'filler',
+				_id: node._id
+			})
+		}
 	}.bind(this))
+	console.log(_.values(counts));
 
 	console.log(JSON.stringify(outputNodes));
 	console.log(JSON.stringify(_.values(connections)));
@@ -664,6 +683,8 @@ TreeMgr.prototype.go = function (tree) {
 	this.addLowestParent(tree);
 
 	this.defaultToOr(tree);
+
+	this.getd3JSON(tree)
 
 	if (!tree.isClass) {
 		tree.hidden = true;
