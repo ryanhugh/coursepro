@@ -9,45 +9,59 @@ describe('Host', function () {
 		it('works', function () {
 
 			var hosts = [
-				new Host({host:'neu.edu',title:'Northeastern University'}),
-				new Host({host:'zzzzz',title:'ZZZZZ'})
+				new Host({
+					host: 'neu.edu',
+					title: 'Northeastern University'
+				}),
+				new Host({
+					host: 'zzzzz',
+					title: 'ZZZZZ'
+				})
 			];
-			
-			hosts.sort(function(a,b){
+
+			hosts.sort(function (a, b) {
 				return a.compareTo(b);
 			})
-			
+
 			expect(hosts[0].host).toBe('neu.edu');
 		});
 
 		it('works', function () {
 
 			var hosts = [
-				new Host({host:'neu.edu',title:'ZZZZZ'}),
-				new Host({host:'aaaa',   title:'ZZZZZ'})
+				new Host({
+					host: 'neu.edu',
+					title: 'ZZZZZ'
+				}),
+				new Host({
+					host: 'aaaa',
+					title: 'ZZZZZ'
+				})
 			];
-			
-			hosts.sort(function(a,b){
+
+			hosts.sort(function (a, b) {
 				return a.compareTo(b);
 			})
-			
+
 			expect(hosts[0].host).toBe('aaaa');
 		});
 	});
 
 
 	describe('.download', function () {
-		it('works', function () {
+		it('works', function (done) {
 
-			var host = new Host({host:'neu.edu'});
+			var host = new Host({
+				host: 'neu.edu'
+			});
 
 			host.download(_.noop);
 			host.download(_.noop);
 			host.download(_.noop);
-			host.download(_.noop);
-
-			expect(host.title).toBe('Northeastern University')
-
+			host.download(function () {
+				expect(host.title).toBe('Northeastern University')
+				done()
+			}.bind(this));
 		});
 	});
 
