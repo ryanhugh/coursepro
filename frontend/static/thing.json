@@ -1,5 +1,73 @@
 {
     "nodes": [{
+        "name": "Basic Differential Equations"
+    }, {
+        "name": "Several Variable Calculus"
+    }, {}, {
+        "name": "FYS: Single Vari Calculus Sem"
+    }, {}, {
+        "name": "Adv Tpcs: Single Vari Calculus"
+    }, {
+        "name": "FurtherTpcs:Single VarCalculus"
+    }, {
+        "name": "Calculus I"
+    }, {
+        "name": "Elem Single Variable Calculus"
+    }, {}, {
+        "name": "Linear Algebra"
+    }, {
+        "name": "FurtherTpcs:Single VarCalculus"
+    }, {
+        "name": "Calculus I"
+    }, {
+        "name": "Elem Single Variable Calculus"
+    }, {
+        "name": "FYS: Single Vari Calculus Sem"
+    }, {}, {
+        "name": "Calculus IIA"
+    }, {
+        "name": "Calculus IIB"
+    }, {
+        "name": "Calculus IIC"
+    }, {
+        "name": "Postcalculus"
+    }, {
+        "name": "Adv Tpcs: Single Vari Calculus"
+    }, {
+        "name": "Brf Survey-Calculus thru2nd Yr"
+    }, {
+        "name": "Calculus I"
+    }, {
+        "name": "Elem Single Variable Calculus"
+    }, {
+        "name": "FYS: Linear Algebra Honors Sem"
+    }, {}, {
+        "name": "Linear Algebra - Honors"
+    }, {
+        "name": "FurtherTpcs:Single VarCalculus"
+    }, {
+        "name": "Calculus I"
+    }, {
+        "name": "Elem Single Variable Calculus"
+    }, {
+        "name": "Adv Tpcs: Single Vari Calculus"
+    }, {
+        "name": "Basic Several Vari Calculus"
+    }, {
+        "name": "FYS: Single Vari Calculus Sem"
+    }, {}, {
+        "name": "Adv Tpcs: Single Vari Calculus"
+    }, {
+        "name": "FurtherTpcs:Single VarCalculus"
+    }, {
+        "name": "Calculus I"
+    }, {
+        "name": "Elem Single Variable Calculus"
+    }, {
+        "name": "Several Variable Calc Honors"
+    }, {
+        "name": "Several Variable Calculus"
+    }, {
         "name": "Hnrs Several Variable Calculus"
     }, {
         "name": "FYS: Linear Algebra Honors Sem"
@@ -26,23 +94,35 @@
         "value": 4
     }, {
         "source": 0,
-        "target": 3,
+        "target": 31,
         "value": 4
     }, {
         "source": 0,
-        "target": 4,
+        "target": 38,
         "value": 4
     }, {
         "source": 0,
-        "target": 5,
+        "target": 39,
         "value": 4
     }, {
         "source": 0,
-        "target": 6,
+        "target": 40,
         "value": 4
     }, {
         "source": 1,
         "target": 2,
+        "value": 4
+    }, {
+        "source": 2,
+        "target": 3,
+        "value": 4
+    }, {
+        "source": 2,
+        "target": 5,
+        "value": 4
+    }, {
+        "source": 2,
+        "target": 6,
         "value": 4
     }, {
         "source": 6,
@@ -50,15 +130,99 @@
         "value": 4
     }, {
         "source": 6,
-        "target": 10,
-        "value": 4
-    }, {
-        "source": 7,
         "target": 8,
         "value": 4
     }, {
-        "source": 7,
-        "target": 9,
+        "source": 9,
+        "target": 10,
+        "value": 4
+    }, {
+        "source": 9,
+        "target": 24,
+        "value": 4
+    }, {
+        "source": 9,
+        "target": 26,
+        "value": 4
+    }, {
+        "source": 10,
+        "target": 11,
+        "value": 4
+    }, {
+        "source": 10,
+        "target": 14,
+        "value": 4
+    }, {
+        "source": 10,
+        "target": 16,
+        "value": 4
+    }, {
+        "source": 10,
+        "target": 17,
+        "value": 4
+    }, {
+        "source": 10,
+        "target": 18,
+        "value": 4
+    }, {
+        "source": 10,
+        "target": 19,
+        "value": 4
+    }, {
+        "source": 10,
+        "target": 20,
+        "value": 4
+    }, {
+        "source": 10,
+        "target": 21,
+        "value": 4
+    }, {
+        "source": 21,
+        "target": 22,
+        "value": 4
+    }, {
+        "source": 21,
+        "target": 23,
+        "value": 4
+    }, {
+        "source": 26,
+        "target": 27,
+        "value": 4
+    }, {
+        "source": 26,
+        "target": 30,
+        "value": 4
+    }, {
+        "source": 31,
+        "target": 32,
+        "value": 4
+    }, {
+        "source": 31,
+        "target": 34,
+        "value": 4
+    }, {
+        "source": 31,
+        "target": 35,
+        "value": 4
+    }, {
+        "source": 40,
+        "target": 41,
+        "value": 4
+    }, {
+        "source": 40,
+        "target": 43,
+        "value": 4
+    }, {
+        "source": 40,
+        "target": 44,
+        "value": 4
+    }, {
+        "source": 40,
+        "target": 45,
+        "value": 4
+    }, {
+        "source": 40,
+        "target": 46,
         "value": 4
     }]
 }
