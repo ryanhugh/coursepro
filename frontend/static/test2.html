@@ -54,7 +54,7 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-d3.json("/thing.json", function(error, graph) {
+d3.json("/thing2.json", function(error, graph) {
   if (error) throw error;
 
   var nodes = graph.nodes.slice(),

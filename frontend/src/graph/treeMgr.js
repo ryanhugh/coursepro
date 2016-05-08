@@ -246,7 +246,7 @@ TreeMgr.prototype.getFirstLayer = function (tree) {
 //if there exists a class later in classList that is not equal to it (could have same depth, classList is sorted by depth)
 //node becomes the node found (set parent's values)
 TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
-	var classList = this.findFlattendClassList(tree, true).sort(function (a,b) {
+	var classList = this.findFlattendClassList(tree, true).sort(function (a, b) {
 		if (a.depth < b.depth) {
 			return -1;
 		}
@@ -313,13 +313,13 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 			//currTree's values need to point to lowestTree
 			// currTree.prereqs.values.forEach(function (subTree) {
 
-				//remove the node to be removed
-				// _.pull(subTree.allParents, currTree)
+			//remove the node to be removed
+			// _.pull(subTree.allParents, currTree)
 
-				//and add its replacement, the lowest tree, if it is not already there
-				// if (!_(subTree.allParents).includes(lowestTree)) {
-				// 	subTree.allParents.push(lowestTree)
-				// }
+			//and add its replacement, the lowest tree, if it is not already there
+			// if (!_(subTree.allParents).includes(lowestTree)) {
+			// 	subTree.allParents.push(lowestTree)
+			// }
 			// }.bind(this))
 
 			currTree.prereqs.values = []
@@ -394,7 +394,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 
 			//ensure that this child has all the matched parents
 			for (var i = 0; i < thisParentsSet.length; i++) {
-				if (!_(child.allParents).contains(thisParentsSet[i])) {
+				if (!_(child.allParents).includes(thisParentsSet[i])) {
 					return false;
 				}
 			}
@@ -405,6 +405,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 		var linesRemoved = parents.length * children.length - parents.length - children.length;
 
 		if (linesRemoved > maxScore) {
+			maxScore = linesRemoved
 			matchParents = parents;
 			matchChildren = children;
 			console.log('new max with ', parents, children)
@@ -413,46 +414,48 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 
 
 	// this transform will add lines, dont do it
-	if (linesRemoved < 0 || matchParents.length < 2 || matchChildren.length < 2) {
-		return;
-	}
+	if (maxScore > 0 && matchParents.length > 1 && matchChildren.length > 1) {
 
-	console.log('all matching nodes:', matchChildren)
 
-	var newNode = {
-		isClass: false,
-		_id: Math.random(),
-		allParents: matchParents,
-		prereqs: {
-			type: 'or', //TODO FIXXX
-			values: matchChildren
-		},
-		coreqs: {
-			type: 'or',
-			values: []
+		console.log('all matching nodes:', matchChildren)
+
+		var newNode = {
+			name:'superman',
+			isClass: false,
+			_id: Math.random()+'',
+			allParents: matchParents,
+			prereqs: {
+				type: 'or', //TODO FIXXX
+				values: matchChildren
+			},
+			coreqs: {
+				type: 'or',
+				values: []
+			}
 		}
-	}
-
-	matchParents.forEach(function (parent) {
-
-		//remove any .values in matchChildren
-		matchChildren.forEach(function (newChild) {
-			_.pull(parent.prereqs.values, newChild)
-		}.bind(this))
-
-		parent.prereqs.values.push(newNode);
-	}.bind(this))
-
-
-	matchChildren.forEach(function (newChild) {
 
 		matchParents.forEach(function (parent) {
-			_.pull(newChild.allParents, parent);
+
+			//remove any .values in matchChildren
+			matchChildren.forEach(function (newChild) {
+				_.pull(parent.prereqs.values, newChild)
+			}.bind(this))
+
+			parent.prereqs.values.push(newNode);
 		}.bind(this))
 
-		newChild.allParents.push(newNode);
 
-	}.bind(this))
+		matchChildren.forEach(function (newChild) {
+
+			matchParents.forEach(function (parent) {
+				_.pull(newChild.allParents, parent);
+			}.bind(this))
+
+			newChild.allParents.push(newNode);
+
+		}.bind(this))
+
+	}
 
 
 	tree.prereqs.values.forEach(function (subTree) {
@@ -475,13 +478,25 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 
 }
 
+TreeMgr.prototype.removeDepth = function(tree) {
+	tree.depth = undefined
 
+	tree.prereqs.values.forEach(function (subTree) {
+		this.removeDepth(subTree);
+	}.bind(this))
+
+	tree.coreqs.values.forEach(function (subTree) {
+		this.removeDepth(subTree);
+	}.bind(this))
+};
 
 TreeMgr.prototype.addDepthLevel = function (tree, depth) {
 	if (depth === undefined) {
 		depth = 0
 	}
-	tree.depth = depth;
+	if (tree.depth === undefined || tree.depth < depth) {
+		tree.depth = depth
+	}
 
 	tree.prereqs.values.forEach(function (subTree) {
 		this.addDepthLevel(subTree, depth + 1);
@@ -716,7 +731,13 @@ TreeMgr.prototype.go = function (tree) {
 
 	this.defaultToOr(tree);
 
-	// this.mergeDuplicateClasses(tree)
+	this.mergeDuplicateClasses(tree)
+
+	this.groupByCommonPrereqs(tree)
+
+	// does depth here work
+	this.removeDepth(tree)
+	this.addDepthLevel(tree);
 
 
 	this.addLowestParent(tree);
