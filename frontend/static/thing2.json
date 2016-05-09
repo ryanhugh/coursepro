@@ -2,191 +2,245 @@
 	"nodes": [{
 		"_id": "572e948914907ce51d0c3956",
 		"name": "Basic Differential Equations",
-		"level": 0
-	}, {
-		"_id": "572e94d914907ce51d0c5e2a",
-		"name": "Several Variable Calculus",
-		"level": 1
-	}, {
-		"_id": "0.97148570226024390.9721566890183011",
-		"name": "filler",
-		"level": 2
-	}, {
-		"_id": "0.21984018344633016",
-		"name": "superman",
-		"level": 4
-	}, {
-		"_id": "572e949714907ce51d0c3a8f",
-		"name": "FYS: Single Vari Calculus Sem",
-		"level": 5
-	}, {
-		"_id": "0.44921114761108380.3217182917693435",
-		"name": "filler",
-		"level": 6
-	}, {
-		"_id": "572e94e914907ce51d0c6a2c",
-		"name": "Adv Tpcs: Single Vari Calculus",
-		"level": 5
-	}, {
-		"_id": "572e950c14907ce51d0c755b",
-		"name": "FurtherTpcs:Single VarCalculus",
-		"level": 5
-	}, {
-		"_id": "0.872899490019011",
-		"name": "superman",
-		"level": 6
-	}, {
-		"_id": "572e949e14907ce51d0c3c16",
-		"name": "Calculus I",
-		"level": 7
-	}, {
-		"_id": "572e94ea14907ce51d0c6b17",
-		"name": "Elem Single Variable Calculus",
-		"level": 7
-	}, {
-		"_id": "0.258175151808378360.39738581221459035",
-		"name": "filler",
-		"level": 2
-	}, {
-		"_id": "572e94e514907ce51d0c66f3",
-		"name": "Linear Algebra",
-		"level": 3
-	}, {
-		"_id": "572e94d014907ce51d0c583b",
-		"name": "Calculus IIA",
-		"level": 4
-	}, {
-		"_id": "572e946e14907ce51d0c3735",
-		"name": "Calculus IIB",
-		"level": 4
-	}, {
-		"_id": "572e949f14907ce51d0c3c68",
-		"name": "Calculus IIC",
-		"level": 4
-	}, {
-		"_id": "572e94a114907ce51d0c3d55",
-		"name": "Postcalculus",
-		"level": 4
-	}, {
-		"_id": "572e949814907ce51d0c3ac8",
-		"name": "Brf Survey-Calculus thru2nd Yr",
-		"level": 4
-	}, {
-		"_id": "572e949514907ce51d0c3a75",
-		"name": "FYS: Linear Algebra Honors Sem",
-		"level": 3
-	}, {
-		"_id": "0.46851125504090960.31123498332823885",
-		"name": "filler",
-		"level": 4
-	}, {
-		"_id": "572e94d114907ce51d0c58e0",
-		"name": "Linear Algebra - Honors",
-		"level": 3
-	}, {
-		"_id": "572e94e314907ce51d0c65d2",
-		"name": "Basic Several Vari Calculus",
-		"level": 1
-	}, {
-		"_id": "572e947914907ce51d0c383b",
-		"name": "Several Variable Calc Honors",
-		"level": 1
-	}, {
-		"_id": "572e949a14907ce51d0c3b13",
-		"name": "Several Variable Calculus",
-		"level": 1
+		"group": 0,
+		"x": 500
+
 	}, {
 		"_id": "572e94f614907ce51d0c7402",
 		"name": "Hnrs Several Variable Calculus",
-		"level": 1
+		"group": 1,
+		"x": 1100
+
 	}, {
-		"_id": "572e94ad14907ce51d0c4455",
-		"name": "FYS: Linear Algebra - Honors",
-		"level": 2
+		"_id": "572e949a14907ce51d0c3b13",
+		"name": "Several Variable Calculus",
+		"group": 1,
+		"x": 800
+
+	}, {
+		"_id": "572e947914907ce51d0c383b",
+		"name": "Several Variable Calc Honors",
+		"group": 1,
+		"x": 500
+
+	}, {
+		"_id": "572e94e314907ce51d0c65d2",
+		"name": "Basic Several Vari Calculus",
+		"group": 1,
+		"x": 200
+
+	}, {
+		"_id": "572e94d914907ce51d0c5e2a",
+		"name": "Several Variable Calculus",
+		"group": 1,
+		"x": -100
+
+	}, {
+		"_id": "0.7706773758985850.4492462687031118",
+		"name": "filler",
+		"group": 2,
+		"x": -250
+
 	}, {
 		"_id": "572e947414907ce51d0c37e6",
 		"name": "Linear Algebra Honors Course",
-		"level": 2
+		"group": 2,
+		"x": 800
+
+	}, {
+		"_id": "572e94ad14907ce51d0c4455",
+		"name": "FYS: Linear Algebra - Honors",
+		"group": 2,
+		"x": 500
+
 	}, {
 		"_id": "572e949b14907ce51d0c3b57",
 		"name": "FYS: Linear Algebra - Honors",
-		"level": 2
+		"group": 2,
+		"x": 1100
+
+	}, {
+		"_id": "0.38698903367142280.8464375642953839",
+		"name": "filler",
+		"group": 2,
+		"x": 50
+
+	}, {
+		"_id": "572e94d114907ce51d0c58e0",
+		"name": "Linear Algebra - Honors",
+		"group": 3,
+		"x": 1025
+
+	}, {
+		"_id": "572e94e514907ce51d0c66f3",
+		"name": "Linear Algebra",
+		"group": 3,
+		"x": -250
+
+	}, {
+		"_id": "572e949514907ce51d0c3a75",
+		"name": "FYS: Linear Algebra Honors Sem",
+		"group": 3,
+		"x": 725
+
+	}, {
+		"_id": "572e949f14907ce51d0c3c68",
+		"name": "Calculus IIC",
+		"group": 4,
+		"x": -400
+
+	}, {
+		"_id": "572e946e14907ce51d0c3735",
+		"name": "Calculus IIB",
+		"group": 4,
+		"x": -700
+
+	}, {
+		"_id": "572e949814907ce51d0c3ac8",
+		"name": "Brf Survey-Calculus thru2nd Yr",
+		"group": 4,
+		"x": 200
+
+	}, {
+		"_id": "0.9885722731172331",
+		"name": "superman",
+		"group": 4,
+		"x": 368.75
+
+	}, {
+		"_id": "0.390895000228145050.9711346320157139",
+		"name": "filler",
+		"group": 4,
+		"x": 725
+
+	}, {
+		"_id": "572e94d014907ce51d0c583b",
+		"name": "Calculus IIA",
+		"group": 4,
+		"x": -1000
+
+	}, {
+		"_id": "572e94a114907ce51d0c3d55",
+		"name": "Postcalculus",
+		"group": 4,
+		"x": -100
+
+	}, {
+		"_id": "572e950c14907ce51d0c755b",
+		"name": "FurtherTpcs:Single VarCalculus",
+		"group": 5,
+		"x": 668.75
+
+	}, {
+		"_id": "572e94e914907ce51d0c6a2c",
+		"name": "Adv Tpcs: Single Vari Calculus",
+		"group": 5,
+		"x": 368.75
+
+	}, {
+		"_id": "572e949714907ce51d0c3a8f",
+		"name": "FYS: Single Vari Calculus Sem",
+		"group": 5,
+		"x": 68.75
+
+	}, {
+		"_id": "0.40593831003770810.9720513420958066",
+		"name": "filler",
+		"group": 6,
+		"x": 68.75
+
+	}, {
+		"_id": "572e94ea14907ce51d0c6b17",
+		"name": "Elem Single Variable Calculus",
+		"group": 6,
+		"x": 434.375
+
+	}, {
+		"_id": "572e949e14907ce51d0c3c16",
+		"name": "Calculus I",
+		"group": 6,
+		"x": 434.375
+
 	}],
 	"links": [{
+		"source": 0,
+		"target": 5,
+		"value": 4
+	}, {
+		"source": 0,
+		"target": 4,
+		"value": 4
+	}, {
+		"source": 0,
+		"target": 3,
+		"value": 4
+	}, {
+		"source": 0,
+		"target": 2,
+		"value": 4
+	}, {
 		"source": 0,
 		"target": 1,
 		"value": 4
 	}, {
-		"source": 0,
-		"target": 21,
-		"value": 4
-	}, {
-		"source": 0,
-		"target": 22,
-		"value": 4
-	}, {
-		"source": 0,
-		"target": 23,
-		"value": 4
-	}, {
-		"source": 0,
-		"target": 24,
+		"source": 1,
+		"target": 8,
 		"value": 4
 	}, {
 		"source": 1,
-		"target": 2,
+		"target": 7,
+		"value": 4
+	}, {
+		"source": 1,
+		"target": 9,
+		"value": 4
+	}, {
+		"source": 1,
+		"target": 13,
 		"value": 4
 	}, {
 		"source": 1,
 		"target": 11,
 		"value": 4
 	}, {
-		"source": 2,
-		"target": 3,
+		"source": 4,
+		"target": 17,
 		"value": 4
 	}, {
-		"source": 3,
-		"target": 4,
-		"value": 4
-	}, {
-		"source": 3,
+		"source": 5,
 		"target": 6,
 		"value": 4
 	}, {
-		"source": 3,
-		"target": 7,
-		"value": 4
-	}, {
-		"source": 4,
-		"target": 5,
-		"value": 4
-	}, {
-		"source": 7,
-		"target": 8,
-		"value": 4
-	}, {
-		"source": 8,
-		"target": 9,
-		"value": 4
-	}, {
-		"source": 8,
+		"source": 5,
 		"target": 10,
 		"value": 4
 	}, {
-		"source": 11,
+		"source": 6,
+		"target": 17,
+		"value": 4
+	}, {
+		"source": 10,
 		"target": 12,
 		"value": 4
 	}, {
-		"source": 11,
-		"target": 18,
+		"source": 10,
+		"target": 13,
+		"value": 4
+	}, {
+		"source": 10,
+		"target": 11,
 		"value": 4
 	}, {
 		"source": 11,
-		"target": 20,
+		"target": 17,
 		"value": 4
 	}, {
 		"source": 12,
-		"target": 13,
+		"target": 19,
+		"value": 4
+	}, {
+		"source": 12,
+		"target": 15,
 		"value": 4
 	}, {
 		"source": 12,
@@ -194,7 +248,7 @@
 		"value": 4
 	}, {
 		"source": 12,
-		"target": 15,
+		"target": 20,
 		"value": 4
 	}, {
 		"source": 12,
@@ -205,44 +259,40 @@
 		"target": 17,
 		"value": 4
 	}, {
-		"source": 12,
-		"target": 3,
-		"value": 4
-	}, {
-		"source": 17,
-		"target": 8,
-		"value": 4
-	}, {
-		"source": 18,
-		"target": 19,
-		"value": 4
-	}, {
-		"source": 20,
-		"target": 3,
-		"value": 4
-	}, {
-		"source": 21,
-		"target": 3,
-		"value": 4
-	}, {
-		"source": 24,
-		"target": 25,
-		"value": 4
-	}, {
-		"source": 24,
-		"target": 26,
-		"value": 4
-	}, {
-		"source": 24,
-		"target": 27,
-		"value": 4
-	}, {
-		"source": 24,
+		"source": 13,
 		"target": 18,
 		"value": 4
 	}, {
-		"source": 24,
-		"target": 20,
+		"source": 16,
+		"target": 25,
+		"value": 4
+	}, {
+		"source": 16,
+		"target": 26,
+		"value": 4
+	}, {
+		"source": 17,
+		"target": 23,
+		"value": 4
+	}, {
+		"source": 17,
+		"target": 22,
+		"value": 4
+	}, {
+		"source": 17,
+		"target": 21,
+		"value": 4
+	}, {
+		"source": 21,
+		"target": 26,
+		"value": 4
+	}, {
+		"source": 21,
+		"target": 25,
+		"value": 4
+	}, {
+		"source": 23,
+		"target": 24,
 		"value": 4
 	}]
 }

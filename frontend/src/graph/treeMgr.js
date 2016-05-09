@@ -310,17 +310,18 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 
 			}.bind(this));
 
-			//currTree's values need to point to lowestTree
-			// currTree.prereqs.values.forEach(function (subTree) {
+			// currTree's values need to point to lowestTree
+			currTree.prereqs.values.forEach(function (subTree) {
 
-			//remove the node to be removed
-			// _.pull(subTree.allParents, currTree)
+				// remove the node to be removed
+				_.pull(subTree.allParents, currTree)
 
-			//and add its replacement, the lowest tree, if it is not already there
-			// if (!_(subTree.allParents).includes(lowestTree)) {
-			// 	subTree.allParents.push(lowestTree)
-			// }
-			// }.bind(this))
+				// and add its replacement, the lowest tree, if it is not already there
+				// if (!_(subTree.allParents).includes(lowestTree)) {
+				// 	subTree.allParents.push(lowestTree)
+				// }
+			}.bind(this))
+
 
 			currTree.prereqs.values = []
 			currTree.coreqs.values = []
@@ -420,9 +421,9 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 		console.log('all matching nodes:', matchChildren)
 
 		var newNode = {
-			name:'superman',
+			name: 'superman',
 			isClass: false,
-			_id: Math.random()+'',
+			_id: Math.random() + '',
 			allParents: matchParents,
 			prereqs: {
 				type: 'or', //TODO FIXXX
@@ -478,7 +479,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 
 }
 
-TreeMgr.prototype.removeDepth = function(tree) {
+TreeMgr.prototype.removeDepth = function (tree) {
 	tree.depth = undefined
 
 	tree.prereqs.values.forEach(function (subTree) {
@@ -633,7 +634,15 @@ TreeMgr.prototype.defaultToOr = function (tree) {
 
 
 TreeMgr.prototype.getd3JSON = function (tree) {
-	var nodes = this.findFlattendClassList(tree, true);
+	var nodes = this.findFlattendClassList(tree, true).sort(function (a, b) {
+		if (a.depth < b.depth) {
+			return -1;
+		}
+		else if (a.depth > b.depth) {
+			return 1
+		}
+		return 0;
+	}.bind(this));
 	var connections = {}
 	var counts = {}
 
@@ -641,9 +650,6 @@ TreeMgr.prototype.getd3JSON = function (tree) {
 		node.prereqs.values.forEach(function (subTree) {
 			if (!_(subTree.allParents).includes(node)) {
 				console.log("ERROR ");
-				debugger
-			}
-			if (subTree._id == '572e949714907ce51d0c3a8f') {
 				debugger
 			}
 
@@ -671,6 +677,10 @@ TreeMgr.prototype.getd3JSON = function (tree) {
 		}.bind(this))
 	}.bind(this))
 
+	nodes = nodes
+
+	nodes[0].x = 500;
+
 	var outputNodes = []
 	nodes.forEach(function (node) {
 
@@ -686,6 +696,27 @@ TreeMgr.prototype.getd3JSON = function (tree) {
 		}
 
 		newValue.group = node.depth
+
+		if (node.allParents.length > 0) {
+			// Find average percent index * 1000, used as starting position for graph
+			// dosen't need to be that close to where it needs to be, d3 will make it better
+			var xSum = 0;
+			node.allParents.forEach(function (nodeParent) {
+				var index = nodeParent.prereqs.values.indexOf(node);
+				var length = nodeParent.prereqs.values.length;
+				if (!nodeParent.x) {
+					debugger
+				}
+
+				xSum += ((index - (length - 1) / 2) * 300 + nodeParent.x)
+
+			}.bind(this))
+
+			node.x = xSum / node.allParents.length
+		}
+		newValue.x = node.x
+
+		newValue.fixed = "true"
 
 		outputNodes.push(newValue)
 

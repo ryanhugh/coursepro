@@ -98,8 +98,8 @@ var nodeDrag = d3.behavior.drag()
 
 d3.json("thing2.json", function (error, graph) {
 	graph.nodes.forEach(function (node) {
-		node.x = node.cx = Math.random() * 100 + 200
-		node.y = node.cy = node.level * 200 + 50
+		// node.x = node.cx = Math.random() * 100 + 200
+		node.y = node.cy = (node.level || node.group) * 200 + 50
 		node.x2 = function () {
 			return node.x + nodeWidth
 		}
@@ -146,7 +146,7 @@ d3.json("thing2.json", function (error, graph) {
 
 		graph.nodes.forEach(function (o, i) {
 			//possible to get the staticly set width and height here, node[0][o.index].lastChild.width.value
-			o.y += ((o.level * 200 + 50) - o.y) * e.alpha * multiplyer;
+			o.y += (((o.level || o.group) * 200 + 50) - o.y) * e.alpha * multiplyer;
 		});
 
 		link.attr("x1", function (d) {
@@ -174,6 +174,7 @@ d3.json("thing2.json", function (error, graph) {
 		.on("tick", tick)
 		.start();
 
+	// return;
 
 	// Two step process:
 	// make nodes find the nodes near them
