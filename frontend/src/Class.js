@@ -281,8 +281,6 @@ Class.prototype.internalDownload = function (callback) {
 			body.forEach(function (classData) {
 				this.prereqs.values.push(this.convertServerData(classData))
 			}.bind(this))
-
-
 		}
 
 		//else just add more data to the class
@@ -329,6 +327,10 @@ Class.prototype.postDataProcess = function () {
 		}.bind(this))
 
 	};
+
+	this.prereqs.values.sort(function (a, b) {
+		return a.compareTo(b)
+	}.bind(this))
 };
 
 //this is used for panels i think and for class list (settings)

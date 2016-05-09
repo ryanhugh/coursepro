@@ -716,8 +716,6 @@ TreeMgr.prototype.getd3JSON = function (tree) {
 		}
 		newValue.x = node.x
 
-		newValue.fixed = "true"
-
 		outputNodes.push(newValue)
 
 
