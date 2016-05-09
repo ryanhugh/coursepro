@@ -1,6 +1,6 @@
  var width = window.innerWidth;
  var height = 2000;
- var nodeWidth = 164;
+ var nodeWidth = 174;
  var nodeHeight = 50;
 
  var fill = d3.scale.category10();
@@ -126,8 +126,8 @@
  	// 	return d3.rgb(fill(i & 3)).darker(2);
  	// })
 
-
- 	node.html('<foreignObject width="'+nodeWidth+'" height="'+nodeHeight+'" style="transform: translate(-50%,-50%);"><div class="panel panel-primary"> <div class="panel-heading"> <h3 class="panel-title">Panel title</h3> </div> <div class="panel-body"> Panel content </div> </div></foreignObject>')
+ 	//  style="transform: translate(-50%,-50%);"
+ 	node.html('<foreignObject width="' + nodeWidth + '" height="' + nodeHeight + '"><div class="panel panel-primary"> <div class="panel-heading"> <h3 class="panel-title">Panel title</h3> </div> <div class="panel-body"> Panel content </div> </div></foreignObject>')
 
 
  	for (var i = 0; i < node[0].length; i++) {
@@ -249,14 +249,26 @@
  // }
 
 
- overlap = function (a, b) {
- 	var _ref, _ref1, _ref2, _ref3;
- 	return ((a.x < (_ref = b.x) && _ref < a.x2()) && (a.y < (_ref1 = b.y) && _ref1 < a.y2())) || ((a.x < (_ref2 = b.x2()) && _ref2 < a.x2()) && (a.y < (_ref3 = b.y2()) && _ref3 < a.y2()));
- };
+ // overlap = function (a, b) {
+ // 	var _ref, _ref1, _ref2, _ref3;
+ // 	return ((a.x <= (_ref = b.x) && _ref <= a.x2()) && (a.y <= (_ref1 = b.y) && _ref1 <= a.y2()))
+ // 	 || ((a.x <= (_ref2 = b.x2()) && _ref2 <= a.x2()) && (a.y <= (_ref3 = b.y2()) && _ref3 <= a.y2()));
+ // };
+
+ function overlap(rect1, rect2) {
+ 	if (rect1.x < rect2.x + nodeWidth &&
+ 		rect1.x + nodeWidth > rect2.x &&
+ 		rect1.y < rect2.y + nodeHeight &&
+ 		nodeHeight + rect1.y > rect2.y) {
+ 		return true;
+ 		// collision detected!
+ 	}
+ }
+
 
  collide = function (node) {
  	var nx1, nx2, ny1, ny2, padding;
- 	padding = 32;
+ 	padding = 0;
  	nx1 = node.x - padding;
  	nx2 = node.x2() + padding;
  	ny1 = node.y - padding;
@@ -268,7 +280,7 @@
  				// dy = Math.min(node.y2() - quad.point.y, quad.point.y2() - node.y) / 4;
  				// node.y -= dy;
  				// quad.point.y += dy;
- 				dx = Math.min(node.x2() - quad.point.x, quad.point.x2() - node.x) / 3;
+ 				var dx = Math.min(node.x2() - quad.point.x, quad.point.x2() - node.x) / 2;
  				node.x -= dx;
  				quad.point.x += dx;
  			}
