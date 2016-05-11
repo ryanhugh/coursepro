@@ -21,28 +21,11 @@ the node injection graph thing
 for node injection, make sure all same type and do overlapping set of names to find node name
 
 
-
-//all requests from all trafic go through here
-BaseData.download = async.memoize(function (config, callback) {
-
-	//make sure have all the keys
-	if (!config.body._id) {
-
-		this.requiredPath.forEach(function (key) {
-			if (!config.body[key]) {
-				elog(this.name, ' not given a ', key, ' in base data download');
-				return;
-			}
-		}.bind(this))
-	}
-
-	config.url = this.API_ENDPOINT;
-
-	request(config, function (err, results) {
-		callback(err, results)
-	}.bind(this))
-},BaseData.hashObj)
-
+POST PROCESS
+make a post process folder and 
+put the data in the database or just process the page datas? 
+ -- cross term data copying would work pretty much either way
+ -- data base binary search might be better for finding other classes
 
 
 
