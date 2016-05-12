@@ -29,7 +29,7 @@ POST PROCESS
 make a post process folder and 
 put the data in the database or just process the page datas? 
  -- cross term data copying would work pretty much either way
- -- data base binary search might be better for finding other classes
+ -- mongodb binary search might be better for finding other classes for postreqs
 
 
 
