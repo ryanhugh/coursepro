@@ -714,8 +714,11 @@ UsersDB.prototype.addIdsToLists = function (listName, classMongoIds, sectionMong
 			return callback('no user found')
 		};
 
+
 		console.log('tried to add ', classMongoIds.length, ' and ', sectionMongoIds.length, ' to user ', user.email, 'list', listName);
-		console.log('list used to have ', user.lists[listName].classes.length, 'classes and ', user.lists[listName].sections.length, 'sections');
+		if (user.lists && user.lists[listName]) {
+			console.log('list used to have ', user.lists[listName].classes.length, 'classes and ', user.lists[listName].sections.length, 'sections');
+		}
 
 		var didChangeUser = false;
 		classMongoIds.forEach(function (mongoId) {
