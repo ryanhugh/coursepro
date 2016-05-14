@@ -174,26 +174,32 @@ d3.json("thing2.json", function (error, graph) {
 		.start();
 
 	// return;
- 
+ 	
 	// Two step process:
 	// make nodes find the nodes near them
 	var safety = 0;
-	while (force.alpha() > 0.005) { // You'll want to try out different, "small" values for this
+	// D3 cuts off at .005 alpha and freezes everything
+	// the higher it is, the faster it loads, but it will not be done when it moves to the next step
+	// You'll want to try out different, "small" values for this
+	while (force.alpha() > 0.1) { 
 		force.tick();
 		if (safety++ > 500) {
-			break; // Avoids infinite looping in case this solution was a bad idea
+			// Avoids infinite looping in case this solution was a bad idea
+			break; 
 		}
 	}
+	console.log(safety);
 
 	//2. make nodes go towards their depth level
 	multiplyer = 10;
 	force.start();
 
-	var safety = 0;
-	while (force.alpha() > 0.005) {
+	safety = 0;
+	while (force.alpha() > 0.01) {
 		force.tick();
 		if (safety++ > 500) {
 			break;
 		}
 	}
+	console.log(safety);
 });
