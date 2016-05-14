@@ -166,7 +166,7 @@ d3.json("thing2.json", function (error, graph) {
 			return "translate(" + d.x + "," + d.y + ")";
 		});
 	}
-	 
+
 	force
 		.nodes(graph.nodes)
 		.links(graph.links)
@@ -174,7 +174,7 @@ d3.json("thing2.json", function (error, graph) {
 		.start();
 
 	// return;
-
+ 
 	// Two step process:
 	// make nodes find the nodes near them
 	var safety = 0;
