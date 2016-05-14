@@ -181,7 +181,8 @@ d3.json("thing2.json", function (error, graph) {
 	// D3 cuts off at .005 alpha and freezes everything
 	// the higher it is, the faster it loads, but it will not be done when it moves to the next step
 	// You'll want to try out different, "small" values for this
-	while (force.alpha() > 0.1) { 
+	// perhaps make this higher if on slower hardware??
+	while (force.alpha() > 0.08) { 
 		force.tick();
 		if (safety++ > 500) {
 			// Avoids infinite looping in case this solution was a bad idea

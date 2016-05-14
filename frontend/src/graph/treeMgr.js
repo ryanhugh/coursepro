@@ -633,7 +633,7 @@ TreeMgr.prototype.defaultToOr = function (tree) {
 };
 
 
-TreeMgr.prototype.getd3JSON = function (tree) {
+TreeMgr.prototype.treeToD3 = function (tree) {
 	var nodes = this.findFlattendClassList(tree, true).sort(function (a, b) {
 		if (a.depth < b.depth) {
 			return -1;
@@ -644,7 +644,6 @@ TreeMgr.prototype.getd3JSON = function (tree) {
 		return 0;
 	}.bind(this));
 	var connections = {}
-	var counts = {}
 
 	nodes.forEach(function (node, nodeIndex) {
 		node.prereqs.values.forEach(function (subTree) {
@@ -657,45 +656,27 @@ TreeMgr.prototype.getd3JSON = function (tree) {
 			var subTreeIndex = nodes.indexOf(subTree)
 			var key = [node._id, nodeIndex, subTree._id, subTreeIndex].sort().join('')
 
-			// console.log(key, node, subTree);
-			if (!counts[key]) {
-				counts[key] = 0
+			if (connections[key]) {
+				console.log("duplicate link between ", node, subTree);
+				return;
 			}
-			counts[key]++
-
-				if (connections[key]) {
-					console.log("duplicate link between ", node, subTree);
-					return;
+			else {
+				connections[key] = {
+					"source": nodeIndex,
+					"target": subTreeIndex,
+					"value": 4
 				}
-				else {
-					connections[key] = {
-						"source": nodeIndex,
-						"target": subTreeIndex,
-						"value": 4
-					}
-				}
+			}
 		}.bind(this))
 	}.bind(this))
 
-	nodes = nodes
+	nodes[0].x = window.innerWidth / 2;
 
-	nodes[0].x = window.innerWidth/2;
-
-	var outputNodes = []
 	nodes.forEach(function (node) {
 
-		var newValue = {
-			_id: node._id
+		if (!node.name) {
+			node.name = 'filler'
 		}
-
-		if (node.name) {
-			newValue.name = node.name
-		}
-		else {
-			newValue.name = 'filler'
-		}
-
-		newValue.group = node.depth
 
 		if (node.allParents.length > 0) {
 			// Find average percent index * 1000, used as starting position for graph
@@ -714,20 +695,15 @@ TreeMgr.prototype.getd3JSON = function (tree) {
 
 			node.x = xSum / node.allParents.length
 		}
-		newValue.x = node.x
-
-		outputNodes.push(newValue)
-
-
 	}.bind(this))
-	console.log(_.values(counts));
 
-	console.log(JSON.stringify({
-		"nodes": outputNodes,
-		"links": _.values(connections)
-	}));
-
+	return {
+		nodes: nodes,
+		links: _.values(connections)
+	}
 };
+
+
 
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 
@@ -770,10 +746,6 @@ TreeMgr.prototype.go = function (tree) {
 
 
 	this.addLowestParent(tree);
-
-	this.getd3JSON(tree)
-
-
 
 	if (!tree.isClass) {
 		tree.hidden = true;

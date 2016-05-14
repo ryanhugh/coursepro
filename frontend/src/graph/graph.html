@@ -1,21 +1,22 @@
-<div style="height:64px"></div>
+<style type="text/css">
+.panel-primary {
+    margin: 5px;
+}
 
-<div style="margin:0 auto">
+.link {
+    stroke: #ccc;
+    stroke-width: 4px;
+}
 
-    <div style="display:inline-block;min-width:100%">
+.node text {
+    pointer-events: none;
+    font: 10px sans-serif;
+}
 
-        <div subject-class-selector focus-selector="{{focusSelector}}" class-on-right="true" style="width: 558px;z-index: 1750;margin: 0 auto;position: relative;height:60px"></div>
-        <div style="height:32px"></div>
-
-        <div ng-if="tree && graph.classCount != 0" ng-include="'graphInner.html'" style="white-space: nowrap;display:block;margin:0 auto" ng-show="!graph.isLoading" auto-center-scroll></div>
-        <div id="containerId"></div>
-
-
-
-        <div class="spinner-loader" style="margin:0 auto;margin-left: 50%;margin-top: 150px;" ng-class="graph.isLoading?'':'noDisplay'"></div>
-
-        <div style="font-size: 28px;text-align: center;padding-top: 200px;font-weight: 600;" ng-if="graph.classCount==0">Nothing Found!</div>
+body {
+    overflow: hidden;
+}
+</style>
 
 
-    </div>
-</div>
+<div id="d3GraphId"></div>
