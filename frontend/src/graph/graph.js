@@ -62,7 +62,6 @@ Graph.prototype.addClass = function (aClass) {
 	var obj = aClass.getIdentifer().full.obj;
 
 	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classId))
-		// this.createGraph()
 };
 
 
