@@ -679,7 +679,7 @@ TreeMgr.prototype.getd3JSON = function (tree) {
 
 	nodes = nodes
 
-	nodes[0].x = 500;
+	nodes[0].x = window.innerWidth/2;
 
 	var outputNodes = []
 	nodes.forEach(function (node) {

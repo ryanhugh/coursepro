@@ -189,6 +189,7 @@ EllucianRequisitesParser.prototype.convertStringToJSON = function (text) {
 		}
 
 		//ending bracket needs to be checked here, but inserted after url/text parsed
+		// https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201615&subj_code_in=BTC&crse_numb_in=6213
 		var endBracketToInsertCount = 0;
 		while (_(element).endsWith(')')) {
 			element = element.slice(0, element.length - 1).trim();

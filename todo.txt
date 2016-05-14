@@ -7,8 +7,6 @@ max number of simultanous classes wawtching???
 TO TEST
 class name stuff -- done
 queue.max on neu, etc -- done
-make it so it can scrape )) from prereqs section -- done
------https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201615&subj_code_in=BTC&crse_numb_in=6213
 last update time should copy down to class deps of class deps -- done
 get has wait list on section -- done
 why are the terms not sorted on the dropdown? -- done
@@ -22,9 +20,22 @@ for node injection, make sure all same type and do overlapping set of names to f
 
 
 is the d3 moving stuff on the screen causing the mess up of starting position????
+ -- no, its gravity, and if thats removed it looks like crap ughhhhh
+
+
 updateing db due to change in deps because of the dep change in last update time????
 Is there some good way to not have a bunch of emails go off whenever change how something is parsed?
 can close and reopen the db when not prod?
+
+
+D3 todo
+merge
+hover to highlight
+superman types
+types
+panel merge
+
+
 
 
 POST PROCESS
