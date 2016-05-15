@@ -200,28 +200,24 @@ Graph.prototype.go = function (tree, callback) {
 			})
 			.call(nodeDrag)
 
-		// node.html('<foreignObject width="' + this.nodeWidth + '" height="' + this.nodeHeight + '"><div class="panel panel-primary"> <div class="panel-heading"> <h3 class="panel-title">Panel title</h3> </div> <div class="panel-body"> Panel content </div> </div></foreignObject>')
-		// var html = '<foreignObject requiredExtensions="http://www.w3.org/1999/xhtml" width="' + this.nodeWidth + '" height="' + this.nodeHeight + '"><div style="display:inline-block;position:relative;width: 165px;height: 128px;" ng-include="\'panel.html\'" ng-init = "this.baseZIndex = 100"></div></foreignObject>'
-		// var html = '<foreignObject requiredExtensions="http://www.w3.org/1999/xhtml" width="' + this.nodeWidth + '" height="' + this.nodeHeight + '"><div  xmlns="http://www.w3.org/1999/xhtml" style="width:500px;height:500px;background:blue"></div></foreignObject>'
-		var html = '<div ng-include="\'panel.html\'" ng-init = "this.baseZIndex = 100"></div>'
+		var html = '<div ng-include="\'panel.html\'"></div>'
 
 		node.append("foreignObject")
 			.attr("width", this.nodeWidth)
 			.attr("height", this.nodeHeight)
 			.append("xhtml:div")
-			// .attr('style','width:500px;height:500px;background:blue')
-			// var a = 
-			// debugger
 
 		for (var i = 0; i < node[0].length; i++) {
+
+			// create the new scope for each node
 			var newScope = this.$scope.$new();
+
+			// set up the links between tree and scope and foreignObject
 			newScope.tree = graph.nodes[i]
 			graph.nodes[i].$scope = newScope
 			graph.nodes[i].foreignObject = node[0][i].lastChild
 
 			$(node[0][i].querySelector('div')).append(this.$compile(html)(newScope))
-
-			// node[0][i].querySelector('.panel-title').innerText = graph.nodes[i].name
 		}
 
 		var multiplyer = 1;
