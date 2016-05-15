@@ -276,7 +276,7 @@ function GraphPanelExpand($timeout, $document) {
 		// z index and shadow both change when expand and on mouse over
 		tree.$scope.style = {
 			'box-shadow': 'gray 0px 0px 0px',
-			cursor: 'pointer'
+ 			cursor: 'pointer'
 		}
 
 		if (!tree.lowestParent) {
