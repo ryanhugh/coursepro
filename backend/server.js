@@ -102,7 +102,7 @@ app.use(function (req, res, next) {
 app.use(function (req, res, next) {
 
 	//send redirect request
-	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost']).includes(req.hostname)) {
+	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost','10.0.0.7']).includes(req.hostname)) {
 
 		logData(req, {
 			msg: {
@@ -118,7 +118,7 @@ app.use(function (req, res, next) {
 
 // add cache forever to external js libraries
 app.use(function (req, res, next) {
-	if (req.protocol == 'http' && !_(req.connection.remoteAddress).includes('127.0.0.1') && req.connection.remoteAddress != '::1') {
+	if (req.protocol == 'http' && !_(req.connection.remoteAddress).includes('127.0.0.1') && req.connection.remoteAddress != '::1' && !_(req.connection.remoteAddress).includes('10.0.0.')) {
 		logData(req, {
 			msg: {
 				summary: 'http -> https redirect'

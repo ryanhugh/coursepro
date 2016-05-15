@@ -1,49 +1,49 @@
 <!--template panel, used for trees-->
 <!-- remove the white-space below and above to wrap the panels -->
 <!-- baseZIndex needs to be set in this scope before included (it is currently set in graphInner.html) -->
- 
 
-<div class="treePanelWrapper" ng-style="style" style="z-index:100" graph-linker graph-line-to-parent>
+
+<div style="z-index:100">
 
 
     <!-- main panel -->
-    <div class="panel panel-primary treePanel" ng-if="tree.isClass && !tree.hidden" graph-panel-expand panel-close=".closePanel" help>
+    <div ng-style="style" class="panel panel-primary treePanel" ng-if="tree.isClass && !tree.hidden" graph-panel-expand panel-close=".closePanel" help>
 
         <div class="panel-heading">
-            <h3 class="panel-title" style="text-align: center;">
-            	
-            	
-            	<span ng-if ="tree.isString">{{::tree.desc}} </span>
-            	 
-            	{{::tree.subject}} {{::tree.classId}}
-                <br/> 
-                {{::tree.name}}
+
+            <span ng-show="isExpanded" style="float: right;margin-top: -59px;margin-top: -7px;margin-right: -8px;">
+
+                <!-- was 48 -->
+                <div ng-if="tree.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = tree" list-icon='saved' toggle-sections='true' toggle='class' style="display:inline-block"></div>
+
+                <span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="cursor: pointer;display:inline-block"></span>
+                <!-- <div ng-init="class = tree" list-icon='watching' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
+            </span>
+
+            <h3 class="panel-title" style="text-align: center;    width: 90%;margin: 0 auto;">
+
+                <span ng-if="tree.isString">{{::tree.desc}} </span>
+
+                {{::tree.subject}} {{::tree.classId}}
+                <br/> {{::tree.name}}
             </h3>
 
-            <span ng-show="isExpanded">
-                <span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="position: absolute;right: 7px;top: 7px;cursor: pointer;"></span>
-                <!-- <div ng-init="class = tree" list-icon='watching' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
- 
-                <!-- was 48 -->
-                <div ng-if ="tree.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = tree" list-icon='saved' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div>
-
-            </span>
 
         </div>
 
         <!-- only the panel body changes on isExpanded -->
-        <div ng-if="isExpanded" class="panel-body panelBodyId" style="line-height: 14px;" ng-style="{'width':panelWidth+'px'}">
+        <div ng-if="isExpanded" class="panel-body panelBodyId" style="line-height: 14px;width:100%" ng-style="{'width':panelWidth+'px'}">
             <div ng-if="tree.dataStatus === macros.DATASTATUS_DONE">
                 <div style="white-space: normal;margin-bottom:10px;line-height:15px">{{tree.desc}}</div>
 
 
-                
+
                 <div style="text-align: center;margin-bottom: -20px;">
                     <a class="linkToClassWatchModel" ng-click="graph.openWatchModel(this)">Get notified if this class changes
                         <br> or if any seats open up!</a>
                 </div>
                 <div>
-                    <div style="text-align:left;display: inline-block; position: absolute;max-width: 50%;line-height: 15px;">
+                    <div style="text-align:left;display: inline-block;max-width: 50%;line-height: 15px;">
                         <span ng-if="tree.maxCredits">
                             <span ng-if="tree.maxCredits === tree.minCredits">
                                 {{tree.maxCredits}}
@@ -66,9 +66,9 @@
 
 
                 <div style="text-align:center;display: inline-block;padding-top:10px;width: 100%;margin-bottom: -10px;">
-                    <div style="width: 260px;position: relative;" ng-repeat="section in tree.sections" class="classSection">
+                    <div style="width: 260px;" ng-repeat="section in tree.sections" class="classSection">
 
-                        <div list-icon='saved' toggle='section' style="position: absolute;top: 4px;right: 4px;"></div>
+                        <div list-icon='saved' toggle='section' style="float:right;margin-top: -4px;margin-right: -3px;"></div>
 
                         <div style=" text-align: center;margin-bottom: 22px;">
                             <span ng-repeat="meeting in ::section.meetings" ng-if="!meeting.hidden">

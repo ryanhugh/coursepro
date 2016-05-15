@@ -686,7 +686,7 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 				var index = nodeParent.prereqs.values.indexOf(node);
 				var length = nodeParent.prereqs.values.length;
 				if (!nodeParent.x) {
-					debugger
+					elog('nodeParent dosent have an x but it was set above?',nodeParent)
 				}
 
 				xSum += ((index - (length - 1) / 2) * 300 + nodeParent.x)

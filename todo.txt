@@ -26,6 +26,7 @@ is the d3 moving stuff on the screen causing the mess up of starting position???
 updateing db due to change in deps because of the dep change in last update time????
 Is there some good way to not have a bunch of emails go off whenever change how something is parsed?
 can close and reopen the db when not prod?
+trim leading 0s from classids
 
 
 D3 todo

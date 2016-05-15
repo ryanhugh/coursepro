@@ -60,74 +60,74 @@ function GraphPanelExpand($timeout, $document) {
 		//move the panel if it is exending past the top/bottom/left/right of the screen
 		//and make page scroll if extending past (top and bottom) or (right and left)
 
-		var coords = $(tree.panel).offset();
-		coords.right = tree.panel.offsetWidth + coords.left;
-		coords.bottom = tree.panel.offsetHeight + coords.top;
+		// var coords = $(tree.panel).offset();
+		// coords.right = tree.panel.offsetWidth + coords.left;
+		// coords.bottom = tree.panel.offsetHeight + coords.top;
 
 
 
-		//don't mess with the dom if panel is not expanded
-		if (!tree.$scope.isExpanded) {
-			tree.panel.style.marginTop = '';
-			tree.panel.style.marginLeft = '';
-			return;
-		};
+		// //don't mess with the dom if panel is not expanded
+		// if (!tree.$scope.isExpanded) {
+		// 	tree.panel.style.marginTop = '';
+		// 	tree.panel.style.marginLeft = '';
+		// 	return;
+		// };
 
 
-		var edgePadding = 30.5
-		var topPadding = 122.5
+		// var edgePadding = 30.5
+		// var topPadding = 122.5
 
-		var topMargin = 0;
+		// var topMargin = 0;
 
-		//top also accounts for navbar
-		if (coords.top < topPadding) {
-			topMargin = topPadding - coords.top
-		}
+		// //top also accounts for navbar
+		// if (coords.top < topPadding) {
+		// 	topMargin = topPadding - coords.top
+		// }
 
-		if (coords.bottom > this.documentHeight - edgePadding) {
+		// if (coords.bottom > this.documentHeight - edgePadding) {
 
-			//had to move it down because it was above the top of the screen
-			//so extend the bottom of the document
-			if (topMargin != 0) {
-				document.body.style.height = (tree.panel.offsetHeight + edgePadding + topPadding) + 'px'
-			}
-			else {
-				topMargin = this.documentHeight - edgePadding - coords.bottom
-			}
-		}
-		if (topMargin + coords.top < topPadding) {
-			topMargin = topPadding - coords.top
-		};
-		tree.panel.style.marginTop = topMargin + 'px'
-
-		document.body.style.minHeight = (tree.panel.offsetHeight + $(tree.panel).offset().top + topPadding) + 'px'
-
-
-		// if (tree.panel.offsetHeight + $(tree.panel).offset().top >) {
+		// 	//had to move it down because it was above the top of the screen
+		// 	//so extend the bottom of the document
+		// 	if (topMargin != 0) {
+		// 		document.body.style.height = (tree.panel.offsetHeight + edgePadding + topPadding) + 'px'
 		// 	}
+		// 	else {
+		// 		topMargin = this.documentHeight - edgePadding - coords.bottom
+		// 	}
+		// }
+		// if (topMargin + coords.top < topPadding) {
+		// 	topMargin = topPadding - coords.top
+		// };
+		// tree.panel.style.marginTop = topMargin + 'px'
+
+		// document.body.style.minHeight = (tree.panel.offsetHeight + $(tree.panel).offset().top + topPadding) + 'px'
 
 
-		var minLeftSide = edgePadding;
-		var leftMargin = 0;
+		// // if (tree.panel.offsetHeight + $(tree.panel).offset().top >) {
+		// // 	}
 
 
-		if (coords.left < minLeftSide) {
-			leftMargin = minLeftSide - coords.left;
-		}
+		// var minLeftSide = edgePadding;
+		// var leftMargin = 0;
+
+
+		// if (coords.left < minLeftSide) {
+		// 	leftMargin = minLeftSide - coords.left;
+		// }
 
 
 
-		var maxRightSide = this.documentWidth - edgePadding;
+		// var maxRightSide = this.documentWidth - edgePadding;
 
-		if (coords.right > maxRightSide) {
-			if (leftMargin != 0) {
-				document.body.style.width = tree.panel.offsetWidth + 'px'
-			}
-			else {
-				leftMargin = maxRightSide - coords.right;
-			}
-		}
-		tree.panel.style.marginLeft = leftMargin + 'px'
+		// if (coords.right > maxRightSide) {
+		// 	if (leftMargin != 0) {
+		// 		document.body.style.width = tree.panel.offsetWidth + 'px'
+		// 	}
+		// 	else {
+		// 		leftMargin = maxRightSide - coords.right;
+		// 	}
+		// }
+		// tree.panel.style.marginLeft = leftMargin + 'px'
 	};
 
 
@@ -149,7 +149,7 @@ function GraphPanelExpand($timeout, $document) {
 			}
 			else {
 				$scope.style['box-shadow'] = 'gray 0px 0px 0px'
-				$scope.style.zIndex = $scope.baseZIndex;
+					// $scope.style.zIndex = $scope.baseZIndex;
 			}
 		}
 		tree.$scope.$apply()
@@ -179,10 +179,11 @@ function GraphPanelExpand($timeout, $document) {
 					console.log("ERRor loading loadSections", err)
 				}
 				//if it worked, calculate the panel width
+				else if (tree.$scope.isExpanded) {
+					tree.foreignObject.setAttribute('width', this.calculatePanelWidth(tree));
+				}
 				else {
-					tree.$scope.panelWidth = this.calculatePanelWidth(tree)
-
-
+					tree.foreignObject.setAttribute('width',174)
 				}
 
 				//$scope references just the $scope of the tree that was updated, 
@@ -193,7 +194,7 @@ function GraphPanelExpand($timeout, $document) {
 				//update the dom with the new $scope and tree
 				tree.$scope.$apply()
 
-				this.moveOnScreen(tree)
+				// this.moveOnScreen(tree)
 				callback()
 
 			}.bind(this), 0)

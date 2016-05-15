@@ -51,7 +51,7 @@ function Graph() {
 	this.$scope.addClass = this.addClass.bind(this)
 }
 
-Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal']
+Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile']
 
 Graph.isPage = true;
 Graph.urls = ['/graph/:host/:termId/:subject?/:classId?']
@@ -94,7 +94,7 @@ Graph.prototype.collide = function (node) {
 				var dx = Math.min(node.x2() - quad.point.x, quad.point.x2() - node.x) / 2;
 				if (isNaN(dx)) {
 					debugger
-					dx=0
+					dx = 0
 				}
 				node.x -= dx;
 				quad.point.x += dx;
@@ -144,7 +144,7 @@ Graph.prototype.go = function (tree, callback) {
 
 
 		var zoom = d3.behavior.zoom()
-			.scaleExtent([1, 10])
+			.scaleExtent([0, 1.5])
 			.on("zoom", function () {
 				container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 			}.bind(this));
@@ -206,16 +206,37 @@ Graph.prototype.go = function (tree, callback) {
 			})
 			.call(nodeDrag)
 
-		node.html('<foreignObject width="' + this.nodeWidth + '" height="' + this.nodeHeight + '"><div class="panel panel-primary"> <div class="panel-heading"> <h3 class="panel-title">Panel title</h3> </div> <div class="panel-body"> Panel content </div> </div></foreignObject>')
+		// node.html('<foreignObject width="' + this.nodeWidth + '" height="' + this.nodeHeight + '"><div class="panel panel-primary"> <div class="panel-heading"> <h3 class="panel-title">Panel title</h3> </div> <div class="panel-body"> Panel content </div> </div></foreignObject>')
+		// var html = '<foreignObject requiredExtensions="http://www.w3.org/1999/xhtml" width="' + this.nodeWidth + '" height="' + this.nodeHeight + '"><div style="display:inline-block;position:relative;width: 165px;height: 128px;" ng-include="\'panel.html\'" ng-init = "this.baseZIndex = 100"></div></foreignObject>'
+		// var html = '<foreignObject requiredExtensions="http://www.w3.org/1999/xhtml" width="' + this.nodeWidth + '" height="' + this.nodeHeight + '"><div  xmlns="http://www.w3.org/1999/xhtml" style="width:500px;height:500px;background:blue"></div></foreignObject>'
+		var html = '<div ng-include="\'panel.html\'" ng-init = "this.baseZIndex = 100"></div>'
 
+		node.append("foreignObject")
+			.attr("width", this.nodeWidth)
+			.attr("height", this.nodeHeight)
+			.append("xhtml:div")
+			// .attr('style','width:500px;height:500px;background:blue')
+			// var a = 
+			// debugger
 
 		for (var i = 0; i < node[0].length; i++) {
-			node[0][i].querySelector('.panel-title').innerText = graph.nodes[i].name
+			var newScope = this.$scope.$new(true);
+			newScope.macros = macros;
+			newScope.tree = graph.nodes[i]
+			graph.nodes[i].$scope = newScope
+			graph.nodes[i].foreignObject = node[0][i].lastChild
+
+			$(node[0][i].querySelector('div')).append(this.$compile(html)(newScope))
+
+			// node[0][i].querySelector('.panel-title').innerText = graph.nodes[i].name
 		}
 
 		var multiplyer = 1;
 
-		var tick = (function tick(e) {
+		force.nodes(graph.nodes)
+			.links(graph.links)
+
+		force.on("tick", function (e) {
 			var q = d3.geom.quadtree(graph.nodes);
 			var i = 0;
 			var n = graph.nodes.length;
@@ -244,15 +265,9 @@ Graph.prototype.go = function (tree, callback) {
 			node.attr("transform", function (d) {
 				return "translate(" + d.x + "," + d.y + ")";
 			}.bind(this));
-		}).bind(this)
+		}.bind(this))
 
-		force
-			.nodes(graph.nodes)
-			.links(graph.links)
-			.on("tick", tick)
-			.start();
-
-		// return;
+		force.start();
 
 		// Two step process:
 		// make nodes find the nodes near them
@@ -268,7 +283,6 @@ Graph.prototype.go = function (tree, callback) {
 				break;
 			}
 		}
-		// console.log(safety);
 
 		//2. make nodes go towards their depth level
 		multiplyer = 10;
@@ -281,8 +295,8 @@ Graph.prototype.go = function (tree, callback) {
 				break;
 			}
 		}
-		// console.log(safety);
 
+		this.$scope.tree = tree;
 
 
 		setTimeout(function () {
