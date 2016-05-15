@@ -27,6 +27,7 @@ updateing db due to change in deps because of the dep change in last update time
 Is there some good way to not have a bunch of emails go off whenever change how something is parsed?
 can close and reopen the db when not prod?
 trim leading 0s from classids
+if a superman parent is !class and all its children.length == superman.children.length skip the !class direcly
 
 
 D3 todo
