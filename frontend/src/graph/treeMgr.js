@@ -413,6 +413,22 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 		}
 	}.bind(this));
 
+	// If any of the parents are !class and parent.prereqs.values == matchChildren, then skip the parent and go to its parent
+	// matchParents.forEach(function (parent) {
+	// 	if (parent.isClass) {
+	// 		return;
+	// 	}
+	// 	return;
+
+	// 	// TYPE CHECK HERE
+
+	// 	if (parent.prereqs.values.length == matchChildren.length && parent.allParents.length === 1) {
+	// 		_.pull(matchParents, parent);
+	// 		matchParents = _.uniq(matchParents.concat(parent.allParents))
+	// 	}
+
+	// }.bind(this))
+
 
 	// this transform will add lines, dont do it
 	if (maxScore > 0 && matchParents.length > 1 && matchChildren.length > 1) {
@@ -421,7 +437,6 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 		console.log('all matching nodes:', matchChildren)
 
 		var newNode = {
-			name: 'superman',
 			isClass: false,
 			_id: Math.random() + '',
 			allParents: matchParents,
@@ -682,7 +697,7 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 				var index = nodeParent.prereqs.values.indexOf(node);
 				var length = nodeParent.prereqs.values.length;
 				if (!nodeParent.x) {
-					elog('nodeParent dosent have an x but it was set above?',nodeParent)
+					elog('nodeParent dosent have an x but it was set above?', nodeParent)
 				}
 
 				xSum += ((index - (length - 1) / 2) * 300 + nodeParent.x)
@@ -750,7 +765,3 @@ TreeMgr.prototype.go = function (tree) {
 
 TreeMgr.prototype.TreeMgr = TreeMgr;
 module.exports = new TreeMgr();
-
-
-console.warn('test line here')
-window.treeMgr = module.exports

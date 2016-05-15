@@ -413,6 +413,19 @@ Class.prototype.getHeighestProfCount = function () {
 	return count;
 };
 
+Class.prototype.getPrettyClassId = function () {
+	if (!this.classId) {
+		return null;
+	}
+
+	var prettyClassId = this.classId;
+	while (_(prettyClassId).startsWith('0') && prettyClassId.length > 1) {
+		prettyClassId = prettyClassId.slice(1)
+	}
+	return prettyClassId
+
+};
+
 //returns true if any sections have an exam, else false
 Class.prototype.sectionsHaveExam = function () {
 	for (var i = 0; i < this.sections.length; i++) {

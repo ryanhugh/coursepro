@@ -24,7 +24,7 @@
 
                 <span ng-if="tree.isString">{{::tree.desc}} </span>
 
-                {{::tree.subject}} {{::tree.classId}}
+                {{::tree.subject}} {{::tree.getPrettyClassId()}}
                 <br/> {{::tree.name}}
             </h3>
 
@@ -66,7 +66,7 @@
 
 
                 <div style="text-align:center;display: inline-block;padding-top:10px;width: 100%;margin-bottom: -10px;">
-                    <div style="width: 260px;" ng-repeat="section in tree.sections" class="classSection">
+                    <div style="width: 260px;vertical-align: top;" ng-repeat="section in tree.sections" class="classSection">
 
                         <div list-icon='saved' toggle='section' style="float:right;margin-top: -4px;margin-right: -3px;"></div>
 

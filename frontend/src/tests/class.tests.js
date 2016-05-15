@@ -144,4 +144,16 @@ describe('Class', function () {
 
 	});
 
+	it('prettyclassid should work', function () {
+
+		var aClass = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classId: '006B',
+			name: 'Calculus IIB'
+		})
+		expect(aClass.getPrettyClassId()).toBe('6B')
+	});
+
 });
