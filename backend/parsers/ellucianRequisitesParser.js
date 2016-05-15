@@ -231,7 +231,7 @@ EllucianRequisitesParser.prototype.removeBlacklistedStrings = function (data) {
 
 	data.values.forEach(function (subData) {
 		if ((typeof subData) == 'string') {
-			if (!subData.match(/\s*Pre-?req for \w+\s*\d+\s*\d+\s*$/gi)) {
+			if (!subData.match(/\s*Pre-?req for \w+\s*[\d\w]+\s*\d+\s*$/gi)) {
 				newValues.push(subData)
 			}
 		}

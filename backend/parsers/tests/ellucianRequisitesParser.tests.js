@@ -399,3 +399,79 @@ it('works with ))', function (done) {
 		})
 	});
 });
+
+
+// note that this site has a lot of options for classes to take under the catalog listing and then only 3 under the section page
+it('works with a ton of ors', function (done) {
+
+
+	fs.readFile('backend/parsers/tests/data/ellucianRequisitesParser/2.html', 'utf8', function (err, body) {
+		expect(err).toBe(null);
+
+		var url = 'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_course_detail?cat_term_in=201604&subj_code_in=MATH&crse_numb_in=033'
+
+		var pageData = PageData.create({
+			dbData: {
+				url: url
+			}
+		});
+
+		pointer.handleRequestResponce(body, function (err, dom) {
+			expect(err).toBe(null);
+
+			var prereqs = ellucianRequisitesParser.parseRequirementSection(pageData, dom[0].children, 'prerequisites');
+
+			console.log(prereqs);
+
+			expect(prereqs).toEqual(Object({
+				type: 'or',
+				values: [Object({
+					classId: '025',
+					termId: '201604',
+					subject: 'MATH'
+				}), Object({
+					classId: '006S',
+					termId: '201604',
+					subject: 'MATH'
+				}), Object({
+					classId: '006A',
+					termId: '201604',
+					subject: 'MATH'
+				}), Object({
+					classId: '006B',
+					termId: '201604',
+					subject: 'MATH'
+				}), Object({
+					classId: '006C',
+					termId: '201604',
+					subject: 'MATH'
+				}), Object({
+					classId: '006D',
+					termId: '201604',
+					subject: 'MATH'
+				}), Object({
+					classId: '025S',
+					termId: '201604',
+					subject: 'MATH'
+				}), Object({
+					classId: '026',
+					termId: '201604',
+					subject: 'MATH'
+				})]
+			}))
+			done()
+		})
+	});
+});
+
+it('removeBlacklistedStrings should work', function () {
+	var a = ellucianRequisitesParser.removeBlacklistedStrings({
+		values: ['Pre-req for Math 033 1', 'Pre-req for Math 025S 1', 'hi']
+	})
+	console.log(a);
+
+
+	expect(a).toEqual({
+		values: ['hi']
+	})
+});
