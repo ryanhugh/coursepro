@@ -674,10 +674,6 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 
 	nodes.forEach(function (node) {
 
-		if (!node.name) {
-			node.name = 'filler'
-		}
-
 		if (node.allParents.length > 0) {
 			// Find average percent index * 1000, used as starting position for graph
 			// dosen't need to be that close to where it needs to be, d3 will make it better

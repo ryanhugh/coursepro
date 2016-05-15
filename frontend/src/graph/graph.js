@@ -79,11 +79,10 @@ Graph.prototype.overlap = function (rect1, rect2) {
 
 
 Graph.prototype.collide = function (node) {
-	var padding = 0;
-	var nx1 = node.x - padding;
-	var nx2 = node.x2() + padding;
-	var ny1 = node.y - padding;
-	var ny2 = node.y2() + padding;
+	var nx1 = node.x;
+	var nx2 = node.x + this.nodeWidth;
+	var ny1 = node.y;
+	var ny2 = node.y + this.nodeHeight;
 	return function (quad, x1, y1, x2, y2) {
 		// var dy;
 		if (quad.point && (quad.point !== node)) {
@@ -91,11 +90,7 @@ Graph.prototype.collide = function (node) {
 				// dy = Math.min(node.y2() - quad.point.y, quad.point.y2() - node.y) / 4;
 				// node.y -= dy;
 				// quad.point.y += dy;
-				var dx = Math.min(node.x2() - quad.point.x, quad.point.x2() - node.x) / 2;
-				if (isNaN(dx)) {
-					debugger
-					dx = 0
-				}
+				var dx = Math.min(node.x + this.nodeWidth - quad.point.x, quad.point.x + this.nodeWidth - node.x) / 2;
 				node.x -= dx;
 				quad.point.x += dx;
 			}
@@ -178,13 +173,8 @@ Graph.prototype.go = function (tree, callback) {
 
 		graph.nodes.forEach(function (node) {
 			// node.x = node.cx = Math.random() * 100 + 200
-			node.y = node.cy = node.depth * 200 + 50
-			node.x2 = function () {
-				return node.x + this.nodeWidth
-			}.bind(this)
-			node.y2 = function () {
-				return node.y + this.nodeHeight
-			}.bind(this)
+			node.height = this.nodeHeight;
+			node.width = this.nodeWidth
 		}.bind(this))
 
 
@@ -250,20 +240,20 @@ Graph.prototype.go = function (tree, callback) {
 			}.bind(this));
 
 			link.attr("x1", function (d) {
-					return d.source.x + this.nodeWidth / 2;
+					return d.source.x;
 				}.bind(this))
 				.attr("y1", function (d) {
-					return d.source.y + this.nodeHeight / 2;
+					return d.source.y;
 				}.bind(this))
 				.attr("x2", function (d) {
-					return d.target.x + this.nodeWidth / 2;
+					return d.target.x;
 				}.bind(this))
 				.attr("y2", function (d) {
-					return d.target.y + this.nodeHeight / 2;
+					return d.target.y;
 				}.bind(this));
 
 			node.attr("transform", function (d) {
-				return "translate(" + d.x + "," + d.y + ")";
+				return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
 			}.bind(this));
 		}.bind(this))
 

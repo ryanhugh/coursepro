@@ -138,18 +138,15 @@ function GraphPanelExpand($timeout, $document) {
 
 		if ($scope.isExpanded) {
 			$scope.style['box-shadow'] = 'gray 0px 0px 9px'
-			$scope.style.zIndex = 1500;
 			$scope.style.cursor = '';
 		}
 		else {
 			$scope.style.cursor = 'pointer';
 			if (isMouseOver) {
 				$scope.style['box-shadow'] = 'gray 0px 0px 6px'
-				$scope.style.zIndex = 150;
 			}
 			else {
 				$scope.style['box-shadow'] = 'gray 0px 0px 0px'
-					// $scope.style.zIndex = $scope.baseZIndex;
 			}
 		}
 		tree.$scope.$apply()
@@ -180,10 +177,13 @@ function GraphPanelExpand($timeout, $document) {
 				}
 				//if it worked, calculate the panel width
 				else if (tree.$scope.isExpanded) {
-					tree.foreignObject.setAttribute('width', this.calculatePanelWidth(tree));
+					var width = this.calculatePanelWidth(tree);
+					tree.foreignObject.setAttribute('width', width);
+					tree.width = width;
 				}
 				else {
-					tree.foreignObject.setAttribute('width',174)
+					tree.width = 174;
+					tree.foreignObject.setAttribute('width', 174)
 				}
 
 				//$scope references just the $scope of the tree that was updated, 
@@ -272,12 +272,10 @@ function GraphPanelExpand($timeout, $document) {
 
 
 		//grab the default z index from the parent $scope, which in intended for this tree
-		tree.$scope.baseZIndex = tree.$scope.$parent.baseZIndex
 
 		// z index and shadow both change when expand and on mouse over
 		tree.$scope.style = {
 			'box-shadow': 'gray 0px 0px 0px',
-			zIndex: $scope.baseZIndex,
 			cursor: 'pointer'
 		}
 
