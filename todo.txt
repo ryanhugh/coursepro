@@ -28,7 +28,7 @@ Is there some good way to not have a bunch of emails go off whenever change how 
 can close and reopen the db when not prod?
 trim leading 0s from classids -- done client side with a getter
 if a superman parent is !class and all its children.length == superman.children.length skip the !class direcly
-
+math 33 requies 6a just like 27!!!!
 
 D3 todo
 merge -- done

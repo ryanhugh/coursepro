@@ -405,7 +405,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 		//calculate the score of this set
 		var linesRemoved = parents.length * children.length - parents.length - children.length;
 
-		if (linesRemoved > maxScore) {
+		if (linesRemoved >= maxScore) {
 			maxScore = linesRemoved
 			matchParents = parents;
 			matchChildren = children;
@@ -431,7 +431,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 
 
 	// this transform will add lines, dont do it
-	if (maxScore > 0 && matchParents.length > 1 && matchChildren.length > 1) {
+	if (maxScore >= 0 && matchParents.length > 1 && matchChildren.length > 1) {
 
 
 		console.log('all matching nodes:', matchChildren)
