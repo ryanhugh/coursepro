@@ -99,6 +99,14 @@ function GraphPanelExpand($timeout, $document) {
 					var width = this.calculatePanelWidth(tree);
 					tree.foreignObject.setAttribute('width', width);
 					tree.width = width;
+
+					// find the g element that is a parent of the foreignObject, and move it to the end of its children
+					// in svgs this is how zindex works
+					var g = tree.foreignObject.parentElement;
+					var gParentElement = g.parentElement;
+					g.remove();
+					gParentElement.appendChild(g)
+
 				}
 				else {
 					tree.width = 174;
@@ -118,7 +126,7 @@ function GraphPanelExpand($timeout, $document) {
 
 				// and tell d3 to move the panel back to where it should be
 				tree.$scope.graph.force.alpha(.0051)
-				
+
 				callback()
 			}.bind(this), 0)
 		}.bind(this))
