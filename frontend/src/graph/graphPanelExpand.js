@@ -50,87 +50,6 @@ function GraphPanelExpand($timeout, $document) {
 		return panelWidth;
 	};
 
-	GraphPanelExpandInner.prototype.moveOnScreen = function (tree) {
-
-		document.body.style.height = ''
-		document.body.style.width = ''
-		document.body.style.minHeight = ''
-
-
-		//move the panel if it is exending past the top/bottom/left/right of the screen
-		//and make page scroll if extending past (top and bottom) or (right and left)
-
-		// var coords = $(tree.panel).offset();
-		// coords.right = tree.panel.offsetWidth + coords.left;
-		// coords.bottom = tree.panel.offsetHeight + coords.top;
-
-
-
-		// //don't mess with the dom if panel is not expanded
-		// if (!tree.$scope.isExpanded) {
-		// 	tree.panel.style.marginTop = '';
-		// 	tree.panel.style.marginLeft = '';
-		// 	return;
-		// };
-
-
-		// var edgePadding = 30.5
-		// var topPadding = 122.5
-
-		// var topMargin = 0;
-
-		// //top also accounts for navbar
-		// if (coords.top < topPadding) {
-		// 	topMargin = topPadding - coords.top
-		// }
-
-		// if (coords.bottom > this.documentHeight - edgePadding) {
-
-		// 	//had to move it down because it was above the top of the screen
-		// 	//so extend the bottom of the document
-		// 	if (topMargin != 0) {
-		// 		document.body.style.height = (tree.panel.offsetHeight + edgePadding + topPadding) + 'px'
-		// 	}
-		// 	else {
-		// 		topMargin = this.documentHeight - edgePadding - coords.bottom
-		// 	}
-		// }
-		// if (topMargin + coords.top < topPadding) {
-		// 	topMargin = topPadding - coords.top
-		// };
-		// tree.panel.style.marginTop = topMargin + 'px'
-
-		// document.body.style.minHeight = (tree.panel.offsetHeight + $(tree.panel).offset().top + topPadding) + 'px'
-
-
-		// // if (tree.panel.offsetHeight + $(tree.panel).offset().top >) {
-		// // 	}
-
-
-		// var minLeftSide = edgePadding;
-		// var leftMargin = 0;
-
-
-		// if (coords.left < minLeftSide) {
-		// 	leftMargin = minLeftSide - coords.left;
-		// }
-
-
-
-		// var maxRightSide = this.documentWidth - edgePadding;
-
-		// if (coords.right > maxRightSide) {
-		// 	if (leftMargin != 0) {
-		// 		document.body.style.width = tree.panel.offsetWidth + 'px'
-		// 	}
-		// 	else {
-		// 		leftMargin = maxRightSide - coords.right;
-		// 	}
-		// }
-		// tree.panel.style.marginLeft = leftMargin + 'px'
-	};
-
-
 	// the given scope is the scope of a tree inside a recursions
 	GraphPanelExpandInner.prototype.updateScope = function (tree, isMouseOver) {
 
@@ -194,9 +113,13 @@ function GraphPanelExpand($timeout, $document) {
 				//update the dom with the new $scope and tree
 				tree.$scope.$apply()
 
-				// this.moveOnScreen(tree)
-				callback()
+				// update the height of the panel
+				tree.height = tree.foreignObject.lastChild.offsetHeight
 
+				// and tell d3 to move the panel back to where it should be
+				tree.$scope.graph.force.alpha(.0051)
+				
+				callback()
 			}.bind(this), 0)
 		}.bind(this))
 	};
@@ -276,7 +199,7 @@ function GraphPanelExpand($timeout, $document) {
 		// z index and shadow both change when expand and on mouse over
 		tree.$scope.style = {
 			'box-shadow': 'gray 0px 0px 0px',
- 			cursor: 'pointer'
+			cursor: 'pointer'
 		}
 
 		if (!tree.lowestParent) {
@@ -307,11 +230,11 @@ function GraphPanelExpand($timeout, $document) {
 
 
 		//get the height and width of the document when the page first loads
-		$timeout(function () {
+		// $timeout(function () {
 
-			this.documentHeight = $document.height()
-			this.documentWidth = $document.width()
-		}.bind(this))
+		// 	this.documentHeight = $document.height()
+		// 	this.documentWidth = $document.width()
+		// }.bind(this))
 
 
 		element.on('mouseover', function () {

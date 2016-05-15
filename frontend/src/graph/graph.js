@@ -32,6 +32,9 @@ function Graph() {
 	this.nodeWidth = 174
 	this.nodeHeight = 50;
 
+	// main d3 force, defined in go
+	this.force = null;
+
 	var path = {};
 
 	for (var attrName in this.$routeParams) {
@@ -119,11 +122,12 @@ Graph.prototype.go = function (tree, callback) {
 		}
 
 
-		var force = d3.layout.force()
+		this.force = d3.layout.force()
 			.charge(-18000)
 			.gravity(0.2)
 			.linkDistance(5)
 			.size([this.graphWidth, this.graphHeight])
+
 
 		var svg = d3.select("#d3GraphId").append("svg")
 			.attr("width", this.graphWidth)
@@ -156,7 +160,7 @@ Graph.prototype.go = function (tree, callback) {
 				}
 				else {
 					dragStartedByRightButton = false;
-					force.alpha(.007)
+					this.force.alpha(.007)
 				}
 			}.bind(this))
 			.on("drag", function (d, i) {
@@ -167,7 +171,7 @@ Graph.prototype.go = function (tree, callback) {
 				d.py += d3.event.dy
 				d.x += d3.event.dx
 				d.y += d3.event.dy
-				force.alpha(.007)
+				this.force.alpha(.007)
 			}.bind(this))
 
 
@@ -210,8 +214,7 @@ Graph.prototype.go = function (tree, callback) {
 			// debugger
 
 		for (var i = 0; i < node[0].length; i++) {
-			var newScope = this.$scope.$new(true);
-			newScope.macros = macros;
+			var newScope = this.$scope.$new();
 			newScope.tree = graph.nodes[i]
 			graph.nodes[i].$scope = newScope
 			graph.nodes[i].foreignObject = node[0][i].lastChild
@@ -223,10 +226,10 @@ Graph.prototype.go = function (tree, callback) {
 
 		var multiplyer = 1;
 
-		force.nodes(graph.nodes)
+		this.force.nodes(graph.nodes)
 			.links(graph.links)
 
-		force.on("tick", function (e) {
+		this.force.on("tick", function (e) {
 			var q = d3.geom.quadtree(graph.nodes);
 			var i = 0;
 			var n = graph.nodes.length;
@@ -257,7 +260,7 @@ Graph.prototype.go = function (tree, callback) {
 			}.bind(this));
 		}.bind(this))
 
-		force.start();
+		this.force.start();
 
 		// Two step process:
 		// make nodes find the nodes near them
@@ -266,8 +269,8 @@ Graph.prototype.go = function (tree, callback) {
 		// the higher it is, the faster it loads, but it will not be done when it moves to the next step
 		// You'll want to try out different, "small" values for this
 		// perhaps make this higher if on slower hardware??
-		while (force.alpha() > 0.08) {
-			force.tick();
+		while (this.force.alpha() > 0.08) {
+			this.force.tick();
 			if (safety++ > 500) {
 				// Avoids infinite looping in case this solution was a bad idea
 				break;
@@ -276,11 +279,11 @@ Graph.prototype.go = function (tree, callback) {
 
 		//2. make nodes go towards their depth level
 		multiplyer = 10;
-		force.start();
+		this.force.start();
 
 		safety = 0;
-		while (force.alpha() > 0.01) {
-			force.tick();
+		while (this.force.alpha() > 0.01) {
+			this.force.tick();
 			if (safety++ > 500) {
 				break;
 			}
@@ -291,6 +294,11 @@ Graph.prototype.go = function (tree, callback) {
 
 		setTimeout(function () {
 			this.$scope.$apply()
+
+			graph.nodes.forEach(function (tree) {
+				tree.height = tree.foreignObject.lastChild.offsetHeight
+			}.bind(this))
+
 			callback(null, tree)
 		}.bind(this), 0)
 
