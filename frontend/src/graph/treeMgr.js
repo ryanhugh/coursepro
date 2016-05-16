@@ -426,31 +426,6 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 		}
 	}.bind(this));
 
-	// If any of the parents are !class and parent.prereqs.values == matchChildren, then skip the parent and go to its parent
-	// matchParents.forEach(function (parent) {
-	// 	if (parent.isClass) {
-	// 		return;
-	// 	}
-	// 	return;
-
-	// 	// TYPE CHECK HERE
-
-	// 	if (parent.prereqs.values.length == matchChildren.length && parent.allParents.length === 1) {
-	// 		_.pull(matchParents, parent);
-
-	// 		var newParents = parent.allParents
-	// 		matchParents = _.uniq(matchParents.concat(newParents))
-
-	// 		newParents.forEach(function (newParent) {
-	// 			_.pull(newParent.prereqs.values,parent);
-	// 			// newParent.prereqs.values.push()
-	// 		}.bind(this))
-
-
-	// 	}
-
-	// }.bind(this))
-
 
 	// this transform will add lines, dont do it
 	if (maxScore >= 0 && matchParents.length > 1 && matchChildren.length > 1) {
@@ -463,7 +438,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 			_id: Math.random() + '',
 			allParents: matchParents,
 			prereqs: {
-				type: 'or', //TODO FIXXX 
+				type: prereqType,
 				values: matchChildren
 			},
 			coreqs: {
@@ -499,21 +474,6 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 	tree.prereqs.values.forEach(function (subTree) {
 		this.groupByCommonPrereqs(subTree, prereqType);
 	}.bind(this));
-
-
-	//PRETTY sure everything would have to be same type (or vs and)
-
-	//for every parent:
-	//any values in matchChildren remove
-	//add newNode
-
-	//for every child:
-	//remove any parent in toSimplify
-	//add newNode
-
-
-
-
 }
 
 TreeMgr.prototype.removeDepth = function (tree) {
