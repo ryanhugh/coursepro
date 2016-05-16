@@ -246,15 +246,7 @@ TreeMgr.prototype.getFirstLayer = function (tree) {
 //if there exists a class later in classList that is not equal to it (could have same depth, classList is sorted by depth)
 //node becomes the node found (set parent's values)
 TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
-	var classList = this.findFlattendClassList(tree, true).sort(function (a, b) {
-		if (a.depth < b.depth) {
-			return -1;
-		}
-		else if (a.depth > b.depth) {
-			return 1
-		}
-		return 0;
-	}.bind(this))
+	var classList = this.findFlattendClassList(tree, true)
 
 	//breath first search down the tree
 	var stack = [tree];
@@ -316,21 +308,8 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 				// remove the node to be removed
 				_.pull(subTree.allParents, currTree)
 
-				// and add its replacement, the lowest tree, if it is not already there
-				// if (!_(subTree.allParents).includes(lowestTree)) {
-				// 	subTree.allParents.push(lowestTree)
-				// }
 			}.bind(this))
 
-
-			currTree.prereqs.values = []
-			currTree.coreqs.values = []
-			currTree.allParents.values = []
-			currTree.depth = 99
-			currTree.name = 'DELETED'
-
-
-			// return;
 		}
 
 		//if two duplicated trees exist, we dont want to process both of their prereqs
@@ -739,11 +718,7 @@ TreeMgr.prototype.go = function (tree) {
 
 	this.sortTree(tree);
 
-	this.addDepthLevel(tree);
-
 	this.addAllParentRelations(tree);
-
-
 
 	this.defaultToOr(tree);
 
@@ -752,7 +727,6 @@ TreeMgr.prototype.go = function (tree) {
 	this.groupByCommonPrereqs(tree)
 
 	// does depth here work
-	this.removeDepth(tree)
 	this.addDepthLevel(tree);
 
 
