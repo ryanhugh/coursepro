@@ -20,8 +20,10 @@ function Updater() {
 		this.onInterval();
 	};
 
-	//30 min
-	setInterval(this.onInterval.bind(this), macros.DB_REFRESH_INTERVAL)
+	if (!macros.UNIT_TESTS) {
+		//30 min
+		setInterval(this.onInterval.bind(this), macros.DB_REFRESH_INTERVAL)
+	}
 }
 
 Updater.prototype.updateClassFromMongoId = function (classMongoId, callback) {
