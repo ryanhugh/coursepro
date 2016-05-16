@@ -6,7 +6,7 @@ function TreeMgr() {
 
 }
 
-
+// this dosen't work after allParents have been added
 TreeMgr.prototype.simplifyTree = function (tree) {
 	if (tree.prereqs.values.length == 0) {
 		return;
@@ -15,9 +15,12 @@ TreeMgr.prototype.simplifyTree = function (tree) {
 	//remove duplicates
 	var newTreeValues = [];
 	tree.prereqs.values.forEach(function (subTree) {
-		if (!_.some(newTreeValues, _.matches(subTree))) {
-			newTreeValues.push(subTree)
+		for (var i = 0; i < newTreeValues.length; i++) {
+			if (newTreeValues[i]._id === subTree._id) {
+				return;
+			}
 		}
+		newTreeValues.push(subTree);
 	}.bind(this))
 	tree.prereqs.values = newTreeValues;
 
@@ -77,6 +80,33 @@ TreeMgr.prototype.simplifyTree = function (tree) {
 	}.bind(this))
 }
 
+// one part of the above function that runs after the node injection that changes allParents...
+TreeMgr.prototype.skipNodesPostStuff = function(tree) {
+	
+	tree.prereqs.values.forEach(function (subTree) {
+		if (subTree.prereqs.values.length === 1 && !subTree.isClass) {
+			_.pull(tree.prereqs.values, subTree)
+
+			var newChild = subTree.prereqs.values[0];
+			_.pull(newChild.allParents,subTree)
+
+			if (!_(newChild.allParents).includes(tree)) {
+				newChild.allParents.push(tree)
+			}
+
+			if (!_(tree.prereqs.values).includes(newChild)) {
+				tree.prereqs.values.push(newChild)
+			}
+
+		}
+	}.bind(this))
+
+
+	//recursion
+	tree.prereqs.values.forEach(function (subTree) {
+		this.skipNodesPostStuff(subTree);
+	}.bind(this))
+};
 
 TreeMgr.prototype.sortTree = function (tree) {
 	if (tree.prereqs.values.length == 0) {
@@ -351,7 +381,7 @@ TreeMgr.prototype.getSubsets = function (bigSet) {
 }
 
 
-TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
+TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 
 	var parents = this.getNeighbors(tree);
 
@@ -359,9 +389,15 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 	var matchParents = [];
 	var matchChildren = [];
 	this.getSubsets(parents).forEach(function (thisParentsSet) {
-
 		if (thisParentsSet.length < 2) {
 			return;
+		}
+
+		// if all parents in this set don't match the given prereq type, drop this set
+		for (var i = thisParentsSet.length - 1; i >= 0; i--) {
+			if (thisParentsSet[i].prereqs.type !== prereqType) {
+				return;
+			}
 		}
 
 		// find the children which these parents share
@@ -369,8 +405,6 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 			if (!child.allParents) {
 				return false;
 			}
-
-
 
 			//ensure that this child has all the matched parents
 			for (var i = 0; i < thisParentsSet.length; i++) {
@@ -403,7 +437,16 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 
 	// 	if (parent.prereqs.values.length == matchChildren.length && parent.allParents.length === 1) {
 	// 		_.pull(matchParents, parent);
-	// 		matchParents = _.uniq(matchParents.concat(parent.allParents))
+
+	// 		var newParents = parent.allParents
+	// 		matchParents = _.uniq(matchParents.concat(newParents))
+
+	// 		newParents.forEach(function (newParent) {
+	// 			_.pull(newParent.prereqs.values,parent);
+	// 			// newParent.prereqs.values.push()
+	// 		}.bind(this))
+
+
 	// 	}
 
 	// }.bind(this))
@@ -420,7 +463,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 			_id: Math.random() + '',
 			allParents: matchParents,
 			prereqs: {
-				type: 'or', //TODO FIXXX
+				type: 'or', //TODO FIXXX 
 				values: matchChildren
 			},
 			coreqs: {
@@ -454,7 +497,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree) {
 
 
 	tree.prereqs.values.forEach(function (subTree) {
-		this.groupByCommonPrereqs(subTree);
+		this.groupByCommonPrereqs(subTree, prereqType);
 	}.bind(this));
 
 
@@ -724,11 +767,14 @@ TreeMgr.prototype.go = function (tree) {
 
 	this.mergeDuplicateClasses(tree)
 
-	this.groupByCommonPrereqs(tree)
+	this.groupByCommonPrereqs(tree, 'or')
+	this.groupByCommonPrereqs(tree, 'and')
 
-	// does depth here work
+	this.skipNodesPostStuff(tree);
+
+	// this.simplifyTree(tree)
+
 	this.addDepthLevel(tree);
-
 
 	this.addLowestParent(tree);
 

@@ -277,6 +277,7 @@ Class.prototype.internalDownload = function (callback) {
 			};
 
 			this._id = Math.random() + '' + Math.random()
+			this.type = 'or'
 
 			body.forEach(function (classData) {
 				this.prereqs.values.push(this.convertServerData(classData))
