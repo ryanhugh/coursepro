@@ -188,6 +188,24 @@ Graph.prototype.go = function (tree, callback) {
 			.attr("class", "link")
 			.style("stroke-width", 4);
 
+		for (var i = 0; i < graph.links.length; i++) {
+
+			var parent;
+			if (graph.nodes[graph.links[i].source].depth > graph.nodes[graph.links[i].target].depth) {
+				parent =  graph.nodes[graph.links[i].target];
+			}
+			else {
+				parent =  graph.nodes[graph.links[i].source];
+			}
+
+			if (parent.prereqs.type == 'and') {
+				link[0][i].style.stroke = '#5B5B5B'
+			}
+
+			// link[0][i]
+			// graph.links[i]
+		}
+
 
 		var node = container.selectAll(".node")
 			.data(graph.nodes)
