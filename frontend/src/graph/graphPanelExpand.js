@@ -181,19 +181,26 @@ function GraphPanelExpand($timeout, $document) {
 	};
 
 	GraphPanelExpandInner.prototype.setUpwardLines = function (tree, lineWidth) {
-		tree.upwardLinks.forEach(function (link) {
-			link.style.strokeWidth = lineWidth + 'px';
-		}.bind(this));
-
+		
+		var linesToSkip = [];
 		tree.allParents.forEach(function (parent) {
-			if (parent.isClass) {
+			if (parent.prereqs.type == 'and') {
+				linesToSkip = linesToSkip.concat(parent.downwardLinks)
 				return;
 			}
-			if (parent.prereqs.type == 'and') {
+			if (parent.isClass) {
 				return;
 			}
 			this.setUpwardLines(parent, lineWidth)
 		}.bind(this))
+
+		tree.upwardLinks.forEach(function (link) {
+			if (_(linesToSkip).includes(link)) {
+				return;
+			}
+			link.style.strokeWidth = lineWidth + 'px';
+		}.bind(this));
+
 
 	};
 
