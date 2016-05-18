@@ -14,6 +14,10 @@ var BaseData = require('./BaseData')
 function Class(config) {
 	BaseData.prototype.constructor.apply(this, arguments);
 
+	if (config.title) {
+		elog("wtf class has a name not a title");
+	}
+
 	//true, if for instance "AP placement exam, etc"
 	this.isString = false;
 
@@ -31,15 +35,19 @@ function Class(config) {
 	//loading status of the sections
 	this.sectionsLoadingStatus = macros.DATASTATUS_NOTSTARTED;
 
+	// graph links, both up and down
+	this.upwardLinks = []
+	this.downwardLinks = []
+
 	//copy over all other attr given
 	for (var attrName in config) {
 
 		//dont copy over some attr
-		//these are copied above
+		//these are copied below and processed a bit
 		if (_(['coreqs', 'prereqs']).includes(attrName) || config[attrName] === undefined) {
 			continue;
 		}
-		//title and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
+		//name and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
 		//setting the innerHTML instead of innerText will work too, but this is better
 		else if (_(['desc', 'name']).includes(attrName)) {
 			this[attrName] = he.decode(config[attrName])

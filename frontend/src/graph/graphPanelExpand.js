@@ -169,26 +169,58 @@ function GraphPanelExpand($timeout, $document) {
 			return;
 		}
 
-
 		ga('send', {
 			'hitType': 'pageview',
 			'page': '/closePanel/' + tree.getIdentifer().full.str,
 			'title': 'Coursepro.io'
 		});
 
-
 		_.pull(this.openOrder, tree)
 
 		this.onClick(tree, callback)
 	};
 
+	GraphPanelExpandInner.prototype.setUpwardLines = function (tree, lineWidth) {
+		tree.upwardLinks.forEach(function (link) {
+			link.style.strokeWidth = lineWidth + 'px';
+		}.bind(this));
+
+		tree.allParents.forEach(function (parent) {
+			if (parent.isClass) {
+				return;
+			}
+			if (parent.prereqs.type == 'and') {
+				return;
+			}
+			this.setUpwardLines(parent, lineWidth)
+		}.bind(this))
+
+	};
+
+	GraphPanelExpandInner.prototype.setDownwardLines = function (tree, lineWidth) {
+		tree.downwardLinks.forEach(function (link) {
+			link.style.strokeWidth = lineWidth + 'px';
+		}.bind(this));
+
+		tree.prereqs.values.forEach(function (child) {
+			if (child.isClass) {
+				return;
+			}
+			this.setDownwardLines(child, lineWidth)
+		}.bind(this))
+	};
+
 
 	GraphPanelExpandInner.prototype.onMouseOver = function (tree) {
 		this.updateScope(tree, true);
+		this.setUpwardLines(tree, 8)
+		this.setDownwardLines(tree, 8)
 	}
 
 	GraphPanelExpandInner.prototype.onMouseOut = function (tree) {
 		this.updateScope(tree, false);
+		this.setUpwardLines(tree, 4)
+		this.setDownwardLines(tree, 4)
 	};
 
 	// called for each recursive call in graphInner.html

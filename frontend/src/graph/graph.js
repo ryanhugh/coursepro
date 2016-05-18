@@ -189,21 +189,48 @@ Graph.prototype.go = function (tree, callback) {
 			.style("stroke-width", 4);
 
 		for (var i = 0; i < graph.links.length; i++) {
+			var currLink = graph.links[i];
 
+			// find the parent of the two nodes the line connects 
 			var parent;
-			if (graph.nodes[graph.links[i].source].depth > graph.nodes[graph.links[i].target].depth) {
-				parent =  graph.nodes[graph.links[i].target];
+			var child;
+			if (graph.nodes[currLink.source].depth > graph.nodes[currLink.target].depth) {
+				parent =  graph.nodes[currLink.target];
+				child = graph.nodes[currLink.source];
 			}
 			else {
-				parent =  graph.nodes[graph.links[i].source];
+				parent =  graph.nodes[currLink.source];
+				child = graph.nodes[currLink.target];
 			}
 
+			// if should be 'and', make line darker
 			if (parent.prereqs.type == 'and') {
 				link[0][i].style.stroke = '#5B5B5B'
 			}
 
-			// link[0][i]
-			// graph.links[i]
+			// tbh all nodes should be instanceof Class
+			if (!graph.nodes[currLink.source].downwardLinks) {
+				graph.nodes[currLink.source].downwardLinks = []
+			}
+
+			if (!graph.nodes[currLink.target].downwardLinks) {
+				graph.nodes[currLink.target].downwardLinks = []
+			}
+
+			if (!graph.nodes[currLink.source].upwardLinks) {
+				graph.nodes[currLink.source].upwardLinks = []
+			}
+
+			if (!graph.nodes[currLink.target].upwardLinks) {
+				graph.nodes[currLink.target].upwardLinks = []
+			}
+
+			//add line to both nodes links list
+			parent.downwardLinks.push(link[0][i])
+			child.upwardLinks.push(link[0][i])
+
+			// graph.nodes[currLink.source].links.push(link[0][i])
+			// graph.nodes[currLink.target].links.push(link[0][i])
 		}
 
 
