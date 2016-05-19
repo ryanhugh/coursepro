@@ -195,11 +195,11 @@ Graph.prototype.go = function (tree, callback) {
 			var parent;
 			var child;
 			if (graph.nodes[currLink.source].depth > graph.nodes[currLink.target].depth) {
-				parent =  graph.nodes[currLink.target];
+				parent = graph.nodes[currLink.target];
 				child = graph.nodes[currLink.source];
 			}
 			else {
-				parent =  graph.nodes[currLink.source];
+				parent = graph.nodes[currLink.source];
 				child = graph.nodes[currLink.target];
 			}
 
@@ -265,106 +265,106 @@ Graph.prototype.go = function (tree, callback) {
 			$(node[0][i].querySelector('div')).append(this.$compile(html)(newScope))
 		}
 
-		var multiplyer = 1;
+		setTimeout(function () {
+			this.$scope.$apply()
 
-		this.force.nodes(graph.nodes)
-			.links(graph.links)
+			var multiplyer = 1;
 
-		this.force.on("tick", function (e) {
-			var q = d3.geom.quadtree(graph.nodes);
-			var k = 0;
-			var n = graph.nodes.length;
-			while (++k < n) {
-				var currNode = graph.nodes[k];
+			this.force.nodes(graph.nodes)
+				.links(graph.links)
 
-				// collision
-				q.visit(this.collide(currNode));
+			this.force.on("tick", function (e) {
+				var q = d3.geom.quadtree(graph.nodes);
+				var k = 0;
+				var n = graph.nodes.length;
+				while (++k < n) {
+					var currNode = graph.nodes[k];
 
-				//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
-				currNode.y += ((currNode.depth * 200 + 50) - currNode.y) * e.alpha * multiplyer;
+					// collision
+					q.visit(this.collide(currNode));
+
+					//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
+					currNode.y += ((currNode.depth * 200 + 50) - currNode.y) * e.alpha * multiplyer;
 
 
-				// collision between children on different depths
-				if (!currNode.allChildrenAtSameDepth) {
-					for (var i = 0; i < currNode.prereqs.values.length; i++) {
-						for (var j = i+1; j < currNode.prereqs.values.length; j++) {
-							if (currNode.prereqs.values[i].depth === currNode.prereqs.values[j].depth) {
-								continue;
-							}
-							var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
-							if (Math.abs(diff)>100) {
-								continue;
-							}
-							if (diff<0) {
-								currNode.prereqs.values[i].x-=(100+diff)/2;
-								currNode.prereqs.values[j].x+=(100+diff)/2;
-							}
-							else {
-								currNode.prereqs.values[i].x+=(100-diff)/2;
-								currNode.prereqs.values[j].x-=(100-diff)/2;	
+					// collision between children on different depths
+					if (!currNode.allChildrenAtSameDepth) {
+						for (var i = 0; i < currNode.prereqs.values.length; i++) {
+							for (var j = i + 1; j < currNode.prereqs.values.length; j++) {
+								if (currNode.prereqs.values[i].depth === currNode.prereqs.values[j].depth) {
+									continue;
+								}
+								var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
+								if (Math.abs(diff) > 100) {
+									continue;
+								}
+								if (diff < 0) {
+									currNode.prereqs.values[i].x -= (100 + diff) / 2;
+									currNode.prereqs.values[j].x += (100 + diff) / 2;
+								}
+								else {
+									currNode.prereqs.values[i].x += (100 - diff) / 2;
+									currNode.prereqs.values[j].x -= (100 - diff) / 2;
+								}
 							}
 						}
 					}
-				}
 
-			};
+				};
 
-			link.attr("x1", function (d) {
-					return d.source.x;
-				}.bind(this))
-				.attr("y1", function (d) {
-					return d.source.y;
-				}.bind(this))
-				.attr("x2", function (d) {
-					return d.target.x;
-				}.bind(this))
-				.attr("y2", function (d) {
-					return d.target.y;
+				link.attr("x1", function (d) {
+						return d.source.x;
+					}.bind(this))
+					.attr("y1", function (d) {
+						return d.source.y;
+					}.bind(this))
+					.attr("x2", function (d) {
+						return d.target.x;
+					}.bind(this))
+					.attr("y2", function (d) {
+						return d.target.y;
+					}.bind(this));
+
+				node.attr("transform", function (d) {
+					return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
 				}.bind(this));
 
-			node.attr("transform", function (d) {
-				return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
-			}.bind(this));
 
 
 
+			}.bind(this))
 
-		}.bind(this))
+			this.force.start();
 
-		this.force.start();
-
-		// Two step process:
-		// make nodes find the nodes near them
-		var safety = 0;
-		// D3 cuts off at .005 alpha and freezes everything
-		// the higher it is, the faster it loads, but it will not be done when it moves to the next step
-		// You'll want to try out different, "small" values for this
-		// perhaps make this higher if on slower hardware??
-		while (this.force.alpha() > 0.08) {
-			this.force.tick();
-			if (safety++ > 500) {
-				// Avoids infinite looping in case this solution was a bad idea
-				break;
+			// Two step process:
+			// make nodes find the nodes near them
+			var safety = 0;
+			// D3 cuts off at .005 alpha and freezes everything
+			// the higher it is, the faster it loads, but it will not be done when it moves to the next step
+			// You'll want to try out different, "small" values for this
+			// perhaps make this higher if on slower hardware??
+			while (this.force.alpha() > 0.08) {
+				this.force.tick();
+				if (safety++ > 500) {
+					// Avoids infinite looping in case this solution was a bad idea
+					break;
+				}
 			}
-		}
 
-		//2. make nodes go towards their depth level
-		multiplyer = 10;
-		this.force.start();
+			//2. make nodes go towards their depth level
+			multiplyer = 10;
+			this.force.start();
 
-		safety = 0;
-		while (this.force.alpha() > 0.01) {
-			this.force.tick();
-			if (safety++ > 500) {
-				break;
+			safety = 0;
+			while (this.force.alpha() > 0.01) {
+				this.force.tick();
+				if (safety++ > 500) {
+					break;
+				}
 			}
-		}
 
-		this.$scope.tree = tree;
+			this.$scope.tree = tree;
 
-
-		setTimeout(function () {
-			this.$scope.$apply()
 
 			graph.nodes.forEach(function (tree) {
 				tree.height = tree.foreignObject.lastChild.offsetHeight
