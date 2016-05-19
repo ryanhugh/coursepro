@@ -2,6 +2,8 @@
 var macros = require('../macros');
 var _ = require('lodash')
 
+var Class = require('../Class')
+
 function TreeMgr() {
 
 }
@@ -81,14 +83,14 @@ TreeMgr.prototype.simplifyTree = function (tree) {
 }
 
 // one part of the above function that runs after the node injection that changes allParents...
-TreeMgr.prototype.skipNodesPostStuff = function(tree) {
-	
+TreeMgr.prototype.skipNodesPostStuff = function (tree) {
+
 	tree.prereqs.values.forEach(function (subTree) {
 		if (subTree.prereqs.values.length === 1 && !subTree.isClass) {
 			_.pull(tree.prereqs.values, subTree)
 
 			var newChild = subTree.prereqs.values[0];
-			_.pull(newChild.allParents,subTree)
+			_.pull(newChild.allParents, subTree)
 
 			if (!_(newChild.allParents).includes(tree)) {
 				newChild.allParents.push(tree)
@@ -433,19 +435,20 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 
 		console.log('all matching nodes:', matchChildren)
 
-		var newNode = {
+		var newNode = Class.create({
 			isClass: false,
-			_id: Math.random() + '',
 			allParents: matchParents,
-			prereqs: {
-				type: prereqType,
-				values: matchChildren
-			},
+
 			coreqs: {
 				type: 'or',
 				values: []
 			}
-		}
+		})
+		newNode.prereqs = {
+			type: prereqType,
+			values: matchChildren
+		};
+
 
 		matchParents.forEach(function (parent) {
 
@@ -696,7 +699,7 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 	}
 };
 
-TreeMgr.prototype.calculateIfChildrenAtSameDepth = function(tree) {
+TreeMgr.prototype.calculateIfChildrenAtSameDepth = function (tree) {
 	var depth = null;
 
 	tree.prereqs.values.forEach(function (subTree) {
@@ -752,7 +755,7 @@ TreeMgr.prototype.go = function (tree) {
 
 	this.addLowestParent(tree);
 
-	this.calculateIfChildrenAtSameDepth(tree); 
+	this.calculateIfChildrenAtSameDepth(tree);
 
 	if (!tree.isClass) {
 		tree.hidden = true;

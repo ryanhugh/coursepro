@@ -209,21 +209,21 @@ Graph.prototype.go = function (tree, callback) {
 			}
 
 			// tbh all nodes should be instanceof Class
-			if (!graph.nodes[currLink.source].downwardLinks) {
-				graph.nodes[currLink.source].downwardLinks = []
-			}
+			// if (!graph.nodes[currLink.source].downwardLinks) {
+			// 	graph.nodes[currLink.source].downwardLinks = []
+			// }
 
-			if (!graph.nodes[currLink.target].downwardLinks) {
-				graph.nodes[currLink.target].downwardLinks = []
-			}
+			// if (!graph.nodes[currLink.target].downwardLinks) {
+			// 	graph.nodes[currLink.target].downwardLinks = []
+			// }
 
-			if (!graph.nodes[currLink.source].upwardLinks) {
-				graph.nodes[currLink.source].upwardLinks = []
-			}
+			// if (!graph.nodes[currLink.source].upwardLinks) {
+			// 	graph.nodes[currLink.source].upwardLinks = []
+			// }
 
-			if (!graph.nodes[currLink.target].upwardLinks) {
-				graph.nodes[currLink.target].upwardLinks = []
-			}
+			// if (!graph.nodes[currLink.target].upwardLinks) {
+			// 	graph.nodes[currLink.target].upwardLinks = []
+			// }
 
 			//add line to both nodes links list
 			parent.downwardLinks.push(link[0][i])

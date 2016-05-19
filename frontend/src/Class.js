@@ -14,6 +14,10 @@ var BaseData = require('./BaseData')
 function Class(config) {
 	BaseData.prototype.constructor.apply(this, arguments);
 
+	if ((config.isClass === false || config.isString === true) && !config._id) {
+		config._id = Math.random() + '' + Math.random()
+	}
+
 	if (config.title) {
 		elog("wtf class has a name not a title");
 	}
@@ -75,6 +79,7 @@ function Class(config) {
 
 			//add the prereqs to this node, and convert server data
 			config.prereqs.values.forEach(function (subTree) {
+
 				this.prereqs.values.push(this.convertServerData(subTree))
 			}.bind(this))
 
@@ -197,7 +202,7 @@ Class.prototype.convertServerData = function (data) {
 				isClass: true,
 				isString: true,
 				desc: data,
-				_id: Math.random() + '' + Math.random()
+				
 			}
 		}
 		//given a branch in the prereqs
@@ -207,7 +212,6 @@ Class.prototype.convertServerData = function (data) {
 			data = {
 				prereqs: data,
 				isClass: false,
-				_id: Math.random() + '' + Math.random()
 			}
 		}
 
