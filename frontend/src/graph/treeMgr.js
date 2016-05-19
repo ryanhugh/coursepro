@@ -696,6 +696,20 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 	}
 };
 
+TreeMgr.prototype.calculateIfChildrenAtSameDepth = function(tree) {
+	var depth = null;
+
+	tree.prereqs.values.forEach(function (subTree) {
+		if (depth === null) {
+			depth = subTree.depth
+		}
+		else if (depth !== subTree.depth) {
+			tree.allChildrenAtSameDepth = false;
+		}
+
+		this.calculateIfChildrenAtSameDepth(subTree);
+	}.bind(this))
+};
 
 
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
@@ -737,6 +751,8 @@ TreeMgr.prototype.go = function (tree) {
 	this.addDepthLevel(tree);
 
 	this.addLowestParent(tree);
+
+	this.calculateIfChildrenAtSameDepth(tree); 
 
 	if (!tree.isClass) {
 		tree.hidden = true;

@@ -39,6 +39,9 @@ function Class(config) {
 	this.upwardLinks = []
 	this.downwardLinks = []
 
+	// Determined in tree mgr to avoid having to calculate every tick
+	this.allChildrenAtSameDepth = true;
+
 	//copy over all other attr given
 	for (var attrName in config) {
 

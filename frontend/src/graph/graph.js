@@ -272,16 +272,41 @@ Graph.prototype.go = function (tree, callback) {
 
 		this.force.on("tick", function (e) {
 			var q = d3.geom.quadtree(graph.nodes);
-			var i = 0;
+			var k = 0;
 			var n = graph.nodes.length;
-			while (++i < n) {
-				q.visit(this.collide(graph.nodes[i]));
-			}
+			while (++k < n) {
+				var currNode = graph.nodes[k];
 
-			graph.nodes.forEach(function (o, i) {
-				//possible to get the staticly set width and height here, node[0][o.index].lastChild.width.value
-				o.y += ((o.depth * 200 + 50) - o.y) * e.alpha * multiplyer;
-			}.bind(this));
+				// collision
+				q.visit(this.collide(currNode));
+
+				//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
+				currNode.y += ((currNode.depth * 200 + 50) - currNode.y) * e.alpha * multiplyer;
+
+				// collision between children on different depths
+				if (!currNode.allChildrenAtSameDepth) {
+					for (var i = 0; i < currNode.prereqs.values.length; i++) {
+						for (var j = i+1; j < currNode.prereqs.values.length; j++) {
+							if (currNode.prereqs.values[i].depth === currNode.prereqs.values[j].depth) {
+								continue;
+							}
+							var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
+							if (Math.abs(diff)>50) {
+								continue;
+							}
+							if (diff<0) {
+								currNode.prereqs.values[i].x-=(50+diff)/2;
+								currNode.prereqs.values[j].x+=(50+diff)/2;
+							}
+							else {
+								currNode.prereqs.values[i].x+=(50-diff)/2;
+								currNode.prereqs.values[j].x-=(50-diff)/2;	
+							}
+						}
+					}
+				}
+
+			};
 
 			link.attr("x1", function (d) {
 					return d.source.x;
@@ -299,6 +324,10 @@ Graph.prototype.go = function (tree, callback) {
 			node.attr("transform", function (d) {
 				return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
 			}.bind(this));
+
+
+
+
 		}.bind(this))
 
 		this.force.start();
