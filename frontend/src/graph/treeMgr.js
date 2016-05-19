@@ -438,17 +438,15 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 		var newNode = Class.create({
 			isClass: false,
 			allParents: matchParents,
-
+			prereqs: {
+				type: prereqType,
+				values: matchChildren
+			},
 			coreqs: {
 				type: 'or',
 				values: []
 			}
 		})
-		newNode.prereqs = {
-			type: prereqType,
-			values: matchChildren
-		};
-
 
 		matchParents.forEach(function (parent) {
 

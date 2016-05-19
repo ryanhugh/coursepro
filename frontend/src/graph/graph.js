@@ -283,6 +283,7 @@ Graph.prototype.go = function (tree, callback) {
 				//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
 				currNode.y += ((currNode.depth * 200 + 50) - currNode.y) * e.alpha * multiplyer;
 
+
 				// collision between children on different depths
 				if (!currNode.allChildrenAtSameDepth) {
 					for (var i = 0; i < currNode.prereqs.values.length; i++) {
@@ -291,16 +292,16 @@ Graph.prototype.go = function (tree, callback) {
 								continue;
 							}
 							var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
-							if (Math.abs(diff)>50) {
+							if (Math.abs(diff)>100) {
 								continue;
 							}
 							if (diff<0) {
-								currNode.prereqs.values[i].x-=(50+diff)/2;
-								currNode.prereqs.values[j].x+=(50+diff)/2;
+								currNode.prereqs.values[i].x-=(100+diff)/2;
+								currNode.prereqs.values[j].x+=(100+diff)/2;
 							}
 							else {
-								currNode.prereqs.values[i].x+=(50-diff)/2;
-								currNode.prereqs.values[j].x-=(50-diff)/2;	
+								currNode.prereqs.values[i].x+=(100-diff)/2;
+								currNode.prereqs.values[j].x-=(100-diff)/2;	
 							}
 						}
 					}
