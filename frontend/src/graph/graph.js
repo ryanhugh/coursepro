@@ -143,7 +143,7 @@ Graph.prototype.go = function (tree, callback) {
 
 
 		var zoom = d3.behavior.zoom()
-			.scaleExtent([0, 1.5])
+			.scaleExtent([.1, 1.5])
 			.on("zoom", function () {
 				container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 			}.bind(this));
