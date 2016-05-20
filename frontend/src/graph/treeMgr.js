@@ -315,7 +315,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 
 		//at minimum this tree exists in the classList, so it should be at least 1
 		if (matchingClasses.length === 0) {
-			console.log('ERROR: no matching classes?!?');
+			elog('ERROR: no matching classes?!?');
 		}
 
 		var lowestTree = matchingClasses[matchingClasses.length - 1];
@@ -329,7 +329,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 			currTree.allParents.forEach(function (parentTree) {
 
 				if (!_(parentTree.prereqs.values).includes(currTree)) {
-					console.log('error parent does not include subtree');
+					elog('error parent does not include subtree');
 				}
 
 				//remove the tree
@@ -358,6 +358,8 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 				_.pull(subTree.allParents, currTree)
 
 			}.bind(this))
+
+			currTree.DELETED = true
 
 		}
 
@@ -778,6 +780,7 @@ TreeMgr.prototype.go = function (tree) {
 	this.groupByCommonPrereqs(tree, 'or')
 	this.groupByCommonPrereqs(tree, 'and')
 
+	this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
 
 	// this.simplifyTree(tree)

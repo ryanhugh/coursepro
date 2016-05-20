@@ -27,6 +27,10 @@ function BaseData(config) {
 			}
 		}
 		this.internalDownload(configOrCallback, callback)
+	}.bind(this), function () {
+		// There is a bug in d3-queue where the built in hash function dosent return a string (its just _.noop) when there are no
+		// arguments to the given fn, so provide a hash fn.
+		return 'a'
 	}.bind(this))
 
 
@@ -396,6 +400,7 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 					configAndCallback.callback(null, this)
 				}
 			}.bind(this))
+			return;
 		}
 
 

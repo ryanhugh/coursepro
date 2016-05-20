@@ -276,6 +276,7 @@ Class.prototype.internalDownload = function (callback) {
 		if (body.length == 0) {
 			console.log('unable to find class even though its a prereq of another class????', this)
 			this.dataStatus = macros.DATASTATUS_FAIL;
+			this._id = Math.random() + '' + Math.random()
 			return callback(null, this)
 		};
 
@@ -291,12 +292,23 @@ Class.prototype.internalDownload = function (callback) {
 				this.coreqs.values = []
 			};
 
-			this._id = Math.random() + '' + Math.random()
-			this.type = 'or'
+			// this._id = Math.random() + '' + Math.random()
+			this.prereqs.type = 'or'
 
 			body.forEach(function (classData) {
 				this.prereqs.values.push(this.convertServerData(classData))
 			}.bind(this))
+
+			this.prereqs.values.sort(function (a,b) {
+				return a.compareTo(b);
+			}.bind(this))
+
+			var ids = [];
+			this.prereqs.values.forEach(function (subTree) {
+				ids.push(subTree._id)
+			}.bind(this))
+			this._id = ids.join('')
+
 		}
 
 		//else just add more data to the class

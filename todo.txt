@@ -3,6 +3,8 @@ https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not i
 max number of simultanous classes wawtching???
 
 
+// is the on i tested alot
+http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 
 TO TEST
 class name stuff -- done
@@ -22,6 +24,9 @@ for node injection, make sure all same type and do overlapping set of names to f
 
 is the d3 moving stuff on the screen causing the mess up of starting position????
  -- no, its gravity, and if thats removed it looks like crap ughhhhh
+
+
+jasmine make sure done() not called twice?
 
 
 updateing db due to change in deps because of the dep change in last update time????
@@ -54,6 +59,26 @@ nodes are in childrens parents
 all nodes connected to each other somehow
 only 1 node with 0 parents
 no duplicates in children or parents
+panels should have text in them 
+no depth > 50
+
+crashes
+http://localhost/#/graph/neu.edu/201710/ME/4570
+http://localhost/#/graph/neu.edu/201710/CHEM/3505
+http://localhost/#/graph/neu.edu/201710/EECE/4642
+http://localhost/#/graph/neu.edu/201710/EECE/2530
+
+when downloading a tree if it turns into a node need to set id to something reliable, like hash of prereqs title's instead of random
+http://localhost/#/graph/neu.edu/201710/ME/4640
+
+needs multiple passes of skipNodesPostStuff??? its because if there are two in a row, it will fix the first oen then node == the next one
+http://localhost/#/graph/neu.edu/201710/ME/5250
+
+this is wrong, its just (1342 or 1252) not (1342 or 1252 or [tree])
+http://localhost/#/graph/neu.edu/201710/PHYS/1155
+
+if node -> and -> node, nothing is changed on highlight
+http://localhost/#/graph/neu.edu/201710/MATH/3331
 
 
 NOTIFICATIONS

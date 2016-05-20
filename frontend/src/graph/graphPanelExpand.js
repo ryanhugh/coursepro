@@ -31,7 +31,7 @@ function GraphPanelExpand($timeout, $document) {
 		}.bind(this))
 
 		if (panelWidth) {
-			panelWidth = Math.min(888, panelWidth)
+			panelWidth = Math.min(895, panelWidth)
 			if (tree.sections.length < 5) {
 				panelWidth = 610;
 			};
