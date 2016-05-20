@@ -39,6 +39,12 @@ GULP todo
 split vender.js and app.js gulpfile
 npm ignore everything in frontend/static/ and copy over the other stuff
 
+
+CLALENDAR
+classes can go as late as 10pm, and they are sometimes on weekends
+https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201602&subj_in=PSYC&crse_in=025&schd_in=A
+
+
 TREE inverients
 nodes are in parents children
 nodes are in childrens parents
@@ -46,6 +52,10 @@ nodes are in childrens parents
 all nodes connected to each other somehow
 only 1 node with 0 parents
 no duplicates in children or parents
+
+
+NOTIFICATIONS
+trello/sms/phone call/etc
 
 
 D3 todo
@@ -269,29 +279,7 @@ merge coreq prereqs with class prereqs
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
 
 
--- the node injection problem: 
--- this is the problem that the physics labs were coming up
-for instance, how do you chage
- 
-a    b
-|\   |\
-| \  | \
-c  d c  d
 
-into this (this step is already done in multi-parent)
-
-a    b
-| \ /|
-| / \|
-c    d
-
-and then into this
-
-a   b
- \ /
-  o
- / \
-c   d
 
 (assuming everything is "or" for this example)
 

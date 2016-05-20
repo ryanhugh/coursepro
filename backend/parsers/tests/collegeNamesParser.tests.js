@@ -18,8 +18,8 @@ describe('the retry is called in mock whois', function () {
 	var _setTimeout = setTimeout;
 	beforeEach(function () {
 		global.setTimeout = function (func, time) {
-				func()
-			}.bind(this)
+			_setTimeout(func, 0);
+		}.bind(this)
 	});
 
 	afterEach(function () {

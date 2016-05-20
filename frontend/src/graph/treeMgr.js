@@ -275,8 +275,25 @@ TreeMgr.prototype.getFirstLayer = function (tree) {
 
 
 //for every node in the tree
-//if there exists a class later in classList that is not equal to it (could have same depth, classList is sorted by depth)
+//if there exists a class later in classList that is not equal to it 
 //node becomes the node found (set parent's values)
+// order of class list dosen't matter - only thing that matters here is that duplicate classes are removed
+
+// this is the problem that the physics labs were coming up
+// this function changes this
+ 
+// a    b
+// |\   |\
+// | \  | \
+// c  d c  d
+
+// into this
+
+// a    b
+// | \ /|
+// | / \|
+// c    d
+// (assuming everything is "or" for this example)
 TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 	var classList = this.findFlattendClassList(tree, true)
 
@@ -383,6 +400,22 @@ TreeMgr.prototype.getSubsets = function (bigSet) {
 }
 
 
+// converts this (output from mergeDuplicateClasses)
+
+// a    b
+// | \ /|
+// | / \|
+// c    d
+
+// into this
+// (assuming everything is "or" for this example)
+
+// a   b
+//  \ /
+//   o
+//  / \
+// c   d
+// 
 TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 
 	var parents = this.getNeighbors(tree);

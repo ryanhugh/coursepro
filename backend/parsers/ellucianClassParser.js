@@ -247,7 +247,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 
 
 			if (!dbAltEntry.dbData.name) {
-				elog('Dont have name for dep??',dbAltEntry.dbData)
+				elog('Dont have name for dep??', dbAltEntry.dbData)
 			}
 
 
@@ -267,7 +267,7 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 		classToAddSectionTo.parsingData.crns.push(sectionURLParsed.crn);
 
 	}.bind(this), element.children);
-	
+
 
 
 
@@ -432,20 +432,26 @@ EllucianClassParser.prototype.onEndParsing = function (pageData) {
 	pageData.setData('crns', pageData.parsingData.crns);
 
 	//also set the crns of the classes that were created
+	var depsToRemove = [];
 	pageData.deps.forEach(function (dep) {
 		if (dep.parser == this) {
 
+			// Any sub classes that don't have any sections on this pass must of had sections before, and they were removed
+			// so safe to remove them 
 			if (!dep.parsingData.crns || dep.parsingData.crns.length === 0) {
 				console.log('error wtf, no crns', dep)
-			};
-
-
-			dep.setData('crns', dep.parsingData.crns)
+				depsToRemove.push(dep)
+			}
+			else {
+				dep.setData('crns', dep.parsingData.crns)
+			}
 		}
-	}.bind(this))
+	}.bind(this)) 
 
-
-};
+	depsToRemove.forEach(function (depToRemove) {
+		_.pull(pageData.deps, depToRemove);
+	}.bind(this)) 
+}; 
 
 
 

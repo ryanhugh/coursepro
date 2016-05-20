@@ -399,3 +399,28 @@ it('name translatin works', function (done) {
 		});
 	});
 });
+
+it('removes dead classes', function () {
+
+	var url = 'some url'
+	var pageData = PageData.create({
+		dbData: {
+			url: url,
+			desc: '',
+			classId: '2160',
+			name: 'Embedded Design Enabling Robotics'
+		}
+	});
+
+	pageData.deps = [PageData.create({
+		dbData: {
+			url: url,
+		}
+	})]
+	pageData.deps[0].parser = ellucianClassParser;
+	pageData.deps[0].parent = pageData;
+
+	ellucianClassParser.onEndParsing(pageData);
+
+	expect(pageData.deps.length).toBe(0)
+});
