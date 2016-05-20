@@ -424,3 +424,4 @@ it('removes dead classes', function () {
 
 	expect(pageData.deps.length).toBe(0)
 });
+ 
