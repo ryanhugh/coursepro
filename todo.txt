@@ -80,6 +80,10 @@ http://localhost/#/graph/neu.edu/201710/PHYS/1155
 if node -> and -> node, nothing is changed on highlight
 http://localhost/#/graph/neu.edu/201710/MATH/3331
 
+do i still need the manual memoize around class?
+unit tests for ^ and memoize stuff
+
+
 
 NOTIFICATIONS
 trello/sms/phone call/etc
@@ -87,9 +91,9 @@ trello/sms/phone call/etc
 
 D3 todo
 merge -- done
-hover to highlight
+hover to highlight -- done
 superman types -- done
-d3 types
+d3 types -- done
 panel merge -- done
 
 
