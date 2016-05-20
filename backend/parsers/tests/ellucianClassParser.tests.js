@@ -408,9 +408,10 @@ it('removes dead classes', function () {
 			url: url,
 			desc: '',
 			classId: '2160',
-			name: 'Embedded Design Enabling Robotics'
+			name: 'Embedded Design Enabling Robotics',
 		}
-	});
+	}); 
+	pageData.parsingData.crns = []
 
 	pageData.deps = [PageData.create({
 		dbData: {
