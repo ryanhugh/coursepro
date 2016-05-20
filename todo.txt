@@ -30,8 +30,10 @@ can close and reopen the db when not prod?
 trim leading 0s from classids -- done client side with a getter
 if a superman parent is !class and all its children.length == superman.children.length skip the !class direcly -- done
 honors?
-make all the injected nodes and stuff where math.random is a thing instanceof Class
+make all the injected nodes and stuff where math.random is a thing instanceof Class -- done
 speed?
+coreqs
+arrows
 if angle < something between 2 children, do a force or maybe if x is too close between children?
 
 
@@ -279,9 +281,6 @@ merge coreq prereqs with class prereqs
 class requires a lower class and the lower classes's lab, which shows the lower class and its lab twice
 
 
-
-
-(assuming everything is "or" for this example)
 
 
 get list of nodes sorted by allParents.length

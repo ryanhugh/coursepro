@@ -301,6 +301,18 @@ BaseParser.prototype.parseCredits = function(containsCreditsText) {
 		}
 	}
 
+	// 0.800 Continuing Education Units 
+	creditsMatch = containsCreditsText.match(/(\d+(:?.\d*)?)\s*Continuing\s*Education\s*Units/i);
+	if (creditsMatch) {
+		var credits = parseFloat(creditsMatch[1])
+		
+		return {
+			minCredits: credits,
+			maxCredits: credits
+		}
+	}
+
+
 	return null;
 }
 

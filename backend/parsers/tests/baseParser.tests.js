@@ -189,3 +189,9 @@ it('simplifySymbols', function() {
 	var a = baseParser.simplifySymbols('‚‚‚„„„')
 	expect(a).toBe('\'\'\'"""')
 });		
+
+it('credit parser can parse Continuing Education Units ', function() {
+	var credits = baseParser.parseCredits('// 0.800 Continuing Education Units ')
+	expect(credits.minCredits).toBe(.8)
+	expect(credits.maxCredits).toBe(.8)
+});
