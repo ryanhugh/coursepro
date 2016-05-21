@@ -63,22 +63,22 @@ panels should have text in them
 no depth > 50
 
 crashes
-http://localhost/#/graph/neu.edu/201710/ME/4570
-http://localhost/#/graph/neu.edu/201710/CHEM/3505
-http://localhost/#/graph/neu.edu/201710/EECE/4642
-http://localhost/#/graph/neu.edu/201710/EECE/2530
+http://localhost/#/graph/neu.edu/201710/ME/4570 -- fixed
+http://localhost/#/graph/neu.edu/201710/CHEM/3505  -- fixed
+http://localhost/#/graph/neu.edu/201710/EECE/4642 -- fixed
+http://localhost/#/graph/neu.edu/201710/EECE/2530 (!class with depth=1 is above the root node@0?)
 
 when downloading a tree if it turns into a node need to set id to something reliable, like hash of prereqs title's instead of random -- done
-change the type of parent to and if was included in a superman node and all of its children were included too?
+change the type of parent to and if was included in a superman node and all of its children were included too? -- done
 http://localhost/#/graph/neu.edu/201710/ME/4640
 
 needs multiple passes of skipNodesPostStuff??? its because if there are two in a row, it will fix the first oen then node == the next one
 http://localhost/#/graph/neu.edu/201710/ME/5250
 
-this is wrong, its just (1342 or 1252) not (1342 or 1252 or [tree])
+this is wrong, its just (1342 or 1252) not (1342 or 1252 or [tree]) -- fixed
 http://localhost/#/graph/neu.edu/201710/PHYS/1155
 
-if node -> and -> node, nothing is changed on highlight
+if node -> and -> node, nothing is changed on highlight -- done
 http://localhost/#/graph/neu.edu/201710/MATH/3331
 
 do i still need the manual memoize around class?

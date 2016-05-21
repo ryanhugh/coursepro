@@ -68,7 +68,9 @@ function GraphPanelExpand($timeout, $document) {
 				$scope.style['box-shadow'] = 'gray 0px 0px 0px'
 			}
 		}
-		tree.$scope.$apply()
+		setTimeout(function () {
+			tree.$scope.$apply()
+		}.bind(this), 0)
 	};
 
 
@@ -181,10 +183,10 @@ function GraphPanelExpand($timeout, $document) {
 	};
 
 	GraphPanelExpandInner.prototype.setUpwardLines = function (tree, lineWidth) {
-		
+
 		var linesToSkip = [];
 		tree.allParents.forEach(function (parent) {
-			if (parent.prereqs.type == 'and') {
+			if (parent.prereqs.type == 'and' && !tree.isClass) {
 				linesToSkip = linesToSkip.concat(parent.downwardLinks)
 				return;
 			}

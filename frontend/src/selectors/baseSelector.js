@@ -65,7 +65,13 @@ BaseSelector.prototype.getValue = function () {
 
 BaseSelector.prototype.getText = function () {
 	if (this.getExists()) {
-		return this.element.select2('data')[0].text;
+		var element = this.element.select2('data')[0];
+		if (element) {
+			return element.text
+		}
+		else {
+			return ''
+		}
 	}
 	else {
 		return ''

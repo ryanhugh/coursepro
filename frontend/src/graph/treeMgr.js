@@ -642,7 +642,7 @@ TreeMgr.prototype.logTree = function (tree, body) {
 TreeMgr.prototype.defaultToOr = function (tree) {
 
 	//if this class is a coreq to another class, remove its coreqs
-	if (tree.prereqs.length < 2) {
+	if (tree.prereqs.values.length < 2) {
 		tree.prereqs.type = 'or'
 	}
 
@@ -774,6 +774,7 @@ TreeMgr.prototype.go = function (tree) {
 	this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
 
+	this.defaultToOr(tree);
 
 	this.addDepthLevel(tree);
 

@@ -123,7 +123,7 @@ Graph.prototype.go = function (tree, callback) {
 
 
 		this.force = d3.layout.force()
-			.charge(-18000)
+			.charge(-20000)
 			.gravity(0.2)
 			.linkDistance(5)
 			.size([this.graphWidth, this.graphHeight])
