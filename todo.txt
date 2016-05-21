@@ -81,6 +81,14 @@ http://localhost/#/graph/neu.edu/201710/PHYS/1155
 if node -> and -> node, nothing is changed on highlight -- done
 http://localhost/#/graph/neu.edu/201710/MATH/3331
 
+if there are a crapton of (a or b or c or d or e or f ... ) do you want to split it into ((a or b or c) or (d or e or f))?
+ 	(maybe split up the nodes that have prereqs, idk)
+http://localhost/#/graph/neu.edu/201710/BIOL/3407
+
+wrong, it should be (3500 and 2000 and (bunch of engw))
+http://localhost/#/graph/neu.edu/201710/IS/4800
+
+
 do i still need the manual memoize around class?
 unit tests for ^ and memoize stuff
 

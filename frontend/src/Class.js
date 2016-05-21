@@ -116,10 +116,12 @@ function Class(config) {
 
 	this.postDataProcess();
 
-	if ((this.isClass === false || this.isString === true) && !this._id) {
-		this.generateIdFromPrereqs()
-	}
-
+	// if ((this.isClass === false || this.isString === true) && !this._id) {
+	// 	this.generateIdFromPrereqs()
+	// 	if (!this._id) {
+	// 		debugger
+	// 	}
+	// }
 
 
 
@@ -182,7 +184,13 @@ Class.prototype.generateIdFromPrereqs = function () {
 	this.prereqs.values.forEach(function (subTree) {
 		ids.push(subTree._id)
 	}.bind(this))
+	if (ids.length === 0) {
+		debugger
+	}
 	this._id = ids.join('')
+	if (this._id === '') {
+		debugger
+	}
 };
 
 
@@ -414,6 +422,65 @@ Class.prototype.compareTo = function (otherClass) {
 	//this is possible if there are (hon) and non hon classes of same subject classId
 	return 0
 };
+
+// Class.prototype.isEqual = function(other) {
+// 	if (this.dataStatus !== macros.DATASTATUS_DONE) {
+// 		elog('cant compare unless downloaded already!',this.dataStatus,this)
+// 	}
+// 	if (this.dataStatus != other.dataStatus) {
+// 		elog('cant compare classes where data status != !!',this,other)
+// 	}
+
+// 	if (this.isClass !== other.isClass) {
+// 		return false;
+// 	}
+// 	if (this.isString !== other.isString) {
+// 		return false;
+// 	}
+
+// 	if (this.isClass) {
+// 		if (this._id == other._id) {
+// 			return true;
+// 		}
+// 		else {
+// 			return false;
+// 		}
+// 	}
+// 	else {
+// 		if (this.isString) {
+// 			if (this.desc === other.desc) {
+// 				return true;
+// 			}
+// 			else {
+// 				return false;
+// 			}
+// 		}
+// 		else {
+// 			if (other.prereqs.values.length !== this.prereqs.values.length) {
+// 				return false;
+// 			}
+
+
+
+// 			for (var i = 0; i < other.prereqs.values.length; i++) {
+// 				for (var j = i+1; j < this.prereqs.values.length; j++) {
+// 					if (this.prereqs.values[j].equals(other.prereqs.values[i])) {
+// 						continue
+// 					}
+// 				}
+// 				// two branches that have same length are different
+// 				elog('hmmmm?')
+// 				return false;
+// 			}
+// 			return true;
+
+
+
+// 		}
+// 	}
+
+// };
+
 
 
 //REPLACE THIS WITH THE JAWN FROM BASEDATA

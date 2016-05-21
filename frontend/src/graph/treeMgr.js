@@ -8,6 +8,20 @@ function TreeMgr() {
 
 }
 
+TreeMgr.prototype.addIdsToTrees = function(tree) {
+	if (!tree._id) {
+		tree.generateIdFromPrereqs()
+	}
+	
+	tree.prereqs.values.forEach(function (subTree) {
+		this.addIdsToTrees(subTree);
+	}.bind(this))
+
+	// tree.coreqs.values.forEach(function (subTree) {
+	// 	this.addIdsToTrees(subTree);
+	// }.bind(this))
+};
+
 // this dosen't work after allParents have been added
 TreeMgr.prototype.simplifyTree = function (tree) {
 	if (tree.prereqs.values.length == 0) {
@@ -746,6 +760,7 @@ TreeMgr.prototype.calculateIfChildrenAtSameDepth = function (tree) {
 TreeMgr.prototype.go = function (tree) {
 
 	// this.matchCoreqsByHonors(tree);
+	this.addIdsToTrees(tree);
 	this.flattenCoreqs(tree);
 	this.removeCoreqsCoreqs(tree);
 
