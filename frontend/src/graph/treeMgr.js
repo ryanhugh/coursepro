@@ -302,7 +302,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 
 	var currTree;
 	while ((currTree = stack.shift())) {
-		
+
 		var matchingClasses = _.filter(classList, {
 			_id: currTree._id
 		});
@@ -451,17 +451,14 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 
 		if (linesRemoved >= maxScore) {
 			maxScore = linesRemoved
-			matchParents = parents;
+			matchParents = thisParentsSet;
 			matchChildren = children;
 			console.log('new max with ', parents, children)
 		}
 	}.bind(this));
 
-
 	// this transform will add lines, dont do it
 	if (maxScore >= 0 && matchParents.length > 1 && matchChildren.length > 1) {
-
-
 		console.log('all matching nodes:', matchChildren)
 
 		var newNode = Class.create({

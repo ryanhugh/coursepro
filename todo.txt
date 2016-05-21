@@ -68,7 +68,8 @@ http://localhost/#/graph/neu.edu/201710/CHEM/3505
 http://localhost/#/graph/neu.edu/201710/EECE/4642
 http://localhost/#/graph/neu.edu/201710/EECE/2530
 
-when downloading a tree if it turns into a node need to set id to something reliable, like hash of prereqs title's instead of random
+when downloading a tree if it turns into a node need to set id to something reliable, like hash of prereqs title's instead of random -- done
+change the type of parent to and if was included in a superman node and all of its children were included too?
 http://localhost/#/graph/neu.edu/201710/ME/4640
 
 needs multiple passes of skipNodesPostStuff??? its because if there are two in a row, it will fix the first oen then node == the next one
