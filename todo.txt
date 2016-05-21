@@ -85,8 +85,12 @@ if there are a crapton of (a or b or c or d or e or f ... ) do you want to split
  	(maybe split up the nodes that have prereqs, idk)
 http://localhost/#/graph/neu.edu/201710/BIOL/3407
 
-wrong, it should be (3500 and 2000 and (bunch of engw))
+wrong, it should be (3500 and 2000 and (bunch of engw)) -- fixed
 http://localhost/#/graph/neu.edu/201710/IS/4800
+
+
+tree is 419 big
+https://localhost/#neu.edu/201630/CHEM/5622
 
 
 do i still need the manual memoize around class?
@@ -354,8 +358,6 @@ neu ips:
 155.33.x.x
 and there was one other /16 too
 
-tree is 419 big
-https://localhost/#neu.edu/201630/CHEM/5622
 
 
 

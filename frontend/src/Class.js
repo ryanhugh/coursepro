@@ -172,6 +172,12 @@ Class.prototype.generateIdFromPrereqs = function () {
 		elog('already have _id told to make another one?')
 		return;
 	}
+	if (this.isString) {
+		this._id = this.host + this.termId + this.desc
+		return;
+	}
+
+
 	if (this.prereqs.values.length == 0) {
 		elog('no prereqs to generate _id from!')
 	}
@@ -182,6 +188,9 @@ Class.prototype.generateIdFromPrereqs = function () {
 
 	var ids = [];
 	this.prereqs.values.forEach(function (subTree) {
+		if (!subTree._id) {
+			subTree.generateIdFromPrereqs()
+		}
 		ids.push(subTree._id)
 	}.bind(this))
 	if (ids.length === 0) {
