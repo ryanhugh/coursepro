@@ -14,10 +14,6 @@ var BaseData = require('./BaseData')
 function Class(config) {
 	BaseData.prototype.constructor.apply(this, arguments);
 
-	if ((config.isClass === false || config.isString === true) && !config._id) {
-		config._id = Math.random() + '' + Math.random()
-	}
-
 	if (config.title) {
 		elog("wtf class has a name not a title");
 	}
@@ -120,6 +116,11 @@ function Class(config) {
 
 	this.postDataProcess();
 
+	if ((this.isClass === false || this.isString === true) && !this._id) {
+		this.generateIdFromPrereqs()
+	}
+
+
 
 
 	// host: "neu.edu"
@@ -139,10 +140,6 @@ function Class(config) {
 	// sections: [new Section()]
 	// subject: "CS"
 	// url: "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201630&subj_in=CS&crse_in=4800&schd_in=%25"
-
-
-	// termText: "Spring 2016" //move this to the Terms.js and make a getter ?
-
 
 
 }
@@ -166,6 +163,26 @@ Class.isValidCreatingData = function (config) {
 	};
 
 	return BaseData.isValidCreatingData.apply(this, arguments);
+};
+
+Class.prototype.generateIdFromPrereqs = function () {
+	if (this._id) {
+		elog('already have _id told to make another one?')
+		return;
+	}
+	if (this.prereqs.values.length == 0) {
+		elog('no prereqs to generate _id from!')
+	}
+
+	this.prereqs.values.sort(function (a, b) {
+		return a.compareTo(b);
+	}.bind(this))
+
+	var ids = [];
+	this.prereqs.values.forEach(function (subTree) {
+		ids.push(subTree._id)
+	}.bind(this))
+	this._id = ids.join('')
 };
 
 
@@ -202,7 +219,7 @@ Class.prototype.convertServerData = function (data) {
 				isClass: true,
 				isString: true,
 				desc: data,
-				
+
 			}
 		}
 		//given a branch in the prereqs
@@ -276,7 +293,11 @@ Class.prototype.internalDownload = function (callback) {
 		if (body.length == 0) {
 			console.log('unable to find class even though its a prereq of another class????', this)
 			this.dataStatus = macros.DATASTATUS_FAIL;
-			this._id = Math.random() + '' + Math.random()
+
+			// Make something repeatable from data here
+			if (!this._id) {
+				this._id = this.host + this.termId + this.subject + this.classId
+			}
 			return callback(null, this)
 		};
 
@@ -292,23 +313,13 @@ Class.prototype.internalDownload = function (callback) {
 				this.coreqs.values = []
 			};
 
-			// this._id = Math.random() + '' + Math.random()
 			this.prereqs.type = 'or'
 
 			body.forEach(function (classData) {
 				this.prereqs.values.push(this.convertServerData(classData))
 			}.bind(this))
 
-			this.prereqs.values.sort(function (a,b) {
-				return a.compareTo(b);
-			}.bind(this))
-
-			var ids = [];
-			this.prereqs.values.forEach(function (subTree) {
-				ids.push(subTree._id)
-			}.bind(this))
-			this._id = ids.join('')
-
+			this.generateIdFromPrereqs();
 		}
 
 		//else just add more data to the class

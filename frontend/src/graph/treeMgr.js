@@ -302,13 +302,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 
 	var currTree;
 	while ((currTree = stack.shift())) {
-
-		if (!currTree.isClass) {
-			stack = stack.concat(currTree.prereqs.values)
-			continue;
-		}
-
-
+		
 		var matchingClasses = _.filter(classList, {
 			_id: currTree._id
 		});
@@ -783,7 +777,6 @@ TreeMgr.prototype.go = function (tree) {
 	this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
 
-	// this.simplifyTree(tree)
 
 	this.addDepthLevel(tree);
 
