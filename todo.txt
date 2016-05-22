@@ -20,8 +20,7 @@ speed?
 
 GRAPH
 
-// is the on i tested alot
-http://localhost/#/graph/swarthmore.edu/201604/MATH/043
+the swarthmore one i tested a lot - http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 coreqs
 arrows
 if angle < something between 2 children, do a force or maybe if x is too close between children?

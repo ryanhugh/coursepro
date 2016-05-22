@@ -69,10 +69,10 @@ Graph.prototype.addClass = function (aClass) {
 
 
 Graph.prototype.overlap = function (rect1, rect2) {
-	if (rect1.x < rect2.x + this.nodeWidth &&
-		rect1.x + this.nodeWidth > rect2.x &&
-		rect1.y < rect2.y + this.nodeHeight &&
-		this.nodeHeight + rect1.y > rect2.y) {
+	if (rect1.x < rect2.x + Math.min(200, rect2.width) &&
+		rect1.x + Math.min(200, rect1.width) > rect2.x &&
+		rect1.y < rect2.y + Math.min(200, rect2.height) &&
+		Math.min(200, rect1.height) + rect1.y > rect2.y) {
 		return true;
 	}
 	else {
@@ -86,7 +86,7 @@ Graph.prototype.collide = function (node1, node2) {
 		return;
 	}
 
-	var dx = Math.min(node1.x + this.nodeWidth - node2.x, node2.x + this.nodeWidth - node1.x, 20) / 2;
+	var dx = Math.min(node1.x + Math.min(200, node1.width) - node2.x, node2.x + Math.min(200, node2.width) - node1.x, 20) / 2;
 	if (node1.x < node2.x) {
 		node1.x -= dx;
 		node2.x += dx;
@@ -249,9 +249,7 @@ Graph.prototype.go = function (tree, callback) {
 				.links(graph.links)
 
 			this.force.on("tick", function (e) {
-				var k = 0;
-				var n = graph.nodes.length;
-				while (++k < n) {
+				for (var k = 0; k < graph.nodes.length; k++) {
 					var currNode = graph.nodes[k];
 
 					// collision
