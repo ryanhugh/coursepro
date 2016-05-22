@@ -136,10 +136,6 @@ describe('Class', function () {
 			expect(classes[0].name).toBe('Calculus IIA')
 			expect(classes[1].name).toBe('Calculus IIB')
 			expect(classes[2].name).toBe('Calculus IIC')
-				// expect(classes[1].name).toBe('Animal Physiology- Lab')
-				// expect(classes[2].name).toBe('Attchm: Animal Physiology')
-
-
 		});
 
 	});
