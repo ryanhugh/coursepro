@@ -63,6 +63,9 @@ BaseDB.prototype.shouldUpdateDB = function (newData, oldData) {
 			//only print lastupdate time if in verbose mode
 			if (attrName != 'lastUpdateTime' || macros.VERBOSE) {
 				console.log('updating db because of change in', attrName)
+				if (attrName === 'deps') {
+					console.log(newData[attrName], oldData[attrName]);
+				}
 			};
 
 			//this should not happen

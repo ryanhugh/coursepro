@@ -13,16 +13,6 @@ last update time should copy down to class deps of class deps -- done
 LOOKING INTO
 safe to lookup docs by url in backend? - ehhh
 async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj) -- done?
-the node injection graph thing
-for node injection, make sure all same type and do overlapping set of names to find node name
-
-// TODO calculate if a node has children at dfferent depts in tree mgr
-
-is the d3 moving stuff on the screen causing the mess up of starting position????
- -- no, its gravity, and if thats removed it looks like crap ughhhhh
-
-
-jasmine make sure done() not called twice?
 
 
 updateing db due to change in deps because of the dep change in last update time????
