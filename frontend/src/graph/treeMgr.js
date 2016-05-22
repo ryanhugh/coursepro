@@ -9,17 +9,18 @@ function TreeMgr() {
 }
 
 TreeMgr.prototype.addIdsToTrees = function(tree) {
-	if (!tree._id) {
-		tree.generateIdFromPrereqs()
-	}
 	
 	tree.prereqs.values.forEach(function (subTree) {
 		this.addIdsToTrees(subTree);
 	}.bind(this))
 
-	// tree.coreqs.values.forEach(function (subTree) {
-	// 	this.addIdsToTrees(subTree);
-	// }.bind(this))
+	tree.coreqs.values.forEach(function (subTree) {
+		this.addIdsToTrees(subTree);
+	}.bind(this))
+
+	if (!tree._id) {
+		tree.generateIdFromPrereqs()
+	}
 };
 
 // this dosen't work after allParents have been added
@@ -592,6 +593,7 @@ TreeMgr.prototype.removeCoreqsCoreqs = function (tree, isACoreq) {
 	//if this class is a coreq to another class, remove its coreqs
 	if (isACoreq) {
 		tree.coreqs.values = [];
+		console.log("Removing a core coreq",tree.classId);
 	}
 
 
@@ -759,10 +761,12 @@ TreeMgr.prototype.calculateIfChildrenAtSameDepth = function (tree) {
 // TreeMgr.prototype.processTree = function(tree, callback) {
 TreeMgr.prototype.go = function (tree) {
 
-	// this.matchCoreqsByHonors(tree);
-	this.addIdsToTrees(tree);
+	// flatten coreqs and remove coreqs coreqs
 	this.flattenCoreqs(tree);
 	this.removeCoreqsCoreqs(tree);
+
+	// all remaining trees a valid, so add _ids to nodes that !classes and don't already have _ids
+	this.addIdsToTrees(tree);
 
 	//at this point, there should not be any with data status = not started, so if find any remove them
 	//actually, dont do this because somtimes classes can error

@@ -116,14 +116,6 @@ function Class(config) {
 
 	this.postDataProcess();
 
-	// if ((this.isClass === false || this.isString === true) && !this._id) {
-	// 	this.generateIdFromPrereqs()
-	// 	if (!this._id) {
-	// 		debugger
-	// 	}
-	// }
-
-
 
 	// host: "neu.edu"
 	// termId: "201630"
@@ -188,9 +180,6 @@ Class.prototype.generateIdFromPrereqs = function () {
 
 	var ids = [];
 	this.prereqs.values.forEach(function (subTree) {
-		if (!subTree._id) {
-			subTree.generateIdFromPrereqs()
-		}
 		ids.push(subTree._id)
 	}.bind(this))
 	if (ids.length === 0) {

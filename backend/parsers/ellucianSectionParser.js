@@ -46,9 +46,8 @@ EllucianSectionParser.prototype.getDatabase = function (pageData) {
 
 EllucianSectionParser.prototype.parseElement = function (pageData, element) {
 	if (element.type != 'tag') {
-		return; 
+		return;
 	}
-
 
 	if (element.name == 'table' && element.attribs.class == 'datadisplaytable' && element.parent.name == 'td' && _(element.attribs.summary).includes("seating")) {
 		var tableData = this.parseTable(element);
@@ -105,17 +104,24 @@ EllucianSectionParser.prototype.parseElement = function (pageData, element) {
 
 
 		//grab credits
-		var text = domutils.getText(element.parent)
+		var text = domutils.getText(element.parent).toLowerCase()
 		var creditsParsed = this.parseCredits(text);
-		
+
 		if (creditsParsed) {
-			pageData.setParentData('maxCredits',creditsParsed.maxCredits);
-			pageData.setParentData('minCredits',creditsParsed.minCredits);
+			pageData.setParentData('maxCredits', creditsParsed.maxCredits);
+			pageData.setParentData('minCredits', creditsParsed.minCredits);
 		}
 		else {
 			console.log('warning, nothing matchied credits', pageData.dbData.url, text);
 		}
 
+		// grab honors (honours is canadian spelling)
+		if (_(text).includes('honors') || _(text).includes('honours')) {
+			pageData.setParentData('honors', true)
+		}
+		else {
+			pageData.setParentData('honors', false)
+		}
 	}
 };
 
