@@ -211,29 +211,9 @@ Graph.prototype.go = function (tree, callback) {
 				link[0][i].style.stroke = '#5B5B5B'
 			}
 
-			// tbh all nodes should be instanceof Class
-			// if (!graph.nodes[currLink.source].downwardLinks) {
-			// 	graph.nodes[currLink.source].downwardLinks = []
-			// }
-
-			// if (!graph.nodes[currLink.target].downwardLinks) {
-			// 	graph.nodes[currLink.target].downwardLinks = []
-			// }
-
-			// if (!graph.nodes[currLink.source].upwardLinks) {
-			// 	graph.nodes[currLink.source].upwardLinks = []
-			// }
-
-			// if (!graph.nodes[currLink.target].upwardLinks) {
-			// 	graph.nodes[currLink.target].upwardLinks = []
-			// }
-
 			//add line to both nodes links list
 			parent.downwardLinks.push(link[0][i])
 			child.upwardLinks.push(link[0][i])
-
-			// graph.nodes[currLink.source].links.push(link[0][i])
-			// graph.nodes[currLink.target].links.push(link[0][i])
 		}
 
 
