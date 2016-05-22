@@ -688,7 +688,10 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 	}.bind(this));
 	var connections = {}
 
+	var coreqs = []
+
 	nodes.forEach(function (node, nodeIndex) {
+		coreqs = coreqs.concat(node.coreqs.values)
 		node.prereqs.values.forEach(function (subTree) {
 			if (!_(subTree.allParents).includes(node)) {
 				console.log("ERROR ");
@@ -736,8 +739,13 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 		}
 	}.bind(this))
 
+	coreqs.forEach(function (coreq) {
+		coreq.x = 0
+		coreq.y = 0
+	}.bind(this))
+
 	return {
-		nodes: nodes,
+		nodes: nodes.concat(coreqs),
 		links: _.values(connections)
 	}
 };

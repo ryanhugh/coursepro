@@ -99,6 +99,18 @@ Graph.prototype.collide = function (node1, node2) {
 
 
 
+Graph.prototype.bringToFront = function(tree) {
+	
+	// find the g element that is a parent of the foreignObject, and move it to the end of its children
+	// in svgs this is how zindex works
+	var g = tree.foreignObject.parentElement;
+	var gParentElement = g.parentElement;
+	g.remove();
+	gParentElement.appendChild(g)
+};
+
+
+
 Graph.prototype.go = function (tree, callback) {
 	this.isLoading = true;
 	downloadTree.fetchFullTree(tree, function (err, tree) {
@@ -208,7 +220,6 @@ Graph.prototype.go = function (tree, callback) {
 			child.upwardLinks.push(link[0][i])
 		}
 
-
 		var node = container.selectAll(".node")
 			.data(graph.nodes)
 			.enter().append("g")
@@ -222,35 +233,7 @@ Graph.prototype.go = function (tree, callback) {
 
 		var html = '<div ng-include="\'panel.html\'"></div>'
 
-		// node.append("foreignObject")
-		// 	.attr("width", this.nodeWidth)
-		// 	.attr("height", this.nodeHeight)
-		// 	.append("xhtml:div")
-
 		for (var i = 0; i < node[0].length; i++) {
-
-			// add a nodes coreqs
-			for (var j = 0; j < graph.nodes[i].coreqs.values.length; j++) {
-
-				var currCoreq = graph.nodes[i].coreqs.values[j]
-
-				// make a new scope for the coreqs
-				var coreqScope = this.$scope.$new();
-
-				// set up the links between tree and scope and foreignObject
-				coreqScope.tree = currCoreq
-				currCoreq.$scope = coreqScope
-
-				var foreignObject = d3.select(node[0][i]).append('foreignObject')
-					.attr("width", this.nodeWidth)
-					.attr("height", this.nodeHeight);
-
-				currCoreq.foreignObject = foreignObject[0][0]
-
-				foreignObject.attr('transform', 'translate(' + (j + 1) * 30 + ',' + (-(j + 1) * 39) + ')')
-				$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(coreqScope))
-			}
-
 
 			// create the new scope for each node
 			var newScope = this.$scope.$new();
@@ -268,6 +251,11 @@ Graph.prototype.go = function (tree, callback) {
 
 			$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
 		}
+		graph.nodes.forEach(function (node) {
+			if (node.isCoreq) {
+				this.bringToFront(node.lowestParent)
+			}
+		}.bind(this))
 
 		setTimeout(function () {
 			this.$scope.$apply()
@@ -281,9 +269,16 @@ Graph.prototype.go = function (tree, callback) {
 				for (var k = 0; k < graph.nodes.length; k++) {
 					var currNode = graph.nodes[k];
 
+					if (currNode.isCoreq) {
+						continue;
+					}
+
 					// collision
 					for (var j = k + 1; j < graph.nodes.length; j++) {
 						var testingCollisionAgainst = graph.nodes[j];
+						if (testingCollisionAgainst.isCoreq) {
+							continue;
+						}
 						this.collide(currNode, testingCollisionAgainst)
 					}
 
@@ -330,7 +325,19 @@ Graph.prototype.go = function (tree, callback) {
 					}.bind(this));
 
 				node.attr("transform", function (d) {
-					return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
+					if (d.isCoreq) {
+
+						var x = d.lowestParent.x - d.width / 2;
+						var y = d.lowestParent.y - d.height / 2;
+
+						x+=(d.coreqIndex+1)*30
+						y-=(d.coreqIndex+1)*39
+
+						return "translate(" + x + "," + y + ")";
+					}
+					else {
+						return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
+					}
 				}.bind(this));
 
 

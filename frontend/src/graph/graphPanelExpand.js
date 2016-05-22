@@ -63,9 +63,14 @@ function GraphPanelExpand($timeout, $document) {
 			$scope.style.cursor = 'pointer';
 			if (isMouseOver) {
 				$scope.style['box-shadow'] = 'gray 0px 0px 6px'
+				tree.$scope.graph.bringToFront(tree)
 			}
 			else {
 				$scope.style['box-shadow'] = 'gray 0px 0px 0px'
+
+				if (tree.isCoreq) {
+					tree.$scope.graph.bringToFront(tree.lowestParent)
+				}
 			}
 		}
 		setTimeout(function () {
@@ -102,12 +107,7 @@ function GraphPanelExpand($timeout, $document) {
 					tree.foreignObject.setAttribute('width', width);
 					tree.width = width;
 
-					// find the g element that is a parent of the foreignObject, and move it to the end of its children
-					// in svgs this is how zindex works
-					var g = tree.foreignObject.parentElement;
-					var gParentElement = g.parentElement;
-					g.remove();
-					gParentElement.appendChild(g)
+
 
 				}
 				else {
