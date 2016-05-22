@@ -1,28 +1,27 @@
 https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
 
-max number of simultanous classes wawtching???
 
-
-// is the on i tested alot
-http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 
 TO TEST
 last update time should copy down to class deps of class deps -- done
+updateing db due to change in deps???? -- logging chages
+honors?
 
 
 LOOKING INTO
 safe to lookup docs by url in backend? - ehhh
-async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj) -- done?
-
-
-updateing db due to change in deps because of the dep change in last update time????
+max number of simultanous classes wawtching???
 Is there some good way to not have a bunch of emails go off whenever change how something is parsed?
 can close and reopen the db when not prod?
-trim leading 0s from classids -- done client side with a getter
-if a superman parent is !class and all its children.length == superman.children.length skip the !class direcly -- done
-honors?
-make all the injected nodes and stuff where math.random is a thing instanceof Class -- done
 speed?
+ -- async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj) -- done?
+ -- do i still need the manual memoize around class?
+ -----unit tests for ^ and memoize stuff
+
+GRAPH
+
+// is the on i tested alot
+http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 coreqs
 arrows
 if angle < something between 2 children, do a force or maybe if x is too close between children?
@@ -79,8 +78,6 @@ tree is 419 big
 https://localhost/#neu.edu/201630/CHEM/5622
 
 
-do i still need the manual memoize around class?
-unit tests for ^ and memoize stuff
 
 
 

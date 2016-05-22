@@ -93,7 +93,10 @@ Graph.prototype.collide = function (node) {
 				// dy = Math.min(node.y2() - quad.point.y, quad.point.y2() - node.y) / 4;
 				// node.y -= dy;
 				// quad.point.y += dy;
-				var dx = Math.min(node.x + this.nodeWidth - quad.point.x, quad.point.x + this.nodeWidth - node.x) / 2;
+				var dx = Math.min(node.x + this.nodeWidth - quad.point.x, quad.point.x + this.nodeWidth - node.x, 20) / 2;
+				// if (dx > 10) {
+				// 	console.log(dx);
+				// }
 				node.x -= dx;
 				quad.point.x += dx;
 			}
