@@ -8,8 +8,8 @@ function TreeMgr() {
 
 }
 
-TreeMgr.prototype.addIdsToTrees = function(tree) {
-	
+TreeMgr.prototype.addIdsToTrees = function (tree) {
+
 	tree.prereqs.values.forEach(function (subTree) {
 		this.addIdsToTrees(subTree);
 	}.bind(this))
@@ -100,24 +100,27 @@ TreeMgr.prototype.simplifyTree = function (tree) {
 // one part of the above function that runs after the node injection that changes allParents...
 TreeMgr.prototype.skipNodesPostStuff = function (tree) {
 
-	tree.prereqs.values.forEach(function (subTree) {
-		if (subTree.prereqs.values.length === 1 && !subTree.isClass) {
-			_.pull(tree.prereqs.values, subTree)
+	if (tree.prereqs.values.length === 1 && !tree.isClass) {
 
-			var newChild = subTree.prereqs.values[0];
-			_.pull(newChild.allParents, subTree)
+		var newChild = tree.prereqs.values[0];
 
-			if (!_(newChild.allParents).includes(tree)) {
-				newChild.allParents.push(tree)
+		_.pull(newChild.allParents, tree);
+
+		tree.allParents.forEach(function (parent) {
+
+			// remove this tree from parents
+			_.pull(parent.prereqs.values, tree)
+
+			// and add new child
+			if (!_(parent.prereqs.values).includes(newChild)) {
+				parent.prereqs.values.push(newChild)
 			}
 
-			if (!_(tree.prereqs.values).includes(newChild)) {
-				tree.prereqs.values.push(newChild)
+			if (!_(newChild.allParents).includes(parent)) {
+				newChild.allParents.push(parent)
 			}
-
-		}
-	}.bind(this))
-
+		}.bind(this))
+	}
 
 	//recursion
 	tree.prereqs.values.forEach(function (subTree) {
@@ -296,7 +299,7 @@ TreeMgr.prototype.getFirstLayer = function (tree) {
 
 // this is the problem that the physics labs were coming up
 // this function changes this
- 
+
 // a    b
 // |\   |\
 // | \  | \
@@ -593,7 +596,7 @@ TreeMgr.prototype.removeCoreqsCoreqs = function (tree, isACoreq) {
 	//if this class is a coreq to another class, remove its coreqs
 	if (isACoreq) {
 		tree.coreqs.values = [];
-		console.log("Removing a core coreq",tree.classId);
+		console.log("Removing a core coreq", tree.classId);
 	}
 
 
@@ -790,7 +793,6 @@ TreeMgr.prototype.go = function (tree) {
 	this.groupByCommonPrereqs(tree, 'or')
 	this.groupByCommonPrereqs(tree, 'and')
 
-	this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
 
 	this.defaultToOr(tree);

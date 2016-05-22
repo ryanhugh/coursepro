@@ -46,15 +46,14 @@ no duplicates in children or parents
 panels should have text in them 
 no depth > 50
 
-crashes
-http://localhost/#/graph/neu.edu/201710/ME/4570 -- fixed
-http://localhost/#/graph/neu.edu/201710/CHEM/3505  -- fixed
-http://localhost/#/graph/neu.edu/201710/EECE/4642 -- fixed
-http://localhost/#/graph/neu.edu/201710/EECE/2530 (!class with depth=1 is above the root node@0?)
-
-when downloading a tree if it turns into a node need to set id to something reliable, like hash of prereqs title's instead of random -- done
-change the type of parent to and if was included in a superman node and all of its children were included too? -- done
+big graphs
+http://localhost/#/graph/neu.edu/201710/ME/4570
+http://localhost/#/graph/neu.edu/201710/CHEM/3505 
+http://localhost/#/graph/neu.edu/201710/EECE/4642
 http://localhost/#/graph/neu.edu/201710/ME/4640
+
+!class with depth=1 is above the root node@0?
+http://localhost/#/graph/neu.edu/201710/EECE/2530 
 
 needs multiple passes of skipNodesPostStuff??? its because if there are two in a row, it will fix the first oen then node == the next one
 http://localhost/#/graph/neu.edu/201710/ME/5250
@@ -84,12 +83,6 @@ NOTIFICATIONS
 trello/sms/phone call/etc
 
 
-D3 todo
-merge -- done
-hover to highlight -- done
-superman types -- done
-d3 types -- done
-panel merge -- done
 
 
 
@@ -113,6 +106,8 @@ holy crap nodev6 is bad. gulp watch dosent work and npm install dosent work on a
 ---dont upgrade to nodev6 until this is fixed https://github.com/gulpjs/gulp/issues/1571
 ----v5.10.1
 async.retry and jasmine.clock
+d3 collision bug in a bunch of examples on the internet skip testing collision with the first node in the list
+--- https://bl.ocks.org/mbostock/3231298
 
 HONORS NOTES
 swathmore and sju have "honors" in title 
