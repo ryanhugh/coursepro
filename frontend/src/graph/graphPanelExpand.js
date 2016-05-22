@@ -53,6 +53,15 @@ function GraphPanelExpand($timeout, $document) {
 	// the given scope is the scope of a tree inside a recursions
 	GraphPanelExpandInner.prototype.updateScope = function (tree, isMouseOver) {
 
+		if (isMouseOver) {
+			this.setUpwardLines(tree, 8)
+			this.setDownwardLines(tree, 8)
+		}
+		else {
+			this.setUpwardLines(tree, 4)
+			this.setDownwardLines(tree, 4)
+		}
+
 		var $scope = tree.$scope
 
 		if ($scope.isExpanded) {
@@ -222,14 +231,10 @@ function GraphPanelExpand($timeout, $document) {
 
 	GraphPanelExpandInner.prototype.onMouseOver = function (tree) {
 		this.updateScope(tree, true);
-		this.setUpwardLines(tree, 8)
-		this.setDownwardLines(tree, 8)
 	}
 
 	GraphPanelExpandInner.prototype.onMouseOut = function (tree) {
 		this.updateScope(tree, false);
-		this.setUpwardLines(tree, 4)
-		this.setDownwardLines(tree, 4)
 	};
 
 	// called for each recursive call in graphInner.html

@@ -596,9 +596,7 @@ TreeMgr.prototype.removeCoreqsCoreqs = function (tree, isACoreq) {
 	//if this class is a coreq to another class, remove its coreqs
 	if (isACoreq) {
 		tree.coreqs.values = [];
-		console.log("Removing a core coreq", tree.classId);
 	}
-
 
 	tree.coreqs.values.forEach(function (subTree) {
 		this.removeCoreqsCoreqs(subTree, true);
