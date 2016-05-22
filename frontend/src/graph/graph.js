@@ -81,28 +81,20 @@ Graph.prototype.overlap = function (rect1, rect2) {
 }
 
 
-Graph.prototype.collide = function (node) {
-	var nx1 = node.x;
-	var nx2 = node.x + this.nodeWidth;
-	var ny1 = node.y;
-	var ny2 = node.y + this.nodeHeight;
-	return function (quad, x1, y1, x2, y2) {
-		// var dy;
-		if (quad.point && (quad.point !== node)) {
-			if (this.overlap(node, quad.point)) {
-				// dy = Math.min(node.y2() - quad.point.y, quad.point.y2() - node.y) / 4;
-				// node.y -= dy;
-				// quad.point.y += dy;
-				var dx = Math.min(node.x + this.nodeWidth - quad.point.x, quad.point.x + this.nodeWidth - node.x, 20) / 2;
-				// if (dx > 10) {
-				// 	console.log(dx);
-				// }
-				node.x -= dx;
-				quad.point.x += dx;
-			}
-		}
-		return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
-	}.bind(this);
+Graph.prototype.collide = function (node1, node2) {
+	if (!this.overlap(node1, node2)) {
+		return;
+	}
+
+	var dx = Math.min(node1.x + this.nodeWidth - node2.x, node2.x + this.nodeWidth - node1.x, 20) / 2;
+	if (node1.x < node2.x) {
+		node1.x -= dx;
+		node2.x += dx;
+	}
+	else {
+		node1.x += dx;
+		node2.x -= dx;
+	}
 };
 
 
@@ -257,14 +249,16 @@ Graph.prototype.go = function (tree, callback) {
 				.links(graph.links)
 
 			this.force.on("tick", function (e) {
-				var q = d3.geom.quadtree(graph.nodes);
 				var k = 0;
 				var n = graph.nodes.length;
 				while (++k < n) {
 					var currNode = graph.nodes[k];
 
 					// collision
-					q.visit(this.collide(currNode));
+					for (var j = k + 1; j < graph.nodes.length; j++) {
+						var testingCollisionAgainst = graph.nodes[j];
+						this.collide(currNode, testingCollisionAgainst)
+					}
 
 					//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
 					currNode.y += ((currNode.depth * 200 + 50) - currNode.y) * e.alpha * multiplyer;
