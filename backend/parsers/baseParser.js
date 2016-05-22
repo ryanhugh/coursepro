@@ -34,10 +34,9 @@ BaseParser.prototype.parse = function (pageData, callback) {
 		if (err) {
 			return callback(err);
 		};
+		pageData.setData('lastUpdateTime', new Date().getTime());
 
 		this.parseDOM(pageData, dom);
-
-		pageData.setData('lastUpdateTime', new Date().getTime());
 
 		callback();
 
