@@ -222,12 +222,35 @@ Graph.prototype.go = function (tree, callback) {
 
 		var html = '<div ng-include="\'panel.html\'"></div>'
 
-		node.append("foreignObject")
-			.attr("width", this.nodeWidth)
-			.attr("height", this.nodeHeight)
-			.append("xhtml:div")
+		// node.append("foreignObject")
+		// 	.attr("width", this.nodeWidth)
+		// 	.attr("height", this.nodeHeight)
+		// 	.append("xhtml:div")
 
 		for (var i = 0; i < node[0].length; i++) {
+
+			// add a nodes coreqs
+			for (var j = 0; j < graph.nodes[i].coreqs.values.length; j++) {
+
+				var currCoreq = graph.nodes[i].coreqs.values[j]
+
+				// make a new scope for the coreqs
+				var coreqScope = this.$scope.$new();
+
+				// set up the links between tree and scope and foreignObject
+				coreqScope.tree = currCoreq
+				currCoreq.$scope = coreqScope
+
+				var foreignObject = d3.select(node[0][i]).append('foreignObject')
+					.attr("width", this.nodeWidth)
+					.attr("height", this.nodeHeight);
+
+				currCoreq.foreignObject = foreignObject[0][0]
+
+				foreignObject.attr('transform', 'translate(' + (j + 1) * 30 + ',' + (-(j + 1) * 39) + ')')
+				$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(coreqScope))
+			}
+
 
 			// create the new scope for each node
 			var newScope = this.$scope.$new();
@@ -235,9 +258,15 @@ Graph.prototype.go = function (tree, callback) {
 			// set up the links between tree and scope and foreignObject
 			newScope.tree = graph.nodes[i]
 			graph.nodes[i].$scope = newScope
-			graph.nodes[i].foreignObject = node[0][i].lastChild
 
-			$(node[0][i].querySelector('div')).append(this.$compile(html)(newScope))
+
+			var foreignObject = d3.select(node[0][i]).append('foreignObject')
+				.attr("width", this.nodeWidth)
+				.attr("height", this.nodeHeight);
+
+			graph.nodes[i].foreignObject = foreignObject[0][0]
+
+			$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
 		}
 
 		setTimeout(function () {

@@ -49,13 +49,16 @@ no depth > 50
 big graphs
 http://localhost/#/graph/neu.edu/201710/ME/4570
 http://localhost/#/graph/neu.edu/201710/CHEM/3505 
+
 http://localhost/#/graph/neu.edu/201710/EECE/4642
 http://localhost/#/graph/neu.edu/201710/ME/4640
+https://localhost/#neu.edu/201630/CHEM/5622
+ -- tree is 419 big
 
 !class with depth=1 is above the root node@0?
 http://localhost/#/graph/neu.edu/201710/EECE/2530 
 
-needs multiple passes of skipNodesPostStuff??? its because if there are two in a row, it will fix the first oen then node == the next one
+needs multiple passes of skipNodesPostStuff??? its because if there are two in a row, it will fix the first oen then node == the next one -- done
 http://localhost/#/graph/neu.edu/201710/ME/5250
 
 this is wrong, its just (1342 or 1252) not (1342 or 1252 or [tree]) -- fixed
@@ -72,8 +75,8 @@ wrong, it should be (3500 and 2000 and (bunch of engw)) -- fixed
 http://localhost/#/graph/neu.edu/201710/IS/4800
 
 
-tree is 419 big
-https://localhost/#neu.edu/201630/CHEM/5622
+
+
 
 
 
