@@ -99,14 +99,24 @@ Graph.prototype.collide = function (node1, node2) {
 
 
 
-Graph.prototype.bringToFront = function(tree) {
-	
+Graph.prototype.bringToFront = function (tree) {
+
 	// find the g element that is a parent of the foreignObject, and move it to the end of its children
 	// in svgs this is how zindex works
 	var g = tree.foreignObject.parentElement;
 	var gParentElement = g.parentElement;
 	g.remove();
 	gParentElement.appendChild(g)
+};
+
+Graph.prototype.updateHeight = function (tree) {
+
+	// update the height of the panel
+	tree.height = tree.foreignObject.lastChild.offsetHeight
+
+	//update the foreign object and the g with the new height
+	tree.foreignObject.setAttribute('height', tree.height)
+	tree.foreignObject.parentNode.setAttribute('height', tree.height)
 };
 
 
@@ -160,7 +170,7 @@ Graph.prototype.go = function (tree, callback) {
 
 		var dragStartedByRightButton = false;
 		var nodeDrag = d3.behavior.drag()
-			.on("dragstart", function (d, i) {
+			.on("dragstart", function (node) {
 				if (d3.event.sourceEvent.which == 3) {
 					dragStartedByRightButton = true
 					return;
@@ -170,14 +180,17 @@ Graph.prototype.go = function (tree, callback) {
 					this.force.alpha(.007)
 				}
 			}.bind(this))
-			.on("drag", function (d, i) {
+			.on("drag", function (node) {
 				if (dragStartedByRightButton) {
 					return;
 				}
-				d.px += d3.event.dx
-				d.py += d3.event.dy
-				d.x += d3.event.dx
-				d.y += d3.event.dy
+				if (node.$scope.isExpanded) {
+					return;
+				}
+				node.px += d3.event.dx
+				node.py += d3.event.dy
+				node.x += d3.event.dx
+				node.y += d3.event.dy
 				this.force.alpha(.007)
 			}.bind(this))
 
@@ -330,8 +343,8 @@ Graph.prototype.go = function (tree, callback) {
 						var x = d.lowestParent.x - d.width / 2;
 						var y = d.lowestParent.y - d.height / 2;
 
-						x+=(d.coreqIndex+1)*30
-						y-=(d.coreqIndex+1)*39
+						x += (d.coreqIndex + 1) * 30
+						y -= (d.coreqIndex + 1) * 39
 
 						return "translate(" + x + "," + y + ")";
 					}
@@ -376,9 +389,8 @@ Graph.prototype.go = function (tree, callback) {
 
 			this.$scope.tree = tree;
 
-
 			graph.nodes.forEach(function (tree) {
-				tree.height = tree.foreignObject.lastChild.offsetHeight
+				this.updateHeight(tree)
 			}.bind(this))
 
 			callback(null, tree)

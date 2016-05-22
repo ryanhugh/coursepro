@@ -115,9 +115,6 @@ function GraphPanelExpand($timeout, $document) {
 					var width = this.calculatePanelWidth(tree);
 					tree.foreignObject.setAttribute('width', width);
 					tree.width = width;
-
-
-
 				}
 				else {
 					tree.width = 174;
@@ -132,8 +129,7 @@ function GraphPanelExpand($timeout, $document) {
 				//update the dom with the new $scope and tree
 				tree.$scope.$apply()
 
-				// update the height of the panel
-				tree.height = tree.foreignObject.lastChild.offsetHeight
+				tree.$scope.graph.updateHeight(tree)
 
 				// and tell d3 to move the panel back to where it should be
 				tree.$scope.graph.force.alpha(.0051)
