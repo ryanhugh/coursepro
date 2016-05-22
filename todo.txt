@@ -18,6 +18,11 @@ speed?
  -- do i still need the manual memoize around class?
  -----unit tests for ^ and memoize stuff
 
+
+coreqs not parsed correcly
+https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=PHYS&crse_numb_in=1161
+
+
 GRAPH
 
 the swarthmore one i tested a lot - http://localhost/#/graph/swarthmore.edu/201604/MATH/043
