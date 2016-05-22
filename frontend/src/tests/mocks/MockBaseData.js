@@ -62,7 +62,9 @@ MockBaseData.download = function (config, callback) {
 		debugger
 	};
 
-	return callback(null, retVal);
+	setTimeout(function () {
+		callback(null, retVal);
+	}.bind(this), 0)
 };
 
 

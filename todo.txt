@@ -8,8 +8,6 @@ http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 
 TO TEST
 last update time should copy down to class deps of class deps -- done
-get has wait list on section -- done
-why are the terms not sorted on the dropdown? -- done
 
 
 LOOKING INTO

@@ -29,19 +29,21 @@ describe('Subject', function () {
 
 
 	describe('.download', function () {
-		it('works', function () {
+		it('works', function (done) {
 
 			var subject = new Subject({
 				_id: '56f22160ea47044a0569872b'
 			});
 
-			subject.download(_.noop);
+			subject.download(function (err) {
 
-			expect(subject.subject).toBe("GENS");
-			expect(subject.text).toBe("General Studies");
-			expect(subject.host).toBe("neu.edu");
-			expect(subject.termId).toBe("201710");
-
+				expect(subject.subject).toBe("GENS");
+				expect(subject.text).toBe("General Studies");
+				expect(subject.host).toBe("neu.edu");
+				expect(subject.termId).toBe("201710");
+				done()
+				
+			}.bind(this));
 		});
 	});
 
