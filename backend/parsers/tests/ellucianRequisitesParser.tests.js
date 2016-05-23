@@ -475,3 +475,43 @@ it('removeBlacklistedStrings should work', function () {
 		values: ['hi']
 	})
 });
+
+
+
+// note that this site has a lot of options for classes to take under the catalog listing and then only 3 under the section page
+it('works with a ton of ors', function (done) {
+
+
+	fs.readFile('backend/parsers/tests/data/ellucianRequisitesParser/coreqs on diff lines.html', 'utf8', function (err, body) {
+		expect(err).toBe(null);
+
+		var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=PHYS&crse_numb_in=1161'
+
+		var pageData = PageData.create({
+			dbData: {
+				url: url
+			}
+		});
+
+		pointer.handleRequestResponce(body, function (err, dom) {
+			expect(err).toBe(null);
+
+			var coreqs = ellucianRequisitesParser.parseRequirementSection(pageData, dom[0].children, 'corequisites');
+			console.log(coreqs);
+
+			expect(coreqs).toEqual({
+				type: 'and',
+				values: [{
+					classId: '1162',
+					termId: '201710',
+					subject: 'PHYS'
+				}, {
+					classId: '1163',
+					termId: '201710',
+					subject: 'PHYS'
+				}]
+			})
+			done()
+		})
+	});
+});

@@ -294,7 +294,10 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 	for (; i < classDetails.length; i++) {
 		if (classDetails[i].type == 'tag') {
 			if (classDetails[i].name == 'br') {
-				continue;
+				if (elements.length > 0) {
+					elements.push(' and ')
+				}
+				continue; 
 			}
 			else if (classDetails[i].name == 'a') {
 
@@ -324,7 +327,8 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 		}
 		else {
 			var urlText = domutils.getOuterHTML(classDetails[i]);
-			if (urlText === '') {
+			urlText = urlText.replace(/\n|\r|\s/gi,' ').replace(/\s+/gi,' ')
+			if (urlText === '' || urlText == ' ') {
 				continue;
 			}
 			if (_(urlText).includes('@#$')) {
@@ -335,11 +339,22 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 		}
 	}
 
+	// Remove all the 'and's from the end that were added from replacing BRs
+	for (var i = elements.length - 1; i >= 0; i--) {
+		if (elements[i] == ' and ' ){
+			elements.splice(i)
+		}
+		else {
+			break;
+		}
+	}
+
 	//no section given, or invalid section, or page does not list any pre/co reqs
 	if (elements.length === 0) {
 		return;
 	}
 
+	console.log(elements);
 
 	var text = elements.join("").trim();
 	if (text === '') {

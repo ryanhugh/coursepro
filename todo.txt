@@ -22,13 +22,16 @@ speed?
 coreqs not parsed correcly
 https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=PHYS&crse_numb_in=1161
 
+// TODO this will happen if neither section or class are in the list
+user.js#toggleListContainsSection
 
 GRAPH
 
 the swarthmore one i tested a lot - http://localhost/#/graph/swarthmore.edu/201604/MATH/043
-coreqs
+coreqs -- done?
 arrows
 if angle < something between 2 children, do a force or maybe if x is too close between children?
+
 
 
 GULP todo
@@ -60,24 +63,20 @@ http://localhost/#/graph/neu.edu/201710/ME/4640
 https://localhost/#neu.edu/201630/CHEM/5622
  -- tree is 419 big
 
-!class with depth=1 is above the root node@0?
-http://localhost/#/graph/neu.edu/201710/EECE/2530 
-
-needs multiple passes of skipNodesPostStuff??? its because if there are two in a row, it will fix the first oen then node == the next one -- done
+ more kindof big trees
+http://localhost/#/graph/neu.edu/201710/IS/4800
 http://localhost/#/graph/neu.edu/201710/ME/5250
-
-this is wrong, its just (1342 or 1252) not (1342 or 1252 or [tree]) -- fixed
+http://localhost/#/graph/neu.edu/201710/MATH/3331
 http://localhost/#/graph/neu.edu/201710/PHYS/1155
 
-if node -> and -> node, nothing is changed on highlight -- done
-http://localhost/#/graph/neu.edu/201710/MATH/3331
+!class with depth=1 is above the root node@0?
+http://localhost/#/graph/neu.edu/201710/EECE/2530 
 
 if there are a crapton of (a or b or c or d or e or f ... ) do you want to split it into ((a or b or c) or (d or e or f))?
  	(maybe split up the nodes that have prereqs, idk)
 http://localhost/#/graph/neu.edu/201710/BIOL/3407
 
-wrong, it should be (3500 and 2000 and (bunch of engw)) -- fixed
-http://localhost/#/graph/neu.edu/201710/IS/4800
+
 
 
 

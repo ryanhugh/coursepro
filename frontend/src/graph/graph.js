@@ -168,6 +168,20 @@ Graph.prototype.go = function (tree, callback) {
 		svg.call(zoom)
 
 
+		// Per-type markers, as they don't inherit styles.
+		// svg.append("svg:defs").selectAll("marker")
+		//     .data(["end"])
+		//   .enter().append("svg:marker")
+		//     .attr("id", String)
+		//     .attr("viewBox", "0 -5 10 10")
+		//     .attr("refX", 5)
+		//     .attr("markerWidth", 6)
+		//     .attr("markerHeight", 6)
+		//     .attr("orient", "auto")
+		//   .append("svg:path")
+		//     .attr("d", "M0,-5L10,0L0,5");
+
+
 		var dragStartedByRightButton = false;
 		var nodeDrag = d3.behavior.drag()
 			.on("dragstart", function (node) {
@@ -204,9 +218,11 @@ Graph.prototype.go = function (tree, callback) {
 
 		var link = container.selectAll(".link")
 			.data(graph.links)
-			.enter().append("line")
+			.enter().append("polyline")
 			.attr("class", "link")
-			.style("stroke-width", 4);
+			.style("stroke-width", 4)
+			.attr("marker-mid", "url(#end)");
+		    // .attr("marker-end", function(d) { return "url(#licensing)"; });
 
 		for (var i = 0; i < graph.links.length; i++) {
 			var currLink = graph.links[i];
@@ -324,18 +340,26 @@ Graph.prototype.go = function (tree, callback) {
 
 				};
 
-				link.attr("x1", function (d) {
-						return d.source.x;
-					}.bind(this))
-					.attr("y1", function (d) {
-						return d.source.y;
-					}.bind(this))
-					.attr("x2", function (d) {
-						return d.target.x;
-					}.bind(this))
-					.attr("y2", function (d) {
-						return d.target.y;
-					}.bind(this));
+				link.attr("points",function (d) {
+
+
+
+					// return d.source.x+','+d.source.y+' '+((d.target.x+d.source.x)/2)+','+((d.target.y+d.source.y)/2)+' '+d.target.x+','+d.target.y
+					return d.target.x+','+d.target.y+' '+((d.source.x+d.target.x)/2)+','+((d.source.y+d.target.y)/2)+' '+d.source.x+','+d.source.y
+				}.bind(this))
+
+				// link.attr("x1", function (d) {
+				// 		return d.source.x;
+				// 	}.bind(this))
+				// 	.attr("y1", function (d) {
+				// 		return d.source.y;
+				// 	}.bind(this))
+				// 	.attr("x2", function (d) {
+				// 		return d.target.x;
+				// 	}.bind(this))
+				// 	.attr("y2", function (d) {
+				// 		return d.target.y;
+				// 	}.bind(this));
 
 				node.attr("transform", function (d) {
 					if (d.isCoreq) {

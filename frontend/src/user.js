@@ -387,7 +387,7 @@ User.prototype.loadList = function (listName, callback) {
 				return callback('internal error');
 			};
 		};
-		
+
 		var q = queue()
 
 		this.ensureList(listName)
@@ -781,10 +781,10 @@ User.prototype.toggleListContainsSection = function (listName, section, callback
 
 		var classInstance;
 		var keys = section.getIdentifer().required.obj;
-		this.lists[listName].classes.forEach(function  (aClass) {
+		this.lists[listName].classes.forEach(function (aClass) {
 
 			for (var keyName in keys) {
-				if (aClass[keyName]!=section[keyName]) {
+				if (aClass[keyName] != section[keyName]) {
 					return;
 				}
 			}
@@ -792,19 +792,28 @@ User.prototype.toggleListContainsSection = function (listName, section, callback
 				return;
 			}
 			if (classInstance) {
-				elog('multiple saved classes have this section?',classInstance,aClass,section);
+				elog('multiple saved classes have this section?', classInstance, aClass, section);
 			}
 			classInstance = aClass
 		}.bind(this))
 
+		if (!classInstance) {
+			// couldn't find a class instance in the saved field, need to make one
+			// Class.create(section.getIdentifer().required.obj).download(function (err, aClass) {
+			// 	if (!aClass.isClass) {
+			// 		aClass.prereqs.values.
 
+			// 	}
+			// }.bind(this))
+			// TODO this will happen if neither section or class are in the list
+			elog('couldnt find classInstance!', section, this.lists[listName])
+		}
 
 
 		this.addToList(listName, [classInstance], [section], function (err) {
 			callback(err)
 		}.bind(this))
 		return;
-		// Class.create(section.getIdentifer().required.obj).download(function (err, aClass) {}.bind(this))
 	}
 };
 
