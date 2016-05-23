@@ -47,7 +47,7 @@ function Class(config) {
 
 		//dont copy over some attr
 		//these are copied below and processed a bit
-		if (_(['coreqs', 'prereqs']).includes(attrName) || config[attrName] === undefined) {
+		if (_(['coreqs', 'prereqs','download']).includes(attrName) || config[attrName] === undefined) {
 			continue;
 		}
 		//name and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
@@ -267,13 +267,6 @@ Class.prototype.internalDownload = function (callback) {
 		callback = function () {}
 	}
 
-
-	//already loaded
-	if (this.dataStatus === macros.DATASTATUS_DONE) {
-		return callback(null, this)
-	};
-
-
 	if (this.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
 		var errorMsg = 'data status was not not started, and called class.download?' + this.dataStatus
 		elog(errorMsg, this)
@@ -333,6 +326,9 @@ Class.prototype.internalDownload = function (callback) {
 			var classData = this.convertServerData(body[0])
 
 			for (var attrName in classData) {
+				if (attrName == 'download') {
+					continue
+				}
 				this[attrName] = classData[attrName]
 			}
 			this.postDataProcess();
@@ -416,8 +412,6 @@ Class.prototype.compareTo = function (otherClass) {
 	else if (this.name < otherClass.name) {
 		return -1;
 	}
-
-	//this is possible if there are (hon) and non hon classes of same subject classId
 	return 0
 };
 

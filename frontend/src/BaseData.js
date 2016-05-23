@@ -10,10 +10,7 @@ function BaseData(config) {
 		this[attrName] = config[attrName]
 	}
 
-	this.downloadCallbacks = []
-
 	var downloadConfig;
-	// var _download = this.download.bind(this);
 	this.download = async.memoize(function (configOrCallback, callback) {
 		if (typeof configOrCallback == 'object') {
 			if (downloadConfig) {
@@ -317,27 +314,6 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 		callback = function () {}
 	}
 
-	if (this.dataStatus === macros.DATASTATUS_FAIL) {
-		return callback('instanced failed to download')
-	};
-
-	if (this.dataStatus === macros.DATASTATUS_DONE) {
-		return callback(null, this)
-	};
-
-	//add callback to downloadCallbacks and dont call it
-	if (this.dataStatus === macros.DATASTATUS_LOADING || this.dataStatus === macros.DATASTATUS_NOTSTARTED) {
-		this.downloadCallbacks.push({
-			config: config,
-			callback: callback
-		})
-
-		//only call the download if wasent loading when this was called, so below code only runs once
-		if (this.dataStatus === macros.DATASTATUS_LOADING) {
-			return;
-		}
-	};
-
 	this.dataStatus = macros.DATASTATUS_LOADING;
 
 	this.constructor.download({
@@ -346,7 +322,6 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 		body: this.getIdentifer().required.lookup
 	}, function (err, results) {
 		this.dataStatus = macros.DATASTATUS_DONE;
-
 
 		if (err) {
 			err = 'http error' + err;
@@ -358,54 +333,20 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 		if (err) {
 			elog(err)
 			this.dataStatus = macros.DATASTATUS_FAIL;
-
-			//call callbacks
-			this.downloadCallbacks.forEach(function (configAndCallback) {
-				configAndCallback.callback(err)
-			}.bind(this))
-			return;
+			return callback(err)
 		}
 
-
-
-
-
-		//make sure that all or none specified to returnResults
-		var returnResultsTrue = 0;
-		var returnResultsFalse = 0;
-		this.downloadCallbacks.forEach(function (configAndCallback) {
-			if (configAndCallback.config.returnResults) {
-				returnResultsTrue++;
-			}
-			else {
-				returnResultsFalse++;
-			}
-		}.bind(this))
-
-		if (returnResultsTrue > 0 && returnResultsFalse > 0) {
-			elog('return results true and false > 0???', this.downloadCallbacks)
-			returnResultsFalse = 0;
+		if (config.returnResults) {
+			return callback(null, results)
 		}
-
 
 		if (results.length == 0) {
 			console.log('base data download results.length = 0', this, config)
 			this.dataStatus = macros.DATASTATUS_FAIL;
+			return callback(null, this)
 
-			this.downloadCallbacks.forEach(function (configAndCallback) {
-				if (returnResultsTrue) {
-					configAndCallback.callback(null, results)
-				}
-				else {
-					configAndCallback.callback(null, this)
-				}
-			}.bind(this))
-			return;
 		}
-
-
-		if (returnResultsFalse) {
-
+		else {
 			var serverData = results[0];
 
 			if (results.length > 1) {
@@ -413,26 +354,14 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 			}
 
 			for (var attrName in serverData) {
+				if (attrName === 'download') {
+					continue;
+				}
 				this[attrName] = serverData[attrName]
 			}
-
+			return callback(null, this)
 		}
 
-
-
-
-
-		this.downloadCallbacks.forEach(function (configAndCallback) {
-			var config = configAndCallback.config
-			var callback = configAndCallback.callback
-
-			if (config.returnResults) {
-				return callback(null, results)
-			};
-
-			callback(null, this)
-
-		}.bind(this))
 	}.bind(this))
 };
 

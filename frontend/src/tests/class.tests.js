@@ -15,6 +15,30 @@ describe('Class', function () {
 			})).toBe(null);
 		});
 
+		it('ensures memoize works', function (done) {
+
+			var aClass = Class.create({
+				"classId": "201",
+				"host": "sju.edu",
+				"termId": "201610",
+				"subject": "JPN",
+			});
+
+			expect(aClass.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
+
+			aClass.download(function () {
+				expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
+
+				aClass.download(function () {
+					expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
+
+					done()
+				}.bind(this))
+				expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
+
+			}.bind(this))
+		});
+
 
 		it('ensures loading data state changes and data loaded', function (done) {
 
