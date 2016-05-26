@@ -66,6 +66,8 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 	}
 	depData.name = this.standardizeClassName(match[1]);
 
+	depData.classUid = this.getClassUid(depData.classId, depData.name)
+
 
 
 
@@ -85,11 +87,11 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 
 
 	//get credits from element.parent.text here
-	
+
 	//grab credits
 	var text = domutils.getText(element.parent)
 	var creditsParsed = this.parseCredits(text);
-	
+
 	if (creditsParsed) {
 		depData.maxCredits = creditsParsed.maxCredits;
 		depData.minCredits = creditsParsed.minCredits;
@@ -97,7 +99,7 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 	else {
 		console.log('warning, nothing matchied credits', pageData.dbData.url, text);
 	}
-	
+
 
 	//desc
 	//list all texts between this and next element, not including <br> or <i>

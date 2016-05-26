@@ -259,9 +259,9 @@ BaseParser.prototype.parseForm = function (url, dom) {
 }
 
 
-BaseParser.prototype.parseCredits = function(containsCreditsText) {
-	
-	
+BaseParser.prototype.parseCredits = function (containsCreditsText) {
+
+
 	//should match 3.000 Credits  or 1.000 TO 21.000 Credits
 	var creditsMatch = containsCreditsText.match(/(?:(\d(:?.\d*)?)\s*to\s*)?(\d+(:?.\d*)?)\s*credit(:?s| hours)/i);
 	if (creditsMatch) {
@@ -293,7 +293,7 @@ BaseParser.prototype.parseCredits = function(containsCreditsText) {
 	if (creditsMatch) {
 
 		var credits = parseFloat(creditsMatch[1]);
-	
+
 		return {
 			minCredits: credits,
 			maxCredits: credits
@@ -304,7 +304,7 @@ BaseParser.prototype.parseCredits = function(containsCreditsText) {
 	creditsMatch = containsCreditsText.match(/(\d+(:?.\d*)?)\s*Continuing\s*Education\s*Units/i);
 	if (creditsMatch) {
 		var credits = parseFloat(creditsMatch[1])
-		
+
 		return {
 			minCredits: credits,
 			maxCredits: credits
@@ -366,7 +366,7 @@ BaseParser.prototype.toTitleCase = function (originalString, warningStr) {
 
 
 	var string = this.simplifySymbols(originalString)
-	
+
 	//get rid of newlines and replace large sections of whitespace with one space
 	string = string.replace(/\n/g, ' ').replace(/\r/g, ' ').replace(/\s+/g, ' ');
 
@@ -381,11 +381,11 @@ BaseParser.prototype.toTitleCase = function (originalString, warningStr) {
 	correctParts.forEach(function (subString) {
 		string = string.replace(new RegExp(subString, 'gi'), subString);
 	}.bind(this))
-	
+
 	string = string.trim()
 
 	if (string != originalString.trim()) {
-		console.log('Warning: changing from ',originalString,'to',string,'at',warningStr);
+		console.log('Warning: changing from ', originalString, 'to', string, 'at', warningStr);
 	}
 
 	return string.trim()
@@ -431,7 +431,7 @@ BaseParser.prototype.splitEndings = function (name) {
 
 		// remove the endings
 		name = name.slice(0, name.indexOf(subString)).trim();
-		
+
 		if (subString.length <= 5) {
 			subString = subString.toLowerCase()
 		}
@@ -467,8 +467,8 @@ BaseParser.prototype.standardizeClassName = function (originalName, possibleMatc
 		possibleMatches[i] = possibleMatches[i].trim().replace(/\s+/gi, ' ')
 		possibleMatches[i] = this.simplifySymbols(possibleMatches[i])
 	}
-	
-	
+
+
 	var name = originalName;
 
 	var nameSplit = this.splitEndings(name)
@@ -477,7 +477,7 @@ BaseParser.prototype.standardizeClassName = function (originalName, possibleMatc
 
 	// if input is in possible matches, done
 	if (_(possibleMatches).includes(originalName) || possibleMatches.length === 0) {
-		return (name + ' '+endings.join(' ')).trim();
+		return (name + ' ' + endings.join(' ')).trim();
 	}
 
 
@@ -514,7 +514,7 @@ BaseParser.prototype.standardizeClassName = function (originalName, possibleMatc
 
 		// huzzah! a match!
 		if (nameIndex == name.length) {
-			
+
 			// add the endings back on, but only if possible match dosent include them
 			for (var j = 0; j < endings.length; j++) {
 				if (!_(possibleMatch).includes(endings[j])) {
@@ -529,6 +529,31 @@ BaseParser.prototype.standardizeClassName = function (originalName, possibleMatc
 	return originalName;
 };
 
+// http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
+BaseParser.prototype.getStringHash = function (input) {
+	var hash = 0;
+	var i;
+	var chr;
+	var len;
+
+	if (input.length === 0) {
+		elog("getStringHash given input.length ==0!!");
+		return hash;
+	}
+	for (i = 0, len = input.length; i < len; i++) {
+		chr = input.charCodeAt(i);
+		hash = ((hash << 5) - hash) + chr;
+		hash |= 0; // Convert to 32bit integer
+	}
+	return String(Math.abs(hash));
+};
+
+BaseParser.prototype.getClassUid = function (classId, title) {
+	if (!title) {
+		elog('get class id given not title!')
+	}
+	return classId + '_' + this.getStringHash(title);
+};
 
 
 

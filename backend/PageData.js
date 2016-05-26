@@ -5,7 +5,7 @@ var _ = require('lodash');
 var queue = require('d3-queue').queue;
 
 var macros = require('./macros')
-// pageDataMgr needs to be here, but cannot be required due to circular dependencies...
+	// pageDataMgr needs to be here, but cannot be required due to circular dependencies...
 
 //this is called in 3 places
 //server.js
@@ -332,7 +332,7 @@ PageData.prototype.addDep = function (depData) {
 
 	//copy over values from this pageData
 	//this way, parsers dont have to explicitly state these values each time they add a dep
-	var valuesToCopy = ['host', 'termId', 'subject', 'classId', 'crn'];
+	var valuesToCopy = ['host', 'termId', 'subject', 'classId', 'classUid', 'crn'];
 	valuesToCopy.forEach(function (attrName) {
 		if (!this.dbData[attrName]) {
 			return;

@@ -1,4 +1,4 @@
-https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
+clashttps://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
 
 
 
@@ -98,7 +98,7 @@ POST PROCESS
 make a post process folder and 
 put the data in the database or just process the page datas? 
  -- cross term data copying would work pretty much either way
- -- mongodb binary search might be better for finding other classes for postreqs
+ -- mongodb binary search might be better for finding other classes for postreqs (DO THIS! other colleges will have a diff format for parsers)
  -- convert prereqs classid to classuuid too
 
 

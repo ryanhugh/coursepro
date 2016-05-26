@@ -105,6 +105,7 @@ it('should parse a bunch of deps', function (done) {
 			//pageData.deps[1] is the other class
 			expect(pageData.deps[1].parser).toBe(ellucianClassParser);
 
+			expect(pageData.deps[1].dbData.classUid).toBe('013_1540583498')
 			expect(pageData.deps[1].dbData.crns).toEqual(['24601', '24603', '25363']);
 			expect(pageData.deps[1].dbData.name).toBe('Thermodyn/Stat Mechanics - Lab');
 			expect(pageData.deps[1].deps.length).toBe(3);
@@ -358,6 +359,7 @@ it('can parse CANCELLED', function (done) {
 			expect(pageData.dbData.crns.length).toBe(1)
 			expect(pageData.dbData.crns[0]).toBe('12291')
 
+
 			expect(pageData.deps.length).toBe(1);
 			pageData.deps.forEach(function (dep) {
 				expect(dep.parent).toBe(pageData);
@@ -400,6 +402,7 @@ it('name translatin works', function (done) {
 	});
 });
 
+// classes that are deps of other classes and on this update have no crns
 it('removes dead classes', function () {
 
 	var url = 'some url'
@@ -410,7 +413,7 @@ it('removes dead classes', function () {
 			classId: '2160',
 			name: 'Embedded Design Enabling Robotics',
 		}
-	}); 
+	});
 	pageData.parsingData.crns = []
 
 	pageData.deps = [PageData.create({
@@ -425,4 +428,19 @@ it('removes dead classes', function () {
 
 	expect(pageData.deps.length).toBe(0)
 });
- 
+
+
+// it('classUid should work', function() {
+	
+// 	var url = 'some url'
+// 	var pageData = PageData.create({
+// 		dbData: {
+// 			url: url,
+// 			desc: '',
+// 			classId: '2160',
+// 			name: 'Embedded Design Enabling Robotics',
+// 		}
+// 	});
+
+
+// });

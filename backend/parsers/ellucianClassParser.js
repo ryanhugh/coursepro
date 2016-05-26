@@ -195,6 +195,8 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 
 			var dbAltEntry = null;
 
+			var classUid = this.getClassUid(pageData.dbData.classId, className)
+
 			//search for an existing dep with the matching classname, etc
 			for (var i = 0; i < pageData.deps.length; i++) {
 
@@ -204,6 +206,9 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 				}
 
 				if (pageData.deps[i].dbData.name == className && pageData.deps[i].dbData.updatedByParent) {
+					if (pageData.deps[i].dbData.classUid != classUid) {
+						elog('classUid isnt the same?', pageData.deps[i].dbData.classUid, classUid)
+					}
 					dbAltEntry = pageData.deps[i];
 				}
 			}
@@ -220,7 +225,8 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 				dbAltEntry = pageData.addDep({
 					url: pageData.dbData.url,
 					updatedByParent: true,
-					name: className
+					name: className,
+					classUid: classUid
 				});
 
 				//could not create a dep with this data.. uh oh
@@ -446,12 +452,12 @@ EllucianClassParser.prototype.onEndParsing = function (pageData) {
 				dep.setData('crns', dep.parsingData.crns)
 			}
 		}
-	}.bind(this)) 
+	}.bind(this))
 
 	depsToRemove.forEach(function (depToRemove) {
 		_.pull(pageData.deps, depToRemove);
-	}.bind(this)) 
-}; 
+	}.bind(this))
+};
 
 
 
