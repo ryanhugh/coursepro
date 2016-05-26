@@ -15,11 +15,11 @@ Is there some good way to not have a bunch of emails go off whenever change how 
 can close and reopen the db when not prod?
 speed?
  -- async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj) -- done?
- -- do i still need the manual memoize around class?
- -----unit tests for ^ and memoize stuff
+ -- do i still need the manual memoize around class? -- done
+ -----unit tests for ^ and memoize stuff -- done
 
 
-coreqs not parsed correcly
+coreqs not parsed correcly -- done
 https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=PHYS&crse_numb_in=1161
 
 // TODO this will happen if neither section or class are in the list
