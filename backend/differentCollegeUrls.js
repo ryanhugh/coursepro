@@ -49,4 +49,15 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://banner.drexel.edu/pls/duprod/bwckschd.p_disp_dyn_sched",
   "https://infobear.bridgew.edu/BANP/bwckschd.p_disp_dyn_sched",
   "https://new-sis-app.sph.harvard.edu:9010/prod/bwckschd.p_disp_dyn_sched"
-  ]
+]
+
+
+// non -ellucian sites
+// harvard https://courses.harvard.edu/search?sort=course_title+asc&start=0&submit=Search&rows=500000&q=0
+// if you remove the q param from the url, 15000+ courses come up, but cs50 is not one of those. If you search for cs50, it comes up. how to get all classes?
+
+
+
+
+
+
