@@ -244,7 +244,7 @@ gulp.task('test', ['btest','ftest'], function () {
 
 
 
-
+// when spider is running, it is the only thing that could be updating that college at that time
 gulp.task('spider', function () {
 	require('./backend/pageDataMgr').main()
 });
