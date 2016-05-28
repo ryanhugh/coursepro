@@ -1,6 +1,8 @@
 clashttps://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
 
 
+clean up bug about updating backend tests with $$ and editing objs returned with find
+cloning in mock db backend return?
 
 TO TEST
 last update time should copy down to class deps of class deps -- done

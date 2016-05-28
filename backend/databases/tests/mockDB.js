@@ -42,11 +42,13 @@ MockTable.prototype.findDiff = function (src, dest) {
 }
 
 
+// The cloning here is so one test can modify the object returned and it will not interfere with the object returned to another test
+// hopefully it dosent make test too slow
 MockTable.prototype.find = function (lookup, callback) {
 	if (lookup._id) {
 		if (this.dataIdMap[lookup._id]) {
-			return callback(null, [this.dataIdMap[lookup._id]]);
-		}
+			return callback(null, [_.cloneDeep(this.dataIdMap[lookup._id])]);
+		} 
 		else {
 			return callback(null, [])
 		}
@@ -59,8 +61,25 @@ MockTable.prototype.find = function (lookup, callback) {
 				retVal.push(row)
 			}
 		}.bind(this))
-		callback(null, retVal)
+		callback(null, _.cloneDeep(retVal))
 	}
+};
+
+MockTable.prototype.containsMongoKeys = function (obj) {
+	if (typeof obj != 'object') {
+		return false;
+	}
+
+
+	for (var attrName in obj) {
+		if (_(attrName).includes('$')) {
+			return true;
+		}
+		if (this.containsMongoKeys(obj[attrName])) {
+			return true;
+		}
+	}
+	return false;
 };
 
 
@@ -71,11 +90,14 @@ MockTable.prototype.update = function (query, newDoc, config, callback) {
 		console.trace()
 	}
 
-	if (query._id) {
+	var newDocContainsMongo = this.containsMongoKeys(newDoc);
+
+	if (query._id && !newDocContainsMongo) {
 		this.dataIdMap[query._id] = newDoc;
 	}
 
 	this.find(query, function (err, docs) {
+		// this is temp until some part of the code needs to update more than one at once
 		if (docs.length > 1) {
 			console.warn('ERROR where is >1 doc being updated at once')
 			console.trace()
@@ -85,6 +107,12 @@ MockTable.prototype.update = function (query, newDoc, config, callback) {
 		if (docs.length === 0) {
 			return callback(null, docs.length)
 		}
+
+		if (newDocContainsMongo) {
+			console.log("mock db dosent support $$ in update query, ignoring call to update");
+			return callback(null, docs.length)
+		}
+
 
 		// var ids = [];
 		// docs.forEach(function (foundDoc) {
@@ -102,6 +130,7 @@ MockTable.prototype.update = function (query, newDoc, config, callback) {
 				return callback(null, docs.length)
 			}
 		}
+		return callback(null, 0)
 	}.bind(this))
 };
 

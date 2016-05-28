@@ -1,6 +1,7 @@
 'use strict';
 var macros = require('../macros')
 var classesDB = require('../databases/classesDB')
+var queue = require('d3-queue').queue
 
 // This file converts prereq classIds to ClassUids by looking up the classes in the db and replacing classIds with classUids
 // if there are multiple results, it creates a 'or' prereq tree, much like Class.js does in the frontend. 
@@ -48,7 +49,7 @@ PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyTo
 			prereqs.values[i] = this.updatePrereqs(prereqEntry, host, termId, keyToRows)
 		}
 		else {
-			elog('wtf is ', prereqEntry)
+			elog('wtf is ', prereqEntry, prereqs)
 		}
 	}
 	return prereqs;
@@ -94,6 +95,8 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 		matchingQuery.termId = baseQuery.termId
 	}
 
+	console.log("HERE", baseQuery, matchingQuery);
+
 
 	//make obj to find results here quickly
 	var keyToRows = {};
@@ -126,6 +129,7 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 					classUid: aClass.classUid
 				})
 			}.bind(this));
+			callback()
 		}.bind(this))
 	}.bind(this))
 
@@ -134,16 +138,39 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 			return callback(err)
 		}
 
+		var updateQueue = queue()
+		console.log(classesToUpdate);
 
 		// loop through classes to update, and get the new data from all the classes
-		results.forEach(function (aClass) {
+		classesToUpdate.forEach(function (aClass) {
 			if (!aClass.prereqs) {
 				return;
 			}
 
-			aClass.prereqs = this.updatePrereqs(aClass.prereqs, aClass.host, aClass.termId, keyToRows);
+			var prereqs = this.updatePrereqs(aClass.prereqs, aClass.host, aClass.termId, keyToRows);
+
+			updateQueue.defer(function (callback) {
 
 
+
+				// this came out of the db, so its going to have and _id and keys
+				classesDB.update({
+					_id: aClass._id
+				}, {
+					$set: {
+						prereqs: prereqs
+					}
+				}, {
+					shouldBeOnlyOne: true
+				}, function (err, docs) {
+					callback(err)
+				}.bind(this))
+			}.bind(this))
+		}.bind(this))
+
+
+		updateQueue.awaitAll(function (err) {
+			callback(err, classesToUpdate)
 		}.bind(this))
 	}.bind(this))
 };

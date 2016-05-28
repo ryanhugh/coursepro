@@ -225,12 +225,12 @@ BaseDB.prototype.update = function (query, updateQuery, config, callback) {
 		config.shouldBeOnlyOne = false;
 	};
 
-	if (!config.skipValidation && !this.isValidLookupValues(lookupValues)) {
-		console.log('invalid terms in ' + this.constructor.name + ' ', lookupValues);
+	if (!config.skipValidation && !this.isValidLookupValues(query)) {
+		console.log('invalid terms in ' + this.constructor.name + ' ', query);
 		return callback('invalid search')
 	};
 
-	lookupValues = this.standardizeQuery(lookupValues);
+	query = this.standardizeQuery(query);
 
 	// keep the original config for the find below
 	var mongoConfig = {};

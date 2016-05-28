@@ -19,7 +19,8 @@ describe('classesDB', function () {
 				"crns": [],
 				"lastUpdateTime": 1.462130839827e+12,
 				"deps": {},
-				"updatedByParent": false
+				"updatedByParent": false,
+				"classUid":"BMC_something",
 			}, {
 				"_id": "57265897d4a30537f91392ac",
 				"desc": "",
@@ -33,7 +34,8 @@ describe('classesDB', function () {
 				"crns": [],
 				"lastUpdateTime": 1.462130839828e+12,
 				"deps": {},
-				"updatedByParent": false
+				"updatedByParent": false,
+				"classUid":"BMC_something",
 			},
 			function (err, newData) {
 				expect(err).toBe(null);
