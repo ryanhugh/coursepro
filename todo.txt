@@ -23,6 +23,11 @@ speed?
  -----unit tests for ^ and memoize stuff -- done
 
 
+opt in to sending email locally if playing with prod
+
+gulp streams thing
+
+
 coreqs not parsed correcly -- done
 https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=PHYS&crse_numb_in=1161
 

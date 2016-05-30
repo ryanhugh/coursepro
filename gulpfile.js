@@ -11,6 +11,11 @@ var flatten = require('gulp-flatten');
 var angularTemplates = require('gulp-angular-templatecache')
 var htmlmin = require('gulp-htmlmin');
 var notify = require("gulp-notify");
+var merge = require('merge-stream')
+
+var mdeps = require('module-deps')
+
+var JSONStream = require('JSONStream');
 
 // for backend unit tests
 var jasmineReporter = require('./backend/jasmineReporter')
@@ -26,6 +31,7 @@ var karma = require('karma')
 //other stuff
 var _ = require('lodash')
 var path = require('path')
+
 
 
 
@@ -50,8 +56,8 @@ function onError(err) {
 
 	if (!err.message) {
 		err = {
-			message:err
-		} 
+			message: err
+		}
 	}
 
 
@@ -66,30 +72,109 @@ function onError(err) {
 	})(err);
 }
 
-//javascript
+
+function getFilesToProcess() {
+
+	var filesToProccess = [];
+	// if (!compileRequire) {
+	var files = glob.sync('frontend/src/**/*.js');
+
+	files.forEach(function (file) {
+		if (!_(file).includes('tests')) {
+			filesToProccess.push(file)
+		};
+	})
+	return filesToProccess;
+
+}
+
+// get list of front end only packages
+var dependencies = [];
+gulp.task('getDependencies', function () {
+	var files = getFilesToProcess();
+	// var bundler = browserify({
+	// 	entries: files,
+	// 	// bundleExternal: false,
+	// }, {
+	// 	basedir: __dirname,
+	// 	debug: false,
+	// 	cache: {}, // required for watchify
+	// 	packageCache: {}, // required for watchify
+
+	// 	// required to be true only for watchify (?) but watchify works when it is off.
+	// 	//dont show C:/ryan/google drive etc in the uglified source code
+	// 	fullPaths: false,
+	// });
+
+	// console.log("HERJERJELJRLEJRLKEJ");
+
+
+	// bundler.pipeline.get('deps').push(through.obj(
+	// 	function (row, enc, next) {
+	// 		var name = row.file || row.id;
+	// 		if (_(dependencies).includes(name)) {
+	// 			console.log('FOUND',name);
+	// 			dependencies.push(name);
+	// 		}
+	// 		next()
+	// 	}
+	// ));
+
+	// bundler = watchify(bundler)
+
+	// var stream = bundler.bundle();
+
+
+	// // stream = stream.pipe(source('app.js'));
+
+	// // stream = stream.pipe(gulp.dest('./frontend/static/js/internal'));
+
+ //    stream.pipe(process.stdout);
+
+	// stream.on('end',function () {
+	// 	console.log('DONEEEE',files);
+	// }.bind(this))
+
+	var md = mdeps(files);
+	md.pipe(JSONStream.stringify()).pipe(process.stdout);
+	// md.end({ file: __dirname + '/frontend/main.js' });
+
+
+	// return stream;
+});
+
+
+// var packageJson = require('./package.json');
+// var dependencies = Object.keys(packageJson && packageJson.dependencies || {});
+
+// if (b.argv.list) {
+//     b.pipeline.get('deps').push(through.obj(
+//         function (row, enc, next) {
+//             console.log(row.file || row.id);
+//             next()
+//         }
+//     ));
+//     return b.bundle();
+// }
 
 //watch is allways on, to turn off (or add the option back) 
 // turn fullPaths back to shouldWatch and only run bundler = watchify(bundler) is shouldWatch is true
 // http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
 
 //another note, if you include a module that dosent exist, it will silently hang forever(?) eg (require('jdklfjdasjfkl'))
-function compileJS(shouldUglify) {
-	var files = glob.sync('frontend/src/**/*.js');
+function compileJSBundle(shouldUglify, compileRequire) {
+	if (compileRequire === undefined) {
+		compileRequire = false;
+	}
 
+	var filesToProccess = getFilesToProcess();
 
-	var filesToProccess = [];
-	files.forEach(function (file) {
-		if (!_(file).includes('tests')) {
-			filesToProccess.push(file)
-		};
-	})
-
-	console.log('Processing:', filesToProccess)
-
+	// console.log('Processing:', filesToProccess,dependencies)
 
 
 	var bundler = browserify({
-		entries: filesToProccess
+		entries: filesToProccess,
+		bundleExternal: false,
 	}, {
 		basedir: __dirname,
 		debug: false,
@@ -98,12 +183,18 @@ function compileJS(shouldUglify) {
 
 		// required to be true only for watchify (?) but watchify works when it is off.
 		//dont show C:/ryan/google drive etc in the uglified source code
-		fullPaths: false
+		fullPaths: false,
 	});
 
 
-	bundler = watchify(bundler)
 
+	bundler = watchify(bundler)
+	if (compileRequire) {
+		bundler = bundler.require(dependencies)
+	}
+	else {
+		bundler = bundler.external(dependencies)
+	}
 	var rebundle = function () {
 		console.log("----Rebundling custom JS!----")
 		var stream = bundler.bundle();
@@ -115,8 +206,12 @@ function compileJS(shouldUglify) {
 			// end this stream
 			this.emit('end');
 		})
-
-		stream = stream.pipe(source('allthejavascript.js'));
+		if (compileRequire) {
+			stream = stream.pipe(source('vender.js'));
+		}
+		else {
+			stream = stream.pipe(source('app.js'));
+		}
 
 		if (shouldUglify) {
 			stream = stream.pipe(streamify(uglify({
@@ -147,6 +242,10 @@ function compileJS(shouldUglify) {
 	return rebundle();
 }
 
+function compileJS(uglifyJS) {
+	return merge(compileJSBundle(uglifyJS, true), compileJSBundle(uglifyJS, false))
+}
+
 
 gulp.task('copyHTML', function () {
 	return gulp
@@ -174,7 +273,7 @@ gulp.task('watchCopyHTML', function () {
 
 
 //production
-gulp.task('uglifyJS', function () {
+gulp.task('uglifyJS', ['getDependencies'], function () {
 	return compileJS(true);
 });
 
@@ -188,7 +287,7 @@ gulp.task('prod', ['uglifyJS', 'watchCopyHTML', 'copyHTML'], function () {
 
 
 //development
-gulp.task('compressJS', function () {
+gulp.task('compressJS', ['getDependencies'], function () {
 	return compileJS(false);
 });
 
@@ -227,20 +326,19 @@ gulp.task('btestRun', function () {
 	gulp.src('backend/**/*.tests.js')
 
 	.pipe(jasmine({
-		reporter: new jasmineReporter()
-	}))
-	.on('error', function (err) {
-		onError(err);
-		this.emit('end');
-	})
+			reporter: new jasmineReporter()
+		}))
+		.on('error', function (err) {
+			onError(err);
+			this.emit('end');
+		})
 });
 
 gulp.task('btest', ['btestRun'], function () {
 	gulp.watch(['backend/**/*.js'], ['btestRun']);
 });
 
-gulp.task('test', ['btest','ftest'], function () {
-});
+gulp.task('test', ['btest', 'ftest'], function () {});
 
 
 
