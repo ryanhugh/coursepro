@@ -354,7 +354,7 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 			}
 
 			for (var attrName in serverData) {
-				if (attrName === 'download') {
+				if ((typeof this[attrName]) === 'function') {
 					continue;
 				}
 				this[attrName] = serverData[attrName]

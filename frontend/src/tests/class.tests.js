@@ -15,7 +15,7 @@ describe('Class', function () {
 			})).toBe(null);
 		});
 
-		it('ensures memoize works', function (done) {
+		it('ensures memoize works and that download was not swapped', function (done) {
 
 			var aClass = Class.create({
 				"classId": "201",
@@ -24,19 +24,24 @@ describe('Class', function () {
 				"subject": "JPN",
 			});
 
+			var download = aClass.download;
+
 			expect(aClass.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
 
 			aClass.download(function () {
 				expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
+				expect(aClass.download).toBe(download)
 
 				aClass.download(function () {
 					expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
+					expect(aClass.download).toBe(download)
 
 					done()
 				}.bind(this))
 				expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
 
 			}.bind(this))
+			expect(aClass.dataStatus).toBe(macros.DATASTATUS_LOADING)
 		});
 
 

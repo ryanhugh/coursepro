@@ -92,6 +92,34 @@ describe('Section', function () {
 		expect(section.dataStatus).toBe(macros.DATASTATUS_LOADING);
 	});
 
+
+	it('ensures memoize works and that download was not swapped', function (done) {
+
+		//works with _id
+		var section = Section.create({
+			_id: '56f21f93ea47044a05691b3e',
+		});
+
+		var download = section.download;
+
+		expect(section.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
+
+		section.download(function () {
+			expect(section.dataStatus).toBe(macros.DATASTATUS_DONE)
+			expect(section.download).toBe(download)
+
+			section.download(function () {
+				expect(section.dataStatus).toBe(macros.DATASTATUS_DONE)
+				expect(section.download).toBe(download)
+				done()
+			}.bind(this))
+			expect(section.dataStatus).toBe(macros.DATASTATUS_DONE)
+
+		}.bind(this))
+		expect(section.dataStatus).toBe(macros.DATASTATUS_LOADING)
+	});
+
+
 	describe('.create', function () {
 		it('ensures you need a lot of stuff or _id to create Section', function () {
 
