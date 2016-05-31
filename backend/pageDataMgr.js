@@ -2,13 +2,17 @@
 var async = require('async');
 var fs = require('fs');
 var _ = require('lodash');
+var queue = require('d3-queue').queue
 
 
 var requireDir = require('require-dir');
 var parsersClasses = requireDir('./parsers');
+var processorsClasses = requireDir('./processors');
 
 var emailMgr = require('./emailMgr');
 var dbUpdater = require('./databases/updater')
+var classesDB = require('./databases/classesDB')
+
 
 
 var parserNames = [];
@@ -32,6 +36,23 @@ for (var parserName in parsersClasses) {
 	parserNames.push(parser.name);
 }
 
+var processors = [];
+for (var processorName in processorsClasses) {
+	var processor = processorsClasses[processorName];
+
+	if (processor.priority === undefined) {
+		console.log(processor)
+		throw 'processor does not have a priority!'
+	}
+	processors.push(processor)
+}
+
+// should be correct, untested
+processors.sort(function (a, b) {
+	return a.priority - b.priority
+}.bind(this))
+
+
 function PageDataMgr() {
 
 }
@@ -41,11 +62,49 @@ PageDataMgr.prototype.getParsers = function () {
 	return parsers;
 };
 
+PageDataMgr.prototype.go = function (pageData, callback) {
+	this.processPageData(pageData, function (err, pageData) {
+		// run the processors
+
+		var q = queue();
+		processors.forEach(function (processor) {
+			if (processor.supportsHost(pageData.dbData.host)) {
+				q.defer(function (callback) {
+
+					var query = {
+						host: pageData.dbData.host
+					}
+					var toCopy = ['termId', 'subject', 'classUid', 'classId', 'crn'];
+					toCopy.forEach(function (term) {
+						if (pageData.dbData[term]) {
+							query[term] = pageData.dbData[term]
+						}
+					}.bind(this))
+					processor.go(query, function (err) {
+						if (err) {
+							console.log("ERROR processor",processor,'errored out',err);
+							return callback(err)
+						}
+						return callback()
+					}.bind(this))
+				}.bind(this))
+			}
+		}.bind(this))
+
+		q.awaitAll(function (err) {
+			if (err) {
+				console.log("ERROR some processor failed, aborting",err);
+			}
+			callback(err, pageData)
+		}.bind(this))
+	}.bind(this))
+};
+
 
 //main starting point for parsing urls
 //startingData.url or startingData._id is required
 //callback = function (err,pageData) {}
-PageDataMgr.prototype.go = function (pageData, callback) {
+PageDataMgr.prototype.processPageData = function (pageData, callback) {
 	if (!callback) {
 		callback = function () {};
 	}
@@ -200,14 +259,35 @@ PageDataMgr.prototype.main = function () {
 	// this.createFromURL('https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched', function () {
 	// 	console.log('all done!! sju')
 	// }.bind(this))
-	this.go(PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched'), function () {
-		console.log('all done!! neu')
 
-	}.bind(this));
+	
+	var pageData = PageData.create({
+		dbData: {
+			_id: '573e8008e24db24fbebc6857'
 
-	this.go(PageData.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'), function () {
-		console.log('all done!! swath')
-	}.bind(this));
+		}
+	})
+
+	// if (!pageData) {
+	// 	console.log('ERROR unable to create page data with _id of ', classMongoId, '????')
+	// 	return callback('error')
+	// }
+	pageData.database = classesDB;
+
+	this.go(pageData,function (err) {
+		console.log("DONEE",err);
+	}.bind(this))
+
+
+
+	// this.go(PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched'), function () {
+	// 	console.log('all done!! neu')
+
+	// }.bind(this));
+
+	// this.go(PageData.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'), function () {
+	// 	console.log('all done!! swath')
+	// }.bind(this));
 
 	// 	console.log('all done!! neu')
 	// }.bind(this))

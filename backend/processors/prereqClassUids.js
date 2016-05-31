@@ -6,10 +6,19 @@ var queue = require('d3-queue').queue
 // This file converts prereq classIds to ClassUids by looking up the classes in the db and replacing classIds with classUids
 // if there are multiple results, it creates a 'or' prereq tree, much like Class.js does in the frontend. 
 
+// this requires that classUids are in the db, so need to re scrape before testing
+
 function PrereqClassUids() {
 
+
+	// runs first, before all other processors
+	this.priority = 0;
 }
 
+// runs on all hosts
+PrereqClassUids.prototype.supportsHost = function(host) {
+	return true;
+};
 
 PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyToRows) {
 	for (var i = prereqs.values.length - 1; i >= 0; i--) {

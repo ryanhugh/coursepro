@@ -269,7 +269,7 @@ PageData.prototype.processDeps = function (callback) {
 
 	//any dep data will be inserted into main PageData for dep
 	async.map(this.deps, function (depPageData, callback) {
-		pageDataMgr.go(depPageData, function (err, newDepData) {
+		pageDataMgr.processPageData(depPageData, function (err, newDepData) {
 			if (err) {
 				console.log('ERROR: processing deps:', err);
 				return callback(err);
