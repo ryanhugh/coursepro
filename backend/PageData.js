@@ -459,12 +459,6 @@ PageData.prototype.getData = function (name) {
 };
 
 
-PageData.prototype.tests = function () {
-
-}
-
-
-
 if (require.main === module) {
 	// require('./pageDataMgr')
 
