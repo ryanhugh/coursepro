@@ -180,8 +180,9 @@ BaseDB.prototype.stopUpdates = function () {
 // does not modify values
 BaseDB.prototype.isValidLookupValues = function (lookupValues) {
 	if (lookupValues._id && lookupValues._id.length != 24) {
-		console.log('_id is included and is not 24 chars long, and therefore is invalid ', lookupValues._id, lookupValues._id.length)
-		console.log('more stuff', _.cloneDeep(lookupValues._id))
+		console.log('_id is included and is not 24 chars long, and therefore is invalid ', lookupValues._id, lookupValues._id.length, typeof lookupValues._id)
+		console.log('more stuff', _.cloneDeep(lookupValues._id),lookupValues._id.constructor)
+		// console.log("");
 		return false;
 	};
 
@@ -225,12 +226,12 @@ BaseDB.prototype.update = function (query, updateQuery, config, callback) {
 		config.shouldBeOnlyOne = false;
 	};
 
+	query = this.standardizeQuery(query);
+
 	if (!config.skipValidation && !this.isValidLookupValues(query)) {
 		console.log('invalid terms in ' + this.constructor.name + ' ', query);
 		return callback('invalid search')
 	};
-
-	query = this.standardizeQuery(query);
 
 	// keep the original config for the find below
 	var mongoConfig = {};
@@ -257,13 +258,14 @@ BaseDB.prototype.find = function (lookupValues, config, callback) {
 	if (!config.shouldBeOnlyOne) {
 		config.shouldBeOnlyOne = false;
 	};
+	
+	lookupValues = this.standardizeQuery(lookupValues);
 
 	if (!config.skipValidation && !this.isValidLookupValues(lookupValues)) {
 		console.log('invalid terms in ' + this.constructor.name + ' ', lookupValues);
 		return callback('invalid search')
 	};
 
-	lookupValues = this.standardizeQuery(lookupValues);
 
 
 	this.table.find(lookupValues, function (err, docs) {

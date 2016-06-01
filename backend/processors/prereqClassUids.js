@@ -6,8 +6,6 @@ var queue = require('d3-queue').queue
 // This file converts prereq classIds to ClassUids by looking up the classes in the db and replacing classIds with classUids
 // if there are multiple results, it creates a 'or' prereq tree, much like Class.js does in the frontend. 
 
-// this requires that classUids are in the db, so need to re scrape before testing
-
 function PrereqClassUids() {
 
 
@@ -57,6 +55,9 @@ PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyTo
 		else if (prereqEntry.type && prereqEntry.values) {
 			prereqs.values[i] = this.updatePrereqs(prereqEntry, host, termId, keyToRows)
 		}
+		else if (prereqEntry.classUid && prereqEntry.subject) {
+			// don't do anything, this is already fixed
+		}
 		else {
 			elog('wtf is ', prereqEntry, prereqs)
 		}
@@ -104,8 +105,6 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 		matchingQuery.termId = baseQuery.termId
 	}
 
-	console.log("HERE", baseQuery, matchingQuery);
-
 
 	//make obj to find results here quickly
 	var keyToRows = {};
@@ -148,7 +147,7 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 		}
 
 		var updateQueue = queue()
-		console.log(classesToUpdate);
+		// console.log(classesToUpdate);
 
 		// loop through classes to update, and get the new data from all the classes
 		classesToUpdate.forEach(function (aClass) {
@@ -184,7 +183,14 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 	}.bind(this))
 };
 
+PrereqClassUids.prototype.tests = function() {
+	
 
+	this.go({ host: 'swarthmore.edu'},function (err) {
+		console.log("DONE!",err);
+	}.bind(this))
+
+};
 
 
 PrereqClassUids.prototype.PrereqClassUids = PrereqClassUids;

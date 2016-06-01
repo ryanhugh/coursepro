@@ -64,6 +64,10 @@ PageDataMgr.prototype.getParsers = function () {
 
 PageDataMgr.prototype.go = function (pageData, callback) {
 	this.processPageData(pageData, function (err, pageData) {
+		if (err) {
+			console.log("err",err);
+			return callback(err)
+		}
 		// run the processors
 
 		var q = queue();
@@ -261,29 +265,29 @@ PageDataMgr.prototype.main = function () {
 	// }.bind(this))
 
 	
-	var pageData = PageData.create({
-		dbData: {
-			_id: '573e8008e24db24fbebc6857'
+	// var pageData = PageData.create({
+	// 	dbData: {
+	// 		_id: '574e401731d808f038eaa79c'
 
-		}
-	})
+	// 	}
+	// })
 
-	// if (!pageData) {
-	// 	console.log('ERROR unable to create page data with _id of ', classMongoId, '????')
-	// 	return callback('error')
-	// }
-	pageData.database = classesDB;
+	// // if (!pageData) {
+	// // 	console.log('ERROR unable to create page data with _id of ', classMongoId, '????')
+	// // 	return callback('error')
+	// // }
+	// pageData.database = classesDB;
 
-	this.go(pageData,function (err) {
-		console.log("DONEE",err);
-	}.bind(this))
+	// this.go(pageData,function (err) {
+	// 	console.log("DONEE",err);
+	// }.bind(this))
 
 
 
-	// this.go(PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched'), function () {
-	// 	console.log('all done!! neu')
+	this.go(PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched'), function () {
+		console.log('all done!! neu')
 
-	// }.bind(this));
+	}.bind(this));
 
 	// this.go(PageData.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'), function () {
 	// 	console.log('all done!! swath')

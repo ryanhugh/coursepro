@@ -11,6 +11,10 @@ last update time should copy down to class deps of class deps -- done
 updateing db due to change in deps???? -- logging chages
 honors?
 
+MAKE SURE IT PROCESSED ALL TERMS AND NOT JUST THE ONE WITH THE ROOT PAGEDATA HAD
+ AND WHY WHERE THERE ERRORS FOR THE ECLASSPARESR?
+
+
 
 LOOKING INTO
 safe to lookup docs by url in backend? - ehhh

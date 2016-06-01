@@ -354,7 +354,7 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 		return;
 	}
 
-	console.log(elements);
+	// console.log(elements);
 
 	var text = elements.join("").trim();
 	if (text === '') {
