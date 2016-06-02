@@ -30,7 +30,7 @@ function Section(config) {
 macros.inherent(BaseData, Section)
 
 
-Section.requiredPath = ['host', 'termId', 'subject', 'classId']
+Section.requiredPath = ['host', 'termId', 'subject', 'classUid']
 Section.optionalPath = ['crn']
 Section.API_ENDPOINT = '/listSections'
 

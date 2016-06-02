@@ -42,7 +42,7 @@ function Graph() {
 	}
 
 	//if given path, load graph
-	if (path.classId && path.subject) {
+	if (path.classUid && path.subject) {
 		this.createGraph(path)
 		this.$scope.focusSelector = false;
 	}
@@ -57,14 +57,14 @@ function Graph() {
 Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile']
 
 Graph.isPage = true;
-Graph.urls = ['/graph/:host/:termId/:subject?/:classId?']
+Graph.urls = ['/graph/:host/:termId/:subject?/:classUid?']
 Graph.fnName = 'Graph'
 
 Graph.prototype.addClass = function (aClass) {
 
 	var obj = aClass.getIdentifer().full.obj;
 
-	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classId))
+	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))
 };
 
 

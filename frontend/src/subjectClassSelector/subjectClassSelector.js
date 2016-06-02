@@ -150,7 +150,7 @@ SubjectClassSelector.prototype.onSelectSubject = function (fireTrigger) {
 		subject.classes.forEach(function (aClass) {
 			classes.push({
 				value: aClass._id,
-				text: aClass.classId + ' - ' + aClass.name
+				text: aClass.classUid + ' - ' + aClass.name
 			})
 		}.bind(this))
 

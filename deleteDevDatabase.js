@@ -9,6 +9,8 @@ var subjectsDB = require('./backend/databases/subjectsDB')
 
 if (macros.PRODUCTION) {
 	fjdsklajfdsjkljlkjl
+	console.log("NOOOOOO");
+	process.exit()
 }
 var toClear = [collegeNamesDB, termsDB, classesDB, linksDB, sectionsDB, subjectsDB]
 

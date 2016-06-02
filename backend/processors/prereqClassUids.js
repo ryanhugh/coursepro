@@ -35,7 +35,7 @@ PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyTo
 			// not in db, this is possible and causes those warnings in the frontend 
 			// unable to find class even though its a prereq of another class????
 			if (!newPrereqs) {
-				continue;
+				prereqs.values[i].missing = true;
 			}
 			// only one match, just swap classId for classUid
 			else if (newPrereqs.length == 1) {
@@ -186,7 +186,7 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 PrereqClassUids.prototype.tests = function() {
 	
 
-	this.go({ host: 'swarthmore.edu'},function (err) {
+	this.go({ host: 'neu.edu'},function (err) {
 		console.log("DONE!",err);
 	}.bind(this))
 

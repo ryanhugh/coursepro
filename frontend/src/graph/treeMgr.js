@@ -137,7 +137,7 @@ TreeMgr.prototype.sortTree = function (tree) {
 	var sizes = [];
 	var subTrees = [];
 
-	//subTrees with no values are sorted by classId
+	//subTrees with no values are sorted by classUid
 	var subPanels = [];
 
 	tree.prereqs.values.forEach(function (subTree) {
@@ -154,7 +154,7 @@ TreeMgr.prototype.sortTree = function (tree) {
 	}.bind(this))
 
 
-	//sort the panels by classId
+	//sort the panels by classUid
 	subPanels.sort(function (a, b) {
 		return a.compareTo(b)
 	}.bind(this))
@@ -231,7 +231,7 @@ TreeMgr.prototype.addAllParentRelations = function (tree, parent) {
 	if (parent && tree.allParents.indexOf(parent) < 0) {
 		tree.allParents.push(parent)
 		if (tree.allParents.length > 1) {
-			console.log('added a second parent on ', tree.subject, tree.classId)
+			console.log('added a second parent on ', tree.subject, tree.classUid)
 		};
 	}
 

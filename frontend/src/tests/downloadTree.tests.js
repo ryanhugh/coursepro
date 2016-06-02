@@ -18,9 +18,9 @@ describe('DownloadTreeTests', function () {
 
 			downloadTree.fetchFullTree({
 				host: 'neu.edu',
-				termId: '201530',
+				termId: '201710',
 				subject: 'CS',
-				classId: '4800'
+				classUid: "4800_1303374065",
 			}, function (err, tree) {
 				expect(err).toBe(null);
 

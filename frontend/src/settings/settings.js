@@ -127,7 +127,7 @@ function Settings() {
 
 Settings.fnName = 'Settings'
 Settings.isPage = true;
-Settings.urls = ['/saved', '/unsubscribe/:host/:termId/:subject/:classId']
+Settings.urls = ['/saved', '/unsubscribe/:host/:termId/:subject/:classUid']
 Settings.$inject = ['$scope', '$timeout', '$routeParams', '$location']
 
 //prototype constructor

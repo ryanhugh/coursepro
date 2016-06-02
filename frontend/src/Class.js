@@ -47,7 +47,7 @@ function Class(config) {
 
 		//dont copy over some attr
 		//these are copied below and processed a bit
-		if (_(['coreqs', 'prereqs','download']).includes(attrName) || config[attrName] === undefined) {
+		if (_(['coreqs', 'prereqs', 'download']).includes(attrName) || config[attrName] === undefined) {
 			continue;
 		}
 		//name and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
@@ -107,8 +107,10 @@ function Class(config) {
 	if (config.dataStatus !== undefined) {
 		this.dataStatus = config.dataStatus
 	}
-	else if (!this.isClass || this.prereqs.length > 0 || this.desc || this.lastUpdateTime !== undefined || this.isString) {
-		this.dataStatus = macros.DATASTATUS_DONE
+	else if (config.missing && config.classId && !config.classUid) {
+
+		// Backend failed to find class with this id, don't bother looking again
+		this.dataStatus = macros.DATASTATUS_FAIL;
 	}
 	else {
 		this.dataStatus = macros.DATASTATUS_NOTSTARTED
@@ -143,7 +145,7 @@ function Class(config) {
 macros.inherent(BaseData, Class)
 
 Class.requiredPath = ['host', 'termId', 'subject']
-Class.optionalPath = ['classId']
+Class.optionalPath = ['classUid']
 Class.API_ENDPOINT = '/listClasses'
 
 
@@ -155,6 +157,13 @@ Class.isValidCreatingData = function (config) {
 	if (config.isString || config.isClass === false) {
 		return true;
 	};
+
+	// Can make a class with clasid, not recommended and not geruentted to only have 1 or 0 results
+
+	if (config.host && config.termId && config.subject && config.classId && !config.classUid) {
+		console.warn('created class with classId')
+		return true;
+	}
 
 	return BaseData.isValidCreatingData.apply(this, arguments);
 };
@@ -186,8 +195,8 @@ Class.prototype.generateIdFromPrereqs = function () {
 		debugger
 	}
 	this._id = ids.join('')
-	if (this._id === '') {
-		debugger
+	if (this._id.length < 3) {
+		elog('couldnt make an id!', this._id, this)
 	}
 };
 
@@ -265,6 +274,15 @@ Class.prototype.convertServerData = function (data) {
 Class.prototype.internalDownload = function (callback) {
 	if (!callback) {
 		callback = function () {}
+	}
+
+	if (!this.isClass || this.prereqs.length > 0 || this.desc || this.lastUpdateTime !== undefined || this.isString) {
+		this.dataStatus = macros.DATASTATUS_DONE
+		return callback(null, this)
+	}
+
+	if (this.dataStatus === macros.DATASTATUS_FAIL) {
+		return callback(null, this)
 	}
 
 	if (this.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
@@ -360,7 +378,7 @@ Class.prototype.postDataProcess = function () {
 				host: this.host,
 				termId: this.termId,
 				subject: this.subject,
-				classId: this.classId,
+				classUid: this.classUid,
 				crn: crn,
 			})
 
@@ -486,7 +504,7 @@ Class.prototype.getPath = function () {
 		str: []
 	}
 
-	var path = ['host', 'termId', 'subject', 'classId']
+	var path = ['host', 'termId', 'subject', 'classUid']
 	for (var i = 0; i < path.length; i++) {
 		if (this[path[i]]) {
 			retVal.obj[path[i]] = this[path[i]]
@@ -542,12 +560,12 @@ Class.prototype.logTree = function (body) {
 		return;
 	}
 
-	if (!this.host || !this.termId || !this.subject || !this.classId) {
-		elog("ERROR cant log class without host, termid, subject, classId")
+	if (!this.host || !this.termId || !this.subject || !this.classUid) {
+		elog("ERROR cant log class without host, termid, subject, classUid")
 		return;
 	};
 
-	//add host, termId, subject, and classId
+	//add host, termId, subject, and classUid
 	body = _.merge(this.getPath().obj, body);
 
 	request({

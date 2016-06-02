@@ -108,7 +108,7 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 
 		//dont load classes that are on ignore list
 		var compareObject = {
-			classId: subTree.classId,
+			classUid: subTree.classUid,
 			subject: subTree.subject,
 			isClass: subTree.isClass
 		};
@@ -129,7 +129,7 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 		}
 		else {
 			if (!tree.isCoreq) {
-				console.log('WARNING removing ', tree.classId, 'because already loaded it', ignoreClasses, compareObject)
+				console.log('WARNING removing ', tree.classUid, 'because already loaded it', ignoreClasses, compareObject)
 				_.pull(tree.prereqs.values, subTree);
 				_.pull(tree.coreqs.values, subTree);
 			}

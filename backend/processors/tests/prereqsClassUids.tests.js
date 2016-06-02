@@ -32,6 +32,32 @@ it('can substitute one line', function () {
 	})
 });
 
+it('can insert a missing if cant find in db', function () {
+
+	var keyToRows = {}
+
+	var prereqs = {
+		type: 'or',
+		values: [
+			{
+				classId: '2500',
+				subject: 'MATH'
+			}
+		]
+	}
+
+	var output = prereqClassUids.updatePrereqs(prereqs, 'neu.edu', '201770', keyToRows)
+
+	expect(output).toEqual({
+		type: 'or',
+		values: [{
+			subject: 'MATH',
+			classId: '2500',
+			missing: true
+		}]
+	})
+});
+
 
 
 it('can replace a class with multiple matches with an "or"', function () {

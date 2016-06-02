@@ -102,7 +102,7 @@ app.use(function (req, res, next) {
 app.use(function (req, res, next) {
 
 	//send redirect request
-	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost','10.0.0.7']).includes(req.hostname)) {
+	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost', '10.0.0.7']).includes(req.hostname)) {
 
 		logData(req, {
 			msg: {
@@ -133,7 +133,7 @@ app.use(function (req, res, next) {
 })
 
 // accepts any type, requires a-zA-Z0-9
-function isAlphaNumeric (string) {
+function isAlphaNumeric(string) {
 	if (typeof string != 'string') {
 		return false;
 	};
@@ -358,7 +358,7 @@ app.post('/listClasses', function (req, res) {
 
 app.post('/listSections', function (req, res) {
 
-	if ((!req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) && !req.body._id) {
+	if ((!req.body.host || !req.body.termId || !req.body.subject || (!req.body.classId && !req.body.classUid)) && !req.body._id) {
 		console.log('error, no host or termId or subject or classId given body:');
 		console.log(req.body)
 		res.send('{"error":"no host or termId or subject or classId given (expected JSON)"}')
@@ -375,7 +375,13 @@ app.post('/listSections', function (req, res) {
 			host: req.body.host,
 			termId: req.body.termId,
 			subject: req.body.subject,
-			classId: req.body.classId
+		}
+
+		if (req.body.classUid) {
+			lookup.classUid = req.body.classUid
+		}
+		else if (req.body.classId) {
+			lookup.classId = req.body.classId
 		}
 
 		if (req.body.crn) {

@@ -6,7 +6,7 @@ var _ = require('lodash')
 describe('Class', function () {
 
 	describe('.create', function () {
-		it('ensures you need classId or _id to create class', function () {
+		it('ensures you need classUid or _id to create class', function () {
 
 			expect(Class.create({
 				host: 'neu.edu',
@@ -18,10 +18,7 @@ describe('Class', function () {
 		it('ensures memoize works and that download was not swapped', function (done) {
 
 			var aClass = Class.create({
-				"classId": "201",
-				"host": "sju.edu",
-				"termId": "201610",
-				"subject": "JPN",
+				_id:'574e50db50ecf9c436128dc2'
 			});
 
 			var download = aClass.download;
@@ -48,17 +45,14 @@ describe('Class', function () {
 		it('ensures loading data state changes and data loaded', function (done) {
 
 			var aClass = Class.create({
-				"classId": "201",
-				"host": "sju.edu",
-				"termId": "201610",
-				"subject": "JPN",
+				_id:'574e50db50ecf9c436128dc3'
 			});
 
 			expect(aClass.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
 
 			aClass.download(function () {
 				expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
-				expect(aClass._id).toBe("56b7f43f083f16e42df53037")
+				expect(aClass._id).toBe("574e50db50ecf9c436128dc3")
 				expect(aClass.prereqs.values[0].isClass).toBe(true)
 				expect(aClass.prereqs.values[0].isString).toBe(true)
 				expect(aClass.prereqs.values[0].desc).toBe("Language Placement JP201")
@@ -71,8 +65,8 @@ describe('Class', function () {
 
 			var aClass = Class.create({
 				"host": "neu.edu",
-				"classId": "7780",
-				"termId": "201630",
+				"classUid": "7780_1224558283",
+				"termId": "201710",
 				"subject": "CS",
 			});
 

@@ -19,7 +19,7 @@ SectionsDB.prototype.isValidLookupValues = function (lookupValues) {
 	if (BaseDB.prototype.isValidLookupValues(lookupValues)) {
 		return true;
 	}
-	else if (lookupValues.host && lookupValues.termId && lookupValues.subject && lookupValues.classId) {
+	else if (lookupValues.host && lookupValues.termId && lookupValues.subject && (lookupValues.classId || lookupValues.classUid)) {
 		return true;
 	}
 	else {
