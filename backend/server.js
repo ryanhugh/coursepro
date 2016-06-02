@@ -330,8 +330,12 @@ app.post('/listClasses', function (req, res) {
 			subject: req.body.subject
 		}
 
-		//add classs id if its given
-		if (req.body.classId) {
+		//add classUid if its given
+		if (req.body.classUid) {
+			lookup.classUid = req.body.classUid;
+		}
+		//add class id if its given
+		else if (req.body.classId) {
 			lookup.classId = req.body.classId;
 		};
 	}

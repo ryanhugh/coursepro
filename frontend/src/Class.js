@@ -266,7 +266,6 @@ Class.prototype.internalDownload = function (callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-	console.warn('DOWNLOAD CALLED') 
 
 	if (this.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
 		var errorMsg = 'data status was not not started, and called class.download?' + this.dataStatus
