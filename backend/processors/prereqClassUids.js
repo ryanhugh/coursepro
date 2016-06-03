@@ -14,7 +14,7 @@ function PrereqClassUids() {
 }
 
 // runs on all hosts
-PrereqClassUids.prototype.supportsHost = function(host) {
+PrereqClassUids.prototype.supportsHost = function (host) {
 	return true;
 };
 
@@ -146,34 +146,36 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 			return callback(err)
 		}
 
+
 		var updateQueue = queue()
-		// console.log(classesToUpdate);
 
 		// loop through classes to update, and get the new data from all the classes
 		classesToUpdate.forEach(function (aClass) {
-			if (!aClass.prereqs) {
-				return;
+
+			var toUpdate = {};
+			if (aClass.prereqs) {
+				toUpdate.prereqs = this.updatePrereqs(aClass.prereqs, aClass.host, aClass.termId, keyToRows);
 			}
 
-			var prereqs = this.updatePrereqs(aClass.prereqs, aClass.host, aClass.termId, keyToRows);
+			if (aClass.coreqs) {
+				toUpdate.coreqs = this.updatePrereqs(aClass.coreqs, aClass.host, aClass.termId, keyToRows);
+			}
 
-			updateQueue.defer(function (callback) {
-
-
-
-				// this came out of the db, so its going to have and _id and keys
-				classesDB.update({
-					_id: aClass._id
-				}, {
-					$set: {
-						prereqs: prereqs
-					}
-				}, {
-					shouldBeOnlyOne: true
-				}, function (err, docs) {
-					callback(err)
+			if (toUpdate.prereqs || toUpdate.coreqs) {
+				updateQueue.defer(function (callback) {
+					// this came out of the db, so its going to have and _id and keys
+					classesDB.update({
+						_id: aClass._id
+					}, {
+						$set: toUpdate
+					}, {
+						shouldBeOnlyOne: true
+					}, function (err, docs) {
+						callback(err)
+					}.bind(this))
 				}.bind(this))
-			}.bind(this))
+			}
+
 		}.bind(this))
 
 
@@ -183,11 +185,13 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 	}.bind(this))
 };
 
-PrereqClassUids.prototype.tests = function() {
-	
+PrereqClassUids.prototype.tests = function () {
 
-	this.go({ host: 'neu.edu'},function (err) {
-		console.log("DONE!",err);
+
+	this.go({
+		host: 'neu.edu'
+	}, function (err) {
+		console.log("DONE!", err);
 	}.bind(this))
 
 };

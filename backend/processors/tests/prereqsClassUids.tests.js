@@ -38,12 +38,10 @@ it('can insert a missing if cant find in db', function () {
 
 	var prereqs = {
 		type: 'or',
-		values: [
-			{
-				classId: '2500',
-				subject: 'MATH'
-			}
-		]
+		values: [{
+			classId: '2500',
+			subject: 'MATH'
+		}]
 	}
 
 	var output = prereqClassUids.updatePrereqs(prereqs, 'neu.edu', '201770', keyToRows)
@@ -118,4 +116,24 @@ it('go should work', function (done) {
 		expect(updatedClasses[0].prereqs.values.length).toBe(3)
 		done()
 	}.bind(this))
+});
+
+
+it('can swap coreqs', function (done) {
+
+	var baseQuery = {
+		"classUid": "017_1314190396",
+		"host": "swarthmore.edu",
+		"termId": "201602",
+		"subject": "EDUC"
+	}
+
+	prereqClassUids.go(baseQuery, function (err, updatedClasses) {
+		expect(updatedClasses.length).toBe(1)
+		console.log(updatedClasses[0].coreqs);
+		expect(updatedClasses[0].coreqs.values[0].classUid).toBe('016_1711862930')
+		done()
+	}.bind(this))
+
+
 });
