@@ -206,7 +206,7 @@ Class.prototype.convertServerData = function (data) {
 	var retVal = {};
 
 	//already processed node, just process the prereqs and coreqs
-	if (data instanceof Class) {
+	if (data.dataStatus === macros.DATASTATUS_DONE) {
 		retVal = data;
 
 		var newCoreqs = [];
@@ -356,6 +356,10 @@ Class.prototype.internalDownload = function (callback) {
 				this.lastUpdateString = moment(this.lastUpdateTime).fromNow()
 			};
 		}
+
+		// temp fix because data status is no longer set in the constructor it was causing it to be copied over at the typeof loop
+		// just here until redo this part of the code
+		this.dataStatus = macros.DATASTATUS_DONE;
 		callback(null, this)
 	}.bind(this))
 }

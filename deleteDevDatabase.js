@@ -16,7 +16,7 @@ var toClear = [collegeNamesDB, termsDB, classesDB, linksDB, sectionsDB, subjects
 
 toClear.forEach(function (db) {
 	db.table.remove({}, function (err, i) {
-		console.log(err, i, db);
+		console.log(err, db.tableName);
 	}.bind(this))
 }.bind(this))
 

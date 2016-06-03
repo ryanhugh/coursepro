@@ -286,10 +286,10 @@ PageDataMgr.prototype.main = function () {
 
 
 
-	// this.go(PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched'), function () {
-	// 	console.log('all done!! neu')
+	this.go(PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched'), function () {
+		console.log('all done!! neu')
 
-	// }.bind(this));
+	}.bind(this));
 
 	// this.go(PageData.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'), function () {
 	// 	console.log('all done!! swath')

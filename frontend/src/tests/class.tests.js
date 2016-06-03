@@ -18,7 +18,7 @@ describe('Class', function () {
 		it('ensures memoize works and that download was not swapped', function (done) {
 
 			var aClass = Class.create({
-				_id:'574e50db50ecf9c436128dc2'
+				_id:'575102d1b462e991061ca594'
 			});
 
 			var download = aClass.download;
@@ -45,14 +45,14 @@ describe('Class', function () {
 		it('ensures loading data state changes and data loaded', function (done) {
 
 			var aClass = Class.create({
-				_id:'574e50db50ecf9c436128dc3'
+				_id:'575102d1b462e991061ca594'
 			});
 
 			expect(aClass.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
 
 			aClass.download(function () {
 				expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
-				expect(aClass._id).toBe("574e50db50ecf9c436128dc3")
+				expect(aClass._id).toBe("575102d1b462e991061ca594")
 				expect(aClass.prereqs.values[0].isClass).toBe(true)
 				expect(aClass.prereqs.values[0].isString).toBe(true)
 				expect(aClass.prereqs.values[0].desc).toBe("Language Placement JP201")

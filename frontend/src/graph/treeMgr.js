@@ -201,24 +201,8 @@ TreeMgr.prototype.sortTree = function (tree) {
 //counts all classes, coreqs and prereqs
 TreeMgr.prototype.countClassesInTree = function (tree) {
 
-	var retVal;
-
-	if (tree.isClass) {
-		retVal = 1;
-	}
-	else {
-		retVal = 0;
-	}
-
-	tree.prereqs.values.forEach(function (subTree) {
-		retVal += this.countClassesInTree(subTree);
-	}.bind(this))
-
-	tree.coreqs.values.forEach(function (subTree) {
-		retVal += this.countClassesInTree(subTree);
-	}.bind(this))
-
-	return retVal;
+	// This accounts for circular references in the graph
+	return this.findFlattendClassList(tree, true, true).length;
 }
 
 
@@ -548,7 +532,7 @@ TreeMgr.prototype.addDepthLevel = function (tree, depth) {
 
 // only recurses on nodes and not classes - finds a list of classes
 // if allNodes is set, use all nodes instead of just classes
-TreeMgr.prototype.findFlattendClassList = function (tree, allNodes) {
+TreeMgr.prototype.findFlattendClassList = function (tree, allNodes, includeCoreqs) {
 	var retVal = [];
 	if (tree.isClass || allNodes) {
 		retVal.push(tree);
@@ -556,8 +540,14 @@ TreeMgr.prototype.findFlattendClassList = function (tree, allNodes) {
 
 	if (!tree.isClass || allNodes) {
 		tree.prereqs.values.forEach(function (subTree) {
-			retVal = retVal.concat(this.findFlattendClassList(subTree, allNodes));
+			retVal = retVal.concat(this.findFlattendClassList(subTree, allNodes, includeCoreqs));
 		}.bind(this))
+
+		if (includeCoreqs) { 
+			tree.coreqs.values.forEach(function (subTree) {
+				retVal = retVal.concat(this.findFlattendClassList(subTree, allNodes, includeCoreqs));
+			}.bind(this))
+		}
 	};
 	retVal = _.uniq(retVal)
 	return retVal;

@@ -20,13 +20,13 @@ describe('DownloadTreeTests', function () {
 				host: 'neu.edu',
 				termId: '201710',
 				subject: 'CS',
-				classUid: "4800_1303374065",
+				classUid: "4750_1045395676",
 			}, function (err, tree) {
 				expect(err).toBe(null);
 
 				treeMgr.go(tree)
 				
-				expect(treeMgr.countClassesInTree(tree)).toBe(18);
+				expect(treeMgr.countClassesInTree(tree)).toBe(14);
 			}.bind(this))
 
 		});
