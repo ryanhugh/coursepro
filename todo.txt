@@ -19,6 +19,7 @@ why were different datas using differnet instanceCaches in testing?
 PREREQS, COREQS, AND ISCOREQ IS SPECIFIC PER GRAPH?!?
 -- and allparents needs to be reset
 
+section needs post process too
 
 
 TODO: bug because not running postProcessdata, need to do that after on create instead of copying data? or maybe in download? create would be better
