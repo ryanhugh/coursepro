@@ -26,7 +26,7 @@ describe('DownloadTreeTests', function () {
 
 				treeMgr.go(tree)
 				
-				expect(treeMgr.countClassesInTree(tree)).toBe(14);
+				expect(treeMgr.countClassesInTree(tree)).toBe(13);
 			}.bind(this))
 
 		});

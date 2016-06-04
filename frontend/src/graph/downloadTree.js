@@ -85,11 +85,11 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 	var toProcess = [];
 
 	//mark all the coreqs as coreqs
-	tree.coreqs.values.forEach(function (subTree) {
-		this.setNodesAttrs(subTree, { 
-			isCoreq: true
-		});
-	}.bind(this))
+	// tree.coreqs.values.forEach(function (subTree) {
+	// 	this.setNodesAttrs(subTree, { 
+	// 		isCoreq: true
+	// 	});
+	// }.bind(this))
 
 	toProcess = toProcess.concat(tree.coreqs.values).concat(tree.prereqs.values)
 

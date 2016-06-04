@@ -361,7 +361,7 @@ Class.prototype.updateWithData = function (config) {
 		}
 		// else if (this.prereqs.values.length > 0) {
 		// 	elog('already have prereqs??', config, this)
-		// }
+		// } 
 		else {
 			this.prereqs.type = config.prereqs.type
 			this.prereqs.values = []
@@ -374,11 +374,11 @@ Class.prototype.updateWithData = function (config) {
 
 		}
 	}
-
+ 
 	// this.coreqs = {
 	// 	type: 'or',
 	// 	values: []
-	// }
+	// } 
 
 	if (config.coreqs) {
 		if (!config.coreqs.values || !config.coreqs.type) {
@@ -387,7 +387,11 @@ Class.prototype.updateWithData = function (config) {
 		// else if (this.coreqs.values.length > 0) {
 		// 	elog('already have coreqs??', config, this)
 		// }
-		else {
+
+
+ 
+		//  WHICHEVER ONE DOWNLOADED FIRST IS NOT THE COREQ, AND THE SECOND ONE IS
+		else if (!this.isCoreq || 1) {
 			this.coreqs.type = config.coreqs.type
 			this.coreqs.values = []
 
@@ -400,6 +404,7 @@ Class.prototype.updateWithData = function (config) {
 			this.coreqs.values.forEach(function (subTree) {
 				subTree.coreqs.values=[]
 				subTree.prereqs.values=[]
+				subTree.isCoreq = true
 			}.bind(this))
 
 
