@@ -31,7 +31,7 @@ describe('Term', function () {
 	describe('.download', function () {
 		it('works', function (done) {
 
-			var term = new Term({
+			var term = Term.create({
 				host: 'neu.edu',
 				termId: '201630'
 			})

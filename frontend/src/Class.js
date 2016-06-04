@@ -395,6 +395,14 @@ Class.prototype.updateWithData = function (config) {
 			config.coreqs.values.forEach(function (subTree) {
 				this.coreqs.values.push(this.convertServerRequisites(subTree))
 			}.bind(this))
+
+			// remove all coreqs'prereqs and coreqs'coreqs to prevent infinate loops in treeMgr...
+			this.coreqs.values.forEach(function (subTree) {
+				subTree.coreqs.values=[]
+				subTree.prereqs.values=[]
+			}.bind(this))
+
+
 		}
 	}
 

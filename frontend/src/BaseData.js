@@ -3,7 +3,8 @@ var macros = require('./macros')
 var request = require('./request')
 var async = require('async')
 
-var instanceCache = {}
+// in unit testing
+window.instanceCache = window.instanceCache || {};
 
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
@@ -73,7 +74,7 @@ BaseData.create = function (config, useCache) {
 	};
 
 
-	if (config instanceof this) {
+	if (config instanceof this.constructor) {
 		elog("tried to make instance of ", this.name, ' with an instance of this');
 		return null;
 	};
@@ -423,21 +424,20 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 				return callback(null, this)
 			}
 			else {
-			// cache will match if used keys, must of used _id or something if here
+				// cache will match if used keys, must of used _id or something if here
 				var keys = this.getIdentifer().full.lookup;
 				for (var i = 0; i < results.length; i++) {
 
 					var isMatch = true;
 
-					for (var j = 0; j < keys.length; j++) {
-						var currKey = keys[j];
+					for (var currKey in keys) {
 						if (results[i][currKey] !== this[currKey]) {
 							isMatch = false;
 						}
 					}
 
 					if (isMatch) {
-						console.warn('cache miss!',keys)
+						console.warn('cache miss!', keys)
 						this.updateWithData(results[i])
 						return callback(null, this);
 					}

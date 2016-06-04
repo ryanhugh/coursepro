@@ -14,7 +14,7 @@ honors?
 resize d3 window on browser size resize
 run the output of classUids thorugh requite parser simplify prereqs
 karma jsdom?
-
+why were different datas using differnet instanceCaches in testing?
 
 
 TODO: bug because not running postProcessdata, need to do that after on create instead of copying data? or maybe in download? create would be better

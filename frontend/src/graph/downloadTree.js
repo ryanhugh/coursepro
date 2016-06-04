@@ -16,10 +16,9 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 	if (ignoreClasses === undefined) {
 		ignoreClasses = [];
 	}
-	
+
 	if (!callback) {
 		elog('fetch full tree called without a callback??')
-		debugger;
 		return;
 	}
 
@@ -42,7 +41,7 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 		}
 
 		//process this nodes values, already at bottom edge of loaded nodes
-		this.fetchSubTrees(tree, ignoreClasses, function(err) {
+		this.fetchSubTrees(tree, ignoreClasses, function (err) {
 			callback(err, tree)
 		}.bind(this))
 
@@ -52,18 +51,32 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 
 DownloadTree.prototype.setNodesAttrs = function (tree, attrs) {
 
-	for (var attrName in attrs) {
-		tree[attrName] = attrs[attrName]
+	var toVisit = [tree];
+	var visited = [];
+
+	var currTree;
+	while ((currTree = toVisit.pop())) {
+		if (_(visited).includes(currTree)) {
+			continue;
+		}
+		visited.push(currTree)
+
+		for (var attrName in attrs) {
+			currTree[attrName] = attrs[attrName]
+		}
+
+		toVisit = toVisit.concat(currTree.prereqs.values).concat(currTree.coreqs.values);
 	}
 
 
-	tree.prereqs.values.forEach(function (subTree) {
-		this.setNodesAttrs(subTree);
-	}.bind(this))
 
-	tree.coreqs.values.forEach(function (subTree) {
-		this.setNodesAttrs(subTree);
-	}.bind(this))
+	// tree.prereqs.values.forEach(function (subTree) {
+	// 	this.setNodesAttrs(subTree);
+	// }.bind(this))
+
+	// tree.coreqs.values.forEach(function (subTree) {
+	// 	this.setNodesAttrs(subTree);
+	// }.bind(this))
 }
 
 //this is called on a subtree when it responds from the server and when recursing down a tree
@@ -73,7 +86,7 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 
 	//mark all the coreqs as coreqs
 	tree.coreqs.values.forEach(function (subTree) {
-		this.setNodesAttrs(subTree, {
+		this.setNodesAttrs(subTree, { 
 			isCoreq: true
 		});
 	}.bind(this))
@@ -81,7 +94,7 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 	toProcess = toProcess.concat(tree.coreqs.values).concat(tree.prereqs.values)
 
 	var subTree;
-	
+
 	//make a queue of sub trees to be processed
 	var q = queue()
 
@@ -90,7 +103,7 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 
 		if (!subTree.isClass || subTree.isString) {
 
-			q.defer(function(callback){
+			q.defer(function (callback) {
 				this.fetchFullTreeOnce(subTree, _.cloneDeep(ignoreClasses), callback);
 			}.bind(this))
 			continue;
@@ -130,11 +143,11 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 
 
 		if (!hasAlreadyLoaded) {
-			
-			q.defer(function(callback){
-				this.fetchFullTreeOnce(subTree, _.cloneDeep(ignoreClasses).concat(compareObject),callback);
+
+			q.defer(function (callback) {
+				this.fetchFullTreeOnce(subTree, _.cloneDeep(ignoreClasses).concat(compareObject), callback);
 			}.bind(this))
-			
+
 		}
 		else {
 			if (!tree.isCoreq) {
@@ -144,9 +157,9 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 			}
 		}
 	}
-	
-	
-	q.awaitAll(function(err){
+
+
+	q.awaitAll(function (err) {
 		callback(err)
 	}.bind(this))
 };
