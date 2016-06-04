@@ -203,10 +203,10 @@ Request.prototype.fireRequest = function (config, callback) {
 			else {
 				err = 'unknown ajax error'
 			}
-			
-			err +=  'config = '+JSON.stringify(config)
 
-			console.log('error, bad code recievied', xmlhttp.status, err,config)
+			err += 'config = ' + JSON.stringify(config)
+
+			console.log('error, bad code recievied', xmlhttp.status, err, config)
 
 			//also need to call all the other callbacks
 			cacheItem.callbacks.forEach(function (callback) {
@@ -219,16 +219,24 @@ Request.prototype.fireRequest = function (config, callback) {
 		var response = JSON.parse(xmlhttp.response)
 
 		if (response.error) {
-			console.log("ERROR networking error bad reqeust?",config);
+			console.log("ERROR networking error bad reqeust?", config);
 		}
-		
-		cacheItem.body = response;
-		cacheItem.loadingStatus = this.LOADINGSTATUS_DONE;
 
-		callback(null, _.cloneDeep(response));
-		cacheItem.callbacks.forEach(function (callback) {
+		if (config.useCache) {
+
+			cacheItem.body = response;
+			cacheItem.loadingStatus = this.LOADINGSTATUS_DONE;
+
 			callback(null, _.cloneDeep(response));
-		}.bind(this))
+			cacheItem.callbacks.forEach(function (callback) {
+				callback(null, _.cloneDeep(response));
+			}.bind(this))
+		}
+		// Avoid all the cloning if not using cache
+		else {
+			callback(null, response)
+		}
+
 
 	}.bind(this);
 
@@ -280,6 +288,7 @@ Request.prototype.go = function (config, callback) {
 	if (config.useCache === undefined) {
 		config.useCache = true;
 	}
+	config.useCache = false;
 
 
 

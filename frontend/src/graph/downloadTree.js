@@ -118,6 +118,15 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 		//there is no infinate recursion
 		//common for coreqs that require each other
 		var hasAlreadyLoaded = _.some(ignoreClasses, _.matches(compareObject));
+		// var hasAlreadyLoaded = false;
+
+		// for (var i = 0; i < ignoreClasses.length; i++) {
+		// 	for (var attrName in compareObject) {
+		// 		if (compareObject[attrName] !== ignoreClasses[attrName]) {
+		// 			break;
+		// 		}
+		// 	}
+		// }
 
 
 		if (!hasAlreadyLoaded) {
@@ -154,7 +163,10 @@ DownloadTree.prototype.fetchFullTree = function (serverData, callback) {
 	this.tree = tree;
 
 
-	this.fetchFullTreeOnce(tree, [], function () {
+	this.fetchFullTreeOnce(tree, [], function (err) {
+		if (err) {
+			elog(err)
+		}
 
 		//another tree was began before this one finished
 		if (this.tree != tree) {

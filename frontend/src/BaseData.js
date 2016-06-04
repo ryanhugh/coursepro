@@ -3,6 +3,8 @@ var macros = require('./macros')
 var request = require('./request')
 var async = require('async')
 
+var instanceCache = {}
+
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
 
@@ -58,7 +60,6 @@ BaseData.isValidCreatingData = function (config) {
 	return true;
 };
 
-var instanceCache = {}
 
 //in static methods, "this" references the constructor
 BaseData.create = function (config, useCache) {
@@ -91,6 +92,18 @@ BaseData.create = function (config, useCache) {
 		return null
 	};
 
+	var canCache = true;
+
+	var allKeys = this.requiredPath.concat(this.optionalPath);
+
+
+	// create the key
+	for (var i = 0; i < allKeys.length; i++) {
+		if (!config[allKeys[i]]) {
+			canCache = false;
+		}
+	}
+
 	//seach instance cache for matching instance
 	//this was decided to be done linearly in case a instance got more data about itself (such as a call to download)
 	//note that we are not cloning the cacheItem, for speed
@@ -100,40 +113,76 @@ BaseData.create = function (config, useCache) {
 	//TODO: clean up the circles of creating instances, and eliminate the !='Class' below.
 	// need good way to separate classes...
 
-	if (instanceCache[this.name] && useCache && 0) {
+
+
+	if (canCache) {
 
 		var allKeys = this.requiredPath.concat(this.optionalPath);
 
-		for (var i = 0; i < instanceCache[this.name].length; i++) {
-			var cacheItem = instanceCache[this.name][i];
+		var key = [];
 
-			if (cacheItem._id && config._id) {
-				if (cacheItem._id == config._id) {
-					return cacheItem;
-				};
-			}
-			else if (this.name != 'Class' && this.doObjectsMatchWithKeys(allKeys, config, cacheItem)) {
-				return cacheItem;
-			}
-		};
+		// create the key
+		for (var i = 0; i < allKeys.length; i++) {
+			key.push(config[allKeys[i]]);
+		}
+
+		key = key.join('/')
+		console.warn('TEST here, dedupe from down belwo')
+
+		if (instanceCache[key]) {
+			console.log("Match found!");
+
+			var instance = instanceCache[key];
+
+			instance.updateWithData(config);
+
+			return instanceCache[key]
+
+
+
+		}
 	};
 
 
 	//the create instance
 	var instance = new this(config);
+	instance.updateWithData(config);
 	if (instance.dataStatus === undefined) {
 		elog("failed to create an instance of " + config, 'with', config)
 		return null;
 	}
 	else {
 
+		if (canCache) {
+
+			var allKeys = this.requiredPath.concat(this.optionalPath);
+
+			var key = [];
+
+			// create the key
+			for (var i = 0; i < allKeys.length; i++) {
+				key.push(config[allKeys[i]]);
+			}
+
+			key = key.join('/')
+				// console.warn('TEST here, dedupe from down belwo')
+
+
+			if (instanceCache[key]) {
+				console.log("WTF there was no match a ms ago!");
+			}
+			instanceCache[key] = instance;
+			return instance;
+			// return instanceCache[key]
+		};
+
 		//put the instance in the cache
 
-		if (!instanceCache[this.name]) {
-			instanceCache[this.name] = []
-		}
+		// if (!instanceCache[this.name]) {
+		// 	instanceCache[this.name] = []
+		// }
 
-		instanceCache[this.name].push(instance)
+		// instanceCache[this.name].push(instance)
 
 		return instance
 	}
@@ -291,6 +340,7 @@ BaseData.download = function (config, callback) {
 	}.bind(this))
 }
 
+
 //the only config option right now is returnResults
 // config must be the same between calls, enfored in the constructor
 BaseData.prototype.internalDownload = function (configOrCallback, callback) {
@@ -318,7 +368,7 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 
 	this.constructor.download({
 		url: this.constructor.API_ENDPOINT,
-		resultsQuery: this.getIdentifer().optional.lookup,
+		// resultsQuery: this.getIdentifer().optional.lookup,
 		body: this.getIdentifer().required.lookup
 	}, function (err, results) {
 		this.dataStatus = macros.DATASTATUS_DONE;
@@ -336,9 +386,9 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 			return callback(err)
 		}
 
-		if (config.returnResults) {
-			return callback(null, results)
-		}
+		// if (config.returnResults) {
+		// 	return callback(null, results)
+		// }
 
 		if (results.length == 0) {
 			console.log('base data download results.length = 0', this, config)
@@ -347,23 +397,85 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 
 		}
 		else {
-			var serverData = results[0];
 
-			if (results.length > 1) {
-				elog("ERROR have more than 1 results??", this, config);
-			}
-
-			for (var attrName in serverData) {
-				if ((typeof this[attrName]) === 'function') {
-					continue;
+			var foundThis = false;
+			//Add all results to the cache
+			results.forEach(function (result) {
+				var instance = this.constructor.create(result);
+				if (instance === this) {
+					foundThis = true;
 				}
-				this[attrName] = serverData[attrName]
+				console.log("hi");
+				instanceCache;
+				// var key = instance.getIdentifer().full.str
+				// console.log("KEY:", key);
+				// if (instanceCache[key]) {
+				// 	elog("Somehting already in cache!>????");
+				// }
+				// else {
+				// 	instanceCache[key] = instance;
+				// }
+
+
+			}.bind(this))
+
+			if (foundThis) {
+				return callback(null, this)
 			}
-			return callback(null, this)
+			else {
+			// cache will match if used keys, must of used _id or something if here
+				var keys = this.getIdentifer().full.lookup;
+				for (var i = 0; i < results.length; i++) {
+
+					var isMatch = true;
+
+					for (var j = 0; j < keys.length; j++) {
+						var currKey = keys[j];
+						if (results[i][currKey] !== this[currKey]) {
+							isMatch = false;
+						}
+					}
+
+					if (isMatch) {
+						console.warn('cache miss!',keys)
+						this.updateWithData(results[i])
+						return callback(null, this);
+					}
+				}
+			}
+			elog('wtf')
+
+			// if (results.length > 1) {
+			// 	elog("ERROR have more than 1 results??", this, config);
+			// }
+			// var serverData = instanceCache[this.getIdentifer().full.str];
+
+
+
+			// for (var attrName in serverData) {
+			// 	if ((typeof this[attrName]) === 'function') {
+			// 		continue;
+			// 	}
+			// 	this[attrName] = serverData[attrName]
+			// }
+			// return callback(null, this)
 		}
 
 	}.bind(this))
 };
+
+
+// Class and section override this to do some reorginizing of the server data
+BaseData.prototype.updateWithData = function (config) {
+	for (var attrName in config) {
+		if ((typeof config[attrName]) == 'function') {
+			elog('given fn??', config, this, this.constructor.name);
+			continue;
+		}
+		this[attrName] = config[attrName]
+	}
+};
+
 
 // needs to be overriden
 BaseData.prototype.compareTo = function () {

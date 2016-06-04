@@ -14,13 +14,9 @@ var BaseData = require('./BaseData')
 function Class(config) {
 	BaseData.prototype.constructor.apply(this, arguments);
 
-	if (config.title) {
-		elog("wtf class has a name not a title");
-	}
 
 	//true, if for instance "AP placement exam, etc"
 	this.isString = false;
-
 
 
 	//turn to false to be a node in a graph
@@ -42,81 +38,21 @@ function Class(config) {
 	// Determined in tree mgr to avoid having to calculate every tick
 	this.allChildrenAtSameDepth = true;
 
-	//copy over all other attr given
-	for (var attrName in config) {
-
-		//dont copy over some attr
-		//these are copied below and processed a bit
-		if (_(['coreqs', 'prereqs', 'download']).includes(attrName) || config[attrName] === undefined) {
-			continue;
-		}
-		//name and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
-		//setting the innerHTML instead of innerText will work too, but this is better
-		else if (_(['desc', 'name']).includes(attrName)) {
-			this[attrName] = he.decode(config[attrName])
-		}
-		else {
-			this[attrName] = config[attrName]
-		}
-	}
-
 
 	this.prereqs = {
 		type: 'or',
 		values: []
 	}
 
-	if (config.prereqs) {
-		if (!config.prereqs.values || !config.prereqs.type) {
-			elog("ERROR given prereqs invalid", config.prereqs)
-		}
-		else {
-			this.prereqs.type = config.prereqs.type
-
-			//add the prereqs to this node, and convert server data
-			config.prereqs.values.forEach(function (subTree) {
-
-				this.prereqs.values.push(this.convertServerData(subTree))
-			}.bind(this))
-
-		}
-	}
 
 	this.coreqs = {
 		type: 'or',
 		values: []
 	}
 
-	if (config.coreqs) {
-		if (!config.coreqs.values || !config.coreqs.type) {
-			elog("ERROR given coreqs invalid", config.coreqs)
-		}
-		else {
-			this.coreqs.type = config.coreqs.type
+	this.crns = [];
 
-			//add the coreqs to this node, and convert server data
-			config.coreqs.values.forEach(function (subTree) {
-				this.coreqs.values.push(this.convertServerData(subTree))
-			}.bind(this))
-		}
-	}
-
-
-
-	//loading status is done if any sign that has data
-	if (config.dataStatus !== undefined) {
-		this.dataStatus = config.dataStatus
-	}
-	else if (config.missing && config.classId && !config.classUid) {
-
-		// Backend failed to find class with this id, don't bother looking again
-		this.dataStatus = macros.DATASTATUS_FAIL;
-	}
-	else {
-		this.dataStatus = macros.DATASTATUS_NOTSTARTED
-	}
-
-	this.postDataProcess();
+	// this.postDataProcess();
 
 
 	// host: "neu.edu"
@@ -202,16 +138,16 @@ Class.prototype.generateIdFromPrereqs = function () {
 
 
 
-Class.prototype.convertServerData = function (data) {
+Class.prototype.convertServerRequisites = function (data) {
 	var retVal = {};
 
 	//already processed node, just process the prereqs and coreqs
-	if (data.dataStatus === macros.DATASTATUS_DONE) {
+	if (data.internalDownload) {
 		retVal = data;
 
 		var newCoreqs = [];
 		data.coreqs.values.forEach(function (subTree) {
-			newCoreqs.push(this.convertServerData(subTree))
+			newCoreqs.push(this.convertServerRequisites(subTree))
 		}.bind(this))
 
 		data.coreqs.values = newCoreqs
@@ -220,7 +156,7 @@ Class.prototype.convertServerData = function (data) {
 
 		var newPrereqs = [];
 		data.prereqs.values.forEach(function (subTree) {
-			newPrereqs.push(this.convertServerData(subTree))
+			newPrereqs.push(this.convertServerRequisites(subTree))
 		}.bind(this))
 
 		data.prereqs.values = newPrereqs;
@@ -298,7 +234,7 @@ Class.prototype.internalDownload = function (callback) {
 
 
 	BaseData.prototype.internalDownload.call(this, {
-		returnResults: true
+		// returnResults: true
 	}, function (err, body) {
 		this.dataStatus = macros.DATASTATUS_DONE;
 		if (err) {
@@ -307,55 +243,57 @@ Class.prototype.internalDownload = function (callback) {
 			return callback(err)
 		}
 
-		if (body.length == 0) {
-			console.log('unable to find class even though its a prereq of another class????', this)
-			this.dataStatus = macros.DATASTATUS_FAIL;
+		// if (body.length == 0) {
+		// 	console.log('unable to find class even though its a prereq of another class????', this)
+		// 	this.dataStatus = macros.DATASTATUS_FAIL;
 
-			// Make something repeatable from data here
-			if (!this._id) {
-				this._id = this.host + this.termId + this.subject + this.classId
-			}
-			return callback(null, this)
-		};
+		// 	// Make something repeatable from data here
+		// 	if (!this._id) {
+		// 		this._id = this.host + this.termId + this.subject + this.classId
+		// 	}
+		// 	return callback(null, this)
+		// };
 
 		//setup an or tree
-		if (body.length > 1) {
+		// if (body.length > 1) {
+		// 	elog("wtf more than 1 result")
+		// }
 
-			//change this to a node
-			this.isClass = false;
+		// 	//change this to a node
+		// 	this.isClass = false;
 
-			if (this.prereqs.values.length != 0 || this.coreqs.values.length != 0) {
-				elog('ERROR already has prereqs or coreqs in download callback??', this)
-				this.prereqs.values = []
-				this.coreqs.values = []
-			};
+		// 	if (this.prereqs.values.length != 0 || this.coreqs.values.length != 0) {
+		// 		elog('ERROR already has prereqs or coreqs in download callback??', this)
+		// 		this.prereqs.values = []
+		// 		this.coreqs.values = []
+		// 	};
 
-			this.prereqs.type = 'or'
+		// 	this.prereqs.type = 'or'
 
-			body.forEach(function (classData) {
-				this.prereqs.values.push(this.convertServerData(classData))
-			}.bind(this))
+		// 	body.forEach(function (classData) {
+		// 		this.prereqs.values.push(this.convertServerRequisites(classData))
+		// 	}.bind(this))
 
-			this.generateIdFromPrereqs();
-		}
+		// 	this.generateIdFromPrereqs();
+		// }
 
 		//else just add more data to the class
-		else {
-			var classData = this.convertServerData(body[0])
+		// else {
+		// var classData = this.convertServerRequisites(this)
 
-			for (var attrName in classData) {
-				if ((typeof this[attrName]) == 'function') {
-					continue
-				}
-				this[attrName] = classData[attrName]
-			}
-			this.postDataProcess();
+		// for (var attrName in classData) {
+		// 	if ((typeof this[attrName]) == 'function') {
+		// 		continue
+		// 	}
+		// 	this[attrName] = classData[attrName]
+		// }
+		// this.postDataProcess();
 
-			//THIS AND THE JAWN BELOW BOTH NEED TO BE RAN AFTER DATA
-			if (this.lastUpdateTime !== undefined) {
-				this.lastUpdateString = moment(this.lastUpdateTime).fromNow()
-			};
-		}
+		//THIS AND THE JAWN BELOW BOTH NEED TO BE RAN AFTER DATA
+
+		// }
+
+
 
 		// temp fix because data status is no longer set in the constructor it was causing it to be copied over at the typeof loop
 		// just here until redo this part of the code
@@ -364,10 +302,186 @@ Class.prototype.internalDownload = function (callback) {
 	}.bind(this))
 }
 
-Class.prototype.postDataProcess = function () {
-	if (!this.crns) {
-		return;
+// called once
+Class.prototype.updateWithData = function (config) {
+	// if (!config.prereqs || !config.coreqs) {
+
+	// }
+	if (config instanceof Class || config.updateWithData) {
+		elog('wtf', config)
+	}
+
+
+	if (config.title) {
+		elog("wtf class has a name not a title");
+	}
+
+	if (this.prereqs.values.length > 0 && config.prereqs) {
+		elog('yo')
+	}
+
+	if (this.coreqs.values.length > 0 && config.coreqs) {
+		elog('yo')
+	}
+
+	// BaseData.prototype.updateWithData.call(this, config);
+
+
+	//copy over all other attr given
+	for (var attrName in config) {
+
+		//dont copy over some attr
+		//these are copied below and processed a bit
+		if (_(['coreqs', 'prereqs', 'download']).includes(attrName) || config[attrName] === undefined) {
+			continue;
+		}
+		// else if (_(['desc', 'name']).includes(attrName)) {
+		// 	this[attrName] = he.decode(config[attrName])
+		// }
+		else {
+			this[attrName] = config[attrName]
+		}
+	}
+
+
+	// if (config.prereqs) {
+
+	// 	this.prereqs = this.convertServerRequisites(this.prereqs);
+	// }
+
+	// if (config.coreqs) {
+
+	// 	this.coreqs = this.convertServerRequisites(this.coreqs)
+	// }
+
+
+	if (config.prereqs) {
+		if (!config.prereqs.values || !config.prereqs.type) {
+			elog("ERROR given prereqs invalid", config.prereqs)
+		}
+		// else if (this.prereqs.values.length > 0) {
+		// 	elog('already have prereqs??', config, this)
+		// }
+		else {
+			this.prereqs.type = config.prereqs.type
+			this.prereqs.values = []
+
+			//add the prereqs to this node, and convert server data
+			config.prereqs.values.forEach(function (subTree) {
+
+				this.prereqs.values.push(this.convertServerRequisites(subTree))
+			}.bind(this))
+
+		}
+	}
+
+	// this.coreqs = {
+	// 	type: 'or',
+	// 	values: []
+	// }
+
+	if (config.coreqs) {
+		if (!config.coreqs.values || !config.coreqs.type) {
+			elog("ERROR given coreqs invalid", config.coreqs)
+		}
+		// else if (this.coreqs.values.length > 0) {
+		// 	elog('already have coreqs??', config, this)
+		// }
+		else {
+			this.coreqs.type = config.coreqs.type
+			this.coreqs.values = []
+
+			//add the coreqs to this node, and convert server data
+			config.coreqs.values.forEach(function (subTree) {
+				this.coreqs.values.push(this.convertServerRequisites(subTree))
+			}.bind(this))
+		}
+	}
+
+
+	if (config.desc) {
+		this.desc = he.decode(config.desc)
+	}
+
+	//name and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
+	//setting the innerHTML instead of innerText will work too, but this is better
+	if (config.name) {
+		this.name = he.decode(config.name)
+	}
+
+	if (this.lastUpdateTime !== undefined) {
+		this.lastUpdateString = moment(this.lastUpdateTime).fromNow()
 	};
+
+
+	// //copy over all other attr given
+	// for (var attrName in config) {
+
+	// 	//dont copy over some attr
+	// 	//these are copied below and processed a bit
+	// 	if (_(['coreqs', 'prereqs', 'download']).includes(attrName) || config[attrName] === undefined) {
+	// 		continue;
+	// 	}
+	// 	else if (_(['desc', 'name']).includes(attrName)) {
+	// 		this[attrName] = he.decode(config[attrName])
+	// 	}
+	// 	else {
+	// 		this[attrName] = config[attrName]
+	// 	}
+	// }
+
+
+	// if (config.prereqs) {
+
+	// 	else {
+	// 		this.prereqs.type = config.prereqs.type
+
+	// 		//add the prereqs to this node, and convert server data
+	// 		config.prereqs.values.forEach(function (subTree) {
+
+	// 			this.prereqs.values.push(this.convertServerRequisites(subTree))
+	// 		}.bind(this))
+
+	// 	}
+	// }
+
+	// this.coreqs = {
+	// 	type: 'or',
+	// 	values: []
+	// }
+
+	// if (config.coreqs) {
+
+	// 	else {
+	// 		this.coreqs.type = config.coreqs.type
+
+	// 		//add the coreqs to this node, and convert server data
+	// 		config.coreqs.values.forEach(function (subTree) {
+	// 			this.coreqs.values.push(this.convertServerRequisites(subTree))
+	// 		}.bind(this))
+	// 	}
+	// }
+
+
+
+	//loading status is done if any sign that has data
+	// if (config.dataStatus !== undefined) {
+	// 	this.dataStatus = config.dataStatus
+	// }
+	if (config.missing && config.classId && !config.classUid) {
+
+		// Backend failed to find class with this id, don't bother looking again
+		this.dataStatus = macros.DATASTATUS_FAIL;
+	}
+	// else {
+	// 	this.dataStatus = macros.DATASTATUS_NOTSTARTED
+	// }
+
+
+
+	// if (!this.crns) {
+	// 	return;
+	// };
 
 	if (!this.prettyUrl && this.url) {
 		this.prettyUrl = this.url;
@@ -388,8 +502,10 @@ Class.prototype.postDataProcess = function () {
 
 			this.sections.push(section)
 		}.bind(this))
-
-	};
+	}
+	else if (this.sections.length > 0) {
+		elog('updateWithData called but already have sections?', this, config)
+	}
 
 	this.prereqs.values.sort(function (a, b) {
 		return a.compareTo(b)

@@ -42,7 +42,7 @@ describe('Class', function () {
 		});
 
 
-		it('ensures loading data state changes and data loaded', function (done) {
+		fit('ensures loading data state changes and data loaded', function (done) {
 
 			var aClass = Class.create({
 				_id:'575102d1b462e991061ca594'

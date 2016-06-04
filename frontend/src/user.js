@@ -74,8 +74,6 @@ function User() {
 			this.dbData = localData;
 		}
 	}
-	window.user = this
-
 }
 
 

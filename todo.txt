@@ -11,9 +11,16 @@ last update time should copy down to class deps of class deps -- done
 updateing db due to change in deps???? -- logging chages
 honors?
 
-MAKE SURE IT PROCESSED ALL TERMS AND NOT JUST THE ONE WITH THE ROOT PAGEDATA HAD -- possible fix found
- AND WHY WHERE THERE ERRORS FOR THE ECLASSPARESR?
-GO FIX COREQS TOO!
+resize d3 window on browser size resize
+run the output of classUids thorugh requite parser simplify prereqs
+karma jsdom?
+
+
+
+TODO: bug because not running postProcessdata, need to do that after on create instead of copying data? or maybe in download? create would be better
+ --- common fn betwen class and section
+
+
 
 
 LOOKING INTO
