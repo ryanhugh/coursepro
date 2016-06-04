@@ -491,14 +491,14 @@ Class.prototype.updateWithData = function (config) {
 	// 	return;
 	// };
 
-	if (!this.prettyUrl && this.url) {
-		this.prettyUrl = this.url;
+	if (!config.prettyUrl && config.url) {
+		this.prettyUrl = config.url;
 	};
 
 	//make sections from crns if they dont exist
-	if (this.crns.length > 0 && this.sections.length == 0) {
+	if (config.crns && config.crns.length > 0 && this.sections.length == 0) {
 
-		this.crns.forEach(function (crn) {
+		config.crns.forEach(function (crn) {
 
 			var section = Section.create({
 				host: this.host,
@@ -511,7 +511,7 @@ Class.prototype.updateWithData = function (config) {
 			this.sections.push(section)
 		}.bind(this))
 	}
-	else if (this.sections.length > 0) {
+	else if (this.sections.length > 0 && config.crns && config.crns.length > 0) {
 		elog('updateWithData called but already have sections?', this, config)
 	}
 
