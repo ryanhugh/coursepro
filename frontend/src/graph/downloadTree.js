@@ -9,7 +9,6 @@ var Class = require('../Class')
 
 
 function DownloadTree() {
-	this.visited = []
 	this.counter = 0
 }
 
@@ -42,7 +41,6 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 			elog(err)
 			return callback(err)
 		}
-		tree.resetRequisites();
 
 		//process this nodes values, already at bottom edge of loaded nodes
 		this.fetchSubTrees(tree, ignoreClasses, function (err) {
@@ -56,26 +54,22 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 
 //this is called on a subtree when it responds from the server and when recursing down a tree
 DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
-	// if (_(ignoreClasses).includes(tree)) {
-	// 	return callback()
-	// }
 
 	var toProcess = [tree];
 
 	// unlike before, we NEVER need to visit the same class twice
 	var visited = [];
-
 	var treeIsDone = true;
-
-
 	var subTree;
 
 	//make a queue of sub trees to be processed
 	var q = queue()
 
 	this.counter++;
+	// just a check to make sure nothing ridiculous is going on
 	if (this.counter > 500 || toProcess.length > 500) {
-		debugger
+		elog('counter', this.counter, 'to process:', toProcess.length, tree, toProcess.slice(0, 10));
+		return callback(null, tree)
 	}
 
 	while ((subTree = toProcess.pop())) {
@@ -87,15 +81,8 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 		}
 		visited.push(subTree)
 
-		// if needs to be loaded load it if not do theloine belo
-
 		if (!subTree.isClass || subTree.isString) {
 			toProcess = toProcess.concat(subTree.coreqs.values).concat(subTree.prereqs.values)
-
-
-			// q.defer(function (callback) {
-			// 	this.fetchFullTreeOnce(subTree, ignoreClasses.slice(0).concat(subTree), callback);
-			// }.bind(this))
 			continue;
 		}
 		else if (subTree.dataStatus === macros.DATASTATUS_NOTSTARTED) {
@@ -104,8 +91,13 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 				continue;
 			}
 			treeIsDone = false;
+
+			// subTree is asigned to above, so need to keep another reference to this one for the async operation
+			
+			var currTree = subTree;
 			q.defer(function (callback) {
-				subTree.download(function (err) {
+				currTree.download(function (err, currTree) {
+					currTree.resetRequisites();
 					callback(err)
 				}.bind(this))
 			}.bind(this))
@@ -116,39 +108,8 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 			continue;
 		}
 		else {
-			elog('wtf')
+			elog('wtf', subTree)
 		}
-
-
-		// console.log('processing,',subTree );
-
-
-		// if (subTree.dataStatus != macros.DATASTATUS_NOTSTARTED) {
-
-		// 	toProcess = toProcess.concat(subTree.prereqs.values).concat(subTree.coreqs.values);
-		// 	continue;
-		// }
-
-		// //pass down all processed classes
-		// //so if the class has itself as a prereq, or a class that is above it,
-		// //there is no infinate recursion
-		// //common for coreqs that require each other
-		// var hasAlreadyLoaded = _(ignoreClasses).includes(subTree);
-
-		// if (!hasAlreadyLoaded) {
-
-		// 	q.defer(function (callback) {
-		// 		this.fetchFullTreeOnce(subTree, ignoreClasses.slice(0).concat(subTree), callback);
-		// 	}.bind(this))
-
-		// }
-		// else {
-		// 	if (!tree.isCoreq) {
-		// 		console.log('WARNING removing ', tree.classUid, 'because already loaded it', ignoreClasses)
-		// 		_.pull(tree.prereqs.values, subTree);
-		// 		_.pull(tree.coreqs.values, subTree);
-		// 	}
-		// }
 	}
 
 
@@ -170,7 +131,6 @@ DownloadTree.prototype.fetchFullTree = function (serverData, callback) {
 	}
 
 	this.tree = tree;
-	this.visited = []
 	this.counter = 0
 	var treeIsDone = false;
 

@@ -290,7 +290,7 @@ Class.prototype.updateWithData = function (config) {
 
 	if (config.prereqs) {
 		if (this.serverPrereqs) {
-			elog('wtf')
+			elog('wtf already have prereqs, given prereqs', config)
 		}
 		else if (!config.prereqs.values || !config.prereqs.type) {
 			elog('prereqs need values ad type')
@@ -298,6 +298,7 @@ Class.prototype.updateWithData = function (config) {
 		else {
 			this.serverPrereqs = _.cloneDeep(config.prereqs)
 		}
+
 	}
 
 	if (config.coreqs) {
@@ -365,9 +366,6 @@ Class.prototype.updateWithData = function (config) {
 		elog('updateWithData called but already have sections?', this, config)
 	}
 
-	this.prereqs.values.sort(function (a, b) {
-		return a.compareTo(b)
-	}.bind(this))
 };
 
 
@@ -379,13 +377,21 @@ Class.prototype.resetRequisites = function () {
 
 		//add the prereqs to this node, and convert server data
 		this.serverPrereqs.values.forEach(function (subTree) {
+			if (subTree.missing) {
+				console.log("removed missing prereq")
+			}
+			else {
+				this.prereqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
+			}
 
-			this.prereqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
+		}.bind(this))
+
+		this.prereqs.values.sort(function (a, b) {
+			return a.compareTo(b)
 		}.bind(this))
 	}
 
 	if (this.serverCoreqs) {
-		//  WHICHEVER ONE DOWNLOADED FIRST IS NOT THE COREQ, AND THE SECOND ONE IS
 		this.coreqs.type = this.serverCoreqs.type
 		this.coreqs.values = []
 
@@ -394,12 +400,9 @@ Class.prototype.resetRequisites = function () {
 			this.coreqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
 		}.bind(this))
 
-		// remove all coreqs'prereqs and coreqs'coreqs to prevent infinate loops in treeMgr...
-		// this.coreqs.values.forEach(function (subTree) {
-		// 	subTree.coreqs.values=[]
-		// 	subTree.prereqs.values=[]
-		// 	subTree.isCoreq = true
-		// }.bind(this))
+		this.coreqs.values.sort(function (a, b) {
+			return a.compareTo(b)
+		}.bind(this))
 	}
 };
 
