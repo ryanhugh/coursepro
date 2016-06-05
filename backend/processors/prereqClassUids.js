@@ -9,8 +9,8 @@ var queue = require('d3-queue').queue
 function PrereqClassUids() {
 
 
-	// runs first, before all other processors
-	this.priority = 0;
+	// runs second, after addClassUids
+	this.priority = 1;
 }
 
 // runs on all hosts
