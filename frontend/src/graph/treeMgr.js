@@ -495,7 +495,6 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 			newChild.allParents.push(newNode);
 
 		}.bind(this))
-		return;
 	}
 
 
@@ -776,9 +775,6 @@ TreeMgr.prototype.calculateIfChildrenAtSameDepth = function (tree) {
 
 // TreeMgr.prototype.processTree = function(tree, callback) {
 TreeMgr.prototype.go = function (tree) {
-	debugger;
-
-	// tree.
 
 	// flatten coreqs and remove coreqs coreqs
 	this.flattenCoreqs(tree);
@@ -807,7 +803,7 @@ TreeMgr.prototype.go = function (tree) {
 	this.mergeDuplicateClasses(tree)
 
 	this.groupByCommonPrereqs(tree, 'or')
-		// this.groupByCommonPrereqs(tree, 'and')
+	this.groupByCommonPrereqs(tree, 'and')
 
 	this.skipNodesPostStuff(tree);
 

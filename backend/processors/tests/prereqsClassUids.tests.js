@@ -137,3 +137,31 @@ it('can swap coreqs', function (done) {
 
 
 });
+
+
+
+
+it('can simplify', function (done) {
+
+
+	var baseQuery = {
+		"classId": "031",
+		"host": "swarthmore.edu",
+		"termId": "201602",
+		"subject": "STAT"
+	}
+
+	prereqClassUids.go(baseQuery, function (err, updatedClasses) {
+		expect(updatedClasses.length).toBe(1)
+
+		updatedClasses[0].prereqs.values.forEach(function (prereq) {
+			expect(prereq.subject).not.toBe(undefined);
+
+			expect(prereq.values).toBe(undefined)
+			expect(prereq.type).toBe(undefined)
+
+		}.bind(this))
+
+		done()
+	}.bind(this))
+});

@@ -369,7 +369,6 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 
 	this.constructor.download({
 		url: this.constructor.API_ENDPOINT,
-		// resultsQuery: this.getIdentifer().optional.lookup,
 		body: this.getIdentifer().required.lookup
 	}, function (err, results) {
 		this.dataStatus = macros.DATASTATUS_DONE;
@@ -387,10 +386,6 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 			return callback(err)
 		}
 
-		// if (config.returnResults) {
-		// 	return callback(null, results)
-		// }
-
 		if (results.length == 0) {
 			console.log('base data download results.length = 0', this, config)
 			this.dataStatus = macros.DATASTATUS_FAIL;
@@ -406,18 +401,6 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 				if (instance === this) {
 					foundThis = true;
 				}
-				console.log("hi");
-				instanceCache;
-				// var key = instance.getIdentifer().full.str
-				// console.log("KEY:", key);
-				// if (instanceCache[key]) {
-				// 	elog("Somehting already in cache!>????");
-				// }
-				// else {
-				// 	instanceCache[key] = instance;
-				// }
-
-
 			}.bind(this))
 
 			if (foundThis) {
@@ -443,22 +426,11 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 					}
 				}
 			}
-			elog('wtf')
 
-			// if (results.length > 1) {
-			// 	elog("ERROR have more than 1 results??", this, config);
-			// }
-			// var serverData = instanceCache[this.getIdentifer().full.str];
-
-
-
-			// for (var attrName in serverData) {
-			// 	if ((typeof this[attrName]) === 'function') {
-			// 		continue;
-			// 	}
-			// 	this[attrName] = serverData[attrName]
-			// }
-			// return callback(null, this)
+			// This class does not exist in database :/
+			console.log('found other classes in this subject, but could not find this one')
+			this.dataStatus = macros.DATASTATUS_FAIL;
+			return callback(null, this)
 		}
 
 	}.bind(this))

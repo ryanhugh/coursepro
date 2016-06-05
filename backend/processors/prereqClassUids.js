@@ -1,6 +1,8 @@
 'use strict';
 var macros = require('../macros')
 var classesDB = require('../databases/classesDB')
+var ellucianRequisitesParser = require('../parsers/ellucianRequisitesParser')
+
 var queue = require('d3-queue').queue
 
 // This file converts prereq classIds to ClassUids by looking up the classes in the db and replacing classIds with classUids
@@ -155,10 +157,14 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 			var toUpdate = {};
 			if (aClass.prereqs) {
 				toUpdate.prereqs = this.updatePrereqs(aClass.prereqs, aClass.host, aClass.termId, keyToRows);
+
+				// and simplify tree again
+				toUpdate.prereqs = ellucianRequisitesParser.simplifyRequirements(toUpdate.prereqs)
 			}
 
 			if (aClass.coreqs) {
 				toUpdate.coreqs = this.updatePrereqs(aClass.coreqs, aClass.host, aClass.termId, keyToRows);
+				toUpdate.coreqs = ellucianRequisitesParser.simplifyRequirements(toUpdate.coreqs)
 			}
 
 			if (toUpdate.prereqs || toUpdate.coreqs) {

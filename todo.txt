@@ -78,12 +78,14 @@ no duplicates in children or parents
 panels should have text in them 
 no depth > 50
 
+debug this next http://localhost/#/graph/neu.edu/201710/CHEM/2331_2069949756
+
 big graphs
 http://localhost/#/graph/neu.edu/201710/ME/4570
-http://localhost/#/graph/neu.edu/201710/CHEM/3505 
+http://localhost/#/graph/neu.edu/201710/CHEM/3505_1161594881 
 
-http://localhost/#/graph/neu.edu/201710/EECE/4642
-http://localhost/#/graph/neu.edu/201710/ME/4640
+http://localhost/#/graph/neu.edu/201710/EECE/4642_422645136
+http://localhost/#/graph/neu.edu/201710/ME/4640_505072758
 https://localhost/#neu.edu/201630/CHEM/5622
  -- tree is 419 big
 

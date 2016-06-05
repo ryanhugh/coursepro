@@ -111,8 +111,19 @@ Class.prototype.generateIdFromPrereqs = function () {
 		elog('already have _id told to make another one?')
 		return;
 	}
-	if (this.isString) {
+	else if (this.isString) {
 		this._id = this.host + this.termId + this.desc
+		return;
+	}
+
+	else if (this.isClass && this.dataStatus === macros.DATASTATUS_FAIL) {
+		this._id = this.host + this.termId + this.subject;
+		if (this.classUid) {
+			this._id = this._id + this.classUid
+		}
+		else if (this.classId) {
+			this._id = this._id + this.classId
+		}
 		return;
 	}
 
@@ -236,16 +247,10 @@ Class.prototype.internalDownload = function (callback) {
 
 
 	BaseData.prototype.internalDownload.call(this, {}, function (err, body) {
-		this.dataStatus = macros.DATASTATUS_DONE;
 		if (err) {
 			elog('http error...', err);
-			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(err)
 		}
-
-		// temp fix because data status is no longer set in the constructor it was causing it to be copied over at the typeof loop
-		// just here until redo this part of the code
-		this.dataStatus = macros.DATASTATUS_DONE;
 		callback(null, this)
 	}.bind(this))
 }

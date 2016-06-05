@@ -81,11 +81,15 @@ EllucianRequisitesParser.prototype.simplifyRequirements = function (data) {
 		type: data.type,
 		values: []
 	};
-
+ 
 	data.values.forEach(function (subData) {
 		if ((typeof subData) == 'string') {
 			retVal.values.push(subData);
 			return;
+		}
+		if (subData.subject && (subData.classId || subData.classUid)) {
+			retVal.values.push(subData);
+			return; 
 		}
 
 		subData = this.simplifyRequirements(subData);
