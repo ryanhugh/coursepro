@@ -69,13 +69,14 @@ PageDataMgr.prototype.getParsers = function () {
 PageDataMgr.prototype.go = function (pageData, callback) {
 	this.processPageData(pageData, function (err, pageData) {
 		if (err) {
-			console.log("err",err);
+			console.log("err", err);
 			return callback(err)
 		}
 		// run the processors
 
 		var q = queue();
 		processors.forEach(function (processor) {
+			console.log("Running", processor.constructor.name);
 			if (processor.supportsHost(pageData.dbData.host)) {
 				q.defer(function (callback) {
 
@@ -90,7 +91,7 @@ PageDataMgr.prototype.go = function (pageData, callback) {
 					}.bind(this))
 					processor.go(query, function (err) {
 						if (err) {
-							console.log("ERROR processor",processor,'errored out',err);
+							console.log("ERROR processor", processor, 'errored out', err);
 							return callback(err)
 						}
 						return callback()
@@ -101,7 +102,7 @@ PageDataMgr.prototype.go = function (pageData, callback) {
 
 		q.awaitAll(function (err) {
 			if (err) {
-				console.log("ERROR some processor failed, aborting",err);
+				console.log("ERROR some processor failed, aborting", err);
 			}
 			callback(err, pageData)
 		}.bind(this))
@@ -269,8 +270,8 @@ PageDataMgr.prototype.main = function () {
 	// }.bind(this))
 
 
-	
-	
+
+
 	// var pageData = PageData.create({
 	// 	dbData: {
 	// 		_id: '574e401731d808f038eaa79c'

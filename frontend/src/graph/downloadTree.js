@@ -39,6 +39,7 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 			elog(err)
 			return callback(err)
 		}
+		tree.resetRequisites();
 
 		//process this nodes values, already at bottom edge of loaded nodes
 		this.fetchSubTrees(tree, ignoreClasses, function (err) {

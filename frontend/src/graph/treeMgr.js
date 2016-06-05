@@ -449,13 +449,13 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 		}.bind(this));
 
 		//calculate the score of this set
-		var linesRemoved = parents.length * children.length - parents.length - children.length;
+		var linesRemoved = thisParentsSet.length * children.length - thisParentsSet.length - children.length;
 
 		if (linesRemoved >= maxScore) {
 			maxScore = linesRemoved
 			matchParents = thisParentsSet;
 			matchChildren = children;
-			console.log('new max with ', parents, children)
+			console.log('new max with ', thisParentsSet, children, maxScore)
 		}
 	}.bind(this));
 
@@ -466,15 +466,14 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 		var newNode = Class.create({
 			isClass: false,
 			allParents: matchParents,
-			prereqs: {
-				type: prereqType,
-				values: matchChildren
-			},
-			coreqs: {
-				type: 'or',
-				values: []
-			}
+
 		})
+		newNode.allParents = matchParents;
+		newNode.prereqs = {
+			type: prereqType,
+			values: matchChildren
+		}
+		newNode.generateIdFromPrereqs();
 
 		matchParents.forEach(function (parent) {
 
@@ -496,7 +495,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 			newChild.allParents.push(newNode);
 
 		}.bind(this))
-
+		return;
 	}
 
 
@@ -543,7 +542,7 @@ TreeMgr.prototype.findFlattendClassList = function (tree, allNodes, includeCoreq
 			retVal = retVal.concat(this.findFlattendClassList(subTree, allNodes, includeCoreqs));
 		}.bind(this))
 
-		if (includeCoreqs) { 
+		if (includeCoreqs) {
 			tree.coreqs.values.forEach(function (subTree) {
 				retVal = retVal.concat(this.findFlattendClassList(subTree, allNodes, includeCoreqs));
 			}.bind(this))
@@ -583,18 +582,36 @@ TreeMgr.prototype.flattenCoreqs = function (tree) {
 
 TreeMgr.prototype.removeCoreqsCoreqs = function (tree, isACoreq) {
 
-	//if this class is a coreq to another class, remove its coreqs
-	if (isACoreq) {
-		tree.coreqs.values = [];
+
+	var toVisit = [tree];
+	var visited = [];
+
+	var currTree;
+	while ((currTree = toVisit.pop())) {
+		if (_(visited).includes(currTree)) {
+			continue;
+		}
+		visited.push(currTree)
+
+		// for (var attrName in attrs) {
+		// 	currTree[attrName] = attrs[attrName]
+		// }
+
+		currTree.prereqs.values.forEach(function (subTree) {
+			subTree.isCoreq = currTree.isCoreq;
+		}.bind(this))
+
+
+		currTree.coreqs.values.forEach(function (subTree) {
+			subTree.isCoreq = true;
+			subTree.prereqs.values = []
+			subTree.coreqs.values = [];
+		}.bind(this))
+
+
+		toVisit = toVisit.concat(currTree.prereqs.values).concat(currTree.coreqs.values);
 	}
 
-	tree.coreqs.values.forEach(function (subTree) {
-		this.removeCoreqsCoreqs(subTree, true);
-	}.bind(this))
-
-	tree.prereqs.values.forEach(function (subTree) {
-		this.removeCoreqsCoreqs(subTree);
-	}.bind(this));
 };
 
 
@@ -761,6 +778,8 @@ TreeMgr.prototype.calculateIfChildrenAtSameDepth = function (tree) {
 TreeMgr.prototype.go = function (tree) {
 	debugger;
 
+	// tree.
+
 	// flatten coreqs and remove coreqs coreqs
 	this.flattenCoreqs(tree);
 	this.removeCoreqsCoreqs(tree);
@@ -788,7 +807,7 @@ TreeMgr.prototype.go = function (tree) {
 	this.mergeDuplicateClasses(tree)
 
 	this.groupByCommonPrereqs(tree, 'or')
-	this.groupByCommonPrereqs(tree, 'and')
+		// this.groupByCommonPrereqs(tree, 'and')
 
 	this.skipNodesPostStuff(tree);
 
