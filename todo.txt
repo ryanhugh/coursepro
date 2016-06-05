@@ -13,12 +13,13 @@ honors?
 
 resize d3 window on browser size resize
 run the output of classUids thorugh requite parser simplify prereqs
-karma jsdom?
+karma jsdom? -- works if localStorage shim added, not that much faster... 
 why were different datas using differnet instanceCaches in testing?
 
 PREREQS, COREQS, AND ISCOREQ IS SPECIFIC PER GRAPH?!?
 -- and allparents needs to be reset
 
+move classUid to a processor because test.js is failing and for some reason multiple classes have same classUid (title is diff...)
 section needs post process too
 
 

@@ -401,11 +401,11 @@ Class.prototype.updateWithData = function (config) {
 			}.bind(this))
 
 			// remove all coreqs'prereqs and coreqs'coreqs to prevent infinate loops in treeMgr...
-			this.coreqs.values.forEach(function (subTree) {
-				subTree.coreqs.values=[]
-				subTree.prereqs.values=[]
-				subTree.isCoreq = true
-			}.bind(this))
+			// this.coreqs.values.forEach(function (subTree) {
+			// 	subTree.coreqs.values=[]
+			// 	subTree.prereqs.values=[]
+			// 	subTree.isCoreq = true
+			// }.bind(this))
 
 
 		}

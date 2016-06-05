@@ -83,6 +83,7 @@ DownloadTree.prototype.setNodesAttrs = function (tree, attrs) {
 DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) {
 
 	var toProcess = [];
+	var visited = [];
 
 	//mark all the coreqs as coreqs
 	// tree.coreqs.values.forEach(function (subTree) {
@@ -99,6 +100,10 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 	var q = queue()
 
 	while ((subTree = toProcess.pop())) {
+		if (_(visited).includes(subTree)) {
+			continue;
+		}
+		visited.push(subTree)
 
 
 		if (!subTree.isClass || subTree.isString) {

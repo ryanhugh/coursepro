@@ -759,6 +759,7 @@ TreeMgr.prototype.calculateIfChildrenAtSameDepth = function (tree) {
 
 // TreeMgr.prototype.processTree = function(tree, callback) {
 TreeMgr.prototype.go = function (tree) {
+	debugger;
 
 	// flatten coreqs and remove coreqs coreqs
 	this.flattenCoreqs(tree);
