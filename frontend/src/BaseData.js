@@ -2,9 +2,12 @@
 var macros = require('./macros')
 var request = require('./request')
 var async = require('async')
+var memoize = require('../../memoize')
 
-// in unit testing
+// if its just a var here, in unit testing there are diffrent instanceCaches for each BaseData? idk why
 window.instanceCache = window.instanceCache || {};
+
+window.loadingCalls = window.loadingCalls || {};
 
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
@@ -14,7 +17,7 @@ function BaseData(config) {
 	}
 
 	var downloadConfig;
-	this.download = async.memoize(function (configOrCallback, callback) {
+	this.download = memoize(function (configOrCallback, callback) {
 		if (typeof configOrCallback == 'object') {
 			if (downloadConfig) {
 				if (!_.isEqual(downloadConfig, configOrCallback)) {
@@ -131,7 +134,7 @@ BaseData.create = function (config, useCache) {
 		console.warn('TEST here, dedupe from down belwo')
 
 		if (instanceCache[key]) {
-			console.log("Match found!",key);
+			console.log("Match found!", key);
 
 			var instance = instanceCache[key];
 
@@ -192,37 +195,6 @@ BaseData.create = function (config, useCache) {
 
 
 
-BaseData.createMany = function (config, callback) {
-
-	//download with the given config, and then create a class instance from each one
-	this.download({
-		body: config
-	}, function (err, results) {
-		if (err) {
-			elog("error", err);
-			return callback(err)
-		}
-
-		var instances = [];
-
-		results.forEach(function (classData) {
-			var instance = this.create(classData);
-			if (!instance) {
-				elog("ERROR could not create a class with ", classData);
-				return;
-			}
-			instances.push(instance)
-		}.bind(this))
-
-
-		instances.sort(function (a, b) {
-			return a.compareTo(b);
-		}.bind(this));
-
-
-		return callback(null, instances)
-	}.bind(this))
-}
 
 
 //returns
@@ -341,6 +313,68 @@ BaseData.download = function (config, callback) {
 	}.bind(this))
 }
 
+BaseData.downloadGroup = memoize(function (config, callback) {
+
+	//download with the given body, and then create a class instance from each one
+	this.download(config, function (err, results) {
+		if (err) {
+			return callback(err)
+		}
+
+		var instances = [];
+
+		results.forEach(function (classData) {
+			var instance = this.create(classData);
+			if (!instance) {
+				elog("ERROR could not create a class with ", classData);
+				return;
+			}
+			instances.push(instance)
+		}.bind(this))
+
+		return callback(null, instances)
+
+	}.bind(this))
+}, function (config) {
+
+	var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
+
+	var key = [];
+
+	// create the key
+	for (var i = 0; i < allKeys.length; i++) {
+		if (!config.body[allKeys[i]]) {
+			break
+		}
+		key.push(config.body[allKeys[i]]);
+	}
+
+	key = key.join('/')
+	if (key.length === 0) {
+		elog(' no key!', config)
+	}
+	return key;
+	// debugger
+})
+
+BaseData.createMany = function (body, callback) {
+
+	this.downloadGroup({
+		body: body
+	}, function (err, results) {
+		if (err) {
+			elog("error", err);
+			return callback(err)
+		}
+
+		instances.sort(function (a, b) {
+			return a.compareTo(b);
+		}.bind(this));
+
+		return callback(null, instances);
+	}.bind(this))
+}
+
 
 //the only config option right now is returnResults
 // config must be the same between calls, enfored in the constructor
@@ -365,20 +399,29 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 		callback = function () {}
 	}
 
+	var lookup = this.getIdentifer().required.lookup
+	var lookupStr = this.getIdentifer().required.str
+
+	if (!loadingCalls[lookupStr]) {
+		loadingCalls[lookupStr] = {
+			loading: true,
+			callbacks: []
+		}
+	}
+
 	this.dataStatus = macros.DATASTATUS_LOADING;
 
-	this.constructor.download({
-		url: this.constructor.API_ENDPOINT,
-		body: this.getIdentifer().required.lookup
-	}, function (err, results) {
+	this.constructor.downloadGroup({
+		body: lookup
+	}, function (err, instances) {
 		this.dataStatus = macros.DATASTATUS_DONE;
 
-		if (err) {
-			err = 'http error' + err;
-		}
-		else if (results.error) {
-			err = 'results.error' + err
-		}
+		// if (err) {
+		// 	err = 'http error' + err;
+		// }
+		// else if (results.error) {
+		// 	err = 'results.error' + err
+		// }
 
 		if (err) {
 			elog(err)
@@ -386,49 +429,39 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 			return callback(err)
 		}
 
-		if (results.length == 0) {
+		if (instances.length == 0) {
 			console.log('base data download results.length = 0', this, config)
 			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(null, this)
 
 		}
+		else if (_(instances).includes(this)) {
+			return callback(null, this);
+		}
 		else {
 
-			var foundThis = false;
-			//Add all results to the cache
-			results.forEach(function (result) {
-				var instance = this.constructor.create(result);
-				if (instance === this) {
-					foundThis = true;
+
+			// cache will match if used keys, must of used _id or something if here
+			var keys = this.getIdentifer().full.lookup;
+			for (var i = 0; i < instances.length; i++) {
+
+				var isMatch = true;
+
+				for (var currKey in keys) {
+					if (instances[i][currKey] !== this[currKey]) {
+						isMatch = false;
+					}
 				}
-			}.bind(this))
 
-			if (foundThis) {
-				return callback(null, this)
-			}
-			else {
-				// cache will match if used keys, must of used _id or something if here
-				var keys = this.getIdentifer().full.lookup;
-				for (var i = 0; i < results.length; i++) {
-
-					var isMatch = true;
-
-					for (var currKey in keys) {
-						if (results[i][currKey] !== this[currKey]) {
-							isMatch = false;
-						}
-					}
-
-					if (isMatch) {
-						console.warn('cache miss!', keys)
-						this.updateWithData(results[i])
-						return callback(null, this);
-					}
+				if (isMatch) {
+					console.warn('cache miss!', keys)
+						// this.updateWithData(instances[i])
+					return callback(null, this);
 				}
 			}
 
 			// This class does not exist in database :/
-			console.log('found other classes in this subject, but could not find this one')
+			console.log('found other classes in this subject, but could not find this one', lookupStr)
 			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(null, this)
 		}
