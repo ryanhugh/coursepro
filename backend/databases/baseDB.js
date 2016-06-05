@@ -197,7 +197,7 @@ BaseDB.prototype.isValidLookupValues = function (lookupValues) {
 // changes the _id to a string if it is not already
 BaseDB.prototype.standardizeQuery = function (query) {
 	if (query._id && typeof (query._id) != 'string') {
-		console.log('chaning id of ', query._id, 'to a string', _.cloneDeep(query._id))
+		console.log('chaning id of ', query._id, 'to a string', _.cloneDeep(query._id),(typeof query._id))
 		query._id = query._id.toString()
 	};
 	return query;
@@ -246,7 +246,8 @@ BaseDB.prototype.update = function (query, updateQuery, config, callback) {
 		mongoConfig[attrName] = config[attrName]
 	}
 
-	this.table.update(query, updateQuery, mongoConfig, function (err, changeCount) {
+	// Monk messes with the _id of the query, so clone it before sending to monk
+	this.table.update(_.cloneDeep(query), updateQuery, mongoConfig, function (err, changeCount) {
 		this.find(query, config, function (err, docs) {
 			callback(err, docs);
 		}.bind(this))
@@ -282,6 +283,8 @@ BaseDB.prototype.find = function (lookupValues, config, callback) {
 			docs.forEach(function (doc) {
 				doc._id = doc._id.toString()
 			}.bind(this))
+
+			// console.log(typeof docs[0]._id, docs[0]._id, docs[0].constructor);
 
 			//db can have a couple values static
 			docs = docs.concat(this.getStaticValues(lookupValues, config))

@@ -529,33 +529,6 @@ BaseParser.prototype.standardizeClassName = function (originalName, possibleMatc
 	return originalName;
 };
 
-// http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
-BaseParser.prototype.getStringHash = function (input) {
-	var hash = 0;
-	var i;
-	var chr;
-	var len;
-
-	if (input.length === 0) {
-		elog("getStringHash given input.length ==0!!");
-		return hash;
-	}
-	for (i = 0, len = input.length; i < len; i++) {
-		chr = input.charCodeAt(i);
-		hash = ((hash << 5) - hash) + chr;
-		hash |= 0; // Convert to 32bit integer
-	}
-	return String(Math.abs(hash));
-};
-
-BaseParser.prototype.getClassUid = function (classId, title) {
-	if (!title) {
-		elog('get class id given not title!')
-	}
-	return classId + '_' + this.getStringHash(title);
-};
-
-
 
 
 BaseParser.prototype.getOptionallyPlural = function (num) {

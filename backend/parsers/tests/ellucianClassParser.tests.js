@@ -78,7 +78,6 @@ it('should parse a bunch of deps', function (done) {
 					url: url,
 					desc: '',
 					classId: '013',
-					classUid: '013_1432539222'
 				}
 			});
 
@@ -93,7 +92,6 @@ it('should parse a bunch of deps', function (done) {
 				url: url,
 				desc: '',
 				classId: '013',
-				classUid: '013_1432539222',
 				name: 'Thermodynamic/ Mech',
 				crns: ['24600']
 			}, JSON.stringify(pageData.dbData));
@@ -107,7 +105,7 @@ it('should parse a bunch of deps', function (done) {
 			//pageData.deps[1] is the other class
 			expect(pageData.deps[1].parser).toBe(ellucianClassParser);
 
-			expect(pageData.deps[1].dbData.classUid).toBe('013_1540583498') 
+			expect(pageData.deps[1].dbData.classId).toBe('013') 
 			expect(pageData.deps[1].dbData.crns).toEqual(['24601', '24603', '25363']);
 			expect(pageData.deps[1].dbData.name).toBe('Thermodyn/Stat Mechanics - Lab');
 			expect(pageData.deps[1].deps.length).toBe(3);

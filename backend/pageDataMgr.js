@@ -47,11 +47,15 @@ for (var processorName in processorsClasses) {
 	processors.push(processor)
 }
 
-// should be correct, untested
 processors.sort(function (a, b) {
+	if (a.priority === b.priority) {
+
+		//not supported yet
+		elog('wtf priority equal');
+	}
+
 	return a.priority - b.priority
 }.bind(this))
-
 
 function PageDataMgr() {
 
@@ -78,7 +82,7 @@ PageDataMgr.prototype.go = function (pageData, callback) {
 					var query = {
 						host: pageData.dbData.host
 					}
-					var toCopy = ['termId', 'subject', 'classUid', 'classId', 'crn'];
+					var toCopy = ['termId', 'subject', 'classId', 'crn'];
 					toCopy.forEach(function (term) {
 						if (pageData.dbData[term]) {
 							query[term] = pageData.dbData[term]

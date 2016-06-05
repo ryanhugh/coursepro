@@ -332,7 +332,7 @@ PageData.prototype.addDep = function (depData) {
 
 	//copy over values from this pageData
 	//this way, parsers dont have to explicitly state these values each time they add a dep
-	var valuesToCopy = ['host', 'termId', 'subject', 'classId', 'classUid', 'crn'];
+	var valuesToCopy = ['host', 'termId', 'subject', 'classId', 'crn'];
 	valuesToCopy.forEach(function (attrName) {
 		if (!this.dbData[attrName]) {
 			return;

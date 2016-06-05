@@ -16,6 +16,9 @@ run the output of classUids thorugh requite parser simplify prereqs
 karma jsdom? -- works if localStorage shim added, not that much faster... 
 why were different datas using differnet instanceCaches in testing?
 
+db.sections.createIndex( { "host": 1, "termId": 1 ,"subject": 1,"classUid": 1,"crn": 1   } )
+
+
 PREREQS, COREQS, AND ISCOREQ IS SPECIFIC PER GRAPH?!?
 -- and allparents needs to be reset
 

@@ -66,9 +66,6 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 	}
 	depData.name = this.standardizeClassName(match[1]);
 
-	depData.classUid = this.getClassUid(depData.classId, depData.name)
-
-
 
 
 

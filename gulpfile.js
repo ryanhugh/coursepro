@@ -14,7 +14,8 @@ var notify = require("gulp-notify");
 
 // for backend unit tests
 var jasmineReporter = require('./backend/jasmineReporter')
-var jasmine = require('gulp-jasmine');
+var Jasmine = require('jasmine');
+
 
 // browsify stuff
 var browserify = require('browserify');
@@ -50,8 +51,8 @@ function onError(err) {
 
 	if (!err.message) {
 		err = {
-			message:err
-		} 
+			message: err
+		}
 	}
 
 
@@ -223,24 +224,33 @@ gulp.task('btestRun', function () {
 		delete require.cache[filePath]
 	}.bind(this))
 
-	// gulp-jasmine works on filepaths so you can't have any plugins before it 
-	gulp.src('backend/**/*.tests.js')
+	// Originally, was using gulp-jasmine, but that is only a small wrapper around jasmine and only does two things:
+	// 1. delete files from require.cache (which it wasen't doing correcly, and had to be done here too)
+	// 2. includes a custom reporter, which was bad and was using a custom one anyway
+	// so after some more problems with it just decided to bypass it instead
+	var jasmine = new Jasmine();
 
-	.pipe(jasmine({
-		reporter: new jasmineReporter()
-	}))
-	.on('error', function (err) {
-		onError(err);
-		this.emit('end');
+
+	var filesToProccess = [];
+	files.forEach(function (file) {
+		if (_(file).endsWith('tests.js')) {
+
+			// get the cache object of the specs.js file,
+			// delete it and its children recursively from cache
+			var resolvedPath = path.resolve(file);
+			jasmine.addSpecFile(resolvedPath);
+		};
 	})
+
+	jasmine.addReporter(new jasmineReporter());
+	jasmine.execute();
 });
 
 gulp.task('btest', ['btestRun'], function () {
 	gulp.watch(['backend/**/*.js'], ['btestRun']);
 });
 
-gulp.task('test', ['btest','ftest'], function () {
-});
+gulp.task('test', ['btest', 'ftest'], function () {});
 
 
 
