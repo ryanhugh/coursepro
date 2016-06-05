@@ -131,7 +131,7 @@ BaseData.create = function (config, useCache) {
 		console.warn('TEST here, dedupe from down belwo')
 
 		if (instanceCache[key]) {
-			console.log("Match found!");
+			console.log("Match found!",key);
 
 			var instance = instanceCache[key];
 

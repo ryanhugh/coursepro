@@ -8,7 +8,7 @@ var Class = require('../Class')
 
 
 function DownloadTree() {
-
+	this.visited = []
 }
 
 
@@ -23,7 +23,12 @@ DownloadTree.prototype.fetchFullTreeOnce = function (tree, ignoreClasses, callba
 	}
 
 	if (!tree.isClass || tree.isString) {
+		console.log(tree, ignoreClasses);
 		this.fetchSubTrees(tree, ignoreClasses, callback)
+		// catch (e) {
+		// 	elog(e,tree, ignoreClasses)
+		// 	console.log(tree, ignoreClasses);
+		// }
 		return;
 	}
 
@@ -84,7 +89,7 @@ DownloadTree.prototype.setNodesAttrs = function (tree, attrs) {
 DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) {
 
 	var toProcess = [];
-	var visited = [];
+	// var visited = [];
 
 	//mark all the coreqs as coreqs
 	// tree.coreqs.values.forEach(function (subTree) {
@@ -101,11 +106,13 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 	var q = queue()
 
 	while ((subTree = toProcess.pop())) {
-		if (_(visited).includes(subTree)) {
+		//this prevents infinate recursion in both coreq->coreq-> coreq and in more complicated loops
+		if (_(this.visited).includes(subTree)) {
 			continue;
 		}
-		visited.push(subTree)
+		this.visited.push(subTree)
 
+		console.log('processing,',subTree );
 
 		if (!subTree.isClass || subTree.isString) {
 
@@ -178,20 +185,26 @@ DownloadTree.prototype.fetchFullTree = function (serverData, callback) {
 		console.log(serverData)
 		return callback('wtf')
 	}
+	if (this.tree) {
+		elog('already downloading a different tree')
+	}
 
 	this.tree = tree;
+	this.visited = []
 
-
+	console.log(tree);
 	this.fetchFullTreeOnce(tree, [], function (err) {
 		if (err) {
 			elog(err)
 		}
+
 
 		//another tree was began before this one finished
 		if (this.tree != tree) {
 			return callback('error different tree started before this one finished')
 		}
 		else {
+			this.tree = null;
 			return callback(null, this.tree);
 		}
 	}.bind(this));
