@@ -214,9 +214,6 @@ TreeMgr.prototype.addAllParentRelations = function (tree, parent) {
 
 	if (parent && tree.allParents.indexOf(parent) < 0) {
 		tree.allParents.push(parent)
-		if (tree.allParents.length > 1) {
-			console.log('added a second parent on ', tree.subject, tree.classUid)
-		};
 	}
 
 	tree.prereqs.values.forEach(function (subTree) {

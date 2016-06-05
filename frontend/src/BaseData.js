@@ -66,11 +66,7 @@ BaseData.isValidCreatingData = function (config) {
 
 
 //in static methods, "this" references the constructor
-BaseData.create = function (config, useCache) {
-	if (useCache === undefined) {
-		useCache = true
-	}
-
+BaseData.create = function (config) {
 	if (!config) {
 		elog('need config to make an object');
 		return null;
@@ -118,32 +114,13 @@ BaseData.create = function (config, useCache) {
 	// need good way to separate classes...
 
 
-
 	if (canCache) {
-
-		var allKeys = this.requiredPath.concat(this.optionalPath);
-
-		var key = [];
-
-		// create the key
-		for (var i = 0; i < allKeys.length; i++) {
-			key.push(config[allKeys[i]]);
-		}
-
-		key = key.join('/')
-		console.warn('TEST here, dedupe from down belwo')
+		var key = this.getKeyFromConfig(config);
 
 		if (instanceCache[key]) {
-			console.log("Match found!", key);
-
 			var instance = instanceCache[key];
-
 			instance.updateWithData(config);
-
 			return instanceCache[key]
-
-
-
 		}
 	};
 
@@ -156,38 +133,15 @@ BaseData.create = function (config, useCache) {
 		return null;
 	}
 	else {
-
 		if (canCache) {
-
-			var allKeys = this.requiredPath.concat(this.optionalPath);
-
-			var key = [];
-
-			// create the key
-			for (var i = 0; i < allKeys.length; i++) {
-				key.push(config[allKeys[i]]);
-			}
-
-			key = key.join('/')
-				// console.warn('TEST here, dedupe from down belwo')
-
+			var key = this.getKeyFromConfig(config);
 
 			if (instanceCache[key]) {
 				console.log("WTF there was no match a ms ago!");
 			}
 			instanceCache[key] = instance;
 			return instance;
-			// return instanceCache[key]
 		};
-
-		//put the instance in the cache
-
-		// if (!instanceCache[this.name]) {
-		// 	instanceCache[this.name] = []
-		// }
-
-		// instanceCache[this.name].push(instance)
-
 		return instance
 	}
 }
@@ -292,6 +246,27 @@ BaseData.prototype.getIdentifer = function () {
 	}
 };
 
+BaseData.getKeyFromConfig = function (config) {
+
+	var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
+
+	var key = [];
+
+	// create the key
+	for (var i = 0; i < allKeys.length; i++) {
+		if (!config[allKeys[i]]) {
+			break
+		}
+		key.push(config[allKeys[i]]);
+	}
+
+	key = key.join('/')
+	if (key.length === 0) {
+		elog(' no key!', config)
+	}
+	return key;
+};
+
 //all requests from all trafic go through here
 BaseData.download = function (config, callback) {
 
@@ -336,25 +311,7 @@ BaseData.downloadGroup = memoize(function (config, callback) {
 
 	}.bind(this))
 }, function (config) {
-
-	var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
-
-	var key = [];
-
-	// create the key
-	for (var i = 0; i < allKeys.length; i++) {
-		if (!config.body[allKeys[i]]) {
-			break
-		}
-		key.push(config.body[allKeys[i]]);
-	}
-
-	key = key.join('/')
-	if (key.length === 0) {
-		elog(' no key!', config)
-	}
-	return key;
-	// debugger
+	return BaseData.getKeyFromConfig(config.body);
 })
 
 BaseData.createMany = function (body, callback) {
