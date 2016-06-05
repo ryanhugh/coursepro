@@ -106,8 +106,10 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 	var q = queue()
 
 	while ((subTree = toProcess.pop())) {
+
 		//this prevents infinate recursion in both coreq->coreq-> coreq and in more complicated loops
 		if (_(this.visited).includes(subTree)) {
+			console.log("unsure if this is too agreesive, eg need to load the same class down diff branches?");
 			continue;
 		}
 		this.visited.push(subTree)
@@ -117,7 +119,7 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 		if (!subTree.isClass || subTree.isString) {
 
 			q.defer(function (callback) {
-				this.fetchFullTreeOnce(subTree, _.cloneDeep(ignoreClasses), callback);
+				this.fetchFullTreeOnce(subTree, ignoreClasses.slice(0), callback);
 			}.bind(this))
 			continue;
 		}
@@ -133,17 +135,17 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 
 
 		//dont load classes that are on ignore list
-		var compareObject = {
-			classUid: subTree.classUid,
-			subject: subTree.subject,
-			isClass: subTree.isClass
-		};
+		// var compareObject = {
+		// 	classUid: subTree.classUid,
+		// 	subject: subTree.subject,
+		// 	isClass: subTree.isClass
+		// };
 
 		//pass down all processed classes
 		//so if the class has itself as a prereq, or a class that is above it,
 		//there is no infinate recursion
 		//common for coreqs that require each other
-		var hasAlreadyLoaded = _.some(ignoreClasses, _.matches(compareObject));
+		var hasAlreadyLoaded = _(ignoreClasses).includes(subTree);
 		// var hasAlreadyLoaded = false;
 
 		// for (var i = 0; i < ignoreClasses.length; i++) {
@@ -158,13 +160,13 @@ DownloadTree.prototype.fetchSubTrees = function (tree, ignoreClasses, callback) 
 		if (!hasAlreadyLoaded) {
 
 			q.defer(function (callback) {
-				this.fetchFullTreeOnce(subTree, _.cloneDeep(ignoreClasses).concat(compareObject), callback);
+				this.fetchFullTreeOnce(subTree, ignoreClasses.slice(0).concat(subTree), callback);
 			}.bind(this))
 
 		}
 		else {
 			if (!tree.isCoreq) {
-				console.log('WARNING removing ', tree.classUid, 'because already loaded it', ignoreClasses, compareObject)
+				console.log('WARNING removing ', tree.classUid, 'because already loaded it', ignoreClasses)
 				_.pull(tree.prereqs.values, subTree);
 				_.pull(tree.coreqs.values, subTree);
 			}
