@@ -26,36 +26,6 @@ function GraphPanelExpand($timeout, $document) {
 		else {
 			return Math.max(576, Math.min(780, tree.desc.length))
 		}
-
-
-		var panelWidth = 0;
-		tree.sections.forEach(function (section) {
-			if (section.meetings) {
-				panelWidth += 330;
-			}
-			else {
-				panelWidth += 185;
-			}
-		}.bind(this))
-
-		if (panelWidth) {
-			panelWidth = Math.min(895, panelWidth)
-			if (tree.sections.length < 5) {
-				panelWidth = 610;
-			};
-		}
-		else {
-			if (tree.desc) {
-				panelWidth = tree.desc.length
-			}
-			else {
-				panelWidth = ''
-			}
-		}
-		if (panelWidth < 476) {
-			panelWidth = 576
-		};
-		return panelWidth;
 	};
 
 	// the given scope is the scope of a tree inside a recursions
