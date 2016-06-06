@@ -12,6 +12,7 @@ updateing db due to change in deps???? -- logging chages
 honors?
 
 resize d3 window on browser size resize -- done
+ -- why does the grpah like move a little?
 run the output of classUids thorugh requite parser simplify prereqs -- done
 karma jsdom? -- works if localStorage shim added, not that much faster... 
 why were different datas using differnet instanceCaches in testing?
