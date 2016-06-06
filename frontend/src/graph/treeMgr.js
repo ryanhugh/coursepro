@@ -770,9 +770,6 @@ TreeMgr.prototype.resetTree = function(tree) {
 	var toVisit = [tree];
 	var visited = [];
 
-	var toVisit = [tree];
-	var visited = [];
-
 	var currTree;
 	while ((currTree = toVisit.pop())) {
 		if (_(visited).includes(currTree)) {

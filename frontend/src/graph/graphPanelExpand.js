@@ -78,7 +78,7 @@ function GraphPanelExpand($timeout, $document) {
 				$scope.style['box-shadow'] = 'gray 0px 0px 0px'
 
 				if (tree.isCoreq) {
-					tree.$scope.graph.bringToFront(tree.lowestParent)
+					tree.$scope.graph.sortCoreqs(tree.lowestParent)
 				}
 			}
 		}

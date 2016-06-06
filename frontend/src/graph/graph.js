@@ -109,6 +109,17 @@ Graph.prototype.bringToFront = function (tree) {
 	gParentElement.appendChild(g)
 };
 
+Graph.prototype.sortCoreqs = function (tree) {
+	if (tree.coreqs.values.length == 0) {
+		return;
+	}
+
+	for (var i = tree.coreqs.values.length - 1; i >= 0; i--) {
+		this.bringToFront(tree.coreqs.values[i]);
+	}
+	this.bringToFront(tree);
+};
+
 Graph.prototype.updateHeight = function (tree) {
 
 	// update the height of the panel
@@ -222,7 +233,7 @@ Graph.prototype.go = function (tree, callback) {
 			.attr("class", "link")
 			.style("stroke-width", 4)
 			.attr("marker-mid", "url(#end)");
-		    // .attr("marker-end", function(d) { return "url(#licensing)"; });
+		// .attr("marker-end", function(d) { return "url(#licensing)"; });
 
 		for (var i = 0; i < graph.links.length; i++) {
 			var currLink = graph.links[i];
@@ -280,11 +291,6 @@ Graph.prototype.go = function (tree, callback) {
 
 			$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
 		}
-		graph.nodes.forEach(function (node) {
-			if (node.isCoreq) {
-				this.bringToFront(node.lowestParent)
-			}
-		}.bind(this))
 
 		setTimeout(function () {
 			this.$scope.$apply()
@@ -293,6 +299,10 @@ Graph.prototype.go = function (tree, callback) {
 
 			this.force.nodes(graph.nodes)
 				.links(graph.links)
+
+			graph.nodes.forEach(function (node) {
+				this.sortCoreqs(node);
+			}.bind(this))
 
 			this.force.on("tick", function (e) {
 				for (var k = 0; k < graph.nodes.length; k++) {
@@ -340,12 +350,12 @@ Graph.prototype.go = function (tree, callback) {
 
 				};
 
-				link.attr("points",function (d) {
+				link.attr("points", function (d) {
 
 
 
 					// return d.source.x+','+d.source.y+' '+((d.target.x+d.source.x)/2)+','+((d.target.y+d.source.y)/2)+' '+d.target.x+','+d.target.y
-					return d.target.x+','+d.target.y+' '+((d.source.x+d.target.x)/2)+','+((d.source.y+d.target.y)/2)+' '+d.source.x+','+d.source.y
+					return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
 				}.bind(this))
 
 				// link.attr("x1", function (d) {
