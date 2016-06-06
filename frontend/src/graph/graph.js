@@ -67,10 +67,15 @@ Graph.prototype.addClass = function (aClass) {
 	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))
 };
 
+Graph.prototype.getWidth = function(tree) {
+	var width = Math.min(200, tree.width);
+	width += tree.coreqs.values.length *34
+	return width;
+};
 
 Graph.prototype.overlap = function (rect1, rect2) {
-	if (rect1.x < rect2.x + Math.min(200, rect2.width) &&
-		rect1.x + Math.min(200, rect1.width) > rect2.x &&
+	if (rect1.x < rect2.x + this.getWidth(rect2) &&
+		rect1.x + this.getWidth(rect1) > rect2.x &&
 		rect1.y < rect2.y + Math.min(200, rect2.height) &&
 		Math.min(200, rect1.height) + rect1.y > rect2.y) {
 		return true;
@@ -86,7 +91,7 @@ Graph.prototype.collide = function (node1, node2) {
 		return;
 	}
 
-	var dx = Math.min(node1.x + Math.min(200, node1.width) - node2.x, node2.x + Math.min(200, node2.width) - node1.x, 20) / 2;
+	var dx = Math.min(node1.x + this.getWidth(node1) - node2.x, node2.x + this.getWidth(node2) - node1.x, 20) / 2;
 	if (node1.x < node2.x) {
 		node1.x -= dx;
 		node2.x += dx;

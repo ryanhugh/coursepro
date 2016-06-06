@@ -318,7 +318,7 @@ BaseData.createMany = function (body, callback) {
 
 	this.downloadGroup({
 		body: body
-	}, function (err, results) {
+	}, function (err, instances) {
 		if (err) {
 			elog("error", err);
 			return callback(err)

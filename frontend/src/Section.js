@@ -24,7 +24,7 @@ function Section(config) {
 	//instances of Meeting
 	this.meetings = []
 
-	this.processServerData(config)
+	// this.processServerData(config)
 }
 
 macros.inherent(BaseData, Section)
@@ -197,8 +197,8 @@ Section.prototype.getUniqueEndTimes = function (ignoreExams) {
 	return retVal;
 };
 
-Section.prototype.getHasWaitList = function(){
-	if (this.waitCapacity > 0 || this.waitRemaining>0) {
+Section.prototype.getHasWaitList = function () {
+	if (this.waitCapacity > 0 || this.waitRemaining > 0) {
 		return true;
 	}
 	else {
@@ -212,25 +212,28 @@ Section.prototype.getHasWaitList = function(){
 // Network methods
 
 
-Section.prototype.internalDownload = function (callback) {
-	if (!callback) {
-		callback = function () {}
-	}
+// Section.prototype.internalDownload = function (callback) {
+// 	if (!callback) {
+// 		callback = function () {}
+// 	}
 
-	BaseData.prototype.internalDownload.call(this, function (err) {
-		if (err) {
-			console.log("ERROR in list sections", err, this)
-			return callback(err);
-		}
+// 	BaseData.prototype.internalDownload.call(this, function (err) {
+// 		if (err) {
+// 			console.log("ERROR in list sections", err, this)
+// 			return callback(err);
+// 		}
 
-		this.processServerData();
+// 		this.processServerData();
 
-		callback(null, this)
+// 		callback(null, this)
 
-	}.bind(this))
-}
+// 	}.bind(this))
+// }
 
-Section.prototype.processServerData = function () {
+Section.prototype.updateWithData = function (data) {
+
+
+	BaseData.prototype.updateWithData.call(this, data);
 
 	var newMeetings = []
 
