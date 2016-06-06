@@ -147,7 +147,7 @@ Graph.prototype.updateHeight = function (tree) {
 Graph.prototype.calculateGraphSize = function () {
 	this.graphWidth = window.innerWidth;
 	this.graphHeight = window.innerHeight;
-	
+
 	this.force.size([this.graphWidth, this.graphHeight])
 
 	this.svg.attr("width", this.graphWidth)
@@ -163,294 +163,301 @@ Graph.prototype.go = function (tree, callback) {
 			return callback(err);
 		};
 
-		treeMgr.go(tree);
-
-		var graph = treeMgr.treeToD3(tree)
-
-		this.classCount = treeMgr.countClassesInTree(tree);
-		if (this.classCount === 0) {
-			elog('0 classes found?', tree)
-		}
-
-
-		this.force = d3.layout.force()
-			.charge(-20000)
-			.gravity(0.2)
-			.linkDistance(5)
-
-
-		this.svg = d3.select("#d3GraphId").append("svg")
-
-		this.calculateGraphSize();
-
-
-		// can move this to the same as above? this was a separate #d3graphId selector
-		d3.select("#d3GraphId").on("mousedown", function () {
-			d3.event.stopPropagation();
-		}.bind(this))
-
-
-		var container = this.svg.append("g");
-
-
-		var zoom = d3.behavior.zoom()
-			.scaleExtent([.1, 1.5])
-			.on("zoom", function () {
-				container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-			}.bind(this));
-
-		this.svg.call(zoom)
-
-
-		// Per-type markers, as they don't inherit styles.
-		// svg.append("svg:defs").selectAll("marker")
-		//     .data(["end"])
-		//   .enter().append("svg:marker")
-		//     .attr("id", String)
-		//     .attr("viewBox", "0 -5 10 10")
-		//     .attr("refX", 5)
-		//     .attr("markerWidth", 6)
-		//     .attr("markerHeight", 6)
-		//     .attr("orient", "auto")
-		//   .append("svg:path")
-		//     .attr("d", "M0,-5L10,0L0,5");
-
-
-		var dragStartedByRightButton = false;
-		var nodeDrag = d3.behavior.drag()
-			.on("dragstart", function (node) {
-				if (d3.event.sourceEvent.which == 3) {
-					dragStartedByRightButton = true
-					return;
-				}
-				else {
-					dragStartedByRightButton = false;
-					this.force.alpha(.007)
-				}
-			}.bind(this))
-			.on("drag", function (node) {
-				if (dragStartedByRightButton) {
-					return;
-				}
-				if (node.$scope.isExpanded) {
-					return;
-				}
-				node.px += d3.event.dx
-				node.py += d3.event.dy
-				node.x += d3.event.dx
-				node.y += d3.event.dy
-				this.force.alpha(.007)
-			}.bind(this))
-
-
-		graph.nodes.forEach(function (node) {
-			// node.x = node.cx = Math.random() * 100 + 200
-			node.height = this.nodeHeight;
-			node.width = this.nodeWidth
-		}.bind(this))
-
-
-		var link = container.selectAll(".link")
-			.data(graph.links)
-			.enter().append("polyline")
-			.attr("class", "link")
-			.style("stroke-width", 4)
-			.attr("marker-mid", "url(#end)");
-		// .attr("marker-end", function(d) { return "url(#licensing)"; });
-
-		for (var i = 0; i < graph.links.length; i++) {
-			var currLink = graph.links[i];
-
-			// find the parent of the two nodes the line connects 
-			var parent;
-			var child;
-			if (graph.nodes[currLink.source].depth > graph.nodes[currLink.target].depth) {
-				parent = graph.nodes[currLink.target];
-				child = graph.nodes[currLink.source];
-			}
-			else {
-				parent = graph.nodes[currLink.source];
-				child = graph.nodes[currLink.target];
-			}
-
-			// if should be 'and', make line darker
-			if (parent.prereqs.type == 'and') {
-				link[0][i].style.stroke = '#5B5B5B'
-			}
-
-			//add line to both nodes links list
-			parent.downwardLinks.push(link[0][i])
-			child.upwardLinks.push(link[0][i])
-		}
-
-		var node = container.selectAll(".node")
-			.data(graph.nodes)
-			.enter().append("g")
-			.attr("class", "node")
-			.attr("width", this.nodeWidth)
-			.attr("height", this.nodeHeight)
-			.on("mousedown", function () {
-				d3.event.stopPropagation();
-			})
-			.call(nodeDrag)
-
-		var html = '<div ng-include="\'panel.html\'"></div>'
-
-		for (var i = 0; i < node[0].length; i++) {
-
-			// create the new scope for each node
-			var newScope = this.$scope.$new();
-
-			// set up the links between tree and scope and foreignObject
-			newScope.tree = graph.nodes[i]
-			graph.nodes[i].$scope = newScope
-
-
-			var foreignObject = d3.select(node[0][i]).append('foreignObject')
-				.attr("width", this.nodeWidth)
-				.attr("height", this.nodeHeight);
-
-			graph.nodes[i].foreignObject = foreignObject[0][0]
-
-			$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
-		}
-
+		// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
 		setTimeout(function () {
 			this.$scope.$apply()
 
-			var multiplyer = 1;
 
-			this.force.nodes(graph.nodes)
-				.links(graph.links)
+			treeMgr.go(tree);
 
-			graph.nodes.forEach(function (node) {
-				this.sortCoreqs(node);
+			var graph = treeMgr.treeToD3(tree)
+
+			this.classCount = treeMgr.countClassesInTree(tree);
+			if (this.classCount === 0) {
+				elog('0 classes found?', tree)
+			}
+
+
+			this.force = d3.layout.force()
+				.charge(-20000)
+				.gravity(0.2)
+				.linkDistance(5)
+
+
+			this.svg = d3.select("#d3GraphId").append("svg")
+
+			this.calculateGraphSize();
+
+
+			// can move this to the same as above? this was a separate #d3graphId selector
+			d3.select("#d3GraphId").on("mousedown", function () {
+				d3.event.stopPropagation();
 			}.bind(this))
 
-			this.force.on("tick", function (e) {
-				for (var k = 0; k < graph.nodes.length; k++) {
-					var currNode = graph.nodes[k];
 
-					if (currNode.isCoreq) {
-						continue;
+			var container = this.svg.append("g");
+
+
+			var zoom = d3.behavior.zoom()
+				.scaleExtent([.1, 1.5])
+				.on("zoom", function () {
+					container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+				}.bind(this));
+
+			this.svg.call(zoom)
+
+
+			// Per-type markers, as they don't inherit styles.
+			// svg.append("svg:defs").selectAll("marker")
+			//     .data(["end"])
+			//   .enter().append("svg:marker")
+			//     .attr("id", String)
+			//     .attr("viewBox", "0 -5 10 10")
+			//     .attr("refX", 5)
+			//     .attr("markerWidth", 6)
+			//     .attr("markerHeight", 6)
+			//     .attr("orient", "auto")
+			//   .append("svg:path")
+			//     .attr("d", "M0,-5L10,0L0,5");
+
+
+			var dragStartedByRightButton = false;
+			var nodeDrag = d3.behavior.drag()
+				.on("dragstart", function (node) {
+					if (d3.event.sourceEvent.which == 3) {
+						dragStartedByRightButton = true
+						return;
 					}
+					else {
+						dragStartedByRightButton = false;
+						this.force.alpha(.007)
+					}
+				}.bind(this))
+				.on("drag", function (node) {
+					if (dragStartedByRightButton) {
+						return;
+					}
+					if (node.$scope.isExpanded) {
+						return;
+					}
+					node.px += d3.event.dx
+					node.py += d3.event.dy
+					node.x += d3.event.dx
+					node.y += d3.event.dy
+					this.force.alpha(.007)
+				}.bind(this))
 
-					// collision
-					for (var j = k + 1; j < graph.nodes.length; j++) {
-						var testingCollisionAgainst = graph.nodes[j];
-						if (testingCollisionAgainst.isCoreq) {
+
+			graph.nodes.forEach(function (node) {
+				// node.x = node.cx = Math.random() * 100 + 200
+				node.height = this.nodeHeight;
+				node.width = this.nodeWidth
+			}.bind(this))
+
+
+			var link = container.selectAll(".link")
+				.data(graph.links)
+				.enter().append("polyline")
+				.attr("class", "link")
+				.style("stroke-width", 4)
+				.attr("marker-mid", "url(#end)");
+			// .attr("marker-end", function(d) { return "url(#licensing)"; });
+
+			for (var i = 0; i < graph.links.length; i++) {
+				var currLink = graph.links[i];
+
+				// find the parent of the two nodes the line connects 
+				var parent;
+				var child;
+				if (graph.nodes[currLink.source].depth > graph.nodes[currLink.target].depth) {
+					parent = graph.nodes[currLink.target];
+					child = graph.nodes[currLink.source];
+				}
+				else {
+					parent = graph.nodes[currLink.source];
+					child = graph.nodes[currLink.target];
+				}
+
+				// if should be 'and', make line darker
+				if (parent.prereqs.type == 'and') {
+					link[0][i].style.stroke = '#5B5B5B'
+				}
+
+				//add line to both nodes links list
+				parent.downwardLinks.push(link[0][i])
+				child.upwardLinks.push(link[0][i])
+			}
+
+			var node = container.selectAll(".node")
+				.data(graph.nodes)
+				.enter().append("g")
+				.attr("class", "node")
+				.attr("width", this.nodeWidth)
+				.attr("height", this.nodeHeight)
+				.on("mousedown", function () {
+					d3.event.stopPropagation();
+				})
+				.call(nodeDrag)
+
+			var html = '<div ng-include="\'panel.html\'"></div>'
+
+			for (var i = 0; i < node[0].length; i++) {
+
+				// create the new scope for each node
+				var newScope = this.$scope.$new();
+
+				// set up the links between tree and scope and foreignObject
+				newScope.tree = graph.nodes[i]
+				graph.nodes[i].$scope = newScope
+
+
+				var foreignObject = d3.select(node[0][i]).append('foreignObject')
+					.attr("width", this.nodeWidth)
+					.attr("height", this.nodeHeight);
+
+				graph.nodes[i].foreignObject = foreignObject[0][0]
+
+				$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
+			}
+
+			// Scope needs to be updated after adding a new scope for each element above
+			setTimeout(function () {
+				this.$scope.$apply()
+
+				var multiplyer = 1;
+
+				this.force.nodes(graph.nodes)
+					.links(graph.links)
+
+				graph.nodes.forEach(function (node) {
+					this.sortCoreqs(node);
+				}.bind(this))
+
+				this.force.on("tick", function (e) {
+					for (var k = 0; k < graph.nodes.length; k++) {
+						var currNode = graph.nodes[k];
+
+						if (currNode.isCoreq) {
 							continue;
 						}
-						this.collide(currNode, testingCollisionAgainst)
-					}
 
-					//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
-					currNode.y += ((currNode.depth * 200 + 50) - currNode.y) * e.alpha * multiplyer;
+						// collision
+						for (var j = k + 1; j < graph.nodes.length; j++) {
+							var testingCollisionAgainst = graph.nodes[j];
+							if (testingCollisionAgainst.isCoreq) {
+								continue;
+							}
+							this.collide(currNode, testingCollisionAgainst)
+						}
+
+						//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
+						currNode.y += ((currNode.depth * 200 + 50) - currNode.y) * e.alpha * multiplyer;
 
 
-					// collision between children on different depths
-					if (!currNode.allChildrenAtSameDepth) {
-						for (var i = 0; i < currNode.prereqs.values.length; i++) {
-							for (var j = i + 1; j < currNode.prereqs.values.length; j++) {
-								if (currNode.prereqs.values[i].depth === currNode.prereqs.values[j].depth) {
-									continue;
-								}
-								var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
-								if (Math.abs(diff) > 100) {
-									continue;
-								}
-								if (diff < 0) {
-									currNode.prereqs.values[i].x -= (100 + diff) / 2;
-									currNode.prereqs.values[j].x += (100 + diff) / 2;
-								}
-								else {
-									currNode.prereqs.values[i].x += (100 - diff) / 2;
-									currNode.prereqs.values[j].x -= (100 - diff) / 2;
+						// collision between children on different depths
+						if (!currNode.allChildrenAtSameDepth) {
+							for (var i = 0; i < currNode.prereqs.values.length; i++) {
+								for (var j = i + 1; j < currNode.prereqs.values.length; j++) {
+									if (currNode.prereqs.values[i].depth === currNode.prereqs.values[j].depth) {
+										continue;
+									}
+									var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
+									if (Math.abs(diff) > 100) {
+										continue;
+									}
+									if (diff < 0) {
+										currNode.prereqs.values[i].x -= (100 + diff) / 2;
+										currNode.prereqs.values[j].x += (100 + diff) / 2;
+									}
+									else {
+										currNode.prereqs.values[i].x += (100 - diff) / 2;
+										currNode.prereqs.values[j].x -= (100 - diff) / 2;
+									}
 								}
 							}
 						}
-					}
 
-				};
+					};
 
-				link.attr("points", function (d) {
-
+					link.attr("points", function (d) {
 
 
-					// return d.source.x+','+d.source.y+' '+((d.target.x+d.source.x)/2)+','+((d.target.y+d.source.y)/2)+' '+d.target.x+','+d.target.y
-					return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
+
+						// return d.source.x+','+d.source.y+' '+((d.target.x+d.source.x)/2)+','+((d.target.y+d.source.y)/2)+' '+d.target.x+','+d.target.y
+						return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
+					}.bind(this))
+
+					// link.attr("x1", function (d) {
+					// 		return d.source.x;
+					// 	}.bind(this))
+					// 	.attr("y1", function (d) {
+					// 		return d.source.y;
+					// 	}.bind(this))
+					// 	.attr("x2", function (d) {
+					// 		return d.target.x;
+					// 	}.bind(this))
+					// 	.attr("y2", function (d) {
+					// 		return d.target.y;
+					// 	}.bind(this));
+
+					node.attr("transform", function (d) {
+						if (d.isCoreq) {
+
+							var x = d.lowestParent.x - d.width / 2;
+							var y = d.lowestParent.y - d.height / 2;
+
+							x += (d.coreqIndex + 1) * 30
+							y -= (d.coreqIndex + 1) * 39
+
+							return "translate(" + x + "," + y + ")";
+						}
+						else {
+							return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
+						}
+					}.bind(this));
+
+
+
+
 				}.bind(this))
 
-				// link.attr("x1", function (d) {
-				// 		return d.source.x;
-				// 	}.bind(this))
-				// 	.attr("y1", function (d) {
-				// 		return d.source.y;
-				// 	}.bind(this))
-				// 	.attr("x2", function (d) {
-				// 		return d.target.x;
-				// 	}.bind(this))
-				// 	.attr("y2", function (d) {
-				// 		return d.target.y;
-				// 	}.bind(this));
+				this.force.start();
 
-				node.attr("transform", function (d) {
-					if (d.isCoreq) {
-
-						var x = d.lowestParent.x - d.width / 2;
-						var y = d.lowestParent.y - d.height / 2;
-
-						x += (d.coreqIndex + 1) * 30
-						y -= (d.coreqIndex + 1) * 39
-
-						return "translate(" + x + "," + y + ")";
+				// Two step process:
+				// make nodes find the nodes near them
+				var safety = 0;
+				// D3 cuts off at .005 alpha and freezes everything
+				// the higher it is, the faster it loads, but it will not be done when it moves to the next step
+				// You'll want to try out different, "small" values for this
+				// perhaps make this higher if on slower hardware??
+				while (this.force.alpha() > 0.005) {
+					this.force.tick();
+					if (safety++ > 500) {
+						// Avoids infinite looping in case this solution was a bad idea
+						break;
 					}
-					else {
-						return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
+				}
+
+				//2. make nodes go towards their depth level
+				multiplyer = 10;
+				this.force.start();
+
+				safety = 0;
+				while (this.force.alpha() > 0.01) {
+					this.force.tick();
+					if (safety++ > 500) {
+						break;
 					}
-				}.bind(this));
-
-
-
-
-			}.bind(this))
-
-			this.force.start();
-
-			// Two step process:
-			// make nodes find the nodes near them
-			var safety = 0;
-			// D3 cuts off at .005 alpha and freezes everything
-			// the higher it is, the faster it loads, but it will not be done when it moves to the next step
-			// You'll want to try out different, "small" values for this
-			// perhaps make this higher if on slower hardware??
-			while (this.force.alpha() > 0.005) {
-				this.force.tick();
-				if (safety++ > 500) {
-					// Avoids infinite looping in case this solution was a bad idea
-					break;
 				}
-			}
 
-			//2. make nodes go towards their depth level
-			multiplyer = 10;
-			this.force.start();
+				this.$scope.tree = tree;
 
-			safety = 0;
-			while (this.force.alpha() > 0.01) {
-				this.force.tick();
-				if (safety++ > 500) {
-					break;
-				}
-			}
+				graph.nodes.forEach(function (tree) {
+					this.updateHeight(tree)
+				}.bind(this))
 
-			this.$scope.tree = tree;
-
-			graph.nodes.forEach(function (tree) {
-				this.updateHeight(tree)
-			}.bind(this))
-
-			callback(null, tree)
+				callback(null, tree)
+			}.bind(this), 0)
 		}.bind(this), 0)
 
 	}.bind(this))
