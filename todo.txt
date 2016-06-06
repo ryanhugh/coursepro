@@ -11,8 +11,8 @@ last update time should copy down to class deps of class deps -- done
 updateing db due to change in deps???? -- logging chages
 honors?
 
-resize d3 window on browser size resize
-run the output of classUids thorugh requite parser simplify prereqs
+resize d3 window on browser size resize -- done
+run the output of classUids thorugh requite parser simplify prereqs -- done
 karma jsdom? -- works if localStorage shim added, not that much faster... 
 why were different datas using differnet instanceCaches in testing?
 

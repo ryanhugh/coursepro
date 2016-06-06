@@ -26,6 +26,7 @@ function Graph() {
 	//controls the state of the spinner
 	this.isLoading = false;
 
+
 	this.graphWidth = window.innerWidth;
 	this.graphHeight = window.innerHeight;
 
@@ -34,6 +35,9 @@ function Graph() {
 
 	// main d3 force, defined in go
 	this.force = null;
+
+	// the svg element, defined in go
+	this.svg = null;
 
 	var path = {};
 
@@ -52,6 +56,10 @@ function Graph() {
 
 
 	this.$scope.addClass = this.addClass.bind(this)
+
+	$(window).resize(function () {
+		this.calculateGraphSize();
+	}.bind(this));
 }
 
 Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile']
@@ -67,9 +75,9 @@ Graph.prototype.addClass = function (aClass) {
 	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))
 };
 
-Graph.prototype.getWidth = function(tree) {
+Graph.prototype.getWidth = function (tree) {
 	var width = Math.min(200, tree.width);
-	width += tree.coreqs.values.length *34
+	width += tree.coreqs.values.length * 34
 	return width;
 };
 
@@ -136,6 +144,16 @@ Graph.prototype.updateHeight = function (tree) {
 };
 
 
+Graph.prototype.calculateGraphSize = function () {
+	this.graphWidth = window.innerWidth;
+	this.graphHeight = window.innerHeight;
+	
+	this.force.size([this.graphWidth, this.graphHeight])
+
+	this.svg.attr("width", this.graphWidth)
+		.attr("height", this.graphHeight)
+};
+
 
 Graph.prototype.go = function (tree, callback) {
 	this.isLoading = true;
@@ -159,12 +177,12 @@ Graph.prototype.go = function (tree, callback) {
 			.charge(-20000)
 			.gravity(0.2)
 			.linkDistance(5)
-			.size([this.graphWidth, this.graphHeight])
 
 
-		var svg = d3.select("#d3GraphId").append("svg")
-			.attr("width", this.graphWidth)
-			.attr("height", this.graphHeight)
+		this.svg = d3.select("#d3GraphId").append("svg")
+
+		this.calculateGraphSize();
+
 
 		// can move this to the same as above? this was a separate #d3graphId selector
 		d3.select("#d3GraphId").on("mousedown", function () {
@@ -172,7 +190,7 @@ Graph.prototype.go = function (tree, callback) {
 		}.bind(this))
 
 
-		var container = svg.append("g");
+		var container = this.svg.append("g");
 
 
 		var zoom = d3.behavior.zoom()
@@ -181,7 +199,7 @@ Graph.prototype.go = function (tree, callback) {
 				container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 			}.bind(this));
 
-		svg.call(zoom)
+		this.svg.call(zoom)
 
 
 		// Per-type markers, as they don't inherit styles.
