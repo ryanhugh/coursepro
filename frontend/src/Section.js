@@ -23,8 +23,6 @@ function Section(config) {
 	//each of these then has times, and days
 	//instances of Meeting
 	this.meetings = []
-
-	// this.processServerData(config)
 }
 
 macros.inherent(BaseData, Section)
@@ -206,29 +204,6 @@ Section.prototype.getHasWaitList = function () {
 	}
 }
 
-
-
-
-// Network methods
-
-
-// Section.prototype.internalDownload = function (callback) {
-// 	if (!callback) {
-// 		callback = function () {}
-// 	}
-
-// 	BaseData.prototype.internalDownload.call(this, function (err) {
-// 		if (err) {
-// 			console.log("ERROR in list sections", err, this)
-// 			return callback(err);
-// 		}
-
-// 		this.processServerData();
-
-// 		callback(null, this)
-
-// 	}.bind(this))
-// }
 
 Section.prototype.updateWithData = function (data) {
 
