@@ -19,7 +19,15 @@ function GraphPanelExpand($timeout, $document) {
 
 
 	GraphPanelExpandInner.prototype.calculatePanelWidth = function (tree) {
-		//calculate the width of this tree
+
+		if (tree.sections.length > 0) {
+			return 780;
+		}
+		else {
+			return Math.max(576, Math.min(780, tree.desc.length))
+		}
+
+
 		var panelWidth = 0;
 		tree.sections.forEach(function (section) {
 			if (section.meetings) {

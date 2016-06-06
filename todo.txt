@@ -17,6 +17,8 @@ run the output of classUids thorugh requite parser simplify prereqs -- done
 karma jsdom? -- works if localStorage shim added, not that much faster... 
 why were different datas using differnet instanceCaches in testing?
 
+width needs to be 780 for panel now
+
 db.sections.createIndex( { "host": 1, "termId": 1 ,"subject": 1,"classUid": 1,"crn": 1   } )
 
 

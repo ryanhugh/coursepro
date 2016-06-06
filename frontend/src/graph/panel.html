@@ -66,75 +66,123 @@
 
 
                 <div style="text-align:center;display: inline-block;padding-top:10px;width: 100%;margin-bottom: -10px;">
-                    <div style="width: 260px;vertical-align: top;" ng-repeat="section in tree.sections" class="classSection">
-
-                        <div list-icon='saved' toggle='section' style="float:right;margin-top: -4px;margin-right: -3px;"></div>
-
-                        <div style=" text-align: center;margin-bottom: 22px;">
-                            <span ng-repeat="meeting in ::section.meetings" ng-if="!meeting.hidden">
-
-
-                                <span ng-if="::meeting.getIsExam()">
-                                    Exam
-                                    <br>
-                                </span>
-
-                                <!-- times, eg 10:30 - 11:35 am -->
-                                <span ng-repeat="time in ::meeting.times">
-                                    {{time[0].start.format('h:mm')}} - {{time[0].end.format('h:mm a')}}
-                                </span>&nbsp;
-
-                                <br ng-if="::!meeting.getIsExam()">
-
-                                <!-- days, eg Monday, Wednesday, Thursday -->
-                                {{::meeting.getWeekdayStrings().join(',&nbsp;')}}
-
-                                <span ng-if="::meeting.getIsExam()">
-                                    {{::meeting.startDate.format('MMM Do')}}
-                                </span>
-
-                                <br>
-
-                                <!-- hr/week jawn, eg 3.3 hours/week -->
-                                {{::meeting.getHoursPerWeek()}}
-                                <span ng-if="::meeting.getIsExam()">hours</span>
-                                <span ng-if="::!meeting.getIsExam()">hours/week</span>
 
 
 
-                                <br>
+                    <table class="table table-striped" ng-if="tree.sections.length>0" style="margin-bottom:0;text-align: left;">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body="true">CRN</span>
+                                </th>
+                                <th>
+                                    <ng-pluralize count="tree.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
+                                </th>
 
-                                <!-- location, eg International Village 019, but with href -->
+                                <th>Weekdays</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Location</th>
+                                <th ng-if="tree.sectionsHaveExam()">Exam start</th>
+                                <th ng-if="tree.sectionsHaveExam()">Exam end</th>
+                                <th ng-if="tree.sectionsHaveExam()">Exam date</th>
+                                <th>
 
-                                <span ng-switch on="::meeting.location.toLowerCase()">
-                                    <span ng-switch-when="tba">location undecided</span>
-                                    <span ng-switch-when="">location undecided</span>
-                                    <span ng-switch-when="web online">Web Online</span>
-                                    <span ng-switch-default>
-
-                                        <a target="_blank" href="http://maps.google.com/?q={{::graph.getCollegeName() +' '+ meeting.getBuilding()}}">{{meeting.where}}</a>
-
+                                    <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                        Seats
                                     </span>
-                                </span>
-                                <br>
-                                <br>
-                            </span>
-                        </div>
 
-                        <div class="lowerSectionInfo">
-                            <div style="display: inline-block;max-width: 50%;">
+                                </th>
+                                <th ng-if="tree.getHasWaitList()">Open/Total Waitlist Seats</th>
+                                <th>Link</th>
+                                <!-- <th>Email
+                        <br>Notifications</th> -->
+                                <th>Saved</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="section in tree.sections">
+                                <td>{{section.crn}}</td>
+                                <td>{{section.getProfs().join(', ')}}</td>
+                                <td>
+                                    <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
+
+                                        <!-- avoid calculating the string more than once -->
+                                        <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip="{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
+
+                                            <div ng-if="section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                            </div>
+
+                                            <div ng-if="!section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+
+                                            </div>
+                                        </span>
+                                    </span>
+                                </td>
+
+                                <td>{{section.getUniqueStartTimes().join(", ")}}</td>
+                                <td>{{section.getUniqueEndTimes().join(", ")}}</td>
+
+                                <td>
+                                    <span ng-repeat="location in section.getLocations()">
+                                        <span ng-if="location != 'TBA' || section.getLocations().length <= 1"> {{location}} </span>
+                                        <span ng-if="!$last">, </span>
+                                    </span>
+                                </td>
 
 
-                                {{::section.getProfs().join(',&nbsp;')}}
+                                <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().start.format('h:mm a')}}</td>
+                                <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().end.format('h:mm a')}}</td>
+                                <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().start.format('MMM Do')}}</td>
+
+                                <td>
+
+                                    <!-- don't display the "/" until these are loaded -->
+                                    <span ng-if="section.seatsRemaining || section.seatsCapacity">
+                                        {{section.seatsRemaining}}/{{section.seatsCapacity}}
+                                    </span>
+
+                                </td>
 
 
-                                <br> CRN: {{section.crn}}</div>
-                            <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;" class="rightSectionText"> {{::section.seatsRemaining}}/{{::section.seatsCapacity}} seats
-                                <br>
-                                <a target="_blank" href="{{::section.url}}">View on {{::section.host}}</a>
-                            </div>
-                        </div>
-                    </div>
+                                <td ng-if="tree.getHasWaitList()">
+
+                                    <!-- don't display the "/" until these are loaded -->
+                                    <span ng-if="section.waitRemaining || section.waitCapacity">
+                                        {{section.waitRemaining}}/{{section.waitCapacity}}
+                                    </span>
+
+
+                                    <!-- don't display the "/" until these are loaded -->
+                                    <span ng-if="!section.waitRemaining && !section.waitCapacity">
+                                        0/0
+                                    </span>
+
+
+
+                                </td>
+
+                                <td>
+                                    <a href="{{section.url}}" target="_blank">
+
+                                        <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{tree.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                        </div>
+
+                                    </a>
+                                </td>
+                                <!-- 
+                    <td>
+                        <span list-icon='watching' toggle="section"></span>
+                    </td> -->
+
+                                <td>
+                                    <span list-icon='saved' toggle="section" style="padding-left: 11px;"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
                 </div>
 
 
