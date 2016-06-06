@@ -100,7 +100,13 @@ TreeMgr.prototype.simplifyTree = function (tree) {
 // one part of the above function that runs after the node injection that changes allParents...
 TreeMgr.prototype.skipNodesPostStuff = function (tree) {
 
-	if (tree.prereqs.values.length === 1 && !tree.isClass) {
+	var shouldMatch = tree.prereqs.values.length === 1 && !tree.isClass;
+
+	if (!shouldMatch) {
+		shouldMatch = tree.allParents.length===1 && tree.allParents[0].prereqs.type == tree.prereqs.type && !tree.isClass
+	}
+
+	if (shouldMatch) {
 
 		var newChild = tree.prereqs.values[0];
 
@@ -612,24 +618,15 @@ TreeMgr.prototype.removeCoreqsCoreqs = function (tree, isACoreq) {
 
 
 //remove (hon) labs on non hon classes, and remove non (hon) labs on non hon classes
-//the proper way to do this is scrape the honors attribute from banner, and group by that, but for now just match title
 TreeMgr.prototype.groupByHonors = function (tree) {
-
-
 	if (tree.isClass && tree.coreqs) {
-
-		if (!_(tree.host).startsWith('neu.edu')) {
-			return;
-		};
-
-		var thisClassIsHon = _(tree.name).includes('(hon)')
 
 		var filteredCoreqs = [];
 		tree.coreqs.values.forEach(function (subTree) {
-			if (_(subTree.name).includes('(hon)') && thisClassIsHon) {
+			if (subTree.honors && tree.honors) {
 				filteredCoreqs.push(subTree);
 			}
-			else if (!_(subTree.name).includes('(hon)') && !thisClassIsHon) {
+			else if (!subTree.honors && !tree.honors) {
 				filteredCoreqs.push(subTree);
 			}
 		}.bind(this));
@@ -641,7 +638,6 @@ TreeMgr.prototype.groupByHonors = function (tree) {
 
 		tree.coreqs.values = filteredCoreqs;
 	}
-
 
 
 	tree.prereqs.values.forEach(function (subTree) {
@@ -766,12 +762,33 @@ TreeMgr.prototype.calculateIfChildrenAtSameDepth = function (tree) {
 	}.bind(this))
 };
 
+TreeMgr.prototype.resetTree = function(tree) {
+	var toVisit = [tree];
+	var visited = [];
+
+	var toVisit = [tree];
+	var visited = [];
+
+	var currTree;
+	while ((currTree = toVisit.pop())) {
+		if (_(visited).includes(currTree)) {
+			continue;
+		}
+		visited.push(currTree)
+		currTree.resetRequisites()
+
+		toVisit = toVisit.concat(currTree.prereqs.values).concat(currTree.coreqs.values);
+
+	}
+};
 
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 
 
 // TreeMgr.prototype.processTree = function(tree, callback) {
 TreeMgr.prototype.go = function (tree) {
+
+	this.resetTree(tree);
 
 	// flatten coreqs and remove coreqs coreqs
 	this.flattenCoreqs(tree);
@@ -784,10 +801,7 @@ TreeMgr.prototype.go = function (tree) {
 	//actually, dont do this because somtimes classes can error
 	// this.removeInvalidSubTrees(tree);
 
-	//remove non hon matching coreqs here
-	//this is ghetto atm... TODO FIX
 	this.groupByHonors(tree);
-
 
 	this.simplifyTree(tree)
 
@@ -806,6 +820,7 @@ TreeMgr.prototype.go = function (tree) {
 
 	this.defaultToOr(tree);
 
+	this.removeDepth(tree);
 	this.addDepthLevel(tree);
 
 	this.addLowestParent(tree);

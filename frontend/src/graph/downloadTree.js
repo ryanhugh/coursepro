@@ -76,7 +76,6 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 
 		//this prevents infinate recursion in both coreq->coreq-> coreq and in more complicated loops
 		if (_(visited).includes(subTree)) {
-			console.log("unsure if this is too agreesive, eg need to load the same class down diff branches?");
 			continue;
 		}
 		visited.push(subTree)
@@ -97,7 +96,7 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 			var currTree = subTree;
 			q.defer(function (callback) {
 				currTree.download(function (err, currTree) {
-					currTree.resetRequisites();
+					// currTree.resetRequisites();
 					callback(err)
 				}.bind(this))
 			}.bind(this))
