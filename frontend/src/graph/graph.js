@@ -261,7 +261,6 @@ Graph.prototype.go = function (tree, callback) {
 				.attr("class", "link")
 				.style("stroke-width", 4)
 				.attr("marker-mid", "url(#end)");
-			// .attr("marker-end", function(d) { return "url(#licensing)"; });
 
 			for (var i = 0; i < graph.links.length; i++) {
 				var currLink = graph.links[i];
@@ -386,19 +385,6 @@ Graph.prototype.go = function (tree, callback) {
 						// return d.source.x+','+d.source.y+' '+((d.target.x+d.source.x)/2)+','+((d.target.y+d.source.y)/2)+' '+d.target.x+','+d.target.y
 						return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
 					}.bind(this))
-
-					// link.attr("x1", function (d) {
-					// 		return d.source.x;
-					// 	}.bind(this))
-					// 	.attr("y1", function (d) {
-					// 		return d.source.y;
-					// 	}.bind(this))
-					// 	.attr("x2", function (d) {
-					// 		return d.target.x;
-					// 	}.bind(this))
-					// 	.attr("y2", function (d) {
-					// 		return d.target.y;
-					// 	}.bind(this));
 
 					node.attr("transform", function (d) {
 						if (d.isCoreq) {
