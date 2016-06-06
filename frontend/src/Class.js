@@ -390,6 +390,13 @@ Class.prototype.resetRequisites = function () {
 			return a.compareTo(b)
 		}.bind(this))
 	}
+	else {
+
+		this.prereqs = {
+			type: 'or',
+			values: []
+		}
+	}
 
 	if (this.serverCoreqs) {
 		this.coreqs.type = this.serverCoreqs.type
@@ -403,6 +410,13 @@ Class.prototype.resetRequisites = function () {
 		this.coreqs.values.sort(function (a, b) {
 			return a.compareTo(b)
 		}.bind(this))
+	}
+	else {
+
+		this.coreqs = {
+			type: 'or',
+			values: []
+		}
 	}
 };
 
