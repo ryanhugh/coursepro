@@ -39,6 +39,12 @@ function Graph() {
 	// the svg element, defined in go
 	this.svg = null;
 
+
+	this.links = []
+
+	this.nodes = []
+
+
 	var path = {};
 
 	for (var attrName in this.$routeParams) {
@@ -51,6 +57,7 @@ function Graph() {
 		this.$scope.focusSelector = false;
 	}
 	else {
+		elog('not supported yet')
 		this.$scope.focusSelector = true;
 	}
 
@@ -112,6 +119,34 @@ Graph.prototype.collide = function (node1, node2) {
 
 
 
+
+// removing and adding nodes to graph
+
+Graph.prototype.removeFromDom = function (node) {
+
+	_.pull(this.nodes, node);
+
+	node.foreignObject.parentElement.remove()
+
+	node.downwardLinks.forEach(function (link) {
+		link.remove()
+	}.bind(this))
+
+	node.upwardLinks.forEach(function (link) {
+		link.remove()
+	}.bind(this))
+
+	this.links.slice(0).forEach(function (currLink, i) {
+		if (currLink.target === node || currLink.source === node) {
+			_.pull(this.links[i], currLink)
+		}
+	}.bind(this))
+};
+
+
+
+
+// change z index of a node
 Graph.prototype.bringToFront = function (tree) {
 
 	// find the g element that is a parent of the foreignObject, and move it to the end of its children
@@ -170,7 +205,9 @@ Graph.prototype.go = function (tree, callback) {
 
 			treeMgr.go(tree);
 
-			var graph = treeMgr.treeToD3(tree)
+			var nodesAndLinks = treeMgr.treeToD3(tree);
+			this.links = nodesAndLinks.links;
+			this.nodes = nodesAndLinks.nodes;
 
 			this.classCount = treeMgr.countClassesInTree(tree);
 			if (this.classCount === 0) {
@@ -248,7 +285,7 @@ Graph.prototype.go = function (tree, callback) {
 				}.bind(this))
 
 
-			graph.nodes.forEach(function (node) {
+			this.nodes.forEach(function (node) {
 				// node.x = node.cx = Math.random() * 100 + 200
 				node.height = this.nodeHeight;
 				node.width = this.nodeWidth
@@ -256,25 +293,25 @@ Graph.prototype.go = function (tree, callback) {
 
 
 			var link = container.selectAll(".link")
-				.data(graph.links)
+				.data(this.links)
 				.enter().append("polyline")
 				.attr("class", "link")
 				.style("stroke-width", 4)
 				.attr("marker-mid", "url(#end)");
 
-			for (var i = 0; i < graph.links.length; i++) {
-				var currLink = graph.links[i];
+			for (var i = 0; i < this.links.length; i++) {
+				var currLink = this.links[i];
 
 				// find the parent of the two nodes the line connects 
 				var parent;
 				var child;
-				if (graph.nodes[currLink.source].depth > graph.nodes[currLink.target].depth) {
-					parent = graph.nodes[currLink.target];
-					child = graph.nodes[currLink.source];
+				if (this.nodes[currLink.source].depth > this.nodes[currLink.target].depth) {
+					parent = this.nodes[currLink.target];
+					child = this.nodes[currLink.source];
 				}
 				else {
-					parent = graph.nodes[currLink.source];
-					child = graph.nodes[currLink.target];
+					parent = this.nodes[currLink.source];
+					child = this.nodes[currLink.target];
 				}
 
 				// if should be 'and', make line darker
@@ -288,7 +325,7 @@ Graph.prototype.go = function (tree, callback) {
 			}
 
 			var node = container.selectAll(".node")
-				.data(graph.nodes)
+				.data(this.nodes)
 				.enter().append("g")
 				.attr("class", "node")
 				.attr("width", this.nodeWidth)
@@ -306,15 +343,15 @@ Graph.prototype.go = function (tree, callback) {
 				var newScope = this.$scope.$new();
 
 				// set up the links between tree and scope and foreignObject
-				newScope.tree = graph.nodes[i]
-				graph.nodes[i].$scope = newScope
+				newScope.tree = this.nodes[i]
+				this.nodes[i].$scope = newScope
 
 
 				var foreignObject = d3.select(node[0][i]).append('foreignObject')
 					.attr("width", this.nodeWidth)
 					.attr("height", this.nodeHeight);
 
-				graph.nodes[i].foreignObject = foreignObject[0][0]
+				this.nodes[i].foreignObject = foreignObject[0][0]
 
 				$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
 			}
@@ -325,24 +362,24 @@ Graph.prototype.go = function (tree, callback) {
 
 				var multiplyer = 1;
 
-				this.force.nodes(graph.nodes)
-					.links(graph.links)
+				this.force.nodes(this.nodes)
+					.links(this.links)
 
-				graph.nodes.forEach(function (node) {
+				this.nodes.forEach(function (node) {
 					this.sortCoreqs(node);
 				}.bind(this))
 
 				this.force.on("tick", function (e) {
-					for (var k = 0; k < graph.nodes.length; k++) {
-						var currNode = graph.nodes[k];
+					for (var k = 0; k < this.nodes.length; k++) {
+						var currNode = this.nodes[k];
 
 						if (currNode.isCoreq) {
 							continue;
 						}
 
 						// collision
-						for (var j = k + 1; j < graph.nodes.length; j++) {
-							var testingCollisionAgainst = graph.nodes[j];
+						for (var j = k + 1; j < this.nodes.length; j++) {
+							var testingCollisionAgainst = this.nodes[j];
 							if (testingCollisionAgainst.isCoreq) {
 								continue;
 							}
@@ -438,7 +475,7 @@ Graph.prototype.go = function (tree, callback) {
 
 				this.$scope.tree = tree;
 
-				graph.nodes.forEach(function (tree) {
+				this.nodes.forEach(function (tree) {
 					this.updateHeight(tree)
 				}.bind(this))
 

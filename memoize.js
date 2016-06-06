@@ -32,15 +32,12 @@ module.exports = function (fn, hasher) {
     var memo = {};
     var queues = {};
     var has = Object.prototype.hasOwnProperty;
-    hasher = hasher || function () {
-        return 'a';
-    };
     var memoized = _restParam(function memoized(args) {
         var callback = args.pop();
-        var key = hasher.apply(null, args);
+        var key = String(hasher.apply(this, args)); // ADDED A String here
         if (has.call(memo, key)) {
             setTimeout(function () {
-                callback.apply(null, memo[key]);
+                callback.apply(this, memo[key]); // CHANGED all the null -> this
             },0);
         }
         else if (has.call(queues, key)) {
@@ -53,7 +50,7 @@ module.exports = function (fn, hasher) {
                 var q = queues[key];
                 delete queues[key];
                 for (var i = 0, l = q.length; i < l; i++) {
-                    q[i].apply(null, args);
+                    q[i].apply(this, args);
                 }
             })]));
         }

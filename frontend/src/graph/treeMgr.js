@@ -373,8 +373,23 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 }
 
 
-// returns all of a tree's prereq's parents, dups removed
-TreeMgr.prototype.getNeighbors = function (tree) {
+// returns all of a tree's parent's prereqs, dups removed. 
+TreeMgr.prototype.getUpwardNeighbors = function (tree) {
+
+	var retVal = [];
+	tree.allParents.forEach(function (parent) {
+		parent.prereqs.values.forEach(function (neighborTree) {
+			if (!_(retVal).includes(neighborTree)) {
+				retVal.push(neighborTree)
+			}
+
+		}.bind(this))
+	}.bind(this))
+	return retVal;
+}
+
+// returns all of a tree's prereq's parents, dups removed. 
+TreeMgr.prototype.getDownwardNeighbors = function (tree) {
 
 	var retVal = [];
 	tree.prereqs.values.forEach(function (subTree) {
@@ -423,7 +438,7 @@ TreeMgr.prototype.getSubsets = function (bigSet) {
 // 
 TreeMgr.prototype.groupByCommonPrereqs = function (tree, prereqType) {
 
-	var parents = this.getNeighbors(tree);
+	var parents = this.getDownwardNeighbors(tree);
 
 	var maxScore = 0;
 	var matchParents = [];
