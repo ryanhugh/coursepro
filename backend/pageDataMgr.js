@@ -66,6 +66,10 @@ PageDataMgr.prototype.getParsers = function () {
 	return parsers;
 };
 
+// This is the main starting point for processing a page data. 
+// this completes in two large steps:
+// 1. parse the website (~20-40 min)
+// 2. run the processors (~1 min per processor)
 PageDataMgr.prototype.go = function (pageData, callback) {
 	this.processPageData(pageData, function (err, pageData) {
 		if (err) {

@@ -1,15 +1,25 @@
 clashttps://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
 
 
-clean up bug about updating backend tests with $$ and editing objs returned with find
-cloning in mock db backend return?
-change pagedatamgr to go and internalGo where go ran post processors afterwords and internalGo works the way go works now
+TODO
+service workers?
+server side index generation and save them to disk somewhere? and pass around the url, dont need to, its known
+by default show panel expanded
+clean up this file a lot
+trello
+sms and phone call notifications?
+click to select class
+swap user remembered classes from _ids to keys
+
+
+
+clean up bug about updating backend tests with $$ and editing objs returned with find -- done
+cloning in mock db backend return? -- done
+change pagedatamgr to go and internalGo where go ran post processors afterwords and internalGo works the way go works now -- done
 
 
 TO TEST
-last update time should copy down to class deps of class deps -- done
 updateing db due to change in deps???? -- logging chages
-honors?
 
 resize d3 window on browser size resize -- done
  -- why does the grpah like move a little?
