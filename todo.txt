@@ -10,12 +10,10 @@ trello
 sms and phone call notifications?
 click to select class
 swap user remembered classes from _ids to keys
+get instanceCache off the window, why were different datas using differnet instanceCaches in testing?
+user.js#toggleListContainsSection needs to be updated to just use class.create -> download and make sure it is fast
+cross term data copying for a processor for like swarthmore class descriptions etc
 
-
-
-clean up bug about updating backend tests with $$ and editing objs returned with find -- done
-cloning in mock db backend return? -- done
-change pagedatamgr to go and internalGo where go ran post processors afterwords and internalGo works the way go works now -- done
 
 
 TO TEST
@@ -23,24 +21,10 @@ updateing db due to change in deps???? -- logging chages
 
 resize d3 window on browser size resize -- done
  -- why does the grpah like move a little?
-run the output of classUids thorugh requite parser simplify prereqs -- done
-karma jsdom? -- works if localStorage shim added, not that much faster... 
-why were different datas using differnet instanceCaches in testing?
 
-width needs to be 780 for panel now
 
 db.sections.createIndex( { "host": 1, "termId": 1 ,"subject": 1,"classUid": 1,"crn": 1   } )
 
-
-PREREQS, COREQS, AND ISCOREQ IS SPECIFIC PER GRAPH?!?
--- and allparents needs to be reset
-
-move classUid to a processor because test.js is failing and for some reason multiple classes have same classUid (title is diff...)
-section needs post process too
-
-
-TODO: bug because not running postProcessdata, need to do that after on create instead of copying data? or maybe in download? create would be better
- --- common fn betwen class and section
 
 
 
@@ -50,17 +34,7 @@ safe to lookup docs by url in backend? - ehhh
 max number of simultanous classes wawtching???
 Is there some good way to not have a bunch of emails go off whenever change how something is parsed?
 can close and reopen the db when not prod?
-speed?
- -- async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj) -- done?
- -- do i still need the manual memoize around class? -- done
- -----unit tests for ^ and memoize stuff -- done
 
-
-coreqs not parsed correcly -- done
-https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=PHYS&crse_numb_in=1161
-
-// TODO this will happen if neither section or class are in the list
-user.js#toggleListContainsSection
 
 GRAPH
 
@@ -73,6 +47,14 @@ if angle < something between 2 children, do a force or maybe if x is too close b
 
 GULP todo
 split vender.js and app.js gulpfile
+ - so i looked at this once and browsify supports this, and can easily make one without the stuff in node_modules
+ - but to actually include that stuff you need to list the modules
+ - and i dont want another list of modules to maintain
+ - this is the module it uses internally to get this, but gave up trying to figure out how it worked. 
+ - https://www.npmjs.com/package/module-deps
+ - 
+ - maybe this module or some other one?
+ - https://www.npmjs.com/package/find-module-deps
 npm ignore everything in frontend/static/ and copy over the other stuff
 
 
@@ -131,15 +113,6 @@ trello/sms/phone call/etc
 
 
 
-
-
-POST PROCESS
-make a post process folder and 
-put the data in the database or just process the page datas? 
- -- cross term data copying would work pretty much either way
- -- mongodb binary search might be better for finding other classes for postreqs (DO THIS! other colleges will have a diff format for parsers)
- ----- this gets complicatd on what to update when updating just one class
- -- convert prereqs classid to classuuid too
 
 
 
