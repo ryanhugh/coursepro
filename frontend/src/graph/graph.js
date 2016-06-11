@@ -39,10 +39,16 @@ function Graph() {
 	// the svg element, defined in go
 	this.svg = null;
 
+	// the container, which is the only child of the svg, defined in go
+	this.container = null;
+
 
 	this.links = []
+	this.linkElements = null;
 
 	this.nodes = []
+
+	this.tree = null;
 
 
 	var path = {};
@@ -124,10 +130,11 @@ Graph.prototype.collide = function (node1, node2) {
 
 Graph.prototype.removeFromDom = function (node) {
 
+	// remove the panel from list and dom
 	_.pull(this.nodes, node);
-
 	node.foreignObject.parentElement.remove()
 
+	// remove the links from list and dom
 	node.downwardLinks.forEach(function (link) {
 		link.remove()
 	}.bind(this))
@@ -143,6 +150,43 @@ Graph.prototype.removeFromDom = function (node) {
 	}.bind(this))
 };
 
+
+// adds a node that was removed back to the d3 world
+Graph.prototype.addToDom = function (node) {
+
+	if (_(this.nodes).includes(node)) {
+		elog('node already here?')
+	}
+	else {
+		this.nodes.push(node)
+	}
+
+
+	//create the links again
+	// only add lines going up because after recursion, going to add all nodes
+	//concat(node.prereqs.values).
+	node.allParents.forEach(function (directNode) {
+		this.links.push({
+			target: node,
+			source: directNode
+		})
+	}.bind(this))
+
+	// node.downwardLinks.forEach(function (link) {
+	// 	this.container.appendChild(link)
+	// }.bind(this))
+
+	node.upwardLinks.forEach(function (link) {
+		this.container[0][0].appendChild(link)
+	}.bind(this))
+
+
+
+	// append the node after the links
+	this.container[0][0].appendChild(node.foreignObject.parentElement)
+
+
+};
 
 
 
@@ -189,6 +233,125 @@ Graph.prototype.calculateGraphSize = function () {
 		.attr("height", this.graphHeight)
 };
 
+Graph.prototype.loadNodes = function (callback) {
+
+	var nodesAndLinks = treeMgr.treeToD3(this.tree);
+	this.links = nodesAndLinks.links;
+	this.nodes = nodesAndLinks.nodes;
+
+	// THIS DOSENT ENED TO BE HERE
+	var dragStartedByRightButton = false;
+	var nodeDrag = d3.behavior.drag()
+		.on("dragstart", function (node) {
+			if (d3.event.sourceEvent.which == 3) {
+				dragStartedByRightButton = true
+				return;
+			}
+			else {
+				dragStartedByRightButton = false;
+				this.force.alpha(.007)
+			}
+		}.bind(this))
+		.on("drag", function (node) {
+			if (dragStartedByRightButton) {
+				return;
+			}
+			if (node.$scope.isExpanded) {
+				return;
+			}
+			node.px += d3.event.dx
+			node.py += d3.event.dy
+			node.x += d3.event.dx
+			node.y += d3.event.dy
+			this.force.alpha(.007)
+		}.bind(this))
+	
+	while (this.container[0][0].firstChild) {
+		this.container[0][0].removeChild(this.container[0][0].firstChild);
+	}
+
+	this.linkElements = this.container.selectAll(".link")
+		.data(this.links)
+		.enter().append("polyline")
+		.attr("class", "link")
+		.style("stroke-width", 4)
+		.attr("marker-mid", "url(#end)");
+
+	for (var i = 0; i < this.links.length; i++) {
+		var currLink = this.links[i];
+
+		// find the parent of the two nodes the line connects 
+		var parent;
+		var child;
+		if (currLink.source.depth > currLink.target.depth) {
+			parent = currLink.target;
+			child = currLink.source;
+		}
+		else {
+			parent = currLink.source;
+			child = currLink.target;
+		}
+
+		// if should be 'and', make line darker
+		if (parent.prereqs.type == 'and') {
+			this.linkElements[0][i].style.stroke = '#5B5B5B'
+		}
+
+		//add line to both nodes links list
+		parent.downwardLinks.push(this.linkElements[0][i])
+		child.upwardLinks.push(this.linkElements[0][i])
+	}
+
+	this.nodeElements = this.container.selectAll(".node")
+		.data(this.nodes)
+		.enter().append("g")
+		.attr("class", "node")
+		.attr("width", this.nodeWidth)
+		.attr("height", this.nodeHeight)
+		.on("mousedown", function () {
+			d3.event.stopPropagation();
+		})
+		.call(nodeDrag)
+
+	var html = '<div ng-include="\'panel.html\'"></div>'
+
+	for (var i = 0; i < this.nodeElements[0].length; i++) {
+
+		// create the new scope for each node
+		var newScope = this.$scope.$new();
+
+		// set up the links between tree and scope and foreignObject
+		newScope.tree = this.nodes[i]
+		this.nodes[i].$scope = newScope
+
+
+		var foreignObject = d3.select(this.nodeElements[0][i]).append('foreignObject')
+			.attr("width", this.nodeWidth)
+			.attr("height", this.nodeHeight);
+
+		this.nodes[i].foreignObject = foreignObject[0][0]
+
+		$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
+	}
+
+
+	// Scope needs to be updated after adding a new scope for each element above
+	setTimeout(function () {
+		this.$scope.$apply()
+
+
+		this.force.nodes(this.nodes)
+			.links(this.links)
+
+		this.nodes.forEach(function (node) {
+			this.sortCoreqs(node);
+		}.bind(this))
+
+		callback()
+	}.bind(this), 0)
+
+};
+
 
 Graph.prototype.go = function (tree, callback) {
 	this.isLoading = true;
@@ -202,17 +365,14 @@ Graph.prototype.go = function (tree, callback) {
 		setTimeout(function () {
 			this.$scope.$apply()
 
+			window.graph = this;
+			window.tree = tree;
+			console.warn('temp')
+
 
 			treeMgr.go(tree);
+			this.tree = tree;
 
-			var nodesAndLinks = treeMgr.treeToD3(tree);
-			this.links = nodesAndLinks.links;
-			this.nodes = nodesAndLinks.nodes;
-
-			this.classCount = treeMgr.countClassesInTree(tree);
-			if (this.classCount === 0) {
-				elog('0 classes found?', tree)
-			}
 
 
 			this.force = d3.layout.force()
@@ -232,13 +392,13 @@ Graph.prototype.go = function (tree, callback) {
 			}.bind(this))
 
 
-			var container = this.svg.append("g");
+			this.container = this.svg.append("g");
 
 
 			var zoom = d3.behavior.zoom()
 				.scaleExtent([.1, 1.5])
 				.on("zoom", function () {
-					container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+					this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 				}.bind(this));
 
 			this.svg.call(zoom)
@@ -258,115 +418,20 @@ Graph.prototype.go = function (tree, callback) {
 			//     .attr("d", "M0,-5L10,0L0,5");
 
 
-			var dragStartedByRightButton = false;
-			var nodeDrag = d3.behavior.drag()
-				.on("dragstart", function (node) {
-					if (d3.event.sourceEvent.which == 3) {
-						dragStartedByRightButton = true
-						return;
-					}
-					else {
-						dragStartedByRightButton = false;
-						this.force.alpha(.007)
-					}
-				}.bind(this))
-				.on("drag", function (node) {
-					if (dragStartedByRightButton) {
-						return;
-					}
-					if (node.$scope.isExpanded) {
-						return;
-					}
-					node.px += d3.event.dx
-					node.py += d3.event.dy
-					node.x += d3.event.dx
-					node.y += d3.event.dy
-					this.force.alpha(.007)
-				}.bind(this))
-
-
-			this.nodes.forEach(function (node) {
-				// node.x = node.cx = Math.random() * 100 + 200
-				node.height = this.nodeHeight;
-				node.width = this.nodeWidth
-			}.bind(this))
-
-
-			var link = container.selectAll(".link")
-				.data(this.links)
-				.enter().append("polyline")
-				.attr("class", "link")
-				.style("stroke-width", 4)
-				.attr("marker-mid", "url(#end)");
-
-			for (var i = 0; i < this.links.length; i++) {
-				var currLink = this.links[i];
-
-				// find the parent of the two nodes the line connects 
-				var parent;
-				var child;
-				if (this.nodes[currLink.source].depth > this.nodes[currLink.target].depth) {
-					parent = this.nodes[currLink.target];
-					child = this.nodes[currLink.source];
-				}
-				else {
-					parent = this.nodes[currLink.source];
-					child = this.nodes[currLink.target];
-				}
-
-				// if should be 'and', make line darker
-				if (parent.prereqs.type == 'and') {
-					link[0][i].style.stroke = '#5B5B5B'
-				}
-
-				//add line to both nodes links list
-				parent.downwardLinks.push(link[0][i])
-				child.upwardLinks.push(link[0][i])
-			}
-
-			var node = container.selectAll(".node")
-				.data(this.nodes)
-				.enter().append("g")
-				.attr("class", "node")
-				.attr("width", this.nodeWidth)
-				.attr("height", this.nodeHeight)
-				.on("mousedown", function () {
-					d3.event.stopPropagation();
-				})
-				.call(nodeDrag)
-
-			var html = '<div ng-include="\'panel.html\'"></div>'
-
-			for (var i = 0; i < node[0].length; i++) {
-
-				// create the new scope for each node
-				var newScope = this.$scope.$new();
-
-				// set up the links between tree and scope and foreignObject
-				newScope.tree = this.nodes[i]
-				this.nodes[i].$scope = newScope
-
-
-				var foreignObject = d3.select(node[0][i]).append('foreignObject')
-					.attr("width", this.nodeWidth)
-					.attr("height", this.nodeHeight);
-
-				this.nodes[i].foreignObject = foreignObject[0][0]
-
-				$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
-			}
-
-			// Scope needs to be updated after adding a new scope for each element above
-			setTimeout(function () {
-				this.$scope.$apply()
+			// STUFF WAS EHRE
+			this.loadNodes(function () {
 
 				var multiplyer = 1;
 
-				this.force.nodes(this.nodes)
-					.links(this.links)
+				this.classCount = treeMgr.countClassesInTree(tree);
+				if (this.classCount === 0) {
+					elog('0 classes found?', tree)
+				}
 
 				this.nodes.forEach(function (node) {
-					this.sortCoreqs(node);
+					// node.x = node.cx = Math.random() * 100 + 200
+					node.height = this.nodeHeight;
+					node.width = this.nodeWidth
 				}.bind(this))
 
 				this.force.on("tick", function (e) {
@@ -415,7 +480,10 @@ Graph.prototype.go = function (tree, callback) {
 
 					};
 
-					link.attr("points", function (d) {
+					this.linkElements.attr("points", function (d) {
+						if (isNaN(d.source.x) || isNaN(d.target.x)) {
+							debugger
+						}
 
 
 
@@ -423,7 +491,12 @@ Graph.prototype.go = function (tree, callback) {
 						return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
 					}.bind(this))
 
-					node.attr("transform", function (d) {
+					this.nodeElements.attr("transform", function (d) {
+						if (isNaN(d.x) || isNaN(d.y)) {
+							debugger
+						}
+
+
 						if (d.isCoreq) {
 
 							var x = d.lowestParent.x - d.width / 2;

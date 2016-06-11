@@ -3,6 +3,7 @@ var macros = require('../macros');
 var _ = require('lodash')
 
 var Class = require('../Class')
+var user = require('../user');
 
 function TreeMgr() {
 
@@ -103,7 +104,7 @@ TreeMgr.prototype.skipNodesPostStuff = function (tree) {
 	var shouldMatch = tree.prereqs.values.length === 1 && !tree.isClass;
 
 	if (!shouldMatch) {
-		shouldMatch = tree.allParents.length===1 && tree.allParents[0].prereqs.type == tree.prereqs.type && !tree.isClass
+		shouldMatch = tree.allParents.length === 1 && tree.allParents[0].prereqs.type == tree.prereqs.type && !tree.isClass
 	}
 
 	if (shouldMatch) {
@@ -218,7 +219,7 @@ TreeMgr.prototype.addAllParentRelations = function (tree, parent) {
 		tree.allParents = [];
 	}
 
-	if (parent && tree.allParents.indexOf(parent) < 0) {
+	if (parent && !_(tree.allParents).includes(parent)) {
 		tree.allParents.push(parent)
 	}
 
@@ -724,8 +725,8 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 			}
 			else {
 				connections[key] = {
-					"source": nodeIndex,
-					"target": subTreeIndex,
+					"source": node,
+					"target": subTree,
 					"value": 4
 				}
 			}
@@ -781,7 +782,7 @@ TreeMgr.prototype.calculateIfChildrenAtSameDepth = function (tree) {
 	}.bind(this))
 };
 
-TreeMgr.prototype.resetTree = function(tree) {
+TreeMgr.prototype.resetTree = function (tree) {
 	var toVisit = [tree];
 	var visited = [];
 
@@ -796,6 +797,93 @@ TreeMgr.prototype.resetTree = function(tree) {
 		toVisit = toVisit.concat(currTree.prereqs.values).concat(currTree.coreqs.values);
 
 	}
+};
+
+TreeMgr.prototype.removeAllParents = function(tree) {
+	tree.allParents = []
+
+	tree.prereqs.values.forEach(function (subTree) {
+		this.removeAllParents(subTree);
+	}.bind(this));
+
+	tree.coreqs.values.forEach(function (subTree) {
+		this.removeAllParents(subTree);
+	}.bind(this));
+
+};
+
+TreeMgr.prototype.simplifyIfSelected = function (tree) {
+	var satisfyingNode = this.getSatisfyingNode(tree);
+	if (!tree.savePrereqsForThisGraph) {
+		tree.savePrereqsForThisGraph = tree.prereqs
+	}
+	if (satisfyingNode) {
+
+		// make a new object so don't mess with savePrereqsForThisGraph
+		tree.prereqs = {
+			values: [satisfyingNode],
+			type: 'or'
+		}
+	}
+	else {
+		tree.prereqs = tree.savePrereqsForThisGraph
+	}
+
+	tree.prereqs.values.forEach(function (subTree) {
+		this.simplifyIfSelected(subTree);
+	}.bind(this));
+};
+
+// returns a node or null
+TreeMgr.prototype.getSatisfyingNode = function (tree) {
+	if (tree.prereqs.type == 'and') {
+		return null;
+	}
+
+	for (var i = 0; i < tree.prereqs.values.length; i++) {
+		var subTree = tree.prereqs.values[i];
+		if (subTree.isClass) {
+
+			// make user support classes that are strings
+			if (subTree.isString) {
+				elog('Cant check subTree that isnt a string not supported yet!')
+				continue;
+			}
+
+			if (user.getListIncludesClass('selected', subTree)) {
+				return subTree;
+			}
+		}
+		else {
+			if (this.getSatisfyingNode(subTree)) {
+				return subTree;
+			}
+		}
+	}
+	return null;
+};
+
+// a node, somewhere in the graph, was selected.
+// send the entire graph through a couple of the steps of below
+// this is needed because in some cases, nodes can be affected that are children of a select node's ansestors, and that no longer need to have a line
+// to one that was just satisfied, so can make graph simpler for it
+TreeMgr.prototype.onNodeSelect = function(tree) {
+	this.removeAllParents(tree);
+
+	this.simplifyIfSelected(tree);
+
+	this.addAllParentRelations(tree);
+	this.skipNodesPostStuff(tree);
+};
+
+
+TreeMgr.prototype.savePrereqsForThisGraph = function (tree) {
+
+	tree.prereqsForThisGraph = tree.prereqs
+
+	tree.prereqs.values.forEach(function (subTree) {
+		this.savePrereqsForThisGraph(subTree);
+	}.bind(this));
 };
 
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
@@ -842,6 +930,8 @@ TreeMgr.prototype.go = function (tree) {
 	this.addLowestParent(tree);
 
 	this.calculateIfChildrenAtSameDepth(tree);
+
+	this.savePrereqsForThisGraph(tree);
 
 	if (!tree.isClass) {
 		tree.hidden = true;

@@ -4,6 +4,7 @@ var _ = require('lodash')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var treeMgr = require('./treeMgr')
+var user = require('../user')
 
 
 function GraphPanelSelect($timeout, $document) {
@@ -72,11 +73,23 @@ function GraphPanelSelect($timeout, $document) {
 			callback = function () {}
 		};
 
-		// going to move to user
-		if (!tree.isSelected) {
-			tree.isSelected = true;
-			this.selectTree(tree)
-		}
+		user.toggleListContainsClass('selected', tree, false, function (err) {
+			if (err) {
+				elog(err);
+				return;
+			}
+			treeMgr.onNodeSelect(tree.$scope.graph.tree) // the BIG TREE
+
+			graph.loadNodes(function () {
+				callback()
+			}.bind(this))
+		}.bind(this))
+
+		// // going to move to user
+		// if (!tree.isSelected) {
+		// 	tree.isSelected = true;
+		// 	this.selectTree(tree)
+		// }
 
 
 	};
