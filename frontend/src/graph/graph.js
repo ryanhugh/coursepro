@@ -340,9 +340,6 @@ Graph.prototype.loadNodes = function (callback) {
 		this.$scope.$apply()
 
 
-		this.force.nodes(this.nodes)
-			.links(this.links)
-
 		this.nodes.forEach(function (node) {
 			this.sortCoreqs(node);
 		}.bind(this))
@@ -420,6 +417,10 @@ Graph.prototype.go = function (tree, callback) {
 
 			// STUFF WAS EHRE
 			this.loadNodes(function () {
+				
+
+				this.force.nodes(this.nodes)
+					.links(this.links)
 
 				var multiplyer = 1;
 

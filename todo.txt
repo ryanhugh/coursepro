@@ -16,6 +16,7 @@ swap user remembered classes from _ids to keys
 get instanceCache off the window, why were different datas using differnet instanceCaches in testing?
 user.js#toggleListContainsSection needs to be updated to just use class.create -> download and make sure it is fast
 cross term data copying for a processor for like swarthmore class descriptions etc
+simplifyTree shouldnt copy attrs between nodes
 
 http://localhost/#/graph/neu.edu/201710/PHYS/1165_1407358073
 

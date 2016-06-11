@@ -104,14 +104,22 @@ TreeMgr.prototype.skipNodesPostStuff = function (tree) {
 	var shouldMatch = tree.prereqs.values.length === 1 && !tree.isClass;
 
 	if (!shouldMatch) {
+		// eliminate current node if
+		//            O
+		//            | <- same type as lines 2 lines down
+		//            . <- eliminate this one
+		//          / |
+		//         O  O
 		shouldMatch = tree.allParents.length === 1 && tree.allParents[0].prereqs.type == tree.prereqs.type && !tree.isClass
 	}
 
 	if (shouldMatch) {
 
-		var newChild = tree.prereqs.values[0];
+		var newChildren = tree.prereqs.values;
 
-		_.pull(newChild.allParents, tree);
+		newChildren.forEach(function (newChild) {
+			_.pull(newChild.allParents, tree);
+		}.bind(this))
 
 		tree.allParents.forEach(function (parent) {
 
@@ -119,13 +127,14 @@ TreeMgr.prototype.skipNodesPostStuff = function (tree) {
 			_.pull(parent.prereqs.values, tree)
 
 			// and add new child
-			if (!_(parent.prereqs.values).includes(newChild)) {
-				parent.prereqs.values.push(newChild)
-			}
-
-			if (!_(newChild.allParents).includes(parent)) {
-				newChild.allParents.push(parent)
-			}
+			newChildren.forEach(function (newChild) {
+				if (!_(parent.prereqs.values).includes(newChild)) {
+					parent.prereqs.values.push(newChild)
+				}
+				if (!_(newChild.allParents).includes(parent)) {
+					newChild.allParents.push(parent)
+				}
+			}.bind(this))
 		}.bind(this))
 	}
 
@@ -874,6 +883,8 @@ TreeMgr.prototype.onNodeSelect = function(tree) {
 
 	this.addAllParentRelations(tree);
 	this.skipNodesPostStuff(tree);
+	this.removeDepth(tree);
+	this.addDepthLevel(tree);
 };
 
 

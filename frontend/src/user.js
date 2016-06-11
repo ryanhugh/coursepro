@@ -79,7 +79,8 @@ function User() {
 
 User.prototype.saveData = function () {
 	//save all dbData to localStorage
-	localStorage.dbData = JSON.stringify(this.dbData)
+	// localStorage.dbData = JSON.stringify(this.dbData)
+	console.warn('tofix, disabled for now. also make class download work with _id?')
 };
 
 
