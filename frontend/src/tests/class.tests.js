@@ -15,7 +15,7 @@ describe('Class', function () {
 			})).toBe(null);
 		});
 
-		it('ensures memoize works and that download was not swapped', function (done) {
+		fit('ensures memoize works and that download was not swapped', function (done) {
 
 			var aClass = Class.create({
 				_id:'575102d1b462e991061ca594'

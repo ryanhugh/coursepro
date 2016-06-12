@@ -7,7 +7,7 @@ var MockBaseData = require('./MockBaseData')
 var proxyquire = require('proxyquireify')(require);
 
 var Class = proxyquire('../../Class', {
-	'./BaseData': MockBaseData, 
+	// './BaseData': MockBaseData, 
 })
 
 
@@ -20,3 +20,4 @@ macros.inherent(Class, MockClass);
 MockClass.mockData = mockData
 
 module.exports = MockClass;
+ 
