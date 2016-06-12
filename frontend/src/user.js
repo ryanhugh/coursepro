@@ -506,8 +506,8 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 	classes.slice(0).forEach(function (aClass) {
 		if (!aClass.isClass) {
 			elog('tried to save a class that !isClas', aClass)
+			_.pull(classes, aClass)
 		}
-		_.pull(classes, aClass)
 	}.bind(this))
 
 
@@ -520,54 +520,80 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		var initClassCount = this.lists[listName].classes.length
 		var initSectionCount = this.lists[listName].sections.length
 
-		var classKeys = [];
-		classes.forEach(function (aClass) {
-			var keys = aClass.getIdentifer().full.obj;
-			if (!keys) {
-				elog("Cant save ", aClass, 'because it dosent have keys!')
-			};
-			classKeys.push(keys)
-		}.bind(this))
-
-		var sectionKeys = [];
-		sections.forEach(function (section) {
-			var keys = seciton.getIdentifer().full.obj;
-			if (!keys) {
-				elog("Cant save ", section, 'because it dosent have keys!')
-			};
-			sectionKeys.push(keys)
-		}.bind(this))
-
-		//add the seciton, but make sure to not add duplicate sectin
+		//add the seciton, but make sure to not add duplicate section
 		//it could be a different instance of that same section
 		sections.forEach(function (section) {
-			var found = false;
 			for (var i = 0; i < this.lists[listName].sections.length; i++) {
 				if (this.lists[listName].sections[i].equals(section)) {
-					found = true;
+					return;
+				}
+			}
+			this.lists[listName].sections.push(section);
+
+			var addToSections = true;
+			for (var i = 0; i < this.lists[listName].sections.length; i++) {
+				if (this.lists[listName].sections[i].equals(aClass)) {
+					addToSections = false;
 					break;
 				}
 			}
-			if (!found) {
-				this.lists[listName].sections.push(section);
+
+			var keys = aClass.getIdentifer().full.obj;
+			var addToDBSections = true;
+			for (var i = 0; i < this.dbData.lists[listName].sections.length; i++) {
+				if (_.isEqual(this.dbData.lists[listName].sections[i], keys)) {
+					addToDBSections = false;
+					break;
+				}
 			}
+			if (addToSections != addToDBSections) {
+				elog('hi')
+			}
+			if (addToSections) {
+				this.lists[listName].sections.push(aClass);
+			}
+			if (addToDBSections) {
+				this.dbData.lists[listName].push(keys)
+			}
+
 		}.bind(this))
 
+		// Add the new class to this.lists and this.dbData.lists
 		classes.forEach(function (aClass) {
-			if (_.filter(this.lists[listName].classes, {
-					_id: aClass._id
-				}).length === 0) {
-				this.lists[listName].classes.push(aClass)
+			var addToClasses = true;
+			for (var i = 0; i < this.lists[listName].classes.length; i++) {
+				if (this.lists[listName].classes[i].equals(aClass)) {
+					addToClasses = false;
+					break;
+				}
+			}
+
+			var keys = aClass.getIdentifer().full.obj;
+			var addToDBClasses = true;
+			for (var i = 0; i < this.dbData.lists[listName].classes.length; i++) {
+				if (_.isEqual(this.dbData.lists[listName].classes[i], keys)) {
+					addToDBClasses = false;
+					break;
+				}
+			}
+			if (addToClasses != addToDBClasses) {
+				elog('hi')
+			}
+			if (addToClasses) {
+				this.lists[listName].classes.push(aClass);
+			}
+			if (addToDBClasses) {
+				this.dbData.lists[listName].classes.push(keys)
 			}
 		}.bind(this))
 
+		if (this.dbData.lists[listName].sections.length != this.lists[listName].sections.length) {
+			elog('no')
+		}
 
-		//add any classes given to both this.lists and this.dbData.lists
-		this.dbData.lists[listName].classes = _.uniq(this.dbData.lists[listName].classes.concat(classIds))
-
-
-		//add any sections given to both this.lists and this.dbData.lists
-		this.dbData.lists[listName].sections = _.uniq(this.dbData.lists[listName].sections.concat(sectionIds))
+		if (this.dbData.lists[listName].classes.length != this.lists[listName].classes.length) {
+			elog('no')
+		}
 
 
 		ga('send', {
@@ -591,7 +617,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 			useCache: false
 		}, function (err, response) {
 			if (err) {
-				elog("ERROR: couldn't log addToList :(", err, response, body);
+				elog("ERROR: couldn't log addToList :(", err, response);
 			}
 		}.bind(this))
 
@@ -721,19 +747,18 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 
 
 
-User.prototype.getListIncludesClass = function (listName, tree) {
-	// if (!this.isAuthAndLoaded(tree)) {
+User.prototype.getListIncludesClass = function (listName, aClass) {
+	// if (!this.isAuthAndLoaded(aClass)) {
 	//     return;
 	// };
 
 	this.ensureList(listName)
-
-	if (_(this.dbData.lists[listName].classes).includes(tree._id)) {
-		return true;
+	for (var i = 0; i < this.lists[listName].classes.length; i++) {
+		if (this.lists[listName].classes[i].equals(aClass)) {
+			return true
+		}
 	}
-	else {
-		return false;
-	}
+	return false;
 };
 
 
@@ -743,13 +768,12 @@ User.prototype.getListIncludesSection = function (listName, section) {
 	// }
 
 	this.ensureList(listName)
-
-	if (_(this.dbData.lists[listName].sections).includes(section._id)) {
-		return true;
+	for (var i = 0; i < this.lists[listName].sections.length; i++) {
+		if (this.lists[listName].sections[i].equals(section)) {
+			return true
+		}
 	}
-	else {
-		return false;
-	}
+	return false;
 };
 
 User.prototype.getList = function (listName) {

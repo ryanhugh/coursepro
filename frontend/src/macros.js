@@ -23,7 +23,7 @@ function Macros() {
 			args[i] = arguments[i];
 		}
 
-		console.log.apply(console, args);
+		console.log.apply(console, ['ELOG'].concat(args));
 		debugger
 		console.trace();
 
