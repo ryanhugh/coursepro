@@ -353,6 +353,10 @@ Graph.prototype.loadNodes = function (shouldGuessCoords, callback) {
 	this.force.nodes(this.nodes)
 		.links(this.links)
 
+	if (!shouldGuessCoords) {
+		this.force.alpha(.01)
+	}
+
 	callback()
 };
 
