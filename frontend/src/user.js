@@ -79,7 +79,7 @@ function User() {
 
 User.prototype.saveData = function () {
 	//save all dbData to localStorage
-	// localStorage.dbData = JSON.stringify(this.dbData)
+	localStorage.dbData = JSON.stringify(this.dbData)
 	console.warn('tofix, disabled for now. also make class download work with _id?')
 };
 
@@ -503,6 +503,14 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		return callback()
 	};
 
+	classes.slice(0).forEach(function (aClass) {
+		if (!aClass.isClass) {
+			elog('tried to save a class that !isClas', aClass)
+		}
+		_.pull(classes, aClass)
+	}.bind(this))
+
+
 	this.loadList(listName, function (err) {
 		if (err) {
 			return callback(err)
@@ -512,29 +520,36 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		var initClassCount = this.lists[listName].classes.length
 		var initSectionCount = this.lists[listName].sections.length
 
-		var classIds = [];
+		var classKeys = [];
 		classes.forEach(function (aClass) {
-			if (!aClass._id) {
-				elog("Cant save ", aClass, 'because it dosent have an _id!')
+			var keys = aClass.getIdentifer().full.obj;
+			if (!keys) {
+				elog("Cant save ", aClass, 'because it dosent have keys!')
 			};
-			classIds.push(aClass._id)
+			classKeys.push(keys)
 		}.bind(this))
 
-		var sectionIds = [];
+		var sectionKeys = [];
 		sections.forEach(function (section) {
-			if (!section._id) {
-				elog("Cant save ", section, 'because it dosent have an _id!')
+			var keys = seciton.getIdentifer().full.obj;
+			if (!keys) {
+				elog("Cant save ", section, 'because it dosent have keys!')
 			};
-			sectionIds.push(section._id)
+			sectionKeys.push(keys)
 		}.bind(this))
 
 		//add the seciton, but make sure to not add duplicate sectin
 		//it could be a different instance of that same section
 		sections.forEach(function (section) {
-			if (_.filter(this.lists[listName].sections, {
-					_id: section._id
-				}).length === 0) {
-				this.lists[listName].sections.push(section)
+			var found = false;
+			for (var i = 0; i < this.lists[listName].sections.length; i++) {
+				if (this.lists[listName].sections[i].equals(section)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				this.lists[listName].sections.push(section);
 			}
 		}.bind(this))
 

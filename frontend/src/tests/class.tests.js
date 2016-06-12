@@ -175,4 +175,80 @@ describe('Class', function () {
 		expect(aClass.getPrettyClassId()).toBe('6B')
 	});
 
+	it('equals should work', function () {
+
+		var aClass = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: '006B',
+		})
+
+		var aClass2 = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: '006B',
+		})
+
+
+		var aClass3 = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: 'NOOO',
+		})
+
+		var aClass4 = Class.create({
+			isString: true,
+			desc: 'hi',
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+		})
+
+		var aClass5 = Class.create({
+			isString: true,
+			desc: 'hi',
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: 'hiii'
+		})
+
+		expect(aClass.equals(aClass2)).toBe(true);
+		expect(aClass.equals(aClass3)).toBe(false);
+		expect(aClass.equals(aClass4)).toBe(false);
+		expect(aClass5.equals(aClass4)).toBe(true);
+
+	});
+
+	it('should work when same class created with prereqs', function() {
+	    
+
+		var aClass = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: '006B',
+			prereqs:{
+				type:'or',
+				values:[]
+			}
+		})
+
+		var aClass2 = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: '006B',
+			prereqs:{
+				type:'or',
+				values:[]
+			}
+		})
+
+
+	});
+
 });

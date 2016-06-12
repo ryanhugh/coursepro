@@ -266,13 +266,13 @@ Class.prototype.updateWithData = function (config) {
 		elog("wtf class has a name not a title");
 	}
 
-	if (this.prereqs.values.length > 0 && config.prereqs) {
-		elog('yo')
-	}
+	// if (this.prereqs.values.length > 0 && config.prereqs) {
+	// 	elog('yo')
+	// }
 
-	if (this.coreqs.values.length > 0 && config.coreqs) {
-		elog('yo')
-	}
+	// if (this.coreqs.values.length > 0 && config.coreqs) {
+	// 	elog('yo')
+	// }
 
 	//copy over all other attr given
 	for (var attrName in config) {
@@ -288,7 +288,7 @@ Class.prototype.updateWithData = function (config) {
 		}
 	}
 
-	if (config.prereqs) {
+	if (config.prereqs && !_.isEqual(config.prereqs, this.serverPrereqs)) {
 		if (this.serverPrereqs) {
 			elog('wtf already have prereqs, given prereqs', config)
 		}
@@ -301,7 +301,7 @@ Class.prototype.updateWithData = function (config) {
 
 	}
 
-	if (config.coreqs) {
+	if (config.coreqs && !_.isEqual(config.prereqs, this.serverCoreqs)) {
 		if (this.serverCoreqs) {
 			elog('wtf')
 		}
@@ -320,12 +320,12 @@ Class.prototype.updateWithData = function (config) {
 		this.allParents = config.allParents
 	}
 
-	if (config.desc) {
-		this.desc = he.decode(config.desc)
-	}
 
 	//name and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
 	//setting the innerHTML instead of innerText will work too, but this is better
+	if (config.desc) {
+		this.desc = he.decode(config.desc)
+	}
 	if (config.name) {
 		this.name = he.decode(config.name)
 	}
@@ -362,7 +362,7 @@ Class.prototype.updateWithData = function (config) {
 			this.sections.push(section)
 		}.bind(this))
 	}
-	else if (this.sections.length > 0 && config.crns && config.crns.length > 0) {
+	else if (this.sections.length > 0 && config.crns && config.crns.length > 0 && !_.isEqual(this.crns, config.crns)) {
 		elog('updateWithData called but already have sections?', this, config)
 	}
 
@@ -418,6 +418,27 @@ Class.prototype.resetRequisites = function () {
 			values: []
 		}
 	}
+};
+
+Class.prototype.equals = function (other) {
+	if (!this.isClass || !other.isClass) {
+		// look into the git history if attempting to implement, this, started a while ago and then deleted it
+		elog('dosent support comparing non classes yet')
+		return false;
+	}
+
+	// both strings
+	if (this.isString && other.isString) {
+		return this.desc === other.desc;
+	}
+
+	// both classes
+	if (!this.isString && !other.isString) {
+		return BaseData.prototype.equals.call(this, other)
+	}
+
+	// one is a string other is a class
+	return false;
 };
 
 

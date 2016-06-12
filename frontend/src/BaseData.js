@@ -117,10 +117,13 @@ BaseData.create = function (config) {
 	if (canCache) {
 		var key = this.getKeyFromConfig(config);
 
-		if (instanceCache[key]) {
+		if (key && instanceCache[key]) {
 			var instance = instanceCache[key];
 			instance.updateWithData(config);
 			return instanceCache[key]
+		}
+		else if (!key) {
+			elog('no key?',config)
 		}
 	};
 
@@ -135,19 +138,37 @@ BaseData.create = function (config) {
 	else {
 		if (canCache) {
 			var key = this.getKeyFromConfig(config);
-
-			if (instanceCache[key]) {
-				console.log("WTF there was no match a ms ago!");
+			if (key) {
+				if (instanceCache[key]) {
+					console.log("WTF there was no match a ms ago!");
+				}
+				instanceCache[key] = instance;
+				return instance;
 			}
-			instanceCache[key] = instance;
-			return instance;
+			else {
+				elog('invalid key post instance', key, config)
+			}
 		};
 		return instance
 	}
 }
 
 
-
+//Compare a BaseData to another
+BaseData.prototype.equals = function (other) {
+	if (this === other) {
+		return true;
+	}
+	if (this.dataStatus != macros.DATASTATUS_DONE || other.dataStatus != macros.DATASTATUS_DONE) {
+		elog('BaseData comparing nodes that are not both done', this, other)
+	}
+	var thisStr = this.getIdentifer().full.str;
+	var otherStr = other.getIdentifer().full.str;
+	if (!thisStr || !otherStr) {
+		elog('BaseData equals something is null?', thisStr, otherStr)
+	}
+	return thisStr === otherStr;
+};
 
 
 
@@ -259,12 +280,16 @@ BaseData.getKeyFromConfig = function (config) {
 		}
 		key.push(config[allKeys[i]]);
 	}
-
-	key = key.join('/')
-	if (key.length === 0) {
-		elog(' no key!', config)
+	if (key.length > 0) {
+		return key.join('/')
 	}
-	return key;
+	else if (config._id) {
+		return config._id
+	}
+	else {
+		// Possible if looking up all hosts
+		return '';
+	}
 };
 
 //all requests from all trafic go through here
@@ -307,7 +332,9 @@ BaseData.downloadGroup = memoize(function (config, callback) {
 			instances.push(instance)
 		}.bind(this))
 
-		return callback(null, instances)
+		// Return results too in case lookup was done with a baseData by _id's or something other than the cache
+		// and the serverData needs to be found and given to the instance
+		return callback(null, instances, results)
 
 	}.bind(this))
 }, function (config) {
@@ -370,7 +397,7 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 
 	this.constructor.downloadGroup({
 		body: lookup
-	}, function (err, instances) {
+	}, function (err, instances, results) {
 		this.dataStatus = macros.DATASTATUS_DONE;
 
 		// if (err) {
@@ -400,19 +427,19 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 
 			// cache will match if used keys, must of used _id or something if here
 			var keys = this.getIdentifer().full.lookup;
-			for (var i = 0; i < instances.length; i++) {
+			for (var i = 0; i < results.length; i++) {
 
 				var isMatch = true;
 
 				for (var currKey in keys) {
-					if (instances[i][currKey] !== this[currKey]) {
+					if (results[i][currKey] !== this[currKey]) {
 						isMatch = false;
 					}
 				}
 
 				if (isMatch) {
+					this.updateWithData(results[i])
 					console.warn('cache miss!', keys)
-						// this.updateWithData(instances[i])
 					return callback(null, this);
 				}
 			}
