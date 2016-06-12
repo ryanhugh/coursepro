@@ -701,8 +701,9 @@ TreeMgr.prototype.defaultToOr = function (tree) {
 	}.bind(this));
 };
 
-
-TreeMgr.prototype.treeToD3 = function (tree) {
+// guess node positions attempts to estimate the output position of the d3 graph
+// set it to false if nodes already have positions
+TreeMgr.prototype.treeToD3 = function (tree, guessNodePositions) {
 	var nodes = this.findFlattendClassList(tree, true).sort(function (a, b) {
 		if (a.depth < b.depth) {
 			return -1;
@@ -742,33 +743,36 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 		}.bind(this))
 	}.bind(this))
 
-	nodes[0].x = window.innerWidth / 2;
+	if (guessNodePositions) {
+		nodes[0].x = window.innerWidth / 2;
 
-	nodes.forEach(function (node) {
+		nodes.forEach(function (node) {
 
-		if (node.allParents.length > 0) {
-			// Find average percent index * 1000, used as starting position for graph
-			// dosen't need to be that close to where it needs to be, d3 will make it better
-			var xSum = 0;
-			node.allParents.forEach(function (nodeParent) {
-				var index = nodeParent.prereqs.values.indexOf(node);
-				var length = nodeParent.prereqs.values.length;
-				if (!nodeParent.x) {
-					elog('nodeParent dosent have an x but it was set above?', nodeParent)
-				}
+			if (node.allParents.length > 0) {
+				// Find average percent index * 1000, used as starting position for graph
+				// dosen't need to be that close to where it needs to be, d3 will make it better
+				var xSum = 0;
+				node.allParents.forEach(function (nodeParent) {
+					var index = nodeParent.prereqs.values.indexOf(node);
+					var length = nodeParent.prereqs.values.length;
+					if (!nodeParent.x) {
+						elog('nodeParent dosent have an x but it was set above?', nodeParent)
+					}
 
-				xSum += ((index - (length - 1) / 2) * 300 + nodeParent.x)
+					xSum += ((index - (length - 1) / 2) * 300 + nodeParent.x)
 
-			}.bind(this))
+				}.bind(this))
 
-			node.x = xSum / node.allParents.length
-		}
-	}.bind(this))
+				node.x = xSum / node.allParents.length
+			}
+		}.bind(this))
 
-	coreqs.forEach(function (coreq) {
-		coreq.x = 0
-		coreq.y = 0
-	}.bind(this))
+		coreqs.forEach(function (coreq) {
+			coreq.x = 0
+			coreq.y = 0
+		}.bind(this))
+	}
+
 
 	return {
 		nodes: nodes.concat(coreqs),
@@ -808,7 +812,7 @@ TreeMgr.prototype.resetTree = function (tree) {
 	}
 };
 
-TreeMgr.prototype.removeAllParents = function(tree) {
+TreeMgr.prototype.removeAllParents = function (tree) {
 	tree.allParents = []
 
 	tree.prereqs.values.forEach(function (subTree) {
@@ -876,7 +880,7 @@ TreeMgr.prototype.getSatisfyingNode = function (tree) {
 // send the entire graph through a couple of the steps of below
 // this is needed because in some cases, nodes can be affected that are children of a select node's ansestors, and that no longer need to have a line
 // to one that was just satisfied, so can make graph simpler for it
-TreeMgr.prototype.onNodeSelect = function(tree) {
+TreeMgr.prototype.onNodeSelect = function (tree) {
 	this.removeAllParents(tree);
 
 	this.simplifyIfSelected(tree);

@@ -233,9 +233,9 @@ Graph.prototype.calculateGraphSize = function () {
 		.attr("height", this.graphHeight)
 };
 
-Graph.prototype.loadNodes = function (callback) {
+Graph.prototype.loadNodes = function (shouldGuessCoords, callback) {
 
-	var nodesAndLinks = treeMgr.treeToD3(this.tree);
+	var nodesAndLinks = treeMgr.treeToD3(this.tree, shouldGuessCoords);
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
 
@@ -265,7 +265,7 @@ Graph.prototype.loadNodes = function (callback) {
 			node.y += d3.event.dy
 			this.force.alpha(.007)
 		}.bind(this))
-	
+
 	while (this.container[0][0].firstChild) {
 		this.container[0][0].removeChild(this.container[0][0].firstChild);
 	}
@@ -336,17 +336,24 @@ Graph.prototype.loadNodes = function (callback) {
 
 
 	// Scope needs to be updated after adding a new scope for each element above
-	setTimeout(function () {
+
+	// Don't do the usally setTimeout so the page dosen't flash white when selecting something
+	try {
 		this.$scope.$apply()
+	}
+	catch (e) {
+
+	}
+
+	this.nodes.forEach(function (node) {
+		this.sortCoreqs(node);
+	}.bind(this))
 
 
-		this.nodes.forEach(function (node) {
-			this.sortCoreqs(node);
-		}.bind(this))
+	this.force.nodes(this.nodes)
+		.links(this.links)
 
-		callback()
-	}.bind(this), 0)
-
+	callback()
 };
 
 
@@ -416,11 +423,8 @@ Graph.prototype.go = function (tree, callback) {
 
 
 			// STUFF WAS EHRE
-			this.loadNodes(function () {
-				
+			this.loadNodes(true, function () {
 
-				this.force.nodes(this.nodes)
-					.links(this.links)
 
 				var multiplyer = 1;
 
