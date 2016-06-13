@@ -19,6 +19,7 @@ window.ga = function () {}
 function XMLHttpRequest() {
 
 	this.onreadystatechange = null;
+	this.url = null;
 
 }
 XMLHttpRequest.DONE = 4;
@@ -30,6 +31,7 @@ XMLHttpRequest.prototype.open = function (method, url, isAsync) {
 	if (!mockData[url] && url !== '/log') {
 		elog('yo unsupported url', url)
 	}
+	this.url = url;
 
 };
 
@@ -43,47 +45,48 @@ XMLHttpRequest.prototype.send = function (json) {
 		this.readyState = XMLHttpRequest.DONE
 		this.status = 200;
 
-		var body = JSON.parse(json);
-		if (!body.userId) {
-			elog('no userId in request?')
+		if (this.url === '/log') {
+			this.response = '{"status":"success"}'
 		}
-		delete body.userId
-
-
-		// MAKE THIS CODE WORK
-	this.mockData.forEach(function (data) {
-
-		//check if _id matches,
-		if (!query._id || query._id !== data._id) {
-
-			//and if it dosent check the keys
-			for (var i = 0; i < keys.length; i++) {
-				var keyName = keys[i]
-				if (query[keyName] != data[keyName]) {
-					return;
-				};
+		else {
+			var body = JSON.parse(json);
+			if (!body.userId) {
+				elog('no userId in request?')
 			}
-		};
+			delete body.userId
 
-		retVal.push(_.cloneDeep(data));
+			var thisMockData = mockData[this.url]
+
+			if (!thisMockData) {
+				debugger
+			}
 
 
-	}.bind(this))
+			var retVal = [];
+			// MAKE THIS CODE WORK
+			thisMockData.forEach(function (data) {
 
-	if (retVal.length == 0) {
-		console.log("unit test error: dont have data for query",query);
-		debugger
-	};
+				for (var attrName in body) {
+					if (body[attrName] != data[attrName]) {
+						return;
+					}
+				}
+				// dont need to clone because json stringify'ing below
+				retVal.push(data);
 
-	setTimeout(function () {
-		callback(null, retVal);
-	}.bind(this), 0)
+			}.bind(this))
 
-		debugger
+			if (retVal.length == 0) {
+				elog("unit test error: dont have data for query", body);
+				debugger
+			};
+			this.response = JSON.stringify(retVal)
+		}
 
-		//empyt for now, add more here when needed
-		this.response = ''
-		this.onreadystatechange()
+
+		setTimeout(function () {
+			this.onreadystatechange()
+		}.bind(this), 0)
 	}
 	else {
 		elog("ERROR dont have a onreadystatechange!");

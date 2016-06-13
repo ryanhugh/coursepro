@@ -28,7 +28,7 @@ describe('SubjectClassSelector', function () {
 		$rootScope = _$rootScope_;
 
 		user.setValue('lastSelectedCollege', 'neu.edu')
-		user.setValue('lastSelectedTerm', '201630')
+		user.setValue('lastSelectedTerm', '201710')
 
 	}));
 

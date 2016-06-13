@@ -394,11 +394,9 @@ User.prototype.loadList = function (listName, callback) {
 		this.lists[listName].dataStatus = macros.DATASTATUS_LOADING
 
 		//fetch all the class data from the _id's in the user watch list
-		this.dbData.lists[listName].classes.forEach(function (classMongoId) {
+		this.dbData.lists[listName].classes.forEach(function (classKeys) {
 			q.defer(function (callback) {
-				Class.create({
-					_id: classMongoId
-				}).download(function (err, aClass) {
+				Class.create(classKeys).download(function (err, aClass) {
 					if (err) {
 						return callback(err)
 					}
@@ -411,11 +409,9 @@ User.prototype.loadList = function (listName, callback) {
 
 
 		//same thing for the sections
-		this.dbData.lists[listName].sections.forEach(function (sectionMongoId) {
+		this.dbData.lists[listName].sections.forEach(function (sectionKeys) {
 			q.defer(function (callback) {
-				Section.create({
-					_id: sectionMongoId
-				}).download(function (err, section) {
+				Section.create(sectionKeys).download(function (err, section) {
 					if (err) {
 						return callback(err)
 					}
