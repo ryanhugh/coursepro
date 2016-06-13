@@ -17,7 +17,6 @@ describe('user', function () {
 
 
 	beforeEach(function () {
-		// spyOn(XMLHttpRequest.prototype, 'send');
 		localStorage.clear()
 	});
 
@@ -35,10 +34,26 @@ describe('user', function () {
 
 				expect(user.getListIncludesClass('test', aClass)).toBe(true)
 
+				var localList = JSON.parse(localStorage.dbData)
+				expect(localList.lists.test.classes.length).toBe(1)
+				expect(localList.lists.test.classes[0].classUid).toBe('5000_202147161')
+
+				// console.log(JSON.stringify(localStorage.dbData));
 				done()
 			}.bind(this))
 		}.bind(this))
 	}.bind(this))
+
+
+
+	// it('load from storage works', function (done) {
+
+	// 	// localStorage.dbData = '{"lists":{"test":{"classes":[{"host":"neu.edu","termId":"201710","subject":"GE","classUid":"5000_202147161"}],"sections":[]}}'
+
+ 
+
+	// });
+
 
 	// var aClass2 = Class.create({
 	// 	host: 'neu.edu',

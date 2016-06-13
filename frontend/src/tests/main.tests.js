@@ -1,3 +1,4 @@
+localStorage.clear()
 var mockClassData = require('./mocks/mockClassData.json')
 var mockSubjectData = require('./mocks/mockSubjectData.json')
 var mockHostData = require('./mocks/mockHostData.json')

@@ -460,11 +460,11 @@ User.prototype.getAllClassesInLists = function () {
 
 			//only include if not already in there
 			//cant use _.uniq because there could be different instances of the same class
-			if (_.filter(classes, {
-					_id: aClass._id
-				}).length === 0) {
-				classes.push(aClass)
+			for (var i = 0; i < this.lists[listName].classes.length; i++) {
+				this.lists[listName].classes[i].equals(aClass)
+				return;
 			}
+			classes.push(aClass)
 		}.bind(this))
 	}
 
