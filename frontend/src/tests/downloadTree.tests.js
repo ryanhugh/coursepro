@@ -1,13 +1,9 @@
 'use strict';
 
-var mockClass = require('./mocks/mockClass')
 var treeMgr = require('../graph/treeMgr')
-var proxyquire = require('proxyquireify')(require);
 var something = require('es6-collections')
 
-var downloadTree = proxyquire('../graph/downloadTree', {
-	'../Class': mockClass,
-})
+var downloadTree = require('../graph/downloadTree')
 
 
 describe('DownloadTreeTests', function () {

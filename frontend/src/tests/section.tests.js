@@ -1,6 +1,6 @@
 'use strict';
-var Section = require('./mocks/mockSection')
-var Class = require('./mocks/mockClass')
+var Section = require('../Section')
+var Class = require('../Class')
 var macros = require('../macros')
 var _ = require('lodash')
 

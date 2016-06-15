@@ -2,7 +2,7 @@
 
 var assert = require('assert')
 var user = require('../user')
-var Class = require('./mocks/MockClass')
+var Class = require('../Class')
 
 
 describe('validateEmail', function () {

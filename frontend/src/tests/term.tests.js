@@ -1,5 +1,5 @@
 'use strict';
-var Term = require('./mocks/mockTerm')
+var Term = require('../Term')
 var macros = require('../macros')
 var _ = require('lodash')
 

@@ -1,5 +1,5 @@
 'use strict';
-var Host = require('./mocks/mockHost')
+var Host = require('../Host')
 var macros = require('../macros')
 var _ = require('lodash')
 
