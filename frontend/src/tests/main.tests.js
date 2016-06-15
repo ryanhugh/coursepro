@@ -16,15 +16,16 @@ var mockData = {
 window.elog = console.error.bind(console);
 window.ga = function () {}
 
+//First attempt at mocking out the frontend classes:
+//I tried having the mock classes inherent from their respective class and mockBaseData, but there were conflicts with static methods 
+//with the second inherent overriding the first instead of the first calling the second.
 
+//Second:
 // Now, the mock data classes inherent from their respective real class, which inherents from mock base data, which inherents from base data. 
 // eg, mockClass -> Class -> MockBaseData -> BaseData. 
 
-//Before this I tried having the mock classes inherent from their respective class and mockBaseData, but there were conflicts with static methods 
-//with the second inherent overriding the first instead of the first calling the second.
-
-//Then, needed to add support for /request, so just reassigned window.XMLHttpRequest and made it work with /listClasses, etc too
-// and removed all the mocks
+//Then, needed to add support for /log, so just reassigned window.XMLHttpRequest and made it work with /listClasses, etc too
+// and removed all the mock classes and proxyquire
 
 
 

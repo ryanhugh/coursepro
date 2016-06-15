@@ -38,8 +38,17 @@ describe('user', function () {
 				expect(localList.lists.test.classes.length).toBe(1)
 				expect(localList.lists.test.classes[0].classUid).toBe('5000_202147161')
 
-				// console.log(JSON.stringify(localStorage.dbData));
-				done()
+
+				user.removeFromList('test', [aClass], [], function () {
+
+
+					expect(user.getListIncludesClass('test', aClass)).toBe(false)
+
+					var localList = JSON.parse(localStorage.dbData)
+					expect(localList.lists.test.classes.length).toBe(0)
+
+					done()
+				}.bind(this))
 			}.bind(this))
 		}.bind(this))
 	}.bind(this))
@@ -48,7 +57,7 @@ describe('user', function () {
 
 	// it('load from storage works', function (done) {
 
-	// 	// localStorage.dbData = '{"lists":{"test":{"classes":[{"host":"neu.edu","termId":"201710","subject":"GE","classUid":"5000_202147161"}],"sections":[]}}'
+		// localStorage.dbData = '{"lists":{"test":{"classes":[{"host":"neu.edu","termId":"201710","subject":"GE","classUid":"5000_202147161"}],"sections":[]}}'
 
  
 

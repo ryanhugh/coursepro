@@ -516,25 +516,18 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		var initClassCount = this.lists[listName].classes.length
 		var initSectionCount = this.lists[listName].sections.length
 
-		//add the seciton, but make sure to not add duplicate section
+		//add the section, but make sure to not add duplicate section
 		//it could be a different instance of that same section
 		sections.forEach(function (section) {
-			for (var i = 0; i < this.lists[listName].sections.length; i++) {
-				if (this.lists[listName].sections[i].equals(section)) {
-					return;
-				}
-			}
-			this.lists[listName].sections.push(section);
-
 			var addToSections = true;
 			for (var i = 0; i < this.lists[listName].sections.length; i++) {
-				if (this.lists[listName].sections[i].equals(aClass)) {
+				if (this.lists[listName].sections[i].equals(section)) {
 					addToSections = false;
 					break;
 				}
 			}
 
-			var keys = aClass.getIdentifer().full.obj;
+			var keys = section.getIdentifer().full.obj;
 			var addToDBSections = true;
 			for (var i = 0; i < this.dbData.lists[listName].sections.length; i++) {
 				if (_.isEqual(this.dbData.lists[listName].sections[i], keys)) {
@@ -546,7 +539,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				elog('hi')
 			}
 			if (addToSections) {
-				this.lists[listName].sections.push(aClass);
+				this.lists[listName].sections.push(section);
 			}
 			if (addToDBSections) {
 				this.dbData.lists[listName].push(keys)
@@ -674,26 +667,33 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 	// 	sectionIds.push(section._id)
 	// }.bind(this))
 
-	classes.forEach(function (classKey) {
+	classes.forEach(function (aClass) {
+
+		var classKey = aClass.getIdentifer().full.obj;
 
 		//remove it from this.lists
 		var matchingClasses = _.filter(this.lists[listName].classes, classKey);
 
 		_.pullAll(this.lists[listName].classes, matchingClasses)
 
+
 		//and this.dbData.lists
-		_.pullAll(this.dbData.lists[listName].classes, classKey)
+		var matchingClassKeys = _.filter(this.dbData.lists[listName].classes, classKey);
+		_.pullAll(this.dbData.lists[listName].classes, matchingClassKeys)
 	}.bind(this))
 
-	sections.forEach(function (sectionKey) {
+	sections.forEach(function (section) {
+		var sectionKey = section.getIdentifer().full.obj;
 
 		//remove it from this.lists
 		var matchingSections = _.filter(this.lists[listName].sections, sectionKey);
 
 		_.pullAll(this.lists[listName].sections, matchingSections)
 
+
 		//and this.dbData.lists
-		_.pull(this.dbData.lists[listName].sections, sectionKey)
+		var matchingSectionKeys = _.filter(this.dbData.lists[listName].sections, sectionKey);
+		_.pullAll(this.dbData.lists[listName].sections, matchingSectionKeys)
 	}.bind(this))
 
 	ga('send', {
