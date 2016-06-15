@@ -2,7 +2,6 @@ clashttps://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, n
 
 
 TODO
-switch user over to keys
 uglify properties before prod?
 
 search:

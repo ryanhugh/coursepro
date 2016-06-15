@@ -88,45 +88,4 @@ describe('user', function () {
 	}.bind(this))
 
 
-
-	// it('load from storage works', function (done) {
-
-		// localStorage.dbData = '{"lists":{"test":{"classes":[{"host":"neu.edu","termId":"201710","subject":"GE","classUid":"5000_202147161"}],"sections":[]}}'
-
- 
-
-	// });
-
-
-	// var aClass2 = Class.create({
-	// 	host: 'neu.edu',
-	// 	termId: '201630',
-	// 	subject: 'MATH',
-	// 	classUid: '006B',
-	// 	prereqs: {
-	// 		type: 'or',
-	// 		values: []
-	// 	}
-	// })
-
-
-	// var aClass = Class.create({
-	// 	host: 'neu.edu',
-	// 	termId: '201630',
-	// 	subject: 'MATH',
-	// 	classUid: '006B',
-	// })
-
-	// var aClass2 = Class.create({
-	// 	host: 'neu.edu',
-	// 	termId: '201630',
-	// 	subject: 'MATH',
-	// 	classUid: '006B',
-	// 	prereqs:{
-	// 		type:'or',
-	// 		values:[]
-	// 	}
-	// })
-
-
 });

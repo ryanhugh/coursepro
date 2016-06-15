@@ -80,7 +80,6 @@ function User() {
 User.prototype.saveData = function () {
 	//save all dbData to localStorage
 	localStorage.dbData = JSON.stringify(this.dbData)
-	console.warn('tofix, disabled for now. also make class download work with _id?')
 };
 
 
@@ -393,7 +392,7 @@ User.prototype.loadList = function (listName, callback) {
 
 		this.lists[listName].dataStatus = macros.DATASTATUS_LOADING
 
-		//fetch all the class data from the _id's in the user watch list
+		//fetch all the class data from the keys in the user watch list
 		this.dbData.lists[listName].classes.forEach(function (classKeys) {
 			q.defer(function (callback) {
 				Class.create(classKeys).download(function (err, aClass) {
@@ -656,16 +655,6 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 
 	var initClassCount = this.lists[listName].classes.length
 	var initSectionCount = this.lists[listName].sections.length
-
-	// var classIds = [];
-	// classes.forEach(function (aClass) {
-	// 	classIds.push(aClass._id)
-	// }.bind(this))
-
-	// var sectionIds = [];
-	// sections.forEach(function (section) {
-	// 	sectionIds.push(section._id)
-	// }.bind(this))
 
 	classes.forEach(function (aClass) {
 
