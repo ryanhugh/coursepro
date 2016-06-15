@@ -3,6 +3,7 @@
 var assert = require('assert')
 var user = require('../user')
 var Class = require('../Class')
+var Section = require('../Section')
 
 
 describe('validateEmail', function () {
@@ -46,6 +47,39 @@ describe('user', function () {
 
 					var localList = JSON.parse(localStorage.dbData)
 					expect(localList.lists.test.classes.length).toBe(0)
+
+					done()
+				}.bind(this))
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
+
+	it('add to lists works with section', function (done) {
+		Section.create({
+			_id: '56f21f93ea47044a05691b3e'
+		}).download(function (err, section) {
+			expect(err || null).toBe(null)
+
+
+			expect(user.getListIncludesSection('test', section)).toBe(false);
+
+			user.addToList('test', [], [section], function (err) {
+				expect(err || null).toBe(null)
+
+				expect(user.getListIncludesSection('test', section)).toBe(true)
+
+				var localList = JSON.parse(localStorage.dbData)
+				expect(localList.lists.test.sections.length).toBe(1)
+				expect(localList.lists.test.sections[0].classUid).toBe('2511')
+
+
+				user.removeFromList('test', [], [section], function () {
+
+
+					expect(user.getListIncludesSection('test', section)).toBe(false)
+
+					var localList = JSON.parse(localStorage.dbData)
+					expect(localList.lists.test.sections.length).toBe(0)
 
 					done()
 				}.bind(this))

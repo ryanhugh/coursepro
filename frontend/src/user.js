@@ -542,7 +542,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				this.lists[listName].sections.push(section);
 			}
 			if (addToDBSections) {
-				this.dbData.lists[listName].push(keys)
+				this.dbData.lists[listName].sections.push(keys)
 			}
 
 		}.bind(this))
