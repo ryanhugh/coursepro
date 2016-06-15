@@ -13,9 +13,7 @@ clean up this file a lot
 trello
 sms and phone call notifications?
 click to select class
-swap user remembered classes from _ids to keys
 get instanceCache off the window, why were different datas using differnet instanceCaches in testing?
-user.js#toggleListContainsSection needs to be updated to just use class.create -> download and make sure it is fast
 cross term data copying for a processor for like swarthmore class descriptions etc
 simplifyTree shouldnt copy attrs between nodes
 

@@ -500,7 +500,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 
 	classes.slice(0).forEach(function (aClass) {
 		if (!aClass.isClass) {
-			elog('tried to save a class that !isClas', aClass)
+			elog('tried to save a class that !isClass', aClass)
 			_.pull(classes, aClass)
 		}
 	}.bind(this))
@@ -798,41 +798,19 @@ User.prototype.toggleListContainsSection = function (listName, section, callback
 	//and tell server
 	else {
 
-		var classInstance;
 		var keys = section.getIdentifer().required.obj;
-		this.lists[listName].classes.forEach(function (aClass) {
-
-			for (var keyName in keys) {
-				if (aClass[keyName] != section[keyName]) {
-					return;
-				}
-			}
-			if (!_(aClass.crns).includes(section.crn)) {
-				return;
-			}
-			if (classInstance) {
-				elog('multiple saved classes have this section?', classInstance, aClass, section);
-			}
-			classInstance = aClass
-		}.bind(this))
-
-		if (!classInstance) {
-			// couldn't find a class instance in the saved field, need to make one
-			// Class.create(section.getIdentifer().required.obj).download(function (err, aClass) {
-			// 	if (!aClass.isClass) {
-			// 		aClass.prereqs.values.
-
-			// 	}
-			// }.bind(this))
-			// TODO this will happen if neither section or class are in the list
-			elog('couldnt find classInstance!', section, this.lists[listName])
+		var classInstance = Class.create(keys);
+		if (classInstance.dataStatus === macros.DATASTATUS_NOTSTARTED) {
+			console.warn('had to load class in toggleListContainsSection :(')
 		}
-
-
-		this.addToList(listName, [classInstance], [section], function (err) {
-			callback(err)
+		classInstance.download(function (err) {
+			if (err) {
+				return callback(err)
+			}
+			this.addToList(listName, [classInstance], [section], function (err) {
+				callback(err)
+			}.bind(this))
 		}.bind(this))
-		return;
 	}
 };
 
