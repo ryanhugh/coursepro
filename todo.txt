@@ -2,6 +2,8 @@ clashttps://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, n
 
 
 TODO
+switch user over to keys
+uglify properties before prod?
 
 search:
  - server side index generation and save them to disk somewhere? and pass around the url, dont need to, its known

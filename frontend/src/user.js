@@ -664,40 +664,36 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 	var initClassCount = this.lists[listName].classes.length
 	var initSectionCount = this.lists[listName].sections.length
 
-	var classIds = [];
-	classes.forEach(function (aClass) {
-		classIds.push(aClass._id)
-	}.bind(this))
+	// var classIds = [];
+	// classes.forEach(function (aClass) {
+	// 	classIds.push(aClass._id)
+	// }.bind(this))
 
-	var sectionIds = [];
-	sections.forEach(function (section) {
-		sectionIds.push(section._id)
-	}.bind(this))
+	// var sectionIds = [];
+	// sections.forEach(function (section) {
+	// 	sectionIds.push(section._id)
+	// }.bind(this))
 
-	classIds.forEach(function (classId) {
+	classes.forEach(function (classKey) {
 
 		//remove it from this.lists
-		var matchingClasses = _.filter(this.lists[listName].classes, {
-			_id: classId
-		});
+		var matchingClasses = _.filter(this.lists[listName].classes, classKey);
 
 		_.pullAll(this.lists[listName].classes, matchingClasses)
 
 		//and this.dbData.lists
-		_.pull(this.dbData.lists[listName].classes, classId)
+		_.pullAll(this.dbData.lists[listName].classes, classKey)
 	}.bind(this))
 
-	sectionIds.forEach(function (sectionId) {
+	sections.forEach(function (sectionKey) {
 
 		//remove it from this.lists
-		var matchingSections = _.filter(this.lists[listName].sections, {
-			_id: sectionId
-		});
+		var matchingSections = _.filter(this.lists[listName].sections, sectionKey);
 
 		_.pullAll(this.lists[listName].sections, matchingSections)
 
 		//and this.dbData.lists
-		_.pull(this.dbData.lists[listName].sections, sectionId)
+		_.pull(this.dbData.lists[listName].sections, sectionKey)
 	}.bind(this))
 
 	ga('send', {
