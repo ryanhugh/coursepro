@@ -21,7 +21,10 @@ function User() {
 	this.dbData = {
 		lists: {},
 		vars: {},
-		// loginKey:'' // generated when login with google
+
+		// Keep track of changes to the version so future types can upgrade/clear localStorage
+		version: this.constructor.DBDATA_VERSION
+			// loginKey:'' // generated when login with google
 	}
 
 	//lastSelectedCollege and lastSelectedTerm are used now
@@ -51,6 +54,12 @@ function User() {
 	// the status of downloading the data from the server. If don't have login key, this stays at not started. 
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED
 
+	this.loadFromLocalStorage();
+}
+
+User.DBDATA_VERSION = 2;
+
+User.prototype.loadFromLocalStorage = function () {
 	// load data
 	// everything comes from localstorage.dbData if don't have login key, else everything except loginKey comes from server.
 	// three cases:
@@ -68,13 +77,26 @@ function User() {
 			this.dbData.vars = localData.vars
 			this.download(_.noop)
 		}
+		// Must be v1, where class _id's were stored and version was not kept track of
+		else if (localData && !localData.version) {
+
+			// There were 2 things in dbData at this version: vars and lists
+			this.dbData.vars = localData.vars;
+
+			//TODO: copy the old _ids to the new format
+
+
+			this.saveData()
+
+		}
 
 		// valid local data
-		else {
+		else if (localData.version == this.constructor.DBDATA_VERSION) {
 			this.dbData = localData;
 		}
 	}
-}
+
+};
 
 
 User.prototype.saveData = function () {

@@ -3,6 +3,13 @@
 var macros = require('../../macros')
 var BaseData = require('../../BaseData')
 
+// Now, the mock data classes inherent from their respective real class, which inherents from mock base data, which inherents from base data. 
+// eg, mockClass -> Class -> MockBaseData -> BaseData. 
+
+//Before this I tried having the mock classes inherent from their respective class and mockBaseData, but there were conflicts with static methods 
+//with the second inherent overriding the first instead of the first calling the second.
+
+
 function MockBaseData() {
 	BaseData.prototype.constructor.apply(this, arguments);
 }
@@ -14,7 +21,7 @@ MockBaseData.download = function (config, callback) {
 		callback = function () {}
 	};
 
-	//make sure have all the keys 
+	//make sure have all the keys
 	if (!config.body._id) {
 
 		this.requiredPath.forEach(function (key) {

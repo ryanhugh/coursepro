@@ -10,6 +10,7 @@ search:
  - by default show panel expanded, maybe with search, but then how show coreqs and prereqs?
 
 clean up this file a lot
+make it so user can upgrade localstorage
 trello
 sms and phone call notifications?
 click to select class

@@ -123,7 +123,7 @@ BaseData.create = function (config) {
 			return instanceCache[key]
 		}
 		else if (!key) {
-			elog('no key?',config)
+			elog('no key?', config)
 		}
 	};
 
@@ -246,13 +246,13 @@ BaseData.prototype.getIdentiferWithKeys = function (keys, isOptional) {
 		retVal.str = retVal.str.join('/')
 	};
 
-	if (this._id !== undefined) {
+	if (retVal.obj) {
+		retVal.lookup = retVal.obj
+	}
+	else if (this._id) {
 		retVal.lookup = {
 			_id: this._id
 		}
-	}
-	else {
-		retVal.lookup = retVal.obj
 	}
 	return retVal;
 };
