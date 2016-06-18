@@ -73,6 +73,32 @@ function Graph() {
 	$(window).resize(function () {
 		this.calculateGraphSize();
 	}.bind(this));
+
+	var dragStartedByRightButton = false;
+	this.nodeDrag = d3.behavior.drag()
+		.on("dragstart", function (node) {
+			if (d3.event.sourceEvent.which == 3) {
+				dragStartedByRightButton = true
+				return;
+			}
+			else {
+				dragStartedByRightButton = false;
+				this.force.alpha(.007)
+			}
+		}.bind(this))
+		.on("drag", function (node) {
+			if (dragStartedByRightButton) {
+				return;
+			}
+			if (node.$scope.isExpanded) {
+				return;
+			}
+			node.px += d3.event.dx
+			node.py += d3.event.dy
+			node.x += d3.event.dx
+			node.y += d3.event.dy
+			this.force.alpha(.007)
+		}.bind(this))
 }
 
 Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile']
@@ -239,32 +265,6 @@ Graph.prototype.loadNodes = function (shouldGuessCoords, callback) {
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
 
-	// THIS DOSENT ENED TO BE HERE
-	var dragStartedByRightButton = false;
-	var nodeDrag = d3.behavior.drag()
-		.on("dragstart", function (node) {
-			if (d3.event.sourceEvent.which == 3) {
-				dragStartedByRightButton = true
-				return;
-			}
-			else {
-				dragStartedByRightButton = false;
-				this.force.alpha(.007)
-			}
-		}.bind(this))
-		.on("drag", function (node) {
-			if (dragStartedByRightButton) {
-				return;
-			}
-			if (node.$scope.isExpanded) {
-				return;
-			}
-			node.px += d3.event.dx
-			node.py += d3.event.dy
-			node.x += d3.event.dx
-			node.y += d3.event.dy
-			this.force.alpha(.007)
-		}.bind(this))
 
 	while (this.container[0][0].firstChild) {
 		this.container[0][0].removeChild(this.container[0][0].firstChild);
@@ -311,7 +311,7 @@ Graph.prototype.loadNodes = function (shouldGuessCoords, callback) {
 		.on("mousedown", function () {
 			d3.event.stopPropagation();
 		})
-		.call(nodeDrag)
+		.call(this.nodeDrag)
 
 	var html = '<div ng-include="\'panel.html\'"></div>'
 

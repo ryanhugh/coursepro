@@ -15,57 +15,6 @@ function GraphPanelSelect($timeout, $document) {
 
 	GraphPanelSelectInner.scope = true;
 
-	GraphPanelSelectInner.prototype.recursiveRemove = function (node) {
-
-		var allParentsAreSatisfied = true;
-		node.allParents.forEach(function (parent) {
-			if (!parent.isSatisfied && !parent.hidden) {
-				allParentsAreSatisfied = false;
-			}
-		}.bind(this))
-
-		// remove this node
-		if (allParentsAreSatisfied) {
-			node.$scope.graph.removeFromDom(node);
-			node.hidden = true;
-
-			node.prereqs.values.forEach(function (subTree) {
-				this.recursiveRemove(subTree)
-			}.bind(this))
-
-			node.coreqs.values.forEach(function (subTree) {
-				this.recursiveRemove(subTree)
-			}.bind(this))
-		}
-	};
-
-	GraphPanelSelectInner.prototype.selectTree = function (tree) {
-		var graph = tree.$scope.graph
-		tree.allParents.forEach(function (parent) {
-			if (parent.prereqs.type == 'or') {
-				parent.isSatisfied = true;
-			}
-		}.bind(this))
-
-
-		var neighbors = treeMgr.getUpwardNeighbors(tree);
-
-		_.pull(neighbors, tree);
-
-		neighbors.forEach(function (node) {
-
-			this.recursiveRemove(node)
-		}.bind(this))
-
-
-
-
-		graph.force.nodes(graph.nodes)
-			.links(graph.links)
-
-
-	};
-
 
 	// if a panel in a tree is clicked
 	GraphPanelSelectInner.prototype.onClick = function (tree, callback) {
@@ -84,14 +33,6 @@ function GraphPanelSelect($timeout, $document) {
 				callback()
 			}.bind(this))
 		}.bind(this))
-
-		// // going to move to user
-		// if (!tree.isSelected) {
-		// 	tree.isSelected = true;
-		// 	this.selectTree(tree)
-		// }
-
-
 	};
 
 
