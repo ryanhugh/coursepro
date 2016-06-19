@@ -75,6 +75,18 @@ function Class(config) {
 	// subject: "CS"
 	// url: "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201630&subj_in=CS&crse_in=4800&schd_in=%25"
 
+	Object.defineProperty(this, "x", {
+		set: function x(x) {
+			if (isNaN(x) || x===undefined) {
+				elog('wtf',x)
+			}
+			this._x = x;
+		}.bind(this),
+		get: function x() {
+			return this._x;
+		}.bind(this)
+	});
+
 
 }
 

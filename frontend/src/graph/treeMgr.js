@@ -701,6 +701,10 @@ TreeMgr.prototype.defaultToOr = function (tree) {
 	}.bind(this));
 };
 
+TreeMgr.prototype.getYGuessFromDepth = function(depth) {
+	return depth * 200 + 50;
+};
+
 // guess node positions attempts to estimate the output position of the d3 graph
 // set it to false if nodes already have positions
 TreeMgr.prototype.treeToD3 = function (tree, guessNodePositions) {
@@ -743,35 +747,47 @@ TreeMgr.prototype.treeToD3 = function (tree, guessNodePositions) {
 		}.bind(this))
 	}.bind(this))
 
-	if (guessNodePositions) {
+	if (nodes[0].x === undefined) {
 		nodes[0].x = window.innerWidth / 2;
-
-		nodes.forEach(function (node) {
-
-			if (node.allParents.length > 0) {
-				// Find average percent index * 1000, used as starting position for graph
-				// dosen't need to be that close to where it needs to be, d3 will make it better
-				var xSum = 0;
-				node.allParents.forEach(function (nodeParent) {
-					var index = nodeParent.prereqs.values.indexOf(node);
-					var length = nodeParent.prereqs.values.length;
-					if (!nodeParent.x) {
-						elog('nodeParent dosent have an x but it was set above?', nodeParent)
-					}
-
-					xSum += ((index - (length - 1) / 2) * 300 + nodeParent.x)
-
-				}.bind(this))
-
-				node.x = xSum / node.allParents.length
-			}
-		}.bind(this))
-
-		coreqs.forEach(function (coreq) {
-			coreq.x = 0
-			coreq.y = 0
-		}.bind(this))
 	}
+
+	nodes.forEach(function (node) {
+
+		if (node.allParents.length > 0 && node.x === undefined) {
+			// Find average percent index * 1000, used as starting position for graph
+			// dosen't need to be that close to where it needs to be, d3 will make it better
+			var xSum = 0;
+			node.allParents.forEach(function (nodeParent) {
+				var index = nodeParent.prereqs.values.indexOf(node);
+				var length = nodeParent.prereqs.values.length;
+				if (!nodeParent.x) {
+					elog('nodeParent dosent have an x but it was set above?', nodeParent)
+				}
+
+				xSum += ((index - (length - 1) / 2) * 300 + nodeParent.x)
+
+			}.bind(this))
+
+			node.x = xSum / node.allParents.length
+		}
+
+		if (node.y === undefined) {
+			node.y = this.getYGuessFromDepth(node.depth)
+		}
+
+	}.bind(this))
+
+	coreqs.forEach(function (coreq) {
+		coreq.x = 0
+		coreq.y = 0
+	}.bind(this))
+
+	nodes.concat(coreqs).forEach(function (node) {
+		if (node.x === undefined || isNaN(node.x) || node.y === undefined || isNaN(node.y)) {
+			elog('nope!',node)
+			debugger
+		}
+	}.bind(this))
 
 
 	return {
@@ -923,6 +939,8 @@ TreeMgr.prototype.go = function (tree) {
 	this.groupByHonors(tree);
 
 	this.simplifyTree(tree)
+
+	this.simplifyIfSelected(tree);
 
 	this.sortTree(tree);
 

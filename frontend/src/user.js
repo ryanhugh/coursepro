@@ -749,16 +749,21 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 };
 
 
-
+// Check the dbData instead of this.lists so the list dosen't have to be loaded
 User.prototype.getListIncludesClass = function (listName, aClass) {
-	// if (!this.isAuthAndLoaded(aClass)) {
-	//     return;
-	// };
-
 	this.ensureList(listName)
-	for (var i = 0; i < this.lists[listName].classes.length; i++) {
-		if (this.lists[listName].classes[i].equals(aClass)) {
-			return true
+	for (var i = 0; i < this.dbData.lists[listName].classes.length; i++) {
+		var currKeys = this.dbData.lists[listName].classes[i];
+
+		var isMatch = true;
+
+		for (var attrName in currKeys) {
+			if (currKeys[attrName] !== aClass[attrName]) {
+				isMatch = false;
+			}
+		}
+		if (isMatch) {
+			return true;
 		}
 	}
 	return false;
@@ -766,24 +771,25 @@ User.prototype.getListIncludesClass = function (listName, aClass) {
 
 
 User.prototype.getListIncludesSection = function (listName, section) {
-	// if (!this.getAuthenticated(section)) {
-	//     return null;
-	// }
-
 	this.ensureList(listName)
-	for (var i = 0; i < this.lists[listName].sections.length; i++) {
-		if (this.lists[listName].sections[i].equals(section)) {
-			return true
+	for (var i = 0; i < this.dbData.lists[listName].sections.length; i++) {
+		var currKeys = this.dbData.lists[listName].sections[i];
+
+		var isMatch = true;
+
+		for (var attrName in currKeys) {
+			if (currKeys[attrName] !== section[attrName]) {
+				isMatch = false;
+			}
+		}
+		if (isMatch) {
+			return true;
 		}
 	}
 	return false;
 };
 
 User.prototype.getList = function (listName) {
-	// if (!this.getAuthenticated()) {
-	//     return null;
-	// }
-
 	this.ensureList(listName)
 
 	return this.lists[listName]

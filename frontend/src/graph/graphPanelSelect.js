@@ -29,7 +29,7 @@ function GraphPanelSelect($timeout, $document) {
 			}
 			treeMgr.onNodeSelect(tree.$scope.graph.tree) // the BIG TREE
 
-			graph.loadNodes(false, function () {
+			tree.$scope.graph.loadNodes(false, function () {
 				callback()
 			}.bind(this))
 		}.bind(this))

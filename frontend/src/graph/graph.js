@@ -139,6 +139,9 @@ Graph.prototype.collide = function (node1, node2) {
 	}
 
 	var dx = Math.min(node1.x + this.getWidth(node1) - node2.x, node2.x + this.getWidth(node2) - node1.x, 20) / 2;
+	if (isNaN(dx) || dx === undefined) {
+		elog('jfladsjflj')
+	}
 	if (node1.x < node2.x) {
 		node1.x -= dx;
 		node2.x += dx;
@@ -353,9 +356,20 @@ Graph.prototype.loadNodes = function (shouldGuessCoords, callback) {
 	this.force.nodes(this.nodes)
 		.links(this.links)
 
+	// This is needed whenever adding or removing nodes from the graph, for d3 internally.
+	this.force.start();
+
 	if (!shouldGuessCoords) {
 		this.force.alpha(.01)
 	}
+
+	this.nodes.forEach(function (node) {
+		if (node.x === undefined || isNaN(node.x)) {
+			elog('wtf0', node)
+		}
+	}.bind(this))
+
+
 
 	callback()
 };
@@ -373,15 +387,8 @@ Graph.prototype.go = function (tree, callback) {
 		setTimeout(function () {
 			this.$scope.$apply()
 
-			window.graph = this;
-			window.tree = tree;
-			console.warn('temp')
-
-
 			treeMgr.go(tree);
 			this.tree = tree;
-
-
 
 			this.force = d3.layout.force()
 				.charge(-20000)
@@ -411,25 +418,7 @@ Graph.prototype.go = function (tree, callback) {
 
 			this.svg.call(zoom)
 
-
-			// Per-type markers, as they don't inherit styles.
-			// svg.append("svg:defs").selectAll("marker")
-			//     .data(["end"])
-			//   .enter().append("svg:marker")
-			//     .attr("id", String)
-			//     .attr("viewBox", "0 -5 10 10")
-			//     .attr("refX", 5)
-			//     .attr("markerWidth", 6)
-			//     .attr("markerHeight", 6)
-			//     .attr("orient", "auto")
-			//   .append("svg:path")
-			//     .attr("d", "M0,-5L10,0L0,5");
-
-
-			// STUFF WAS EHRE
 			this.loadNodes(true, function () {
-
-
 				var multiplyer = 1;
 
 				this.classCount = treeMgr.countClassesInTree(tree);
@@ -444,6 +433,13 @@ Graph.prototype.go = function (tree, callback) {
 				}.bind(this))
 
 				this.force.on("tick", function (e) {
+					this.nodes.forEach(function (node) {
+						if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
+							elog('wtf1', node)
+						}
+					}.bind(this))
+
+
 					for (var k = 0; k < this.nodes.length; k++) {
 						var currNode = this.nodes[k];
 
@@ -472,6 +468,9 @@ Graph.prototype.go = function (tree, callback) {
 										continue;
 									}
 									var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
+									if (isNaN(diff) || diff === undefined) {
+										elog('noooooo')
+									}
 									if (Math.abs(diff) > 100) {
 										continue;
 									}
@@ -486,8 +485,14 @@ Graph.prototype.go = function (tree, callback) {
 								}
 							}
 						}
-
 					};
+
+					this.nodes.forEach(function (node) {
+						if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
+							elog('wtf2', node)
+						}
+					}.bind(this))
+
 
 					this.linkElements.attr("points", function (d) {
 						if (isNaN(d.source.x) || isNaN(d.target.x)) {
