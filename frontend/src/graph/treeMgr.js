@@ -904,8 +904,25 @@ TreeMgr.prototype.savePrereqsForThisGraph = function (tree) {
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 
 
+// , was selected.
+// send the entire graph through a couple of the steps of below
+
+// TreeMgr.prototype.onNodeSelect = function (tree) {
+// 	this.removeAllParents(tree);
+
+// 	this.simplifyIfSelected(tree);
+
+// 	this.addAllParentRelations(tree);
+// 	this.skipNodesPostStuff(tree);
+// 	this.removeDepth(tree);
+// 	this.addDepthLevel(tree);
+// };
+
+
+
 // TreeMgr.prototype.processTree = function(tree, callback) {
 TreeMgr.prototype.go = function (tree) {
+	this.removeAllParents(tree);
 
 	this.resetTree(tree);
 
@@ -936,6 +953,9 @@ TreeMgr.prototype.go = function (tree) {
 	this.groupByCommonPrereqs(tree, 'or')
 	this.groupByCommonPrereqs(tree, 'and')
 
+	this.skipNodesPostStuff(tree);
+	this.skipNodesPostStuff(tree);
+	this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
 
 	this.defaultToOr(tree);

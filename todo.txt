@@ -85,6 +85,11 @@ no duplicates in children or parents
 panels should have text in them 
 no depth > 50
 
+
+this.skipNodesPostStuff(tree); needed 4 times??????
+
+
+
 debug this next http://localhost/#/graph/neu.edu/201710/CHEM/2331_2069949756
 
 big graphs
@@ -108,6 +113,8 @@ http://localhost/#/graph/neu.edu/201710/EECE/2530
 if there are a crapton of (a or b or c or d or e or f ... ) do you want to split it into ((a or b or c) or (d or e or f))?
  	(maybe split up the nodes that have prereqs, idk)
 http://localhost/#/graph/neu.edu/201710/BIOL/3407
+
+
 
 
 
