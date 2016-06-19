@@ -27,7 +27,15 @@ function GraphPanelSelect($timeout, $document) {
 				elog(err);
 				return;
 			}
-			treeMgr.onNodeSelect(tree.$scope.graph.tree) // the BIG TREE
+
+			// Run the entire big tree through all of treeMgr again
+			// this is needed to rediscover any common prereqs, recalculate depths, and pretty much 
+			// everything else that treeMgr does. 
+
+			// comment from the other code:
+			// this is needed because in some cases, nodes can be affected that are children of a select node's ansestors, and that no longer need to have a line
+			// to one that was just satisfied, so can make graph simpler for it
+			treeMgr.go(tree.$scope.graph.tree) 
 
 			tree.$scope.graph.loadNodes(false, function () {
 				callback()

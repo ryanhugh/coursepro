@@ -267,7 +267,11 @@ Graph.prototype.loadNodes = function (shouldGuessCoords, callback) {
 	var nodesAndLinks = treeMgr.treeToD3(this.tree, shouldGuessCoords);
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
-
+	
+	this.nodes.forEach(function (node) {
+		node.height = this.nodeHeight;
+		node.width = this.nodeWidth
+	}.bind(this))
 
 	while (this.container[0][0].firstChild) {
 		this.container[0][0].removeChild(this.container[0][0].firstChild);
@@ -363,14 +367,6 @@ Graph.prototype.loadNodes = function (shouldGuessCoords, callback) {
 		this.force.alpha(.01)
 	}
 
-	this.nodes.forEach(function (node) {
-		if (node.x === undefined || isNaN(node.x)) {
-			elog('wtf0', node)
-		}
-	}.bind(this))
-
-
-
 	callback()
 };
 
@@ -425,12 +421,6 @@ Graph.prototype.go = function (tree, callback) {
 				if (this.classCount === 0) {
 					elog('0 classes found?', tree)
 				}
-
-				this.nodes.forEach(function (node) {
-					// node.x = node.cx = Math.random() * 100 + 200
-					node.height = this.nodeHeight;
-					node.width = this.nodeWidth
-				}.bind(this))
 
 				this.force.on("tick", function (e) {
 					this.nodes.forEach(function (node) {
@@ -495,21 +485,21 @@ Graph.prototype.go = function (tree, callback) {
 
 
 					this.linkElements.attr("points", function (d) {
-						if (isNaN(d.source.x) || isNaN(d.target.x)) {
-							debugger
+						if (d.target.x === undefined || isNaN(d.target.x) || isNaN(d.target.y) || d.target.y === undefined) {
+							elog('wtf3', d.target)
 						}
 
+						if (d.source.x === undefined || isNaN(d.source.x) || isNaN(d.source.y) || d.source.y === undefined) {
+							elog('wtf4', d.source)
+						}
 
-
-						// return d.source.x+','+d.source.y+' '+((d.target.x+d.source.x)/2)+','+((d.target.y+d.source.y)/2)+' '+d.target.x+','+d.target.y
 						return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
 					}.bind(this))
 
 					this.nodeElements.attr("transform", function (d) {
-						if (isNaN(d.x) || isNaN(d.y)) {
-							debugger
+						if (d.x === undefined || isNaN(d.x) || isNaN(d.y) || d.y === undefined) {
+							elog('wtf5', d)
 						}
-
 
 						if (d.isCoreq) {
 

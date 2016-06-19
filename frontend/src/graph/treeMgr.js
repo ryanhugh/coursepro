@@ -892,22 +892,6 @@ TreeMgr.prototype.getSatisfyingNode = function (tree) {
 	return null;
 };
 
-// a node, somewhere in the graph, was selected.
-// send the entire graph through a couple of the steps of below
-// this is needed because in some cases, nodes can be affected that are children of a select node's ansestors, and that no longer need to have a line
-// to one that was just satisfied, so can make graph simpler for it
-TreeMgr.prototype.onNodeSelect = function (tree) {
-	this.removeAllParents(tree);
-
-	this.simplifyIfSelected(tree);
-
-	this.addAllParentRelations(tree);
-	this.skipNodesPostStuff(tree);
-	this.removeDepth(tree);
-	this.addDepthLevel(tree);
-};
-
-
 TreeMgr.prototype.savePrereqsForThisGraph = function (tree) {
 
 	tree.prereqsForThisGraph = tree.prereqs
@@ -935,7 +919,6 @@ TreeMgr.prototype.go = function (tree) {
 	//at this point, there should not be any with data status = not started, so if find any remove them
 	//actually, dont do this because somtimes classes can error
 	// this.removeInvalidSubTrees(tree);
-
 	this.groupByHonors(tree);
 
 	this.simplifyTree(tree)
