@@ -892,6 +892,31 @@ TreeMgr.prototype.getSatisfyingNode = function (tree) {
 	return null;
 };
 
+TreeMgr.prototype.setWouldSatisfy = function(tree) {
+	tree.wouldSatisfyNode = this.wouldSatisfyNode(tree)
+	
+	tree.prereqs.values.forEach(function (subTree) {
+		this.setWouldSatisfy(subTree);
+	}.bind(this));
+};
+
+// returns true if this tree would satisfy a node if selected and make the graph simpler,
+// else it returns false
+TreeMgr.prototype.wouldSatisfyNode = function(tree) {
+	for (var i = 0; i < tree.allParents.length; i++) {
+		var parent = tree.allParents[i];
+		if (parent.prereqs.type === 'or' && parent.prereqs.values.length > 1) {
+			return true;
+		}
+	}
+
+
+	//also recurse upward if parent is !class and type 'or' ?
+
+	return false;
+
+};
+
 TreeMgr.prototype.savePrereqsForThisGraph = function (tree) {
 
 	tree.prereqsForThisGraph = tree.prereqs
@@ -902,25 +927,6 @@ TreeMgr.prototype.savePrereqsForThisGraph = function (tree) {
 };
 
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
-
-
-// , was selected.
-// send the entire graph through a couple of the steps of below
-
-// TreeMgr.prototype.onNodeSelect = function (tree) {
-// 	this.removeAllParents(tree);
-
-// 	this.simplifyIfSelected(tree);
-
-// 	this.addAllParentRelations(tree);
-// 	this.skipNodesPostStuff(tree);
-// 	this.removeDepth(tree);
-// 	this.addDepthLevel(tree);
-// };
-
-
-
-// TreeMgr.prototype.processTree = function(tree, callback) {
 TreeMgr.prototype.go = function (tree) {
 	this.removeAllParents(tree);
 
@@ -941,10 +947,13 @@ TreeMgr.prototype.go = function (tree) {
 	this.simplifyTree(tree)
 
 	this.simplifyIfSelected(tree);
+	
 
 	this.sortTree(tree);
 
 	this.addAllParentRelations(tree);
+	this.skipNodesPostStuff(tree);
+	this.skipNodesPostStuff(tree);
 
 	this.defaultToOr(tree);
 
@@ -954,8 +963,8 @@ TreeMgr.prototype.go = function (tree) {
 	this.groupByCommonPrereqs(tree, 'and')
 
 	this.skipNodesPostStuff(tree);
-	this.skipNodesPostStuff(tree);
-	this.skipNodesPostStuff(tree);
+	// this.skipNodesPostStuff(tree);
+	// this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
 
 	this.defaultToOr(tree);
@@ -966,6 +975,7 @@ TreeMgr.prototype.go = function (tree) {
 	this.addLowestParent(tree);
 
 	this.calculateIfChildrenAtSameDepth(tree);
+	this.setWouldSatisfy(tree);
 
 	this.savePrereqsForThisGraph(tree);
 
