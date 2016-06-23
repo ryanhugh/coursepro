@@ -160,11 +160,13 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 
 				// and simplify tree again
 				toUpdate.prereqs = ellucianRequisitesParser.simplifyRequirements(toUpdate.prereqs)
+				aClass.prereqs = toUpdate.prereqs
 			}
 
 			if (aClass.coreqs) {
 				toUpdate.coreqs = this.updatePrereqs(aClass.coreqs, aClass.host, aClass.termId, keyToRows);
 				toUpdate.coreqs = ellucianRequisitesParser.simplifyRequirements(toUpdate.coreqs)
+				aClass.coreqs = toUpdate.coreqs
 			}
 
 			if (toUpdate.prereqs || toUpdate.coreqs) {
