@@ -893,9 +893,18 @@ TreeMgr.prototype.getSatisfyingNode = function (tree) {
 };
 
 TreeMgr.prototype.setWouldSatisfy = function(tree) {
-	tree.wouldSatisfyNode = this.wouldSatisfyNode(tree)
+	if (tree.isCoreq) {
+		tree.wouldSatisfyNode = tree.lowestParent.wouldSatisfyNode
+	}
+	else {
+		tree.wouldSatisfyNode = this.wouldSatisfyNode(tree)
+	}
 	
 	tree.prereqs.values.forEach(function (subTree) {
+		this.setWouldSatisfy(subTree);
+	}.bind(this));
+
+	tree.coreqs.values.forEach(function (subTree) {
 		this.setWouldSatisfy(subTree);
 	}.bind(this));
 };
@@ -947,7 +956,7 @@ TreeMgr.prototype.go = function (tree) {
 	this.simplifyTree(tree)
 
 	this.simplifyIfSelected(tree);
-	
+
 
 	this.sortTree(tree);
 
