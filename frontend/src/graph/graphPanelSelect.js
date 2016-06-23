@@ -37,7 +37,7 @@ function GraphPanelSelect($timeout, $document) {
 			// to one that was just satisfied, so can make graph simpler for it
 			treeMgr.go(tree.$scope.graph.tree) 
 
-			tree.$scope.graph.loadNodes(false, function () {
+			tree.$scope.graph.loadNodes(function () {
 				callback()
 			}.bind(this))
 		}.bind(this))

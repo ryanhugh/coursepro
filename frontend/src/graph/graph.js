@@ -262,9 +262,9 @@ Graph.prototype.calculateGraphSize = function () {
 		.attr("height", this.graphHeight)
 };
 
-Graph.prototype.loadNodes = function (shouldGuessCoords, callback) {
+Graph.prototype.loadNodes = function (callback) {
 
-	var nodesAndLinks = treeMgr.treeToD3(this.tree, shouldGuessCoords);
+	var nodesAndLinks = treeMgr.treeToD3(this.tree);
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
 	
@@ -363,9 +363,7 @@ Graph.prototype.loadNodes = function (shouldGuessCoords, callback) {
 	// This is needed whenever adding or removing nodes from the graph, for d3 internally.
 	this.force.start();
 
-	if (!shouldGuessCoords) {
-		this.force.alpha(.01)
-	}
+	this.force.alpha(.01)
 
 	callback()
 };
@@ -414,7 +412,7 @@ Graph.prototype.go = function (tree, callback) {
 
 			this.svg.call(zoom)
 
-			this.loadNodes(true, function () {
+			this.loadNodes(function () {
 				var multiplyer = 1;
 
 				this.classCount = treeMgr.countClassesInTree(tree);

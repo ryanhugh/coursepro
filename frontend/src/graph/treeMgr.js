@@ -707,7 +707,7 @@ TreeMgr.prototype.getYGuessFromDepth = function(depth) {
 
 // guess node positions attempts to estimate the output position of the d3 graph
 // set it to false if nodes already have positions
-TreeMgr.prototype.treeToD3 = function (tree, guessNodePositions) {
+TreeMgr.prototype.treeToD3 = function (tree) {
 	var nodes = this.findFlattendClassList(tree, true).sort(function (a, b) {
 		if (a.depth < b.depth) {
 			return -1;
