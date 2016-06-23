@@ -764,6 +764,7 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 					elog('nodeParent dosent have an x but it was set above?', nodeParent)
 				}
 
+				// 300 is the guess distance between nodes
 				xSum += ((index - (length - 1) / 2) * 300 + nodeParent.x)
 
 			}.bind(this))
