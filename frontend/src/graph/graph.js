@@ -267,7 +267,7 @@ Graph.prototype.loadNodes = function (callback) {
 	var nodesAndLinks = treeMgr.treeToD3(this.tree);
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
-	
+
 	this.nodes.forEach(function (node) {
 		node.height = this.nodeHeight;
 		node.width = this.nodeWidth

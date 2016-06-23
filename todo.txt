@@ -26,6 +26,11 @@ http://localhost/#/graph/neu.edu/201710/PHYS/1165_1407358073
 #87c3d0 for light blue
 
 
+// would this work somewhere??
+tree.prereqs.values.sort(function (a, b) {
+	return b.x - a.x;
+}.bind(this))
+
 
 
 TO TEST
