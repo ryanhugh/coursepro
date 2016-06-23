@@ -684,24 +684,24 @@ TreeMgr.prototype.logTree = function (tree, body) {
 	tree.logTree(body)
 
 };
-TreeMgr.prototype.defaultToOr = function (tree) {
+TreeMgr.prototype.defaultTo = function (tree, type) {
 
 	//if this class is a coreq to another class, remove its coreqs
 	if (tree.prereqs.values.length < 2) {
-		tree.prereqs.type = 'or'
+		tree.prereqs.type = type
 	}
 
 
 	tree.coreqs.values.forEach(function (subTree) {
-		this.defaultToOr(subTree);
+		this.defaultTo(subTree, type);
 	}.bind(this))
 
 	tree.prereqs.values.forEach(function (subTree) {
-		this.defaultToOr(subTree);
+		this.defaultTo(subTree, type);
 	}.bind(this));
 };
 
-TreeMgr.prototype.getYGuessFromDepth = function(depth) {
+TreeMgr.prototype.getYGuessFromDepth = function (depth) {
 	return depth * 200 + 50;
 };
 
@@ -785,7 +785,7 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 
 	nodes.concat(coreqs).forEach(function (node) {
 		if (node.x === undefined || isNaN(node.x) || node.y === undefined || isNaN(node.y)) {
-			elog('nope!',node)
+			elog('nope!', node)
 			debugger
 		}
 	}.bind(this))
@@ -893,14 +893,14 @@ TreeMgr.prototype.getSatisfyingNode = function (tree) {
 	return null;
 };
 
-TreeMgr.prototype.setWouldSatisfy = function(tree) {
+TreeMgr.prototype.setWouldSatisfy = function (tree) {
 	if (tree.isCoreq) {
 		tree.wouldSatisfyNode = tree.lowestParent.wouldSatisfyNode
 	}
 	else {
 		tree.wouldSatisfyNode = this.wouldSatisfyNode(tree)
 	}
-	
+
 	tree.prereqs.values.forEach(function (subTree) {
 		this.setWouldSatisfy(subTree);
 	}.bind(this));
@@ -912,7 +912,7 @@ TreeMgr.prototype.setWouldSatisfy = function(tree) {
 
 // returns true if this tree would satisfy a node if selected and make the graph simpler,
 // else it returns false
-TreeMgr.prototype.wouldSatisfyNode = function(tree) {
+TreeMgr.prototype.wouldSatisfyNode = function (tree) {
 	for (var i = 0; i < tree.allParents.length; i++) {
 		var parent = tree.allParents[i];
 		if (parent.prereqs.type === 'or' && parent.prereqs.values.length > 1) {
@@ -965,7 +965,7 @@ TreeMgr.prototype.go = function (tree) {
 	this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
 
-	this.defaultToOr(tree);
+	this.defaultTo(tree, 'and');
 
 	this.mergeDuplicateClasses(tree)
 
@@ -977,7 +977,7 @@ TreeMgr.prototype.go = function (tree) {
 	// this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
 
-	this.defaultToOr(tree);
+	this.defaultTo(tree, 'and');
 
 	this.removeDepth(tree);
 	this.addDepthLevel(tree);
