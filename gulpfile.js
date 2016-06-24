@@ -233,10 +233,9 @@ gulp.task('btestRun', function () {
 
 	var filesToProccess = [];
 	files.forEach(function (file) {
-		if (_(file).endsWith('tests.js')) {
 
-			// get the cache object of the specs.js file,
-			// delete it and its children recursively from cache
+		// add all the .tests.js files to jasmine
+		if (_(file).endsWith('tests.js')) {
 			var resolvedPath = path.resolve(file);
 			jasmine.addSpecFile(resolvedPath);
 		};
