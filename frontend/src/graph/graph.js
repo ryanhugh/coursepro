@@ -385,7 +385,10 @@ Graph.prototype.go = function (tree, callback) {
 			this.tree = tree;
 
 			this.force = d3.layout.force()
-				.charge(-20000)
+				.charge(function (node) {
+					debugger
+					return -20000 - node.coreqs.values.length*5000
+				}.bind(this))
 				.gravity(0.2)
 				.linkDistance(5)
 
