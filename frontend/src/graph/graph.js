@@ -116,7 +116,12 @@ Graph.prototype.addClass = function (aClass) {
 
 Graph.prototype.getWidth = function (tree) {
 	var width = Math.min(200, tree.width);
-	width += tree.coreqs.values.length * 34
+	if (tree.coreqs.values.length > 0) {
+		width += tree.coreqs.values.length * 34
+	}
+	else {
+		width += 17
+	}
 	return width;
 };
 
@@ -386,8 +391,7 @@ Graph.prototype.go = function (tree, callback) {
 
 			this.force = d3.layout.force()
 				.charge(function (node) {
-					debugger
-					return -20000 - node.coreqs.values.length*5000
+					return -20000 - node.coreqs.values.length*7000
 				}.bind(this))
 				.gravity(0.2)
 				.linkDistance(5)
@@ -448,7 +452,7 @@ Graph.prototype.go = function (tree, callback) {
 						}
 
 						//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
-						currNode.y += ((currNode.depth * 200 + 50) - currNode.y) * e.alpha * multiplyer;
+						currNode.y += (treeMgr.getYGuessFromDepth(currNode.depth) - currNode.y) * e.alpha * multiplyer;
 
 
 						// collision between children on different depths
