@@ -9,6 +9,7 @@ var URI = require('urijs');
 var compress = require('compression');
 var https = require('https')
 var async = require('async')
+var dns = require('dns')
 
 
 var pageDataMgr = require('./pageDataMgr');
@@ -247,6 +248,52 @@ app.post('/listColleges', function (req, res) {
 		res.send(JSON.stringify(names));
 	});
 })
+
+app.post('/getCurrentCollege', function (req, res) {
+
+	var ip = req.connection.remoteAddress;
+	if (req.body.ip) {
+		ip = req.body.ip
+	}
+	if (ip === '::1') {
+		res.send('{"error":"cant do a rdns of localhost"}');
+		return;
+	}
+
+	dns.reverse(ip, function (err, results) {
+		if (err) {
+			elog(ip, err);
+			res.send('{"error":"internal server error :/"}');
+			return;
+		}
+		if (results.length < 1) {
+			elog('WTF got 0 results', ip, results)
+			res.send('{}');
+			return;
+		}
+
+		if (results.length > 1) {
+			console.log('WARNING: got more that 1 results?', ip, results)
+		}
+
+		var fullHost = results[0];
+
+		//now strip everything except the last 'neu.edu'
+		//when going international use this list https://publicsuffix.org/list/public_suffix_list.dat
+		//for now only supports .edu
+
+		var match = fullHost.match(/\.([^.]+?\.edu)$/);
+		if (!match) {
+			elog('no match on result?')
+			res.send('{}');
+			return;
+		}
+
+		res.send(JSON.stringify({
+			host: match[1]
+		}))
+	}.bind(this))
+}.bind(this))
 
 
 
