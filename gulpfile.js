@@ -253,11 +253,13 @@ var btestRun = batch(function (events, callback) {
 	jasmine.onComplete(function (passedAll) {
 		callback()
 	}.bind(this))
-},function (err) {
-	console.log('BATCH FAILED!',err)
+}, function (err) {
+	console.log('BATCH FAILED!', err);
 }.bind(this));
 
-
+process.on('uncaughtException', function (err) {
+	console.log('Caught exception: ', err.stack);
+});
 
 gulp.task('btest', function () {
 	btestRun();

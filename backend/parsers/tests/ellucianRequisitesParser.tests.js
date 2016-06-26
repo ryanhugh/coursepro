@@ -297,6 +297,34 @@ it('simplifyRequirements shoudl work', function () {
 		type: 'or',
 		values: ['1', '6', '1', '1', '6', '1', '6']
 	});
+ 
+});
+
+
+it('simplifyRequirements shoudl work', function () {  
+
+	expect(ellucianRequisitesParser.simplifyRequirements({
+		"type": "and",
+		"values": [{
+			"type": "or",
+			"values": [{
+				"subject": "PHYS",
+				"classUid": "1148_1041629977"
+			}, {
+				"subject": "PHYS",
+				"classUid": "1148_1041629977"
+			}]
+		}]
+	})).toEqual({
+		"type": "or",
+		"values": [{
+			"subject": "PHYS",
+			"classUid": "1148_1041629977"
+		}, {
+			"subject": "PHYS",
+			"classUid": "1148_1041629977"
+		}]
+	});
 
 });
 

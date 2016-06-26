@@ -105,7 +105,7 @@ it('parse prereqs and coreqs and seat data from 1.html', function (done) {
 			});
 
 			expect(pageData.parent.data.coreqs).toEqual({
-				"type": "and",
+				"type": "or",
 				"values": [{
 					classId: '2161',
 					termId: '201610',

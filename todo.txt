@@ -29,6 +29,8 @@ auto recognize which college someone is coming from (not really a processor?) --
 make the search index and upload it to ec2 bucket
 
 
+make the collision code for nodes at different tiers use actuall trig and not ghetto trig
+
 
 http://localhost/#/graph/neu.edu/201710/PHYS/1165_1407358073
 
