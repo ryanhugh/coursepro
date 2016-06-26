@@ -20,6 +20,10 @@ simplifyTree shouldnt copy attrs between nodes
 
 chem 2311 dosent have coreqs????? it should
 https://coursepro.io/#/graph/neu.edu/201710/CHEM/2311
+ -- change how this is done, working on it in prereqClassUids, but need some work
+ -- moving the logic for this from treeMgr to ^^  DO THIS NEXTTTTTTT AND THEN the collision code?
+
+
 
 PROCESSORS:
 find things for search prefil hint thing
@@ -27,6 +31,8 @@ find things for search prefil hint thing
 semester start and end on term -- done
 auto recognize which college someone is coming from (not really a processor?) -- done
 make the search index and upload it to ec2 bucket
+
+
 
 
 make the collision code for nodes at different tiers use actuall trig and not ghetto trig
@@ -103,6 +109,13 @@ only 1 node with 0 parents
 no duplicates in children or parents
 panels should have text in them 
 no depth > 50
+
+
+====Parsing warnings====
+pre/co reqs that link to invalid classes
+classes that say "recistation for " or "lab for" but don't have any coreqs
+
+
 
 
 this.skipNodesPostStuff(tree); needed 4 times??????

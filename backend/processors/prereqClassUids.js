@@ -133,7 +133,7 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 					keyToRows[key] = []
 				}
 
-				// only need to keet subject and classUid
+				// only need to keep subject and classUid
 				keyToRows[key].push({
 					subject: aClass.subject,
 					classUid: aClass.classUid
@@ -166,6 +166,22 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 			if (aClass.coreqs) {
 				toUpdate.coreqs = this.updatePrereqs(aClass.coreqs, aClass.host, aClass.termId, keyToRows);
 				toUpdate.coreqs = ellucianRequisitesParser.simplifyRequirements(toUpdate.coreqs)
+
+
+				// Remove honors coreqs from classes that are not honors
+				// for (var i = 0; i < aClass.coreqs.values.length; i++) {
+				// 	var subValues = aClass.coreqs.values[i];
+				// 	if (!subValues.subject || !subValues.classUid) {
+
+				// 	}
+				// }
+
+
+				// and remove non honors coreqs if there is a hon lab with the same classId
+				// this isnt going to be 100% reliable across colleges, idk how to make it better, but want to error on the side of showing too many coreqs
+
+
+
 				aClass.coreqs = toUpdate.coreqs
 			}
 
