@@ -23,9 +23,10 @@ https://coursepro.io/#/graph/neu.edu/201710/CHEM/2311
 
 PROCESSORS:
 find things for search prefil hint thing
-semester start and end on term
-auto recognize which college someone is coming from (not really a processor?)
-
+ - at neu it should be International Village and First Year Writing
+semester start and end on term -- done
+auto recognize which college someone is coming from (not really a processor?) -- done
+make the search index and upload it to ec2 bucket
 
 
 

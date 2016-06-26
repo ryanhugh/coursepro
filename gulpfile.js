@@ -11,6 +11,7 @@ var flatten = require('gulp-flatten');
 var angularTemplates = require('gulp-angular-templatecache')
 var htmlmin = require('gulp-htmlmin');
 var notify = require("gulp-notify");
+var batch = require('gulp-batch');
 
 // for backend unit tests
 var jasmineReporter = require('./backend/jasmineReporter')
@@ -216,7 +217,13 @@ gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 // if u want to u can run individual test files with
 // jasmine-node ellucianSectionParser.tests.js  --matchall
 // also don't compare pageDatas directly with expect(pageData).toEqual, it will cause jasmine to eat up all yo ram and crash
-gulp.task('btestRun', function () {
+
+// the batch is a solution for a async problem,
+// where if you quickly saved a file a bunch of times, 
+// gulp would run the watcher again before the prior run finished
+// so the require.cache would be cleared halfway through the excecution of the first tests
+// which messed up a lot of stuff
+var btestRun = batch(function (events, callback) {
 	var files = glob.sync('backend/**/*.js');
 
 	files.forEach(function (file) {
@@ -243,10 +250,18 @@ gulp.task('btestRun', function () {
 
 	jasmine.addReporter(new jasmineReporter());
 	jasmine.execute();
-});
+	jasmine.onComplete(function (passedAll) {
+		callback()
+	}.bind(this))
+},function () {
+	console.log('BATCH FAILED!',arguments)
+}.bind(this));
 
-gulp.task('btest', ['btestRun'], function () {
-	gulp.watch(['backend/**/*.js'], ['btestRun']);
+
+
+gulp.task('btest', function () {
+	btestRun();
+	gulp.watch(['backend/**/*.js'], btestRun);
 });
 
 gulp.task('test', ['btest', 'ftest'], function () {});

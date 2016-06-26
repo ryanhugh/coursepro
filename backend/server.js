@@ -9,9 +9,9 @@ var URI = require('urijs');
 var compress = require('compression');
 var https = require('https')
 var async = require('async')
-var dns = require('dns')
 
 
+var macros = require('./macros')
 var pageDataMgr = require('./pageDataMgr');
 
 var blacklistedEmails = require('./blacklistedEmails.json')
@@ -23,6 +23,15 @@ var classesDB = require('./databases/classesDB');
 var sectionsDB = require('./databases/sectionsDB');
 var usersDB = require('./databases/usersDB');
 var dbUpdater = require('./databases/updater')
+
+var dns;
+if (macros.UNIT_TESTS) {
+	dns = require('./tests/mockDns')
+}
+else {
+	dns = require('dns')
+}
+
 
 
 var search = require('./search');
@@ -263,7 +272,7 @@ app.post('/getCurrentCollege', function (req, res) {
 	dns.reverse(ip, function (err, results) {
 		if (err) {
 			elog(ip, err);
-			res.send('{"error":"internal server error :/"}');
+			res.send('{"error":"internal server error :/"}' + ip + err + JSON.stringify(req.body));
 			return;
 		}
 		if (results.length < 1) {
@@ -996,7 +1005,30 @@ app.post("/*", function (req, res, next) {
 });
 
 
-app.listen(80);
+if (macros.UNIT_TESTS) {
+
+	var q = queue();
+
+	// close the old server, if one existed
+	if (global.expressHttpServer) {
+		q.defer(function (callback) {
+			global.expressHttpServer.close(callback)
+		}.bind(this))
+	}
+	q.awaitAll(function (err) {
+		if (err) {
+			elog(err);
+		}
+		global.expressHttpServer = app.listen(8123);
+	}.bind(this))
+
+}
+else {
+	if (global.expressHttpServer) {
+		elog('already running a http server???')
+	}
+	global.expressHttpServer = app.listen(80);
+}
 
 
 //https
@@ -1026,5 +1058,27 @@ async.parallel([
 			cert: results[1]
 		};
 		var server = https.createServer(credentials, app);
-		server.listen(443);
+		if (macros.UNIT_TESTS) {
+
+			var q = queue();
+
+			// close the old server, if one existed
+			if (global.expressHttpsServer) {
+				q.defer(function (callback) {
+					global.expressHttpsServer.close(callback)
+				}.bind(this))
+			}
+			q.awaitAll(function (err) {
+				elog(err);
+				global.expressHttpsServer = server.listen(8443);
+			}.bind(this))
+
+		}
+		else {
+			if (global.expressHttpsServer) {
+				elog('already running a https server???')
+			}
+			global.expressHttpsServer = server.listen(443);
+		}
+
 	})
