@@ -97,6 +97,8 @@ it('https works', function (done) {
 
 		// need this because the host isn't coursepro.io, but meh it at least checks some stuff is working
 		rejectUnauthorized: false
+
+		//resp.connection.getPeerCertificate().subject.O is the orginization that the cert was issued to
 	}, function (err, resp, body) {
 		expect(err).toBe(null);
 		return done()
