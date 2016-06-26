@@ -253,8 +253,8 @@ var btestRun = batch(function (events, callback) {
 	jasmine.onComplete(function (passedAll) {
 		callback()
 	}.bind(this))
-},function () {
-	console.log('BATCH FAILED!',arguments)
+},function (err) {
+	console.log('BATCH FAILED!',err)
 }.bind(this));
 
 

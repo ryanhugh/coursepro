@@ -201,7 +201,6 @@ app.use(function (req, res, next) {
 			}
 		})
 
-		res.redirect('https://coursepro.io' + req.url);
 		res.status(418)
 		res.setHeader('LEEROOOOOOOOOOOOOOOOOOOOOOY', 'JEEEEEEENKIIIIIIIIIIIIIIINS!!!!');
 		res.send('trolololololol');
