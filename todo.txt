@@ -30,6 +30,7 @@ find things for search prefil hint thing
  - at neu it should be International Village and First Year Writing
 semester start and end on term -- done
 auto recognize which college someone is coming from (not really a processor?) -- done
+remove honors coreqs from non hon classes, etc
 make the search index and upload it to ec2 bucket
 
 

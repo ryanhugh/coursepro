@@ -109,8 +109,16 @@ TermStartEndDate.prototype.runOnTerm = function (query, callback) {
 
 TermStartEndDate.prototype.go = function (baseQuery, callback) {
 
+	// Don't run if only updating one class
+	if (baseQuery.host && baseQuery.termId && baseQuery.subject && baseQuery.classId) {
+		return callback();
+	}
+
 	if (baseQuery.host && baseQuery.termId) {
-		return this.runOnTerm(baseQuery, function (err, result) {
+		return this.runOnTerm({
+			host: baseQuery.host,
+			termId: baseQuery.termId
+		}, function (err, result) {
 			if (err) {
 				return callback(err)
 			}
@@ -171,4 +179,3 @@ module.exports = new TermStartEndDate();
 if (require.main === module) {
 	module.exports.tests();
 }
-
