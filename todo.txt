@@ -107,15 +107,19 @@ nodes are in childrens parents
 !classes have (>1 child or >1 parent) and at lest 1 child and at least 1 parent
 all nodes connected to each other somehow
 only 1 node with 0 parents
-no duplicates in children or parents
+no duplicates in children or parents (except coreqs)
 panels should have text in them 
 no depth > 50
 any isCoreq should only have exacly one parent
 
 
-====Parsing warnings====
+====Parsing warnings that could tell school about====
 pre/co reqs that link to invalid classes
 classes that say "recistation for " or "lab for" but don't have any coreqs
+
+
+=== performance === 
+is coreq.clone() slowing this down?
 
 
 
