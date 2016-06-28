@@ -653,10 +653,24 @@ TreeMgr.prototype.groupByHonors = function (tree) {
 		var filteredCoreqs = [];
 		tree.coreqs.values.forEach(function (subTree) {
 			if (subTree.honors && tree.honors) {
-				filteredCoreqs.push(subTree);
+				filteredCoreqs.push(subTree.clone());
+			}
+
+			// If there is no honors equivalent, add the non hon class
+			else if (tree.honors && !subTree.honors) {
+				for (var i = 0; i < tree.coreqs.values.length; i++) {
+					var currTree = tree.coreqs.values[i];
+					if (currTree == subTree) {
+						continue;
+					}
+					if (currTree.classId == subTree.classId && currTree.honors && !subTree.honors) {
+						return;
+					}
+				}
+				filteredCoreqs.push(subTree.clone());
 			}
 			else if (!subTree.honors && !tree.honors) {
-				filteredCoreqs.push(subTree);
+				filteredCoreqs.push(subTree.clone());
 			}
 		}.bind(this));
 

@@ -18,7 +18,7 @@ describe('Class', function () {
 		it('ensures memoize works and that download was not swapped', function (done) {
 
 			var aClass = Class.create({
-				_id:'575102d1b462e991061ca594'
+				_id: '575102d1b462e991061ca594'
 			});
 
 			var download = aClass.download;
@@ -45,7 +45,7 @@ describe('Class', function () {
 		it('ensures loading data state changes and data loaded', function (done) {
 
 			var aClass = Class.create({
-				_id:'575102d1b462e991061ca594'
+				_id: '575102d1b462e991061ca594'
 			});
 
 			expect(aClass.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
@@ -223,17 +223,17 @@ describe('Class', function () {
 
 	});
 
-	it('should work when same class created with prereqs', function() {
-	    
+	it('should work when same class created with prereqs', function () {
+
 
 		var aClass = Class.create({
 			host: 'neu.edu',
 			termId: '201630',
 			subject: 'MATH',
 			classUid: '006B',
-			prereqs:{
-				type:'or',
-				values:[]
+			prereqs: {
+				type: 'or',
+				values: []
 			}
 		})
 
@@ -242,13 +242,34 @@ describe('Class', function () {
 			termId: '201630',
 			subject: 'MATH',
 			classUid: '006B',
-			prereqs:{
-				type:'or',
-				values:[]
+			prereqs: {
+				type: 'or',
+				values: []
 			}
 		})
 
 
+	});
+
+
+	it('clone works', function (done) {
+
+
+		var aClass = Class.create({
+			"host": "neu.edu",
+			"classUid": "7780_1224558283",
+			"termId": "201710",
+			"subject": "CS",
+		});
+
+		aClass.download(function () {
+
+			var other = aClass.clone();
+
+			expect(aClass.download).not.toBe(other.download)
+			expect(aClass.classUid).toBe(other.classUid)
+			done()
+		}.bind(this))
 	});
 
 });

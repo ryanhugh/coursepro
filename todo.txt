@@ -110,6 +110,7 @@ only 1 node with 0 parents
 no duplicates in children or parents
 panels should have text in them 
 no depth > 50
+any isCoreq should only have exacly one parent
 
 
 ====Parsing warnings====

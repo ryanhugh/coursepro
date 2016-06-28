@@ -441,6 +441,39 @@ Class.prototype.equals = function (other) {
 };
 
 
+Class.prototype.clone = function() {
+	var other = new Class();
+
+	for (var attrName in this) {
+		if (this[attrName] instanceof HTMLElement) {
+			elog('cant clone a HTMLElement in class clone',this[attrName])
+			continue;
+		}
+		else if ((typeof this[attrName]) === 'function') {
+			continue;
+		}
+		else if (Array.isArray(this[attrName])) {
+			var canClone = true;
+			for (var i = 0; i < this[attrName].length; i++) {
+				if (this[attrName] instanceof HTMLElement) {
+					canClone = false;
+					break;
+				}
+			}
+			if (canClone) {
+				other[attrName] = _.cloneDeep(this[attrName])
+			}
+			else {
+				elog('cant clone a HTMLElement in class clone',this[attrName])
+				other[attrName] = this[attrName]
+			}
+		}
+		other[attrName] = _.cloneDeep(this[attrName])
+	}
+	return other;
+};
+
+
 
 //this is used for panels i think and for class list (settings)
 //sort by classId, if it exists, and then subject
