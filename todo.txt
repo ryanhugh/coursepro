@@ -1,4 +1,4 @@
-clashttps://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
+https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
 
 
 TODO
