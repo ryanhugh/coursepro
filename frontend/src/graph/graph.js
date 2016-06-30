@@ -30,7 +30,7 @@ function Graph() {
 	this.graphWidth = window.innerWidth;
 	this.graphHeight = window.innerHeight;
 
-	this.nodeWidth = 174
+	this.nodeWidth = 300
 	this.nodeHeight = 50;
 
 	// main d3 force, defined in go
@@ -325,7 +325,7 @@ Graph.prototype.loadNodes = function (callback) {
 		})
 		.call(this.nodeDrag)
 
-	var html = '<div ng-include="\'panel.html\'"></div>'
+	var html = '<div ng-include="\'selectPanel.html\'"></div>'
 
 	for (var i = 0; i < this.nodeElements[0].length; i++) {
 

@@ -7,7 +7,7 @@
 
 
     <!-- main panel -->
-    <div ng-style="style" class="panel {{tree.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="tree.isClass" graph-panel-select panel-close=".closePanel">
+    <div ng-style="style" class="panel {{tree.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="tree.isClass" panel-close=".closePanel" ng-click="tree.showSelectPanel = !tree.showSelectPanel">
 
         <div class="panel-heading">
 
@@ -199,8 +199,8 @@
 
             <ng-pluralize ng-if="::tree.dataStatus!==macros.DATASTATUS_FAIL" count="::tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
         </div>
-
-
     </div>
+
+    <div ng-if="tree.showSelectPanel" ng-include="selectPanel.html"></div>
 
 </div>
