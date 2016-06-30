@@ -59,15 +59,8 @@ function GraphLineToParent($timeout) {
 			return;
 		};
 
-		if (tree.hidden) {
-			console.log("hidden yo");
-			return
-		}
 		if (!tree.lowestParent) {
 			console.log("no parent yo");
-			return;
-		};
-		if (tree.lowestParent.hidden) {
 			return;
 		};
 

@@ -1002,10 +1002,6 @@ TreeMgr.prototype.go = function (tree) {
 	this.setWouldSatisfy(tree);
 
 	this.savePrereqsForThisGraph(tree);
-
-	if (!tree.isClass) {
-		tree.hidden = true;
-	};
 }
 
 TreeMgr.prototype.TreeMgr = TreeMgr;

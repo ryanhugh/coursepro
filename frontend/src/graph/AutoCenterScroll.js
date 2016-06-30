@@ -37,7 +37,7 @@ function AutoCenterScroll($timeout) {
 				// if two giant trees are off screen, pick one and scroll to it
 				// so something is on the screen when the loading finishes
 				// http://localhost/#neu.edu/201630/EECE/4792
-				if (tree.hidden && tree.prereqs.values.length > 0 && (tree.prereqs.values.length % 2) == 0) {
+				if (tree.prereqs.values.length > 0 && (tree.prereqs.values.length % 2) == 0) {
 
 					//scroll to one of sub trees
 					var x = tree.prereqs.values[parseInt(tree.prereqs.values.length / 2)].x
