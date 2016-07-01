@@ -211,7 +211,6 @@ function GraphPanelExpand($timeout, $document) {
 		this.updateScope(tree, false);
 	};
 
-	// called for each recursive call in graphInner.html
 	//this is called once when $scope.tree === undefined, when the root node first loads
 	GraphPanelExpandInner.prototype.link = function ($scope, element, attrs) {
 
