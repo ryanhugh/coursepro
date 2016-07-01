@@ -1,5 +1,5 @@
 <!-- main panel -->
-<div ng-style="style" class="panel {{tree.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="tree.isClass" panel-close=".closePanel" ng-click="tree.showSelectPanel = !tree.showSelectPanel">
+<div ng-style="style" class="panel {{tree.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="tree.isClass && !tree.showSelectPanel" panel-close=".closePanel" panel-prompt>
 
     <div class="panel-heading">
 
