@@ -93,6 +93,7 @@ split vender.js and app.js gulpfile
  - 
  - maybe this module or some other one?
  - https://www.npmjs.com/package/find-module-deps
+ - https://github.com/allain/recursive-deps/blob/master/index.js
 npm ignore everything in frontend/static/ and copy over the other stuff
 
 
