@@ -77,17 +77,22 @@ function onError(err) {
 }
 
 
-function getFilesToProcess() {
+function getFilesToProcess(includeTests) {
+
+	var files = glob.sync('frontend/src/**/*.js');
+
+	if (includeTests) {
+		return files;
+	}
 
 	var filesToProccess = [];
-	// if (!compileRequire) {
-	var files = glob.sync('frontend/src/**/*.js');
 
 	files.forEach(function (file) {
 		if (!_(file).includes('tests')) {
 			filesToProccess.push(file)
 		};
 	})
+
 	return filesToProccess;
 
 }
@@ -97,12 +102,14 @@ function getFilesToProcess() {
 // http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
 
 //another note, if you include a module that dosent exist, it will silently hang forever(?) eg (require('jdklfjdasjfkl'))
-function compileJSBundle(shouldUglify, compileRequire, callback) {
+function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 	if (compileRequire === undefined) {
 		compileRequire = false;
 	}
 
-	var filesToProccess = getFilesToProcess();
+
+	var filesToProccess = getFilesToProcess(includeTests);
+	console.log("args:", shouldUglify, includeTests, compileRequire);
 
 	recursiveDeps(filesToProccess).then(function (dependencies) {
 
@@ -158,11 +165,17 @@ function compileJSBundle(shouldUglify, compileRequire, callback) {
 				// end this stream
 				this.emit('end');
 			})
+
+			var ending = '.js';
+			if (includeTests) {
+				ending = '.tests.js'
+			}
+
 			if (compileRequire) {
-				stream = stream.pipe(source('vender.js'));
+				stream = stream.pipe(source('vender' + ending));
 			}
 			else {
-				stream = stream.pipe(source('app.js'));
+				stream = stream.pipe(source('app' + ending));
 			}
 
 
@@ -208,15 +221,15 @@ function compileJSBundle(shouldUglify, compileRequire, callback) {
 	}.bind(this));
 }
 
-function compileJS(uglifyJS, callback) {
+function compileJS(uglifyJS, includeTests, callback) {
 	var q = queue();
 
 	q.defer(function (callback) {
-		compileJSBundle(uglifyJS, true, callback);
+		compileJSBundle(uglifyJS, includeTests, true, callback);
 	}.bind(this));
 
 	q.defer(function (callback) {
-		compileJSBundle(uglifyJS, false, callback);
+		compileJSBundle(uglifyJS, includeTests, false, callback);
 	}.bind(this));
 
 	q.awaitAll(function (err) {
@@ -251,7 +264,7 @@ gulp.task('watchCopyHTML', function () {
 
 //production
 gulp.task('uglifyJS', function (callback) {
-	compileJS(true, callback);
+	compileJS(true, false, callback);
 });
 
 
@@ -265,7 +278,7 @@ gulp.task('prod', ['uglifyJS', 'watchCopyHTML', 'copyHTML'], function () {
 
 //development
 gulp.task('compressJS', function (callback) {
-	compileJS(false, callback);
+	compileJS(false, false, callback);
 });
 
 
@@ -277,6 +290,11 @@ gulp.task('dev', ['compressJS', 'watchCopyHTML', 'copyHTML'], function () {
 
 
 gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
+	compileJS(false, true, function () {
+
+	}.bind(this));
+
+
 	new karma.Server({
 		configFile: __dirname + '/frontend/karma.conf.js',
 	}, function (exitCode) {

@@ -1,12 +1,12 @@
 module.exports = function (config) {
   config.set({
     files: [
-      'src/**/*.js',
-      'src/**/*.json',
-      "static/js/internal/html.js",
+      "static/js/internal/vender.tests.js",
+      "static/js/internal/app.tests.js",
       "static/js/external/select2.min.js",
       "static/js/external/selectize.min.js",
       "static/js/external/angular-selectize.js",
+      "static/js/internal/html.js",
     ],
     plugins: [
       'karma-chrome-launcher',
@@ -18,10 +18,7 @@ module.exports = function (config) {
 
     ],
     frameworks: ['browserify', 'jasmine'],
-    preprocessors: {
-      'src/**/*.js': ['browserify'],
-      'src/**/*.json': ['browserify']
-    },
+    preprocessors: {},
     browsers: ['PhantomJS'],
     browserify: {
       debug: true,

@@ -59,7 +59,7 @@ var _ = require('lodash')
 // 	"subject": "CS",
 // 	"classId": "2511",
 // 	"classUid": "2511_23456789",
-// 	"seatsCapacity": 19,
+// 	"seatsCapacity": 19, 
 // 	"seatsRemaining": 0,
 // 	"waitCapacity": 0,
 // 	"waitRemaining": 0,
