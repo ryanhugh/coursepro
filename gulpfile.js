@@ -187,9 +187,19 @@ function compileJSBundle(shouldUglify, compileRequire, callback) {
 				node_module_dependencies.push(dep)
 			}
 		}.bind(this))
-		console.log(node_module_dependencies);
+		if (compileRequire) {
+			console.log(node_module_dependencies);
+		}
+		else {
+			console.log(filesToProccess);
+		}
+
 
 		// console.log('Processing:', filesToProccess,dependencies)
+
+		if (compileRequire) {
+			filesToProccess = [];
+		}
 
 
 		var bundler = browserify({
@@ -232,19 +242,28 @@ function compileJSBundle(shouldUglify, compileRequire, callback) {
 				stream = stream.pipe(source('app.js'));
 			}
 
+
 			if (shouldUglify) {
+
+
+				var compressOptions = {
+					drop_console: true,
+					unsafe: true,
+					collapse_vars: true,
+					pure_getters: true,
+					// warnings: true,
+					// keep_fnames: true
+				}
+
+				// if (!compileRequire) {
+				// 	compressOptions.warnings = true;
+				// }
+
 				stream = stream.pipe(streamify(uglify({
 					options: {
 						ie_proof: false
 					},
-					compress: {
-						drop_console: true,
-						unsafe: true,
-						collapse_vars: true,
-						pure_getters: true,
-						// warnings: true,
-						// keep_fnames: true
-					}
+					compress: compressOptions
 				})));
 			}
 
