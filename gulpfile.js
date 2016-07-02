@@ -92,79 +92,6 @@ function getFilesToProcess() {
 
 }
 
-// get list of front end only packages
-var dependencies = [];
-gulp.task('getDependencies', function () {
-	var files = getFilesToProcess();
-
-
-
-
-	// var bundler = browserify({
-	// 	entries: files,
-	// 	// bundleExternal: false,
-	// }, {
-	// 	basedir: __dirname,
-	// 	debug: false,
-	// 	cache: {}, // required for watchify
-	// 	packageCache: {}, // required for watchify
-
-	// 	// required to be true only for watchify (?) but watchify works when it is off.
-	// 	//dont show C:/ryan/google drive etc in the uglified source code
-	// 	fullPaths: false,
-	// });
-
-	// console.log("HERJERJELJRLEJRLKEJ");
-
-
-	// bundler.pipeline.get('deps').push(through.obj(
-	// 	function (row, enc, next) {
-	// 		var name = row.file || row.id;
-	// 		if (_(dependencies).includes(name)) {
-	// 			console.log('FOUND',name);
-	// 			dependencies.push(name);
-	// 		}
-	// 		next()
-	// 	}
-	// ));
-
-	// bundler = watchify(bundler)
-
-	// var stream = bundler.bundle();
-
-
-	// // stream = stream.pipe(source('app.js'));
-
-	// // stream = stream.pipe(gulp.dest('./frontend/static/js/internal'));
-
-	//    stream.pipe(process.stdout);
-
-	// stream.on('end',function () {
-	// 	console.log('DONEEEE',files);
-	// }.bind(this))
-
-	// var md = mdeps(files);
-	// md.pipe(JSONStream.stringify()).pipe(process.stdout);
-	// md.end({ file: __dirname + '/frontend/main.js' });
-
-
-	// return stream;
-});
-
-
-// var packageJson = require('./package.json');
-// var dependencies = Object.keys(packageJson && packageJson.dependencies || {});
-
-// if (b.argv.list) {
-//     b.pipeline.get('deps').push(through.obj(
-//         function (row, enc, next) {
-//             console.log(row.file || row.id);
-//             next()
-//         }
-//     ));
-//     return b.bundle();
-// }
-
 //watch is allways on, to turn off (or add the option back) 
 // turn fullPaths back to shouldWatch and only run bundler = watchify(bundler) is shouldWatch is true
 // http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
@@ -178,7 +105,6 @@ function compileJSBundle(shouldUglify, compileRequire, callback) {
 	var filesToProccess = getFilesToProcess();
 
 	recursiveDeps(filesToProccess).then(function (dependencies) {
-		// console.log(dependencies); // ['bluebird', 'fs-promise', ...]
 
 
 		var node_module_dependencies = [];
@@ -193,9 +119,6 @@ function compileJSBundle(shouldUglify, compileRequire, callback) {
 		else {
 			console.log(filesToProccess);
 		}
-
-
-		// console.log('Processing:', filesToProccess,dependencies)
 
 		if (compileRequire) {
 			filesToProccess = [];
