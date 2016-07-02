@@ -85,16 +85,6 @@ if angle < something between 2 children, do a force or maybe if x is too close b
 
 
 GULP todo
-split vender.js and app.js gulpfile
- - so i looked at this once and browsify supports this, and can easily make one without the stuff in node_modules
- - but to actually include that stuff you need to list the modules
- - and i dont want another list of modules to maintain
- - this is the module it uses internally to get this, but gave up trying to figure out how it worked. 
- - https://www.npmjs.com/package/module-deps
- - 
- - maybe this module or some other one?
- - https://www.npmjs.com/package/find-module-deps
- - https://github.com/allain/recursive-deps/blob/master/index.js
 npm ignore everything in frontend/static/ and copy over the other stuff
 
 

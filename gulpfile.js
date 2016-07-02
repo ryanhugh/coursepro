@@ -200,7 +200,12 @@ function compileJSBundle(shouldUglify, compileRequire, callback) {
 
 		bundler.on('update', rebundle);
 		rebundle();
-	});
+	}).catch(function (err) {
+		console.log('recursiveDeps FAILED!', err)
+		if (err) {
+			console.log(err.stack);
+		}
+	}.bind(this));
 }
 
 function compileJS(uglifyJS, callback) {
@@ -245,7 +250,7 @@ gulp.task('watchCopyHTML', function () {
 
 
 //production
-gulp.task('uglifyJS', ['getDependencies'], function (callback) {
+gulp.task('uglifyJS', function (callback) {
 	compileJS(true, callback);
 });
 
@@ -259,7 +264,7 @@ gulp.task('prod', ['uglifyJS', 'watchCopyHTML', 'copyHTML'], function () {
 
 
 //development
-gulp.task('compressJS', ['getDependencies'], function (callback) {
+gulp.task('compressJS', function (callback) {
 	compileJS(false, callback);
 });
 
