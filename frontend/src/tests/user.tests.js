@@ -1,6 +1,5 @@
 'use strict';
 
-var assert = require('assert')
 var user = require('../user')
 var Class = require('../Class')
 var Section = require('../Section')
