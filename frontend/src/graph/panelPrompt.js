@@ -22,15 +22,20 @@ function PanelPrompt() {
 		};
 		tree.showSelectPanel = !tree.showSelectPanel;
 
-		if (tree.showSelectPanel) {
-			tree.foreignObject.setAttribute('width', 300)
-		}
-		else {
-			tree.foreignObject.setAttribute('width', tree.width)
-		}
-		
 		setTimeout(function () {
 			tree.$scope.$apply()
+
+			if (tree.showSelectPanel) {
+				tree.width = 300
+			}
+			else {
+				tree.width = tree.$scope.graph.nodeWidth
+			}
+			tree.foreignObject.setAttribute('width', tree.width)
+			tree.$scope.graph.updateHeight(tree);
+			
+			
+			callback()
 		}.bind(this))
 	};
 

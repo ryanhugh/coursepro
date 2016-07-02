@@ -1,199 +1,201 @@
-<!-- main panel -->
-<div ng-style="style" class="panel {{tree.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="tree.isClass && !tree.showSelectPanel" panel-close=".closePanel" panel-prompt>
+<div graph-panel-expand ng-click="graphPanelExpand.onPanelClick(tree)">
 
-    <div class="panel-heading">
+    <!-- main panel -->
+    <div ng-style="style" class="panel {{tree.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="tree.isClass && !tree.showSelectPanel" panel-close=".closePanel">
 
-        <span ng-show="isExpanded" style="float: right;margin-top: -59px;margin-top: -7px;margin-right: -10px;">
+        <div class="panel-heading">
 
-            <!-- was 48 -->
-            <div ng-if="tree.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = tree" list-icon='saved' toggle-sections='true' toggle='class' style="display:inline-block;margin-right: 6px;"></div>
+            <span ng-show="isExpanded" style="float: right;margin-top: -59px;margin-top: -7px;margin-right: -10px;">
 
-            <span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="cursor: pointer;display:inline-block"></span>
-            <!-- <div ng-init="class = tree" list-icon='watching' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
-        </span>
+                <!-- was 48 -->
+                <div ng-if="tree.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = tree" list-icon='saved' toggle-sections='true' toggle='class' style="display:inline-block;margin-right: 6px;"></div>
 
-        <h3 class="panel-title" style="text-align: center;    width: 90%;margin: 0 auto;">
+                <span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="cursor: pointer;display:inline-block"></span>
+                <!-- <div ng-init="class = tree" list-icon='watching' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
+            </span>
 
-            <span ng-if="tree.isString">{{::tree.desc}} </span>
+            <h3 class="panel-title" style="text-align: center;    width: 90%;margin: 0 auto;">
 
-            {{::tree.subject}} {{::tree.getPrettyClassId()}}
-            <br/> {{::tree.name}}
-        </h3>
+                <span ng-if="tree.isString">{{::tree.desc}} </span>
 
-
-    </div>
-
-    <!-- only the panel body changes on isExpanded -->
-    <div ng-if="isExpanded" class="panel-body panelBodyId" style="line-height: 14px;width:100%;padding: 0;padding-top: 15px;" ng-style="{'width':panelWidth+'px'}">
-        <div ng-if="tree.dataStatus === macros.DATASTATUS_DONE">
-            <div style="margin-left: 15px;margin-right: 15px;padding-bottom: 12px;">
-                <div style="white-space: normal;margin-bottom:10px;line-height:15px">{{tree.desc}}</div>
+                {{::tree.subject}} {{::tree.getPrettyClassId()}}
+                <br/> {{::tree.name}}
+            </h3>
 
 
+        </div>
 
-                <div style="text-align: center;margin-bottom: -20px;">
-                    <a class="linkToClassWatchModel" ng-click="graph.openWatchModel(this)">Get notified if this class changes
-                        <br> or if any seats open up!</a>
-                </div>
-                <div>
-                    <div style="text-align:left;display: inline-block;max-width: 50%;line-height: 15px;">
-                        <span ng-if="tree.maxCredits">
-                            <span ng-if="tree.maxCredits === tree.minCredits">
-                                {{tree.maxCredits}}
-                            </span>
-                            <span ng-if="tree.maxCredits !== tree.minCredits">
-                                {{tree.minCredits}} to {{tree.maxCredits}}
-                            </span>
-                            credits
-                        </span>
-                        <br>
-                        <span ng-if="tree.lastUpdateString">
-                            Updated {{tree.lastUpdateString}}
-                        </span>
+        <!-- only the panel body changes on isExpanded -->
+        <div ng-if="isExpanded" class="panel-body panelBodyId" style="line-height: 14px;width:100%;padding: 0;padding-top: 15px;" ng-style="{'width':panelWidth+'px'}">
+            <div ng-if="tree.dataStatus === macros.DATASTATUS_DONE">
+                <div style="margin-left: 15px;margin-right: 15px;padding-bottom: 12px;">
+                    <div style="white-space: normal;margin-bottom:10px;line-height:15px">{{tree.desc}}</div>
+
+
+
+                    <div style="text-align: center;margin-bottom: -20px;">
+                        <a class="linkToClassWatchModel" ng-click="graph.openWatchModel(this)">Get notified if this class changes
+                            <br> or if any seats open up!</a>
                     </div>
-                    <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;">
-                        <a target="_blank" href="{{tree.prettyUrl}}">View on {{tree.host}}</a>
-                    </div>
-                </div>
-
-            </div>
-
-            <table class="table table-striped" ng-if="tree.sections.length>0" style="margin-bottom:0">
-                <thead>
-                    <tr>
-                        <th>
-                            <span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body="true">CRN</span>
-                        </th>
-                        <th>
-                            <ng-pluralize count="tree.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
-                        </th>
-
-                        <th>Weekdays</th>
-                        <th>Start</th>
-                        <th>End</th>
-                        <th>Location</th>
-                        <th ng-if="tree.sectionsHaveExam()">Exam start</th>
-                        <th ng-if="tree.sectionsHaveExam()">Exam end</th>
-                        <th ng-if="tree.sectionsHaveExam()">Exam date</th>
-                        <th>
-
-                            <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                                Seats
-                            </span>
-
-                        </th>
-                        <th ng-if="tree.getHasWaitList()">Open/Total Waitlist Seats</th>
-                        <th>Link</th>
-                        <!-- <th>Email
-                        <br>Notifications</th> -->
-                        <th>Saved</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="section in tree.sections">
-                        <td>{{section.crn}}</td>
-                        <td>{{section.getProfs().join(', ')}}</td>
-                        <td>
-                            <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
-
-                                <!-- avoid calculating the string more than once -->
-                                <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip="{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
-
-                                    <div ng-if="section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
-                                    </div>
-
-                                    <div ng-if="!section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
-
-                                    </div>
+                    <div>
+                        <div style="text-align:left;display: inline-block;max-width: 50%;line-height: 15px;">
+                            <span ng-if="tree.maxCredits">
+                                <span ng-if="tree.maxCredits === tree.minCredits">
+                                    {{tree.maxCredits}}
                                 </span>
+                                <span ng-if="tree.maxCredits !== tree.minCredits">
+                                    {{tree.minCredits}} to {{tree.maxCredits}}
+                                </span>
+                                credits
                             </span>
-                        </td>
-
-                        <td>{{section.getUniqueStartTimes().join(", ")}}</td>
-                        <td>{{section.getUniqueEndTimes().join(", ")}}</td>
-
-                        <td>
-                            <span ng-repeat="location in section.getLocations()">
-                                <span ng-if="location != 'TBA' || section.getLocations().length <= 1"> {{location}} </span>
-                                <span ng-if="!$last">, </span>
+                            <br>
+                            <span ng-if="tree.lastUpdateString">
+                                Updated {{tree.lastUpdateString}}
                             </span>
-                        </td>
+                        </div>
+                        <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;">
+                            <a target="_blank" href="{{tree.prettyUrl}}">View on {{tree.host}}</a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <table class="table table-striped" ng-if="tree.sections.length>0" style="margin-bottom:0">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body="true">CRN</span>
+                            </th>
+                            <th>
+                                <ng-pluralize count="tree.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
+                            </th>
+
+                            <th>Weekdays</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Location</th>
+                            <th ng-if="tree.sectionsHaveExam()">Exam start</th>
+                            <th ng-if="tree.sectionsHaveExam()">Exam end</th>
+                            <th ng-if="tree.sectionsHaveExam()">Exam date</th>
+                            <th>
+
+                                <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                    Seats
+                                </span>
+
+                            </th>
+                            <th ng-if="tree.getHasWaitList()">Open/Total Waitlist Seats</th>
+                            <th>Link</th>
+                            <!-- <th>Email
+                        <br>Notifications</th> -->
+                            <th>Saved</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="section in tree.sections">
+                            <td>{{section.crn}}</td>
+                            <td>{{section.getProfs().join(', ')}}</td>
+                            <td>
+                                <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
+
+                                    <!-- avoid calculating the string more than once -->
+                                    <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip="{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
+
+                                        <div ng-if="section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                        </div>
+
+                                        <div ng-if="!section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+
+                                        </div>
+                                    </span>
+                                </span>
+                            </td>
+
+                            <td>{{section.getUniqueStartTimes().join(", ")}}</td>
+                            <td>{{section.getUniqueEndTimes().join(", ")}}</td>
+
+                            <td>
+                                <span ng-repeat="location in section.getLocations()">
+                                    <span ng-if="location != 'TBA' || section.getLocations().length <= 1"> {{location}} </span>
+                                    <span ng-if="!$last">, </span>
+                                </span>
+                            </td>
 
 
-                        <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().start.format('h:mm a')}}</td>
-                        <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().end.format('h:mm a')}}</td>
-                        <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().start.format('MMM Do')}}</td>
+                            <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().start.format('h:mm a')}}</td>
+                            <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().end.format('h:mm a')}}</td>
+                            <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().start.format('MMM Do')}}</td>
 
-                        <td>
+                            <td>
 
-                            <!-- don't display the "/" until these are loaded -->
-                            <span ng-if="section.seatsRemaining || section.seatsCapacity">
-                                {{section.seatsRemaining}}/{{section.seatsCapacity}}
-                            </span>
+                                <!-- don't display the "/" until these are loaded -->
+                                <span ng-if="section.seatsRemaining || section.seatsCapacity">
+                                    {{section.seatsRemaining}}/{{section.seatsCapacity}}
+                                </span>
 
-                        </td>
-
-
-                        <td ng-if="tree.getHasWaitList()">
-
-                            <!-- don't display the "/" until these are loaded -->
-                            <span ng-if="section.waitRemaining || section.waitCapacity">
-                                {{section.waitRemaining}}/{{section.waitCapacity}}
-                            </span>
+                            </td>
 
 
-                            <!-- don't display the "/" until these are loaded -->
-                            <span ng-if="!section.waitRemaining && !section.waitCapacity">
-                                0/0
-                            </span>
+                            <td ng-if="tree.getHasWaitList()">
+
+                                <!-- don't display the "/" until these are loaded -->
+                                <span ng-if="section.waitRemaining || section.waitCapacity">
+                                    {{section.waitRemaining}}/{{section.waitCapacity}}
+                                </span>
+
+
+                                <!-- don't display the "/" until these are loaded -->
+                                <span ng-if="!section.waitRemaining && !section.waitCapacity">
+                                    0/0
+                                </span>
 
 
 
-                        </td>
+                            </td>
 
-                        <td>
-                            <a href="{{section.url}}" target="_blank">
+                            <td>
+                                <a href="{{section.url}}" target="_blank">
 
-                                <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{tree.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                                </div>
+                                    <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{tree.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                    </div>
 
-                            </a>
-                        </td>
-                        <!-- 
+                                </a>
+                            </td>
+                            <!-- 
                     <td>
                         <span list-icon='watching' toggle="section"></span>
                     </td> -->
 
-                        <td>
-                            <span list-icon='saved' toggle="section" style="padding-left: 11px;"></span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                            <td>
+                                <span list-icon='saved' toggle="section" style="padding-left: 11px;"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
 
 
+            </div>
+
+            <div ng-if="::tree.dataStatus === macros.DATASTATUS_FAIL">
+
+                0 sections this term
+                <div style="white-space: normal;">
+                    <br>Couldn't find any class info on
+                    <br> {{::tree.host}} :( </div>
+            </div>
         </div>
 
-        <div ng-if="::tree.dataStatus === macros.DATASTATUS_FAIL">
 
-            0 sections this term
-            <div style="white-space: normal;">
-                <br>Couldn't find any class info on
-                <br> {{::tree.host}} :( </div>
+        <!-- !isExpanded must be watching (no ::) -->
+        <div ng-if="!isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
+            <div ng-if="::tree.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
+
+            <ng-pluralize ng-if="::tree.dataStatus!==macros.DATASTATUS_FAIL" count="::tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
         </div>
     </div>
 
 
-    <!-- !isExpanded must be watching (no ::) -->
-    <div ng-if="!isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
-        <div ng-if="::tree.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
 
-        <ng-pluralize ng-if="::tree.dataStatus!==macros.DATASTATUS_FAIL" count="::tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
-    </div>
+    <div ng-if="tree.showSelectPanel" ng-include="'selectPanel.html'"></div>
 </div>
-
-
-
-
-<div ng-if="tree.showSelectPanel" ng-include="'selectPanel.html'"></div>

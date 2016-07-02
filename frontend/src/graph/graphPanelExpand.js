@@ -67,7 +67,7 @@ function GraphPanelExpand($timeout, $document) {
 
 
 	// if a panel in a tree is clicked
-	GraphPanelExpandInner.prototype.onClick = function (tree, callback) {
+	GraphPanelExpandInner.prototype.onExpandClick = function (tree, callback) {
 		if (!callback) {
 			callback = function () {}
 		};
@@ -90,14 +90,12 @@ function GraphPanelExpand($timeout, $document) {
 				}
 				//if it worked, calculate the panel width
 				else if (tree.$scope.isExpanded) {
-					var width = this.calculatePanelWidth(tree);
-					tree.foreignObject.setAttribute('width', width);
-					tree.width = width;
+					tree.width = this.calculatePanelWidth(tree);
 				}
 				else {
-					tree.width = 174;
-					tree.foreignObject.setAttribute('width', 174)
+					tree.width = tree.$scope.graph.nodeWidth;
 				}
+				tree.foreignObject.setAttribute('width', tree.width)
 
 				//$scope references just the $scope of the tree that was updated, 
 				// this.$scope references everything, and contains $scope
@@ -114,6 +112,28 @@ function GraphPanelExpand($timeout, $document) {
 
 				callback()
 			}.bind(this), 0)
+		}.bind(this))
+	};
+
+	GraphPanelExpandInner.prototype.onPanelClick = function (tree, callback) {
+		if (!callback) {
+			callback = function () {}
+		};
+		tree.showSelectPanel = !tree.showSelectPanel;
+
+		setTimeout(function () {
+			tree.$scope.$apply()
+
+			if (tree.showSelectPanel) {
+				tree.width = 300
+			}
+			else {
+				tree.width = tree.$scope.graph.nodeWidth
+			}
+			tree.foreignObject.setAttribute('width', tree.width)
+			tree.$scope.graph.updateHeight(tree);
+
+			callback()
 		}.bind(this))
 	};
 
@@ -213,7 +233,7 @@ function GraphPanelExpand($timeout, $document) {
 
 	//this is called once when $scope.tree === undefined, when the root node first loads
 	GraphPanelExpandInner.prototype.link = function ($scope, element, attrs) {
-
+		$scope.graphPanelExpand = this;
 
 		var tree = $scope.tree
 
@@ -255,15 +275,6 @@ function GraphPanelExpand($timeout, $document) {
 		}
 
 
-
-		//get the height and width of the document when the page first loads
-		// $timeout(function () {
-
-		// 	this.documentHeight = $document.height()
-		// 	this.documentWidth = $document.width()
-		// }.bind(this))
-
-
 		element.on('mouseover', function () {
 			this.onMouseOver(tree)
 		}.bind(this))
@@ -272,16 +283,16 @@ function GraphPanelExpand($timeout, $document) {
 			this.onMouseOut(tree)
 		}.bind(this))
 
-		element.on('click', function () {
-			this.openPanel(tree);
-		}.bind(this))
+		// element.on('click', function () {
+		// 	this.onPanelClick(tree);
+		// }.bind(this))
 
 
-		var closeElement = element.find(attrs.panelClose)
+		// var closeElement = element.find(attrs.panelClose)
 
-		closeElement.on('click', function () {
-			this.closePanel(tree);
-		}.bind(this))
+		// closeElement.on('click', function () {
+		// 	this.closePanel(tree);
+		// }.bind(this))
 
 	}
 
