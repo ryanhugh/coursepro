@@ -12,18 +12,12 @@ module.exports = function (config) {
       'karma-chrome-launcher',
       'karma-phantomjs-launcher',
       'karma-jasmine',
-      'karma-browserify',
       'karma-logcapture-reporter',
       'karma-mocha-reporter',
-
     ],
-    frameworks: ['browserify', 'jasmine'],
+    frameworks: ['jasmine'],
     preprocessors: {},
     browsers: ['PhantomJS'],
-    browserify: {
-      debug: true,
-      plugin: [],
-    },
     reporters: ['logcapture', 'progress', 'mocha'],
     client: {
       captureConsole: true
