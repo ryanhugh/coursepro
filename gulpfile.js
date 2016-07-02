@@ -11,21 +11,16 @@ var flatten = require('gulp-flatten');
 var angularTemplates = require('gulp-angular-templatecache')
 var htmlmin = require('gulp-htmlmin');
 var notify = require("gulp-notify");
-var merge = require('merge-stream')
 
-var mdeps = require('module-deps')
-var queue = require('d3-queue').queue;
-
-var JSONStream = require('JSONStream');
-var batch = require('gulp-batch');
-var recursiveDeps = require('recursive-deps');
 
 // for backend unit tests
+var batch = require('gulp-batch');
 var jasmineReporter = require('./backend/jasmineReporter')
 var Jasmine = require('jasmine');
 
 
 // browsify stuff
+var recursiveDeps = require('recursive-deps');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var watchify = require('watchify')
@@ -35,6 +30,7 @@ var karma = require('karma')
 //other stuff
 var _ = require('lodash')
 var path = require('path')
+var queue = require('d3-queue').queue;
 
 
 
