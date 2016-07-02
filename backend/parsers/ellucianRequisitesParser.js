@@ -75,38 +75,65 @@ EllucianRequisitesParser.prototype.groupRequirementsByAnd = function (data) {
 //this is given the output of formatRequirements, where data.type and data.values exist
 // if there is an or embedded in another or, merge them (and and's too)
 //and if there is a subvalue of only 1 len, merge that too
-EllucianRequisitesParser.prototype.simplifyRequirements = function (data) {
+EllucianRequisitesParser.prototype.simplifyRequirementsBase = function (data) {
+	if ((typeof data) === 'string') {
+		return data;
+	}
 
+	if (data.subject && (data.classId || data.classUid)) {
+		return data;
+	}
+
+	// Must have .values and .type from here on
 	var retVal = {
 		type: data.type,
 		values: []
 	};
 
+	// Simplify all children
 	data.values.forEach(function (subData) {
-		if ((typeof subData) == 'string') {
-			retVal.values.push(subData);
-			return;
-		}
+		subData = this.simplifyRequirementsBase(subData);
 
-		subData = this.simplifyRequirements(subData);
+		if (subData.type && subData.values) {
 
-		//if same type, merge
-		if (subData.type == data.type) {
-			retVal.values = retVal.values.concat(subData.values);
-		}
+			//if same type, merge
+			if (subData.type == data.type) {
+				retVal.values = retVal.values.concat(subData.values);
+				return;
+			}
 
-		//if only contains 1 value, merge
-		else if (subData.values.length == 1) {
-			retVal.values.push(subData.values[0]);
+			//if only contains 1 value, merge
+			else if (subData.values.length == 1) {
+				retVal.values.push(subData.values[0]);
+				return;
+			}
 		}
 
 		//just add the subdata
-		else {
-			retVal.values.push(subData);
-		}
-	}.bind(this));
+		retVal.values.push(subData);
+	}.bind(this))
+
+	// Simplify this node
+	if (retVal.values.length === 1) {
+		return retVal.values[0];
+	}
+
 	return retVal;
 };
+
+
+EllucianRequisitesParser.prototype.simplifyRequirements = function (data) {
+	data = this.simplifyRequirementsBase(data);
+	if (!data.values || !data.type) {
+		return {
+			type: 'or',
+			values: [data]
+		}
+	}
+	else {
+		return data
+	}
+}
 
 
 
@@ -152,7 +179,7 @@ EllucianRequisitesParser.prototype.formatRequirements = function (data) {
 //splits a string by and/or and to json string (uparsed)
 EllucianRequisitesParser.prototype.convertStringToJSON = function (text) {
 
-	text = text.replace(/[\n\r\s]+/gi,' ')
+	text = text.replace(/[\n\r\s]+/gi, ' ')
 
 	var elements = [];
 
@@ -297,7 +324,7 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 				if (elements.length > 0) {
 					elements.push(' and ')
 				}
-				continue; 
+				continue;
 			}
 			else if (classDetails[i].name == 'a') {
 
@@ -327,7 +354,7 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 		}
 		else {
 			var urlText = domutils.getOuterHTML(classDetails[i]);
-			urlText = urlText.replace(/\n|\r|\s/gi,' ').replace(/\s+/gi,' ')
+			urlText = urlText.replace(/\n|\r|\s/gi, ' ').replace(/\s+/gi, ' ')
 			if (urlText === '' || urlText == ' ') {
 				continue;
 			}
@@ -341,7 +368,7 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 
 	// Remove all the 'and's from the end that were added from replacing BRs
 	for (var i = elements.length - 1; i >= 0; i--) {
-		if (elements[i] == ' and ' ){
+		if (elements[i] == ' and ') {
 			elements.splice(i)
 		}
 		else {
@@ -354,7 +381,7 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 		return;
 	}
 
-	console.log(elements);
+	// console.log(elements);
 
 	var text = elements.join("").trim();
 	if (text === '') {

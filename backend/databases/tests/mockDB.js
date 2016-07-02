@@ -114,13 +114,7 @@ MockTable.prototype.update = function (query, newDoc, config, callback) {
 		}
 
 
-		// var ids = [];
-		// docs.forEach(function (foundDoc) {
-		// 	ids.push(foundDoc._id)
-		// }.bind(this))
-
-		// only supports 1 rn
-
+		// only supports 1 rn, add support for more when needed
 		var id = docs[0]._id;
 		this.dataIdMap[id] = newDoc
 

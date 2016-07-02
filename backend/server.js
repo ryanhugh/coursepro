@@ -11,6 +11,7 @@ var https = require('https')
 var async = require('async')
 
 
+var macros = require('./macros')
 var pageDataMgr = require('./pageDataMgr');
 
 var blacklistedEmails = require('./blacklistedEmails.json')
@@ -22,6 +23,15 @@ var classesDB = require('./databases/classesDB');
 var sectionsDB = require('./databases/sectionsDB');
 var usersDB = require('./databases/usersDB');
 var dbUpdater = require('./databases/updater')
+
+var dns;
+if (macros.UNIT_TESTS) {
+	dns = require('./tests/mockDns')
+}
+else {
+	dns = require('dns')
+}
+
 
 
 var search = require('./search');
@@ -102,7 +112,7 @@ app.use(function (req, res, next) {
 app.use(function (req, res, next) {
 
 	//send redirect request
-	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost','10.0.0.7']).includes(req.hostname)) {
+	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost', '10.0.0.7']).includes(req.hostname)) {
 
 		logData(req, {
 			msg: {
@@ -133,7 +143,7 @@ app.use(function (req, res, next) {
 })
 
 // accepts any type, requires a-zA-Z0-9
-function isAlphaNumeric (string) {
+function isAlphaNumeric(string) {
 	if (typeof string != 'string') {
 		return false;
 	};
@@ -191,7 +201,6 @@ app.use(function (req, res, next) {
 			}
 		})
 
-		res.redirect('https://coursepro.io' + req.url);
 		res.status(418)
 		res.setHeader('LEEROOOOOOOOOOOOOOOOOOOOOOY', 'JEEEEEEENKIIIIIIIIIIIIIIINS!!!!');
 		res.send('trolololololol');
@@ -247,6 +256,52 @@ app.post('/listColleges', function (req, res) {
 		res.send(JSON.stringify(names));
 	});
 })
+
+app.post('/getCurrentCollege', function (req, res) {
+
+	var ip = req.connection.remoteAddress;
+	if (req.body.ip) {
+		ip = req.body.ip
+	}
+	if (ip === '::1') {
+		res.send('{"error":"cant do a rdns of localhost"}');
+		return;
+	}
+
+	dns.reverse(ip, function (err, results) {
+		if (err) {
+			elog(ip, err);
+			res.send('{"error":"internal server error :/"}' + ip + err + JSON.stringify(req.body));
+			return;
+		}
+		if (results.length < 1) {
+			elog('WTF got 0 results', ip, results)
+			res.send('{}');
+			return;
+		}
+
+		if (results.length > 1) {
+			console.log('WARNING: got more that 1 results?', ip, results)
+		}
+
+		var fullHost = results[0];
+
+		//now strip everything except the last 'neu.edu'
+		//when going international use this list https://publicsuffix.org/list/public_suffix_list.dat
+		//for now only supports .edu
+
+		var match = fullHost.match(/\.([^.]+?\.edu)$/);
+		if (!match) {
+			elog('no match on result?')
+			res.send('{}');
+			return;
+		}
+
+		res.send(JSON.stringify({
+			host: match[1]
+		}))
+	}.bind(this))
+}.bind(this))
 
 
 
@@ -330,8 +385,12 @@ app.post('/listClasses', function (req, res) {
 			subject: req.body.subject
 		}
 
-		//add classs id if its given
-		if (req.body.classId) {
+		//add classUid if its given
+		if (req.body.classUid) {
+			lookup.classUid = req.body.classUid;
+		}
+		//add class id if its given
+		else if (req.body.classId) {
 			lookup.classId = req.body.classId;
 		};
 	}
@@ -354,7 +413,7 @@ app.post('/listClasses', function (req, res) {
 
 app.post('/listSections', function (req, res) {
 
-	if ((!req.body.host || !req.body.termId || !req.body.subject || !req.body.classId) && !req.body._id) {
+	if ((!req.body.host || !req.body.termId || !req.body.subject || (!req.body.classId && !req.body.classUid)) && !req.body._id) {
 		console.log('error, no host or termId or subject or classId given body:');
 		console.log(req.body)
 		res.send('{"error":"no host or termId or subject or classId given (expected JSON)"}')
@@ -371,7 +430,13 @@ app.post('/listSections', function (req, res) {
 			host: req.body.host,
 			termId: req.body.termId,
 			subject: req.body.subject,
-			classId: req.body.classId
+		}
+
+		if (req.body.classUid) {
+			lookup.classUid = req.body.classUid
+		}
+		else if (req.body.classId) {
+			lookup.classId = req.body.classId
 		}
 
 		if (req.body.crn) {
@@ -939,7 +1004,30 @@ app.post("/*", function (req, res, next) {
 });
 
 
-app.listen(80);
+if (macros.UNIT_TESTS) {
+
+	var q = queue();
+
+	// close the old server, if one existed
+	if (global.expressHttpServer) {
+		q.defer(function (callback) {
+			global.expressHttpServer.close(callback)
+		}.bind(this))
+	}
+	q.awaitAll(function (err) {
+		if (err) {
+			elog(err);
+		}
+		global.expressHttpServer = app.listen(8123);
+	}.bind(this))
+
+}
+else {
+	if (global.expressHttpServer) {
+		elog('already running a http server???')
+	}
+	global.expressHttpServer = app.listen(80);
+}
 
 
 //https
@@ -969,5 +1057,27 @@ async.parallel([
 			cert: results[1]
 		};
 		var server = https.createServer(credentials, app);
-		server.listen(443);
+		if (macros.UNIT_TESTS) {
+
+			var q = queue();
+
+			// close the old server, if one existed
+			if (global.expressHttpsServer) {
+				q.defer(function (callback) {
+					global.expressHttpsServer.close(callback)
+				}.bind(this))
+			}
+			q.awaitAll(function (err) {
+				elog(err);
+				global.expressHttpsServer = server.listen(8443);
+			}.bind(this))
+
+		}
+		else {
+			if (global.expressHttpsServer) {
+				elog('already running a https server???')
+			}
+			global.expressHttpsServer = server.listen(443);
+		}
+
 	})

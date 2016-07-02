@@ -1,6 +1,8 @@
 'use strict';
 var macros = require('../macros')
 var classesDB = require('../databases/classesDB')
+var ellucianRequisitesParser = require('../parsers/ellucianRequisitesParser')
+
 var queue = require('d3-queue').queue
 
 // This file converts prereq classIds to ClassUids by looking up the classes in the db and replacing classIds with classUids
@@ -8,8 +10,15 @@ var queue = require('d3-queue').queue
 
 function PrereqClassUids() {
 
+
+	// runs second, after addClassUids
+	this.priority = 1;
 }
 
+// runs on all hosts
+PrereqClassUids.prototype.supportsHost = function (host) {
+	return true;
+};
 
 PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyToRows) {
 	for (var i = prereqs.values.length - 1; i >= 0; i--) {
@@ -28,7 +37,7 @@ PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyTo
 			// not in db, this is possible and causes those warnings in the frontend 
 			// unable to find class even though its a prereq of another class????
 			if (!newPrereqs) {
-				continue;
+				prereqs.values[i].missing = true;
 			}
 			// only one match, just swap classId for classUid
 			else if (newPrereqs.length == 1) {
@@ -47,6 +56,9 @@ PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyTo
 		}
 		else if (prereqEntry.type && prereqEntry.values) {
 			prereqs.values[i] = this.updatePrereqs(prereqEntry, host, termId, keyToRows)
+		}
+		else if (prereqEntry.classUid && prereqEntry.subject) {
+			// don't do anything, this is already fixed
 		}
 		else {
 			elog('wtf is ', prereqEntry, prereqs)
@@ -95,8 +107,6 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 		matchingQuery.termId = baseQuery.termId
 	}
 
-	console.log("HERE", baseQuery, matchingQuery);
-
 
 	//make obj to find results here quickly
 	var keyToRows = {};
@@ -123,7 +133,7 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 					keyToRows[key] = []
 				}
 
-				// only need to keet subject and classUid
+				// only need to keep subject and classUid
 				keyToRows[key].push({
 					subject: aClass.subject,
 					classUid: aClass.classUid
@@ -138,34 +148,58 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 			return callback(err)
 		}
 
+
 		var updateQueue = queue()
-		console.log(classesToUpdate);
 
 		// loop through classes to update, and get the new data from all the classes
 		classesToUpdate.forEach(function (aClass) {
-			if (!aClass.prereqs) {
-				return;
+
+			var toUpdate = {};
+			if (aClass.prereqs) {
+				toUpdate.prereqs = this.updatePrereqs(aClass.prereqs, aClass.host, aClass.termId, keyToRows);
+
+				// and simplify tree again
+				toUpdate.prereqs = ellucianRequisitesParser.simplifyRequirements(toUpdate.prereqs)
+				aClass.prereqs = toUpdate.prereqs
 			}
 
-			var prereqs = this.updatePrereqs(aClass.prereqs, aClass.host, aClass.termId, keyToRows);
+			if (aClass.coreqs) {
+				toUpdate.coreqs = this.updatePrereqs(aClass.coreqs, aClass.host, aClass.termId, keyToRows);
+				toUpdate.coreqs = ellucianRequisitesParser.simplifyRequirements(toUpdate.coreqs)
 
-			updateQueue.defer(function (callback) {
+
+				// Remove honors coreqs from classes that are not honors
+				// for (var i = 0; i < aClass.coreqs.values.length; i++) {
+				// 	var subValues = aClass.coreqs.values[i];
+				// 	if (!subValues.subject || !subValues.classUid) {
+
+				// 	}
+				// }
+
+
+				// and remove non honors coreqs if there is a hon lab with the same classId
+				// this isnt going to be 100% reliable across colleges, idk how to make it better, but want to error on the side of showing too many coreqs
 
 
 
-				// this came out of the db, so its going to have and _id and keys
-				classesDB.update({
-					_id: aClass._id
-				}, {
-					$set: {
-						prereqs: prereqs
-					}
-				}, {
-					shouldBeOnlyOne: true
-				}, function (err, docs) {
-					callback(err)
+				aClass.coreqs = toUpdate.coreqs
+			}
+
+			if (toUpdate.prereqs || toUpdate.coreqs) {
+				updateQueue.defer(function (callback) {
+					// this came out of the db, so its going to have and _id and keys
+					classesDB.update({
+						_id: aClass._id
+					}, {
+						$set: toUpdate
+					}, {
+						shouldBeOnlyOne: true
+					}, function (err, docs) {
+						callback(err)
+					}.bind(this))
 				}.bind(this))
-			}.bind(this))
+			}
+
 		}.bind(this))
 
 
@@ -175,7 +209,16 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 	}.bind(this))
 };
 
+PrereqClassUids.prototype.tests = function () {
 
+
+	this.go({
+		host: 'neu.edu'
+	}, function (err) {
+		console.log("DONE!", err);
+	}.bind(this))
+
+};
 
 
 PrereqClassUids.prototype.PrereqClassUids = PrereqClassUids;

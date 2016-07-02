@@ -77,7 +77,7 @@ it('should parse a bunch of deps', function (done) {
 				dbData: {
 					url: url,
 					desc: '',
-					classId: '013'
+					classId: '013',
 				}
 			});
 
@@ -105,7 +105,7 @@ it('should parse a bunch of deps', function (done) {
 			//pageData.deps[1] is the other class
 			expect(pageData.deps[1].parser).toBe(ellucianClassParser);
 
-			expect(pageData.deps[1].dbData.classUid).toBe('013_1540583498')
+			expect(pageData.deps[1].dbData.classId).toBe('013') 
 			expect(pageData.deps[1].dbData.crns).toEqual(['24601', '24603', '25363']);
 			expect(pageData.deps[1].dbData.name).toBe('Thermodyn/Stat Mechanics - Lab');
 			expect(pageData.deps[1].deps.length).toBe(3);
@@ -431,7 +431,7 @@ it('removes dead classes', function () {
 
 
 // it('classUid should work', function() {
-	
+
 // 	var url = 'some url'
 // 	var pageData = PageData.create({
 // 		dbData: {

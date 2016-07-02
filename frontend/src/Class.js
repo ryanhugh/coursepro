@@ -14,13 +14,9 @@ var BaseData = require('./BaseData')
 function Class(config) {
 	BaseData.prototype.constructor.apply(this, arguments);
 
-	if (config.title) {
-		elog("wtf class has a name not a title");
-	}
 
 	//true, if for instance "AP placement exam, etc"
 	this.isString = false;
-
 
 
 	//turn to false to be a node in a graph
@@ -42,79 +38,23 @@ function Class(config) {
 	// Determined in tree mgr to avoid having to calculate every tick
 	this.allChildrenAtSameDepth = true;
 
-	//copy over all other attr given
-	for (var attrName in config) {
-
-		//dont copy over some attr
-		//these are copied below and processed a bit
-		if (_(['coreqs', 'prereqs','download']).includes(attrName) || config[attrName] === undefined) {
-			continue;
-		}
-		//name and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
-		//setting the innerHTML instead of innerText will work too, but this is better
-		else if (_(['desc', 'name']).includes(attrName)) {
-			this[attrName] = he.decode(config[attrName])
-		}
-		else {
-			this[attrName] = config[attrName]
-		}
-	}
-
 
 	this.prereqs = {
 		type: 'or',
 		values: []
 	}
 
-	if (config.prereqs) {
-		if (!config.prereqs.values || !config.prereqs.type) {
-			elog("ERROR given prereqs invalid", config.prereqs)
-		}
-		else {
-			this.prereqs.type = config.prereqs.type
-
-			//add the prereqs to this node, and convert server data
-			config.prereqs.values.forEach(function (subTree) {
-
-				this.prereqs.values.push(this.convertServerData(subTree))
-			}.bind(this))
-
-		}
-	}
 
 	this.coreqs = {
 		type: 'or',
 		values: []
 	}
 
-	if (config.coreqs) {
-		if (!config.coreqs.values || !config.coreqs.type) {
-			elog("ERROR given coreqs invalid", config.coreqs)
-		}
-		else {
-			this.coreqs.type = config.coreqs.type
+	this.crns = [];
 
-			//add the coreqs to this node, and convert server data
-			config.coreqs.values.forEach(function (subTree) {
-				this.coreqs.values.push(this.convertServerData(subTree))
-			}.bind(this))
-		}
-	}
+	this.allParents = []
 
-
-
-	//loading status is done if any sign that has data
-	if (config.dataStatus !== undefined) {
-		this.dataStatus = config.dataStatus
-	}
-	else if (!this.isClass || this.prereqs.length > 0 || this.desc || this.lastUpdateTime !== undefined || this.isString) {
-		this.dataStatus = macros.DATASTATUS_DONE
-	}
-	else {
-		this.dataStatus = macros.DATASTATUS_NOTSTARTED
-	}
-
-	this.postDataProcess();
+	// this.postDataProcess();
 
 
 	// host: "neu.edu"
@@ -135,7 +75,6 @@ function Class(config) {
 	// subject: "CS"
 	// url: "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201630&subj_in=CS&crse_in=4800&schd_in=%25"
 
-
 }
 
 
@@ -143,7 +82,7 @@ function Class(config) {
 macros.inherent(BaseData, Class)
 
 Class.requiredPath = ['host', 'termId', 'subject']
-Class.optionalPath = ['classId']
+Class.optionalPath = ['classUid']
 Class.API_ENDPOINT = '/listClasses'
 
 
@@ -156,6 +95,13 @@ Class.isValidCreatingData = function (config) {
 		return true;
 	};
 
+	// Can make a class with clasid, not recommended and not geruentted to only have 1 or 0 results
+
+	if (config.host && config.termId && config.subject && config.classId && !config.classUid) {
+		console.warn('created class with classId')
+		return true;
+	}
+
 	return BaseData.isValidCreatingData.apply(this, arguments);
 };
 
@@ -164,8 +110,19 @@ Class.prototype.generateIdFromPrereqs = function () {
 		elog('already have _id told to make another one?')
 		return;
 	}
-	if (this.isString) {
+	else if (this.isString) {
 		this._id = this.host + this.termId + this.desc
+		return;
+	}
+
+	else if (this.isClass && this.dataStatus === macros.DATASTATUS_FAIL) {
+		this._id = this.host + this.termId + this.subject;
+		if (this.classUid) {
+			this._id = this._id + this.classUid
+		}
+		else if (this.classId) {
+			this._id = this._id + this.classId
+		}
 		return;
 	}
 
@@ -186,23 +143,23 @@ Class.prototype.generateIdFromPrereqs = function () {
 		debugger
 	}
 	this._id = ids.join('')
-	if (this._id === '') {
-		debugger
+	if (this._id.length < 3) {
+		elog('couldnt make an id!', this._id, this)
 	}
 };
 
 
 
-Class.prototype.convertServerData = function (data) {
+Class.prototype.convertServerRequisites = function (data) {
 	var retVal = {};
 
 	//already processed node, just process the prereqs and coreqs
-	if (data instanceof Class) {
+	if (data.internalDownload) {
 		retVal = data;
 
 		var newCoreqs = [];
 		data.coreqs.values.forEach(function (subTree) {
-			newCoreqs.push(this.convertServerData(subTree))
+			newCoreqs.push(this.convertServerRequisites(subTree))
 		}.bind(this))
 
 		data.coreqs.values = newCoreqs
@@ -211,7 +168,7 @@ Class.prototype.convertServerData = function (data) {
 
 		var newPrereqs = [];
 		data.prereqs.values.forEach(function (subTree) {
-			newPrereqs.push(this.convertServerData(subTree))
+			newPrereqs.push(this.convertServerRequisites(subTree))
 		}.bind(this))
 
 		data.prereqs.values = newPrereqs;
@@ -266,7 +223,15 @@ Class.prototype.internalDownload = function (callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-	console.warn('DOWNLOAD CALLED') 
+
+	if (!this.isClass || this.prereqs.length > 0 || this.desc || this.lastUpdateTime !== undefined || this.isString) {
+		this.dataStatus = macros.DATASTATUS_DONE
+		return callback(null, this)
+	}
+
+	if (this.dataStatus === macros.DATASTATUS_FAIL) {
+		return callback(null, this)
+	}
 
 	if (this.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
 		var errorMsg = 'data status was not not started, and called class.download?' + this.dataStatus
@@ -280,100 +245,235 @@ Class.prototype.internalDownload = function (callback) {
 	};
 
 
-	BaseData.prototype.internalDownload.call(this, {
-		returnResults: true
-	}, function (err, body) {
-		this.dataStatus = macros.DATASTATUS_DONE;
+	BaseData.prototype.internalDownload.call(this, {}, function (err, body) {
 		if (err) {
 			elog('http error...', err);
-			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(err)
-		}
-
-		if (body.length == 0) {
-			console.log('unable to find class even though its a prereq of another class????', this)
-			this.dataStatus = macros.DATASTATUS_FAIL;
-
-			// Make something repeatable from data here
-			if (!this._id) {
-				this._id = this.host + this.termId + this.subject + this.classId
-			}
-			return callback(null, this)
-		};
-
-		//setup an or tree
-		if (body.length > 1) {
-
-			//change this to a node
-			this.isClass = false;
-
-			if (this.prereqs.values.length != 0 || this.coreqs.values.length != 0) {
-				elog('ERROR already has prereqs or coreqs in download callback??', this)
-				this.prereqs.values = []
-				this.coreqs.values = []
-			};
-
-			this.prereqs.type = 'or'
-
-			body.forEach(function (classData) {
-				this.prereqs.values.push(this.convertServerData(classData))
-			}.bind(this))
-
-			this.generateIdFromPrereqs();
-		}
-
-		//else just add more data to the class
-		else {
-			var classData = this.convertServerData(body[0])
-
-			for (var attrName in classData) {
-				if ((typeof this[attrName]) == 'function') {
-					continue
-				}
-				this[attrName] = classData[attrName]
-			}
-			this.postDataProcess();
-
-			//THIS AND THE JAWN BELOW BOTH NEED TO BE RAN AFTER DATA
-			if (this.lastUpdateTime !== undefined) {
-				this.lastUpdateString = moment(this.lastUpdateTime).fromNow()
-			};
 		}
 		callback(null, this)
 	}.bind(this))
 }
 
-Class.prototype.postDataProcess = function () {
-	if (!this.crns) {
-		return;
+// called once
+Class.prototype.updateWithData = function (config) {
+	if (config instanceof Class || config.updateWithData) {
+		elog('wtf', config)
+	}
+
+
+	if (config.title) {
+		elog("wtf class has a name not a title");
+	}
+
+	// if (this.prereqs.values.length > 0 && config.prereqs) {
+	// 	elog('yo')
+	// }
+
+	// if (this.coreqs.values.length > 0 && config.coreqs) {
+	// 	elog('yo')
+	// }
+
+	//copy over all other attr given
+	for (var attrName in config) {
+
+		//dont copy over some attr
+		//these are copied below and processed a bit
+		if (_(['coreqs', 'prereqs', 'download']).includes(attrName) || config[attrName] === undefined) {
+			continue;
+		}
+
+		else {
+			this[attrName] = config[attrName]
+		}
+	}
+
+	if (config.prereqs && !_.isEqual(config.prereqs, this.serverPrereqs)) {
+		if (this.serverPrereqs) {
+			elog('wtf already have prereqs, given prereqs', config)
+		}
+		else if (!config.prereqs.values || !config.prereqs.type) {
+			elog('prereqs need values ad type')
+		}
+		else {
+			this.serverPrereqs = _.cloneDeep(config.prereqs)
+		}
+
+	}
+
+	if (config.coreqs && !_.isEqual(config.prereqs, this.serverCoreqs)) {
+		if (this.serverCoreqs) {
+			elog('wtf')
+		}
+		else if (!config.coreqs.values || !config.coreqs.type) {
+			elog('coreqs need values ad type')
+		}
+		else {
+			this.serverCoreqs = _.cloneDeep(config.coreqs)
+		}
+	}
+
+	if (config.coreqs || config.prereqs) {
+		this.resetRequisites();
+	}
+	if (config.allParents) {
+		this.allParents = config.allParents
+	}
+
+
+	//name and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
+	//setting the innerHTML instead of innerText will work too, but this is better
+	if (config.desc) {
+		this.desc = he.decode(config.desc)
+	}
+	if (config.name) {
+		this.name = he.decode(config.name)
+	}
+
+	if (this.lastUpdateTime !== undefined) {
+		this.lastUpdateString = moment(this.lastUpdateTime).fromNow()
 	};
 
-	if (!this.prettyUrl && this.url) {
-		this.prettyUrl = this.url;
+
+	if (config.missing && config.classId && !config.classUid) {
+
+		// Backend failed to find class with this id, don't bother looking again
+		this.dataStatus = macros.DATASTATUS_FAIL;
+	}
+
+
+	if (!config.prettyUrl && config.url) {
+		this.prettyUrl = config.url;
 	};
 
 	//make sections from crns if they dont exist
-	if (this.crns.length > 0 && this.sections.length == 0) {
+	if (config.crns && config.crns.length > 0 && this.sections.length == 0) {
 
-		this.crns.forEach(function (crn) {
+		config.crns.forEach(function (crn) {
 
 			var section = Section.create({
 				host: this.host,
 				termId: this.termId,
 				subject: this.subject,
-				classId: this.classId,
+				classUid: this.classUid,
 				crn: crn,
 			})
 
 			this.sections.push(section)
 		}.bind(this))
+	}
+	else if (this.sections.length > 0 && config.crns && config.crns.length > 0 && !_.isEqual(this.crns, config.crns)) {
+		elog('updateWithData called but already have sections?', this, config)
+	}
 
-	};
-
-	this.prereqs.values.sort(function (a, b) {
-		return a.compareTo(b)
-	}.bind(this))
 };
+
+
+Class.prototype.resetRequisites = function () {
+	this.allParents = []
+	if (this.serverPrereqs) {
+		this.prereqs.type = this.serverPrereqs.type
+		this.prereqs.values = []
+
+		//add the prereqs to this node, and convert server data
+		this.serverPrereqs.values.forEach(function (subTree) {
+			if (subTree.missing) {
+				console.log("removed missing prereq")
+			}
+			else {
+				this.prereqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
+			}
+
+		}.bind(this))
+
+		this.prereqs.values.sort(function (a, b) {
+			return a.compareTo(b)
+		}.bind(this))
+	}
+	else {
+
+		this.prereqs = {
+			type: 'or',
+			values: []
+		}
+	}
+
+	if (this.serverCoreqs) {
+		this.coreqs.type = this.serverCoreqs.type
+		this.coreqs.values = []
+
+		//add the coreqs to this node, and convert server data
+		this.serverCoreqs.values.forEach(function (subTree) {
+			this.coreqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
+		}.bind(this))
+
+		this.coreqs.values.sort(function (a, b) {
+			return a.compareTo(b)
+		}.bind(this))
+	}
+	else {
+
+		this.coreqs = {
+			type: 'or',
+			values: []
+		}
+	}
+};
+
+Class.prototype.equals = function (other) {
+	if (!this.isClass || !other.isClass) {
+		// look into the git history if attempting to implement, this, started a while ago and then deleted it
+		elog('dosent support comparing non classes yet')
+		return false;
+	}
+
+	// both strings
+	if (this.isString && other.isString) {
+		return this.desc === other.desc;
+	}
+
+	// both classes
+	if (!this.isString && !other.isString) {
+		return BaseData.prototype.equals.call(this, other)
+	}
+
+	// one is a string other is a class
+	return false;
+};
+
+
+Class.prototype.clone = function() {
+	var other = new Class();
+
+	for (var attrName in this) {
+		if (this[attrName] instanceof HTMLElement) {
+			elog('cant clone a HTMLElement in class clone',this[attrName])
+			continue;
+		}
+		else if ((typeof this[attrName]) === 'function') {
+			continue;
+		}
+		else if (Array.isArray(this[attrName])) {
+			var canClone = true;
+			for (var i = 0; i < this[attrName].length; i++) {
+				if (this[attrName] instanceof HTMLElement) {
+					canClone = false;
+					break;
+				}
+			}
+			if (canClone) {
+				other[attrName] = _.cloneDeep(this[attrName])
+			}
+			else {
+				elog('cant clone a HTMLElement in class clone',this[attrName])
+				other[attrName] = this[attrName]
+			}
+		}
+		other[attrName] = _.cloneDeep(this[attrName])
+	}
+	return other;
+};
+
+
 
 //this is used for panels i think and for class list (settings)
 //sort by classId, if it exists, and then subject
@@ -416,63 +516,6 @@ Class.prototype.compareTo = function (otherClass) {
 	return 0
 };
 
-// Class.prototype.isEqual = function(other) {
-// 	if (this.dataStatus !== macros.DATASTATUS_DONE) {
-// 		elog('cant compare unless downloaded already!',this.dataStatus,this)
-// 	}
-// 	if (this.dataStatus != other.dataStatus) {
-// 		elog('cant compare classes where data status != !!',this,other)
-// 	}
-
-// 	if (this.isClass !== other.isClass) {
-// 		return false;
-// 	}
-// 	if (this.isString !== other.isString) {
-// 		return false;
-// 	}
-
-// 	if (this.isClass) {
-// 		if (this._id == other._id) {
-// 			return true;
-// 		}
-// 		else {
-// 			return false;
-// 		}
-// 	}
-// 	else {
-// 		if (this.isString) {
-// 			if (this.desc === other.desc) {
-// 				return true;
-// 			}
-// 			else {
-// 				return false;
-// 			}
-// 		}
-// 		else {
-// 			if (other.prereqs.values.length !== this.prereqs.values.length) {
-// 				return false;
-// 			}
-
-
-
-// 			for (var i = 0; i < other.prereqs.values.length; i++) {
-// 				for (var j = i+1; j < this.prereqs.values.length; j++) {
-// 					if (this.prereqs.values[j].equals(other.prereqs.values[i])) {
-// 						continue
-// 					}
-// 				}
-// 				// two branches that have same length are different
-// 				elog('hmmmm?')
-// 				return false;
-// 			}
-// 			return true;
-
-
-
-// 		}
-// 	}
-
-// };
 
 
 
@@ -487,7 +530,7 @@ Class.prototype.getPath = function () {
 		str: []
 	}
 
-	var path = ['host', 'termId', 'subject', 'classId']
+	var path = ['host', 'termId', 'subject', 'classUid']
 	for (var i = 0; i < path.length; i++) {
 		if (this[path[i]]) {
 			retVal.obj[path[i]] = this[path[i]]
@@ -543,12 +586,12 @@ Class.prototype.logTree = function (body) {
 		return;
 	}
 
-	if (!this.host || !this.termId || !this.subject || !this.classId) {
-		elog("ERROR cant log class without host, termid, subject, classId")
+	if (!this.host || !this.termId || !this.subject || !this.classUid) {
+		elog("ERROR cant log class without host, termid, subject, classUid")
 		return;
 	};
 
-	//add host, termId, subject, and classId
+	//add host, termId, subject, and classUid
 	body = _.merge(this.getPath().obj, body);
 
 	request({

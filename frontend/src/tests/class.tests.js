@@ -1,12 +1,12 @@
 'use strict';
-var Class = require('./mocks/mockClass')
+var Class = require('../Class')
 var macros = require('../macros')
 var _ = require('lodash')
 
 describe('Class', function () {
 
 	describe('.create', function () {
-		it('ensures you need classId or _id to create class', function () {
+		it('ensures you need classUid or _id to create class', function () {
 
 			expect(Class.create({
 				host: 'neu.edu',
@@ -18,10 +18,7 @@ describe('Class', function () {
 		it('ensures memoize works and that download was not swapped', function (done) {
 
 			var aClass = Class.create({
-				"classId": "201",
-				"host": "sju.edu",
-				"termId": "201610",
-				"subject": "JPN",
+				_id: '575102d1b462e991061ca594'
 			});
 
 			var download = aClass.download;
@@ -48,17 +45,14 @@ describe('Class', function () {
 		it('ensures loading data state changes and data loaded', function (done) {
 
 			var aClass = Class.create({
-				"classId": "201",
-				"host": "sju.edu",
-				"termId": "201610",
-				"subject": "JPN",
+				_id: '575102d1b462e991061ca594'
 			});
 
 			expect(aClass.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
 
 			aClass.download(function () {
 				expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
-				expect(aClass._id).toBe("56b7f43f083f16e42df53037")
+				expect(aClass._id).toBe("575102d1b462e991061ca594")
 				expect(aClass.prereqs.values[0].isClass).toBe(true)
 				expect(aClass.prereqs.values[0].isString).toBe(true)
 				expect(aClass.prereqs.values[0].desc).toBe("Language Placement JP201")
@@ -71,8 +65,8 @@ describe('Class', function () {
 
 			var aClass = Class.create({
 				"host": "neu.edu",
-				"classId": "7780",
-				"termId": "201630",
+				"classUid": "7780_1224558283",
+				"termId": "201710",
 				"subject": "CS",
 			});
 
@@ -179,6 +173,103 @@ describe('Class', function () {
 			name: 'Calculus IIB'
 		})
 		expect(aClass.getPrettyClassId()).toBe('6B')
+	});
+
+	it('equals should work', function () {
+
+		var aClass = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: '006B',
+		})
+
+		var aClass2 = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: '006B',
+		})
+
+
+		var aClass3 = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: 'NOOO',
+		})
+
+		var aClass4 = Class.create({
+			isString: true,
+			desc: 'hi',
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+		})
+
+		var aClass5 = Class.create({
+			isString: true,
+			desc: 'hi',
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: 'hiii'
+		})
+
+		expect(aClass.equals(aClass2)).toBe(true);
+		expect(aClass.equals(aClass3)).toBe(false);
+		expect(aClass.equals(aClass4)).toBe(false);
+		expect(aClass5.equals(aClass4)).toBe(true);
+
+	});
+
+	it('should work when same class created with prereqs', function () {
+
+
+		var aClass = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: '006B',
+			prereqs: {
+				type: 'or',
+				values: []
+			}
+		})
+
+		var aClass2 = Class.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'MATH',
+			classUid: '006B',
+			prereqs: {
+				type: 'or',
+				values: []
+			}
+		})
+
+
+	});
+
+
+	it('clone works', function (done) {
+
+
+		var aClass = Class.create({
+			"host": "neu.edu",
+			"classUid": "7780_1224558283",
+			"termId": "201710",
+			"subject": "CS",
+		});
+
+		aClass.download(function () {
+
+			var other = aClass.clone();
+
+			expect(aClass.download).not.toBe(other.download)
+			expect(aClass.classUid).toBe(other.classUid)
+			done()
+		}.bind(this))
 	});
 
 });

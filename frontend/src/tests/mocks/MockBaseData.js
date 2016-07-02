@@ -32,11 +32,18 @@ MockBaseData.download = function (config, callback) {
 		}.bind(this))
 	}
 
-	var keys = this.requiredPath.concat(this.optionalPath);
+	var query = _.merge(config.body, config.resultsQuery)
+	var keys = this.requiredPath.slice(0)//.concat(this.optionalPath);
+
+	// only check them if the query has them
+	this.optionalPath.forEach(function (key) {
+		if (query[key]) {
+			keys.push(key)
+		}
+	}.bind(this))
 
 	var retVal = [];
 
-	var query = _.merge(config.body, config.resultsQuery)
 
 	this.mockData.forEach(function (data) {
 
@@ -58,7 +65,7 @@ MockBaseData.download = function (config, callback) {
 	}.bind(this))
 
 	if (retVal.length == 0) {
-		console.log("unit test error: dont have data for query");
+		console.log("unit test error: dont have data for query",query);
 		debugger
 	};
 

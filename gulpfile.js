@@ -14,12 +14,16 @@ var notify = require("gulp-notify");
 var merge = require('merge-stream')
 
 var mdeps = require('module-deps')
+var queue = require('d3-queue').queue;
 
 var JSONStream = require('JSONStream');
+var batch = require('gulp-batch');
+var recursiveDeps = require('recursive-deps');
 
 // for backend unit tests
 var jasmineReporter = require('./backend/jasmineReporter')
-var jasmine = require('gulp-jasmine');
+var Jasmine = require('jasmine');
+
 
 // browsify stuff
 var browserify = require('browserify');
@@ -92,6 +96,10 @@ function getFilesToProcess() {
 var dependencies = [];
 gulp.task('getDependencies', function () {
 	var files = getFilesToProcess();
+
+
+
+
 	// var bundler = browserify({
 	// 	entries: files,
 	// 	// bundleExternal: false,
@@ -129,14 +137,14 @@ gulp.task('getDependencies', function () {
 
 	// // stream = stream.pipe(gulp.dest('./frontend/static/js/internal'));
 
- //    stream.pipe(process.stdout);
+	//    stream.pipe(process.stdout);
 
 	// stream.on('end',function () {
 	// 	console.log('DONEEEE',files);
 	// }.bind(this))
 
-	var md = mdeps(files);
-	md.pipe(JSONStream.stringify()).pipe(process.stdout);
+	// var md = mdeps(files);
+	// md.pipe(JSONStream.stringify()).pipe(process.stdout);
 	// md.end({ file: __dirname + '/frontend/main.js' });
 
 
@@ -162,90 +170,112 @@ gulp.task('getDependencies', function () {
 // http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
 
 //another note, if you include a module that dosent exist, it will silently hang forever(?) eg (require('jdklfjdasjfkl'))
-function compileJSBundle(shouldUglify, compileRequire) {
+function compileJSBundle(shouldUglify, compileRequire, callback) {
 	if (compileRequire === undefined) {
 		compileRequire = false;
 	}
 
 	var filesToProccess = getFilesToProcess();
 
-	// console.log('Processing:', filesToProccess,dependencies)
+	recursiveDeps(filesToProccess).then(function (dependencies) {
+		// console.log(dependencies); // ['bluebird', 'fs-promise', ...]
 
 
-	var bundler = browserify({
-		entries: filesToProccess,
-		bundleExternal: false,
-	}, {
-		basedir: __dirname,
-		debug: false,
-		cache: {}, // required for watchify
-		packageCache: {}, // required for watchify
+		var node_module_dependencies = [];
+		dependencies.forEach(function (dep) {
+			if (!path.isAbsolute(dep)) {
+				node_module_dependencies.push(dep)
+			}
+		}.bind(this))
+		console.log(node_module_dependencies);
 
-		// required to be true only for watchify (?) but watchify works when it is off.
-		//dont show C:/ryan/google drive etc in the uglified source code
-		fullPaths: false,
-	});
+		// console.log('Processing:', filesToProccess,dependencies)
 
 
+		var bundler = browserify({
+			entries: filesToProccess,
+			bundleExternal: false,
+		}, {
+			basedir: __dirname,
+			debug: false,
+			cache: {}, // required for watchify
+			packageCache: {}, // required for watchify
 
-	bundler = watchify(bundler)
-	if (compileRequire) {
-		bundler = bundler.require(dependencies)
-	}
-	else {
-		bundler = bundler.external(dependencies)
-	}
-	var rebundle = function () {
-		console.log("----Rebundling custom JS!----")
-		var stream = bundler.bundle();
+			// required to be true only for watchify (?) but watchify works when it is off.
+			//dont show C:/ryan/google drive etc in the uglified source code
+			fullPaths: false,
+		});
 
 
-
-		stream.on('error', function (err) {
-			onError(err);
-			// end this stream
-			this.emit('end');
-		})
+		bundler = watchify(bundler)
 		if (compileRequire) {
-			stream = stream.pipe(source('vender.js'));
+			bundler = bundler.require(node_module_dependencies)
 		}
 		else {
-			stream = stream.pipe(source('app.js'));
+			bundler = bundler.external(node_module_dependencies)
 		}
+		var rebundle = function () {
+			console.log("----Rebundling custom JS!----")
+			var stream = bundler.bundle();
 
-		if (shouldUglify) {
-			stream = stream.pipe(streamify(uglify({
-				options: {
-					ie_proof: false
-				},
-				compress: {
-					drop_console: true,
-					unsafe: true,
-					collapse_vars: true,
-					pure_getters: true,
-					// warnings: true,
-					// keep_fnames: true
-				}
-			})));
-		}
 
-		stream = stream.pipe(gulp.dest('./frontend/static/js/internal'));
 
-		stream.on('end', function () {
-			console.log("----Done Rebundling custom JS!----")
-		}.bind(this))
+			stream.on('error', function (err) {
+				onError(err);
+				// end this stream
+				this.emit('end');
+			})
+			if (compileRequire) {
+				stream = stream.pipe(source('vender.js'));
+			}
+			else {
+				stream = stream.pipe(source('app.js'));
+			}
 
-		return stream;
-	};
+			if (shouldUglify) {
+				stream = stream.pipe(streamify(uglify({
+					options: {
+						ie_proof: false
+					},
+					compress: {
+						drop_console: true,
+						unsafe: true,
+						collapse_vars: true,
+						pure_getters: true,
+						// warnings: true,
+						// keep_fnames: true
+					}
+				})));
+			}
 
-	bundler.on('update', rebundle);
-	return rebundle();
+			stream = stream.pipe(gulp.dest('./frontend/static/js/internal'));
+
+			stream.on('end', function () {
+				console.log("----Done Rebundling custom JS!----")
+				callback();
+			}.bind(this))
+		};
+
+		bundler.on('update', rebundle);
+		rebundle();
+	});
 }
 
-function compileJS(uglifyJS) {
-	return merge(compileJSBundle(uglifyJS, true), compileJSBundle(uglifyJS, false))
-}
+function compileJS(uglifyJS, callback) {
+	var q = queue();
 
+	q.defer(function (callback) {
+		compileJSBundle(uglifyJS, true, callback);
+	}.bind(this));
+
+	q.defer(function (callback) {
+		compileJSBundle(uglifyJS, false, callback);
+	}.bind(this));
+
+	q.awaitAll(function (err) {
+		callback(err)
+	}.bind(this))
+}
 
 gulp.task('copyHTML', function () {
 	return gulp
@@ -273,8 +303,8 @@ gulp.task('watchCopyHTML', function () {
 
 
 //production
-gulp.task('uglifyJS', ['getDependencies'], function () {
-	return compileJS(true);
+gulp.task('uglifyJS', ['getDependencies'], function (callback) {
+	compileJS(true, callback);
 });
 
 
@@ -287,8 +317,8 @@ gulp.task('prod', ['uglifyJS', 'watchCopyHTML', 'copyHTML'], function () {
 
 
 //development
-gulp.task('compressJS', ['getDependencies'], function () {
-	return compileJS(false);
+gulp.task('compressJS', ['getDependencies'], function (callback) {
+	compileJS(false, callback);
 });
 
 
@@ -314,7 +344,13 @@ gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 // if u want to u can run individual test files with
 // jasmine-node ellucianSectionParser.tests.js  --matchall
 // also don't compare pageDatas directly with expect(pageData).toEqual, it will cause jasmine to eat up all yo ram and crash
-gulp.task('btestRun', function () {
+
+// the batch is a solution for a async problem,
+// where if you quickly saved a file a bunch of times, 
+// gulp would run the watcher again before the prior run finished
+// so the require.cache would be cleared halfway through the excecution of the first tests
+// which messed up a lot of stuff
+var btestRun = batch(function (events, callback) {
 	var files = glob.sync('backend/**/*.js');
 
 	files.forEach(function (file) {
@@ -322,20 +358,39 @@ gulp.task('btestRun', function () {
 		delete require.cache[filePath]
 	}.bind(this))
 
-	// gulp-jasmine works on filepaths so you can't have any plugins before it 
-	gulp.src('backend/**/*.tests.js')
+	// Originally, was using gulp-jasmine, but that is only a small wrapper around jasmine and only does two things:
+	// 1. delete files from require.cache (which it wasen't doing correcly, and had to be done here too)
+	// 2. includes a custom reporter, which was bad and was using a custom one anyway
+	// so after some more problems with it just decided to bypass it instead
+	var jasmine = new Jasmine();
 
-	.pipe(jasmine({
-			reporter: new jasmineReporter()
-		}))
-		.on('error', function (err) {
-			onError(err);
-			this.emit('end');
-		})
+
+	var filesToProccess = [];
+	files.forEach(function (file) {
+
+		// add all the .tests.js files to jasmine
+		if (_(file).endsWith('tests.js')) {
+			var resolvedPath = path.resolve(file);
+			jasmine.addSpecFile(resolvedPath);
+		};
+	})
+
+	jasmine.addReporter(new jasmineReporter());
+	jasmine.execute();
+	jasmine.onComplete(function (passedAll) {
+		callback()
+	}.bind(this))
+}, function (err) {
+	console.log('BATCH FAILED!', err);
+}.bind(this));
+
+process.on('uncaughtException', function (err) {
+	console.log('Caught exception: ', err.stack);
 });
 
-gulp.task('btest', ['btestRun'], function () {
-	gulp.watch(['backend/**/*.js'], ['btestRun']);
+gulp.task('btest', function () {
+	btestRun();
+	gulp.watch(['backend/**/*.js'], btestRun);
 });
 
 gulp.task('test', ['btest', 'ftest'], function () {});

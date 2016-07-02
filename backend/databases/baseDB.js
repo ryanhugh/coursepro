@@ -180,8 +180,9 @@ BaseDB.prototype.stopUpdates = function () {
 // does not modify values
 BaseDB.prototype.isValidLookupValues = function (lookupValues) {
 	if (lookupValues._id && lookupValues._id.length != 24) {
-		console.log('_id is included and is not 24 chars long, and therefore is invalid ', lookupValues._id, lookupValues._id.length)
-		console.log('more stuff', _.cloneDeep(lookupValues._id))
+		console.log('_id is included and is not 24 chars long, and therefore is invalid ', lookupValues._id, lookupValues._id.length, typeof lookupValues._id)
+		console.log('more stuff', _.cloneDeep(lookupValues._id),lookupValues._id.constructor)
+		// console.log("");
 		return false;
 	};
 
@@ -196,7 +197,7 @@ BaseDB.prototype.isValidLookupValues = function (lookupValues) {
 // changes the _id to a string if it is not already
 BaseDB.prototype.standardizeQuery = function (query) {
 	if (query._id && typeof (query._id) != 'string') {
-		console.log('chaning id of ', query._id, 'to a string', _.cloneDeep(query._id))
+		console.log('chaning id of ', query._id, 'to a string', _.cloneDeep(query._id),(typeof query._id))
 		query._id = query._id.toString()
 	};
 	return query;
@@ -225,12 +226,12 @@ BaseDB.prototype.update = function (query, updateQuery, config, callback) {
 		config.shouldBeOnlyOne = false;
 	};
 
+	query = this.standardizeQuery(query);
+
 	if (!config.skipValidation && !this.isValidLookupValues(query)) {
 		console.log('invalid terms in ' + this.constructor.name + ' ', query);
 		return callback('invalid search')
 	};
-
-	query = this.standardizeQuery(query);
 
 	// keep the original config for the find below
 	var mongoConfig = {};
@@ -245,7 +246,8 @@ BaseDB.prototype.update = function (query, updateQuery, config, callback) {
 		mongoConfig[attrName] = config[attrName]
 	}
 
-	this.table.update(query, updateQuery, mongoConfig, function (err, changeCount) {
+	// Monk messes with the _id of the query, so clone it before sending to monk
+	this.table.update(_.cloneDeep(query), updateQuery, mongoConfig, function (err, changeCount) {
 		this.find(query, config, function (err, docs) {
 			callback(err, docs);
 		}.bind(this))
@@ -257,13 +259,14 @@ BaseDB.prototype.find = function (lookupValues, config, callback) {
 	if (!config.shouldBeOnlyOne) {
 		config.shouldBeOnlyOne = false;
 	};
+	
+	lookupValues = this.standardizeQuery(lookupValues);
 
 	if (!config.skipValidation && !this.isValidLookupValues(lookupValues)) {
 		console.log('invalid terms in ' + this.constructor.name + ' ', lookupValues);
 		return callback('invalid search')
 	};
 
-	lookupValues = this.standardizeQuery(lookupValues);
 
 
 	this.table.find(lookupValues, function (err, docs) {
@@ -280,6 +283,8 @@ BaseDB.prototype.find = function (lookupValues, config, callback) {
 			docs.forEach(function (doc) {
 				doc._id = doc._id.toString()
 			}.bind(this))
+
+			// console.log(typeof docs[0]._id, docs[0]._id, docs[0].constructor);
 
 			//db can have a couple values static
 			docs = docs.concat(this.getStaticValues(lookupValues, config))

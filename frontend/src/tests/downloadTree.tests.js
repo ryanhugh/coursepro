@@ -1,13 +1,9 @@
 'use strict';
 
-var mockClass = require('./mocks/mockClass')
 var treeMgr = require('../graph/treeMgr')
-var proxyquire = require('proxyquireify')(require);
 var something = require('es6-collections')
 
-var downloadTree = proxyquire('../graph/downloadTree', {
-	'../Class': mockClass,
-})
+var downloadTree = require('../graph/downloadTree')
 
 
 describe('DownloadTreeTests', function () {
@@ -18,15 +14,15 @@ describe('DownloadTreeTests', function () {
 
 			downloadTree.fetchFullTree({
 				host: 'neu.edu',
-				termId: '201530',
+				termId: '201710',
 				subject: 'CS',
-				classId: '4800'
+				classUid: "4750_1045395676",
 			}, function (err, tree) {
 				expect(err).toBe(null);
 
 				treeMgr.go(tree)
 				
-				expect(treeMgr.countClassesInTree(tree)).toBe(18);
+				expect(treeMgr.countClassesInTree(tree)).toBe(13);
 			}.bind(this))
 
 		});

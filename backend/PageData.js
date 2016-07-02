@@ -269,7 +269,7 @@ PageData.prototype.processDeps = function (callback) {
 
 	//any dep data will be inserted into main PageData for dep
 	async.map(this.deps, function (depPageData, callback) {
-		pageDataMgr.go(depPageData, function (err, newDepData) {
+		pageDataMgr.processPageData(depPageData, function (err, newDepData) {
 			if (err) {
 				console.log('ERROR: processing deps:', err);
 				return callback(err);
@@ -332,7 +332,7 @@ PageData.prototype.addDep = function (depData) {
 
 	//copy over values from this pageData
 	//this way, parsers dont have to explicitly state these values each time they add a dep
-	var valuesToCopy = ['host', 'termId', 'subject', 'classId', 'classUid', 'crn'];
+	var valuesToCopy = ['host', 'termId', 'subject', 'classId', 'crn'];
 	valuesToCopy.forEach(function (attrName) {
 		if (!this.dbData[attrName]) {
 			return;
@@ -457,12 +457,6 @@ PageData.prototype.setData = function (name, value) {
 PageData.prototype.getData = function (name) {
 	return this.dbData[name];
 };
-
-
-PageData.prototype.tests = function () {
-
-}
-
 
 
 if (require.main === module) {

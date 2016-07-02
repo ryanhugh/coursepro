@@ -1,5 +1,5 @@
 'use strict';
-var Subject = require('./mocks/mockSubject')
+var Subject = require('../Subject')
 var macros = require('../macros')
 var _ = require('lodash')
 

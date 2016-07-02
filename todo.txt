@@ -1,15 +1,70 @@
-clashttps://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
+https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
 
 
-clean up bug about updating backend tests with $$ and editing objs returned with find
-cloning in mock db backend return?
-change pagedatamgr to go and internalGo where go ran post processors afterwords and internalGo works the way go works now
+TODO
+uglify properties before prod?
+
+search:
+ - server side index generation and save them to disk somewhere? and pass around the url, dont need to, its known
+- service workers(for awesomeness and to cache data)
+ - by default show panel expanded, maybe with search, but then how show coreqs and prereqs?
+
+clean up this file a lot
+make it so user can upgrade localstorage
+trello
+sms and phone call notifications?
+click to select class
+get instanceCache off the window, why were different datas using differnet instanceCaches in testing?
+cross term data copying for a processor for like swarthmore class descriptions etc
+simplifyTree shouldnt copy attrs between nodes
+
+chem 2311 dosent have coreqs????? it should
+https://coursepro.io/#/graph/neu.edu/201710/CHEM/2311
+ -- change how this is done, working on it in prereqClassUids, but need some work
+ -- moving the logic for this from treeMgr to ^^  DO THIS NEXTTTTTTT AND THEN the collision code?
+
+
+
+PROCESSORS:
+find things for search prefil hint thing
+ - at neu it should be International Village and First Year Writing
+semester start and end on term -- done
+auto recognize which college someone is coming from (not really a processor?) -- done
+remove honors coreqs from non hon classes, etc
+make the search index and upload it to ec2 bucket
+
+
+
+
+make the collision code for nodes at different tiers use actuall trig and not ghetto trig
+
+
+http://localhost/#/graph/neu.edu/201710/PHYS/1165_1407358073
+
+
+#5f9337 and #6c994a kindof work for green
+
+#87c3d0 for light blue
+
+
+// would this work somewhere??
+tree.prereqs.values.sort(function (a, b) {
+	return b.x - a.x;
+}.bind(this))
+
 
 
 TO TEST
-last update time should copy down to class deps of class deps -- done
 updateing db due to change in deps???? -- logging chages
-honors?
+
+resize d3 window on browser size resize -- done
+ -- why does the grpah like move a little?
+
+
+db.sections.createIndex( { "host": 1, "termId": 1 ,"subject": 1,"classUid": 1,"crn": 1   } )
+
+
+
 
 
 LOOKING INTO
@@ -17,22 +72,8 @@ safe to lookup docs by url in backend? - ehhh
 max number of simultanous classes wawtching???
 Is there some good way to not have a bunch of emails go off whenever change how something is parsed?
 can close and reopen the db when not prod?
-speed?
- -- async memorize on this.download for tterms and stuff - slap in on basedata.constructor.download with a hashwer that gets all of config and config.body (how to hash obj) -- done?
- -- do i still need the manual memoize around class? -- done
- -----unit tests for ^ and memoize stuff -- done
 
 
-opt in to sending email locally if playing with prod
-
-gulp streams thing
-
-
-coreqs not parsed correcly -- done
-https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=PHYS&crse_numb_in=1161
-
-// TODO this will happen if neither section or class are in the list
-user.js#toggleListContainsSection
 
 GRAPH
 
@@ -45,6 +86,15 @@ if angle < something between 2 children, do a force or maybe if x is too close b
 
 GULP todo
 split vender.js and app.js gulpfile
+ - so i looked at this once and browsify supports this, and can easily make one without the stuff in node_modules
+ - but to actually include that stuff you need to list the modules
+ - and i dont want another list of modules to maintain
+ - this is the module it uses internally to get this, but gave up trying to figure out how it worked. 
+ - https://www.npmjs.com/package/module-deps
+ - 
+ - maybe this module or some other one?
+ - https://www.npmjs.com/package/find-module-deps
+ - https://github.com/allain/recursive-deps/blob/master/index.js
 npm ignore everything in frontend/static/ and copy over the other stuff
 
 
@@ -59,16 +109,35 @@ nodes are in childrens parents
 !classes have (>1 child or >1 parent) and at lest 1 child and at least 1 parent
 all nodes connected to each other somehow
 only 1 node with 0 parents
-no duplicates in children or parents
+no duplicates in children or parents (except coreqs)
 panels should have text in them 
 no depth > 50
+any isCoreq should only have exacly one parent
+
+
+====Parsing warnings that could tell school about====
+pre/co reqs that link to invalid classes
+classes that say "recistation for " or "lab for" but don't have any coreqs
+
+
+=== performance === 
+is coreq.clone() slowing this down?
+
+
+
+
+this.skipNodesPostStuff(tree); needed 4 times??????
+
+
+
+debug this next http://localhost/#/graph/neu.edu/201710/CHEM/2331_2069949756
 
 big graphs
 http://localhost/#/graph/neu.edu/201710/ME/4570
-http://localhost/#/graph/neu.edu/201710/CHEM/3505 
+http://localhost/#/graph/neu.edu/201710/CHEM/3505_1161594881 
 
-http://localhost/#/graph/neu.edu/201710/EECE/4642
-http://localhost/#/graph/neu.edu/201710/ME/4640
+http://localhost/#/graph/neu.edu/201710/EECE/4642_422645136
+http://localhost/#/graph/neu.edu/201710/ME/4640_505072758
 https://localhost/#neu.edu/201630/CHEM/5622
  -- tree is 419 big
 
@@ -95,21 +164,14 @@ http://localhost/#/graph/neu.edu/201710/BIOL/3407
 
 
 
+
+
 NOTIFICATIONS
 trello/sms/phone call/etc
 
 
 
 
-
-
-POST PROCESS
-make a post process folder and 
-put the data in the database or just process the page datas? 
- -- cross term data copying would work pretty much either way
- -- mongodb binary search might be better for finding other classes for postreqs (DO THIS! other colleges will have a diff format for parsers)
- ----- this gets complicatd on what to update when updating just one class
- -- convert prereqs classid to classuuid too
 
 
 

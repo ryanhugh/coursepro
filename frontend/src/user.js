@@ -21,7 +21,10 @@ function User() {
 	this.dbData = {
 		lists: {},
 		vars: {},
-		// loginKey:'' // generated when login with google
+
+		// Keep track of changes to the version so future types can upgrade/clear localStorage
+		version: this.constructor.DBDATA_VERSION
+			// loginKey:'' // generated when login with google
 	}
 
 	//lastSelectedCollege and lastSelectedTerm are used now
@@ -51,6 +54,12 @@ function User() {
 	// the status of downloading the data from the server. If don't have login key, this stays at not started. 
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED
 
+	this.loadFromLocalStorage();
+}
+
+User.DBDATA_VERSION = 2;
+
+User.prototype.loadFromLocalStorage = function () {
 	// load data
 	// everything comes from localstorage.dbData if don't have login key, else everything except loginKey comes from server.
 	// three cases:
@@ -68,15 +77,26 @@ function User() {
 			this.dbData.vars = localData.vars
 			this.download(_.noop)
 		}
+		// Must be v1, where class _id's were stored and version was not kept track of
+		else if (localData && !localData.version) {
+
+			// There were 2 things in dbData at this version: vars and lists
+			this.dbData.vars = localData.vars;
+
+			//TODO: copy the old _ids to the new format
+
+
+			this.saveData()
+
+		}
 
 		// valid local data
-		else {
+		else if (localData.version == this.constructor.DBDATA_VERSION) {
 			this.dbData = localData;
 		}
 	}
-	window.user = this
 
-}
+};
 
 
 User.prototype.saveData = function () {
@@ -394,12 +414,10 @@ User.prototype.loadList = function (listName, callback) {
 
 		this.lists[listName].dataStatus = macros.DATASTATUS_LOADING
 
-		//fetch all the class data from the _id's in the user watch list
-		this.dbData.lists[listName].classes.forEach(function (classMongoId) {
+		//fetch all the class data from the keys in the user watch list
+		this.dbData.lists[listName].classes.forEach(function (classKeys) {
 			q.defer(function (callback) {
-				Class.create({
-					_id: classMongoId
-				}).download(function (err, aClass) {
+				Class.create(classKeys).download(function (err, aClass) {
 					if (err) {
 						return callback(err)
 					}
@@ -412,11 +430,9 @@ User.prototype.loadList = function (listName, callback) {
 
 
 		//same thing for the sections
-		this.dbData.lists[listName].sections.forEach(function (sectionMongoId) {
+		this.dbData.lists[listName].sections.forEach(function (sectionKeys) {
 			q.defer(function (callback) {
-				Section.create({
-					_id: sectionMongoId
-				}).download(function (err, section) {
+				Section.create(sectionKeys).download(function (err, section) {
 					if (err) {
 						return callback(err)
 					}
@@ -465,11 +481,11 @@ User.prototype.getAllClassesInLists = function () {
 
 			//only include if not already in there
 			//cant use _.uniq because there could be different instances of the same class
-			if (_.filter(classes, {
-					_id: aClass._id
-				}).length === 0) {
-				classes.push(aClass)
+			for (var i = 0; i < this.lists[listName].classes.length; i++) {
+				this.lists[listName].classes[i].equals(aClass)
+				return;
 			}
+			classes.push(aClass)
 		}.bind(this))
 	}
 
@@ -504,6 +520,14 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		return callback()
 	};
 
+	classes.slice(0).forEach(function (aClass) {
+		if (!aClass.isClass) {
+			elog('tried to save a class that !isClass', aClass)
+			_.pull(classes, aClass)
+		}
+	}.bind(this))
+
+
 	this.loadList(listName, function (err) {
 		if (err) {
 			return callback(err)
@@ -513,47 +537,73 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		var initClassCount = this.lists[listName].classes.length
 		var initSectionCount = this.lists[listName].sections.length
 
-		var classIds = [];
-		classes.forEach(function (aClass) {
-			if (!aClass._id) {
-				elog("Cant save ", aClass, 'because it dosent have an _id!')
-			};
-			classIds.push(aClass._id)
-		}.bind(this))
-
-		var sectionIds = [];
-		sections.forEach(function (section) {
-			if (!section._id) {
-				elog("Cant save ", section, 'because it dosent have an _id!')
-			};
-			sectionIds.push(section._id)
-		}.bind(this))
-
-		//add the seciton, but make sure to not add duplicate sectin
+		//add the section, but make sure to not add duplicate section
 		//it could be a different instance of that same section
 		sections.forEach(function (section) {
-			if (_.filter(this.lists[listName].sections, {
-					_id: section._id
-				}).length === 0) {
-				this.lists[listName].sections.push(section)
+			var addToSections = true;
+			for (var i = 0; i < this.lists[listName].sections.length; i++) {
+				if (this.lists[listName].sections[i].equals(section)) {
+					addToSections = false;
+					break;
+				}
 			}
+
+			var keys = section.getIdentifer().full.obj;
+			var addToDBSections = true;
+			for (var i = 0; i < this.dbData.lists[listName].sections.length; i++) {
+				if (_.isEqual(this.dbData.lists[listName].sections[i], keys)) {
+					addToDBSections = false;
+					break;
+				}
+			}
+			if (addToSections != addToDBSections) {
+				elog('hi')
+			}
+			if (addToSections) {
+				this.lists[listName].sections.push(section);
+			}
+			if (addToDBSections) {
+				this.dbData.lists[listName].sections.push(keys)
+			}
+
 		}.bind(this))
 
+		// Add the new class to this.lists and this.dbData.lists
 		classes.forEach(function (aClass) {
-			if (_.filter(this.lists[listName].classes, {
-					_id: aClass._id
-				}).length === 0) {
-				this.lists[listName].classes.push(aClass)
+			var addToClasses = true;
+			for (var i = 0; i < this.lists[listName].classes.length; i++) {
+				if (this.lists[listName].classes[i].equals(aClass)) {
+					addToClasses = false;
+					break;
+				}
+			}
+
+			var keys = aClass.getIdentifer().full.obj;
+			var addToDBClasses = true;
+			for (var i = 0; i < this.dbData.lists[listName].classes.length; i++) {
+				if (_.isEqual(this.dbData.lists[listName].classes[i], keys)) {
+					addToDBClasses = false;
+					break;
+				}
+			}
+			if (addToClasses != addToDBClasses) {
+				elog('hi')
+			}
+			if (addToClasses) {
+				this.lists[listName].classes.push(aClass);
+			}
+			if (addToDBClasses) {
+				this.dbData.lists[listName].classes.push(keys)
 			}
 		}.bind(this))
 
+		if (this.dbData.lists[listName].sections.length != this.lists[listName].sections.length) {
+			elog('no')
+		}
 
-		//add any classes given to both this.lists and this.dbData.lists
-		this.dbData.lists[listName].classes = _.uniq(this.dbData.lists[listName].classes.concat(classIds))
-
-
-		//add any sections given to both this.lists and this.dbData.lists
-		this.dbData.lists[listName].sections = _.uniq(this.dbData.lists[listName].sections.concat(sectionIds))
+		if (this.dbData.lists[listName].classes.length != this.lists[listName].classes.length) {
+			elog('no')
+		}
 
 
 		ga('send', {
@@ -577,7 +627,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 			useCache: false
 		}, function (err, response) {
 			if (err) {
-				elog("ERROR: couldn't log addToList :(", err, response, body);
+				elog("ERROR: couldn't log addToList :(", err, response);
 			}
 		}.bind(this))
 
@@ -628,40 +678,33 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 	var initClassCount = this.lists[listName].classes.length
 	var initSectionCount = this.lists[listName].sections.length
 
-	var classIds = [];
 	classes.forEach(function (aClass) {
-		classIds.push(aClass._id)
-	}.bind(this))
 
-	var sectionIds = [];
-	sections.forEach(function (section) {
-		sectionIds.push(section._id)
-	}.bind(this))
-
-	classIds.forEach(function (classId) {
+		var classKey = aClass.getIdentifer().full.obj;
 
 		//remove it from this.lists
-		var matchingClasses = _.filter(this.lists[listName].classes, {
-			_id: classId
-		});
+		var matchingClasses = _.filter(this.lists[listName].classes, classKey);
 
 		_.pullAll(this.lists[listName].classes, matchingClasses)
 
+
 		//and this.dbData.lists
-		_.pull(this.dbData.lists[listName].classes, classId)
+		var matchingClassKeys = _.filter(this.dbData.lists[listName].classes, classKey);
+		_.pullAll(this.dbData.lists[listName].classes, matchingClassKeys)
 	}.bind(this))
 
-	sectionIds.forEach(function (sectionId) {
+	sections.forEach(function (section) {
+		var sectionKey = section.getIdentifer().full.obj;
 
 		//remove it from this.lists
-		var matchingSections = _.filter(this.lists[listName].sections, {
-			_id: sectionId
-		});
+		var matchingSections = _.filter(this.lists[listName].sections, sectionKey);
 
 		_.pullAll(this.lists[listName].sections, matchingSections)
 
+
 		//and this.dbData.lists
-		_.pull(this.dbData.lists[listName].sections, sectionId)
+		var matchingSectionKeys = _.filter(this.dbData.lists[listName].sections, sectionKey);
+		_.pullAll(this.dbData.lists[listName].sections, matchingSectionKeys)
 	}.bind(this))
 
 	ga('send', {
@@ -706,43 +749,47 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 };
 
 
-
-User.prototype.getListIncludesClass = function (listName, tree) {
-	// if (!this.isAuthAndLoaded(tree)) {
-	//     return;
-	// };
-
+// Check the dbData instead of this.lists so the list dosen't have to be loaded
+User.prototype.getListIncludesClass = function (listName, aClass) {
 	this.ensureList(listName)
+	for (var i = 0; i < this.dbData.lists[listName].classes.length; i++) {
+		var currKeys = this.dbData.lists[listName].classes[i];
 
-	if (_(this.dbData.lists[listName].classes).includes(tree._id)) {
-		return true;
+		var isMatch = true;
+
+		for (var attrName in currKeys) {
+			if (currKeys[attrName] !== aClass[attrName]) {
+				isMatch = false;
+			}
+		}
+		if (isMatch) {
+			return true;
+		}
 	}
-	else {
-		return false;
-	}
+	return false;
 };
 
 
 User.prototype.getListIncludesSection = function (listName, section) {
-	// if (!this.getAuthenticated(section)) {
-	//     return null;
-	// }
-
 	this.ensureList(listName)
+	for (var i = 0; i < this.dbData.lists[listName].sections.length; i++) {
+		var currKeys = this.dbData.lists[listName].sections[i];
 
-	if (_(this.dbData.lists[listName].sections).includes(section._id)) {
-		return true;
+		var isMatch = true;
+
+		for (var attrName in currKeys) {
+			if (currKeys[attrName] !== section[attrName]) {
+				isMatch = false;
+			}
+		}
+		if (isMatch) {
+			return true;
+		}
 	}
-	else {
-		return false;
-	}
+	return false;
 };
 
 User.prototype.getList = function (listName) {
-	// if (!this.getAuthenticated()) {
-	//     return null;
-	// }
-
 	this.ensureList(listName)
 
 	return this.lists[listName]
@@ -779,41 +826,19 @@ User.prototype.toggleListContainsSection = function (listName, section, callback
 	//and tell server
 	else {
 
-		var classInstance;
 		var keys = section.getIdentifer().required.obj;
-		this.lists[listName].classes.forEach(function (aClass) {
-
-			for (var keyName in keys) {
-				if (aClass[keyName] != section[keyName]) {
-					return;
-				}
-			}
-			if (!_(aClass.crns).includes(section.crn)) {
-				return;
-			}
-			if (classInstance) {
-				elog('multiple saved classes have this section?', classInstance, aClass, section);
-			}
-			classInstance = aClass
-		}.bind(this))
-
-		if (!classInstance) {
-			// couldn't find a class instance in the saved field, need to make one
-			// Class.create(section.getIdentifer().required.obj).download(function (err, aClass) {
-			// 	if (!aClass.isClass) {
-			// 		aClass.prereqs.values.
-
-			// 	}
-			// }.bind(this))
-			// TODO this will happen if neither section or class are in the list
-			elog('couldnt find classInstance!', section, this.lists[listName])
+		var classInstance = Class.create(keys);
+		if (classInstance.dataStatus === macros.DATASTATUS_NOTSTARTED) {
+			console.warn('had to load class in toggleListContainsSection :(')
 		}
-
-
-		this.addToList(listName, [classInstance], [section], function (err) {
-			callback(err)
+		classInstance.download(function (err) {
+			if (err) {
+				return callback(err)
+			}
+			this.addToList(listName, [classInstance], [section], function (err) {
+				callback(err)
+			}.bind(this))
 		}.bind(this))
-		return;
 	}
 };
 

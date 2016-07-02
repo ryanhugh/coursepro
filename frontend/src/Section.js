@@ -23,14 +23,12 @@ function Section(config) {
 	//each of these then has times, and days
 	//instances of Meeting
 	this.meetings = []
-
-	this.processServerData(config)
 }
 
 macros.inherent(BaseData, Section)
 
 
-Section.requiredPath = ['host', 'termId', 'subject', 'classId']
+Section.requiredPath = ['host', 'termId', 'subject', 'classUid']
 Section.optionalPath = ['crn']
 Section.API_ENDPOINT = '/listSections'
 
@@ -197,8 +195,8 @@ Section.prototype.getUniqueEndTimes = function (ignoreExams) {
 	return retVal;
 };
 
-Section.prototype.getHasWaitList = function(){
-	if (this.waitCapacity > 0 || this.waitRemaining>0) {
+Section.prototype.getHasWaitList = function () {
+	if (this.waitCapacity > 0 || this.waitRemaining > 0) {
 		return true;
 	}
 	else {
@@ -207,30 +205,10 @@ Section.prototype.getHasWaitList = function(){
 }
 
 
+Section.prototype.updateWithData = function (data) {
 
 
-// Network methods
-
-
-Section.prototype.internalDownload = function (callback) {
-	if (!callback) {
-		callback = function () {}
-	}
-
-	BaseData.prototype.internalDownload.call(this, function (err) {
-		if (err) {
-			console.log("ERROR in list sections", err, this)
-			return callback(err);
-		}
-
-		this.processServerData();
-
-		callback(null, this)
-
-	}.bind(this))
-}
-
-Section.prototype.processServerData = function () {
+	BaseData.prototype.updateWithData.call(this, data);
 
 	var newMeetings = []
 

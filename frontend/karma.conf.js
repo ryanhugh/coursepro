@@ -1,5 +1,3 @@
-var proxyquire = require('proxyquireify');
-
 module.exports = function (config) {
   config.set({
     files: [
@@ -27,10 +25,7 @@ module.exports = function (config) {
     browsers: ['PhantomJS'],
     browserify: {
       debug: true,
-      plugin: ['proxyquire-universal'],
-      configure: function (bundle) {
-        bundle.plugin(proxyquire.plugin)
-      }
+      plugin: [],
     },
     reporters: ['logcapture', 'progress', 'mocha'],
     client: {

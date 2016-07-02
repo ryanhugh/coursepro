@@ -2,6 +2,12 @@
 var macros = require('./macros')
 var request = require('./request')
 var async = require('async')
+var memoize = require('../../memoize')
+
+// if its just a var here, in unit testing there are diffrent instanceCaches for each BaseData? idk why
+window.instanceCache = window.instanceCache || {};
+
+window.loadingCalls = window.loadingCalls || {};
 
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
@@ -11,7 +17,7 @@ function BaseData(config) {
 	}
 
 	var downloadConfig;
-	this.download = async.memoize(function (configOrCallback, callback) {
+	this.download = memoize(function (configOrCallback, callback) {
 		if (typeof configOrCallback == 'object') {
 			if (downloadConfig) {
 				if (!_.isEqual(downloadConfig, configOrCallback)) {
@@ -58,21 +64,16 @@ BaseData.isValidCreatingData = function (config) {
 	return true;
 };
 
-var instanceCache = {}
 
 //in static methods, "this" references the constructor
-BaseData.create = function (config, useCache) {
-	if (useCache === undefined) {
-		useCache = true
-	}
-
+BaseData.create = function (config) {
 	if (!config) {
 		elog('need config to make an object');
 		return null;
 	};
 
 
-	if (config instanceof this) {
+	if (config instanceof this.constructor) {
 		elog("tried to make instance of ", this.name, ' with an instance of this');
 		return null;
 	};
@@ -91,6 +92,18 @@ BaseData.create = function (config, useCache) {
 		return null
 	};
 
+	var canCache = true;
+
+	var allKeys = this.requiredPath.concat(this.optionalPath);
+
+
+	// create the key
+	for (var i = 0; i < allKeys.length; i++) {
+		if (!config[allKeys[i]]) {
+			canCache = false;
+		}
+	}
+
 	//seach instance cache for matching instance
 	//this was decided to be done linearly in case a instance got more data about itself (such as a call to download)
 	//note that we are not cloning the cacheItem, for speed
@@ -100,79 +113,63 @@ BaseData.create = function (config, useCache) {
 	//TODO: clean up the circles of creating instances, and eliminate the !='Class' below.
 	// need good way to separate classes...
 
-	if (instanceCache[this.name] && useCache && 0) {
 
-		var allKeys = this.requiredPath.concat(this.optionalPath);
+	if (canCache) {
+		var key = this.getKeyFromConfig(config);
 
-		for (var i = 0; i < instanceCache[this.name].length; i++) {
-			var cacheItem = instanceCache[this.name][i];
-
-			if (cacheItem._id && config._id) {
-				if (cacheItem._id == config._id) {
-					return cacheItem;
-				};
-			}
-			else if (this.name != 'Class' && this.doObjectsMatchWithKeys(allKeys, config, cacheItem)) {
-				return cacheItem;
-			}
-		};
+		if (key && instanceCache[key]) {
+			var instance = instanceCache[key];
+			instance.updateWithData(config);
+			return instanceCache[key]
+		}
+		else if (!key) {
+			elog('no key?', config)
+		}
 	};
 
 
 	//the create instance
 	var instance = new this(config);
+	instance.updateWithData(config);
 	if (instance.dataStatus === undefined) {
 		elog("failed to create an instance of " + config, 'with', config)
 		return null;
 	}
 	else {
-
-		//put the instance in the cache
-
-		if (!instanceCache[this.name]) {
-			instanceCache[this.name] = []
-		}
-
-		instanceCache[this.name].push(instance)
-
+		if (canCache) {
+			var key = this.getKeyFromConfig(config);
+			if (key) {
+				if (instanceCache[key]) {
+					console.log("WTF there was no match a ms ago!");
+				}
+				instanceCache[key] = instance;
+				return instance;
+			}
+			else {
+				elog('invalid key post instance', key, config)
+			}
+		};
 		return instance
 	}
 }
 
 
+//Compare a BaseData to another
+BaseData.prototype.equals = function (other) {
+	if (this === other) {
+		return true;
+	}
+	if (this.dataStatus != macros.DATASTATUS_DONE || other.dataStatus != macros.DATASTATUS_DONE) {
+		elog('BaseData comparing nodes that are not both done', this, other)
+	}
+	var thisStr = this.getIdentifer().full.str;
+	var otherStr = other.getIdentifer().full.str;
+	if (!thisStr || !otherStr) {
+		elog('BaseData equals something is null?', thisStr, otherStr)
+	}
+	return thisStr === otherStr;
+};
 
-
-BaseData.createMany = function (config, callback) {
-
-	//download with the given config, and then create a class instance from each one
-	this.download({
-		body: config
-	}, function (err, results) {
-		if (err) {
-			elog("error", err);
-			return callback(err)
-		}
-
-		var instances = [];
-
-		results.forEach(function (classData) {
-			var instance = this.create(classData);
-			if (!instance) {
-				elog("ERROR could not create a class with ", classData);
-				return;
-			}
-			instances.push(instance)
-		}.bind(this))
-
-
-		instances.sort(function (a, b) {
-			return a.compareTo(b);
-		}.bind(this));
-
-
-		return callback(null, instances)
-	}.bind(this))
-}
 
 
 //returns
@@ -249,13 +246,13 @@ BaseData.prototype.getIdentiferWithKeys = function (keys, isOptional) {
 		retVal.str = retVal.str.join('/')
 	};
 
-	if (this._id !== undefined) {
+	if (retVal.obj) {
+		retVal.lookup = retVal.obj
+	}
+	else if (this._id) {
 		retVal.lookup = {
 			_id: this._id
 		}
-	}
-	else {
-		retVal.lookup = retVal.obj
 	}
 	return retVal;
 };
@@ -267,6 +264,31 @@ BaseData.prototype.getIdentifer = function () {
 		required: this.getIdentiferWithKeys(this.constructor.requiredPath),
 		optional: this.getIdentiferWithKeys(this.constructor.optionalPath, true),
 		full: this.getIdentiferWithKeys(this.constructor.requiredPath.concat(this.constructor.optionalPath))
+	}
+};
+
+BaseData.getKeyFromConfig = function (config) {
+
+	var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
+
+	var key = [];
+
+	// create the key
+	for (var i = 0; i < allKeys.length; i++) {
+		if (!config[allKeys[i]]) {
+			break
+		}
+		key.push(config[allKeys[i]]);
+	}
+	if (key.length > 0) {
+		return key.join('/')
+	}
+	else if (config._id) {
+		return config._id
+	}
+	else {
+		// Possible if looking up all hosts
+		return '';
 	}
 };
 
@@ -291,6 +313,53 @@ BaseData.download = function (config, callback) {
 	}.bind(this))
 }
 
+BaseData.downloadGroup = memoize(function (config, callback) {
+
+	//download with the given body, and then create a class instance from each one
+	this.download(config, function (err, results) {
+		if (err) {
+			return callback(err)
+		}
+
+		var instances = [];
+
+		results.forEach(function (classData) {
+			var instance = this.create(classData);
+			if (!instance) {
+				elog("ERROR could not create a class with ", classData);
+				return;
+			}
+			instances.push(instance)
+		}.bind(this))
+
+		// Return results too in case lookup was done with a baseData by _id's or something other than the cache
+		// and the serverData needs to be found and given to the instance
+		return callback(null, instances, results)
+
+	}.bind(this))
+}, function (config) {
+	return BaseData.getKeyFromConfig(config.body);
+})
+
+BaseData.createMany = function (body, callback) {
+
+	this.downloadGroup({
+		body: body
+	}, function (err, instances) {
+		if (err) {
+			elog("error", err);
+			return callback(err)
+		}
+
+		instances.sort(function (a, b) {
+			return a.compareTo(b);
+		}.bind(this));
+
+		return callback(null, instances);
+	}.bind(this))
+}
+
+
 //the only config option right now is returnResults
 // config must be the same between calls, enfored in the constructor
 BaseData.prototype.internalDownload = function (configOrCallback, callback) {
@@ -314,21 +383,29 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 		callback = function () {}
 	}
 
+	var lookup = this.getIdentifer().required.lookup
+	var lookupStr = this.getIdentifer().required.str
+
+	if (!loadingCalls[lookupStr]) {
+		loadingCalls[lookupStr] = {
+			loading: true,
+			callbacks: []
+		}
+	}
+
 	this.dataStatus = macros.DATASTATUS_LOADING;
 
-	this.constructor.download({
-		url: this.constructor.API_ENDPOINT,
-		resultsQuery: this.getIdentifer().optional.lookup,
-		body: this.getIdentifer().required.lookup
-	}, function (err, results) {
+	this.constructor.downloadGroup({
+		body: lookup
+	}, function (err, instances, results) {
 		this.dataStatus = macros.DATASTATUS_DONE;
 
-		if (err) {
-			err = 'http error' + err;
-		}
-		else if (results.error) {
-			err = 'results.error' + err
-		}
+		// if (err) {
+		// 	err = 'http error' + err;
+		// }
+		// else if (results.error) {
+		// 	err = 'results.error' + err
+		// }
 
 		if (err) {
 			elog(err)
@@ -336,34 +413,58 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 			return callback(err)
 		}
 
-		if (config.returnResults) {
-			return callback(null, results)
-		}
-
-		if (results.length == 0) {
+		if (instances.length == 0) {
 			console.log('base data download results.length = 0', this, config)
 			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(null, this)
 
 		}
+		else if (_(instances).includes(this)) {
+			return callback(null, this);
+		}
 		else {
-			var serverData = results[0];
 
-			if (results.length > 1) {
-				elog("ERROR have more than 1 results??", this, config);
-			}
 
-			for (var attrName in serverData) {
-				if ((typeof this[attrName]) === 'function') {
-					continue;
+			// cache will match if used keys, must of used _id or something if here
+			var keys = this.getIdentifer().full.lookup;
+			for (var i = 0; i < results.length; i++) {
+
+				var isMatch = true;
+
+				for (var currKey in keys) {
+					if (results[i][currKey] !== this[currKey]) {
+						isMatch = false;
+					}
 				}
-				this[attrName] = serverData[attrName]
+
+				if (isMatch) {
+					this.updateWithData(results[i])
+					console.warn('cache miss!', keys)
+					return callback(null, this);
+				}
 			}
+
+			// This class does not exist in database :/
+			console.log('found other classes in this subject, but could not find this one', lookupStr)
+			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(null, this)
 		}
 
 	}.bind(this))
 };
+
+
+// Class and section override this to do some reorginizing of the server data
+BaseData.prototype.updateWithData = function (config) {
+	for (var attrName in config) {
+		if ((typeof config[attrName]) == 'function') {
+			elog('given fn??', config, this, this.constructor.name);
+			continue;
+		}
+		this[attrName] = config[attrName]
+	}
+};
+
 
 // needs to be overriden
 BaseData.prototype.compareTo = function () {

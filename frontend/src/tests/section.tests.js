@@ -1,6 +1,6 @@
 'use strict';
-var Section = require('./mocks/mockSection')
-var Class = require('./mocks/mockClass')
+var Section = require('../Section')
+var Class = require('../Class')
 var macros = require('../macros')
 var _ = require('lodash')
 
@@ -58,6 +58,7 @@ var _ = require('lodash')
 // 	"termId": "201610",
 // 	"subject": "CS",
 // 	"classId": "2511",
+// 	"classUid": "2511_23456789",
 // 	"seatsCapacity": 19,
 // 	"seatsRemaining": 0,
 // 	"waitCapacity": 0,
@@ -128,7 +129,7 @@ describe('Section', function () {
 				host: 'neu.edu',
 				termId: '201630',
 				subject: 'CS',
-				classId: '2511',
+				classUid: '2511',
 				crn: '11722',
 			})).not.toBe(null);
 

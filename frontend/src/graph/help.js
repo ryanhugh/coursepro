@@ -50,10 +50,6 @@ function Help($timeout) {
 				continue
 			};
 
-			if (currTree.hidden || currTree.lowestParent.hidden) {
-				continue;
-			}
-
 
 			if (currTree.lineToParent.offsetWidth > 250) {
 

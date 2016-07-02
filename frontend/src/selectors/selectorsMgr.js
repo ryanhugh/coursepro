@@ -8,8 +8,6 @@ var user = require('../user')
 
 var College = require('./college')
 var Term = require('./term')
-// var Subject = require('./subject')
-// var Class = require('./class')
 
 
 function SelectorsMgr() {
