@@ -14,12 +14,13 @@
             </div>
         </div>
         <div style="width: 50%;float: right;display: inline;height: 100%;text-align: center;" ng-click="graphPanelExpand.onPanelSelect(tree);$event.stopPropagation();">
-            <div style="padding: 6px;text-align: left;padding-bottom: 0px;">Select this class!</div>
+            <div style="padding: 6px;text-align: left;padding-bottom: 0px;" ng-if ="tree.wouldSatisfyNode">Select this class!</div>
+            <div style="padding: 6px;text-align: left;padding-bottom: 0px;" ng-if ="!tree.wouldSatisfyNode">Unselect this class!</div>
             <div style="padding: 6px;text-align: left;padding-top: 1px;">
                 <a>More info</a>
             </div>
             <div style="padding-top: 5px;">
-                <div class="panel panel-primary" style="margin: 0 auto;width: 87px;">
+                <div class="panel {{tree.wouldSatisfyNode?'panel-primary':'panel-info'}}" style="margin: 0 auto;width: 87px;">
                     <div class="panel-heading" style="height: 29px;">
                         <h3 class="panel-title"></h3>
                     </div>

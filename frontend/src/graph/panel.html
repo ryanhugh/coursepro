@@ -1,16 +1,16 @@
-<div graph-panel-expand ng-click="graphPanelExpand.openPanelPrompt(tree)">
+<div graph-panel-expand ng-click="tree.isCoreq?graphPanelExpand.openPanel(tree):graphPanelExpand.openPanelPrompt(tree)">
 
     <!-- main panel -->
     <div ng-style="style" class="panel {{tree.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="tree.isClass && !tree.showSelectPanel" panel-close=".closePanel">
 
         <div class="panel-heading">
 
-            <span ng-show="tree.isExpanded" style="float: right;margin-top: -59px;margin-top: -7px;margin-right: -10px;">
+            <span ng-show="tree.isExpanded" style="float: right;margin-top: -5px;margin-right: -10px;">
 
                 <!-- was 48 -->
-                <div ng-if="tree.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = tree" list-icon='saved' toggle-sections='true' toggle='class' style="display:inline-block;margin-right: 6px;"></div>
+                <!-- <div ng-if="tree.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = tree" list-icon='saved' toggle-sections='true' toggle='class' style="display:inline-block;margin-right: 6px;"></div> -->
 
-                <span class="glyphicon glyphicon-remove" ng-click="graphPanelExpand.closePanel(tree)" aria-hidden="true" style="cursor: pointer;display:inline-block"></span>
+                <span class="glyphicon glyphicon-remove" ng-click="graphPanelExpand.closePanel(tree)" aria-hidden="true" style="cursor: pointer;display:inline-block;font-size: 17px;"></span>
                 <!-- <div ng-init="class = tree" list-icon='watching' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
             </span>
 
@@ -88,49 +88,49 @@
                             <th>Link</th>
                             <!-- <th>Email
                         <br>Notifications</th> -->
-                            <th>Saved</th>
+                            <!-- <th>Saved</th> -->
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="section in tree.sections">
-                            <td>{{section.crn}}</td>
-                            <td>{{section.getProfs().join(', ')}}</td>
+                            <td>{{::section.crn}}</td>
+                            <td>{{::section.getProfs().join(', ')}}</td>
                             <td>
                                 <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
 
                                     <!-- avoid calculating the string more than once -->
                                     <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip="{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
 
-                                        <div ng-if="section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                        <div ng-if="::section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in ::section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
                                         </div>
 
-                                        <div ng-if="!section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                        <div ng-if="::(!section.meetsOnWeekends())" class="weekDayBox" ng-repeat="weekDay in ::section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
 
                                         </div>
                                     </span>
                                 </span>
                             </td>
 
-                            <td>{{section.getUniqueStartTimes().join(", ")}}</td>
-                            <td>{{section.getUniqueEndTimes().join(", ")}}</td>
+                            <td>{{::section.getUniqueStartTimes().join(", ")}}</td>
+                            <td>{{::section.getUniqueEndTimes().join(", ")}}</td>
 
                             <td>
-                                <span ng-repeat="location in section.getLocations()">
-                                    <span ng-if="location != 'TBA' || section.getLocations().length <= 1"> {{location}} </span>
+                                <span ng-repeat="location in ::section.getLocations()">
+                                    <span ng-if="location != 'TBA' || section.getLocations().length <= 1"> {{::location}} </span>
                                     <span ng-if="!$last">, </span>
                                 </span>
                             </td>
 
 
-                            <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().start.format('h:mm a')}}</td>
-                            <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().end.format('h:mm a')}}</td>
-                            <td ng-if="tree.sectionsHaveExam()">{{section.getExamMoments().start.format('MMM Do')}}</td>
+                            <td ng-if="tree.sectionsHaveExam()">{{::section.getExamMoments().start.format('h:mm a')}}</td>
+                            <td ng-if="tree.sectionsHaveExam()">{{::section.getExamMoments().end.format('h:mm a')}}</td>
+                            <td ng-if="tree.sectionsHaveExam()">{{::section.getExamMoments().start.format('MMM Do')}}</td>
 
                             <td>
 
                                 <!-- don't display the "/" until these are loaded -->
-                                <span ng-if="section.seatsRemaining || section.seatsCapacity">
-                                    {{section.seatsRemaining}}/{{section.seatsCapacity}}
+                                <span ng-if="::(section.seatsRemaining || section.seatsCapacity)">
+                                    {{::section.seatsRemaining}}/{{::section.seatsCapacity}}
                                 </span>
 
                             </td>
@@ -139,8 +139,8 @@
                             <td ng-if="tree.getHasWaitList()">
 
                                 <!-- don't display the "/" until these are loaded -->
-                                <span ng-if="section.waitRemaining || section.waitCapacity">
-                                    {{section.waitRemaining}}/{{section.waitCapacity}}
+                                <span ng-if="::section.waitRemaining || ::section.waitCapacity">
+                                    {{::section.waitRemaining}}/{{::section.waitCapacity}}
                                 </span>
 
 
@@ -154,9 +154,9 @@
                             </td>
 
                             <td>
-                                <a href="{{section.url}}" target="_blank">
+                                <a href="{{::section.url}}" target="_blank">
 
-                                    <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{tree.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                    <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{::tree.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
                                     </div>
 
                                 </a>
@@ -166,9 +166,9 @@
                         <span list-icon='watching' toggle="section"></span>
                     </td> -->
 
-                            <td>
+                            <!-- <td>
                                 <span list-icon='saved' toggle="section" style="padding-left: 11px;"></span>
-                            </td>
+                            </td> -->
                         </tr>
                     </tbody>
                 </table>

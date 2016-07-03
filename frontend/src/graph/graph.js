@@ -30,6 +30,8 @@ function Graph() {
 	this.graphWidth = window.innerWidth;
 	this.graphHeight = window.innerHeight;
 
+	// This is the default for nodes, and is what is allways used for collision
+	// When a panel expands to the prompt and to a expanded panel, tree.width changes, but this does not
 	this.nodeWidth = 174
 	this.nodeHeight = 50;
 
@@ -115,7 +117,7 @@ Graph.prototype.addClass = function (aClass) {
 };
 
 Graph.prototype.getWidth = function (tree) {
-	var width = Math.min(200, tree.width);
+	var width = Math.min(200, this.nodeWidth);
 	if (tree.coreqs.values.length > 0) {
 		width += tree.coreqs.values.length * 34
 	}
@@ -145,7 +147,7 @@ Graph.prototype.collide = function (node1, node2) {
 
 	var dx = Math.min(node1.x + this.getWidth(node1) - node2.x, node2.x + this.getWidth(node2) - node1.x, 20) / 2;
 	if (isNaN(dx) || dx === undefined) {
-		elog('jfladsjflj')
+		elog('bad')
 	}
 	if (node1.x < node2.x) {
 		node1.x -= dx;
@@ -269,108 +271,108 @@ Graph.prototype.calculateGraphSize = function () {
 
 Graph.prototype.loadNodes = function (callback) {
 
-	var nodesAndLinks = treeMgr.treeToD3(this.tree);
-	this.links = nodesAndLinks.links;
-	this.nodes = nodesAndLinks.nodes;
+	setTimeout(function () {
+		var nodesAndLinks = treeMgr.treeToD3(this.tree);
+		this.links = nodesAndLinks.links;
+		this.nodes = nodesAndLinks.nodes;
 
-	this.nodes.forEach(function (node) {
-		node.height = this.nodeHeight;
-		node.width = this.nodeWidth
-	}.bind(this))
+		this.nodes.forEach(function (node) {
+			node.height = this.nodeHeight;
+			node.width = this.nodeWidth
+		}.bind(this))
 
-	while (this.container[0][0].firstChild) {
-		this.container[0][0].removeChild(this.container[0][0].firstChild);
-	}
-
-	this.linkElements = this.container.selectAll(".link")
-		.data(this.links)
-		.enter().append("polyline")
-		.attr("class", "link")
-		.style("stroke-width", 4)
-		.attr("marker-mid", "url(#end)");
-
-	for (var i = 0; i < this.links.length; i++) {
-		var currLink = this.links[i];
-
-		// find the parent of the two nodes the line connects 
-		var parent;
-		var child;
-		if (currLink.source.depth > currLink.target.depth) {
-			parent = currLink.target;
-			child = currLink.source;
-		}
-		else {
-			parent = currLink.source;
-			child = currLink.target;
+		while (this.container[0][0].firstChild) {
+			this.container[0][0].removeChild(this.container[0][0].firstChild);
 		}
 
-		// if should be 'and', make line darker
-		if (parent.prereqs.type == 'and') {
-			this.linkElements[0][i].style.stroke = '#5B5B5B'
+		this.linkElements = this.container.selectAll(".link")
+			.data(this.links)
+			.enter().append("polyline")
+			.attr("class", "link")
+			.style("stroke-width", 4)
+			.attr("marker-mid", "url(#end)");
+
+		for (var i = 0; i < this.links.length; i++) {
+			var currLink = this.links[i];
+
+			// find the parent of the two nodes the line connects 
+			var parent;
+			var child;
+			if (currLink.source.depth > currLink.target.depth) {
+				parent = currLink.target;
+				child = currLink.source;
+			}
+			else {
+				parent = currLink.source;
+				child = currLink.target;
+			}
+
+			// if should be 'and', make line darker
+			if (parent.prereqs.type == 'and') {
+				this.linkElements[0][i].style.stroke = '#5B5B5B'
+			}
+
+			//add line to both nodes links list
+			parent.downwardLinks.push(this.linkElements[0][i])
+			child.upwardLinks.push(this.linkElements[0][i])
 		}
 
-		//add line to both nodes links list
-		parent.downwardLinks.push(this.linkElements[0][i])
-		child.upwardLinks.push(this.linkElements[0][i])
-	}
-
-	this.nodeElements = this.container.selectAll(".node")
-		.data(this.nodes)
-		.enter().append("g")
-		.attr("class", "node")
-		.attr("width", this.nodeWidth)
-		.attr("height", this.nodeHeight)
-		.on("mousedown", function () {
-			d3.event.stopPropagation();
-		})
-		.call(this.nodeDrag)
-
-	var html = '<div ng-include="\'panel.html\'"></div>'
-
-	for (var i = 0; i < this.nodeElements[0].length; i++) {
-
-		// create the new scope for each node
-		var newScope = this.$scope.$new();
-
-		// set up the links between tree and scope and foreignObject
-		newScope.tree = this.nodes[i]
-		this.nodes[i].$scope = newScope
-
-
-		var foreignObject = d3.select(this.nodeElements[0][i]).append('foreignObject')
+		this.nodeElements = this.container.selectAll(".node")
+			.data(this.nodes)
+			.enter().append("g")
+			.attr("class", "node")
 			.attr("width", this.nodeWidth)
-			.attr("height", this.nodeHeight);
+			.attr("height", this.nodeHeight)
+			.on("mousedown", function () {
+				d3.event.stopPropagation();
+			})
+			.call(this.nodeDrag)
 
-		this.nodes[i].foreignObject = foreignObject[0][0]
+		var html = '<div ng-include="\'panel.html\'"></div>'
 
-		$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
-	}
+		for (var i = 0; i < this.nodeElements[0].length; i++) {
+
+			// create the new scope for each node
+			var newScope = this.$scope.$new();
+
+			// set up the links between tree and scope and foreignObject
+			newScope.tree = this.nodes[i]
+			this.nodes[i].$scope = newScope
 
 
-	// Scope needs to be updated after adding a new scope for each element above
+			var foreignObject = d3.select(this.nodeElements[0][i]).append('foreignObject')
+				.attr("width", this.nodeWidth)
+				.attr("height", this.nodeHeight);
 
-	// Don't do the usally setTimeout so the page dosen't flash white when selecting something
-	try {
+			this.nodes[i].foreignObject = foreignObject[0][0]
+
+			$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
+		}
+
+
+		// Scope needs to be updated after adding a new scope for each element above
+		// This is why this entire function is in a setTimeout
 		this.$scope.$apply()
-	}
-	catch (e) {
 
-	}
-
-	this.nodes.forEach(function (node) {
-		this.sortCoreqs(node);
-	}.bind(this))
+		this.nodes.forEach(function (node) {
+			this.sortCoreqs(node);
+		}.bind(this))
 
 
-	this.force.nodes(this.nodes)
-		.links(this.links)
+		this.force.nodes(this.nodes)
+			.links(this.links)
 
-	// This is needed whenever adding or removing nodes from the graph, for d3 internally.
-	this.force.start();
+		this.nodes.forEach(function (tree) {
+			this.updateHeight(tree)
+		}.bind(this))
 
-	this.force.alpha(.01)
+		// This is needed whenever adding or removing nodes from the graph, for d3 internally.
+		this.force.start();
 
-	callback()
+		this.force.alpha(.01)
+
+		callback()
+	}.bind(this), 0)
 };
 
 
@@ -383,188 +385,182 @@ Graph.prototype.go = function (tree, callback) {
 		};
 
 		// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
-		setTimeout(function () {
-			this.$scope.$apply()
+		// setTimeout(function () {
+		// this.$scope.$apply()
 
-			treeMgr.go(tree);
-			this.tree = tree;
+		treeMgr.go(tree);
+		this.tree = tree;
 
-			this.force = d3.layout.force()
-				.charge(function (node) {
-					return -20000 - node.coreqs.values.length*7000
-				}.bind(this))
-				.gravity(0.2)
-				.linkDistance(5)
-
-
-			this.svg = d3.select("#d3GraphId").append("svg")
-
-			this.calculateGraphSize();
-
-
-			// can move this to the same as above? this was a separate #d3graphId selector
-			d3.select("#d3GraphId").on("mousedown", function () {
-				d3.event.stopPropagation();
+		this.force = d3.layout.force()
+			.charge(function (node) {
+				return -20000 - node.coreqs.values.length * 7000
 			}.bind(this))
+			.gravity(0.2)
+			.linkDistance(5)
 
 
-			this.container = this.svg.append("g");
+		this.svg = d3.select("#d3GraphId").append("svg")
+
+		this.calculateGraphSize();
 
 
-			var zoom = d3.behavior.zoom()
-				.scaleExtent([.1, 1.5])
-				.on("zoom", function () {
-					this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-				}.bind(this));
-
-			this.svg.call(zoom)
-
-			this.loadNodes(function () {
-				var multiplyer = 1;
-
-				this.classCount = treeMgr.countClassesInTree(tree);
-				if (this.classCount === 0) {
-					elog('0 classes found?', tree)
-				}
-
-				this.force.on("tick", function (e) {
-					this.nodes.forEach(function (node) {
-						if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
-							elog('wtf1', node)
-						}
-					}.bind(this))
+		// can move this to the same as above? this was a separate #d3graphId selector
+		d3.select("#d3GraphId").on("mousedown", function () {
+			d3.event.stopPropagation();
+		}.bind(this))
 
 
-					for (var k = 0; k < this.nodes.length; k++) {
-						var currNode = this.nodes[k];
+		this.container = this.svg.append("g");
 
-						if (currNode.isCoreq) {
+
+		var zoom = d3.behavior.zoom()
+			.scaleExtent([.1, 1.5])
+			.on("zoom", function () {
+				this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+			}.bind(this));
+
+		this.svg.call(zoom)
+
+		this.loadNodes(function () {
+			var multiplyer = 1;
+
+			this.classCount = treeMgr.countClassesInTree(tree);
+			if (this.classCount === 0) {
+				elog('0 classes found?', tree)
+			}
+
+			this.force.on("tick", function (e) {
+				this.nodes.forEach(function (node) {
+					if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
+						elog('wtf1', node)
+					}
+				}.bind(this))
+
+
+				for (var k = 0; k < this.nodes.length; k++) {
+					var currNode = this.nodes[k];
+
+					if (currNode.isCoreq) {
+						continue;
+					}
+
+					// collision
+					for (var j = k + 1; j < this.nodes.length; j++) {
+						var testingCollisionAgainst = this.nodes[j];
+						if (testingCollisionAgainst.isCoreq) {
 							continue;
 						}
+						this.collide(currNode, testingCollisionAgainst)
+					}
 
-						// collision
-						for (var j = k + 1; j < this.nodes.length; j++) {
-							var testingCollisionAgainst = this.nodes[j];
-							if (testingCollisionAgainst.isCoreq) {
-								continue;
-							}
-							this.collide(currNode, testingCollisionAgainst)
-						}
-
-						//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
-						currNode.y += (treeMgr.getYGuessFromDepth(currNode.depth) - currNode.y) * e.alpha * multiplyer;
+					//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
+					currNode.y += (treeMgr.getYGuessFromDepth(currNode.depth) - currNode.y) * e.alpha * multiplyer;
 
 
-						// collision between children on different depths
-						if (!currNode.allChildrenAtSameDepth) {
-							for (var i = 0; i < currNode.prereqs.values.length; i++) {
-								for (var j = i + 1; j < currNode.prereqs.values.length; j++) {
-									if (currNode.prereqs.values[i].depth === currNode.prereqs.values[j].depth) {
-										continue;
-									}
-									var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
-									if (isNaN(diff) || diff === undefined) {
-										elog('noooooo')
-									}
-									if (Math.abs(diff) > 100) {
-										continue;
-									}
-									if (diff < 0) {
-										currNode.prereqs.values[i].x -= (100 + diff) / 2;
-										currNode.prereqs.values[j].x += (100 + diff) / 2;
-									}
-									else {
-										currNode.prereqs.values[i].x += (100 - diff) / 2;
-										currNode.prereqs.values[j].x -= (100 - diff) / 2;
-									}
+					// collision between children on different depths
+					if (!currNode.allChildrenAtSameDepth) {
+						for (var i = 0; i < currNode.prereqs.values.length; i++) {
+							for (var j = i + 1; j < currNode.prereqs.values.length; j++) {
+								if (currNode.prereqs.values[i].depth === currNode.prereqs.values[j].depth) {
+									continue;
+								}
+								var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
+								if (isNaN(diff) || diff === undefined) {
+									elog('noooooo')
+								}
+								if (Math.abs(diff) > 100) {
+									continue;
+								}
+								if (diff < 0) {
+									currNode.prereqs.values[i].x -= (100 + diff) / 2;
+									currNode.prereqs.values[j].x += (100 + diff) / 2;
+								}
+								else {
+									currNode.prereqs.values[i].x += (100 - diff) / 2;
+									currNode.prereqs.values[j].x -= (100 - diff) / 2;
 								}
 							}
 						}
-					};
+					}
+				};
 
-					this.nodes.forEach(function (node) {
-						if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
-							elog('wtf2', node)
-						}
-					}.bind(this))
-
-
-					this.linkElements.attr("points", function (d) {
-						if (d.target.x === undefined || isNaN(d.target.x) || isNaN(d.target.y) || d.target.y === undefined) {
-							elog('wtf3', d.target)
-						}
-
-						if (d.source.x === undefined || isNaN(d.source.x) || isNaN(d.source.y) || d.source.y === undefined) {
-							elog('wtf4', d.source)
-						}
-
-						return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
-					}.bind(this))
-
-					this.nodeElements.attr("transform", function (d) {
-						if (d.x === undefined || isNaN(d.x) || isNaN(d.y) || d.y === undefined) {
-							elog('wtf5', d)
-						}
-
-						if (d.isCoreq) {
-
-							var x = d.lowestParent.x - d.width / 2;
-							var y = d.lowestParent.y - d.height / 2;
-
-							x += (d.coreqIndex + 1) * 30
-							y -= (d.coreqIndex + 1) * 39
-
-							return "translate(" + x + "," + y + ")";
-						}
-						else {
-							return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
-						}
-					}.bind(this));
-
-
-
-
+				this.nodes.forEach(function (node) {
+					if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
+						elog('wtf2', node)
+					}
 				}.bind(this))
 
-				this.force.start();
 
-				// Two step process:
-				// make nodes find the nodes near them
-				var safety = 0;
-				// D3 cuts off at .005 alpha and freezes everything
-				// the higher it is, the faster it loads, but it will not be done when it moves to the next step
-				// You'll want to try out different, "small" values for this
-				// perhaps make this higher if on slower hardware??
-				while (this.force.alpha() > 0.005) {
-					this.force.tick();
-					if (safety++ > 500) {
-						// Avoids infinite looping in case this solution was a bad idea
-						break;
+				this.linkElements.attr("points", function (d) {
+					if (d.target.x === undefined || isNaN(d.target.x) || isNaN(d.target.y) || d.target.y === undefined) {
+						elog('wtf3', d.target)
 					}
-				}
 
-				//2. make nodes go towards their depth level
-				multiplyer = 10;
-				this.force.start();
-
-				safety = 0;
-				while (this.force.alpha() > 0.01) {
-					this.force.tick();
-					if (safety++ > 500) {
-						break;
+					if (d.source.x === undefined || isNaN(d.source.x) || isNaN(d.source.y) || d.source.y === undefined) {
+						elog('wtf4', d.source)
 					}
-				}
 
-				this.$scope.tree = tree;
-
-				this.nodes.forEach(function (tree) {
-					this.updateHeight(tree)
+					return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
 				}.bind(this))
 
-				callback(null, tree)
-			}.bind(this), 0)
-		}.bind(this), 0)
+				this.nodeElements.attr("transform", function (d) {
+					if (d.x === undefined || isNaN(d.x) || isNaN(d.y) || d.y === undefined) {
+						elog('wtf5', d)
+					}
 
+					if (d.isCoreq) {
+
+						var x = d.lowestParent.x - d.width / 2;
+						var y = d.lowestParent.y - d.height / 2;
+
+						x += (d.coreqIndex + 1) * 30
+						y -= (d.coreqIndex + 1) * 39
+
+						return "translate(" + x + "," + y + ")";
+					}
+					else {
+						return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
+					}
+				}.bind(this));
+
+
+
+
+			}.bind(this))
+
+			this.force.start();
+
+			// Two step process:
+			// make nodes find the nodes near them
+			var safety = 0;
+			// D3 cuts off at .005 alpha and freezes everything
+			// the higher it is, the faster it loads, but it will not be done when it moves to the next step
+			// You'll want to try out different, "small" values for this
+			// perhaps make this higher if on slower hardware??
+			while (this.force.alpha() > 0.005) {
+				this.force.tick();
+				if (safety++ > 500) {
+					// Avoids infinite looping in case this solution was a bad idea
+					break;
+				}
+			}
+
+			//2. make nodes go towards their depth level
+			multiplyer = 10;
+			this.force.start();
+
+			safety = 0;
+			while (this.force.alpha() > 0.01) {
+				this.force.tick();
+				if (safety++ > 500) {
+					break;
+				}
+			}
+
+			this.$scope.tree = tree;
+			callback(null, tree)
+			
+		}.bind(this))
 	}.bind(this))
 };
 

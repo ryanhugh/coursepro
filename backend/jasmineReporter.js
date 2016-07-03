@@ -17,7 +17,6 @@ var noopTimer = {
 function ConsoleReporter() {
   var options = {}
   options.print = options.print || function () {
-    console.warn('hiijfdlkasj')
     process.stdout.write(util.format.apply(this, arguments));
   };
   options.showColors = options.hasOwnProperty('showColors') ? options.showColors : true;

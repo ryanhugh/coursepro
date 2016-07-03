@@ -146,7 +146,7 @@ function GraphPanelExpand($timeout, $document) {
 			return callback();
 		}
 		this.togglePanelPrompt(tree, callback);
-
+		this.updateScope(tree, true)
 	};
 
 	GraphPanelExpandInner.prototype.closePanelPrompt = function (tree, callback) {
@@ -157,6 +157,7 @@ function GraphPanelExpand($timeout, $document) {
 			return callback()
 		}
 		this.togglePanelPrompt(tree, callback);
+		this.updateScope(tree, false)
 	};
 
 
@@ -180,10 +181,18 @@ function GraphPanelExpand($timeout, $document) {
 			// comment from the other code:
 			// this is needed because in some cases, nodes can be affected that are children of a select node's ansestors, and that no longer need to have a line
 			// to one that was just satisfied, so can make graph simpler for it
-			treeMgr.go(tree.$scope.graph.tree) 
-
+			treeMgr.go(tree.$scope.graph.tree)
 			tree.$scope.graph.loadNodes(function () {
-				callback()
+
+				// After all the graph stuff is done, shink this panel back to avoid the redraw
+				setTimeout(function () {
+					tree.showSelectPanel = false;
+					tree.isExpanded = false;
+					tree.$scope.$apply();
+					tree.$scope.graph.updateHeight(tree)
+					clearTimeout(tree.graphPanelPromptTimeout);
+					callback()
+				}.bind(this))
 			}.bind(this))
 		}.bind(this))
 	};
@@ -282,6 +291,33 @@ function GraphPanelExpand($timeout, $document) {
 		this.updateScope(tree, false);
 	};
 
+	GraphPanelExpandInner.prototype.startPromptTimer = function (tree, event) {
+		clearTimeout(tree.graphPanelPromptTimeout);
+		if (tree.isCoreq) {
+			return;
+		}
+		tree.graphPanelPromptTimeout = setTimeout(function () {
+			var coords = tree.foreignObject.getBoundingClientRect();
+			// If graph is still where the mouse used to be
+			// (cannot get current mouse pos without another event)
+			if (event.clientX < coords.left) {
+				return;
+			}
+			else if (event.clientX > coords.right) {
+				return;
+			}
+			else if (event.clientY < coords.top) {
+				return;
+			}
+			else if (event.clientY > coords.bottom) {
+				return;
+			}
+			else {
+				this.openPanelPrompt(tree);
+			}
+		}.bind(this), 1500)
+	};
+
 	//this is called once when $scope.tree === undefined, when the root node first loads
 	GraphPanelExpandInner.prototype.link = function ($scope, element, attrs) {
 		$scope.graphPanelExpand = this;
@@ -325,18 +361,20 @@ function GraphPanelExpand($timeout, $document) {
 			}.bind(this))
 		}
 
-		element.on('mouseover', function () {
+		element.on('mouseover', function (event) {
 			this.onMouseOver(tree)
+			this.startPromptTimer(tree, event);
+		}.bind(this))
 
-			tree.graphPanelPromptTimeout = setTimeout(function () {
-				this.openPanelPrompt(tree);
-			}.bind(this), 0)
+		element.on('mousemove', function (event) {
+			this.startPromptTimer(tree, event);
 		}.bind(this))
 
 		element.on('mouseout', function () {
 			clearTimeout(tree.graphPanelPromptTimeout);
 			this.onMouseOut(tree)
 		}.bind(this))
+
 
 		// element.on('click', function () {
 		// 	this.openPanelPrompt(tree);
