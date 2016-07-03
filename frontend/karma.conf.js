@@ -3,9 +3,6 @@ module.exports = function (config) {
     files: [
       "static/js/internal/vender.tests.js",
       "static/js/internal/app.tests.js",
-      "static/js/external/select2.min.js",
-      "static/js/external/selectize.min.js",
-      "static/js/external/angular-selectize.js",
       "static/js/internal/html.js",
     ],
     plugins: [

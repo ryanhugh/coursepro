@@ -2,6 +2,12 @@
  * Angular Selectize2
  * https://github.com/machineboy2045/angular-selectize
  **/
+var angular = require('angular')
+
+// Two dependencies for selectize and selectize itself
+require('microplugin')
+require('sifter')
+var Selectize = require('selectize')
 
 angular.module('selectize', []).value('selectizeConfig', {}).directive("selectize", ['selectizeConfig', function (selectizeConfig) {
   return {
