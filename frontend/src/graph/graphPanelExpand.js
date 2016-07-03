@@ -4,7 +4,7 @@ var _ = require('lodash')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var treeMgr = require('./treeMgr')
-
+var user = require('../user')
 
 function GraphPanelExpand($timeout, $document) {
 
@@ -42,7 +42,7 @@ function GraphPanelExpand($timeout, $document) {
 
 		var $scope = tree.$scope
 
-		if ($scope.isExpanded) {
+		if (tree.isExpanded) {
 			$scope.style['box-shadow'] = 'gray 0px 0px 9px'
 			$scope.style.cursor = '';
 		}
@@ -82,14 +82,15 @@ function GraphPanelExpand($timeout, $document) {
 
 			//setTimeout 0 because $scope.$update()
 			setTimeout(function () {
-				tree.$scope.isExpanded = !tree.$scope.isExpanded;
+				tree.isExpanded = !tree.isExpanded;
+				tree.showSelectPanel = false;
 
 				//if it failed, toggle isExpanded and update the scope
 				if (err) {
 					console.log("ERRor loading loadSections", err)
 				}
 				//if it worked, calculate the panel width
-				else if (tree.$scope.isExpanded) {
+				else if (tree.isExpanded) {
 					tree.width = this.calculatePanelWidth(tree);
 				}
 				else {
@@ -115,13 +116,10 @@ function GraphPanelExpand($timeout, $document) {
 		}.bind(this))
 	};
 
-	GraphPanelExpandInner.prototype.onPanelClick = function (tree, callback) {
-		if (!callback) {
-			callback = function () {}
-		};
-		tree.showSelectPanel = !tree.showSelectPanel;
-
+	GraphPanelExpandInner.prototype.togglePanelPrompt = function (tree, callback) {
 		setTimeout(function () {
+			clearTimeout(tree.graphPanelPromptTimeout);
+			tree.showSelectPanel = !tree.showSelectPanel;
 			tree.$scope.$apply()
 
 			if (tree.showSelectPanel) {
@@ -133,7 +131,60 @@ function GraphPanelExpand($timeout, $document) {
 			tree.foreignObject.setAttribute('width', tree.width)
 			tree.$scope.graph.updateHeight(tree);
 
+			// and tell d3 to move the panel back to where it should be
+			tree.$scope.graph.force.alpha(.0051)
+
 			callback()
+		}.bind(this), 0)
+	};
+
+	GraphPanelExpandInner.prototype.openPanelPrompt = function (tree, callback) {
+		if (!callback) {
+			callback = function () {}
+		};
+		if (tree.isExpanded || tree.showSelectPanel) {
+			return callback();
+		}
+		this.togglePanelPrompt(tree, callback);
+
+	};
+
+	GraphPanelExpandInner.prototype.closePanelPrompt = function (tree, callback) {
+		if (!callback) {
+			callback = function () {}
+		};
+		if (tree.isExpanded || !tree.showSelectPanel) {
+			return callback()
+		}
+		this.togglePanelPrompt(tree, callback);
+	};
+
+
+
+	// if a panel in a tree is clicked
+	GraphPanelExpandInner.prototype.onPanelSelect = function (tree, callback) {
+		if (!callback) {
+			callback = function () {}
+		};
+
+		user.toggleListContainsClass('selected', tree, false, function (err) {
+			if (err) {
+				elog(err);
+				return;
+			}
+
+			// Run the entire big tree through all of treeMgr again
+			// this is needed to rediscover any common prereqs, recalculate depths, and pretty much 
+			// everything else that treeMgr does. 
+
+			// comment from the other code:
+			// this is needed because in some cases, nodes can be affected that are children of a select node's ansestors, and that no longer need to have a line
+			// to one that was just satisfied, so can make graph simpler for it
+			treeMgr.go(tree.$scope.graph.tree) 
+
+			tree.$scope.graph.loadNodes(function () {
+				callback()
+			}.bind(this))
 		}.bind(this))
 	};
 
@@ -153,7 +204,7 @@ function GraphPanelExpand($timeout, $document) {
 	};
 
 	GraphPanelExpandInner.prototype.openPanel = function (tree, callback) {
-		if (tree.$scope.isExpanded || tree.isString) {
+		if (tree.isExpanded || tree.isString) {
 			return;
 		}
 
@@ -166,11 +217,11 @@ function GraphPanelExpand($timeout, $document) {
 
 		this.openOrder.push(tree)
 
-		this.onClick(tree, callback)
+		this.onExpandClick(tree, callback)
 	};
 
 	GraphPanelExpandInner.prototype.closePanel = function (tree, callback) {
-		if (!tree.$scope.isExpanded) {
+		if (!tree.isExpanded) {
 			return;
 		}
 
@@ -182,7 +233,7 @@ function GraphPanelExpand($timeout, $document) {
 
 		_.pull(this.openOrder, tree)
 
-		this.onClick(tree, callback)
+		this.onExpandClick(tree, callback)
 	};
 
 	GraphPanelExpandInner.prototype.setUpwardLines = function (tree, lineWidth) {
@@ -274,25 +325,29 @@ function GraphPanelExpand($timeout, $document) {
 			}.bind(this))
 		}
 
-
 		element.on('mouseover', function () {
 			this.onMouseOver(tree)
+
+			tree.graphPanelPromptTimeout = setTimeout(function () {
+				this.openPanelPrompt(tree);
+			}.bind(this), 0)
 		}.bind(this))
 
 		element.on('mouseout', function () {
+			clearTimeout(tree.graphPanelPromptTimeout);
 			this.onMouseOut(tree)
 		}.bind(this))
 
 		// element.on('click', function () {
-		// 	this.onPanelClick(tree);
+		// 	this.openPanelPrompt(tree);
 		// }.bind(this))
 
 
-		// var closeElement = element.find(attrs.panelClose)
+		var closeElement = element.find(attrs.panelClose)
 
-		// closeElement.on('click', function () {
-		// 	this.closePanel(tree);
-		// }.bind(this))
+		closeElement.on('click', function () {
+			this.closePanel(tree);
+		}.bind(this))
 
 	}
 

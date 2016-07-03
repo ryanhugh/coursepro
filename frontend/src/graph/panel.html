@@ -1,16 +1,16 @@
-<div graph-panel-expand ng-click="graphPanelExpand.onPanelClick(tree)">
+<div graph-panel-expand ng-click="graphPanelExpand.openPanelPrompt(tree)">
 
     <!-- main panel -->
     <div ng-style="style" class="panel {{tree.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="tree.isClass && !tree.showSelectPanel" panel-close=".closePanel">
 
         <div class="panel-heading">
 
-            <span ng-show="isExpanded" style="float: right;margin-top: -59px;margin-top: -7px;margin-right: -10px;">
+            <span ng-show="tree.isExpanded" style="float: right;margin-top: -59px;margin-top: -7px;margin-right: -10px;">
 
                 <!-- was 48 -->
                 <div ng-if="tree.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = tree" list-icon='saved' toggle-sections='true' toggle='class' style="display:inline-block;margin-right: 6px;"></div>
 
-                <span class="glyphicon glyphicon-remove closePanel" aria-hidden="true" style="cursor: pointer;display:inline-block"></span>
+                <span class="glyphicon glyphicon-remove" ng-click="graphPanelExpand.closePanel(tree)" aria-hidden="true" style="cursor: pointer;display:inline-block"></span>
                 <!-- <div ng-init="class = tree" list-icon='watching' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
             </span>
 
@@ -25,8 +25,8 @@
 
         </div>
 
-        <!-- only the panel body changes on isExpanded -->
-        <div ng-if="isExpanded" class="panel-body panelBodyId" style="line-height: 14px;width:100%;padding: 0;padding-top: 15px;" ng-style="{'width':panelWidth+'px'}">
+        <!-- only the panel body changes on tree.isExpanded -->
+        <div ng-if="tree.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;width:100%;padding: 0;padding-top: 15px;" ng-style="{'width':panelWidth+'px'}">
             <div ng-if="tree.dataStatus === macros.DATASTATUS_DONE">
                 <div style="margin-left: 15px;margin-right: 15px;padding-bottom: 12px;">
                     <div style="white-space: normal;margin-bottom:10px;line-height:15px">{{tree.desc}}</div>
@@ -187,8 +187,8 @@
         </div>
 
 
-        <!-- !isExpanded must be watching (no ::) -->
-        <div ng-if="!isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
+        <!-- !tree.isExpanded must be watching (no ::) -->
+        <div ng-if="!tree.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
             <div ng-if="::tree.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
 
             <ng-pluralize ng-if="::tree.dataStatus!==macros.DATASTATUS_FAIL" count="::tree.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
