@@ -151,17 +151,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 			bundler = bundler.external(node_module_dependencies)
 		}
 		var rebundle = function () {
-			console.log("----Rebundling custom JS!----")
-			var stream = bundler.bundle();
-
-
-
-			stream.on('error', function (err) {
-				onError(err);
-				// end this stream
-				this.emit('end');
-			})
-
+			
 			// These names are hardcoded into index.html and into the karma.conf.js
 			// and maybe in server.js
 			var name = '';
@@ -182,6 +172,19 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 				}
 			}
 
+			
+			console.log("----Bundling " + name + "!----")
+			var stream = bundler.bundle();
+
+
+
+			stream.on('error', function (err) {
+				onError(err);
+				// end this stream
+				this.emit('end');
+			})
+
+			
 			stream = stream.pipe(source(name));
 			
 
@@ -215,7 +218,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 			stream = stream.pipe(gulp.dest('./frontend/static/js'));
 
 			stream.on('end', function () {
-				console.log("----Done Rebundling custom JS!----")
+				console.log("----Done Bundling " + name + "!----")
 				callback();
 			}.bind(this))
 		};
