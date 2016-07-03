@@ -199,7 +199,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 				})));
 			}
 
-			stream = stream.pipe(gulp.dest('./frontend/static/js/internal'));
+			stream = stream.pipe(gulp.dest('./frontend/static/js'));
 
 			stream.on('end', function () {
 				console.log("----Done Rebundling custom JS!----")
@@ -249,7 +249,7 @@ gulp.task('copyHTML', function () {
 			standalone: true
 		}))
 		.pipe(concat('html.js'))
-		.pipe(gulp.dest('./frontend/static/js/internal'))
+		.pipe(gulp.dest('./frontend/static/js'))
 })
 
 gulp.task('watchCopyHTML', function () {

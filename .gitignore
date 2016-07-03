@@ -1,4 +1,4 @@
-frontend/static/js/internal/*
+frontend/static/js/*
 frontend/static/html/*
 *.db
 node_modules

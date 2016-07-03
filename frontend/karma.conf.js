@@ -1,9 +1,9 @@
 module.exports = function (config) {
   config.set({
     files: [
-      "static/js/internal/vender.tests.js",
-      "static/js/internal/app.tests.js",
-      "static/js/internal/html.js",
+      "static/js/vender.tests.js",
+      "static/js/app.tests.js",
+      "static/js/html.js",
     ],
     plugins: [
       'karma-chrome-launcher',
