@@ -726,7 +726,7 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 		useCache: false
 	}, function (err, response) {
 		if (err) {
-			elog("ERROR: couldn't log removeFromList :(", err, response, body);
+			elog("ERROR: couldn't log removeFromList :(", err, response);
 		}
 	}.bind(this))
 
