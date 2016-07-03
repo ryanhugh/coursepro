@@ -3,7 +3,7 @@ var util = require('util')
 var baseDB = require('./databases/baseDB')
 
 // copied from node_modules\jasmine\lib\reporters\console_reporter.js, with some changes
-// dosent log . F or * as its runnign the tests
+// dosent log . F or * as its running the tests
 // closes the db connection when its done
 
 
@@ -17,6 +17,7 @@ var noopTimer = {
 function ConsoleReporter() {
   var options = {}
   options.print = options.print || function () {
+    console.warn('hiijfdlkasj')
     process.stdout.write(util.format.apply(this, arguments));
   };
   options.showColors = options.hasOwnProperty('showColors') ? options.showColors : true;

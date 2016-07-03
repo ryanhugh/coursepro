@@ -105,7 +105,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 
 
 	var filesToProccess = getFilesToProcess(includeTests);
-	console.log("args:", shouldUglify, includeTests, compileRequire);
+	// console.log("args:", shouldUglify, includeTests, compileRequire);
 
 	recursiveDeps(filesToProccess).then(function (dependencies) {
 
@@ -384,3 +384,4 @@ gulp.task('test', ['btest', 'ftest'], function () {});
 gulp.task('spider', function () {
 	require('./backend/pageDataMgr').main()
 });
+module.exports = gulp;
