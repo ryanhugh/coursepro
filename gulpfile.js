@@ -52,24 +52,24 @@ gulp.task('watchUglifyCSS', function () {
 });
 
 
-function onError(err) {
+function onError(error) {
 
-	if (!err.message) {
-		err = {
-			message: err
+	if (!error.message) {
+		error = {
+			message: error
 		}
 	}
 
 
-	// print the error (can replace with gulp-util)
-	console.log(err.message);
-	if (err.stack) {
-		console.log(err.stack);
+	// print the erroror (can replace with gulp-util)
+	console.log(error.message);
+	if (error.stack) {
+		console.log(error.stack);
 	}
 	notify.onError({
-		message: 'Error: <%= error.message %>',
+		message: 'Error: '+ error.message,
 		sound: false // deactivate sound?
-	})(err);
+	})(error);
 }
 
 
@@ -162,18 +162,28 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 				this.emit('end');
 			})
 
-			var ending = '.js';
-			if (includeTests) {
-				ending = '.tests.js'
-			}
-
+			// These names are hardcoded into index.html and into the karma.conf.js
+			// and maybe in server.js
+			var name = '';
 			if (compileRequire) {
-				stream = stream.pipe(source('vender' + ending));
+				if (includeTests) {
+					name = 'vender.tests.js'
+				}
+				else {
+					name = 'vender.js'
+				}
 			}
 			else {
-				stream = stream.pipe(source('app' + ending));
+				if (includeTests) {
+					name = 'app.tests.js'
+				}
+				else {
+					name = 'app.js'
+				}
 			}
 
+			stream = stream.pipe(source(name));
+			
 
 			if (shouldUglify) {
 
@@ -286,18 +296,24 @@ gulp.task('dev', ['compressJS', 'watchCopyHTML', 'copyHTML'], function () {
 
 
 gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
+	
+	// This is called every time the js is rebundled, and we only want to start the karma server once
+	var hasCompiledOnce = false;
 	compileJS(false, true, function () {
+		if (hasCompiledOnce) {
+			return;
+		}
+		hasCompiledOnce = true;
+		
+		new karma.Server({
+			configFile: __dirname + '/frontend/karma.conf.js',
+		}, function (exitCode) {
+			console.log('ERROR Karma has exited with ' + exitCode)
+			onError('KARMA has crashed!!!!');
+			process.exit()
+		}.bind(this)).start();
 
 	}.bind(this));
-
-
-	new karma.Server({
-		configFile: __dirname + '/frontend/karma.conf.js',
-	}, function (exitCode) {
-		console.log('ERROR Karma has exited with ' + exitCode)
-		onError('KARMA has crashed!!!!');
-		process.exit()
-	}.bind(this)).start();
 });
 
 
