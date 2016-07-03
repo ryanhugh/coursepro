@@ -23,6 +23,7 @@ https://coursepro.io/#/graph/neu.edu/201710/CHEM/2311
  -- change how this is done, working on it in prereqClassUids, but need some work
  -- moving the logic for this from treeMgr to ^^  DO THIS NEXTTTTTTT AND THEN the collision code?
 
+npm update / npm outdated 
 
 
 PROCESSORS:
