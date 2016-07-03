@@ -196,7 +196,10 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 					// warnings: true,
 					// keep_fnames: true
 				}
-
+	
+				// Most of these warnings are also optimizations that uglify 
+				// was able to fix, aka variable only used once, so it was skipped.
+				// There aren't any warnings about undefined variables, etc.
 				// if (!compileRequire) {
 				// 	compressOptions.warnings = true;
 				// }
