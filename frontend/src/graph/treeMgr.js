@@ -952,13 +952,16 @@ TreeMgr.prototype.savePrereqsForThisGraph = function (tree) {
 
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 TreeMgr.prototype.go = function (tree) {
-	this.removeAllParents(tree);
 
 	this.resetTree(tree);
 
 	// flatten coreqs and remove coreqs coreqs
 	this.flattenCoreqs(tree);
+
+	// Any fn before this one needs to be able to handle coreq -> coreq-> coreq
 	this.removeCoreqsCoreqs(tree);
+
+	this.removeAllParents(tree);
 
 	// all remaining trees a valid, so add _ids to nodes that !classes and don't already have _ids
 	this.addIdsToTrees(tree);
