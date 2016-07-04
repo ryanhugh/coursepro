@@ -269,110 +269,120 @@ Graph.prototype.calculateGraphSize = function () {
 		.attr("height", this.graphHeight)
 };
 
+// This ca
 Graph.prototype.loadNodes = function (callback) {
 
-	setTimeout(function () {
-		var nodesAndLinks = treeMgr.treeToD3(this.tree);
-		this.links = nodesAndLinks.links;
-		this.nodes = nodesAndLinks.nodes;
+	// setTimeout(function () {
+	var nodesAndLinks = treeMgr.treeToD3(this.tree);
+	this.links = nodesAndLinks.links;
+	this.nodes = nodesAndLinks.nodes;
 
-		this.nodes.forEach(function (node) {
-			node.height = this.nodeHeight;
-			node.width = this.nodeWidth
-		}.bind(this))
+	this.nodes.forEach(function (node) {
+		node.height = this.nodeHeight;
+		node.width = this.nodeWidth
+	}.bind(this))
 
-		while (this.container[0][0].firstChild) {
-			this.container[0][0].removeChild(this.container[0][0].firstChild);
+	while (this.container[0][0].firstChild) {
+		this.container[0][0].removeChild(this.container[0][0].firstChild);
+	}
+
+	this.linkElements = this.container.selectAll(".link")
+		.data(this.links)
+		.enter().append("polyline")
+		.attr("class", "link")
+		.style("stroke-width", 4)
+		.attr("marker-mid", "url(#end)");
+
+	for (var i = 0; i < this.links.length; i++) {
+		var currLink = this.links[i];
+
+		// find the parent of the two nodes the line connects 
+		var parent;
+		var child;
+		if (currLink.source.depth > currLink.target.depth) {
+			parent = currLink.target;
+			child = currLink.source;
+		}
+		else {
+			parent = currLink.source;
+			child = currLink.target;
 		}
 
-		this.linkElements = this.container.selectAll(".link")
-			.data(this.links)
-			.enter().append("polyline")
-			.attr("class", "link")
-			.style("stroke-width", 4)
-			.attr("marker-mid", "url(#end)");
-
-		for (var i = 0; i < this.links.length; i++) {
-			var currLink = this.links[i];
-
-			// find the parent of the two nodes the line connects 
-			var parent;
-			var child;
-			if (currLink.source.depth > currLink.target.depth) {
-				parent = currLink.target;
-				child = currLink.source;
-			}
-			else {
-				parent = currLink.source;
-				child = currLink.target;
-			}
-
-			// if should be 'and', make line darker
-			if (parent.prereqs.type == 'and') {
-				this.linkElements[0][i].style.stroke = '#5B5B5B'
-			}
-
-			//add line to both nodes links list
-			parent.downwardLinks.push(this.linkElements[0][i])
-			child.upwardLinks.push(this.linkElements[0][i])
+		// if should be 'and', make line darker
+		if (parent.prereqs.type == 'and') {
+			this.linkElements[0][i].style.stroke = '#5B5B5B'
 		}
 
-		this.nodeElements = this.container.selectAll(".node")
-			.data(this.nodes)
-			.enter().append("g")
-			.attr("class", "node")
+		//add line to both nodes links list
+		parent.downwardLinks.push(this.linkElements[0][i])
+		child.upwardLinks.push(this.linkElements[0][i])
+	}
+
+	this.nodeElements = this.container.selectAll(".node")
+		.data(this.nodes)
+		.enter().append("g")
+		.attr("class", "node")
+		.attr("width", this.nodeWidth)
+		.attr("height", this.nodeHeight)
+		.on("mousedown", function () {
+			d3.event.stopPropagation();
+		})
+		.call(this.nodeDrag)
+
+	var html = '<div ng-include="\'panel.html\'"></div>'
+
+	for (var i = 0; i < this.nodeElements[0].length; i++) {
+
+		// create the new scope for each node
+		var newScope = this.$scope.$new();
+
+		// set up the links between tree and scope and foreignObject
+		newScope.tree = this.nodes[i]
+		this.nodes[i].$scope = newScope
+
+
+		var foreignObject = d3.select(this.nodeElements[0][i]).append('foreignObject')
 			.attr("width", this.nodeWidth)
-			.attr("height", this.nodeHeight)
-			.on("mousedown", function () {
-				d3.event.stopPropagation();
-			})
-			.call(this.nodeDrag)
+			.attr("height", this.nodeHeight);
 
-		var html = '<div ng-include="\'panel.html\'"></div>'
+		this.nodes[i].foreignObject = foreignObject[0][0]
 
-		for (var i = 0; i < this.nodeElements[0].length; i++) {
-
-			// create the new scope for each node
-			var newScope = this.$scope.$new();
-
-			// set up the links between tree and scope and foreignObject
-			newScope.tree = this.nodes[i]
-			this.nodes[i].$scope = newScope
+		// if (!newScope.tree.isCoreq) {
+		$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
+			// }
+	}
 
 
-			var foreignObject = d3.select(this.nodeElements[0][i]).append('foreignObject')
-				.attr("width", this.nodeWidth)
-				.attr("height", this.nodeHeight);
+	// Scope needs to be updated after adding a new scope for each element above
+	// This entire fn should be in a setTimeout because of the scope problems, but 
+	// that causes conflicts with d3 sometimes running another tick in between when
+	// this fn was called and the setTimeout... 
+	this.$scope.$apply();
+	// try {
+	// }
+	// catch (e) {
 
-			this.nodes[i].foreignObject = foreignObject[0][0]
+	// }
 
-			$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
-		}
-
-
-		// Scope needs to be updated after adding a new scope for each element above
-		// This is why this entire function is in a setTimeout
-		this.$scope.$apply()
-
-		this.nodes.forEach(function (node) {
-			this.sortCoreqs(node);
-		}.bind(this))
+	this.nodes.forEach(function (node) {
+		this.sortCoreqs(node);
+	}.bind(this))
 
 
-		this.force.nodes(this.nodes)
-			.links(this.links)
+	this.force.nodes(this.nodes)
+		.links(this.links)
 
-		this.nodes.forEach(function (tree) {
-			this.updateHeight(tree)
-		}.bind(this))
+	this.nodes.forEach(function (tree) {
+		this.updateHeight(tree)
+	}.bind(this))
 
-		// This is needed whenever adding or removing nodes from the graph, for d3 internally.
-		this.force.start();
+	// This is needed whenever adding or removing nodes from the graph, for d3 internally.
+	this.force.start();
 
-		this.force.alpha(.01)
+	this.force.alpha(.01)
 
-		callback()
-	}.bind(this), 0)
+	callback()
+		// }.bind(this), 0)
 };
 
 
@@ -559,7 +569,7 @@ Graph.prototype.go = function (tree, callback) {
 
 			this.$scope.tree = tree;
 			callback(null, tree)
-			
+
 		}.bind(this))
 	}.bind(this))
 };

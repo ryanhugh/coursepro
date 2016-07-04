@@ -173,19 +173,19 @@ function GraphPanelExpand($timeout, $document) {
 				elog(err);
 				return;
 			}
+			setTimeout(function () {
 
-			// Run the entire big tree through all of treeMgr again
-			// this is needed to rediscover any common prereqs, recalculate depths, and pretty much 
-			// everything else that treeMgr does. 
+				// Run the entire big tree through all of treeMgr again
+				// this is needed to rediscover any common prereqs, recalculate depths, and pretty much 
+				// everything else that treeMgr does. 
 
-			// comment from the other code:
-			// this is needed because in some cases, nodes can be affected that are children of a select node's ansestors, and that no longer need to have a line
-			// to one that was just satisfied, so can make graph simpler for it
-			treeMgr.go(tree.$scope.graph.tree)
-			tree.$scope.graph.loadNodes(function () {
+				// comment from the other code:
+				// this is needed because in some cases, nodes can be affected that are children of a select node's ansestors, and that no longer need to have a line
+				// to one that was just satisfied, so can make graph simpler for it
+				treeMgr.go(tree.$scope.graph.tree)
+				tree.$scope.graph.loadNodes(function () {
 
-				// After all the graph stuff is done, shink this panel back to avoid the redraw
-				setTimeout(function () {
+					// After all the graph stuff is done, shink this panel back to avoid the redraw
 					tree.showSelectPanel = false;
 					tree.isExpanded = false;
 					tree.$scope.$apply();
@@ -193,7 +193,7 @@ function GraphPanelExpand($timeout, $document) {
 					clearTimeout(tree.graphPanelPromptTimeout);
 					callback()
 				}.bind(this))
-			}.bind(this))
+			}.bind(this), 0)
 		}.bind(this))
 	};
 
