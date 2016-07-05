@@ -2,7 +2,7 @@
 var macros = require('./macros')
 var request = require('./request')
 var async = require('async')
-var memoize = require('../../memoize')
+var memoize = require('../../../memoize')
 
 // if its just a var here, in unit testing there are diffrent instanceCaches for each BaseData? idk why
 window.instanceCache = window.instanceCache || {};

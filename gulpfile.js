@@ -31,11 +31,15 @@ var karma = require('karma')
 var _ = require('lodash')
 var path = require('path')
 var queue = require('d3-queue').queue;
+var fs = require('fs-extra')
 
 
 
 
-//this is not used atm
+//this is not used now. 
+// This searches the html for used css rules and removes the ones it cant find
+// It can easily remove too many, especially when a angular/js is used to dynamically add classes
+// Use with caution. 
 gulp.task('uglifyCSS', function () {
 	return gulp.src('frontend/css/homepage/*.css')
 		// .pipe(concat('allthecss.css'))
@@ -67,7 +71,7 @@ function onError(error) {
 		console.log(error.stack);
 	}
 	notify.onError({
-		message: 'Error: '+ error.message,
+		message: 'Error: ' + error.message,
 		sound: false // deactivate sound?
 	})(error);
 }
@@ -75,7 +79,7 @@ function onError(error) {
 
 function getFilesToProcess(includeTests) {
 
-	var files = glob.sync('frontend/src/**/*.js');
+	var files = glob.sync('frontend/src/js/**/*.js');
 
 	if (includeTests) {
 		return files;
@@ -151,7 +155,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 			bundler = bundler.external(node_module_dependencies)
 		}
 		var rebundle = function () {
-			
+
 			// These names are hardcoded into index.html and into the karma.conf.js
 			// and maybe in server.js
 			var name = '';
@@ -172,7 +176,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 				}
 			}
 
-			
+
 			console.log("----Bundling " + name + "!----")
 			var stream = bundler.bundle();
 
@@ -184,9 +188,9 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 				this.emit('end');
 			})
 
-			
+
 			stream = stream.pipe(source(name));
-			
+
 
 			if (shouldUglify) {
 
@@ -196,10 +200,9 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 					unsafe: true,
 					collapse_vars: true,
 					pure_getters: true,
-					// warnings: true,
 					// keep_fnames: true
 				}
-	
+
 				// Most of these warnings are also optimizations that uglify 
 				// was able to fix, aka variable only used once, so it was skipped.
 				// There aren't any warnings about undefined variables, etc.
@@ -249,13 +252,118 @@ function compileJS(uglifyJS, includeTests, callback) {
 	}.bind(this))
 }
 
+
+//production
+gulp.task('uglifyJS', function (callback) {
+	compileJS(true, false, callback);
+});
+
+//development
+gulp.task('compressJS', function (callback) {
+	compileJS(false, false, callback);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+// ================ STATIC STUFF ================
+// This includes anything that is the same between prod, dev, and testing
+// includes fonts, images, root files (robots.txt and index.html), css, and html
+gulp.task('copyFonts', function () {
+	gulp.src('frontend/src/fonts/*')
+		.pipe(gulp.dest('frontend/static/fonts'));
+}.bind(this));
+
+gulp.task('watchCopyFonts', function () {
+	gulp.watch(['frontend/src/fonts/*'], ['copyFonts']);
+}.bind(this));
+
+
+gulp.task('copyImages', function () {
+	gulp.src('frontend/src/images/*').pipe(gulp.dest('frontend/static/images'));
+}.bind(this));
+
+gulp.task('watchCopyImages', function () {
+	gulp.watch(['frontend/src/images/*'], ['copyImages']);
+}.bind(this));
+
+// Copy everything that isn't a folder from the src/ dir to the static/ dir
+gulp.task('copyRootFiles', function (callback) {
+
+	// List all files and folders in the root src/ dir
+	glob("frontend/src/*", function (err, results) {
+		if (err) {
+			return callback(err);
+		}
+
+		var files = [];
+
+		var q = queue();
+
+		// Filter out everything that isnt a file
+		results.forEach(function (name) {
+			q.defer(function (callback) {
+
+				fs.stat(name, function (err, stats) {
+					if (err) {
+						return callback(err)
+					}
+					if (stats.isFile()) {
+						files.push(name)
+					}
+					callback();
+				}.bind(this))
+			}.bind(this))
+		}.bind(this))
+
+
+		q.awaitAll(function (err) {
+			if (err) {
+				return callback(err);
+			}
+
+			var q = queue();
+
+			// Copy all files to the output dir
+			files.forEach(function (file) {
+				q.defer(function (callback) {
+
+					var fileName = path.basename(file);
+
+					fs.copy(file, 'frontend/static/' + fileName, function (err) {
+						return callback(err)
+					}.bind(this))
+				}.bind(this))
+
+			}.bind(this))
+
+			q.awaitAll(function (err) {
+				return callback(err)
+			}.bind(this))
+
+		}.bind(this))
+	})
+}.bind(this));
+
+gulp.task('watchcopyRootFiles', function () {
+	gulp.watch(['frontend/src/*'], ['copyRootFiles']);
+}.bind(this));
+
+
+// =========== HTML ===========
+
 gulp.task('copyHTML', function () {
 	return gulp
-		.src('./frontend/src/**/*.html')
+		.src('./frontend/src/js/**/*.html')
 		.pipe(flatten())
-		// .pipe(rename({
-		// 	dirname:'html'
-		// }))
 		.pipe(htmlmin({
 			collapseWhitespace: true,
 			removeComments: true
@@ -269,40 +377,39 @@ gulp.task('copyHTML', function () {
 })
 
 gulp.task('watchCopyHTML', function () {
-	gulp.watch(['frontend/src/**/*.html'], ['copyHTML']);
+	gulp.watch(['frontend/src/js/**/*.html'], ['copyHTML']);
 });
 
+// =========== CSS ===========
 
 
-//production
-gulp.task('uglifyJS', function (callback) {
-	compileJS(true, false, callback);
-});
+
+
+
+
+gulp.task('copyStatic', ['copyFonts', 'copyImages', 'copyRootFiles', 'copyHTML'], function () {
+
+}.bind(this));
+
+gulp.task('watchCopyStatic', ['watchCopyFonts', 'watchCopyImages', 'watchcopyRootFiles', 'watchCopyHTML'], function () {
+
+}.bind(this));
 
 
 
 //main prod starting point
-gulp.task('prod', ['uglifyJS', 'watchCopyHTML', 'copyHTML'], function () {
+gulp.task('prod', ['uglifyJS', 'copyStatic', 'watchCopyStatic'], function () {
 	require('./backend/server')
 })
 
 
-
-//development
-gulp.task('compressJS', function (callback) {
-	compileJS(false, false, callback);
-});
-
-
-gulp.task('dev', ['compressJS', 'watchCopyHTML', 'copyHTML'], function () {
+gulp.task('dev', ['compressJS', 'copyStatic', 'watchCopyStatic'], function () {
 	require('./backend/server')
 })
 
 
+gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 
-
-gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
-	
 	// This is called every time the js is rebundled, and we only want to start the karma server once
 	var hasCompiledOnce = false;
 	compileJS(false, true, function () {
@@ -310,7 +417,7 @@ gulp.task('ftest', ['watchCopyHTML', 'copyHTML'], function () {
 			return;
 		}
 		hasCompiledOnce = true;
-		
+
 		new karma.Server({
 			configFile: __dirname + '/frontend/karma.conf.js',
 		}, function (exitCode) {
@@ -367,9 +474,7 @@ var btestRun = batch(function (events, callback) {
 	console.log('BATCH FAILED!', err);
 }.bind(this));
 
-process.on('uncaughtException', function (err) {
-	console.log('Caught exception: ', err.stack);
-});
+
 
 gulp.task('btest', function () {
 	btestRun();
@@ -384,4 +489,13 @@ gulp.task('test', ['btest', 'ftest'], function () {});
 gulp.task('spider', function () {
 	require('./backend/pageDataMgr').main()
 });
+
+
+
+process.on('uncaughtException', function (err) {
+	console.log('Caught exception: ', err.stack);
+});
+
+
+
 module.exports = gulp;
