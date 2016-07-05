@@ -11,6 +11,7 @@ var flatten = require('gulp-flatten');
 var angularTemplates = require('gulp-angular-templatecache')
 var htmlmin = require('gulp-htmlmin');
 var notify = require("gulp-notify");
+var addsrc = require('gulp-add-src');
 
 
 // for backend unit tests
@@ -26,6 +27,8 @@ var source = require('vinyl-source-stream');
 var watchify = require('watchify')
 var glob = require('glob')
 var karma = require('karma')
+	// var cssnano = require('gulp-cssnano');
+var cleanCSS = require('gulp-clean-css');
 
 //other stuff
 var _ = require('lodash')
@@ -381,17 +384,57 @@ gulp.task('watchCopyHTML', function () {
 });
 
 // =========== CSS ===========
+// Css files that don't end in .min.css are minified
+gulp.task('copyCSS', function (callback) {
+
+	// glob("frontend/src/css/*", function (err, results) {
+
+	// 	var toMinify = [];
+	// 	var toConcat = [];
+	// 	results.forEach(function (file) {
+	// 		if (file.endsWith('min.css')) {
+	// 			toConcat.push(file)
+	// 		}
+	// 		else {
+	// 			toMinify.push(file)
+	// 		}
+	// 	}.bind(this))
+
+
+	// 	gulp.src()
+
+
+	// })
+
+
+	return gulp.src(['frontend/src/css/*', '!frontend/src/css/*.min.css'])
+		.pipe(concat('allthecss.css'))
+		// .pipe(cssnano({
+		// 	discardComments: {
+		// 		removeAll: true
+		// 	}{
+		// }))
+		.pipe(cleanCSS({
+			keepSpecialComments: 0
+		}))
+	    .pipe(addsrc('frontend/src/css/*.min.css'))
+		.pipe(concat('allthecss.css'))
+		.pipe(gulp.dest('frontend/static/css'));
+});
+
+
+gulp.task('watchCopyCSS', function () {
+	gulp.watch(['frontend/src/css/*'], ['copyCSS']);
+});
 
 
 
 
-
-
-gulp.task('copyStatic', ['copyFonts', 'copyImages', 'copyRootFiles', 'copyHTML'], function () {
+gulp.task('copyStatic', ['copyFonts', 'copyImages', 'copyRootFiles', 'copyHTML', 'copyCSS'], function () {
 
 }.bind(this));
 
-gulp.task('watchCopyStatic', ['watchCopyFonts', 'watchCopyImages', 'watchcopyRootFiles', 'watchCopyHTML'], function () {
+gulp.task('watchCopyStatic', ['watchCopyFonts', 'watchCopyImages', 'watchcopyRootFiles', 'watchCopyHTML', 'watchCopyCSS'], function () {
 
 }.bind(this));
 
