@@ -32,6 +32,7 @@ find things for search prefil hint thing
 semester start and end on term -- done
 auto recognize which college someone is coming from (not really a processor?) -- done
 remove honors coreqs from non hon classes, etc
+find and fix "lab for " and "recitation for " classes and mark then as actually having coreqs (like phys 1155)
 make the search index and upload it to ec2 bucket
 
 
@@ -324,6 +325,8 @@ trace surveys
 student reviews of classes
 scrape rate my prof
 add textbook data
+get major/minor data
+get advisor data (like which advisor(s) for which majors)
 --- http://northeastern.bncollege.com/webapp/wcs/stores/servlet/TBWizardView?storeId=17555&catalogId=10001&langId=-1
 ---and i have code for scraping somewhere too, might be in homework repo
 payments for notifications?

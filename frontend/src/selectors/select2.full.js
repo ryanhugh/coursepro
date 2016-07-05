@@ -4,6 +4,8 @@
  *
  * Released under the MIT license
  * https://github.com/select2/select2/blob/master/LICENSE.md
+ *
+ * Note: some lines were changed in this file!!
  */
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
