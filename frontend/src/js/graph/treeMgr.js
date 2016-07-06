@@ -955,6 +955,8 @@ TreeMgr.prototype.savePrereqsForThisGraph = function (tree) {
 
 
 // TREE inverients
+// This function can be skipped in prod somehow
+// invarients that are not checked yet:
 // no duplicates in children or parents (except coreqs)
 // panels should have text in them 
 TreeMgr.prototype.ensureInvariants = function (tree, foundRootNode) {
@@ -1015,11 +1017,11 @@ TreeMgr.prototype.ensureInvariants = function (tree, foundRootNode) {
 	}
 
 	tree.prereqs.values.forEach(function (subTree) {
-		this.ensureInvariants(subTree);
+		this.ensureInvariants(subTree, foundRootNode);
 	}.bind(this));
 
 	tree.coreqs.values.forEach(function (subTree) {
-		this.ensureInvariants(subTree);
+		this.ensureInvariants(subTree, foundRootNode);
 	}.bind(this));
 };
 
