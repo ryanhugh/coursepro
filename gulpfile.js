@@ -286,7 +286,7 @@ gulp.task('compressJS', function (callback) {
 // This includes anything that is the same between prod, dev, and testing
 // includes fonts, images, root files (robots.txt and index.html), css, and html
 gulp.task('copyFonts', function () {
-	gulp.src('frontend/src/fonts/*')
+	return gulp.src('frontend/src/fonts/*')
 		.pipe(gulp.dest('frontend/static/fonts'));
 }.bind(this));
 
@@ -296,7 +296,7 @@ gulp.task('watchCopyFonts', function () {
 
 
 gulp.task('copyImages', function () {
-	gulp.src('frontend/src/images/*').pipe(gulp.dest('frontend/static/images'));
+	return gulp.src('frontend/src/images/*').pipe(gulp.dest('frontend/static/images'));
 }.bind(this));
 
 gulp.task('watchCopyImages', function () {
