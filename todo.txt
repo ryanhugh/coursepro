@@ -1,13 +1,29 @@
 https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
 
 
-TODO
+PROD
 uglify properties before prod?
+
+
+TODO
+ensure invarients hold on tree
+ - bugs ahoy
+add third state of this class is required, selecting or unselecting woulnt do anything to the graph to the panel prompt
+debug why it takes multiple clicks sometimes?
+show only 10? classes to start, then have button to show more
+"lab for \d+" add (and that regex has to be different)
+
+
+
+
 
 search:
  - server side index generation and save them to disk somewhere? and pass around the url, dont need to, its known
 - service workers(for awesomeness and to cache data)
  - by default show panel expanded, maybe with search, but then how show coreqs and prereqs?
+
+
+
 
 clean up this file a lot
 make it so user can upgrade localstorage
@@ -39,6 +55,7 @@ make the search index and upload it to ec2 bucket
 
 
 make the collision code for nodes at different tiers use actuall trig and not ghetto trig
+- for both updwards and downwards
 
 
 http://localhost/#/graph/neu.edu/201710/PHYS/1165_1407358073
@@ -94,17 +111,6 @@ CLALENDAR
 classes can go as late as 10pm, and they are sometimes on weekends
 https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_listcrse?term_in=201602&subj_in=PSYC&crse_in=025&schd_in=A
 
-
-TREE inverients
-nodes are in parents children
-nodes are in childrens parents
-!classes have (>1 child or >1 parent) and at lest 1 child and at least 1 parent
-all nodes connected to each other somehow
-only 1 node with 0 parents
-no duplicates in children or parents (except coreqs)
-panels should have text in them 
-no depth > 50
-any isCoreq should only have exacly one parent
 
 
 ====Parsing warnings that could tell school about====

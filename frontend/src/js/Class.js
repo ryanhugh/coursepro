@@ -127,8 +127,8 @@ Class.prototype.generateIdFromPrereqs = function () {
 	}
 
 
-	if (this.prereqs.values.length == 0) {
-		elog('no prereqs to generate _id from!')
+	if (this.prereqs.values.length < 2) {
+		elog('not enough prereqs to generate _id from!')
 	}
 
 	this.prereqs.values.sort(function (a, b) {
@@ -376,10 +376,7 @@ Class.prototype.resetRequisites = function () {
 
 		//add the prereqs to this node, and convert server data
 		this.serverPrereqs.values.forEach(function (subTree) {
-			if (subTree.missing) {
-				console.log("removed missing prereq")
-			}
-			else {
+			if (!subTree.missing) {
 				this.prereqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
 			}
 

@@ -580,39 +580,39 @@ Graph.prototype.createGraph = function (tree, callback) {
 	}
 
 	// stuff i need to take
-	tree = {
-		host: 'neu.edu',
-		termId: '201710',
-		isClass: false,
-		prereqs: {
-			type: 'and',
-			values: [{
-				subject: 'EECE',
-				classUid: '2322_1420743956',
-			}, {
-				subject: 'EECE',
-				classUid: '2323_2018952043',
-			}, {
-				subject: 'EECE',
-				classUid: '2540_2092162332',
-			}, {
-				subject: 'CS',
-				classUid: '4800_1303374065'
-			}, {
-				subject: 'CS',
-				classUid: '3700_1941416797'
-			}, {
-				subject: 'CS',
-				classUid: '4400_1871949484'
-			}, {
-				subject: 'CS',
-				classUid: '4500_118506562'
-			}, {
-				subject: 'PHYS',
-				classUid: '1155_521395573'
-			}]
-		}
-	}
+	// tree = {
+	// 	host: 'neu.edu',
+	// 	termId: '201710',
+	// 	isClass: false,
+	// 	prereqs: {
+	// 		type: 'and',
+	// 		values: [{
+	// 			subject: 'EECE',
+	// 			classUid: '2322_1420743956',
+	// 		}, {
+	// 			subject: 'EECE',
+	// 			classUid: '2323_2018952043',
+	// 		}, {
+	// 			subject: 'EECE',
+	// 			classUid: '2540_2092162332',
+	// 		}, {
+	// 			subject: 'CS',
+	// 			classUid: '4800_1303374065'
+	// 		}, {
+	// 			subject: 'CS',
+	// 			classUid: '3700_1941416797'
+	// 		}, {
+	// 			subject: 'CS',
+	// 			classUid: '4400_1871949484'
+	// 		}, {
+	// 			subject: 'CS',
+	// 			classUid: '4500_118506562'
+	// 		}, {
+	// 			subject: 'PHYS',
+	// 			classUid: '1155_521395573'
+	// 		}]
+	// 	}
+	// }
 
 
 	//process tree takes in a callback

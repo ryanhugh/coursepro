@@ -337,6 +337,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 
 		//if tree not the lowest tree, replace
 		if (currTree !== lowestTree) {
+			console.log("Swaping !",currTree,'for',lowestTree);
 
 			//switch all references to currTree to lowestTree
 			currTree.allParents.forEach(function (parentTree) {
@@ -950,6 +951,80 @@ TreeMgr.prototype.savePrereqsForThisGraph = function (tree) {
 	}.bind(this));
 };
 
+
+
+
+// TREE inverients
+// no duplicates in children or parents (except coreqs)
+// panels should have text in them 
+TreeMgr.prototype.ensureInvariants = function (tree, foundRootNode) {
+	if (foundRootNode === undefined) {
+		foundRootNode = false;
+	}
+
+	// nodes are in parents children
+	// nodes are in childrens parents
+	var children = tree.prereqs.values.concat(tree.coreqs.values);
+	children.forEach(function (subTree) {
+		if (!subTree.allParents.includes(tree)) {
+			elog('childrens parent dosent include this tree')
+		}
+	}.bind(this))
+
+	tree.allParents.forEach(function (parent) {
+		var siblings = parent.prereqs.values.concat(parent.coreqs.values)
+		if (!siblings.includes(tree)) {
+			elog('parent\'s children dosent include this tree')
+		}
+	}.bind(this))
+
+	// !classes have (>1 child or >1 parent) and at lest 1 child and at least 1 parent
+	if (!tree.isClass) {
+		if (tree.prereqs.values.length < 1) {
+			elog('!Class must have at least 1 child')
+		}
+		if (tree.allParents.length < 1) {
+			elog('!Class must have at least 1 parent')
+		}
+		if (tree.allParents.length === 1 && tree.prereqs.values.length === 1) {
+			elog('!Class must have either more than 1 parent or more than 1 child')
+		}
+	}
+
+	// no depth > 50
+	if (tree.depth > 50) {
+		elog('depth too large to be valid...')
+	}
+
+	// any isCoreq should only have exacly one parent
+	if (tree.isCoreq && tree.allParents.length != 1) {
+		elog('Coreq has more than one parent?')
+	}
+
+	// all classes data status is loaded
+	if (tree.isClass && !tree.isString && tree.dataStatus != macros.DATASTATUS_DONE) {
+		elog('found tree that isnt loaded?')
+	}
+
+	// only 1 node with 0 parents
+	if (tree.allParents.length === 0) {
+		if (foundRootNode) {
+			elog('multiple nodes with no parents?')
+		}
+		foundRootNode = true;
+	}
+
+	tree.prereqs.values.forEach(function (subTree) {
+		this.ensureInvariants(subTree);
+	}.bind(this));
+
+	tree.coreqs.values.forEach(function (subTree) {
+		this.ensureInvariants(subTree);
+	}.bind(this));
+};
+
+
+
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 TreeMgr.prototype.go = function (tree) {
 
@@ -979,10 +1054,14 @@ TreeMgr.prototype.go = function (tree) {
 	this.sortTree(tree);
 
 	this.addAllParentRelations(tree);
+
 	this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
+	this.ensureInvariants(tree);
 
 	this.defaultTo(tree, 'and');
+
+	this.ensureInvariants(tree);
 
 	this.mergeDuplicateClasses(tree)
 
@@ -990,9 +1069,9 @@ TreeMgr.prototype.go = function (tree) {
 	this.groupByCommonPrereqs(tree, 'and')
 
 	this.skipNodesPostStuff(tree);
-	// this.skipNodesPostStuff(tree);
-	// this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
+
+	this.ensureInvariants(tree);
 
 	this.defaultTo(tree, 'and');
 
@@ -1005,6 +1084,8 @@ TreeMgr.prototype.go = function (tree) {
 	this.setWouldSatisfy(tree);
 
 	this.savePrereqsForThisGraph(tree);
+
+	this.ensureInvariants(tree);
 }
 
 TreeMgr.prototype.TreeMgr = TreeMgr;
