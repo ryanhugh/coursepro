@@ -27,7 +27,7 @@ var source = require('vinyl-source-stream');
 var watchify = require('watchify')
 var glob = require('glob')
 var karma = require('karma')
-	// var cssnano = require('gulp-cssnano');
+var cssnano = require('gulp-cssnano');
 var cleanCSS = require('gulp-clean-css');
 
 //other stuff
@@ -80,24 +80,26 @@ function onError(error) {
 }
 
 
-function getFilesToProcess(includeTests) {
+function getFilesToProcess(includeTests, callback) {
 
-	var files = glob.sync('frontend/src/js/**/*.js');
+	glob('frontend/src/js/**/*.js', function (err, files) {
+		if (err) {
+			return callback(err)
+		}
+		if (includeTests) {
+			return callback(null, files);
+		}
 
-	if (includeTests) {
-		return files;
-	}
+		var filesToProccess = [];
 
-	var filesToProccess = [];
+		files.forEach(function (file) {
+			if (!_(file).includes('tests')) {
+				filesToProccess.push(file)
+			};
+		})
 
-	files.forEach(function (file) {
-		if (!_(file).includes('tests')) {
-			filesToProccess.push(file)
-		};
-	})
-
-	return filesToProccess;
-
+		return callback(null, filesToProccess)
+	}.bind(this));
 }
 
 //watch is allways on, to turn off (or add the option back) 
@@ -111,131 +113,134 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 	}
 
 
-	var filesToProccess = getFilesToProcess(includeTests);
-	// console.log("args:", shouldUglify, includeTests, compileRequire);
-
-	recursiveDeps(filesToProccess).then(function (dependencies) {
-
-
-		var node_module_dependencies = [];
-		dependencies.forEach(function (dep) {
-			if (!path.isAbsolute(dep)) {
-				node_module_dependencies.push(dep)
-			}
-		}.bind(this))
-		if (compileRequire) {
-			console.log(node_module_dependencies);
-		}
-		else {
-			console.log(filesToProccess);
+	getFilesToProcess(includeTests, function (err, filesToProccess) {
+		if (err) {
+			return callback(err)
 		}
 
-		if (compileRequire) {
-			filesToProccess = [];
-		}
+		recursiveDeps(filesToProccess).then(function (dependencies) {
 
 
-		var bundler = browserify({
-			entries: filesToProccess,
-			bundleExternal: false,
-		}, {
-			basedir: __dirname,
-			debug: false,
-			cache: {}, // required for watchify
-			packageCache: {}, // required for watchify
-
-			// required to be true only for watchify (?) but watchify works when it is off.
-			//dont show C:/ryan/google drive etc in the uglified source code
-			fullPaths: false,
-		});
-
-
-		bundler = watchify(bundler)
-		if (compileRequire) {
-			bundler = bundler.require(node_module_dependencies)
-		}
-		else {
-			bundler = bundler.external(node_module_dependencies)
-		}
-		var rebundle = function () {
-
-			// These names are hardcoded into index.html and into the karma.conf.js
-			// and maybe in server.js
-			var name = '';
+			var node_module_dependencies = [];
+			dependencies.forEach(function (dep) {
+				if (!path.isAbsolute(dep)) {
+					node_module_dependencies.push(dep)
+				}
+			}.bind(this))
 			if (compileRequire) {
-				if (includeTests) {
-					name = 'vender.tests.js'
-				}
-				else {
-					name = 'vender.js'
-				}
+				console.log(node_module_dependencies);
 			}
 			else {
-				if (includeTests) {
-					name = 'app.tests.js'
+				console.log(filesToProccess);
+			}
+
+			if (compileRequire) {
+				filesToProccess = [];
+			}
+
+
+			var bundler = browserify({
+				entries: filesToProccess,
+				bundleExternal: false,
+			}, {
+				basedir: __dirname,
+				debug: false,
+				cache: {}, // required for watchify
+				packageCache: {}, // required for watchify
+
+				// required to be true only for watchify (?) but watchify works when it is off.
+				//dont show C:/ryan/google drive etc in the uglified source code
+				fullPaths: false,
+			});
+
+
+			bundler = watchify(bundler)
+			if (compileRequire) {
+				bundler = bundler.require(node_module_dependencies)
+			}
+			else {
+				bundler = bundler.external(node_module_dependencies)
+			}
+			var rebundle = function () {
+
+				// These names are hardcoded into index.html and into the karma.conf.js
+				// and maybe in server.js
+				var name = '';
+				if (compileRequire) {
+					if (includeTests) {
+						name = 'vender.tests.js'
+					}
+					else {
+						name = 'vender.js'
+					}
 				}
 				else {
-					name = 'app.js'
-				}
-			}
-
-
-			console.log("----Bundling " + name + "!----")
-			var stream = bundler.bundle();
-
-
-
-			stream.on('error', function (err) {
-				onError(err);
-				// end this stream
-				this.emit('end');
-			})
-
-
-			stream = stream.pipe(source(name));
-
-
-			if (shouldUglify) {
-
-
-				var compressOptions = {
-					drop_console: true,
-					unsafe: true,
-					collapse_vars: true,
-					pure_getters: true,
-					// keep_fnames: true
+					if (includeTests) {
+						name = 'app.tests.js'
+					}
+					else {
+						name = 'app.js'
+					}
 				}
 
-				// Most of these warnings are also optimizations that uglify 
-				// was able to fix, aka variable only used once, so it was skipped.
-				// There aren't any warnings about undefined variables, etc.
-				// if (!compileRequire) {
-				// 	compressOptions.warnings = true;
-				// }
 
-				stream = stream.pipe(streamify(uglify({
-					options: {
-						ie_proof: false
-					},
-					compress: compressOptions
-				})));
+				console.log("----Bundling " + name + "!----")
+				var stream = bundler.bundle();
+
+
+
+				stream.on('error', function (err) {
+					onError(err);
+					// end this stream
+					this.emit('end');
+				})
+
+
+				stream = stream.pipe(source(name));
+
+
+				if (shouldUglify) {
+
+
+					var compressOptions = {
+						drop_console: true,
+						unsafe: true,
+						collapse_vars: true,
+						pure_getters: true,
+						// keep_fnames: true
+					}
+
+					// Most of these warnings are also optimizations that uglify 
+					// was able to fix, aka variable only used once, so it was skipped.
+					// There aren't any warnings about undefined variables, etc.
+					// if (!compileRequire) {
+					// 	compressOptions.warnings = true;
+					// }
+
+					stream = stream.pipe(streamify(uglify({
+						options: {
+							ie_proof: false
+						},
+						compress: compressOptions
+					})));
+				}
+
+				stream = stream.pipe(gulp.dest('./frontend/static/js'));
+
+				stream.on('end', function () {
+					console.log("----Done Bundling " + name + "!----")
+					callback();
+				}.bind(this))
+			};
+
+			bundler.on('update', rebundle);
+			rebundle();
+		}).catch(function (err) {
+			console.log('recursiveDeps FAILED!', err)
+			if (err) {
+				console.log(err.stack);
 			}
-
-			stream = stream.pipe(gulp.dest('./frontend/static/js'));
-
-			stream.on('end', function () {
-				console.log("----Done Bundling " + name + "!----")
-				callback();
-			}.bind(this))
-		};
-
-		bundler.on('update', rebundle);
-		rebundle();
-	}).catch(function (err) {
-		console.log('recursiveDeps FAILED!', err)
-		if (err) {
-			console.log(err.stack);
-		}
+		}.bind(this));
 	}.bind(this));
 }
 
@@ -385,39 +390,20 @@ gulp.task('watchCopyHTML', function () {
 
 // =========== CSS ===========
 // Css files that don't end in .min.css are minified
+// cssnano is too slow and takes a couple seconds
 gulp.task('copyCSS', function (callback) {
-
-	// glob("frontend/src/css/*", function (err, results) {
-
-	// 	var toMinify = [];
-	// 	var toConcat = [];
-	// 	results.forEach(function (file) {
-	// 		if (file.endsWith('min.css')) {
-	// 			toConcat.push(file)
-	// 		}
-	// 		else {
-	// 			toMinify.push(file)
-	// 		}
-	// 	}.bind(this))
-
-
-	// 	gulp.src()
-
-
-	// })
-
 
 	return gulp.src(['frontend/src/css/*', '!frontend/src/css/*.min.css'])
 		.pipe(concat('allthecss.css'))
-		// .pipe(cssnano({
-		// 	discardComments: {
-		// 		removeAll: true
-		// 	}{
-		// }))
-		.pipe(cleanCSS({
-			keepSpecialComments: 0
+		.pipe(cssnano({
+			discardComments: {
+				removeAll: true
+			}
 		}))
-	    .pipe(addsrc('frontend/src/css/*.min.css'))
+		// .pipe(cleanCSS({
+		// 	keepSpecialComments: 0
+		// }))
+		.pipe(addsrc('frontend/src/css/*.min.css'))
 		.pipe(concat('allthecss.css'))
 		.pipe(gulp.dest('frontend/static/css'));
 });
@@ -484,35 +470,36 @@ gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 // so the require.cache would be cleared halfway through the excecution of the first tests
 // which messed up a lot of stuff
 var btestRun = batch(function (events, callback) {
-	var files = glob.sync('backend/**/*.js');
 
-	files.forEach(function (file) {
-		var filePath = path.resolve(file);
-		delete require.cache[filePath]
-	}.bind(this))
+	glob('backend/**/*.js', function (err, files) {
+		files.forEach(function (file) {
+			var filePath = path.resolve(file);
+			delete require.cache[filePath]
+		}.bind(this))
 
-	// Originally, was using gulp-jasmine, but that is only a small wrapper around jasmine and only does two things:
-	// 1. delete files from require.cache (which it wasen't doing correcly, and had to be done here too)
-	// 2. includes a custom reporter, which was bad and was using a custom one anyway
-	// so after some more problems with it just decided to bypass it instead
-	var jasmine = new Jasmine();
+		// Originally, was using gulp-jasmine, but that is only a small wrapper around jasmine and only does two things:
+		// 1. delete files from require.cache (which it wasen't doing correcly, and had to be done here too)
+		// 2. includes a custom reporter, which was bad and was using a custom one anyway
+		// so after some more problems with it just decided to bypass it instead
+		var jasmine = new Jasmine();
 
 
-	var filesToProccess = [];
-	files.forEach(function (file) {
+		var filesToProccess = [];
+		files.forEach(function (file) {
 
-		// add all the .tests.js files to jasmine
-		if (_(file).endsWith('tests.js')) {
-			var resolvedPath = path.resolve(file);
-			jasmine.addSpecFile(resolvedPath);
-		};
-	})
+			// add all the .tests.js files to jasmine
+			if (_(file).endsWith('tests.js')) {
+				var resolvedPath = path.resolve(file);
+				jasmine.addSpecFile(resolvedPath);
+			};
+		})
 
-	jasmine.addReporter(new jasmineReporter());
-	jasmine.execute();
-	jasmine.onComplete(function (passedAll) {
-		callback()
-	}.bind(this))
+		jasmine.addReporter(new jasmineReporter());
+		jasmine.execute();
+		jasmine.onComplete(function (passedAll) {
+			callback()
+		}.bind(this))
+	}.bind(this));
 }, function (err) {
 	console.log('BATCH FAILED!', err);
 }.bind(this));
