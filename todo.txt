@@ -88,7 +88,6 @@ if angle < something between 2 children, do a force or maybe if x is too close b
 
 GULP todo
 merge html.js and app.js
-npm ignore everything in frontend/static/ and copy over the other stuff
 
 
 CLALENDAR
