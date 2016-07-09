@@ -28,13 +28,14 @@ var watchify = require('watchify')
 var glob = require('glob')
 var karma = require('karma')
 var cssnano = require('gulp-cssnano');
-var cleanCSS = require('gulp-clean-css');
+// var cleanCSS = require('gulp-clean-css');
 
 //other stuff
 var _ = require('lodash')
 var path = require('path')
 var queue = require('d3-queue').queue;
 var fs = require('fs-extra')
+var memoize = require('./memoize')
 
 
 
@@ -79,8 +80,10 @@ function onError(error) {
 	})(error);
 }
 
-
-function getFilesToProcess(includeTests, callback) {
+// This assumes that the list of files never changes.
+// Support for adding/removing files would need some stuff to change in compileJS(how much?) and 
+// this fn would have to change a bit too
+var getFilesToProcess = memoize(function (includeTests, callback) {
 
 	glob('frontend/src/js/**/*.js', function (err, files) {
 		if (err) {
@@ -100,13 +103,11 @@ function getFilesToProcess(includeTests, callback) {
 
 		return callback(null, filesToProccess)
 	}.bind(this));
-}
+})
 
 //watch is allways on, to turn off (or add the option back) 
 // turn fullPaths back to shouldWatch and only run bundler = watchify(bundler) is shouldWatch is true
 // http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
-
-//another note, if you include a module that dosent exist, it will silently hang forever(?) eg (require('jdklfjdasjfkl'))
 function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 	if (compileRequire === undefined) {
 		compileRequire = false;

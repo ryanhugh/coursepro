@@ -31,6 +31,10 @@ function _restParam(func, startIndex) {
 module.exports = function (fn, hasher) {
     var memo = {};
     var queues = {};
+    if (!hasher) {
+    	hasher = function(){}
+    }
+    
     var has = Object.prototype.hasOwnProperty;
     var memoized = _restParam(function memoized(args) {
         var callback = args.pop();

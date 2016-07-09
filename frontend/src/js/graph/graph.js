@@ -1,7 +1,7 @@
 'use strict';
 var _ = require('lodash')
 var macros = require('../macros')
-var d3 = require('d3')
+var d3 = require('d3') 
 
 // base angular stuff
 var directiveMgr = require('../directiveMgr')

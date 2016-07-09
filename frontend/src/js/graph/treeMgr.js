@@ -19,9 +19,9 @@ TreeMgr.prototype.addIdsToTrees = function (tree) {
 		this.addIdsToTrees(subTree);
 	}.bind(this))
 
-	if (!tree._id) {
-		tree.generateIdFromPrereqs()
-	}
+	// if (!tree._id) {
+	tree.generateIdFromPrereqs()
+	// }
 };
 
 // this dosen't work after allParents have been added
@@ -314,12 +314,17 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 
 	//breath first search down the tree
 	var stack = [tree];
-
+	
+	var deletedTrees = [];
+	
 	var currTree;
 	while ((currTree = stack.shift())) {
 		if (currTree.isClass) {
 			stack = stack.concat(currTree.prereqs.values)
 			continue
+		}
+		if (_(deletedTrees).includes(currTree)) {
+			continue;
 		}
 
 		var matchingClasses = _.filter(classList, {
@@ -374,6 +379,8 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 			}.bind(this))
 
 			currTree.DELETED = true
+			
+			deletedTrees.push(currTree);
 
 		}
 
@@ -1040,18 +1047,19 @@ TreeMgr.prototype.go = function (tree) {
 
 	this.removeAllParents(tree);
 
-	// all remaining trees a valid, so add _ids to nodes that !classes and don't already have _ids
-	this.addIdsToTrees(tree);
 
 	//at this point, there should not be any with data status = not started, so if find any remove them
 	//actually, dont do this because somtimes classes can error
 	// this.removeInvalidSubTrees(tree);
 	this.groupByHonors(tree);
 
+
+	// all remaining trees a valid, so add _ids to nodes that !classes and don't already have _ids
+	this.addIdsToTrees(tree);
+	
+	// SImplifyTree requires _id's but simplifyIfSelected changes what the _ids whould be generated to so have to update them again
 	this.simplifyTree(tree)
-
 	this.simplifyIfSelected(tree);
-
 
 	this.sortTree(tree);
 
@@ -1059,6 +1067,10 @@ TreeMgr.prototype.go = function (tree) {
 
 	this.skipNodesPostStuff(tree);
 	this.skipNodesPostStuff(tree);
+	
+	// all remaining trees a valid, so add _ids to nodes that !classes and don't already have _ids
+	this.addIdsToTrees(tree);
+
 	this.ensureInvariants(tree);
 
 	this.defaultTo(tree, 'and');
