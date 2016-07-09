@@ -106,11 +106,13 @@ Class.isValidCreatingData = function (config) {
 };
 
 Class.prototype.generateIdFromPrereqs = function () {
-	if (this._id) {
-		elog('already have _id told to make another one?')
+	if (this.isClass && this._id) {
 		return;
 	}
-	else if (this.isString) {
+	
+	// If not a class, re create the id in case prereqs changed
+	
+	if (this.isString) {
 		this._id = this.host + this.termId + this.desc
 		return;
 	}
@@ -140,12 +142,13 @@ Class.prototype.generateIdFromPrereqs = function () {
 		ids.push(subTree._id)
 	}.bind(this))
 	if (ids.length === 0) {
-		debugger
+		elog('cannot make id!',this)
 	}
 	this._id = ids.join('')
 	if (this._id.length < 3) {
 		elog('couldnt make an id!', this._id, this)
 	}
+	console.log("made ",this._id)
 };
 
 
