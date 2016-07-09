@@ -28,13 +28,14 @@ var watchify = require('watchify')
 var glob = require('glob')
 var karma = require('karma')
 var cssnano = require('gulp-cssnano');
-var cleanCSS = require('gulp-clean-css');
+// var cleanCSS = require('gulp-clean-css');
 
 //other stuff
 var _ = require('lodash')
 var path = require('path')
 var queue = require('d3-queue').queue;
 var fs = require('fs-extra')
+var memoize = require('./memoize')
 
 
 
@@ -80,7 +81,7 @@ function onError(error) {
 }
 
 
-function getFilesToProcess(includeTests, callback) {
+var getFilesToProcess = memoize(function (includeTests, callback) {
 
 	glob('frontend/src/js/**/*.js', function (err, files) {
 		if (err) {
@@ -100,7 +101,7 @@ function getFilesToProcess(includeTests, callback) {
 
 		return callback(null, filesToProccess)
 	}.bind(this));
-}
+})
 
 //watch is allways on, to turn off (or add the option back) 
 // turn fullPaths back to shouldWatch and only run bundler = watchify(bundler) is shouldWatch is true
