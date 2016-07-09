@@ -11,7 +11,8 @@ ensure invarients hold on tree
 add third state of this class is required, selecting or unselecting woulnt do anything to the graph to the panel prompt
 debug why it takes multiple clicks sometimes?
 show only 10? classes to start, then have button to show more
-"lab for \d+" add (and that regex has to be different)
+"lab for [subject]\s+\d+" add (and that regex has to be different)
+https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=PHYS&crse_numb_in=1152
 
 
 
