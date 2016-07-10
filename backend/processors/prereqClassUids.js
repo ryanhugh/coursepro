@@ -20,6 +20,64 @@ PrereqClassUids.prototype.supportsHost = function (host) {
 	return true;
 };
 
+
+PrereqClassUids.prototype.getClassHash = function(query, config, callback) {
+	
+	// and find all classes that could be matched
+	var matchingQuery = {
+		host: query.host
+	}
+
+	// if base query specified term, we can specify it here too and still find all the classes needed
+	if (query.termId) {
+		matchingQuery.termId = query.termId
+	}
+
+
+	//make obj to find results here quickly
+	var keyToRows = {};
+
+	classesDB.find(matchingQuery, {
+		skipValidation: true
+	}, function (err, results) {
+		if (err) {
+			console.log(err);
+			return callback(err)
+		}
+
+		results.forEach(function (aClass) {
+			if (!aClass.host || !aClass.termId || !aClass.subject || !aClass.classUid) {
+				elog("ERROR class dosent have required fields??", aClass);
+				return;
+			}
+
+			// multiple classes could have same key
+			var key = aClass.host + aClass.termId + aClass.subject;
+			if (config.useClassId) {
+				key += aClass.classId
+			}
+			else if (aClass.classUid) {
+				key += aClass.classUid	
+			}
+			else {
+				elog('Cant use classUid if dont have classUid!',aClass)
+			}
+			
+
+			if (!keyToRows[key]) {
+				keyToRows[key] = []
+			}
+
+			// only need to keep subject and classUid
+			keyToRows[key].push(aClass)
+			
+		}.bind(this));
+		
+		return callback(null, keyToRows);
+		callback()
+	}.bind(this))
+}
+
 PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyToRows) {
 	for (var i = prereqs.values.length - 1; i >= 0; i--) {
 		var prereqEntry = prereqs.values[i]
@@ -32,7 +90,11 @@ PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyTo
 			// multiple classes could have same key
 			var key = host + termId + prereqEntry.subject + prereqEntry.classId
 
-			var newPrereqs = keyToRows[key];
+			var newPrereqs = {
+				subject: keyToRows[key].subject,
+				classUid: keyToRows[key].classUid
+			}
+			
 
 			// not in db, this is possible and causes those warnings in the frontend 
 			// unable to find class even though its a prereq of another class????
@@ -97,51 +159,18 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 		}.bind(this));
 	}.bind(this))
 
-	// and find all classes that could be matched
-	var matchingQuery = {
-		host: baseQuery.host
-	}
-
-	// if base query specified term, we can specify it here too and still find all the classes needed
-	if (baseQuery.termId) {
-		matchingQuery.termId = baseQuery.termId
-	}
-
-
-	//make obj to find results here quickly
-	var keyToRows = {};
-
+	var keyToRow = {};
 	q.defer(function (callback) {
-		classesDB.find(matchingQuery, {
-			skipValidation: true
-		}, function (err, results) {
+		this.getClassHash(baseQuery, {useClassId:true}, function(err, theKeyToRow) {
 			if (err) {
-				console.log(err);
+				elog(err)
 				return callback(err)
 			}
-
-			results.forEach(function (aClass) {
-				if (!aClass.host || !aClass.termId || !aClass.subject || !aClass.classUid) {
-					elog("ERROR class dosent have required fields??", aClass);
-					return;
-				}
-
-				// multiple classes could have same key
-				var key = aClass.host + aClass.termId + aClass.subject + aClass.classId
-
-				if (!keyToRows[key]) {
-					keyToRows[key] = []
-				}
-
-				// only need to keep subject and classUid
-				keyToRows[key].push({
-					subject: aClass.subject,
-					classUid: aClass.classUid
-				})
-			}.bind(this));
-			callback()
+			keyToRow = theKeyToRow;
+			callback();
 		}.bind(this))
 	}.bind(this))
+
 
 	q.awaitAll(function (err) {
 		if (err) {
