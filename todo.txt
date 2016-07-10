@@ -49,7 +49,7 @@ find things for search prefil hint thing
 semester start and end on term -- done
 auto recognize which college someone is coming from (not really a processor?) -- done
 remove honors coreqs from non hon classes, etc
-find and fix "lab for " and "recitation for " classes and mark then as actually having coreqs (like phys 1155)
+
 make the search index and upload it to ec2 bucket
 
 
