@@ -5,7 +5,7 @@ PROD
 uglify properties before prod?
 
 
-TODO
+TODO====================
 ensure invarients hold on tree
  - bugs ahoy
 add third state of this class is required, selecting or unselecting woulnt do anything to the graph to the panel prompt
