@@ -140,7 +140,3 @@ AddClassUids.prototype.tests = function () {
 AddClassUids.prototype.AddClassUids = AddClassUids;
 
 module.exports = new AddClassUids();
-
-if (require.main === module) {
-	module.exports.tests();
-}

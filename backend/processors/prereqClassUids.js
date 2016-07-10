@@ -156,14 +156,7 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 
 
 				// Remove honors coreqs from classes that are not honors
-				// for (var i = 0; i < aClass.coreqs.values.length; i++) {
-				// 	var subValues = aClass.coreqs.values[i];
-				// 	if (!subValues.subject || !subValues.classUid) {
-
-				// 	}
-				// }
-
-
+				// This logic is currently in the frontend, but should be moved to the backend.
 				// and remove non honors coreqs if there is a hon lab with the same classId
 				// this isnt going to be 100% reliable across colleges, idk how to make it better, but want to error on the side of showing too many coreqs
 
@@ -209,5 +202,4 @@ PrereqClassUids.prototype.tests = function () {
 
 
 PrereqClassUids.prototype.PrereqClassUids = PrereqClassUids;
-
 module.exports = new PrereqClassUids();
