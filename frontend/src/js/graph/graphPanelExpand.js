@@ -376,12 +376,6 @@ function GraphPanelExpand($timeout, $document) {
 			this.onMouseOut(tree)
 		}.bind(this))
 
-
-		// element.on('click', function () {
-		// 	this.openPanelPrompt(tree);
-		// }.bind(this))
-
-
 		var closeElement = element.find(attrs.panelClose)
 
 		closeElement.on('click', function () {
