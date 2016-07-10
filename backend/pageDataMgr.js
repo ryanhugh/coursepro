@@ -7,7 +7,12 @@ var queue = require('d3-queue').queue
 
 var requireDir = require('require-dir');
 var parsersClasses = requireDir('./parsers');
-var processorsClasses = requireDir('./processors');
+
+var processors = [
+	require('./processors/addClassUids'),
+	require('./processors/prereqClassUids'),
+	require('./processors/termStartEndDate')
+]
 
 var emailMgr = require('./emailMgr');
 var dbUpdater = require('./databases/updater')
@@ -36,26 +41,6 @@ for (var parserName in parsersClasses) {
 	parserNames.push(parser.name);
 }
 
-var processors = [];
-for (var processorName in processorsClasses) {
-	var processor = processorsClasses[processorName];
-
-	if (processor.priority === undefined) {
-		console.log(processor)
-		throw 'processor does not have a priority!'
-	}
-	processors.push(processor)
-}
-
-processors.sort(function (a, b) {
-	if (a.priority === b.priority) {
-
-		//not supported yet
-		elog('wtf priority equal');
-	}
-
-	return a.priority - b.priority
-}.bind(this))
 
 function PageDataMgr() {
 

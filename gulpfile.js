@@ -38,6 +38,9 @@ var fs = require('fs-extra')
 var memoize = require('./memoize')
 
 
+process.on('uncaughtException', function (err) {
+	console.log('Caught exception: ', err.stack);
+});
 
 
 //this is not used now. 
@@ -522,10 +525,6 @@ gulp.task('spider', function () {
 });
 
 
-
-process.on('uncaughtException', function (err) {
-	console.log('Caught exception: ', err.stack);
-});
 
 
 

@@ -1,6 +1,7 @@
 'use strict';
 var sectionsDB = require('../databases/sectionsDB')
 var termsDB = require('../databases/termsDB')
+var BaseProcessor = require('./baseProcessor').BaseProcessor
 var _ = require('lodash')
 var queue = require('d3-queue').queue
 
@@ -11,10 +12,11 @@ var queue = require('d3-queue').queue
 
 
 function TermStartEndDate() {
-
-	// runs third, after prereqClassUids
-	this.priority = 2;
+	BaseProcessor.prototype.constructor.apply(this, arguments);
 }
+
+TermStartEndDate.prototype = Object.create(BaseProcessor.prototype);
+TermStartEndDate.prototype.constructor = TermStartEndDate;
 
 
 // runs on all hosts

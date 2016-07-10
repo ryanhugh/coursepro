@@ -2,6 +2,7 @@
 var macros = require('../macros')
 var classesDB = require('../databases/classesDB')
 var sectionsDB = require('../databases/sectionsDB')
+var BaseProcessor = require('./baseProcessor').BaseProcessor
 var queue = require('d3-queue').queue
 
 // Add classUids to classes. ClassUid = ClassId + '_'  + hash(class.name)
@@ -9,12 +10,11 @@ var queue = require('d3-queue').queue
 // Lookup by classId and there will be 0+ results.
 
 function AddClassUids() {
-
-
-	// runs first, before all other processors
-	this.priority = 0;
+	BaseProcessor.prototype.constructor.apply(this, arguments);
 }
 
+AddClassUids.prototype = Object.create(BaseProcessor.prototype);
+AddClassUids.prototype.constructor = AddClassUids;
 
 // http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
 AddClassUids.prototype.getStringHash = function (input) {

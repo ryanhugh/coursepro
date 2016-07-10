@@ -2,6 +2,7 @@
 var macros = require('../macros')
 var classesDB = require('../databases/classesDB')
 var ellucianRequisitesParser = require('../parsers/ellucianRequisitesParser')
+var BaseProcessor = require('./baseProcessor').BaseProcessor
 
 var queue = require('d3-queue').queue
 
@@ -9,11 +10,13 @@ var queue = require('d3-queue').queue
 // if there are multiple results, it creates a 'or' prereq tree, much like Class.js does in the frontend. 
 
 function PrereqClassUids() {
-
-
-	// runs second, after addClassUids
-	this.priority = 1;
+	BaseProcessor.prototype.constructor.apply(this, arguments);
 }
+
+
+PrereqClassUids.prototype = Object.create(BaseProcessor.prototype);
+PrereqClassUids.prototype.constructor = PrereqClassUids;
+
 
 // runs on all hosts
 PrereqClassUids.prototype.supportsHost = function (host) {
@@ -21,62 +24,6 @@ PrereqClassUids.prototype.supportsHost = function (host) {
 };
 
 
-PrereqClassUids.prototype.getClassHash = function(query, config, callback) {
-	
-	// and find all classes that could be matched
-	var matchingQuery = {
-		host: query.host
-	}
-
-	// if base query specified term, we can specify it here too and still find all the classes needed
-	if (query.termId) {
-		matchingQuery.termId = query.termId
-	}
-
-
-	//make obj to find results here quickly
-	var keyToRows = {};
-
-	classesDB.find(matchingQuery, {
-		skipValidation: true
-	}, function (err, results) {
-		if (err) {
-			console.log(err);
-			return callback(err)
-		}
-
-		results.forEach(function (aClass) {
-			if (!aClass.host || !aClass.termId || !aClass.subject || !aClass.classUid) {
-				elog("ERROR class dosent have required fields??", aClass);
-				return;
-			}
-
-			// multiple classes could have same key
-			var key = aClass.host + aClass.termId + aClass.subject;
-			if (config.useClassId) {
-				key += aClass.classId
-			}
-			else if (aClass.classUid) {
-				key += aClass.classUid	
-			}
-			else {
-				elog('Cant use classUid if dont have classUid!',aClass)
-			}
-			
-
-			if (!keyToRows[key]) {
-				keyToRows[key] = []
-			}
-
-			// only need to keep subject and classUid
-			keyToRows[key].push(aClass)
-			
-		}.bind(this));
-		
-		return callback(null, keyToRows);
-		callback()
-	}.bind(this))
-}
 
 PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyToRows) {
 	for (var i = prereqs.values.length - 1; i >= 0; i--) {
@@ -90,15 +37,22 @@ PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyTo
 			// multiple classes could have same key
 			var key = host + termId + prereqEntry.subject + prereqEntry.classId
 
-			var newPrereqs = {
-				subject: keyToRows[key].subject,
-				classUid: keyToRows[key].classUid
+			var newPrereqs = [];
+
+			if (keyToRows[key]) {
+				keyToRows[key].forEach(function (row) {
+					newPrereqs.push({
+						subject: row.subject,
+						classUid: row.classUid
+					})
+				}.bind(this))
 			}
-			
+
+
 
 			// not in db, this is possible and causes those warnings in the frontend 
 			// unable to find class even though its a prereq of another class????
-			if (!newPrereqs) {
+			if (newPrereqs.length === 0) {
 				prereqs.values[i].missing = true;
 			}
 			// only one match, just swap classId for classUid
@@ -159,14 +113,16 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 		}.bind(this));
 	}.bind(this))
 
-	var keyToRow = {};
+	var keyToRows = {};
 	q.defer(function (callback) {
-		this.getClassHash(baseQuery, {useClassId:true}, function(err, theKeyToRow) {
+		this.getClassHash(baseQuery, {
+			useClassId: true
+		}, function (err, theKeyToRow) {
 			if (err) {
 				elog(err)
 				return callback(err)
 			}
-			keyToRow = theKeyToRow;
+			keyToRows = theKeyToRow;
 			callback();
 		}.bind(this))
 	}.bind(this))
@@ -186,6 +142,8 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 			var toUpdate = {};
 			if (aClass.prereqs) {
 				toUpdate.prereqs = this.updatePrereqs(aClass.prereqs, aClass.host, aClass.termId, keyToRows);
+
+				console.log(JSON.stringify(toUpdate.prereqs));
 
 				// and simplify tree again
 				toUpdate.prereqs = ellucianRequisitesParser.simplifyRequirements(toUpdate.prereqs)
@@ -253,7 +211,3 @@ PrereqClassUids.prototype.tests = function () {
 PrereqClassUids.prototype.PrereqClassUids = PrereqClassUids;
 
 module.exports = new PrereqClassUids();
-
-if (require.main === module) {
-	module.exports.tests();
-}
