@@ -28,9 +28,16 @@ function GraphPanelExpand($timeout, $document) {
 		}
 	};
 
+	GraphPanelExpandInner.prototype.getTreePanel = function(tree) {
+		var panels = tree.foreignObject.getElementsByClassName('treePanel');
+		if (panels.length != 1) {
+			elog('should be 1 panel per node')
+		}
+		return panels[0];
+	};
+
 	// the given scope is the scope of a tree inside a recursions
 	GraphPanelExpandInner.prototype.updateScope = function (tree, isMouseOver) {
-
 		if (isMouseOver) {
 			this.setUpwardLines(tree, 8)
 			this.setDownwardLines(tree, 8)
@@ -40,29 +47,35 @@ function GraphPanelExpand($timeout, $document) {
 			this.setDownwardLines(tree, 4)
 		}
 
-		var $scope = tree.$scope
 
-		if (tree.isExpanded) {
-			$scope.style['box-shadow'] = 'gray 0px 0px 9px'
-			$scope.style.cursor = '';
-		}
-		else {
-			$scope.style.cursor = 'pointer';
-			if (isMouseOver) {
-				$scope.style['box-shadow'] = 'gray 0px 0px 6px'
-				tree.$scope.graph.bringToFront(tree)
+		if (!tree.showSelectPanel) {
+
+			// Manually change the style of the node because AngularJS is just too slow. 
+			var panel = this.getTreePanel(tree);
+			if (tree.isExpanded) {
+				panel.style['box-shadow'] = 'gray 0px 0px 9px'
+				panel.style.cursor = '';
 			}
 			else {
-				$scope.style['box-shadow'] = 'gray 0px 0px 0px'
-
-				if (tree.isCoreq) {
-					tree.$scope.graph.sortCoreqs(tree.lowestParent)
+				panel.style.cursor = 'pointer';
+				if (isMouseOver) {
+					panel.style['box-shadow'] = 'gray 0px 0px 6px'
+				}
+				else {
+					panel.style['box-shadow'] = 'gray 0px 0px 0px'
 				}
 			}
 		}
-		setTimeout(function () {
-			tree.$scope.$apply()
-		}.bind(this), 0)
+
+		// Run these regardless if the showSelctedPanel is shown or not
+		if (!tree.isExpanded) {
+			if (isMouseOver) {
+				tree.$scope.graph.bringToFront(tree)
+			}
+			else if (tree.isCoreq) {
+				tree.$scope.graph.sortCoreqs(tree.lowestParent)
+			}
+		}
 	};
 
 
@@ -157,7 +170,9 @@ function GraphPanelExpand($timeout, $document) {
 			return callback()
 		}
 		this.togglePanelPrompt(tree, callback);
-		this.updateScope(tree, false)
+		setTimeout(function () {
+			this.updateScope(tree, false);
+		}.bind(this),0)
 	};
 
 
@@ -326,18 +341,7 @@ function GraphPanelExpand($timeout, $document) {
 
 		element = element.parent()
 
-
-
-		//grab the default z index from the parent $scope, which in intended for this tree
-
-		// z index and shadow both change when expand and on mouse over
-		tree.$scope.style = {
-			'box-shadow': 'gray 0px 0px 0px',
-			cursor: 'pointer'
-		}
-
 		if (!tree.lowestParent) {
-
 			this.openOrder = []
 		};
 
@@ -345,23 +349,20 @@ function GraphPanelExpand($timeout, $document) {
 		if (!tree.lowestParent && treeMgr.countClassesInTree(tree) === 1) {
 
 			//this is undone when openPanel is done, a couple lines down
-			tree.$scope.style.visibility = 'hidden'
+			var panel = this.getTreePanel(tree);
+			panel.style.visibility = 'hidden'
 
 			this.openPanel(tree, function (err) {
 				if (err) {
-					console.log("ERROR", err);
+					elog(err);
 				}
 
-				tree.$scope.style.visibility = ''
-
-				setTimeout(function () {
-					tree.$scope.$apply();
-				}.bind(this), 0)
-
+				panel.style.visibility = ''
 			}.bind(this))
 		}
 
 		element.on('mouseover', function (event) {
+			console.log("on mouse over!");
 			this.onMouseOver(tree)
 			this.startPromptTimer(tree, event);
 		}.bind(this))
@@ -371,6 +372,7 @@ function GraphPanelExpand($timeout, $document) {
 		}.bind(this))
 
 		element.on('mouseout', function () {
+			console.log("on mouse out!");
 			clearTimeout(tree.graphPanelPromptTimeout);
 			this.onMouseOut(tree)
 		}.bind(this))

@@ -1,7 +1,7 @@
 <div graph-panel-expand ng-click="tree.isCoreq?graphPanelExpand.openPanel(tree):graphPanelExpand.openPanelPrompt(tree)">
 
     <!-- main panel -->
-    <div ng-style="style" class="panel {{tree.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="tree.isClass && !tree.showSelectPanel" panel-close=".closePanel">
+    <div class="panel {{tree.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="tree.isClass && !tree.showSelectPanel" panel-close=".closePanel">
 
         <div class="panel-heading">
 
