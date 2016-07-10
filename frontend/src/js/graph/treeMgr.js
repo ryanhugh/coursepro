@@ -114,6 +114,9 @@ TreeMgr.prototype.skipNodesPostStuff = function (tree) {
 	}
 
 	if (shouldMatch) {
+		tree.DELETED2 = true;
+
+		console.log('Removing in skipNodesPostStuff',tree)
 
 		var newChildren = tree.prereqs.values;
 
@@ -136,12 +139,23 @@ TreeMgr.prototype.skipNodesPostStuff = function (tree) {
 				}
 			}.bind(this))
 		}.bind(this))
-	}
 
-	//recursion
-	tree.prereqs.values.forEach(function (subTree) {
-		this.skipNodesPostStuff(subTree);
-	}.bind(this))
+
+		// Because we added nodes to the parent's 
+		// process them again
+		tree.allParents.forEach(function (parent) {
+			//recursion
+			parent.prereqs.values.forEach(function (subTree) {
+				this.skipNodesPostStuff(subTree);
+			}.bind(this))
+		}.bind(this))
+	}
+	else {
+		//recursion
+		tree.prereqs.values.forEach(function (subTree) {
+			this.skipNodesPostStuff(subTree);
+		}.bind(this))
+	}
 };
 
 TreeMgr.prototype.sortTree = function (tree) {
@@ -975,14 +989,14 @@ TreeMgr.prototype.ensureInvariants = function (tree, foundRootNode) {
 	// nodes are in childrens parents
 	var children = tree.prereqs.values.concat(tree.coreqs.values);
 	children.forEach(function (subTree) {
-		if (!subTree.allParents.includes(tree)) {
+		if (!_(subTree.allParents).includes(tree)) {
 			elog('childrens parent dosent include this tree')
 		}
 	}.bind(this))
 
 	tree.allParents.forEach(function (parent) {
 		var siblings = parent.prereqs.values.concat(parent.coreqs.values)
-		if (!siblings.includes(tree)) {
+		if (!_(siblings).includes(tree)) {
 			elog('parent\'s children dosent include this tree')
 		}
 	}.bind(this))
@@ -1066,12 +1080,12 @@ TreeMgr.prototype.go = function (tree) {
 	this.addAllParentRelations(tree);
 
 	this.skipNodesPostStuff(tree);
-	this.skipNodesPostStuff(tree);
+	// this.skipNodesPostStuff(tree);
 	
+	this.ensureInvariants(tree);
 	// all remaining trees a valid, so add _ids to nodes that !classes and don't already have _ids
 	this.addIdsToTrees(tree);
 
-	this.ensureInvariants(tree);
 
 	this.defaultTo(tree, 'and');
 
@@ -1083,7 +1097,7 @@ TreeMgr.prototype.go = function (tree) {
 	this.groupByCommonPrereqs(tree, 'and')
 
 	this.skipNodesPostStuff(tree);
-	this.skipNodesPostStuff(tree);
+	// this.skipNodesPostStuff(tree);
 
 	this.ensureInvariants(tree);
 

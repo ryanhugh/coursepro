@@ -147,8 +147,7 @@ Class.prototype.generateIdFromPrereqs = function () {
 	this._id = ids.join('')
 	if (this._id.length < 3) {
 		elog('couldnt make an id!', this._id, this)
-	}
-	console.log("made ",this._id)
+	} 
 };
 
 

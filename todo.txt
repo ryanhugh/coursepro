@@ -35,7 +35,7 @@ get instanceCache off the window, why were different datas using differnet insta
 cross term data copying for a processor for like swarthmore class descriptions etc
 simplifyTree shouldnt copy attrs between nodes
 
-chem 2311 dosent have coreqs????? it should
+chem 2311 dosent have coreq	s????? it should
 https://coursepro.io/#/graph/neu.edu/201710/CHEM/2311
  -- change how this is done, working on it in prereqClassUids, but need some work
  -- moving the logic for this from treeMgr to ^^  DO THIS NEXTTTTTTT AND THEN the collision code?
