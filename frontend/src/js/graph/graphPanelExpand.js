@@ -114,10 +114,11 @@ function GraphPanelExpand($timeout, $document) {
 				//$scope references just the $scope of the tree that was updated, 
 				// this.$scope references everything, and contains $scope
 
-				this.updateScope(tree, false);
 
 				//update the dom with the new $scope and tree
 				tree.$scope.$apply()
+
+				this.updateScope(tree, false);
 
 				tree.$scope.graph.updateHeight(tree)
 
@@ -362,7 +363,6 @@ function GraphPanelExpand($timeout, $document) {
 		}
 
 		element.on('mouseover', function (event) {
-			console.log("on mouse over!");
 			this.onMouseOver(tree)
 			this.startPromptTimer(tree, event);
 		}.bind(this))
@@ -372,7 +372,6 @@ function GraphPanelExpand($timeout, $document) {
 		}.bind(this))
 
 		element.on('mouseout', function () {
-			console.log("on mouse out!");
 			clearTimeout(tree.graphPanelPromptTimeout);
 			this.onMouseOut(tree)
 		}.bind(this))
