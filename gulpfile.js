@@ -456,7 +456,7 @@ gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 		}, function (exitCode) {
 			console.log('ERROR Karma has exited with ' + exitCode)
 			onError('KARMA has crashed!!!!');
-			process.exit()
+			// process.exit()
 		}.bind(this)).start();
 
 	}.bind(this));

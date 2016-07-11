@@ -109,9 +109,9 @@ Class.prototype.generateIdFromPrereqs = function () {
 	if (this.isClass && this._id) {
 		return;
 	}
-	
+
 	// If not a class, re create the id in case prereqs changed
-	
+
 	if (this.isString) {
 		this._id = this.host + this.termId + this.desc
 		return;
@@ -142,12 +142,12 @@ Class.prototype.generateIdFromPrereqs = function () {
 		ids.push(subTree._id)
 	}.bind(this))
 	if (ids.length === 0) {
-		elog('cannot make id!',this)
+		elog('cannot make id!', this)
 	}
 	this._id = ids.join('')
 	if (this._id.length < 3) {
 		elog('couldnt make an id!', this._id, this)
-	} 
+	}
 };
 
 
@@ -440,12 +440,12 @@ Class.prototype.equals = function (other) {
 };
 
 
-Class.prototype.clone = function() {
+Class.prototype.clone = function () {
 	var other = new Class();
 
 	for (var attrName in this) {
 		if (this[attrName] instanceof HTMLElement) {
-			elog('cant clone a HTMLElement in class clone',this[attrName])
+			elog('cant clone a HTMLElement in class clone', this[attrName])
 			continue;
 		}
 		else if ((typeof this[attrName]) === 'function') {
@@ -463,12 +463,23 @@ Class.prototype.clone = function() {
 				other[attrName] = _.cloneDeep(this[attrName])
 			}
 			else {
-				elog('cant clone a HTMLElement in class clone',this[attrName])
+				elog('cant clone a HTMLElement in class clone', this[attrName])
 				other[attrName] = this[attrName]
 			}
 		}
+
+		// Don't deepclone sections, the same Section() is used for both class instances below
+		else if (attrName == 'sections') {
+			continue;
+		}
 		other[attrName] = _.cloneDeep(this[attrName])
 	}
+
+	other.sections = [];
+	this.sections.forEach(function (section) {
+		other.sections.push(section);
+	}.bind(this))
+
 	return other;
 };
 
@@ -639,7 +650,10 @@ Class.prototype.loadSections = function (callback) {
 		this.sections.forEach(function (section) {
 
 			q.defer(function (callback) {
-				section.download(callback)
+				section.download(function (err, instance) {
+					debugger
+					callback(err, instance, section)
+				}.bind(this))
 			}.bind(this))
 
 		}.bind(this))

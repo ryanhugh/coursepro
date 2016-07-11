@@ -12,12 +12,18 @@ window.loadingCalls = window.loadingCalls || {};
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
 
+	// this.updateWithData(config);
 	for (var attrName in config) {
 		this[attrName] = config[attrName]
 	}
 
+	// This self = this is only used for debugging
+	var self = this;
 	var downloadConfig;
 	this.download = memoize(function (configOrCallback, callback) {
+		if (this != self) {
+			elog("instance failure!??!?!?", this, self)
+		}
 		if (typeof configOrCallback == 'object') {
 			if (downloadConfig) {
 				if (!_.isEqual(downloadConfig, configOrCallback)) {
@@ -30,11 +36,7 @@ function BaseData(config) {
 			}
 		}
 		this.internalDownload(configOrCallback, callback)
-	}.bind(this), function () {
-		// There is a bug in d3-queue where the built in hash function dosent return a string (its just _.noop) when there are no
-		// arguments to the given fn, so provide a hash fn.
-		return 'a'
-	}.bind(this))
+	})
 
 
 }
