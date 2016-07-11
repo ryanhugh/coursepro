@@ -17,6 +17,12 @@ function GraphPanelExpand($timeout, $document) {
 
 	GraphPanelExpandInner.scope = true;
 
+	GraphPanelExpandInner.prototype.bringExpandedPanelsToFront = function() {
+		this.openOrder.forEach(function (tree) {
+			tree.$scope.graph.bringToFront(tree);
+		}.bind(this))
+	};
+
 	GraphPanelExpandInner.prototype.increaseShowing = function(tree) {
 		tree.showingSectionCount+=10;
 		setTimeout(function () {
@@ -82,6 +88,9 @@ function GraphPanelExpand($timeout, $document) {
 			else if (tree.isCoreq) {
 				tree.$scope.graph.sortCoreqs(tree.lowestParent)
 			}
+
+			this.bringExpandedPanelsToFront()
+
 		}
 	};
 
