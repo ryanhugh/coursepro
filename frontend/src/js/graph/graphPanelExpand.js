@@ -19,7 +19,9 @@ function GraphPanelExpand($timeout, $document) {
 
 	GraphPanelExpandInner.prototype.increaseShowing = function(tree) {
 		tree.showingSectionCount+=10;
-		tree.$scope.graph.updateHeight(tree)
+		setTimeout(function () {
+			tree.$scope.graph.updateHeight(tree)
+		}.bind(this),0)
 	};
 
 
