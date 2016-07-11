@@ -180,7 +180,6 @@ TestsMgr.prototype.go = function(values) {
 		return;
 	}
 	this.ran = true;
-	debugger;
 
 
 

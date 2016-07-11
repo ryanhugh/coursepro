@@ -187,7 +187,6 @@ SubjectClassSelector.prototype.onSelectClass = function (fireTrigger) {
 	if (!fireTrigger) {
 		return;
 	};
-	// debugger;
 
 	setTimeout(function () {
 		if (this.$scope.addClass) {

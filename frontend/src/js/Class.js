@@ -651,7 +651,6 @@ Class.prototype.loadSections = function (callback) {
 
 			q.defer(function (callback) {
 				section.download(function (err, instance) {
-					debugger
 					callback(err, instance, section)
 				}.bind(this))
 			}.bind(this))

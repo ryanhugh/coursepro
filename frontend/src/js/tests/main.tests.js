@@ -71,7 +71,7 @@ XMLHttpRequest.prototype.send = function (json) {
 			var thisMockData = mockData[this.url]
 
 			if (!thisMockData) {
-				debugger
+				elog('unit test error: dont have url for request')
 			}
 
 
@@ -91,7 +91,6 @@ XMLHttpRequest.prototype.send = function (json) {
 
 			if (retVal.length == 0) {
 				elog("unit test error: dont have data for query", body);
-				debugger
 			};
 			this.response = JSON.stringify(retVal)
 		}

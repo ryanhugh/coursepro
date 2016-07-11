@@ -376,8 +376,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 				}
 
 				if (_(parentTree.prereqs.values).includes(currTree)) {
-					console.log("ERROR something bad yo")
-					debugger
+					elog("ERROR something bad yo")
 				}
 
 			}.bind(this));
@@ -759,8 +758,7 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 		coreqs = coreqs.concat(node.coreqs.values)
 		node.prereqs.values.forEach(function (subTree) {
 			if (!_(subTree.allParents).includes(node)) {
-				console.log("ERROR ");
-				debugger
+				elog("subtree dosent have node as parent",node,subTree);
 			}
 
 
@@ -768,7 +766,7 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 			var key = [node._id, nodeIndex, subTree._id, subTreeIndex].sort().join('')
 
 			if (connections[key]) {
-				console.log("duplicate link between ", node, subTree);
+				elog("duplicate link between ", node, subTree);
 				return;
 			}
 			else {
@@ -820,7 +818,6 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 	nodes.concat(coreqs).forEach(function (node) {
 		if (node.x === undefined || isNaN(node.x) || node.y === undefined || isNaN(node.y)) {
 			elog('nope!', node)
-			debugger
 		}
 	}.bind(this))
 

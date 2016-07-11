@@ -65,8 +65,7 @@ MockBaseData.download = function (config, callback) {
 	}.bind(this))
 
 	if (retVal.length == 0) {
-		console.log("unit test error: dont have data for query",query);
-		debugger
+		elog("unit test error: dont have data for query",query);
 	};
 
 	setTimeout(function () {

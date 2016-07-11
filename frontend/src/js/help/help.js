@@ -21,10 +21,6 @@ function Help() {
 	};
 
 	this.path = path;
-	// console.log("path",path);
-
-
-	// debugger
 }
 
 Help.fnName = 'Help'

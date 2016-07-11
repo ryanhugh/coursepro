@@ -257,7 +257,7 @@ describe('Class', function () {
 
 		var aClass = Class.create({
 			"host": "neu.edu",
-			"classUid": "7780_1224558283",
+			"classUid": "1801_75365412",
 			"termId": "201710",
 			"subject": "CS",
 		});
@@ -268,7 +268,14 @@ describe('Class', function () {
 
 			expect(aClass.download).not.toBe(other.download)
 			expect(aClass.classUid).toBe(other.classUid)
-			done()
+
+			// And that clones can download sections
+			other.loadSections(function (err) {
+				expect(!err).toBe(true);
+				expect(other.sections[0].dataStatus).toBe(macros.DATASTATUS_DONE)
+				done()
+			}.bind(this))
+
 		}.bind(this))
 	});
 

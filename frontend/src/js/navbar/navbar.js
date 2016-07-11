@@ -26,7 +26,6 @@ NavBar.prototype.getTerm = function() {
 };
 
 NavBar.prototype.openHelp = function() {
-	// debugger
 	Help.open(this)
 };
 
