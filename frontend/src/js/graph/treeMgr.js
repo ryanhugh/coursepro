@@ -19,9 +19,7 @@ TreeMgr.prototype.addIdsToTrees = function (tree) {
 		this.addIdsToTrees(subTree);
 	}.bind(this))
 
-	// if (!tree._id) {
 	tree.generateIdFromPrereqs()
-	// }
 };
 
 // this dosen't work after allParents have been added
@@ -956,11 +954,7 @@ TreeMgr.prototype.wouldSatisfyNode = function (tree) {
 		}
 	}
 
-
-	//also recurse upward if parent is !class and type 'or' ?
-
 	return false;
-
 };
 
 TreeMgr.prototype.savePrereqsForThisGraph = function (tree) {
