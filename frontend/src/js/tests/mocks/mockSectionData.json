@@ -532,4 +532,39 @@
 	"waitRemaining": 0,
 	"deps": {},
 	"updatedByParent": false
+}, {
+	"_id": "5751035cb462e991061cf06b",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201710&crn_in=18063",
+	"crn": "18063",
+	"meetings": [{
+		"startDate": 17051,
+		"endDate": 17152,
+		"profs": [
+			"Michelle Anne Borkin"
+		],
+		"where": "TBA",
+		"type": "Class",
+		"times": {
+			"3": [{
+				"start": 42300,
+				"end": 48300
+			}],
+			"5": [{
+				"start": 42300,
+				"end": 48300
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201710",
+	"subject": "CS",
+	"classId": "7280",
+	"classUid": "7280_1998699938",
+	"lastUpdateTime": 1464927068723,
+	"seatsCapacity": 30,
+	"seatsRemaining": 0,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"deps": {},
+	"updatedByParent": false
 }]

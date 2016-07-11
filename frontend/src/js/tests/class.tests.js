@@ -284,14 +284,14 @@ describe('Class', function () {
 
 		var aClass = Class.create({
 			"host": "neu.edu",
-			"classUid": "1801_75365412",
+			"classUid": "7280_1998699938",
 			"termId": "201710",
 			"subject": "CS",
 		});
 
 		aClass.download(function (err) {
 			expect(!err).toBe(true);
-			expect(aClass.sections.length).toBe(3);
+			expect(aClass.sections.length).toBe(1);
 
 			expect(aClass.sections[0].dataStatus).toBe(macros.DATASTATUS_NOTSTARTED);
 

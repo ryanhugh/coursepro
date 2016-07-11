@@ -7,8 +7,6 @@ var memoize = require('../../../memoize')
 // if its just a var here, in unit testing there are diffrent instanceCaches for each BaseData? idk why
 window.instanceCache = window.instanceCache || {};
 
-window.loadingCalls = window.loadingCalls || {};
-
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
 
@@ -107,15 +105,8 @@ BaseData.create = function (config) {
 	}
 
 	//seach instance cache for matching instance
-	//this was decided to be done linearly in case a instance got more data about itself (such as a call to download)
+	// hash all searches with host + termId + subject + classUid + crn and then lookup in the table
 	//note that we are not cloning the cacheItem, for speed
-
-	//the only time that useCache is true is in class download, because that makes a new instance and 
-	//copied all the attributes, so we dont want to return the old instance that dosent have any attrs 
-	//TODO: clean up the circles of creating instances, and eliminate the !='Class' below.
-	// need good way to separate classes...
-
-
 	if (canCache) {
 		var key = this.getKeyFromConfig(config);
 
@@ -387,13 +378,6 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 
 	var lookup = this.getIdentifer().required.lookup
 	var lookupStr = this.getIdentifer().required.str
-
-	if (!loadingCalls[lookupStr]) {
-		loadingCalls[lookupStr] = {
-			loading: true,
-			callbacks: []
-		}
-	}
 
 	this.dataStatus = macros.DATASTATUS_LOADING;
 
