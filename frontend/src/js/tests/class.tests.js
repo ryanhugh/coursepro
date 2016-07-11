@@ -272,4 +272,28 @@ describe('Class', function () {
 		}.bind(this))
 	});
 
+
+	it('can load sections', function (done) {
+
+		var aClass = Class.create({
+			"host": "neu.edu",
+			"classUid": "1801_75365412",
+			"termId": "201710",
+			"subject": "CS",
+		});
+
+		aClass.download(function (err) {
+			expect(!err).toBe(true);
+			expect(aClass.sections.length).toBe(3);
+
+			expect(aClass.sections[0].dataStatus).toBe(macros.DATASTATUS_NOTSTARTED);
+
+			aClass.loadSections(function (err) {
+				expect(!err).toBe(true);
+
+				expect(aClass.sections[0].dataStatus).toBe(macros.DATASTATUS_DONE);
+				done()
+			}.bind(this))
+		});
+	});
 });

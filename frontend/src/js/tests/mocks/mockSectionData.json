@@ -94,7 +94,7 @@
 	"meetings": [{
 		"startDate": 16687,
 		"endDate": 16778,
-		"profs": ["Leena Razzaq","Bob Jones"],
+		"profs": ["Leena Razzaq", "Bob Jones"],
 		"where": "West Village H 212",
 		"times": {}
 	}],
@@ -251,8 +251,7 @@
 				"end": 63600
 			}]
 		}
-	},
-	{
+	}, {
 		"startDate": 16778,
 		"endDate": 16778,
 		"profs": ["Leena Razzaq"],
@@ -440,4 +439,97 @@
 	"waitCapacity": 0,
 	"waitRemaining": 0,
 	"lastUpdateTime": 1458710716857
+}, {
+	"_id": "5751034ab462e991061ce834",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201710&crn_in=16295",
+	"crn": "16295",
+	"meetings": [{
+		"startDate": 17051,
+		"endDate": 17142,
+		"profs": [
+			"Virgil Pavlu"
+		],
+		"where": "TBA",
+		"type": "Class",
+		"times": {
+			"5": [{
+				"start": 48900,
+				"end": 54900
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201710",
+	"subject": "CS",
+	"classId": "1801",
+	"classUid": "1801_75365412",
+	"lastUpdateTime": 1464927050445,
+	"seatsCapacity": 32,
+	"seatsRemaining": 0,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"deps": {},
+	"updatedByParent": false
+}, {
+	"_id": "57510320b462e991061cd2fb",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201710&crn_in=16293",
+	"crn": "16293",
+	"meetings": [{
+		"startDate": 17051,
+		"endDate": 17142,
+		"profs": [
+			"Virgil Pavlu"
+		],
+		"where": "TBA",
+		"type": "Class",
+		"times": {
+			"5": [{
+				"start": 42300,
+				"end": 48300
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201710",
+	"subject": "CS",
+	"classId": "1801",
+	"classUid": "1801_75365412",
+	"lastUpdateTime": 1464927008671,
+	"seatsCapacity": 32,
+	"seatsRemaining": -6,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"deps": {},
+	"updatedByParent": false
+}, {
+	"_id": "57510348b462e991061ce71e",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201710&crn_in=16292",
+	"crn": "16292",
+	"meetings": [{
+		"startDate": 17051,
+		"endDate": 17142,
+		"profs": [
+			"Virgil Pavlu"
+		],
+		"where": "TBA",
+		"type": "Class",
+		"times": {
+			"5": [{
+				"start": 35400,
+				"end": 41400
+			}]
+		}
+	}],
+	"host": "neu.edu",
+	"termId": "201710",
+	"subject": "CS",
+	"classId": "1801",
+	"classUid": "1801_75365412",
+	"lastUpdateTime": 1464927048644,
+	"seatsCapacity": 32,
+	"seatsRemaining": 31,
+	"waitCapacity": 0,
+	"waitRemaining": 0,
+	"deps": {},
+	"updatedByParent": false
 }]
