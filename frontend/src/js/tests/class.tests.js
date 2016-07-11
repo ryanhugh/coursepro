@@ -247,8 +247,6 @@ describe('Class', function () {
 				values: []
 			}
 		})
-
-
 	});
 
 
