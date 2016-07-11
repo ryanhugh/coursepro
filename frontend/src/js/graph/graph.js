@@ -83,6 +83,9 @@ function Graph() {
 				dragStartedByRightButton = true
 				return;
 			}
+			else if (node.isExpanded) {
+				return;
+			}
 			else {
 				dragStartedByRightButton = false;
 				this.force.alpha(.007)
@@ -92,7 +95,7 @@ function Graph() {
 			if (dragStartedByRightButton) {
 				return;
 			}
-			if (node.$scope.isExpanded) {
+			if (node.isExpanded) {
 				return;
 			}
 			node.px += d3.event.dx

@@ -27,9 +27,11 @@
 
         <!-- only the panel body changes on tree.isExpanded -->
         <div ng-if="tree.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;width:100%;padding: 0;padding-top: 15px;" ng-style="{'width':panelWidth+'px'}">
-            <div ng-if="tree.dataStatus === macros.DATASTATUS_DONE">
+            <div ng-if="tree.dataStatus === macros.DATASTATUS_DONE" ng-init="tree.showingSectionCount=10">
                 <div style="margin-left: 15px;margin-right: 15px;padding-bottom: 12px;">
-                    <div style="white-space: normal;margin-bottom:10px;line-height:15px">{{tree.desc}}</div>
+                    <div style="white-space: normal;margin-bottom:10px;line-height:15px">
+                        {{tree.desc}}
+                    </div>
 
 
 
@@ -92,7 +94,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="section in tree.sections">
+                        <tr ng-repeat="section in tree.sections.slice(0,tree.showingSectionCount)">
                             <td>{{::section.crn}}</td>
                             <td>{{::section.getProfs().join(', ')}}</td>
                             <td>
@@ -173,7 +175,9 @@
                     </tbody>
                 </table>
 
-
+                <div ng-if="tree.showingSectionCount<tree.sections.length" class="showMoreButton" ng-click="graphPanelExpand.increaseShowing(tree)">
+                    Show More..
+                </div>
 
             </div>
 

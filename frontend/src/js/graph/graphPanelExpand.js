@@ -17,6 +17,11 @@ function GraphPanelExpand($timeout, $document) {
 
 	GraphPanelExpandInner.scope = true;
 
+	GraphPanelExpandInner.prototype.increaseShowing = function(tree) {
+		tree.showingSectionCount+=10;
+		tree.$scope.graph.updateHeight(tree)
+	};
+
 
 	GraphPanelExpandInner.prototype.calculatePanelWidth = function (tree) {
 
