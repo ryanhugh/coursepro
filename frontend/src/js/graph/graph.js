@@ -358,13 +358,7 @@ Graph.prototype.loadNodes = function (callback) {
 	// This entire fn should be in a setTimeout because of the scope problems, but 
 	// that causes conflicts with d3 sometimes running another tick in between when
 	// this fn was called and the setTimeout... 
-	// this.$scope.$apply();
 	this.$scope.$apply();
-	// try {
-	// }
-	// catch (e) {
-
-	// }
 
 	this.nodes.forEach(function (node) {
 		this.sortCoreqs(node);
