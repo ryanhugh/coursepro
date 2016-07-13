@@ -17,17 +17,17 @@ function GraphPanelExpand($timeout, $document) {
 
 	GraphPanelExpandInner.scope = true;
 
-	GraphPanelExpandInner.prototype.bringExpandedPanelsToFront = function() {
+	GraphPanelExpandInner.prototype.bringExpandedPanelsToFront = function () {
 		this.openOrder.forEach(function (tree) {
 			tree.$scope.graph.bringToFront(tree);
 		}.bind(this))
 	};
 
-	GraphPanelExpandInner.prototype.increaseShowing = function(tree) {
-		tree.showingSectionCount+=10;
+	GraphPanelExpandInner.prototype.increaseShowing = function (tree) {
+		tree.showingSectionCount += 10;
 		setTimeout(function () {
 			tree.$scope.graph.updateHeight(tree)
-		}.bind(this),0)
+		}.bind(this), 0)
 	};
 
 
@@ -41,7 +41,7 @@ function GraphPanelExpand($timeout, $document) {
 		}
 	};
 
-	GraphPanelExpandInner.prototype.getTreePanel = function(tree) {
+	GraphPanelExpandInner.prototype.getTreePanel = function (tree) {
 		var panels = tree.foreignObject.getElementsByClassName('treePanel');
 		if (panels.length != 1) {
 			elog('should be 1 panel per node')
@@ -49,8 +49,8 @@ function GraphPanelExpand($timeout, $document) {
 		return panels[0];
 	};
 
-	GraphPanelExpandInner.prototype.getNodeIsSelected = function(tree) {
-		return user.getListIncludesClass('selected',tree);
+	GraphPanelExpandInner.prototype.getNodeIsSelected = function (tree) {
+		return user.getListIncludesClass('selected', tree);
 	};
 
 	// the given scope is the scope of a tree inside a recursions
@@ -193,7 +193,7 @@ function GraphPanelExpand($timeout, $document) {
 		this.togglePanelPrompt(tree, callback);
 		setTimeout(function () {
 			this.updateScope(tree, false);
-		}.bind(this),0)
+		}.bind(this), 0)
 	};
 
 
@@ -210,12 +210,12 @@ function GraphPanelExpand($timeout, $document) {
 		}
 
 
-		user.toggleListContainsClass('selected', tree, false, function (err) {
-			if (err) {
-				elog(err);
-				return;
-			}
-			setTimeout(function () {
+		setTimeout(function () {
+			user.toggleListContainsClass('selected', tree, false, function (err) {
+				if (err) {
+					elog(err);
+					return;
+				}
 
 				// Run the entire big tree through all of treeMgr again
 				// this is needed to rediscover any common prereqs, recalculate depths, and pretty much 
@@ -235,8 +235,8 @@ function GraphPanelExpand($timeout, $document) {
 					clearTimeout(tree.graphPanelPromptTimeout);
 					callback()
 				}.bind(this))
-			}.bind(this), 0)
-		}.bind(this))
+			}.bind(this))
+		}.bind(this), 0)
 	};
 
 

@@ -1,7 +1,7 @@
 'use strict';
 var _ = require('lodash')
 var macros = require('../macros')
-var d3 = require('d3') 
+var d3 = require('d3')
 
 // base angular stuff
 var directiveMgr = require('../directiveMgr')
@@ -358,6 +358,7 @@ Graph.prototype.loadNodes = function (callback) {
 	// This entire fn should be in a setTimeout because of the scope problems, but 
 	// that causes conflicts with d3 sometimes running another tick in between when
 	// this fn was called and the setTimeout... 
+	// this.$scope.$apply();
 	this.$scope.$apply();
 	// try {
 	// }
@@ -532,10 +533,6 @@ Graph.prototype.go = function (tree, callback) {
 						return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
 					}
 				}.bind(this));
-
-
-
-
 			}.bind(this))
 
 			this.force.start();
@@ -568,6 +565,9 @@ Graph.prototype.go = function (tree, callback) {
 			}
 
 			this.$scope.tree = tree;
+			setTimeout(function () {
+				this.$scope.$apply();
+			}.bind(this))
 			callback(null, tree)
 
 		}.bind(this))
