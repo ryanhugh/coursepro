@@ -14,22 +14,37 @@
             </div>
         </div>
         <div style="width: 50%;float: right;display: inline;height: 100%;text-align: center;" ng-click="graphPanelExpand.onPanelSelect(tree);$event.stopPropagation();">
-            <div style="padding: 6px;text-align: left;padding-bottom: 0px;" ng-if ="tree.wouldSatisfyNode">Select this class!</div>
-            <div style="padding: 6px;text-align: left;padding-bottom: 0px;" ng-if ="!tree.wouldSatisfyNode">Unselect this class!</div>
-            <div style="padding: 6px;text-align: left;padding-top: 1px;">
-                <a>More info</a>
-            </div>
-            <div style="padding-top: 5px;">
-                <div class="panel {{tree.wouldSatisfyNode?'panel-primary':'panel-info'}}" style="margin: 0 auto;width: 87px;">
-                    <div class="panel-heading" style="height: 29px;">
-                        <h3 class="panel-title"></h3>
+
+            <div ng-if="tree.wouldSatisfyNode || graphPanelExpand.getNodeIsSelected(tree)">
+                <div style="padding: 6px;text-align: left;padding-bottom: 0px;" ng-if="tree.wouldSatisfyNode && !graphPanelExpand.getNodeIsSelected(tree)">
+                    Select this class!
+                </div>
+                <div style="padding: 6px;text-align: left;padding-bottom: 0px;" ng-if="graphPanelExpand.getNodeIsSelected(tree)">
+                    Unselect this class!
+                </div>
+                <div style="padding: 6px;text-align: left;padding-top: 1px;">
+                    <a>More info</a>
+                </div>
+                <div style="padding-top: 5px;">
+                    <div class="panel {{graphPanelExpand.getNodeIsSelected(tree)?'panel-primary':'panel-info'}}" style="margin: 0 auto;width: 87px;">
+                        <div class="panel-heading" style="height: 29px;">
+                            <h3 class="panel-title"></h3>
+                        </div>
+                        <div class="panel-body"></div>
                     </div>
-                    <div class="panel-body"></div>
                 </div>
             </div>
+
+
+            <div style="padding: 9px;text-align: left" ng-if="!tree.wouldSatisfyNode && !graphPanelExpand.getNodeIsSelected(tree)">
+                This class is required for
+                <br/> 
+                EECE 5575
+            </div>
+
         </div>
 
     </div>
     <div style="border-left-color: rgba(0, 0, 0, 0.2);border-left-style: solid;border-width: 1px;height: 168px;margin-left: 50%;margin-top: -167px;margin-bottom:-1px"></div>
-    </div>
+</div>
 </div>

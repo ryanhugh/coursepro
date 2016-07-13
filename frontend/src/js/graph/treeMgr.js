@@ -114,7 +114,7 @@ TreeMgr.prototype.skipNodesPostStuff = function (tree) {
 	if (shouldMatch) {
 		tree.DELETED2 = true;
 
-		console.log('Removing in skipNodesPostStuff',tree)
+		console.log('Removing in skipNodesPostStuff', tree)
 
 		var newChildren = tree.prereqs.values;
 
@@ -326,9 +326,9 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 
 	//breath first search down the tree
 	var stack = [tree];
-	
+
 	var deletedTrees = [];
-	
+
 	var currTree;
 	while ((currTree = stack.shift())) {
 		if (currTree.isClass) {
@@ -354,7 +354,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 
 		//if tree not the lowest tree, replace
 		if (currTree !== lowestTree) {
-			console.log("Swaping !",currTree,'for',lowestTree);
+			console.log("Swaping !", currTree, 'for', lowestTree);
 
 			//switch all references to currTree to lowestTree
 			currTree.allParents.forEach(function (parentTree) {
@@ -390,7 +390,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function (tree) {
 			}.bind(this))
 
 			currTree.DELETED = true
-			
+
 			deletedTrees.push(currTree);
 
 		}
@@ -758,7 +758,7 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 		coreqs = coreqs.concat(node.coreqs.values)
 		node.prereqs.values.forEach(function (subTree) {
 			if (!_(subTree.allParents).includes(node)) {
-				elog("subtree dosent have node as parent",node,subTree);
+				elog("subtree dosent have node as parent", node, subTree);
 			}
 
 
@@ -971,6 +971,7 @@ TreeMgr.prototype.savePrereqsForThisGraph = function (tree) {
 // invarients that are not checked yet:
 // no duplicates in children or parents (except coreqs)
 // panels should have text in them 
+// should never be selected and wouldSatisfyOtherNodes
 TreeMgr.prototype.ensureInvariants = function (tree, foundRootNode) {
 	if (foundRootNode === undefined) {
 		foundRootNode = false;
@@ -1028,6 +1029,15 @@ TreeMgr.prototype.ensureInvariants = function (tree, foundRootNode) {
 		foundRootNode = true;
 	}
 
+	if (tree.isString) {
+		if (tree.coreqs.values.length != 0 || tree.prereqs.values.length != 0) {
+			elog('string cant have prereqs or coreqs')
+		}
+		if (!tree.isClass) {
+			elog('string must be class')
+		}
+	}
+
 	tree.prereqs.values.forEach(function (subTree) {
 		this.ensureInvariants(subTree, foundRootNode);
 	}.bind(this));
@@ -1061,7 +1071,7 @@ TreeMgr.prototype.go = function (tree) {
 
 	// all remaining trees a valid, so add _ids to nodes that !classes and don't already have _ids
 	this.addIdsToTrees(tree);
-	
+
 	// SImplifyTree requires _id's but simplifyIfSelected changes what the _ids whould be generated to so have to update them again
 	this.simplifyTree(tree)
 	this.simplifyIfSelected(tree);
@@ -1072,7 +1082,7 @@ TreeMgr.prototype.go = function (tree) {
 
 	this.skipNodesPostStuff(tree);
 	// this.skipNodesPostStuff(tree);
-	
+
 	this.ensureInvariants(tree);
 	// all remaining trees a valid, so add _ids to nodes that !classes and don't already have _ids
 	this.addIdsToTrees(tree);

@@ -49,6 +49,10 @@ function GraphPanelExpand($timeout, $document) {
 		return panels[0];
 	};
 
+	GraphPanelExpandInner.prototype.getNodeIsSelected = function(tree) {
+		return user.getListIncludesClass('selected',tree);
+	};
+
 	// the given scope is the scope of a tree inside a recursions
 	GraphPanelExpandInner.prototype.updateScope = function (tree, isMouseOver) {
 		if (isMouseOver) {
@@ -199,6 +203,12 @@ function GraphPanelExpand($timeout, $document) {
 		if (!callback) {
 			callback = function () {}
 		};
+
+		// Selecting this node will not change the tree, don't allow it to be selected.
+		if (!tree.wouldSatisfyNode && !user.getListIncludesClass('selected', tree)) {
+			return callback();
+		}
+
 
 		user.toggleListContainsClass('selected', tree, false, function (err) {
 			if (err) {
