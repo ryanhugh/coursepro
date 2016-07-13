@@ -272,10 +272,8 @@ Graph.prototype.calculateGraphSize = function () {
 		.attr("height", this.graphHeight)
 };
 
-// This ca
+// This is called when the graph is first loaded, and whenever a panel on the graph is selected. 
 Graph.prototype.loadNodes = function (callback) {
-
-	// setTimeout(function () {
 	var nodesAndLinks = treeMgr.treeToD3(this.tree);
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
@@ -385,7 +383,6 @@ Graph.prototype.loadNodes = function (callback) {
 	this.force.alpha(.01)
 
 	callback()
-		// }.bind(this), 0)
 };
 
 
