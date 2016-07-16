@@ -697,9 +697,8 @@ UsersDB.prototype.addIdsToLists = function (listName, classMongoIds, sectionMong
 			return callback('no user found')
 		};
 
-		console.log('tried to add ', classMongoIds.length, ' and ', sectionMongoIds.length, ' to user ', user.email, 'list', listName);
-		console.log(user);
 
+		console.log('tried to add ', classMongoIds.length, ' and ', sectionMongoIds.length, ' to user ', user.email, 'list', listName);
 
 		var didChangeUser = false;
 		if (user.lists[listName]) {
