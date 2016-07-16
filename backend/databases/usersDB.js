@@ -731,6 +731,7 @@ UsersDB.prototype.addIdsToLists = function (listName, classMongoIds, sectionMong
 	}.bind(this));
 };
 
+
 UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectionMongoIds, loginKey, callback) {
 	var toPull = {};
 	toPull["lists." + listName + ".classes"] = classMongoIds
