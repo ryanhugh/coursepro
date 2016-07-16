@@ -28,7 +28,7 @@ var watchify = require('watchify')
 var glob = require('glob')
 var karma = require('karma')
 var cssnano = require('gulp-cssnano');
-// var cleanCSS = require('gulp-clean-css');
+// var cleanCSS = require('gulp-clean-css'); 
 
 //other stuff
 var _ = require('lodash')
