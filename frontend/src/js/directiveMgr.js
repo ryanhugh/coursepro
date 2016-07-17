@@ -5,6 +5,19 @@ var angular = require('angular')
 require('bootstrap')
 require('fullcalendar')
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(function(reg) {
+    // registration worked
+    console.log('Registration succeeded. Scope is ' + reg.scope);
+  }).catch(function(error) {
+    // registration failed
+    elog('Service worker registration failed with ' , error);
+  });
+}
+else {
+	console.log('Service worker not supported')
+}
+
 //max depth for a tree, if it reaches this angular will barf
 var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize', 'ui.calendar', 'templates', 'infinite-scroll'], ['$rootScopeProvider','$compileProvider', function ($rootScopeProvider,$compileProvider) {
 	$rootScopeProvider.digestTtl(20);
