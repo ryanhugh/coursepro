@@ -22,7 +22,7 @@ ClassesDB.prototype.isValidLookupValues = function (lookupValues) {
 	if (BaseDB.prototype.isValidLookupValues(lookupValues)) {
 		return true;
 	}
-	else if (lookupValues.host && lookupValues.termId && lookupValues.subject) {
+	else if (lookupValues.host && lookupValues.termId) {
 		return true;
 	}
 	else {

@@ -289,15 +289,15 @@ BaseData.getKeyFromConfig = function (config) {
 BaseData.download = function (config, callback) {
 
 	//make sure have all the keys
-	if (!config.body._id) {
+	// if (!config.body._id) {
 
-		this.requiredPath.forEach(function (key) {
-			if (!config.body[key]) {
-				elog(this.name, ' not given a ', key, ' in base data download');
-				return;
-			}
-		}.bind(this))
-	}
+	// 	this.requiredPath.forEach(function (key) {
+	// 		if (!config.body[key]) {
+	// 			elog(this.name, ' not given a ', key, ' in base data download');
+	// 			return;
+	// 		}
+	// 	}.bind(this))
+	// }
 
 	config.url = this.API_ENDPOINT;
 
@@ -376,8 +376,20 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 		callback = function () {}
 	}
 
-	var lookup = this.getIdentifer().required.lookup
-	var lookupStr = this.getIdentifer().required.str
+
+
+
+	// var lookup = this.getIdentifer().required.lookup
+	// var lookupStr = this.getIdentifer().required.str
+
+
+	var lookup = {};
+	if (this.host) {
+		lookup.host = this.host
+	}
+	if (this.termId) {
+		lookup.termId = this.termId
+	}
 
 	this.dataStatus = macros.DATASTATUS_LOADING;
 
@@ -431,7 +443,7 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 			}
 
 			// This class does not exist in database :/
-			console.log('found other classes in this subject, but could not find this one', lookupStr)
+			console.log('found other classes in this subject, but could not find this one', lookup)
 			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(null, this)
 		}

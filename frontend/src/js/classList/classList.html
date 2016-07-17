@@ -116,7 +116,7 @@
                 </div>
 
 
-                <div style="padding-top:5px" ng-if="class.lastUpdateString">Updated {{class.lastUpdateString}}</div>
+                <div style="padding-top:5px" ng-if="::class.getLastUpdateString()">Updated {{::class.getLastUpdateString()}}</div>
 
 
                 <table class="table table-striped" ng-if="class.sections.length>0" style="margin-bottom:0">

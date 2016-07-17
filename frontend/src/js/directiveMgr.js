@@ -14,7 +14,7 @@ if ('serviceWorker' in navigator) {
     elog('Service worker registration failed with ' , error);
   });
 }
-else {
+else { 
 	console.log('Service worker not supported')
 }
 

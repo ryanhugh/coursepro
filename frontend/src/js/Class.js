@@ -331,10 +331,6 @@ Class.prototype.updateWithData = function (config) {
 		this.name = he.decode(config.name)
 	}
 
-	if (this.lastUpdateTime !== undefined) {
-		this.lastUpdateString = moment(this.lastUpdateTime).fromNow()
-	};
-
 
 	if (config.missing && config.classId && !config.classUid) {
 
@@ -576,6 +572,15 @@ Class.prototype.getPrettyClassId = function () {
 	}
 	return prettyClassId
 
+};
+
+Class.prototype.getLastUpdateString = function () {
+	if (this.lastUpdateTime) {
+		return moment(this.lastUpdateTime).fromNow()
+	}
+	else {
+		return null;
+	}
 };
 
 //returns true if any sections have an exam, else false

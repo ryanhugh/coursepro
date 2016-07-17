@@ -51,8 +51,8 @@
                                 credits
                             </span>
                             <br>
-                            <span ng-if="tree.lastUpdateString">
-                                Updated {{tree.lastUpdateString}}
+                            <span ng-if="::tree.getLastUpdateString()">
+                                Updated {{::tree.getLastUpdateString()}}
                             </span>
                         </div>
                         <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;">

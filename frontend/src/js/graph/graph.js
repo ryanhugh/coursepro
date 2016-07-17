@@ -319,6 +319,10 @@ Graph.prototype.loadNodes = function (callback) {
 		child.upwardLinks.push(this.linkElements[0][i])
 	}
 
+	if (!this.nodeDrag) {
+		elog('hi')
+	}
+
 	this.nodeElements = this.container.selectAll(".node")
 		.data(this.nodes)
 		.enter().append("g")

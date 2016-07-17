@@ -364,7 +364,7 @@ app.post('/listSubjects', function (req, res) {
 
 app.post('/listClasses', function (req, res) {
 
-	if ((!req.body.host || !req.body.termId || !req.body.subject) && !req.body._id) {
+	if ((!req.body.host || !req.body.termId) && !req.body._id) {
 		console.log('error, no host or termId or subject given body:');
 		console.log(req.body)
 		res.status(400);
@@ -382,8 +382,12 @@ app.post('/listClasses', function (req, res) {
 		lookup = {
 			host: req.body.host,
 			termId: req.body.termId,
-			subject: req.body.subject
 		}
+
+		if (req.body.subject) {
+			lookup.subject = req.body.subject
+		}
+
 
 		//add classUid if its given
 		if (req.body.classUid) {
@@ -413,7 +417,7 @@ app.post('/listClasses', function (req, res) {
 
 app.post('/listSections', function (req, res) {
 
-	if ((!req.body.host || !req.body.termId || !req.body.subject || (!req.body.classId && !req.body.classUid)) && !req.body._id) {
+	if ((!req.body.host || !req.body.termId) && !req.body._id) {
 		console.log('error, no host or termId or subject or classId given body:');
 		console.log(req.body)
 		res.send('{"error":"no host or termId or subject or classId given (expected JSON)"}')
@@ -429,7 +433,10 @@ app.post('/listSections', function (req, res) {
 		lookup = {
 			host: req.body.host,
 			termId: req.body.termId,
-			subject: req.body.subject,
+		}
+
+		if (req.body.subject) {
+			lookup.subject = req.body.subject
 		}
 
 		if (req.body.classUid) {
