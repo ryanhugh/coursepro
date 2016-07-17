@@ -357,9 +357,15 @@ BaseData.download = function (config, callback) {
 		}
 		var hashStr = hash.join('/')
 
-		if (isFullHashIndex && resultsHash[hashStr]) {
-			callback(null, [resultsHash[hashStr]])
+		var result = resultsHash[hashStr]
+
+		// queried for a single class
+		if (isFullHashIndex && result) {
+			callback(null, [result])
 			return;
+		}
+		else if (isFullHashIndex && !result) {
+			return callback(null, []);
 		}
 		else {
 			// loop through results to find matching (hopefully this isnt too slow)

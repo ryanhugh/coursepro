@@ -505,7 +505,7 @@ var btestRun = batch(function (events, callback) {
 		}.bind(this))
 	}.bind(this));
 }, function (err) {
-	console.log('BATCH FAILED!', err);
+	onError('BATCH FAILED!' + err);
 }.bind(this));
 
 
