@@ -247,7 +247,7 @@ Class.prototype.internalDownload = function (callback) {
 	};
 
 
-	BaseData.prototype.internalDownload.call(this, {}, function (err, body) {
+	BaseData.prototype.internalDownload.call(this, function (err, body) {
 		if (err) {
 			elog('http error...', err);
 			return callback(err)

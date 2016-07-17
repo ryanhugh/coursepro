@@ -4,8 +4,7 @@ var request = require('./request')
 var async = require('async')
 var memoize = require('../../../memoize')
 
-// if its just a var here, in unit testing there are diffrent instanceCaches for each BaseData? idk why
-window.instanceCache = window.instanceCache || {};
+var instanceCache = {};
 
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
@@ -18,25 +17,12 @@ function BaseData(config) {
 	// This self = this is only used for debugging
 	var self = this;
 	var downloadConfig;
-	this.download = memoize(function (configOrCallback, callback) {
+	this.download = memoize(function (callback) {
 		if (this != self) {
 			elog("instance failure!??!?!?", this, self)
 		}
-		if (typeof configOrCallback == 'object') {
-			if (downloadConfig) {
-				if (!_.isEqual(downloadConfig, configOrCallback)) {
-					elog('CONIFG must be the same between download calls of' + this.constructor.name)
-					return;
-				}
-			}
-			else {
-				downloadConfig = configOrCallback
-			}
-		}
-		this.internalDownload(configOrCallback, callback)
+		this.internalDownload(callback)
 	})
-
-
 }
 
 BaseData.doObjectsMatchWithKeys = function (keys, a, b) {
@@ -285,8 +271,42 @@ BaseData.getKeyFromConfig = function (config) {
 	}
 };
 
+var resultsHash = {};
+
 //all requests from all trafic go through here
 BaseData.download = function (config, callback) {
+
+	// HERE, can be given 2 types:
+	// host + ... + classUid, which can just index hash and done
+	// .. and missing classUid, in which you would just loop over O(n)...
+	// 	this.requiredPath
+	// ["host", "termId", "subject"]
+	// this.optionalPath
+	// ["classUid"]
+
+
+
+	var keys = this.requiredPath.concat(this.optionalPath)
+	var isFullHashIndex = true
+	var hash = [this.API_ENDPOINT];
+	for (var i = 0; i < keys.length; i++) {
+		var attrName = keys[i]
+		var keyValue = config.body[attrName]
+		if (keyValue) {
+			hash.push(keyValue)
+		}
+		else {
+			isFullHashIndex = false;
+			break;
+		};
+	}
+	var hashStr = hash.join('/')
+
+	if (isFullHashIndex && resultsHash[hashStr]) {
+		callback(null, [resultsHash[hashStr]])
+		return;
+	}
+
 
 	//make sure have all the keys
 	// if (!config.body._id) {
@@ -299,9 +319,54 @@ BaseData.download = function (config, callback) {
 	// 	}.bind(this))
 	// }
 
-	config.url = this.API_ENDPOINT;
+	// config.url = this.API_ENDPOINT;
 
-	request(config, function (err, results) {
+	// Get all the data in this term
+	var requestQuery = {
+		url:this.API_ENDPOINT,
+		body:{}
+	}
+	if (config.body.host) {
+		requestQuery.body.host = config.body.host
+	}
+	if (config.body.termId) {
+		requestQuery.body.termId = config.body.termId
+	}
+
+	request(requestQuery, function (err, results) {
+
+		// load it into the hash map
+		results.forEach(function (result) {
+			var hash = this.API_ENDPOINT+'/'+this.getKeyFromConfig(result)
+			resultsHash[hash] = result;
+		}.bind(this))
+
+		// Find the one we were asked for	
+		var isFullHashIndex = true
+		var hash = [this.API_ENDPOINT];
+		for (var i = 0; i < keys.length; i++) {
+			var attrName = keys[i]
+			var keyValue = config.body[attrName]
+			if (keyValue) {
+				hash.push(keyValue)
+			}
+			else {
+				isFullHashIndex = false;
+				break;
+			};
+		}
+		var hashStr = hash.join('/')
+
+		if (isFullHashIndex && resultsHash[hashStr]) {
+			callback(null, [resultsHash[hashStr]])
+			return;
+		}
+		else {
+			// loop through results to find matching (hopefully this isnt too slow)
+			console.warn("not done yet!")
+		}
+
+
 		callback(err, results)
 	}.bind(this))
 }
@@ -353,30 +418,10 @@ BaseData.createMany = function (body, callback) {
 }
 
 
-//the only config option right now is returnResults
-// config must be the same between calls, enfored in the constructor
-BaseData.prototype.internalDownload = function (configOrCallback, callback) {
-	var config = configOrCallback;
-
-	//switch if config not given
-	if (typeof configOrCallback == 'function') {
-		callback = configOrCallback
-		config = {}
-	}
-	else if (!configOrCallback && !callback) {
-		config = {}
-	}
-
-	//if could get more than 1 with normal keys
-	if (config.returnResults === undefined) {
-		config.returnResults = false;
-	};
-
+BaseData.prototype.internalDownload = function (callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-
-
 
 
 	// var lookup = this.getIdentifer().required.lookup
@@ -389,6 +434,14 @@ BaseData.prototype.internalDownload = function (configOrCallback, callback) {
 	}
 	if (this.termId) {
 		lookup.termId = this.termId
+	}
+
+	// var resultsQuery = {}
+	if (this.subject) {
+		lookup.subject = this.subject
+	}
+	if (this.classUid) {
+		lookup.classUid = this.classUid
 	}
 
 	this.dataStatus = macros.DATASTATUS_LOADING;
