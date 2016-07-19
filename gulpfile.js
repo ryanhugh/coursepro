@@ -67,7 +67,9 @@ gulp.task('watchUglifyCSS', function () {
 
 function injectMacros(stream) {
 	for (var attrName in macros) {
-		stream = stream.pipe(replace('macros.' + attrName, String(macros[attrName])))
+		stream = stream.pipe(replace('macros.' + attrName, String(macros[attrName]), {
+			skipBinary: true
+		}))
 	}
 	return stream;
 }
