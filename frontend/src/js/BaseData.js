@@ -284,6 +284,16 @@ BaseData.download = function (config, callback) {
 	// this.optionalPath
 	// ["classUid"]
 
+	if (!config.body._id) {
+		if (!config.body.host && _(this.requiredPath).includes('host')) {
+			elog('nope')
+		}
+		if (!config.body.termId && _(this.requiredPath).includes('termId')) {
+			elog('nope')
+		}
+
+	}
+
 
 
 	var keys = this.requiredPath.concat(this.optionalPath)
@@ -303,8 +313,7 @@ BaseData.download = function (config, callback) {
 	var hashStr = hash.join('/')
 
 	if (isFullHashIndex && resultsHash[hashStr]) {
-		callback(null, [resultsHash[hashStr]])
-		return;
+		return callback(null, [resultsHash[hashStr]])
 	}
 
 	// NEED SOME WAY TO NOT FIRE THIS OFF TWICE EV3R
@@ -326,8 +335,8 @@ BaseData.download = function (config, callback) {
 
 	// Get all the data in this term
 	var requestQuery = {
-		url:this.API_ENDPOINT,
-		body:{}
+		url: this.API_ENDPOINT,
+		body: {}
 	}
 	if (config.body.host) {
 		requestQuery.body.host = config.body.host
@@ -336,11 +345,18 @@ BaseData.download = function (config, callback) {
 		requestQuery.body.termId = config.body.termId
 	}
 
+	//NEED SOMEWAY TO PREVENT 2 DIFF SECTION FROM LOADING THE ENTIRE TERM TWIECE
+	// THATS WHATS GOING ON with engw1111 right now, all of the sections are getting here and loading the entir eterm
+	// they are passing download group because full lookup passed to it
+
 	request(requestQuery, function (err, results) {
+		if (err) {
+			return callback(err)
+		}
 
 		// load it into the hash map
 		results.forEach(function (result) {
-			var hash = this.API_ENDPOINT+'/'+this.getKeyFromConfig(result)
+			var hash = this.API_ENDPOINT + '/' + this.getKeyFromConfig(result)
 			resultsHash[hash] = result;
 		}.bind(this))
 
@@ -348,8 +364,7 @@ BaseData.download = function (config, callback) {
 
 		// queried for a single class
 		if (isFullHashIndex && result) {
-			callback(null, [result])
-			return;
+			return callback(null, [result])
 		}
 
 		//
@@ -357,6 +372,25 @@ BaseData.download = function (config, callback) {
 			return callback(null, []);
 		}
 		else {
+			console.warn('Missed cache, searching for ', config.body);
+
+			var arrayOfResults = _.values(resultsHash);
+			var matches = [];
+			for (var i = 0; i < arrayOfResults.length; i++) {
+				var row = arrayOfResults[i];
+				var isMatch = true;
+				for (var attrName in config.body) {
+					if (config.body[attrName] != row[attrName]) {
+						isMatch = false;
+						break;
+					}
+				}
+				if (isMatch) {
+					matches.push(row)
+				}
+			}
+			return callback(null, matches)
+
 			// loop through results to find matching (hopefully this isnt too slow)
 			console.warn("not done yet!")
 		}
@@ -426,17 +460,27 @@ BaseData.prototype.internalDownload = function (callback) {
 	var lookup = {};
 	if (this.host) {
 		lookup.host = this.host
-	}
-	if (this.termId) {
-		lookup.termId = this.termId
-	}
 
-	// var resultsQuery = {}
-	if (this.subject) {
-		lookup.subject = this.subject
+		if (this.termId) {
+			lookup.termId = this.termId
+		}
+
+		// var resultsQuery = {}
+		if (this.subject) {
+			lookup.subject = this.subject
+		}
+		if (this.classUid) {
+			lookup.classUid = this.classUid
+		}
+		if (this.crn) {
+			lookup.crn = this.crn
+		}
 	}
-	if (this.classUid) {
-		lookup.classUid = this.classUid
+	else if (this._id) {
+		lookup._id = this._id
+	}
+	else {
+		elog('dont have _id or host?',this)
 	}
 
 	this.dataStatus = macros.DATASTATUS_LOADING;
