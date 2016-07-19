@@ -11,6 +11,9 @@
  limitations under the License.
 */
 
+// macros.DEVELOPMENT and macros.PRODUCTION are swapped with true and false by gulp-replace
+var macros = {};
+
 // While overkill for this specific sample in which there is only one cache,
 // this is one best practice that can be followed in general to keep track of
 // multiple caches used by a given service worker, and keep them all versioned.
@@ -27,7 +30,7 @@
 var CACHE_VERSION = 1;
 var CURRENT_CACHES = {
   'read-through': 'read-through-cache-v' + CACHE_VERSION
-};
+}; 
 
 self.addEventListener('install', function (event) {
   event.waitUntil(self.skipWaiting());
@@ -176,6 +179,11 @@ this.addEventListener('fetch', function (event) {
   }
 
   if (event.request.method != 'GET' && !shouldCachePost(event.request.url)) {
+    return;
+  }
+
+  if (macros.DEVELOPMENT && event.request.url.endsWith('.js')) {
+    console.log("Not caching .js on dev");
     return;
   }
 

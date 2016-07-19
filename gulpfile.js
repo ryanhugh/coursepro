@@ -12,6 +12,7 @@ var angularTemplates = require('gulp-angular-templatecache')
 var htmlmin = require('gulp-htmlmin');
 var notify = require("gulp-notify");
 var addsrc = require('gulp-add-src');
+var replace = require('gulp-replace');
 
 
 // for backend unit tests
@@ -36,10 +37,11 @@ var path = require('path')
 var queue = require('d3-queue').queue;
 var fs = require('fs-extra')
 var memoize = require('./memoize')
+var macros = require('./backend/macros')
 
 
 process.on('uncaughtException', function (err) {
-	onError('Restart gulp'+err)
+	onError('Restart gulp' + err)
 });
 
 
@@ -62,6 +64,13 @@ gulp.task('watchUglifyCSS', function () {
 	gulp.watch(['frontend/css/*.css'], ['uglifyCSS']);
 });
 
+
+function injectMacros(stream) {
+	for (var attrName in macros) {
+		stream = stream.pipe(replace('macros.' + attrName, String(macros[attrName])))
+	}
+	return stream;
+}
 
 function onError(error) {
 
@@ -165,28 +174,30 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 			else {
 				bundler = bundler.external(node_module_dependencies)
 			}
-			var rebundle = function () {
 
-				// These names are hardcoded into index.html and into the karma.conf.js
-				// and maybe in server.js
-				var name = '';
-				if (compileRequire) {
-					if (includeTests) {
-						name = 'vender.tests.js'
-					}
-					else {
-						name = 'vender.js'
-					}
+			// These names are hardcoded into index.html and into the karma.conf.js
+			// and maybe in server.js
+			var name = '';
+			if (compileRequire) {
+				if (includeTests) {
+					name = 'vender.tests.js'
 				}
 				else {
-					if (includeTests) {
-						name = 'app.tests.js'
-					}
-					else {
-						name = 'app.js'
-					}
+					name = 'vender.js'
 				}
+			}
+			else {
+				if (includeTests) {
+					name = 'app.tests.js'
+				}
+				else {
+					name = 'app.js'
+				}
+			}
+			var timers = {};
 
+			var rebundle = function () {
+				timers[name] = new Date()
 
 				console.log("----Bundling " + name + "!----")
 				var stream = bundler.bundle();
@@ -229,10 +240,14 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 					})));
 				}
 
+				// This adds about 30-40 ms, would benefit a lot from some memoize stream things
+				stream = injectMacros(stream)
+
 				stream = stream.pipe(gulp.dest('./frontend/static/js'));
 
 				stream.on('end', function () {
-					console.log("----Done Bundling " + name + "!----")
+
+					console.log("----Done Bundling " + name + " (" + (new Date() - timers[name]) + " ms) !----")
 					callback();
 				}.bind(this))
 			};
@@ -350,9 +365,22 @@ gulp.task('copyRootFiles', function (callback) {
 
 					var fileName = path.basename(file);
 
-					fs.copy(file, 'frontend/static/' + fileName, function (err) {
-						return callback(err)
-					}.bind(this))
+					var stream = gulp.src(file);
+
+					stream = injectMacros(stream)
+
+					stream.pipe(gulp.dest('./frontend/static'))
+						.on('error', function (err) {
+							onError(err)
+						}.bind(this))
+						.on('end', function () {
+							callback()
+						}.bind(this))
+
+
+					// fs.copy(file, 'frontend/static/' + fileName, function (err) {
+					// 	return callback(err)
+					// }.bind(this))
 				}.bind(this))
 
 			}.bind(this))

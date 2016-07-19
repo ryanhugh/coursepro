@@ -307,6 +307,9 @@ BaseData.download = function (config, callback) {
 		return;
 	}
 
+	// NEED SOME WAY TO NOT FIRE THIS OFF TWICE EV3R
+	// IF ALL DATA IS DOWNLOADED, JUST SEARCH IT
+
 
 	//make sure have all the keys
 	// if (!config.body._id) {
@@ -341,22 +344,6 @@ BaseData.download = function (config, callback) {
 			resultsHash[hash] = result;
 		}.bind(this))
 
-		// Find the one we were asked for	
-		var isFullHashIndex = true
-		var hash = [this.API_ENDPOINT];
-		for (var i = 0; i < keys.length; i++) {
-			var attrName = keys[i]
-			var keyValue = config.body[attrName]
-			if (keyValue) {
-				hash.push(keyValue)
-			}
-			else {
-				isFullHashIndex = false;
-				break;
-			};
-		}
-		var hashStr = hash.join('/')
-
 		var result = resultsHash[hashStr]
 
 		// queried for a single class
@@ -364,6 +351,8 @@ BaseData.download = function (config, callback) {
 			callback(null, [result])
 			return;
 		}
+
+		//
 		else if (isFullHashIndex && !result) {
 			return callback(null, []);
 		}

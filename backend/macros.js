@@ -62,14 +62,12 @@ function setupTargetStates() {
 
 		if (command === 'prod') {
 			exports.PRODUCTION = true;
-			return;
 		}
 		else if (command === 'dev' || command === 'spider') {
 			exports.DEVELOPMENT = true;
 			if (command == 'spider') {
 				exports.SPIDER = true;
-			};
-			return
+			}
 		}
 		else if (_(command).includes('test')) {
 			exports.UNIT_TESTS = true;
@@ -84,8 +82,23 @@ function setupTargetStates() {
 	else {
 		console.log("Not running from gulp, setting to dev mode")
 		exports.DEVELOPMENT = true;
-		return;
 	}
+
+
+	//Set all the stuff that wasen't set to false
+	if (exports.PRODUCTION === undefined) {
+		exports.PRODUCTION = false
+	}
+	if (exports.DEVELOPMENT === undefined) {
+		exports.DEVELOPMENT = false
+	}
+	if (exports.SPIDER === undefined) {
+		exports.SPIDER = false
+	}
+	if (exports.UNIT_TESTS === undefined) {
+		exports.UNIT_TESTS = false;
+	}
+
 }
 setupTargetStates()
 
