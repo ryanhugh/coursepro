@@ -273,6 +273,29 @@ BaseData.getKeyFromConfig = function (config) {
 
 var resultsHash = {};
 
+BaseData.downloadResultsGroup = memoize(function (config, callback) {
+
+	console.log("Downloading + Building hash for " + this.API_ENDPOINT, config);
+
+	request(config, function (err, results) {
+		if (err) {
+			return callback(err)
+		}
+
+		// load it into the hash map
+		results.forEach(function (result) {
+			var hash = this.API_ENDPOINT + '/' + this.getKeyFromConfig(result)
+			resultsHash[hash] = result;
+		}.bind(this))
+
+		callback(null, results, resultsHash)
+	}.bind(this))
+
+}, function (config) {
+	return this.API_ENDPOINT + '/' + BaseData.getKeyFromConfig(config.body)
+})
+
+
 //all requests from all trafic go through here
 BaseData.download = function (config, callback) {
 
@@ -349,16 +372,8 @@ BaseData.download = function (config, callback) {
 	// THATS WHATS GOING ON with engw1111 right now, all of the sections are getting here and loading the entir eterm
 	// they are passing download group because full lookup passed to it
 
-	request(requestQuery, function (err, results) {
-		if (err) {
-			return callback(err)
-		}
+	this.downloadResultsGroup(requestQuery, function (err, results, resultsHash) {
 
-		// load it into the hash map
-		results.forEach(function (result) {
-			var hash = this.API_ENDPOINT + '/' + this.getKeyFromConfig(result)
-			resultsHash[hash] = result;
-		}.bind(this))
 
 		var result = resultsHash[hashStr]
 
@@ -480,7 +495,7 @@ BaseData.prototype.internalDownload = function (callback) {
 		lookup._id = this._id
 	}
 	else {
-		elog('dont have _id or host?',this)
+		elog('dont have _id or host?', this)
 	}
 
 	this.dataStatus = macros.DATASTATUS_LOADING;
@@ -504,7 +519,7 @@ BaseData.prototype.internalDownload = function (callback) {
 		}
 
 		if (instances.length == 0) {
-			console.log('base data download results.length = 0', this, config)
+			console.log('base data download results.length = 0', this, lookup)
 			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(null, this)
 
