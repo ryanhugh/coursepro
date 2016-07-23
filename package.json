@@ -51,6 +51,7 @@
     "lodash": "^4.0.0",
     "merge-stream": "^1.0.0",
     "microplugin": "0.0.3",
+    "mkdirp": "^0.5.1",
     "moment": "^2.11.2",
     "mongodb": "^2.1.18",
     "monk": "^2.1.0",

@@ -11,7 +11,11 @@ var parsersClasses = requireDir('./parsers');
 var processors = [
 	require('./processors/addClassUids'),
 	require('./processors/prereqClassUids'),
-	require('./processors/termStartEndDate')
+	require('./processors/termStartEndDate'),
+	
+	// Add new processors here
+	
+	require('./processors/databaseDumps')
 ]
 
 var emailMgr = require('./emailMgr');

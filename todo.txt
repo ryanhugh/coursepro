@@ -14,7 +14,6 @@ debug why it takes multiple clicks sometimes?
 popup explaining what is going on with the selecting
 
 
-
 https://serviceworke.rs/
 
 

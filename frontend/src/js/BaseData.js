@@ -276,8 +276,13 @@ var resultsHash = {};
 BaseData.downloadResultsGroup = memoize(function (config, callback) {
 
 	console.log("Downloading + Building hash for " + this.API_ENDPOINT, config);
+	
+	var requestConfig = {};
+	var string = this.getKeyFromConfig(config.body);
+	requestConfig.url = this.API_ENDPOINT + '/' + string;
+	// console.log(requestConfig)
 
-	request(config, function (err, results) {
+	request(requestConfig, function (err, results) {
 		if (err) {
 			return callback(err)
 		}
@@ -373,6 +378,9 @@ BaseData.download = function (config, callback) {
 	// they are passing download group because full lookup passed to it
 
 	this.downloadResultsGroup(requestQuery, function (err, results, resultsHash) {
+		if (err) {
+			return callback(err);
+		}
 
 
 		var result = resultsHash[hashStr]
