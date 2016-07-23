@@ -3,6 +3,7 @@ var BaseProcessor = require('./baseProcessor').BaseProcessor;
 var macros = require('../macros')
 var classesDB = require('../databases/classesDB')
 var sectionsDB = require('../databases/sectionsDB')
+var subjectsDB = require('../databases/subjectsDB')
 var mkdirp = require('mkdirp');
 var queue = require('d3-queue').queue
 var fs = require('fs')
@@ -113,6 +114,17 @@ DatabaseDumps.prototype.go = function(query, callback) {
 				return callback(err)
 			}
 			this.saveRows('listSections',results,function(err) {
+				return callback(err)
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
+	
+	q.defer(function(callback) {
+		subjectsDB.find(searchQuery, {skipValidation: true},function(err, results) {
+			if (err) {
+				return callback(err)
+			}
+			this.saveRows('listSubjects',results,function(err) {
 				return callback(err)
 			}.bind(this))
 		}.bind(this))
