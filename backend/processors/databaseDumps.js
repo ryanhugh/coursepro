@@ -130,6 +130,8 @@ DatabaseDumps.prototype.go = function(query, callback) {
 		}.bind(this))
 	}.bind(this))
 	
+	console.warn("NEED TO ADD TERM AND COLLEG EHERE TOOOO");
+	
 	q.awaitAll(function(err) {
 		callback(err)
 	}.bind(this))
