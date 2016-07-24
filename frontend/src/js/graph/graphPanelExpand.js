@@ -255,8 +255,11 @@ function GraphPanelExpand($timeout, $document) {
 	};
 
 	GraphPanelExpandInner.prototype.openPanel = function (tree, callback) {
+		if (!callback) {
+			callback = function(){}
+		}
 		if (tree.isExpanded || tree.isString) {
-			return;
+			return callback();
 		}
 
 		ga('send', {
@@ -272,8 +275,11 @@ function GraphPanelExpand($timeout, $document) {
 	};
 
 	GraphPanelExpandInner.prototype.closePanel = function (tree, callback) {
+		if (!callback) {
+			callback = function(){}
+		}
 		if (!tree.isExpanded) {
-			return;
+			return callback();
 		}
 
 		ga('send', {
@@ -374,19 +380,22 @@ function GraphPanelExpand($timeout, $document) {
 
 		//if only this panel, expand it
 		if (!tree.lowestParent && treeMgr.countClassesInTree(tree) === 1) {
-			return;
+			// return;
+			
+			setTimeout(function(){
+				//this is undone when openPanel is done, a couple lines down
+				var panel = this.getTreePanel(tree);
+				panel.style.visibility = 'hidden'
+	
+				this.openPanel(tree, function (err) {
+					if (err) {
+						elog(err);
+					}
+	
+					panel.style.visibility = ''
+				}.bind(this))
+			}.bind(this),0)
 
-			//this is undone when openPanel is done, a couple lines down
-			var panel = this.getTreePanel(tree);
-			panel.style.visibility = 'hidden'
-
-			this.openPanel(tree, function (err) {
-				if (err) {
-					elog(err);
-				}
-
-				panel.style.visibility = ''
-			}.bind(this))
 		}
 
 		element.on('mouseover', function (event) {
