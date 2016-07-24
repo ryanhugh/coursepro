@@ -63,7 +63,7 @@ function Graph() {
 	if (path.classUid && path.subject) {
 		setTimeout(function(){
 			this.createGraph(path)
-		}.bind(this))
+		}.bind(this), 0);
 		this.$scope.focusSelector = false;
 	}
 	else {
