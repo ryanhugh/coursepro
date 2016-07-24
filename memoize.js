@@ -52,6 +52,10 @@ module.exports = function (fn, hasher) {
             fn.apply(this, args.concat([_restParam(function (args) {
                 memo[key] = args;
                 var q = queues[key];
+                if (!q) {
+                	console.error('CALLED CALLBACK TWICE!',new Error().stack)
+                	debugger
+                }
                 delete queues[key];
                 for (var i = 0, l = q.length; i < l; i++) {
                     q[i].apply(this, args);

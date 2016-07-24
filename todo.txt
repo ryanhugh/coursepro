@@ -12,6 +12,7 @@ debug why it takes multiple clicks sometimes?
 "lab for [subject]\s+\d+" add (and that regex has to be different)
  --- https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=PHYS&crse_numb_in=1152
 popup explaining what is going on with the selecting
+for graphs that only have one node, make it so you can drag that node
 
 
 https://serviceworke.rs/

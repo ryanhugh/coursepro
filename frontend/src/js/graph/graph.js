@@ -61,7 +61,9 @@ function Graph() {
 
 	//if given path, load graph
 	if (path.classUid && path.subject) {
-		this.createGraph(path)
+		setTimeout(function(){
+			this.createGraph(path)
+		}.bind(this))
 		this.$scope.focusSelector = false;
 	}
 	else {
@@ -76,34 +78,8 @@ function Graph() {
 		this.calculateGraphSize();
 	}.bind(this));
 
-	var dragStartedByRightButton = false;
-	this.nodeDrag = d3.behavior.drag()
-		.on("dragstart", function (node) {
-			if (d3.event.sourceEvent.which == 3) {
-				dragStartedByRightButton = true
-				return;
-			}
-			else if (node.isExpanded) {
-				return;
-			}
-			else {
-				dragStartedByRightButton = false;
-				this.force.alpha(.007)
-			}
-		}.bind(this))
-		.on("drag", function (node) {
-			if (dragStartedByRightButton) {
-				return;
-			}
-			if (node.isExpanded) {
-				return;
-			}
-			node.px += d3.event.dx
-			node.py += d3.event.dy
-			node.x += d3.event.dx
-			node.y += d3.event.dy
-			this.force.alpha(.007)
-		}.bind(this))
+	
+
 }
 
 Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile']
@@ -318,6 +294,36 @@ Graph.prototype.loadNodes = function (callback) {
 		parent.downwardLinks.push(this.linkElements[0][i])
 		child.upwardLinks.push(this.linkElements[0][i])
 	}
+	
+	var dragStartedByRightButton = false;
+	
+	this.nodeDrag = d3.behavior.drag()
+		.on("dragstart", function (node) {
+			if (d3.event.sourceEvent.which == 3) {
+				dragStartedByRightButton = true
+				return;
+			}
+			else if (node.isExpanded) {
+				return;
+			}
+			else {
+				dragStartedByRightButton = false;
+				this.force.alpha(.007)
+			}
+		}.bind(this))
+		.on("drag", function (node) {
+			if (dragStartedByRightButton) {
+				return;
+			}
+			if (node.isExpanded) {
+				return;
+			}
+			node.px += d3.event.dx
+			node.py += d3.event.dy
+			node.x += d3.event.dx
+			node.y += d3.event.dy
+			this.force.alpha(.007)
+		}.bind(this))
 
 	if (!this.nodeDrag) {
 		elog('hi')
@@ -576,7 +582,6 @@ Graph.prototype.createGraph = function (tree, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-
 
 	//process tree takes in a callback
 	this.go(tree, function (err, tree) {

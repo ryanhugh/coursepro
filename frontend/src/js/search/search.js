@@ -61,7 +61,7 @@ function Search() {
 
 Search.fnName = 'Search'
 // Search.isPage = true;
-Search.$inject = ['$scope']
+Search.$inject = ['$scope','$location']
 // Search.urls = ['/search/:host/:termId/:subject?/:searchText?']
 
 //prototype constructor
@@ -199,6 +199,12 @@ Search.prototype.search = function() {
 		
 		this.$scope.$apply();
 	}.bind(this))
+}
+
+
+Search.prototype.onClick = function(aClass) {
+	var obj = aClass;
+	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))		
 }
 
 

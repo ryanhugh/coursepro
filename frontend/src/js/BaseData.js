@@ -341,7 +341,10 @@ BaseData.download = function (config, callback) {
 	var hashStr = hash.join('/')
 
 	if (isFullHashIndex && resultsHash[hashStr]) {
-		return callback(null, [resultsHash[hashStr]])
+		setTimeout(function(){
+			callback(null, [resultsHash[hashStr]])
+		}.bind(this),0)
+		return;
 	}
 
 	// NEED SOME WAY TO NOT FIRE THIS OFF TWICE EV3R

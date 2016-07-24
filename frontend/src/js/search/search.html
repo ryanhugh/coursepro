@@ -2,9 +2,9 @@
 	<div class="list-group">
 		
 		
-	  <a ng-repeat = "aClass in search.classes" class="list-group-item {{$index===1?'active':''}}">
-	    <h4 class="list-group-item-heading">{{aClass.subject}} {{aClass.classId}}</h4>
-	    <p class="list-group-item-text">{{aClass.name}}</p>
+	  <a ng-repeat = "aClass in search.classes" class="list-group-item {{$index===1?'active':''}}" href="" ng-click="search.onClick(aClass)">
+	    <h4 class="list-group-item-heading">{{::aClass.subject}} {{::aClass.classId}}</h4>
+	    <p class="list-group-item-text">{{::aClass.name}}</p>
 	  </a>
 	  
 	  <!--<a class="list-group-item">-->
