@@ -91,17 +91,17 @@ function shouldCachePost(url) {
 
 
 function go(request, requestForCache) {
-  console.log('Handling fetch event for', request.url);
+  //console.log('Handling fetch event for', request.url);
   return caches.open(CURRENT_CACHES['read-through']).then(function (cache) {
     return cache.match(requestForCache).then(function (response) {
       if (response) {
         // If there is an entry in the cache for event.request, then response will be defined
         // and we can just return it.
-        console.log(' Found response in cache:', response);
+        // console.log(' Found response in cache:', response);
 
         //update the cache
         fetch(request.clone()).then(function (response) {
-          console.log('  Response for %s from network is: %O', request.url, response);
+          //console.log('  Response for %s from network is: %O', request.url, response);
 
           // Optional: add in extra conditions here, e.g. response.type == 'basic' to only cache
           // responses from the same domain. See https://fetch.spec.whatwg.org/#concept-response-type
@@ -123,13 +123,13 @@ function go(request, requestForCache) {
 
       // Otherwise, if there is no entry in the cache for request, response will be
       // undefined, and we need to fetch() the resource.
-      console.log(' No response for %s found in cache. About to fetch from network...', request.url);
+      //console.log(' No response for %s found in cache. About to fetch from network...', request.url);
 
       // We call .clone() on the request since we might use it in the call to cache.put() later on.
       // Both fetch() and cache.put() "consume" the request, so we need to make a copy.
       // (see https://fetch.spec.whatwg.org/#dom-request-clone)
       return fetch(request.clone()).then(function (response) {
-        console.log('  Response for %s from network is: %O', request.url, response);
+        // console.log('  Response for %s from network is: %O', request.url, response);
 
         // Optional: add in extra conditions here, e.g. response.type == 'basic' to only cache
         // responses from the same domain. See https://fetch.spec.whatwg.org/#concept-response-type
@@ -183,7 +183,7 @@ this.addEventListener('fetch', function (event) {
   }
 
   if (macros.DEVELOPMENT && event.request.url.endsWith('.js')) {
-    console.log("Not caching .js on dev");
+    // console.log("Not caching .js on dev");
     return;
   }
 
@@ -201,7 +201,7 @@ this.addEventListener('fetch', function (event) {
 
       var newUrl = event.request.url + '/' + newEndingUrl.join('/')
 
-      console.log("new url: ", newUrl);
+      //console.log("new url: ", newUrl);
 
       return go(event.request, new Request(newUrl))
     }.bind(this)))

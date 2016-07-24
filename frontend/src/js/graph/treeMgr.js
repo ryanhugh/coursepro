@@ -779,47 +779,6 @@ TreeMgr.prototype.treeToD3 = function (tree) {
 		}.bind(this))
 	}.bind(this))
 
-	if (nodes[0].x === undefined) {
-		nodes[0].x = window.innerWidth / 2;
-	}
-
-	nodes.forEach(function (node) {
-
-		if (node.x === undefined) {
-			// Find average percent index * 1000, used as starting position for graph
-			// dosen't need to be that close to where it needs to be, d3 will make it better
-			var xSum = 0;
-			node.allParents.forEach(function (nodeParent) {
-				var index = nodeParent.prereqs.values.indexOf(node);
-				var length = nodeParent.prereqs.values.length;
-				if (!nodeParent.x) {
-					elog('nodeParent dosent have an x but it was set above?', nodeParent)
-				}
-
-				// 300 is the guess distance between nodes
-				xSum += ((index - (length - 1) / 2) * 300 + nodeParent.x)
-
-			}.bind(this))
-
-			node.x = xSum / node.allParents.length
-		}
-
-		if (node.y === undefined) {
-			node.y = this.getYGuessFromDepth(node.depth)
-		}
-
-	}.bind(this))
-
-	coreqs.forEach(function (coreq) {
-		coreq.x = 0
-		coreq.y = 0
-	}.bind(this))
-
-	nodes.concat(coreqs).forEach(function (node) {
-		if (node.x === undefined || isNaN(node.x) || node.y === undefined || isNaN(node.y)) {
-			elog('nope!', node)
-		}
-	}.bind(this))
 
 
 	return {

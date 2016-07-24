@@ -19,6 +19,10 @@ THE PANEL WIDTH IS GOOFED UP BECAUSE IT IS ALREADY EXPANDED AND IT IS JUST RETUR
 
 
 
+i think its the coreq is in the force diagramm? not sure would do a conditional breakpoint in that d3 math
+and can avoid running d3 force at all for the small graphs?
+
+
 https://serviceworke.rs/
 
 

@@ -26,9 +26,9 @@ function Graph() {
 	//controls the state of the spinner
 	this.isLoading = false;
 
-
-	this.graphWidth = window.innerWidth;
-	this.graphHeight = window.innerHeight;
+	this.graphWidth = this.getSvgWidth();
+	
+	this.graphHeight = this.getSvgHeight();
 
 	// This is the default for nodes, and is what is allways used for collision
 	// When a panel expands to the prompt and to a expanded panel, tree.width changes, but this does not
@@ -77,9 +77,15 @@ function Graph() {
 	$(window).resize(function () {
 		this.calculateGraphSize();
 	}.bind(this));
+}
 
-	
+Graph.prototype.getSvgWidth = function(){
+	// return 600;
+	return window.innerWidth - 300;
+}
 
+Graph.prototype.getSvgHeight = function() {
+	return window.innerHeight - 50;
 }
 
 Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile']
@@ -238,9 +244,56 @@ Graph.prototype.updateHeight = function (tree) {
 };
 
 
+Graph.prototype.estimateNodePositions = function(){
+	var nodes = this.nodes;
+	if (nodes[0].x === undefined) {
+		nodes[0].x = this.getSvgWidth()/2;
+	}
+
+	nodes.forEach(function (node) {
+		if (node.isCoreq) {
+			node.x = 0
+			node.y = 0;
+			return;
+		}
+
+		if (node.x === undefined) {
+			// Find average percent index * 1000, used as starting position for graph
+			// dosen't need to be that close to where it needs to be, d3 will make it better
+			var xSum = 0;
+			node.allParents.forEach(function (nodeParent) {
+				var index = nodeParent.prereqs.values.indexOf(node);
+				var length = nodeParent.prereqs.values.length;
+				if (!nodeParent.x) {
+					elog('nodeParent dosent have an x but it was set above?', nodeParent)
+				}
+
+				// 300 is the guess distance between nodes
+				xSum += ((index - (length - 1) / 2) * 300 + nodeParent.x)
+
+			}.bind(this))
+
+			node.x = xSum / node.allParents.length
+		}
+
+		if (node.y === undefined) {
+			node.y = treeMgr.getYGuessFromDepth(node.depth)
+		}
+
+	}.bind(this))
+
+	nodes.forEach(function (node) {
+		if (node.x === undefined || isNaN(node.x) || node.y === undefined || isNaN(node.y)) {
+			elog('nope!', node)
+		}
+	}.bind(this))
+
+}
+
+
 Graph.prototype.calculateGraphSize = function () {
-	this.graphWidth = window.innerWidth;
-	this.graphHeight = window.innerHeight;
+	this.graphWidth = this.getSvgWidth();
+	this.graphHeight = this.getSvgHeight();
 
 	this.force.size([this.graphWidth, this.graphHeight])
 
@@ -253,6 +306,13 @@ Graph.prototype.loadNodes = function (callback) {
 	var nodesAndLinks = treeMgr.treeToD3(this.tree);
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
+	
+	
+	
+	this.estimateNodePositions();
+	
+	
+	
 
 	this.nodes.forEach(function (node) {
 		node.height = this.nodeHeight;
