@@ -854,6 +854,8 @@ TreeMgr.prototype.resetTree = function (tree) {
 		}
 		visited.push(currTree)
 		currTree.resetRequisites()
+		tree.isExpanded = false;
+		tree.showSelectPanel = false;
 
 		toVisit = toVisit.concat(currTree.prereqs.values).concat(currTree.coreqs.values);
 

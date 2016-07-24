@@ -100,7 +100,7 @@ function GraphPanelExpand($timeout, $document) {
 
 
 	// if a panel in a tree is clicked
-	GraphPanelExpandInner.prototype.onExpandClick = function (tree, callback) {
+	GraphPanelExpandInner.prototype.onExpandClick = function (tree, openPanel, callback) {
 		if (!callback) {
 			callback = function () {}
 		};
@@ -109,13 +109,13 @@ function GraphPanelExpand($timeout, $document) {
 		//this returns instantly if already loaded
 		tree.loadSections(function (err) {
 			if (err) {
-				console.log("ERROR", err);
+				elog("ERROR", err);
 				// return callback(err)
 			}
 
 			//setTimeout 0 because $scope.$update()
 			setTimeout(function () {
-				tree.isExpanded = !tree.isExpanded;
+				tree.isExpanded = openPanel;
 				tree.showSelectPanel = false;
 
 				//if it failed, toggle isExpanded and update the scope
@@ -259,7 +259,11 @@ function GraphPanelExpand($timeout, $document) {
 			callback = function(){}
 		}
 		if (tree.isExpanded || tree.isString) {
-			return callback();
+			
+			elog('openPanel was called and the panel is already open?')
+			if (tree.isString) {
+				return callback();
+			}
 		}
 
 		ga('send', {
@@ -271,7 +275,7 @@ function GraphPanelExpand($timeout, $document) {
 
 		this.openOrder.push(tree)
 
-		this.onExpandClick(tree, callback)
+		this.onExpandClick(tree, true, callback)
 	};
 
 	GraphPanelExpandInner.prototype.closePanel = function (tree, callback) {
@@ -279,7 +283,7 @@ function GraphPanelExpand($timeout, $document) {
 			callback = function(){}
 		}
 		if (!tree.isExpanded) {
-			return callback();
+			elog('closePanel was called and the panel is already closed?')
 		}
 
 		ga('send', {
@@ -290,7 +294,7 @@ function GraphPanelExpand($timeout, $document) {
 
 		_.pull(this.openOrder, tree)
 
-		this.onExpandClick(tree, callback)
+		this.onExpandClick(tree, false, callback)
 	};
 
 	GraphPanelExpandInner.prototype.setUpwardLines = function (tree, lineWidth) {
