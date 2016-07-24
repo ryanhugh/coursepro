@@ -735,7 +735,7 @@ TreeMgr.prototype.defaultTo = function (tree, type) {
 };
 
 TreeMgr.prototype.getYGuessFromDepth = function (depth) {
-	return depth * 250 + 50;
+	return depth * 250 + 250;
 };
 
 // guess node positions attempts to estimate the output position of the d3 graph
