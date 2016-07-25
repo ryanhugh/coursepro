@@ -275,7 +275,7 @@ var resultsHash = {};
 
 BaseData.downloadResultsGroup = memoize(function (config, callback) {
 
-	console.log("Downloading + Building hash for " + this.API_ENDPOINT, config);
+	console.log("Downloading + Building hash for " + this.API_ENDPOINT, JSON.stringify(config.body));
 	
 	var requestConfig = {};
 	var string = this.getKeyFromConfig(config.body);

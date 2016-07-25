@@ -383,20 +383,21 @@ function GraphPanelExpand($timeout, $document) {
 		};
 
 		//if only this panel, expand it
-		if (!tree.lowestParent && treeMgr.countClassesInTree(tree) === 1) {
-			// return;
+		//&& treeMgr.countClassesInTree(tree) === 1
+		if (!tree.lowestParent ) {
+			return;
 			
 			setTimeout(function(){
 				//this is undone when openPanel is done, a couple lines down
 				var panel = this.getTreePanel(tree);
-				panel.style.visibility = 'hidden'
+				// panel.style.visibility = 'hidden'
 	
 				this.openPanel(tree, function (err) {
 					if (err) {
 						elog(err);
 					}
 	
-					panel.style.visibility = ''
+					// panel.style.visibility = ''
 				}.bind(this))
 			}.bind(this),0)
 

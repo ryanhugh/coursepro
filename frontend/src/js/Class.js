@@ -55,15 +55,15 @@ function Class(config) {
 	this.allParents = []
 	
 	var bValue = undefined;
-	Object.defineProperty(this, 'x', {
-	  get: function() { 
-	  	return bValue; 
-	  },
-	  set: function(newValue) { 
-	  	debugger
-	  	bValue = newValue; 
-	  },
-	});
+	// Object.defineProperty(this, 'x', {
+	//   get: function() { 
+	//   	return bValue; 
+	//   },
+	//   set: function(newValue) { 
+	//   	debugger
+	//   	bValue = newValue; 
+	//   },
+	// });
 
 	// this.postDataProcess();
 

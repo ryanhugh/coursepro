@@ -486,6 +486,8 @@ Graph.prototype.go = function (tree, callback) {
 
 
 		this.container = this.svg.append("g");
+		
+		var containerXOffset = 0;
 
 
 		var zoom = d3.behavior.zoom()
@@ -505,6 +507,7 @@ Graph.prototype.go = function (tree, callback) {
 			}
 
 			this.force.on("tick", function (e) {
+				
 				this.nodes.forEach(function (node) {
 					if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
 						elog('wtf1', node)
@@ -627,6 +630,17 @@ Graph.prototype.go = function (tree, callback) {
 					break;
 				}
 			}
+			
+			
+			// Center the root node by translating the container <g> inside the svg
+			zoom.translate([this.getSvgWidth()/2-this.tree.x, 0])
+			
+			// Zoom in a little, (this number is arbitrary)
+			// zoom.scale(1.16) // DO want to do this, but causes bug where not centered
+			zoom.event(this.svg)
+			// zoom.center([this.tree.x,this.tree.y])
+			// zoom.event(this.svg)
+			
 
 			this.$scope.tree = tree;
 			setTimeout(function () {
