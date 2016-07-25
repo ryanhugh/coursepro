@@ -61,7 +61,7 @@ function Search() {
 
 Search.fnName = 'Search'
 // Search.isPage = true;
-Search.$inject = ['$scope','$location']
+Search.$inject = ['$scope','$location','$routeParams']
 // Search.urls = ['/search/:host/:termId/:subject?/:searchText?']
 
 //prototype constructor
@@ -170,6 +170,9 @@ Search.prototype.search = function() {
 		}, {
 			subject: 'PHYS',
 			classUid: '1155_521395573'
+		}, {
+			subject:'CHEM',
+			classUid:'3505_1161594881'
 		}]
 	keys.forEach(function(row) {
 		row.termId = '201710'
@@ -205,6 +208,11 @@ Search.prototype.search = function() {
 Search.prototype.onClick = function(aClass) {
 	var obj = aClass;
 	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))		
+}
+
+Search.prototype.isActive = function(aClass) {
+	console.log(this.$routeParams)
+	return this.$routeParams.classUid === aClass.classUid && this.$routeParams.subject === aClass.subject
 }
 
 

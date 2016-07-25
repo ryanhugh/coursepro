@@ -385,7 +385,7 @@ function GraphPanelExpand($timeout, $document) {
 		//if only this panel, expand it
 		//&& treeMgr.countClassesInTree(tree) === 1
 		if (!tree.lowestParent ) {
-			return;
+			// return;
 			
 			setTimeout(function(){
 				//this is undone when openPanel is done, a couple lines down
