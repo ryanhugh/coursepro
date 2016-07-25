@@ -13,10 +13,10 @@ debug why it takes multiple clicks sometimes?
  --- https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=PHYS&crse_numb_in=1152
 popup explaining what is going on with the selecting
 for graphs that only have one node, make it so you can drag that node
-for graphs that only have one node, skip the prompt popup and go straight to the expand panel
-make sure graphs are in the center of the page, expecially smaller graphs
+for graphs that only have one node, skip the prompt popup and go straight to the expand panel -- doing allwasys
+make sure graphs are in the center of the page, expecially smaller graphs -- done
 THE PANEL WIDTH IS GOOFED UP BECAUSE IT IS ALREADY EXPANDED AND IT IS JUST RETURNING ON ON PANEL CLICK OR WHATEVER
-
+selecting a panel causes the root node to expand again!
 
 
 i think its the coreq is in the force diagramm? not sure would do a conditional breakpoint in that d3 math

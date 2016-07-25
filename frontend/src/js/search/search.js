@@ -211,7 +211,6 @@ Search.prototype.onClick = function(aClass) {
 }
 
 Search.prototype.isActive = function(aClass) {
-	console.log(this.$routeParams)
 	return this.$routeParams.classUid === aClass.classUid && this.$routeParams.subject === aClass.subject
 }
 

@@ -141,6 +141,7 @@ function GraphPanelExpand($timeout, $document) {
 				this.updateScope(tree, false);
 
 				tree.$scope.graph.updateHeight(tree)
+				this.bringExpandedPanelsToFront();
 
 				// and tell d3 to move the panel back to where it should be
 				tree.$scope.graph.force.alpha(.0051)
@@ -253,6 +254,10 @@ function GraphPanelExpand($timeout, $document) {
 		};
 		this.closePanel(tree)
 	};
+	
+	GraphPanelExpandInner.prototype.canClosePanel = function(tree) {
+		return tree.lowestParent || tree.prereqs.values.length>0
+	}
 
 	GraphPanelExpandInner.prototype.openPanel = function (tree, callback) {
 		if (!callback) {
@@ -281,6 +286,9 @@ function GraphPanelExpand($timeout, $document) {
 	GraphPanelExpandInner.prototype.closePanel = function (tree, callback) {
 		if (!callback) {
 			callback = function(){}
+		}
+		if (!this.canClosePanel(tree)) {
+			return callback()
 		}
 		if (!tree.isExpanded) {
 			elog('closePanel was called and the panel is already closed?')

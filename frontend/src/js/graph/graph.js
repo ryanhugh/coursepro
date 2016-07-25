@@ -355,27 +355,29 @@ Graph.prototype.loadNodes = function (callback) {
 		child.upwardLinks.push(this.linkElements[0][i])
 	}
 	
-	var dragStartedByRightButton = false;
+	var skipThisDrag = false;
 	
 	this.nodeDrag = d3.behavior.drag()
 		.on("dragstart", function (node) {
 			if (d3.event.sourceEvent.which == 3) {
-				dragStartedByRightButton = true
+				skipThisDrag = true
 				return;
 			}
 			else if (node.isExpanded) {
+				skipThisDrag = true;
+				return;
+			}
+			else if (!node.lowestParent && node.prereqs.values.length === 0) {
+				skipThisDrag = true;
 				return;
 			}
 			else {
-				dragStartedByRightButton = false;
+				skipThisDrag = false;
 				this.force.alpha(.007)
 			}
 		}.bind(this))
 		.on("drag", function (node) {
-			if (dragStartedByRightButton) {
-				return;
-			}
-			if (node.isExpanded) {
+			if (skipThisDrag) {
 				return;
 			}
 			node.px += d3.event.dx
@@ -385,9 +387,6 @@ Graph.prototype.loadNodes = function (callback) {
 			this.force.alpha(.007)
 		}.bind(this))
 
-	if (!this.nodeDrag) {
-		elog('hi')
-	}
 
 	this.nodeElements = this.container.selectAll(".node")
 		.data(this.nodes)
@@ -445,7 +444,7 @@ Graph.prototype.loadNodes = function (callback) {
 	// This is needed whenever adding or removing nodes from the graph, for d3 internally.
 	this.force.start();
 
-	this.force.alpha(.01)
+	this.force.alpha(.03)
 
 	callback()
 };
