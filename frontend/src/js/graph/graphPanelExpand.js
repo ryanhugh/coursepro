@@ -11,6 +11,8 @@ function GraphPanelExpand($timeout, $document) {
 	function GraphPanelExpandInner() {
 
 		this.openOrder = []
+		
+		this.didOpenRootNode = false;
 
 		$document.keydown(this.onKeyDown.bind(this))
 	}
@@ -380,9 +382,13 @@ function GraphPanelExpand($timeout, $document) {
 
 	//this is called once when $scope.tree === undefined, when the root node first loads
 	GraphPanelExpandInner.prototype.link = function ($scope, element, attrs) {
+		
+		// The graph-panel-expand is on a child element of the tree element, so the passed in scope is a child of the 
+		// scope we need
+		var tree = $scope.tree;
+		$scope = tree.$scope;
 		$scope.graphPanelExpand = this;
 
-		var tree = $scope.tree
 
 		element = element.parent()
 
@@ -392,7 +398,13 @@ function GraphPanelExpand($timeout, $document) {
 
 		//if only this panel, expand it
 		//&& treeMgr.countClassesInTree(tree) === 1
-		if (!tree.lowestParent ) {
+		if (!tree.lowestParent && !this.didOpenRootNode) {
+			this.didOpenRootNode = true;
+			
+			// When the root node is destroyed, open another one
+		    tree.$scope.$on("$destroy", function() {
+		    	this.didOpenRootNode = false;
+		    }.bind(this));
 			// return;
 			
 			setTimeout(function(){

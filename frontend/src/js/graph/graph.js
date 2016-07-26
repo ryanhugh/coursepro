@@ -13,6 +13,7 @@ var treeMgr = require('./treeMgr')
 
 var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
 
+
 //thing that calls on download tree, treeMgr, render, popup and help
 //manages the page that generates the tree graphs
 
@@ -303,6 +304,19 @@ Graph.prototype.calculateGraphSize = function () {
 
 // This is called when the graph is first loaded, and whenever a panel on the graph is selected. 
 Graph.prototype.loadNodes = function (callback) {
+	
+	// Release prior nodes and $destroy the scopes
+	this.nodes.forEachf(function(node){
+		node.foreignObject.remove();
+		node.$scope.$destroy();
+	}.bind(this))
+	
+	// Remove the lines
+	while (this.container[0][0].firstChild) {
+		this.container[0][0].removeChild(this.container[0][0].firstChild);
+	}
+
+	
 	var nodesAndLinks = treeMgr.treeToD3(this.tree);
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
@@ -318,10 +332,6 @@ Graph.prototype.loadNodes = function (callback) {
 		node.height = this.nodeHeight;
 		node.width = this.nodeWidth
 	}.bind(this))
-
-	while (this.container[0][0].firstChild) {
-		this.container[0][0].removeChild(this.container[0][0].firstChild);
-	}
 
 	this.linkElements = this.container.selectAll(".link")
 		.data(this.links)

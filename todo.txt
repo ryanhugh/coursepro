@@ -16,7 +16,7 @@ for graphs that only have one node, make it so you can drag that node
 for graphs that only have one node, skip the prompt popup and go straight to the expand panel -- doing allwasys
 make sure graphs are in the center of the page, expecially smaller graphs -- done
 THE PANEL WIDTH IS GOOFED UP BECAUSE IT IS ALREADY EXPANDED AND IT IS JUST RETURNING ON ON PANEL CLICK OR WHATEVER
-selecting a panel causes the root node to expand again!
+selecting a panel causes the root node to expand again
 
 
 i think its the coreq is in the force diagramm? not sure would do a conditional breakpoint in that d3 math
