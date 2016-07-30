@@ -13,22 +13,20 @@ function Search() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	this.searchText = ''
-	
+
 	// Updated on search, used in ng-repeat
 	this.classes = [];
-	
-	
-	// stuff i need to take
-	
+
+
 	// host: 'neu.edu',
 	// 	termId: '201710',
 	// 	isClass: false,
 	// 	prereqs: {
 	// 		type: 'and',
 	// 		values: 
-	
 
-	
+
+
 	// 	}
 	// }
 
@@ -60,9 +58,9 @@ function Search() {
 }
 
 Search.fnName = 'Search'
-// Search.isPage = true;
-Search.$inject = ['$scope','$location','$routeParams']
-// Search.urls = ['/search/:host/:termId/:subject?/:searchText?']
+	// Search.isPage = true;
+Search.$inject = ['$scope', '$location', '$routeParams']
+	// Search.urls = ['/search/:host/:termId/:subject?/:searchText?']
 
 //prototype constructor
 Search.prototype = Object.create(BaseDirective.prototype);
@@ -105,7 +103,7 @@ Search.prototype.go = function () {
 			classes.push(aClass)
 		}.bind(this))
 
-		classes.sort(function (a,b) {
+		classes.sort(function (a, b) {
 			return a.compareTo(b)
 		}.bind(this))
 
@@ -119,7 +117,7 @@ Search.prototype.go = function () {
 		// // this.container.innerHTML = '<div style="font-size: 28px;text-align: center;padding-top: 200px;font-weight: 600;">Nothing Found!</div>'
 
 	}.bind(this))
-} 
+}
 
 
 
@@ -138,79 +136,81 @@ Search.prototype.onEnter = function () {
 
 
 // NEw
-Search.prototype.search = function() {
-	
+Search.prototype.search = function () {
+
 	// search here
-	
+
 	// class = JSON.stringify()
-	
-		this.classes = []
-	
-		var keys = [{
-			subject: 'EECE',
-			classUid: '2322_1420743956',
-		}, {
-			subject: 'EECE',
-			classUid: '2323_2018952043',
-		}, {
-			subject: 'EECE',
-			classUid: '2540_2092162332',
-		}, {
-			subject: 'CS',
-			classUid: '4800_1303374065'
-		}, {
-			subject: 'CS',
-			classUid: '3700_1941416797'
-		}, {
-			subject: 'CS',
-			classUid: '4400_1871949484'
-		}, {
-			subject: 'CS',
-			classUid: '4500_118506562'
-		}, {
-			subject: 'PHYS',
-			classUid: '1155_521395573'
-		}, {
-			subject:'CHEM',
-			classUid:'3505_1161594881'
-		}]
-	keys.forEach(function(row) {
+
+	this.classes = []
+
+
+	// stuff i need to take
+	var keys = [{
+		subject: 'EECE',
+		classUid: '2322_1420743956',
+	}, {
+		subject: 'EECE',
+		classUid: '2323_2018952043',
+	}, {
+		subject: 'EECE',
+		classUid: '2540_2092162332',
+	}, {
+		subject: 'CS',
+		classUid: '4800_1303374065'
+	}, {
+		subject: 'CS',
+		classUid: '3700_1941416797'
+	}, {
+		subject: 'CS',
+		classUid: '4400_1871949484'
+	}, {
+		subject: 'CS',
+		classUid: '4500_118506562'
+	}, {
+		subject: 'PHYS',
+		classUid: '1155_521395573'
+	}, {
+		subject: 'CHEM',
+		classUid: '3505_1161594881'
+	}]
+	keys.forEach(function (row) {
 		row.termId = '201710'
 		row.host = 'neu.edu'
 	}.bind(this));
-	
-	
+
+
 	var q = queue()
-	
-	keys.forEach(function(row) {
+
+	keys.forEach(function (row) {
 		var aClass = Class.create(row)
-		q.defer(function(callback){
-			aClass.download(function(err){
+		q.defer(function (callback) {
+			aClass.download(function (err) {
 				callback(err)
 			}.bind(this))
 		}.bind(this))
 		this.classes.push(aClass)
 	}.bind(this))
-	
-	q.awaitAll(function(err){
+
+	q.awaitAll(function (err) {
 		if (err) {
 			elog(err);
 			return;
 		}
-		
-		
-		
+
+
+
 		this.$scope.$apply();
 	}.bind(this))
 }
 
 
-Search.prototype.onClick = function(aClass) {
+Search.prototype.onClick = function (aClass) {
 	var obj = aClass;
-	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))		
+	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))
 }
 
-Search.prototype.isActive = function(aClass) {
+Search.prototype.isActive = function (aClass) {
 	return this.$routeParams.classUid === aClass.classUid && this.$routeParams.subject === aClass.subject
 }
 
