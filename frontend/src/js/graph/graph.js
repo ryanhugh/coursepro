@@ -72,6 +72,10 @@ function Graph() {
 		this.$scope.focusSelector = true;
 	}
 
+	this.$scope.$on('$destroy',function () {
+		console.log("HIII")
+	}.bind(this))
+
 
 	this.$scope.addClass = this.addClass.bind(this)
 
@@ -306,7 +310,7 @@ Graph.prototype.calculateGraphSize = function () {
 Graph.prototype.loadNodes = function (callback) {
 	
 	// Release prior nodes and $destroy the scopes
-	this.nodes.forEachf(function(node){
+	this.nodes.forEach(function(node){
 		node.foreignObject.remove();
 		node.$scope.$destroy();
 	}.bind(this))
