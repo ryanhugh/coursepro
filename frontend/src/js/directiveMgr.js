@@ -199,28 +199,11 @@ DirectiveMgr.prototype.addRawDirective = function(directive) {
 		directive.$inject = []
 	}
 	
-	var directiveInstance;
-	
 	function AngularDirective () {
-		
-		if (!directiveInstance) {
-			directiveInstance = new directive([].slice.call(arguments))
-		}
-		
-		return directiveInstance;
-		
-		// for (var i=0;i<directive.$inject.length;i++) {
-		// 	var noduleName = directive.$inject[i];
-		// 	directiveInstance[noduleName] = arguments[i]
-		// }
-		
-		
-		// return directiveInstance
+		return new directive([].slice.call(arguments))
 	}
 	
 	AngularDirective.$inject = directive.$inject;
-	
-
 
 	angularModule.directive(directive.directiveName, AngularDirective);
 }
