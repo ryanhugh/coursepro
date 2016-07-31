@@ -5,6 +5,7 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var treeMgr = require('./treeMgr')
 var user = require('../user')
+var Graph = require('./graph')
 
 function GraphPanelExpand() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
@@ -20,14 +21,14 @@ GraphPanelExpand.scope = true;
 
 GraphPanelExpand.prototype.bringExpandedPanelsToFront = function () {
 	this.openOrder.forEach(function (tree) {
-		tree.$scope.graph.bringToFront(tree);
+		Graph.instance.bringToFront(tree);
 	}.bind(this))
 };
 
 GraphPanelExpand.prototype.increaseShowing = function (tree) {
 	tree.showingSectionCount += 10;
 	setTimeout(function () {
-		tree.$scope.graph.updateHeight(tree)
+		Graph.instance.updateHeight(tree)
 	}.bind(this), 0)
 };
 
@@ -88,10 +89,10 @@ GraphPanelExpand.prototype.updateScope = function (tree, isMouseOver) {
 	// Run these regardless if the showSelctedPanel is shown or not
 	if (!tree.isExpanded) {
 		if (isMouseOver) {
-			tree.$scope.graph.bringToFront(tree)
+			Graph.instance.bringToFront(tree)
 		}
 		else if (tree.isCoreq) {
-			tree.$scope.graph.sortCoreqs(tree.lowestParent)
+			Graph.instance.sortCoreqs(tree.lowestParent)
 		}
 
 		this.bringExpandedPanelsToFront()
@@ -128,7 +129,7 @@ GraphPanelExpand.prototype.onExpandClick = function (tree, openPanel, callback) 
 				tree.width = this.calculatePanelWidth(tree);
 			}
 			else {
-				tree.width = tree.$scope.graph.nodeWidth;
+				tree.width = Graph.instance.nodeWidth;
 			}
 			tree.foreignObject.setAttribute('width', tree.width)
 
@@ -141,11 +142,11 @@ GraphPanelExpand.prototype.onExpandClick = function (tree, openPanel, callback) 
 
 			this.updateScope(tree, false);
 
-			tree.$scope.graph.updateHeight(tree)
+			Graph.instance.updateHeight(tree)
 			this.bringExpandedPanelsToFront();
 
 			// and tell d3 to move the panel back to where it should be
-			tree.$scope.graph.force.alpha(.0051)
+			Graph.instance.force.alpha(.0051)
 
 			callback()
 		}.bind(this), 0)
@@ -162,13 +163,13 @@ GraphPanelExpand.prototype.togglePanelPrompt = function (tree, callback) {
 			tree.width = 300
 		}
 		else {
-			tree.width = tree.$scope.graph.nodeWidth
+			tree.width = Graph.instance.nodeWidth
 		}
 		tree.foreignObject.setAttribute('width', tree.width)
-		tree.$scope.graph.updateHeight(tree);
+		Graph.instance.updateHeight(tree);
 
 		// and tell d3 to move the panel back to where it should be
-		tree.$scope.graph.force.alpha(.0051)
+		Graph.instance.force.alpha(.0051)
 
 		callback()
 	}.bind(this), 0)
@@ -226,14 +227,14 @@ GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
 			// comment from the other code:
 			// this is needed because in some cases, nodes can be affected that are children of a select node's ansestors, and that no longer need to have a line
 			// to one that was just satisfied, so can make graph simpler for it
-			treeMgr.go(tree.$scope.graph.tree)
-			tree.$scope.graph.loadNodes(function () {
+			treeMgr.go(Graph.instance.tree)
+			Graph.instance.loadNodes(function () {
 
 				// After all the graph stuff is done, shink this panel back to avoid the redraw
 				tree.showSelectPanel = false;
 				tree.isExpanded = false;
 				tree.$scope.$apply();
-				tree.$scope.graph.updateHeight(tree)
+				Graph.instance.updateHeight(tree)
 				clearTimeout(tree.graphPanelPromptTimeout);
 				callback()
 			}.bind(this))

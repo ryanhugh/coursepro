@@ -201,7 +201,7 @@ DirectiveMgr.prototype.addRawDirective = function(Directive) {
 		Directive.$inject = []
 	}
 	
-	if (Directive.$inject.includes('$scope')) {
+	if (_(Directive.$inject).includes('$scope')) {
 		elog('Cant inject a $scope into a directive, only controllers. Use the link function in directives.')
 	}
 	

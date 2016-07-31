@@ -9,6 +9,8 @@ var user = require('./user')
 function SignInWithGoogle() {
 }
 
+SignInWithGoogle.$inject = []
+
 SignInWithGoogle.fnName = 'SignInWithGoogle'
 
 SignInWithGoogle.prototype.link = function (scope, element, attrs) {

@@ -12,7 +12,6 @@ var downloadTree = require('./downloadTree')
 var treeMgr = require('./treeMgr')
 
 var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
-var GraphPanelExpand = require('./graphPanelExpand')
 
 
 //thing that calls on download tree, treeMgr, render, popup and help
@@ -477,11 +476,6 @@ Graph.prototype.go = function (tree, callback) {
 		// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
 		// setTimeout(function () {
 		// this.$scope.$apply()
-
-		// if (this.tree && this.tree.$scope && this.tree.$scope.graphPanelExpand) {
-		// 	this.tree.$scope.graphPanelExpand.onNewGraph();
-		// 	console.log("Setting to false!");
-		// }
 
 		treeMgr.go(tree);
 		this.tree = tree;
