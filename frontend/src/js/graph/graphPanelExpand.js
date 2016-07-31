@@ -6,25 +6,25 @@ var BaseDirective = require('../BaseDirective')
 var treeMgr = require('./treeMgr')
 var user = require('../user')
 
-function GraphPanelExpandInner(args) {
+function GraphPanelExpand(args) {
 	BaseDirective.prototype.constructor.apply(this, args);
 
 	this.openOrder = []
 
-	this.didOpenRootNode = false;
+	this.rootNodeId = null;
 
 	this.$document.keydown(this.onKeyDown.bind(this))
 }
 
-GraphPanelExpandInner.scope = true;
+GraphPanelExpand.scope = true;
 
-GraphPanelExpandInner.prototype.bringExpandedPanelsToFront = function () {
+GraphPanelExpand.prototype.bringExpandedPanelsToFront = function () {
 	this.openOrder.forEach(function (tree) {
 		tree.$scope.graph.bringToFront(tree);
 	}.bind(this))
 };
 
-GraphPanelExpandInner.prototype.increaseShowing = function (tree) {
+GraphPanelExpand.prototype.increaseShowing = function (tree) {
 	tree.showingSectionCount += 10;
 	setTimeout(function () {
 		tree.$scope.graph.updateHeight(tree)
@@ -32,7 +32,7 @@ GraphPanelExpandInner.prototype.increaseShowing = function (tree) {
 };
 
 
-GraphPanelExpandInner.prototype.calculatePanelWidth = function (tree) {
+GraphPanelExpand.prototype.calculatePanelWidth = function (tree) {
 
 	if (tree.sections.length > 0) {
 		return 780;
@@ -42,7 +42,7 @@ GraphPanelExpandInner.prototype.calculatePanelWidth = function (tree) {
 	}
 };
 
-GraphPanelExpandInner.prototype.getTreePanel = function (tree) {
+GraphPanelExpand.prototype.getTreePanel = function (tree) {
 	var panels = tree.foreignObject.getElementsByClassName('treePanel');
 	if (panels.length != 1) {
 		elog('should be 1 panel per node')
@@ -50,12 +50,12 @@ GraphPanelExpandInner.prototype.getTreePanel = function (tree) {
 	return panels[0];
 };
 
-GraphPanelExpandInner.prototype.getNodeIsSelected = function (tree) {
+GraphPanelExpand.prototype.getNodeIsSelected = function (tree) {
 	return user.getListIncludesClass('selected', tree);
 };
 
 // the given scope is the scope of a tree inside a recursions
-GraphPanelExpandInner.prototype.updateScope = function (tree, isMouseOver) {
+GraphPanelExpand.prototype.updateScope = function (tree, isMouseOver) {
 	if (isMouseOver) {
 		this.setUpwardLines(tree, 8)
 		this.setDownwardLines(tree, 8)
@@ -101,7 +101,7 @@ GraphPanelExpandInner.prototype.updateScope = function (tree, isMouseOver) {
 
 
 // if a panel in a tree is clicked
-GraphPanelExpandInner.prototype.onExpandClick = function (tree, openPanel, callback) {
+GraphPanelExpand.prototype.onExpandClick = function (tree, openPanel, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
@@ -152,7 +152,7 @@ GraphPanelExpandInner.prototype.onExpandClick = function (tree, openPanel, callb
 	}.bind(this))
 };
 
-GraphPanelExpandInner.prototype.togglePanelPrompt = function (tree, callback) {
+GraphPanelExpand.prototype.togglePanelPrompt = function (tree, callback) {
 	setTimeout(function () {
 		clearTimeout(tree.graphPanelPromptTimeout);
 		tree.showSelectPanel = !tree.showSelectPanel;
@@ -174,7 +174,7 @@ GraphPanelExpandInner.prototype.togglePanelPrompt = function (tree, callback) {
 	}.bind(this), 0)
 };
 
-GraphPanelExpandInner.prototype.openPanelPrompt = function (tree, callback) {
+GraphPanelExpand.prototype.openPanelPrompt = function (tree, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
@@ -185,7 +185,7 @@ GraphPanelExpandInner.prototype.openPanelPrompt = function (tree, callback) {
 	this.updateScope(tree, true)
 };
 
-GraphPanelExpandInner.prototype.closePanelPrompt = function (tree, callback) {
+GraphPanelExpand.prototype.closePanelPrompt = function (tree, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
@@ -201,7 +201,7 @@ GraphPanelExpandInner.prototype.closePanelPrompt = function (tree, callback) {
 
 
 // if a panel in a tree is clicked
-GraphPanelExpandInner.prototype.onPanelSelect = function (tree, callback) {
+GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
@@ -243,7 +243,7 @@ GraphPanelExpandInner.prototype.onPanelSelect = function (tree, callback) {
 
 
 //called from graph.html 
-GraphPanelExpandInner.prototype.onKeyDown = function (event) {
+GraphPanelExpand.prototype.onKeyDown = function (event) {
 	if (event.which != 27 || event.type != 'keydown') {
 		return;
 	};
@@ -256,11 +256,11 @@ GraphPanelExpandInner.prototype.onKeyDown = function (event) {
 	this.closePanel(tree)
 };
 
-GraphPanelExpandInner.prototype.canClosePanel = function (tree) {
+GraphPanelExpand.prototype.canClosePanel = function (tree) {
 	return tree.lowestParent || tree.prereqs.values.length > 0
 }
 
-GraphPanelExpandInner.prototype.openPanel = function (tree, callback) {
+GraphPanelExpand.prototype.openPanel = function (tree, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
@@ -284,7 +284,7 @@ GraphPanelExpandInner.prototype.openPanel = function (tree, callback) {
 	this.onExpandClick(tree, true, callback)
 };
 
-GraphPanelExpandInner.prototype.closePanel = function (tree, callback) {
+GraphPanelExpand.prototype.closePanel = function (tree, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
@@ -306,7 +306,7 @@ GraphPanelExpandInner.prototype.closePanel = function (tree, callback) {
 	this.onExpandClick(tree, false, callback)
 };
 
-GraphPanelExpandInner.prototype.setUpwardLines = function (tree, lineWidth) {
+GraphPanelExpand.prototype.setUpwardLines = function (tree, lineWidth) {
 
 	var linesToSkip = [];
 	tree.allParents.forEach(function (parent) {
@@ -330,7 +330,7 @@ GraphPanelExpandInner.prototype.setUpwardLines = function (tree, lineWidth) {
 
 };
 
-GraphPanelExpandInner.prototype.setDownwardLines = function (tree, lineWidth) {
+GraphPanelExpand.prototype.setDownwardLines = function (tree, lineWidth) {
 	tree.downwardLinks.forEach(function (link) {
 		link.style.strokeWidth = lineWidth + 'px';
 	}.bind(this));
@@ -344,15 +344,19 @@ GraphPanelExpandInner.prototype.setDownwardLines = function (tree, lineWidth) {
 };
 
 
-GraphPanelExpandInner.prototype.onMouseOver = function (tree) {
+GraphPanelExpand.prototype.onMouseOver = function (tree) {
 	this.updateScope(tree, true);
 }
 
-GraphPanelExpandInner.prototype.onMouseOut = function (tree) {
+GraphPanelExpand.prototype.onMouseOut = function (tree) {
 	this.updateScope(tree, false);
 };
 
-GraphPanelExpandInner.prototype.startPromptTimer = function (tree, event) {
+// GraphPanelExpand.prototype.onNewGraph = function() {
+// 	this.didOpenRootNode = false;
+// };
+
+GraphPanelExpand.prototype.startPromptTimer = function (tree, event) {
 	clearTimeout(tree.graphPanelPromptTimeout);
 	if (tree.isCoreq) {
 		return;
@@ -380,7 +384,7 @@ GraphPanelExpandInner.prototype.startPromptTimer = function (tree, event) {
 };
 
 //this is called once when $scope.tree === undefined, when the root node first loads
-GraphPanelExpandInner.prototype.link = function ($scope, element, attrs) {
+GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
 	// The graph-panel-expand is on a child element of the tree element, so the passed in scope is a child of the 
 	// scope we need
@@ -397,13 +401,14 @@ GraphPanelExpandInner.prototype.link = function ($scope, element, attrs) {
 
 	//if only this panel, expand it
 	//&& treeMgr.countClassesInTree(tree) === 1
-	if (!tree.lowestParent && !this.didOpenRootNode) {
-		this.didOpenRootNode = true;
+	if (!tree.lowestParent && tree._id != this.rootNodeId) {
+		this.rootNodeId = tree._id;
+		console.log("Found! setting to true");
 
-		// When the root node is destroyed, open another one
-		tree.$scope.$on("$destroy", function () {
-			this.didOpenRootNode = false;
-		}.bind(this));
+		// When the root node is destroyed, open another one this THIS DOES NTO WORK BECAUSE IT WILL ALSO TRIGGER WITH SELECT
+		// tree.$scope.$on("$destroy", function () {
+		// 	this.didOpenRootNode = false;
+		// }.bind(this));
 		// return;
 
 		setTimeout(function () {
@@ -445,10 +450,10 @@ GraphPanelExpandInner.prototype.link = function ($scope, element, attrs) {
 }
 
 
-GraphPanelExpandInner.fnName = 'GraphPanelExpand'
-GraphPanelExpandInner.$inject = ['$document'];
+GraphPanelExpand.fnName = 'GraphPanelExpand'
+GraphPanelExpand.$inject = ['$document'];
 
 
-GraphPanelExpandInner.prototype.GraphPanelExpandInner = GraphPanelExpandInner;
-module.exports = GraphPanelExpandInner;
-directiveMgr.addRawDirective(GraphPanelExpandInner)
+GraphPanelExpand.prototype.GraphPanelExpand = GraphPanelExpand;
+module.exports = GraphPanelExpand;
+directiveMgr.addRawDirective(GraphPanelExpand)
