@@ -180,15 +180,51 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 
 DirectiveMgr.prototype.addLink = function (link) {
 
-
-
 	if (!link.directiveName) {
 		link.directiveName = this.calculateName(link)
-	};
+	}
 
 
 	angularModule.directive(link.directiveName, link);
 };
+
+DirectiveMgr.prototype.addRawDirective = function(directive) {
+	
+	if (!directive.directiveName) {
+		directive.directiveName = this.calculateName(directive)
+	}
+	
+	if (!directive.$inject) {
+		console.warn('no $inject?');
+		directive.$inject = []
+	}
+	
+	var directiveInstance;
+	
+	function AngularDirective () {
+		
+		if (!directiveInstance) {
+			directiveInstance = new directive([].slice.call(arguments))
+		}
+		
+		return directiveInstance;
+		
+		// for (var i=0;i<directive.$inject.length;i++) {
+		// 	var noduleName = directive.$inject[i];
+		// 	directiveInstance[noduleName] = arguments[i]
+		// }
+		
+		
+		// return directiveInstance
+	}
+	
+	AngularDirective.$inject = directive.$inject;
+	
+
+
+	angularModule.directive(directive.directiveName, AngularDirective);
+}
+
 
 DirectiveMgr.prototype.addRawController = function (controller) {
 

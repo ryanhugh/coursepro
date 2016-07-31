@@ -6,15 +6,14 @@ var BaseDirective = require('../BaseDirective')
 var treeMgr = require('./treeMgr')
 var user = require('../user')
 
-function GraphPanelExpand($timeout, $document) {
-
-	function GraphPanelExpandInner() {
+	function GraphPanelExpandInner(args) {
+		BaseDirective.prototype.constructor.apply(this, args);
 
 		this.openOrder = []
 		
 		this.didOpenRootNode = false;
 
-		$document.keydown(this.onKeyDown.bind(this))
+		this.$document.keydown(this.onKeyDown.bind(this))
 	}
 
 	GraphPanelExpandInner.scope = true;
@@ -445,17 +444,11 @@ function GraphPanelExpand($timeout, $document) {
 
 	}
 
-	var instance = new GraphPanelExpandInner();
-	instance.link = instance.link.bind(instance)
 
-	return instance;
-
-}
-
-GraphPanelExpand.fnName = 'GraphPanelExpand'
-GraphPanelExpand.$inject = ['$timeout', '$document'];
+GraphPanelExpandInner.fnName = 'GraphPanelExpand'
+GraphPanelExpandInner.$inject = ['$document'];
 
 
-GraphPanelExpand.prototype.GraphPanelExpand = GraphPanelExpand;
-module.exports = GraphPanelExpand;
-directiveMgr.addLink(GraphPanelExpand)
+GraphPanelExpandInner.prototype.GraphPanelExpandInner = GraphPanelExpandInner;
+module.exports = GraphPanelExpandInner;
+directiveMgr.addRawDirective(GraphPanelExpandInner)

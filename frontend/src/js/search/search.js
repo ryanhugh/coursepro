@@ -214,6 +214,9 @@ Search.prototype.isActive = function(aClass) {
 	return this.$routeParams.classUid === aClass.classUid && this.$routeParams.subject === aClass.subject
 }
 
+Search.link = function($scope, element, attrs) {
+	// alert('hi')
+}
 
 
 
