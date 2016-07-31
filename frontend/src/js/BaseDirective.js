@@ -22,6 +22,10 @@ function BaseDirective() {
 		this[injectName] = arguments[i]
 	};
 
+	if (this.constructor.instance) {
+		console.error('already have instance of ',this,'?')
+	}
+
 	this.constructor.instance = this;
 
 	if (this.$scope) {
@@ -29,12 +33,11 @@ function BaseDirective() {
 		this.$scope[directiveMgr.calculateName(this.constructor)] = this;
 		this.$scope.macros = macros;
 
+		// Angular controllers are re created each time they are used, so remove the old instance from this.constructor
+		// Add set the new one. Directives are only instantiated once and also don't have a $scope, so this will not run if this is a directive. 
 		this.$scope.$on('$destroy', function () {
-			alert('removing instance')
 			this.constructor.instance = null;
 		}.bind(this))
-
-
 	}
 }
 

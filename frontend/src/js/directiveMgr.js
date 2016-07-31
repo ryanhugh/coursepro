@@ -203,10 +203,10 @@ DirectiveMgr.prototype.addRawDirective = function(Directive) {
 	}
 	
 	function AngularDirective () {
-		return new directive([].slice.call(arguments))
+		return new Directive([].slice.call(arguments))
 	}
 	
-	AngularDirective.$inject = directive.$inject;
+	AngularDirective.$inject = Directive.$inject;
 
 	angularModule.directive(Directive.directiveName, AngularDirective);
 }
