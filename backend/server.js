@@ -228,13 +228,20 @@ app.use(function (req, res, next) {
 
 // add cache forever to external js libraries
 app.use(function (req, res, next) {
-	if (_(req.path).startsWith('/js/external') || _(req.path).startsWith('/fonts') || _(req.path).startsWith('/css') || _(req.path).startsWith('/images')) {
-		// console.log('setting to 1 yr')
-		res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year (in seconds)
+	if (macros.PRODUCTION) {
+		if (_(req.path).startsWith('/js/external') || _(req.path).startsWith('/fonts') || _(req.path).startsWith('/css') || _(req.path).startsWith('/images')) {
+			// console.log('setting to 1 yr')
+			res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year (in seconds)
+		}
+		else {
+			// console.log('setting to 5 min')
+			res.setHeader('Cache-Control', 'public, max-age=300'); // 5 min (in seconds)
+		}
 	}
+
+	// for development and unit tests, etc
 	else {
-		// console.log('setting to 5 min')
-		res.setHeader('Cache-Control', 'public, max-age=300'); // 5 min (in seconds)
+		res.setHeader('Cache-Control', 'no-cache');
 	}
 	next()
 });
