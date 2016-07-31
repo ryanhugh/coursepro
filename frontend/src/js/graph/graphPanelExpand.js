@@ -17,8 +17,6 @@ function GraphPanelExpand() {
 	this.$document.keydown(this.onKeyDown.bind(this))
 }
 
-GraphPanelExpand.scope = true;
-
 GraphPanelExpand.prototype.bringExpandedPanelsToFront = function () {
 	this.openOrder.forEach(function (tree) {
 		Graph.instance.bringToFront(tree);
