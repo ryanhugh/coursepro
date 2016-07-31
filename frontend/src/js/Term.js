@@ -19,6 +19,7 @@ macros.inherent(BaseData, Term)
 Term.requiredPath = ['host']
 Term.optionalPath = ['termId']
 Term.API_ENDPOINT = '/listTerms'
+Term.bypassResultsCache = true;
 
 
 Term.prototype.loadSubjects = function (callback) {

@@ -18,6 +18,7 @@ macros.inherent(BaseData, Host)
 Host.requiredPath = []
 Host.optionalPath = ['host']
 Host.API_ENDPOINT = '/listColleges'
+Host.bypassResultsCache = true;
 
 
 Host.prototype.loadTerms = function (callback) {

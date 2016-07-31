@@ -276,11 +276,15 @@ var resultsHash = {};
 BaseData.downloadResultsGroup = memoize(function (config, callback) {
 
 	console.log("Downloading + Building hash for " + this.API_ENDPOINT, JSON.stringify(config.body));
-	
+
 	var requestConfig = {};
-	var string = this.getKeyFromConfig(config.body);
-	requestConfig.url = this.API_ENDPOINT + '/' + string;
-	// console.log(requestConfig)
+	if (this.bypassResultsCache) {
+		requestConfig = config
+	}
+	else {
+		var string = this.getKeyFromConfig(config.body);
+		requestConfig.url = this.API_ENDPOINT + '/' + string;
+	}
 
 	request(requestConfig, function (err, results) {
 		if (err) {
@@ -341,28 +345,11 @@ BaseData.download = function (config, callback) {
 	var hashStr = hash.join('/')
 
 	if (isFullHashIndex && resultsHash[hashStr]) {
-		setTimeout(function(){
+		setTimeout(function () {
 			callback(null, [resultsHash[hashStr]])
-		}.bind(this),0)
+		}.bind(this), 0)
 		return;
 	}
-
-	// NEED SOME WAY TO NOT FIRE THIS OFF TWICE EV3R
-	// IF ALL DATA IS DOWNLOADED, JUST SEARCH IT
-
-
-	//make sure have all the keys
-	// if (!config.body._id) {
-
-	// 	this.requiredPath.forEach(function (key) {
-	// 		if (!config.body[key]) {
-	// 			elog(this.name, ' not given a ', key, ' in base data download');
-	// 			return;
-	// 		}
-	// 	}.bind(this))
-	// }
-
-	// config.url = this.API_ENDPOINT;
 
 	// Get all the data in this term
 	var requestQuery = {
@@ -376,15 +363,16 @@ BaseData.download = function (config, callback) {
 		requestQuery.body.termId = config.body.termId
 	}
 
-	//NEED SOMEWAY TO PREVENT 2 DIFF SECTION FROM LOADING THE ENTIRE TERM TWIECE
-	// THATS WHATS GOING ON with engw1111 right now, all of the sections are getting here and loading the entir eterm
-	// they are passing download group because full lookup passed to it
-
 	this.downloadResultsGroup(requestQuery, function (err, results, resultsHash) {
 		if (err) {
 			return callback(err);
 		}
 
+		//If looking up a host or a term, the requestQuery will be the same as the config.
+		// If thats the case, just return all the results
+		if (_.isEqual(config.body, requestQuery.body)) {
+			return callback(null, results)
+		}
 
 		var result = resultsHash[hashStr]
 
@@ -392,18 +380,15 @@ BaseData.download = function (config, callback) {
 		if (isFullHashIndex && result) {
 			return callback(null, [result])
 		}
-
-		//
 		else if (isFullHashIndex && !result) {
 			return callback(null, []);
 		}
 		else {
-			console.warn('Missed cache, searching for ', config.body);
+			ewarn('Missed cache, searching for ', config.body);
 
-			var arrayOfResults = _.values(resultsHash);
 			var matches = [];
-			for (var i = 0; i < arrayOfResults.length; i++) {
-				var row = arrayOfResults[i];
+			for (var i = 0; i < results.length; i++) {
+				var row = results[i];
 				var isMatch = true;
 				for (var attrName in config.body) {
 					if (config.body[attrName] != row[attrName]) {
@@ -416,13 +401,8 @@ BaseData.download = function (config, callback) {
 				}
 			}
 			return callback(null, matches)
-
-			// loop through results to find matching (hopefully this isnt too slow)
-			console.warn("not done yet!")
 		}
-
-
-		callback(err, results)
+		elog('?')
 	}.bind(this))
 }
 
