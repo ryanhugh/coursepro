@@ -19,6 +19,12 @@ THE PANEL WIDTH IS GOOFED UP BECAUSE IT IS ALREADY EXPANDED AND IT IS JUST RETUR
 selecting a panel causes the root node to expand again
 
 
+
+
+bootstrap over arrow to show coreqs when panel is expanded?
+
+
+
 i think its the coreq is in the force diagramm? not sure would do a conditional breakpoint in that d3 math
 and can avoid running d3 force at all for the small graphs?
 
@@ -26,13 +32,6 @@ and can avoid running d3 force at all for the small graphs?
 https://serviceworke.rs/
 
 
-this thing
-<div class="list-group">
-  <a href="#" class="list-group-item active">
-    <h4 class="list-group-item-heading">List group item heading</h4>
-    <p class="list-group-item-text">...</p>
-  </a>
-</div>
 
 
 

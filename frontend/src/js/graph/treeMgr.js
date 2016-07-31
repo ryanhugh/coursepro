@@ -815,6 +815,10 @@ TreeMgr.prototype.resetTree = function (tree) {
 		currTree.resetRequisites()
 		currTree.isExpanded = false;
 		currTree.showSelectPanel = false;
+		currTree.x = undefined
+		currTree.y = undefined
+		currTree.px = undefined;
+		currTree.py = undefined
 
 		toVisit = toVisit.concat(currTree.prereqs.values).concat(currTree.coreqs.values);
 
