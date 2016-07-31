@@ -284,6 +284,9 @@ BaseData.downloadResultsGroup = memoize(function (config, callback) {
 	else {
 		var string = this.getKeyFromConfig(config.body);
 		requestConfig.url = this.API_ENDPOINT + '/' + string;
+
+		//mirrors databaseDump.js
+		requestConfig = requestConfig.replace(/\W+/g, "_");
 	}
 
 	request(requestConfig, function (err, results) {

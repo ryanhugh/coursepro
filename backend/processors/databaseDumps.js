@@ -51,8 +51,8 @@ DatabaseDumps.prototype.saveRows = function (endpoint, results, callback) {
 			var fileName = folderName + '/' + rowData.termId;
 
 			// Replace any non-alphanumeric character with an underscore
-			folderName = folderName.replace(/\W+/g,"_");
-			fileName = fileName.replace(/\W+/g,"_");
+			folderName = folderName.replace(/\W+/g, "_");
+			fileName = fileName.replace(/\W+/g, "_");
 
 			// NEED TO MAKE THESE ^^ CHANGES IN THE FRONTEND AND UNIT TESTS
 
