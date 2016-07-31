@@ -225,4 +225,4 @@ SelectorsMgr.prototype.go = function () {
 //window.selectorsMgr is set in the constructor
 SelectorsMgr.prototype.SelectorsMgr = SelectorsMgr;
 module.exports = SelectorsMgr;
-directiveMgr.addDirective(SelectorsMgr)
+directiveMgr.addController(SelectorsMgr)

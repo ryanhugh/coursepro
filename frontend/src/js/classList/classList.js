@@ -135,4 +135,4 @@ ClassList.prototype.showLoadingText = function () {
 
 ClassList.prototype.ClassList = ClassList;
 module.exports = ClassList;
-directiveMgr.addDirective(ClassList)
+directiveMgr.addController(ClassList)

@@ -80,4 +80,4 @@ List.prototype.addSubject = function(subject) {
 
 List.prototype.List = List;
 module.exports = List;
-directiveMgr.addDirective(List)
+directiveMgr.addController(List)

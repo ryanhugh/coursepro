@@ -453,4 +453,4 @@ GraphPanelExpand.$inject = ['$document'];
 
 GraphPanelExpand.prototype.GraphPanelExpand = GraphPanelExpand;
 module.exports = GraphPanelExpand;
-directiveMgr.addRawDirective(GraphPanelExpand)
+directiveMgr.addDirective(GraphPanelExpand)

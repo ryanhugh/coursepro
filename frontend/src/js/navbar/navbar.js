@@ -26,4 +26,4 @@ NavBar.prototype.openSelectors = function() {
 
 NavBar.prototype.NavBar = NavBar;
 module.exports = NavBar;
-directiveMgr.addDirective(NavBar)
+directiveMgr.addController(NavBar)

@@ -32,4 +32,4 @@ RoutePageCache.$inject = ['$scope', '$route']
 
 RoutePageCache.prototype.RoutePageCache = RoutePageCache;
 module.exports = RoutePageCache;
-directiveMgr.addDirective(RoutePageCache)
+directiveMgr.addController(RoutePageCache)

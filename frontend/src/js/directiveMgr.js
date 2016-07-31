@@ -42,6 +42,8 @@ angularModule.factory('$exceptionHandler', function () {
 		toLog.message = exception.message
 		toLog.name = exception.name
 
+		console.error(exception.stack)
+
 		elog(JSON.stringify(toLog))
 
 		throw exception;
@@ -104,7 +106,7 @@ DirectiveMgr.prototype.getHTMLPathFromName = function (directiveName) {
 };
 
 //by default, directive.urls is set to the name of the class with the first letter lowercased eg settings
-DirectiveMgr.prototype.addDirective = function (directive) {
+DirectiveMgr.prototype.addController = function (directive) {
 
 
 	//angular creates a instance of the directive (new directive) below, 
@@ -159,8 +161,6 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 	angularDirective.controller = directive
 
 
-
-
 	//this should be split up to addPage, addController, and addLink
 	if (directive.isPage) {
 
@@ -180,7 +180,7 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 	}
 };
 
-DirectiveMgr.prototype.addRawDirective = function(Directive) {
+DirectiveMgr.prototype.addDirective = function(Directive) {
 	if (!Directive.directiveName) {
 		Directive.directiveName = this.calculateName(Directive)
 	}

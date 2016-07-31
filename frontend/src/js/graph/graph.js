@@ -735,4 +735,4 @@ Graph.prototype.openWatchModel = function ($scope) {
 
 Graph.prototype.Graph = Graph;
 module.exports = Graph;
-directiveMgr.addDirective(Graph)
+directiveMgr.addController(Graph)

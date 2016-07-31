@@ -227,4 +227,4 @@ SubjectClassSelector.$inject = ['$scope', '$routeParams']
 
 SubjectClassSelector.prototype.SubjectClassSelector = SubjectClassSelector;
 module.exports = SubjectClassSelector;
-directiveMgr.addDirective(SubjectClassSelector)
+directiveMgr.addController(SubjectClassSelector)

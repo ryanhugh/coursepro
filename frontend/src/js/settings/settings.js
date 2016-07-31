@@ -161,4 +161,4 @@ Settings.prototype.addClass = function (aClass) {
 
 Settings.prototype.Settings = Settings;
 module.exports = Settings;
-directiveMgr.addDirective(Settings)
+directiveMgr.addController(Settings)

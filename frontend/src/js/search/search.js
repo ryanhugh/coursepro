@@ -217,4 +217,4 @@ Search.prototype.addSubject = function (subject) {
 
 Search.prototype.Search = Search;
 module.exports = Search;
-directiveMgr.addDirective(Search)
+directiveMgr.addController(Search)

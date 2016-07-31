@@ -33,4 +33,4 @@ SignInWithGoogle.prototype.link = function (scope, element, attrs) {
 
 SignInWithGoogle.prototype.SignInWithGoogle = SignInWithGoogle;
 module.exports = SignInWithGoogle;
-directiveMgr.addRawDirective(SignInWithGoogle)
+directiveMgr.addDirective(SignInWithGoogle)

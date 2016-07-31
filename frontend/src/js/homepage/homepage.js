@@ -39,4 +39,4 @@ Homepage.prototype.openSelectors = function () {
 
 Homepage.prototype.Homepage = Homepage;
 module.exports = Homepage;
-directiveMgr.addDirective(Homepage)
+directiveMgr.addController(Homepage)

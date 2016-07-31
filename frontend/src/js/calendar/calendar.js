@@ -230,4 +230,4 @@ Calendar.prototype.unpinClass = function (aClass) {
 
 Calendar.prototype.Calendar = Calendar;
 module.exports = Calendar;
-directiveMgr.addDirective(Calendar)
+directiveMgr.addController(Calendar)

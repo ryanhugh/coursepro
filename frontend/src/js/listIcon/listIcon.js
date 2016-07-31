@@ -112,4 +112,4 @@ ListIcon.prototype.link = function ($scope, element, attrs) {
 
 ListIcon.prototype.ListIcon = ListIcon;
 module.exports = ListIcon;
-directiveMgr.addRawDirective(ListIcon)
+directiveMgr.addDirective(ListIcon)

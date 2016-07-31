@@ -47,4 +47,4 @@ GoogleAnalytics.prototype.constructor = GoogleAnalytics;
 
 GoogleAnalytics.prototype.GoogleAnalytics = GoogleAnalytics;
 module.exports = GoogleAnalytics;
-directiveMgr.addDirective(GoogleAnalytics)
+directiveMgr.addController(GoogleAnalytics)
