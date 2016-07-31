@@ -18,17 +18,6 @@ function Search() {
 	this.classes = [];
 
 
-	// host: 'neu.edu',
-	// 	termId: '201710',
-	// 	isClass: false,
-	// 	prereqs: {
-	// 		type: 'and',
-	// 		values: 
-
-
-
-	// 	}
-	// }
 
 
 	// this.$scope.$on('$routeChangeSuccess', function () {
