@@ -180,17 +180,6 @@ DirectiveMgr.prototype.addDirective = function (directive) {
 	}
 };
 
-
-DirectiveMgr.prototype.addLink = function (link) {
-
-	if (!link.directiveName) {
-		link.directiveName = this.calculateName(link)
-	}
-
-
-	angularModule.directive(link.directiveName, link);
-};
-
 DirectiveMgr.prototype.addRawDirective = function(Directive) {
 	if (!Directive.directiveName) {
 		Directive.directiveName = this.calculateName(Directive)
