@@ -352,9 +352,6 @@ GraphPanelExpand.prototype.onMouseOut = function (tree) {
 	this.updateScope(tree, false);
 };
 
-// GraphPanelExpand.prototype.onNewGraph = function() {
-// 	this.didOpenRootNode = false;
-// };
 
 GraphPanelExpand.prototype.startPromptTimer = function (tree, event) {
 	clearTimeout(tree.graphPanelPromptTimeout);
@@ -404,6 +401,7 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 	if (!tree.lowestParent && tree._id != this.rootNodeId) {
 		this.rootNodeId = tree._id;
 		console.log("Found! setting to true");
+
 
 		// When the root node is destroyed, open another one this THIS DOES NTO WORK BECAUSE IT WILL ALSO TRIGGER WITH SELECT
 		// tree.$scope.$on("$destroy", function () {

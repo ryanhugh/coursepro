@@ -18,19 +18,24 @@ function BaseDirective() {
 		if (injectName == '$location') {
 			//wrapper here
 		}
-		else if (injectName == '$scope') {
-			arguments[i].self = this;
-			arguments[i][directiveMgr.calculateName(this.constructor)] = this;
-			arguments[i].macros = macros;
-		}
-		// else
 
 		this[injectName] = arguments[i]
+	};
+
+	this.constructor.instance = this;
+
+	if (this.$scope) {
+		this.$scope.self = this;
+		this.$scope[directiveMgr.calculateName(this.constructor)] = this;
+		this.$scope.macros = macros;
+
+		this.$scope.$on('$destroy', function () {
+			alert('removing instance')
+			this.constructor.instance = null;
+		}.bind(this))
+
+
 	}
-
-
-
-	
 }
 
 
