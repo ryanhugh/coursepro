@@ -7,7 +7,6 @@ function BaseSelector() {
 	//values the selector currently has (eg CS,EECE,...)
 	this.values = []
 
-
 	//the .val() of the Select Your College!, Select Term!, option
 	this.helpId = 'help_id'
 
@@ -101,13 +100,12 @@ BaseSelector.prototype.setup = function (config, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-	request(this.getRequestBody(), function (err, selectValues) {
+
+	this.download(function (err, selectValues) {
 		if (err) {
-			console.log(err);
+			elog(err);
 			return;
 		}
-
-		selectValues = this.processValues(selectValues);
 
 		selectValues = [{
 			id: this.helpId,
@@ -123,7 +121,7 @@ BaseSelector.prototype.setup = function (config, callback) {
 }
 
 BaseSelector.prototype.onSelect = function() {
-	
+	elog('onSelect not overridden')
 };
 
 BaseSelector.prototype.setupSelector = function (values, config) {

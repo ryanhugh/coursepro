@@ -2,6 +2,7 @@
 var BaseSelector = require('./baseSelector').BaseSelector;
 
 var user = require('../user')
+var Host = require('../Host')
 
 function College() {
 	BaseSelector.prototype.constructor.apply(this, arguments);
@@ -21,30 +22,25 @@ College.prototype.onSelect = function (value) {
 	user.setValue('lastSelectedCollege', value)
 };
 
-College.prototype.getRequestBody = function () {
-	return {
-		type: 'POST',
-		url: '/listColleges',
-		body: {}
+College.prototype.download = function(callback) {
+	if (!callback) {
+		callback = function () {}
 	}
-};
-College.prototype.processValues = function (values) {
 
-	var retVal = [];
-	values.forEach(function (college) {
-		retVal.push({
-			id: college.host,
-			text: college.title
-		});
-	}.bind(this));
+	Host.createMany({}, function (err, colleges) {
 
-	retVal.sort(function (a, b) {
-		if (a.text < b.text) return -1;
-		if (a.text > b.text) return 1;
-		return 0;
+		var retVal = [];
+		colleges.forEach(function (college) {
+			retVal.push({
+				id: college.host,
+				text: college.title
+			});
+		}.bind(this));
+
+		return callback(err, retVal)
 	}.bind(this))
-	return retVal;
 };
+
 
 
 module.exports = College;

@@ -1,53 +1,49 @@
 'use strict';
 var BaseSelector = require('./baseSelector').BaseSelector;
 
-
 var user = require('../user')
+var Term = require('../Term')
 
-function Term () {
-	BaseSelector.prototype.constructor.apply(this,arguments);
-	this.element= $(".selectTerm");
-	this.class='termSelectContainer';
-	// this.next = selectorsMgr.subject;
+function TermSelector() {
+	BaseSelector.prototype.constructor.apply(this, arguments);
+	this.element = $(".selectTerm");
+	this.class = 'termSelectContainer';
 	this.helpText = 'Select Term'
 }
 
 
 //prototype constructor
-Term.prototype = Object.create(BaseSelector.prototype);
-Term.prototype.constructor = Term;
+TermSelector.prototype = Object.create(BaseSelector.prototype);
+TermSelector.prototype.constructor = TermSelector;
 
-Term.prototype.onSelect = function(value) {
-	user.setValue('lastSelectedTerm',value)
+TermSelector.prototype.onSelect = function (value) {
+	user.setValue('lastSelectedTerm', value)
 };
 
-Term.prototype.getRequestBody = function() {
-	return {
-		url:'/listTerms',
-		type:'POST',
-		body:{
-			host:selectorsMgr.college.getValue()
-		}
+
+TermSelector.prototype.download = function (callback) {
+	if (!callback) {
+		callback = function () {}
 	}
+
+	Term.createMany({
+		host: selectorsMgr.college.getValue(),
+	}, function (err, terms) {
+		if (err) {
+			elog(err)
+			return callback(err)
+		}
+
+		var retVal = [];
+		terms.forEach(function (term) {
+			retVal.push({
+				text: term.text,
+				id: term.termId
+			})
+		}.bind(this))
+
+		return callback(err, retVal)
+	}.bind(this))
 };
 
-Term.prototype.processValues = function(values) {
-
-	var retVal = []; 
-	values.forEach(function (item) {
-		retVal.push({
-			text:item.text,
-			id:item.termId
-		})
-	}.bind(this))
-
-	retVal.sort(function(a, b){
-		if(a.id > b.id) return -1;
-		if(a.id < b.id) return 1;
-		return 0;
-	}.bind(this))
-	return retVal;
-};
-
-
-module.exports = Term;
+module.exports = TermSelector;
