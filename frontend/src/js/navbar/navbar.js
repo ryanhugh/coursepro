@@ -3,16 +3,10 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
 var user = require('../user')
-var Help = require('../help/help')
 
 function NavBar() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	this.$scope.user = user;
-
-
-	
-
-
 }
 
 NavBar.fnName = 'NavBar'
@@ -23,10 +17,6 @@ NavBar.prototype.getHost = function() {
 }
 NavBar.prototype.getTerm = function() {
 	return user.getValue('lastSelectedTerm');
-};
-
-NavBar.prototype.openHelp = function() {
-	Help.open(this)
 };
 
 NavBar.prototype.openSelectors = function() {
