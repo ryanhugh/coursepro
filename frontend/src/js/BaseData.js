@@ -384,7 +384,7 @@ BaseData.download = function (config, callback) {
 			return callback(null, []);
 		}
 		else {
-			ewarn('Missed cache, searching for ', config.body);
+			elog('Missed cache, searching for ', config.body);
 
 			var matches = [];
 			for (var i = 0; i < results.length; i++) {

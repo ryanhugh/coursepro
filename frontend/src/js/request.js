@@ -182,10 +182,6 @@ Request.prototype.fireRequest = function (config, callback) {
 		body.userId = localStorage.userId;
 	}
 
-	// if (config.auth && localStorage.loginKey && config.type == 'POST') {
-	// 	body.loginKey = localStorage.loginKey
-	// };
-
 
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function () {
@@ -243,7 +239,12 @@ Request.prototype.fireRequest = function (config, callback) {
 
 	xmlhttp.open(config.type, config.url, true);
 	xmlhttp.setRequestHeader("Content-type", "application/json");
-	xmlhttp.send(JSON.stringify(body));
+	if (config.type === 'POST') {
+		xmlhttp.send(JSON.stringify(body));
+	}
+	else {
+		xmlhttp.send();
+	}
 }
 
 
