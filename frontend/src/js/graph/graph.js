@@ -12,6 +12,7 @@ var downloadTree = require('./downloadTree')
 var treeMgr = require('./treeMgr')
 
 var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
+var GraphPanelExpand = require('./graphPanelExpand')
 
 
 //thing that calls on download tree, treeMgr, render, popup and help

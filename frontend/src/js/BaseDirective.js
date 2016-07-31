@@ -27,6 +27,8 @@ function BaseDirective() {
 
 		this[injectName] = arguments[i]
 	};
+	
+	this.constructor.instance = this;
 }
 
 

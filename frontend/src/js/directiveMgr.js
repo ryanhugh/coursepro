@@ -188,15 +188,18 @@ DirectiveMgr.prototype.addLink = function (link) {
 	angularModule.directive(link.directiveName, link);
 };
 
-DirectiveMgr.prototype.addRawDirective = function(directive) {
-	
-	if (!directive.directiveName) {
-		directive.directiveName = this.calculateName(directive)
+DirectiveMgr.prototype.addRawDirective = function(Directive) {
+	if (!Directive.directiveName) {
+		Directive.directiveName = this.calculateName(Directive)
 	}
 	
-	if (!directive.$inject) {
+	if (!Directive.$inject) {
 		console.warn('no $inject?');
-		directive.$inject = []
+		Directive.$inject = []
+	}
+	
+	if (Directive.$inject.includes('$scope')) {
+		elog('Cant inject a $scope into a directive, only controllers. Use the link function in directives.')
 	}
 	
 	var directiveInstance;
@@ -204,25 +207,16 @@ DirectiveMgr.prototype.addRawDirective = function(directive) {
 	function AngularDirective () {
 		
 		if (!directiveInstance) {
-			directiveInstance = new directive([].slice.call(arguments))
+			directiveInstance = new Directive([].slice.call(arguments))
+
 		}
 		
 		return directiveInstance;
-		
-		// for (var i=0;i<directive.$inject.length;i++) {
-		// 	var noduleName = directive.$inject[i];
-		// 	directiveInstance[noduleName] = arguments[i]
-		// }
-		
-		
-		// return directiveInstance
 	}
 	
-	AngularDirective.$inject = directive.$inject;
-	
+	AngularDirective.$inject = Directive.$inject;
 
-
-	angularModule.directive(directive.directiveName, AngularDirective);
+	angularModule.directive(Directive.directiveName, AngularDirective);
 }
 
 
