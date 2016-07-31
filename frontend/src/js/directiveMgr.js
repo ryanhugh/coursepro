@@ -202,19 +202,11 @@ DirectiveMgr.prototype.addRawDirective = function(Directive) {
 		elog('Cant inject a $scope into a directive, only controllers. Use the link function in directives.')
 	}
 	
-	var directiveInstance;
-	
 	function AngularDirective () {
-		
-		if (!directiveInstance) {
-			directiveInstance = new Directive([].slice.call(arguments))
-
-		}
-		
-		return directiveInstance;
+		return new directive([].slice.call(arguments))
 	}
 	
-	AngularDirective.$inject = Directive.$inject;
+	AngularDirective.$inject = directive.$inject;
 
 	angularModule.directive(Directive.directiveName, AngularDirective);
 }

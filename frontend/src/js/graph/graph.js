@@ -29,7 +29,7 @@ function Graph() {
 	this.isLoading = false;
 
 	this.graphWidth = this.getSvgWidth();
-	
+
 	this.graphHeight = this.getSvgHeight();
 
 	// This is the default for nodes, and is what is allways used for collision
@@ -63,7 +63,7 @@ function Graph() {
 
 	//if given path, load graph
 	if (path.classUid && path.subject) {
-		setTimeout(function(){
+		setTimeout(function () {
 			this.createGraph(path)
 		}.bind(this), 0);
 		this.$scope.focusSelector = false;
@@ -73,6 +73,10 @@ function Graph() {
 		this.$scope.focusSelector = true;
 	}
 
+	this.$scope.$on('$destroy', function () {
+		console.log("HIII")
+	}.bind(this))
+
 
 	this.$scope.addClass = this.addClass.bind(this)
 
@@ -81,12 +85,12 @@ function Graph() {
 	}.bind(this));
 }
 
-Graph.prototype.getSvgWidth = function(){
+Graph.prototype.getSvgWidth = function () {
 	// return 600;
 	return window.innerWidth - 300;
 }
 
-Graph.prototype.getSvgHeight = function() {
+Graph.prototype.getSvgHeight = function () {
 	return window.innerHeight - 50;
 }
 
@@ -246,10 +250,10 @@ Graph.prototype.updateHeight = function (tree) {
 };
 
 
-Graph.prototype.estimateNodePositions = function(){
+Graph.prototype.estimateNodePositions = function () {
 	var nodes = this.nodes;
 	if (nodes[0].x === undefined) {
-		nodes[0].x = this.getSvgWidth()/2;
+		nodes[0].x = this.getSvgWidth() / 2;
 	}
 
 	nodes.forEach(function (node) {
@@ -305,29 +309,29 @@ Graph.prototype.calculateGraphSize = function () {
 
 // This is called when the graph is first loaded, and whenever a panel on the graph is selected. 
 Graph.prototype.loadNodes = function (callback) {
-	
+
 	// Release prior nodes and $destroy the scopes
-	this.nodes.forEach(function(node){
+	this.nodes.forEach(function (node) {
 		node.foreignObject.remove();
 		node.$scope.$destroy();
 	}.bind(this))
-	
+
 	// Remove the lines
 	while (this.container[0][0].firstChild) {
 		this.container[0][0].removeChild(this.container[0][0].firstChild);
 	}
 
-	
+
 	var nodesAndLinks = treeMgr.treeToD3(this.tree);
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
-	
-	
-	
+
+
+
 	this.estimateNodePositions();
-	
-	
-	
+
+
+
 
 	this.nodes.forEach(function (node) {
 		node.height = this.nodeHeight;
@@ -365,9 +369,9 @@ Graph.prototype.loadNodes = function (callback) {
 		parent.downwardLinks.push(this.linkElements[0][i])
 		child.upwardLinks.push(this.linkElements[0][i])
 	}
-	
+
 	var skipThisDrag = false;
-	
+
 	this.nodeDrag = d3.behavior.drag()
 		.on("dragstart", function (node) {
 			if (d3.event.sourceEvent.which == 3) {
@@ -469,9 +473,15 @@ Graph.prototype.go = function (tree, callback) {
 			return callback(err);
 		};
 
+
 		// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
 		// setTimeout(function () {
 		// this.$scope.$apply()
+
+		// if (this.tree && this.tree.$scope && this.tree.$scope.graphPanelExpand) {
+		// 	this.tree.$scope.graphPanelExpand.onNewGraph();
+		// 	console.log("Setting to false!");
+		// }
 
 		treeMgr.go(tree);
 		this.tree = tree;
@@ -496,9 +506,6 @@ Graph.prototype.go = function (tree, callback) {
 
 
 		this.container = this.svg.append("g");
-		
-		var containerXOffset = 0;
-
 
 		var zoom = d3.behavior.zoom()
 			.scaleExtent([.1, 1.5])
@@ -517,7 +524,7 @@ Graph.prototype.go = function (tree, callback) {
 			}
 
 			this.force.on("tick", function (e) {
-				
+
 				this.nodes.forEach(function (node) {
 					if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
 						elog('wtf1', node)
@@ -640,17 +647,18 @@ Graph.prototype.go = function (tree, callback) {
 					break;
 				}
 			}
-			
-			
+
+
 			// Center the root node by translating the container <g> inside the svg
-			zoom.translate([this.getSvgWidth()/2-this.tree.x, 0])
-			
+			zoom.translate([this.getSvgWidth() / 2 - this.tree.x, 0])
+
 			// Zoom in a little, (this number is arbitrary)
 			// zoom.scale(1.16) // DO want to do this, but causes bug where not centered
 			zoom.event(this.svg)
+
 			// zoom.center([this.tree.x,this.tree.y])
 			// zoom.event(this.svg)
-			
+
 
 			this.$scope.tree = tree;
 			setTimeout(function () {
