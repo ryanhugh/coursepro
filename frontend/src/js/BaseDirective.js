@@ -26,7 +26,11 @@ function BaseDirective() {
 		// else
 
 		this[injectName] = arguments[i]
-	};
+	}
+
+
+
+	
 }
 
 
