@@ -6,8 +6,9 @@ var BaseDirective = require('../BaseDirective')
 var treeMgr = require('./treeMgr')
 var user = require('../user')
 
-function GraphPanelExpand(args) {
-	BaseDirective.prototype.constructor.apply(this, args);
+function GraphPanelExpand() {
+	debugger
+	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	this.openOrder = []
 

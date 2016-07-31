@@ -20,9 +20,12 @@ else {
 	console.log('Service worker not supported')
 }
 
-//max depth for a tree, if it reaches this angular will barf
 var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize', 'ui.calendar', 'templates', 'infinite-scroll'], ['$rootScopeProvider', '$compileProvider', function ($rootScopeProvider, $compileProvider) {
+	
+	//max depth for a tree, if it reaches this angular will barf
 	$rootScopeProvider.digestTtl(20);
+
+	// https://docs.angularjs.org/guide/production
 	$compileProvider.debugInfoEnabled(false);
 }]);
 
@@ -203,7 +206,9 @@ DirectiveMgr.prototype.addRawDirective = function(Directive) {
 	}
 	
 	function AngularDirective () {
-		return new Directive([].slice.call(arguments))
+		var args = [].slice.call(arguments)
+		// http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
+		return new (Function.prototype.bind.apply(Directive, [null].concat(args)))
 	}
 	
 	AngularDirective.$inject = Directive.$inject;

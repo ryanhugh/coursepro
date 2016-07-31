@@ -16,7 +16,7 @@ function Calendar($scope) {
 			header: false,
 			defaultDate: '1970-01-06',
 			minTime: '08:00:00',
-			maxTime: '22:00:00',
+			maxTime: '22:00:00', 
 			defaultView: 'agendaWeek',
 			allDaySlot: false,
 			weekends: false, //unless there are meetings on weekends

@@ -20,7 +20,7 @@ function Settings() {
 
 	this.isLoading = true;
 	if (_(this.$location.path()).startsWith('/unsubscribe')) {
-
+ 
 		var path = {};
 		for (var attrName in this.$routeParams) {
 			path[attrName] = decodeURIComponent(this.$routeParams[attrName])
