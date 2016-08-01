@@ -217,7 +217,7 @@ BaseData.prototype.getIdentiferWithKeys = function (keys, isOptional) {
 		}
 		else {
 			retVal.obj[keys[i]] = value
-			retVal.str.push(value)
+			retVal.str.push(value.replace(/[^A-Za-z0-9.]+/g, "_"))
 		}
 	}
 
@@ -257,7 +257,7 @@ BaseData.getKeyFromConfig = function (config) {
 		if (!config[allKeys[i]]) {
 			break
 		}
-		key.push(config[allKeys[i]]);
+		key.push(config[allKeys[i]].replace(/[^A-Za-z0-9.]+/g, "_"));
 	}
 	if (key.length > 0) {
 		return key.join('/')
@@ -286,7 +286,7 @@ BaseData.downloadResultsGroup = memoize(function (config, callback) {
 		requestConfig.url = this.API_ENDPOINT + '/' + string;
 
 		//mirrors databaseDump.js
-		requestConfig = requestConfig.replace(/\W+/g, "_");
+		requestConfig.url = requestConfig.url;
 	}
 
 	request(requestConfig, function (err, results) {
