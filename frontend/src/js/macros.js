@@ -16,61 +16,59 @@ function Macros() {
 	this.LAST_SELECTED_COLLEGE = 'lastSelectedCollege';
 	this.LAST_SELECTED_TERM = 'lastSelectedTerm';
 
-	// factor our list names too????
-
+	// Three lists in use for user.
 	this.SAVED_LIST = 'saved';
 	this.WATCHING_LIST = 'watching';
-	this.SELECTED_LIST = 'selected'
+	this.SELECTED_LIST = 'selected';
 
+	// In unit tests, window.elog is defined in main.tests.js to be just console.error
+	if (!macros.UNIT_TESTS) {
+		//used all over the place for logging erros
+		window.elog = function () {
 
-	if (macros.UNIT_TESTS) {
-		return;
-	}
-	//used all over the place for logging erros
-	window.elog = function () {
-
-		var args = [];
-		for (var i = 0; i < arguments.length; i++) {
-			args[i] = arguments[i];
-		}
-
-		console.log.apply(console, ['ELOG'].concat(args));
-		debugger
-		console.trace();
-
-		var bodyString;
-
-		var outputString = []
-
-		args.forEach(function (arg) {
-
-			var str;
-			try {
-				str = JSON.stringify(arg)
+			var args = [];
+			for (var i = 0; i < arguments.length; i++) {
+				args[i] = arguments[i];
 			}
-			catch (e) {
-				str = 'circular data'
-			}
-			outputString.push(str)
-		}.bind(this))
 
-		bodyString = {
-			msg: outputString.join('')
-		}
+			console.log.apply(console, ['ELOG'].concat(args));
+			debugger
+			console.trace();
 
-		//use a separate calls stack in case this throws an error, it will not affect code that calls this
-		setTimeout(function () {
-			request({
-				url: '/logError',
-				useCache: false,
-				body: bodyString
-			}, function (err, response) {
-				if (err) {
-					console.log("error logging error... lol");
-				};
+			var bodyString;
+
+			var outputString = []
+
+			args.forEach(function (arg) {
+
+				var str;
+				try {
+					str = JSON.stringify(arg)
+				}
+				catch (e) {
+					str = 'circular data'
+				}
+				outputString.push(str)
 			}.bind(this))
-		}.bind(this), 0)
-	}.bind(this)
+
+			bodyString = {
+				msg: outputString.join('')
+			}
+
+			//use a separate calls stack in case this throws an error, it will not affect code that calls this
+			setTimeout(function () {
+				request({
+					url: '/logError',
+					useCache: false,
+					body: bodyString
+				}, function (err, response) {
+					if (err) {
+						console.log("error logging error... lol");
+					};
+				}.bind(this))
+			}.bind(this), 0)
+		}.bind(this)
+	}
 }
 
 Macros.prototype.inherent = function (Baseclass, Subclass) {
