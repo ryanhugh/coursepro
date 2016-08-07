@@ -1,9 +1,13 @@
-localStorage.clear()
+'use strict';
+var _ = require('lodash')
+
 var mockClassData = require('./mocks/mockClassData.json')
 var mockSubjectData = require('./mocks/mockSubjectData.json')
 var mockHostData = require('./mocks/mockHostData.json')
 var mockTermData = require('./mocks/mockTermData.json')
 var mockSectionData = require('./mocks/mockSectionData.json')
+
+localStorage.clear()
 
 var mockData = {
 	'listColleges': mockHostData,

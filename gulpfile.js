@@ -377,6 +377,8 @@ gulp.task('copyRootFiles', function (callback) {
 
 					// sw.js is the only file that runs through this stuff now
 					if (file.endsWith('.js')) {
+
+						// This wraps the code in an anonymous function that is called immediately. Helps uglifyJS uglify more things. 
 						stream = stream.pipe(iife())
 						stream = stream.pipe(streamify(uglify({
 							options: {

@@ -880,6 +880,9 @@ User.prototype.toggleListContainsClass = function (listName, aClass, addSections
 };
 
 User.prototype.getValue = function (name) {
+	if (!name) {
+		elog('no name in get value?')
+	}
 	return this.dbData.vars[name];
 };
 

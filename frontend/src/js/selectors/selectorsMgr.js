@@ -48,7 +48,7 @@ SelectorsMgr.prototype.updateSelectors = function () {
 
 			//if user has values, use those
 
-			var lastSelectedCollege = user.getValue('lastSelectedCollege')
+			var lastSelectedCollege = user.getValue(macros.LAST_SELECTED_COLLEGE)
 
 			//what if user has not loaded yet????
 			if (lastSelectedCollege) {
@@ -60,7 +60,7 @@ SelectorsMgr.prototype.updateSelectors = function () {
 
 
 				//load term too?
-				var lastSelectedTerm = user.getValue('lastSelectedTerm')
+				var lastSelectedTerm = user.getValue(macros.LAST_SELECTED_TERM);
 
 				// show to dropdown, but not opened
 				if (lastSelectedTerm) {
@@ -111,9 +111,9 @@ SelectorsMgr.prototype.finish = function (callback) {
 		return;
 	};
 
-	user.setValue('lastSelectedCollege', collegeVal)
+	user.setValue(macros.LAST_SELECTED_COLLEGE, collegeVal)
 
-	user.setValue('lastSelectedTerm', termId)
+	user.setValue(macros.LAST_SELECTED_TERM, termId)
 
 	var toUpdate = {}
 

@@ -12,7 +12,16 @@ function Macros() {
 	this.DATASTATUS_DONE = 2;
 	this.DATASTATUS_FAIL = 3;
 
-	if (window.elog) {
+	// Two user variables used to keep track of the last selected college and term. 
+	this.LAST_SELECTED_COLLEGE = 'lastSelectedCollege';
+	this.LAST_SELECTED_TERM = 'lastSelectedTerm';
+
+	// factor our list names too????
+
+	// this.SAVED_LIST = 
+
+
+	if (macros.UNIT_TESTS) {
 		return;
 	}
 	//used all over the place for logging erros
@@ -32,7 +41,7 @@ function Macros() {
 		var outputString = []
 
 		args.forEach(function (arg) {
-			
+
 			var str;
 			try {
 				str = JSON.stringify(arg)
@@ -44,7 +53,7 @@ function Macros() {
 		}.bind(this))
 
 		bodyString = {
-			msg:outputString.join('')
+			msg: outputString.join('')
 		}
 
 		//use a separate calls stack in case this throws an error, it will not affect code that calls this

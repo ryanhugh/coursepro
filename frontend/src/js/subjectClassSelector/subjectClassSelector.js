@@ -1,6 +1,7 @@
 'use strict';
 var _ = require('lodash')
 
+var macros = require('../macros')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
@@ -72,8 +73,8 @@ SubjectClassSelector.prototype.updateSubjects = function (callback) {
 
 
 	this.term = Term.create({
-		host: user.getValue('lastSelectedCollege'),
-		termId: user.getValue('lastSelectedTerm')
+		host: user.getValue(macros.LAST_SELECTED_COLLEGE),
+		termId: user.getValue(macros.LAST_SELECTED_TERM)
 	})
 
 

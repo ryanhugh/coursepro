@@ -93,8 +93,8 @@ Calendar.prototype.updateCalendar = function () {
 		//filter out ones that don't match this term and host (this is inefficient because it loads all classes, instead of just ones in this term)
 		//sections of other ones are also loaded, so atm pretty slow...
 
-		var host = user.getValue('lastSelectedCollege')
-		var termId = user.getValue('lastSelectedTerm')
+		var host = user.getValue(macros.LAST_SELECTED_COLLEGE)
+		var termId = user.getValue(macros.LAST_SELECTED_TERM)
 
 		list.classes.forEach(function (aClass) {
 			if (aClass.host === host && aClass.termId === termId) {
@@ -190,7 +190,6 @@ Calendar.prototype.addClass = function (aClass) {
 
 Calendar.prototype.getListName = function () {
 	return 'saved';
-	// return (user.getValue('lastSelectedCollege') + '/' + user.getValue('lastSelectedTerm') + '/Primary Schedule').replace(/\./g, '')
 };
 
 Calendar.prototype.isSectionPinned = function (section) {

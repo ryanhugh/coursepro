@@ -17,7 +17,7 @@ TermSelector.prototype = Object.create(BaseSelector.prototype);
 TermSelector.prototype.constructor = TermSelector;
 
 TermSelector.prototype.onSelect = function (value) {
-	user.setValue('lastSelectedTerm', value)
+	user.setValue(macros.LAST_SELECTED_TERM, value)
 };
 
 

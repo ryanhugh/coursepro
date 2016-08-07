@@ -92,8 +92,8 @@ function Settings() {
 			//unique list of classes
 			var classes = [];
 
-			var currentTermId = user.getValue('lastSelectedTerm')
-			var currentHost = user.getValue('lastSelectedCollege')
+			var currentHost = user.getValue(macros.LAST_SELECTED_COLLEGE)
+			var currentTermId = user.getValue(macros.LAST_SELECTED_TERM)
 
 			//merge watching and saved, remove duplicates
 			user.lists['watching'].classes.concat(user.lists['saved'].classes).forEach(function (aClass) {
