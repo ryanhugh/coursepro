@@ -370,6 +370,8 @@ gulp.task('copyRootFiles', function (callback) {
 					var stream = gulp.src(file);
 
 					stream = injectMacros(stream)
+					
+					// dont uglify in dev!
 
 					stream.pipe(gulp.dest('./frontend/static'))
 						.on('error', function (err) {
