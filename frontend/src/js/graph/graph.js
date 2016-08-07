@@ -72,11 +72,6 @@ function Graph() {
 		this.$scope.focusSelector = true;
 	}
 
-	this.$scope.$on('$destroy', function () {
-		console.log("HIII")
-	}.bind(this))
-
-
 	this.$scope.addClass = this.addClass.bind(this)
 
 	$(window).resize(function () {

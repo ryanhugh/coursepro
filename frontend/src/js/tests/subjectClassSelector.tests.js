@@ -1,10 +1,13 @@
+'use strict';
 require('angular-mocks')
 
 require('../macros.js')
 require('../directiveMgr.js')
 
+var macros = require('../macros')
+
 var user = require('../user')
-var subjectClassSelector = require('../subjectClassSelector/subjectClassSelector') 
+var subjectClassSelector = require('../subjectClassSelector/subjectClassSelector')
 
 
 
@@ -16,14 +19,16 @@ describe('SubjectClassSelector', function () {
 
 	var $controller;
 	var $rootScope;
+	var $compile;
 
-	beforeEach(inject(function (_$controller_, _$rootScope_) {
+	beforeEach(inject(function (_$controller_, _$rootScope_, _$compile_) {
 		// The injector unwraps the underscores (_) from around the parameter names when matching
 		$controller = _$controller_;
 		$rootScope = _$rootScope_;
+		$compile = _$compile_;
 
-		user.setValue('lastSelectedCollege', 'neu.edu')
-		user.setValue('lastSelectedTerm', '201710')
+		user.setValue(macros.LAST_SELECTED_COLLEGE, 'neu.edu');
+		user.setValue(macros.LAST_SELECTED_TERM, '201710');
 
 	}));
 
@@ -37,11 +42,17 @@ describe('SubjectClassSelector', function () {
 				$scope: $scope
 			});
 
+			// var element = $compile("<div graph></div>")($scope);
+		    // fire all the watches, so the scope expression {{1 + 1}} will be evaluated
+		    // $scope.$apply();
+
+		    debugger
+
 			// controller.selectedSubject = 'CS'
 			// controller.updateSubjects(function () {
 			// 	console.log(controller.term.subjects);
 			// }.bind(this))
- 
+
 
 
 

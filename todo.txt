@@ -14,14 +14,14 @@ debug why it takes multiple clicks sometimes?
 popup explaining what is going on with the selecting
 
 
-2. MAKE NEU.EDU/LAW _> NEU.EDU_LAW WORK IN FRONTEND, and standardize the regex everywhere
+2. MAKE NEU.EDU/LAW _> NEU.EDU_LAW WORK IN FRONTEND, and standardize the regex everywhere (they are in basedata and in dumpdatabase)
 3. shared dir with keys generator and stuff?
 4. and can remove keys.obj and key.lookup because they are the same now?
 
+unit tests graph
+remove unneccesary describe in the tests
 
 
-uglify the sw.js
-clean up sw.js
 
 
 bootstrap over arrow to show coreqs when panel is expanded?

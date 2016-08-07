@@ -48,8 +48,8 @@ DatabaseDumps.prototype.saveRows = function (endpoint, results, callback) {
 			var rowData = classLists[attrName]
 
 			// Replace any non-alphanumeric character with an underscore
-			var folderName = './frontend/static/' + endpoint + '/' + rowData.host.replace(/[^A-Za-z0-9.]/g, "_");
-			var fileName = folderName + '/' + rowData.termId.replace(/[^A-Za-z0-9.]/g, "_");
+			var folderName = './frontend/static/' + endpoint + '/' + rowData.host.replace(/[^A-Za-z0-9.]+/g, "_");
+			var fileName = folderName + '/' + rowData.termId.replace(/[^A-Za-z0-9.]+/g, "_");
 
 			// NEED TO MAKE THESE ^^ CHANGES IN THE FRONTEND AND UNIT TESTS
 
