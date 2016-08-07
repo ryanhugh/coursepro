@@ -70,11 +70,13 @@ describe('Graph', function () {
 		// fire all the watches, so the scope expression {{1 + 1}} will be evaluated
 		$scope.$apply();
 
+		var win = new MockWindow()
+
 
 		var graph = $controller(Graph, {
 			$scope: $scope,
 			$document: element[0].parentNode,
-			$window: new MockWindow()
+			$window: win
 		});
 		console.log($controller, $scope);
 
@@ -91,8 +93,9 @@ describe('Graph', function () {
 			console.log(aClass);
 
 			expect(!!aClass.foreignObject);
-			expect(aClass.x !== undefined);
-			expect(aClass.y !== undefined);
+			expect(aClass.x).toBe((win.innerWidth - macros.SEARCH_WIDTH)/2);
+			expect(aClass.y > 0 && aClass.y < graph.graphHeight);
+			
 
 
 

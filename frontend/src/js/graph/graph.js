@@ -192,20 +192,12 @@ Graph.prototype.addToDom = function (node) {
 		})
 	}.bind(this))
 
-	// node.downwardLinks.forEach(function (link) {
-	// 	this.container.appendChild(link)
-	// }.bind(this))
-
 	node.upwardLinks.forEach(function (link) {
 		this.container[0][0].appendChild(link)
 	}.bind(this))
 
-
-
 	// append the node after the links
 	this.container[0][0].appendChild(node.foreignObject.parentElement)
-
-
 };
 
 
