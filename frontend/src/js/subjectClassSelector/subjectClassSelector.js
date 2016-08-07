@@ -22,7 +22,7 @@ function SubjectClassSelector() {
 
 
 	this.updateSubjects(function (err) {
-		
+
 		this.updateFromRoute()
 
 	}.bind(this))
@@ -36,9 +36,9 @@ function SubjectClassSelector() {
 	this.showClassesSelector = false;
 
 
-	this.$scope.$watch('subjectClassSelector.selectedSubject', this.onSelectSubject.bind(this,undefined))
+	this.$scope.$watch('subjectClassSelector.selectedSubject', this.onSelectSubject.bind(this, undefined))
 
-	this.$scope.$watch('subjectClassSelector.selectedClass', this.onSelectClass.bind(this,undefined))
+	this.$scope.$watch('subjectClassSelector.selectedClass', this.onSelectClass.bind(this, undefined))
 
 
 	this.$scope.$on('$routeChangeSuccess', this.updateFromRoute.bind(this))

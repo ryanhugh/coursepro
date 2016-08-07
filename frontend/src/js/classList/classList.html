@@ -67,7 +67,7 @@
                         <!-- stop event propagation outside the icons -->
                         <span ng-click="$event.stopPropagation()">
 
-                            <span list-icon='saved' toggle="class" class="rightIcon"></span>
+                            <span list-icon='{{macros.SAVED_LIST}}' toggle="class" class="rightIcon"></span>
                             <!-- <span list-icon='watching' toggle="class" class="rightIcon"></span> -->
 
                             <!-- link icon -->
@@ -226,7 +226,7 @@
                     </td> -->
 
                             <td>
-                                <span list-icon='saved' toggle="section" style="padding-left: 11px;"></span>
+                                <span list-icon='{{macros.SAVED_LIST}}' toggle="section" style="padding-left: 11px;"></span>
                             </td>
                         </tr>
                     </tbody>

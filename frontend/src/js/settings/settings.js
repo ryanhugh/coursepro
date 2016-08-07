@@ -72,7 +72,7 @@ function Settings() {
 				}.bind(this))
 
 				q.defer(function (callback) {
-					user.loadList('saved', function (err) {
+					user.loadList(macros.SAVED_LIST, function (err) {
 						callback(err)
 					}.bind(this))
 				}.bind(this))
@@ -96,7 +96,7 @@ function Settings() {
 			var currentTermId = user.getValue(macros.LAST_SELECTED_TERM)
 
 			//merge watching and saved, remove duplicates
-			user.lists['watching'].classes.concat(user.lists['saved'].classes).forEach(function (aClass) {
+			user.lists['watching'].classes.concat(user.lists[macros.SAVED_LIST].classes).forEach(function (aClass) {
 				if (currentTermId != aClass.termId || currentHost != aClass.host) {
 					return;
 				};
@@ -154,7 +154,7 @@ Settings.prototype.addClass = function (aClass) {
 
 
 	//if it is not in this list already, add it
-	user.toggleListContainsClass('saved', aClass)
+	user.toggleListContainsClass(macros.SAVED_LIST, aClass)
 };
 
 

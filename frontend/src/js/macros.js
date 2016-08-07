@@ -18,7 +18,7 @@ function Macros() {
 
 	// factor our list names too????
 
-	// this.SAVED_LIST = 
+	this.SAVED_LIST = 'saved';
 
 
 	if (macros.UNIT_TESTS) {

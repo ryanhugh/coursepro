@@ -189,7 +189,7 @@ Calendar.prototype.addClass = function (aClass) {
 };
 
 Calendar.prototype.getListName = function () {
-	return 'saved';
+	return macros.SAVED_LIST;
 };
 
 Calendar.prototype.isSectionPinned = function (section) {
