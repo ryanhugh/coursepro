@@ -55,37 +55,6 @@ function Class(config) {
 	this.allParents = []
 	
 	var bValue = undefined;
-	// Object.defineProperty(this, 'x', {
-	//   get: function() { 
-	//   	return bValue; 
-	//   },
-	//   set: function(newValue) { 
-	//   	debugger
-	//   	bValue = newValue; 
-	//   },
-	// });
-
-	// this.postDataProcess();
-
-
-	// host: "neu.edu"
-	// termId: "201630"
-	// prereqs and coreqs are inhereted from node
-
-	// _id: "5683f82c36b66840e86b3f37"
-	// classId: "4800"
-	// crns: Array[2]
-	// desc: "Introduces the basic principles and techniques for the design, analysis, and implementation of efficient algorithms and data representations. Discusses asymptotic analysis and formal methods for establishing the correctness of algorithms. Considers divide-and-conquer algorithms, graph traversal algorithms, and optimization techniques. Introduces information theory and covers the fundamental structures for representing data. Examines flat and hierarchical representations, dynamic data representations, and data compression. Concludes with a discussion of the relationship of the topics in this course to complexity theory and the notion of the hardness of problems. Prereq. CS 1500 or CS 2510. 4.000 Lecture hours"
-	// lastUpdateTime: 1451932181085
-	// maxCredits: 4
-	// minCredits: 4
-	// name: "Algorithms and Data"
-
-	// prettyUrl: "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201630&subj_code_in=CS&crse_numb_in=4800"
-	// sections: [new Section()]
-	// subject: "CS"
-	// url: "https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201630&subj_in=CS&crse_in=4800&schd_in=%25"
-
 }
 
 

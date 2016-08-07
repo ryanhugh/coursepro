@@ -74,21 +74,20 @@ function Graph() {
 
 	this.$scope.addClass = this.addClass.bind(this)
 
-	$(window).resize(function () {
+	this.$window.addEventListener('resize', function () {
 		this.calculateGraphSize();
-	}.bind(this));
+	}.bind(this))
 }
 
 Graph.prototype.getSvgWidth = function () {
-	// return 600;
-	return window.innerWidth - 300;
+	return this.$window.innerWidth - 300;
 }
 
 Graph.prototype.getSvgHeight = function () {
-	return window.innerHeight - 50;
+	return this.$window.innerHeight - 50;
 }
 
-Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile', '$document']
+Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile', '$document', '$window']
 
 Graph.isPage = true;
 Graph.urls = ['/graph/:host/:termId/:subject?/:classUid?']

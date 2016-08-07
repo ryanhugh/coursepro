@@ -32,30 +32,19 @@ describe('SubjectClassSelector', function () {
 
 	}));
 
-	describe('$scope.grade', function () {
-		it('sets the strength to "strong" if the password length is >8 chars', function () {
+	it('should work', function () {
 
-			var $scope = $rootScope.$new();
-
-
-			var controller = $controller(subjectClassSelector, {
-				$scope: $scope
-			});
-
-			// var element = $compile("<div graph></div>")($scope);
-		    // fire all the watches, so the scope expression {{1 + 1}} will be evaluated
-		    // $scope.$apply();
-
-		    debugger
-
-			// controller.selectedSubject = 'CS'
-			// controller.updateSubjects(function () {
-			// 	console.log(controller.term.subjects);
-			// }.bind(this))
+		var $scope = $rootScope.$new();
 
 
-
-
+		var controller = $controller(subjectClassSelector, {
+			$scope: $scope
 		});
+
+		// controller.selectedSubject = 'CS'
+		// controller.updateSubjects(function () {
+		// 	console.log(controller.term.subjects);
+		// }.bind(this))
+
 	});
 });

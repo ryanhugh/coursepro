@@ -13,6 +13,16 @@ var Class = require('../../Class')
 // 	Graph
 // });
 
+function MockWindow () {
+
+	this.innerWidth = 500;
+	this.innerHeight = 500;
+}
+
+MockWindow.prototype.addEventListener = function(type, fn) {
+	// implement if needed
+};
+
 
 
 
@@ -63,11 +73,11 @@ describe('Graph', function () {
 
 		var graph = $controller(Graph, {
 			$scope: $scope,
-			$document: element[0].parentNode
+			$document: element[0].parentNode,
+			$window: new MockWindow()
 		});
 		console.log($controller, $scope);
 
-		debugger
 
 		var aClass = Class.create({
 			"host": "neu.edu",
