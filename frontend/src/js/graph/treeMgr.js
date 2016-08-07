@@ -876,7 +876,7 @@ TreeMgr.prototype.getSatisfyingNode = function (tree) {
 				continue;
 			}
 
-			if (user.getListIncludesClass('selected', subTree)) {
+			if (user.getListIncludesClass(macros.SELECTED_LIST, subTree)) {
 				return subTree;
 			}
 		}

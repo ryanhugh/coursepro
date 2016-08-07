@@ -28,7 +28,7 @@ function Settings() {
 
 		Class.create(path).download(function (err, aClass) {
 			aClass.loadSections(function (err) {
-				user.removeFromList('watching', [aClass], aClass.sections, function (errMsg, clientMsg) {
+				user.removeFromList(macros.WATCHING_LIST, [aClass], aClass.sections, function (errMsg, clientMsg) {
 					console.log("msg here", errMsg, clientMsg);
 					if (errMsg) {
 						this.alertMsgText = errMsg;
@@ -65,7 +65,7 @@ function Settings() {
 				var q = queue();
 
 				q.defer(function (callback) {
-					user.loadList('watching', function (err) {
+					user.loadList(macros.WATCHING_LIST, function (err) {
 						callback(err)
 					}.bind(this))
 
@@ -96,7 +96,7 @@ function Settings() {
 			var currentTermId = user.getValue(macros.LAST_SELECTED_TERM)
 
 			//merge watching and saved, remove duplicates
-			user.lists['watching'].classes.concat(user.lists[macros.SAVED_LIST].classes).forEach(function (aClass) {
+			user.lists[macros.WATCHING_LIST].classes.concat(user.lists[macros.SAVED_LIST].classes).forEach(function (aClass) {
 				if (currentTermId != aClass.termId || currentHost != aClass.host) {
 					return;
 				};

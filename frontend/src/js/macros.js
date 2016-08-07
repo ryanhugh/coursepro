@@ -19,6 +19,8 @@ function Macros() {
 	// factor our list names too????
 
 	this.SAVED_LIST = 'saved';
+	this.WATCHING_LIST = 'watching';
+	this.SELECTED_LIST = 'selected'
 
 
 	if (macros.UNIT_TESTS) {

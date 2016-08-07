@@ -1,5 +1,6 @@
 'use strict';
 var _ = require('lodash')
+var macros = require('../macros')
 
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
@@ -50,7 +51,7 @@ GraphPanelExpand.prototype.getTreePanel = function (tree) {
 };
 
 GraphPanelExpand.prototype.getNodeIsSelected = function (tree) {
-	return user.getListIncludesClass('selected', tree);
+	return user.getListIncludesClass(macros.SELECTED_LIST, tree);
 };
 
 // the given scope is the scope of a tree inside a recursions
@@ -206,13 +207,13 @@ GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
 	};
 
 	// Selecting this node will not change the tree, don't allow it to be selected.
-	if (!tree.wouldSatisfyNode && !user.getListIncludesClass('selected', tree)) {
+	if (!tree.wouldSatisfyNode && !user.getListIncludesClass(macros.SELECTED_LIST, tree)) {
 		return callback();
 	}
 
 
 	setTimeout(function () {
-		user.toggleListContainsClass('selected', tree, false, function (err) {
+		user.toggleListContainsClass(macros.SELECTED_LIST, tree, false, function (err) {
 			if (err) {
 				elog(err);
 				return;

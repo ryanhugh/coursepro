@@ -65,7 +65,7 @@ WatchClassesModel.open = function (caller, tree) {
 };
 
 WatchClassesModel.prototype.addClassToWatchList = function () {
-	user.addToList('watching', [this.tree], this.tree.sections, function (err, msg) {
+	user.addToList(macros.WATCHING_LIST, [this.tree], this.tree.sections, function (err, msg) {
 
 		this.error = false;
 
@@ -88,7 +88,7 @@ WatchClassesModel.prototype.addClassToWatchList = function () {
 
 WatchClassesModel.prototype.removeClassFromWatchList = function () {
 
-	user.removeFromList('watching', [this.tree], this.tree.sections, function (err, msg) {
+	user.removeFromList(macros.WATCHING_LIST, [this.tree], this.tree.sections, function (err, msg) {
 		var string = '';
 		if (err) {
 			this.unsubscribeMsg = err

@@ -11,7 +11,7 @@
                 <!-- <div ng-if="tree.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = tree" list-icon='{{macros.SAVED_LIST}}' toggle-sections='true' toggle='class' style="display:inline-block;margin-right: 6px;"></div> -->
 
                 <span ng-if ="graphPanelExpand.canClosePanel(tree)" class="glyphicon glyphicon-remove" ng-click="graphPanelExpand.closePanel(tree)" aria-hidden="true" style="cursor: pointer;display:inline-block;font-size: 17px;"></span>
-                <!-- <div ng-init="class = tree" list-icon='watching' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
+                <!-- <div ng-init="class = tree" list-icon='{{macros.WATCHING_LIST}}' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
             </span>
 
             <h3 class="panel-title" style="text-align: center;    width: 90%;margin: 0 auto;">
@@ -165,7 +165,7 @@
                             </td>
                             <!-- 
                     <td>
-                        <span list-icon='watching' toggle="section"></span>
+                        <span list-icon='{{macros.WATCHING_LIST}}' toggle="section"></span>
                     </td> -->
 
                             <!-- <td>
