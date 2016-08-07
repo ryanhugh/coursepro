@@ -375,19 +375,19 @@ gulp.task('copyRootFiles', function (callback) {
 
 					stream = injectMacros(stream)
 					
-					// dont uglify in dev!
-
 					// sw.js is the only file that runs through this stuff now
 					if (file.endsWith('.js')) {
 
 						// This wraps the code in an anonymous function that is called immediately. Helps uglifyJS uglify more things. 
 						stream = stream.pipe(iife())
-						stream = stream.pipe(streamify(uglify({
-							options: {
-								ie_proof: false
-							},
-							compress: UGLIFY_JS_OPTIONS
-						})))
+						if (macros.PRODUCTION) {
+							stream = stream.pipe(streamify(uglify({
+								options: {
+									ie_proof: false
+								},
+								compress: UGLIFY_JS_OPTIONS
+							})))
+						}
 					}
 
 					stream.pipe(gulp.dest('./frontend/static'))
