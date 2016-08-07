@@ -88,7 +88,7 @@ Graph.prototype.getSvgHeight = function () {
 	return window.innerHeight - 50;
 }
 
-Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile']
+Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile', '$document']
 
 Graph.isPage = true;
 Graph.urls = ['/graph/:host/:termId/:subject?/:classUid?']
@@ -483,13 +483,15 @@ Graph.prototype.go = function (tree, callback) {
 			.linkDistance(5)
 
 
-		this.svg = d3.select("#d3GraphId").append("svg")
+		var d3GraphId = d3.select(this.$document.getElementById('d3GraphId'))
+
+		this.svg = d3GraphId.append("svg")
 
 		this.calculateGraphSize();
 
 
 		// can move this to the same as above? this was a separate #d3graphId selector
-		d3.select("#d3GraphId").on("mousedown", function () {
+		d3GraphId.on("mousedown", function () {
 			d3.event.stopPropagation();
 		}.bind(this))
 
