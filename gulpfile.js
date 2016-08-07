@@ -374,6 +374,8 @@ gulp.task('copyRootFiles', function (callback) {
 					var stream = gulp.src(file);
 
 					stream = injectMacros(stream)
+					
+					// dont uglify in dev!
 
 					// sw.js is the only file that runs through this stuff now
 					if (file.endsWith('.js')) {
