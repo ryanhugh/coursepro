@@ -21,6 +21,10 @@ function Macros() {
 	this.WATCHING_LIST = 'watching';
 	this.SELECTED_LIST = 'selected';
 
+	// These is also hardcoded into the css
+	this.SEARCH_WIDTH = 300;
+	this.NAVBAR_HEIGHT = 50;
+
 	// In unit tests, window.elog is defined in main.tests.js to be just console.error
 	if (!macros.UNIT_TESTS) {
 		//used all over the place for logging erros

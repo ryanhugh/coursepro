@@ -80,11 +80,11 @@ function Graph() {
 }
 
 Graph.prototype.getSvgWidth = function () {
-	return this.$window.innerWidth - 300;
+	return this.$window.innerWidth - macros.SEARCH_WIDTH;
 }
 
 Graph.prototype.getSvgHeight = function () {
-	return this.$window.innerHeight - 50;
+	return this.$window.innerHeight - macros.NAVBAR_HEIGHT;
 }
 
 Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile', '$document', '$window']
