@@ -33,7 +33,6 @@ DatabaseDumps.prototype.saveRows = function (endpoint, results, callback) {
 				list: [],
 				host: row.host,
 				termId: row.termId
-
 			}
 		}
 
