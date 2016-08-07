@@ -5,18 +5,18 @@
 // This was created from this: https://googlechrome.github.io/samples/service-worker/read-through-caching/
 // and many other places on the internet
 
-
+ 
 // macros.DEVELOPMENT and macros.PRODUCTION are swapped with true and false by gulp-replace
 // this is just here so it dosen't crash if this isn't ran through gulp-replace
 var macros = {};
 
 var CACHE_NAME = 'main';
 
-self.addEventListener('install', function (event) {
+addEventListener('install', function (event) {
 	event.waitUntil(self.skipWaiting());
 });
 
-this.addEventListener('activate', function (event) {
+addEventListener('activate', function (event) {
 	// Delete all caches that aren't equal to CACHE_NAME
 	event.waitUntil(
 		caches.keys().then(function (cacheNames) {
@@ -79,7 +79,7 @@ function fetchAndCache(request, requestForCache, shouldReturnResponse) {
 			return retVal;
 		}
 	});
-}.bind(this)
+}
 
 
 function go(request, requestForCache) {
@@ -111,7 +111,7 @@ function go(request, requestForCache) {
 
 
 
-this.addEventListener('fetch', function (event) {
+addEventListener('fetch', function (event) {
 
 	if (event.request.url.startsWith('data:')) {
 		return;

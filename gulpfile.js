@@ -13,6 +13,7 @@ var htmlmin = require('gulp-htmlmin');
 var notify = require("gulp-notify");
 var addsrc = require('gulp-add-src');
 var replace = require('gulp-replace');
+var iife = require("gulp-iife");
 
 
 // for backend unit tests
@@ -38,6 +39,26 @@ var queue = require('d3-queue').queue;
 var fs = require('fs-extra')
 var memoize = require('./memoize')
 var macros = require('./backend/macros')
+
+
+
+var UGLIFY_JS_OPTIONS = {
+	drop_console: true,
+	unsafe: true,
+	collapse_vars: true,
+	pure_getters: true,
+	unused: true,
+	collapse_vars: true,
+	// keep_fnames: true
+}
+
+// Old code from before that isn't used anymore
+// Most of these warnings are also optimizations that uglify 
+// was able to fix, aka variable only used once, so it was skipped.
+// There aren't any warnings about undefined variables, etc.
+// if (!compileRequire) {
+// 	compressOptions.warnings = true;
+// }
 
 
 process.on('uncaughtException', function (err) {
@@ -217,28 +238,11 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 
 
 				if (shouldUglify) {
-
-
-					var compressOptions = {
-						drop_console: true,
-						unsafe: true,
-						collapse_vars: true,
-						pure_getters: true,
-						// keep_fnames: true
-					}
-
-					// Most of these warnings are also optimizations that uglify 
-					// was able to fix, aka variable only used once, so it was skipped.
-					// There aren't any warnings about undefined variables, etc.
-					// if (!compileRequire) {
-					// 	compressOptions.warnings = true;
-					// }
-
 					stream = stream.pipe(streamify(uglify({
 						options: {
 							ie_proof: false
 						},
-						compress: compressOptions
+						compress: UGLIFY_JS_OPTIONS
 					})));
 				}
 
@@ -370,6 +374,17 @@ gulp.task('copyRootFiles', function (callback) {
 					var stream = gulp.src(file);
 
 					stream = injectMacros(stream)
+
+					// sw.js is the only file that runs through this stuff now
+					if (file.endsWith('.js')) {
+						stream = stream.pipe(iife())
+						stream = stream.pipe(streamify(uglify({
+							options: {
+								ie_proof: false
+							},
+							compress: UGLIFY_JS_OPTIONS
+						})))
+					}
 
 					stream.pipe(gulp.dest('./frontend/static'))
 						.on('error', function (err) {

@@ -3,6 +3,7 @@ var macros = require('./macros')
 var request = require('./request')
 var async = require('async')
 var memoize = require('../../../memoize')
+var _ = require('lodash')
 
 var instanceCache = {};
 
