@@ -1,3 +1,23 @@
+
+
+
+
+NOW:
+unit tests graph
+remove unneccesary describe in the tests
+the setTimouts are breaking the unit tests. can remove them and hide graph visibility while loading?
+swap out the settimoues for $timeout?
+
+
+
+
+
+
+
+
+
+
+
 https://coursepro.io/#/graph/ccsu.edu/201640/ACTL/465 --- fixed in master, not in prod
 
 
@@ -18,8 +38,6 @@ popup explaining what is going on with the selecting
 3. shared dir with keys generator and stuff?
 4. and can remove keys.obj and key.lookup because they are the same now?
 
-unit tests graph
-remove unneccesary describe in the tests
 
 
 

@@ -115,7 +115,7 @@ GraphPanelExpand.prototype.onExpandClick = function (tree, openPanel, callback) 
 		}
 
 		//setTimeout 0 because $scope.$update()
-		setTimeout(function () {
+		this.$timeout(function () {
 			tree.isExpanded = openPanel;
 			tree.showSelectPanel = false;
 
@@ -148,7 +148,7 @@ GraphPanelExpand.prototype.onExpandClick = function (tree, openPanel, callback) 
 			Graph.instance.force.alpha(.0051)
 
 			callback()
-		}.bind(this), 0)
+		}.bind(this))
 	}.bind(this))
 };
 
@@ -212,7 +212,7 @@ GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
 	}
 
 
-	setTimeout(function () {
+	this.$timeout(function () {
 		user.toggleListContainsClass(macros.SELECTED_LIST, tree, false, function (err) {
 			if (err) {
 				elog(err);
@@ -238,7 +238,7 @@ GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
 				callback()
 			}.bind(this))
 		}.bind(this))
-	}.bind(this), 0)
+	}.bind(this))
 };
 
 
@@ -399,19 +399,12 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 	//if only this panel, expand it
 	//&& treeMgr.countClassesInTree(tree) === 1
 	if (!tree.lowestParent && tree._id != this.rootNodeId) {
-		this.rootNodeId = tree._id;
-		console.log("Found! setting to true");
-
-
-		// When the root node is destroyed, open another one this THIS DOES NTO WORK BECAUSE IT WILL ALSO TRIGGER WITH SELECT
-		// tree.$scope.$on("$destroy", function () {
-		// 	this.didOpenRootNode = false;
-		// }.bind(this));
 		// return;
+		this.rootNodeId = tree._id;
 
-		setTimeout(function () {
+		// setTimeout(function () {
 			//this is undone when openPanel is done, a couple lines down
-			var panel = this.getTreePanel(tree);
+			// var panel = this.getTreePanel(tree);
 			// panel.style.visibility = 'hidden'
 
 			this.openPanel(tree, function (err) {
@@ -421,7 +414,7 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
 				// panel.style.visibility = ''
 			}.bind(this))
-		}.bind(this), 0)
+		// }.bind(this), 0)
 
 	}
 
@@ -447,9 +440,20 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
 }
 
+// GraphPanelExpand.prototype.compile = function(tele, b,c,d) {
+// 	return {
+// 		pre: function (scope, iElem, iAttrs) {
+// 			debugger	
+// 		},
+// 		post: function (scope, iElem, iAttrs) {
+// 			debugger
+// 		}
+// 	}
+// };
+
 
 GraphPanelExpand.fnName = 'GraphPanelExpand'
-GraphPanelExpand.$inject = ['$document'];
+GraphPanelExpand.$inject = ['$document','$timeout'];
 
 
 GraphPanelExpand.prototype.GraphPanelExpand = GraphPanelExpand;

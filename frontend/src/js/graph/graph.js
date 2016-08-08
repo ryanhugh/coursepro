@@ -417,9 +417,11 @@ Graph.prototype.loadNodes = function (callback) {
 
 		this.nodes[i].foreignObject = foreignObject[0][0]
 
-		// if (!newScope.tree.isCoreq) {
 		$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
-			// }
+
+		newScope.$apply();
+
+		this.updateHeight(this.nodes[i])
 	}
 
 
@@ -436,10 +438,6 @@ Graph.prototype.loadNodes = function (callback) {
 
 	this.force.nodes(this.nodes)
 		.links(this.links)
-
-	this.nodes.forEach(function (tree) {
-		this.updateHeight(tree)
-	}.bind(this))
 
 	// This is needed whenever adding or removing nodes from the graph, for d3 internally.
 	this.force.start();
@@ -473,8 +471,9 @@ Graph.prototype.go = function (tree, callback) {
 			.gravity(0.2)
 			.linkDistance(5)
 
-
-		var d3GraphId = d3.select(this.$document.getElementById('d3GraphId'))
+		// Use querySelector instead of getElementById because document fragments used for testing
+		// in phantomJS don't have getElementById but do have querySelector. 
+		var d3GraphId = d3.select(this.$document[0].querySelector('#d3GraphId'))
 
 		this.svg = d3GraphId.append("svg")
 
@@ -645,7 +644,7 @@ Graph.prototype.go = function (tree, callback) {
 			this.$scope.tree = tree;
 			setTimeout(function () {
 				this.$scope.$apply();
-			}.bind(this))
+			}.bind(this), 0);
 			callback(null, tree)
 
 		}.bind(this))

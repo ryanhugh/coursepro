@@ -36,6 +36,7 @@ function BaseDirective() {
 		// Angular controllers are re created each time they are used, so remove the old instance from this.constructor
 		// Add set the new one. Directives are only instantiated once and also don't have a $scope, so this will not run if this is a directive. 
 		this.$scope.$on('$destroy', function () {
+			console.log("Deallocating" + this.constructor.name);
 			this.constructor.instance = null;
 		}.bind(this))
 	}

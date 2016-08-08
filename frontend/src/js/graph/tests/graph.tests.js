@@ -13,13 +13,13 @@ var Class = require('../../Class')
 // 	Graph
 // });
 
-function MockWindow () {
+function MockWindow() {
 
 	this.innerWidth = 500;
 	this.innerHeight = 500;
 }
 
-MockWindow.prototype.addEventListener = function(type, fn) {
+MockWindow.prototype.addEventListener = function (type, fn) {
 	// implement if needed
 };
 
@@ -29,7 +29,7 @@ MockWindow.prototype.addEventListener = function(type, fn) {
 
 //this will need mock term and that term needs to have a .subjects that are valid
 
-describe('Graph', function () {
+fdescribe('Graph', function () {
 	//same as the app in directive manager
 	beforeEach(angular.mock.module('app'));
 
@@ -61,6 +61,8 @@ describe('Graph', function () {
 
 
 		var element = $compile(html)($scope);
+		var doc = $(document.createDocumentFragment());
+		doc.append(element);
 
 		if (element.length === 0) {
 			elog('YOJFdsjfdskjl')
@@ -75,7 +77,7 @@ describe('Graph', function () {
 
 		var graph = $controller(Graph, {
 			$scope: $scope,
-			$document: element[0].parentNode,
+			$document: doc,
 			$window: win
 		});
 		console.log($controller, $scope);
@@ -93,13 +95,14 @@ describe('Graph', function () {
 			console.log(aClass);
 
 			expect(!!aClass.foreignObject);
-			expect(aClass.x).toBe((win.innerWidth - macros.SEARCH_WIDTH)/2);
+			expect(aClass.x).toBe((win.innerWidth - macros.SEARCH_WIDTH) / 2);
 			expect(aClass.y > 0 && aClass.y < graph.graphHeight);
-			
 
 
+			setTimeout(function () {
+				done();
+			}.bind(this), 0)
 
-			done();
 		}.bind(this))
 
 		// debugger;

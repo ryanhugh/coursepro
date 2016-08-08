@@ -63,7 +63,7 @@ function shouldCachePost(url) {
 
 // Fetches a request and caches the response in the cache if it is a valid response. 
 // If the response is needed elsewhere, set shouldReturnResponse to true to return the reponse too. 
-function fetchAndCache(request, requestForCache, shouldReturnResponse) {
+function fetchAndCache(request, requestForCache, cache, shouldReturnResponse) {
 
 	//update the cache
 	return fetch(request).then(function (response) {
@@ -89,11 +89,11 @@ function go(request, requestForCache) {
 				// If there is an entry in the cache for event.request, then response will be defined
 				// and we can just return it.
 				// console.log(' Found response in cache:', response);
-				fetchAndCache(request, requestForCache, false);
+				fetchAndCache(request, requestForCache, cache, false);
 				return response;
 			}
 
-			return fetchAndCache(request, requestForCache, true);
+			return fetchAndCache(request, requestForCache, cache, true);
 
 		}).catch(function (error) {
 			// This catch() will handle exceptions that arise from the match() or fetch() operations.
