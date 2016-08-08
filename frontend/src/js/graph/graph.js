@@ -471,8 +471,8 @@ Graph.prototype.go = function (tree, callback) {
 			.gravity(0.2)
 			.linkDistance(5)
 
-		// Use querySelector instead of getElementById because document fragments used for testing
-		// in phantomJS don't have getElementById but do have querySelector. 
+		// Use querySelector instead of getElementById in case this.$document is a document fragment.
+		// (It could be in testing and im phantomJS document fragments don't have getElementById but do have querySelector).
 		var d3GraphId = d3.select(this.$document[0].querySelector('#d3GraphId'))
 
 		this.svg = d3GraphId.append("svg")
