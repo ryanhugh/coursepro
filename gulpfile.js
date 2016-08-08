@@ -18,7 +18,7 @@ var iife = require("gulp-iife");
 
 // for backend unit tests
 var batch = require('gulp-batch');
-var jasmineReporter = require('./backend/jasmineReporter')
+var JasmineReporter = require('./backend/jasmineReporter')
 var Jasmine = require('jasmine');
 
 
@@ -137,7 +137,7 @@ var getFilesToProcess = memoize(function (includeTests, callback) {
 		})
 
 		return callback(null, filesToProccess)
-	}.bind(this));
+	});
 })
 
 //watch is allways on, to turn off (or add the option back) 
@@ -162,7 +162,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 				if (!path.isAbsolute(dep)) {
 					node_module_dependencies.push(dep)
 				}
-			}.bind(this))
+			})
 			if (compileRequire) {
 				console.log(node_module_dependencies);
 			}
@@ -255,7 +255,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 
 					console.log("----Done Bundling " + name + " (" + (new Date() - timers[name]) + " ms) !----")
 					callback();
-				}.bind(this))
+				})
 			};
 
 			bundler.on('update', rebundle);
@@ -265,8 +265,8 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 			if (err) {
 				console.log(err.stack);
 			}
-		}.bind(this));
-	}.bind(this));
+		});
+	});
 }
 
 function compileJS(uglifyJS, includeTests, callback) {
@@ -274,15 +274,15 @@ function compileJS(uglifyJS, includeTests, callback) {
 
 	q.defer(function (callback) {
 		compileJSBundle(uglifyJS, includeTests, true, callback);
-	}.bind(this));
+	});
 
 	q.defer(function (callback) {
 		compileJSBundle(uglifyJS, includeTests, false, callback);
-	}.bind(this));
+	});
 
 	q.awaitAll(function (err) {
 		callback(err)
-	}.bind(this))
+	})
 }
 
 
@@ -313,20 +313,20 @@ gulp.task('compressJS', function (callback) {
 gulp.task('copyFonts', function () {
 	return gulp.src('frontend/src/fonts/*')
 		.pipe(gulp.dest('frontend/static/fonts'));
-}.bind(this));
+});
 
 gulp.task('watchCopyFonts', function () {
 	gulp.watch(['frontend/src/fonts/*'], ['copyFonts']);
-}.bind(this));
+});
 
 
 gulp.task('copyImages', function () {
 	return gulp.src('frontend/src/images/*').pipe(gulp.dest('frontend/static/images'));
-}.bind(this));
+});
 
 gulp.task('watchCopyImages', function () {
 	gulp.watch(['frontend/src/images/*'], ['copyImages']);
-}.bind(this));
+});
 
 // Copy everything that isn't a folder from the src/ dir to the static/ dir
 gulp.task('copyRootFiles', function (callback) {
@@ -353,9 +353,9 @@ gulp.task('copyRootFiles', function (callback) {
 						files.push(name)
 					}
 					callback();
-				}.bind(this))
-			}.bind(this))
-		}.bind(this))
+				})
+			})
+		})
 
 
 		q.awaitAll(function (err) {
@@ -393,30 +393,26 @@ gulp.task('copyRootFiles', function (callback) {
 					stream.pipe(gulp.dest('./frontend/static'))
 						.on('error', function (err) {
 							onError(err)
-						}.bind(this))
+						})
 						.on('end', function () {
 							callback()
-						}.bind(this))
+						})
 
+				})
 
-					// fs.copy(file, 'frontend/static/' + fileName, function (err) {
-					// 	return callback(err)
-					// }.bind(this))
-				}.bind(this))
-
-			}.bind(this))
+			})
 
 			q.awaitAll(function (err) {
 				return callback(err)
-			}.bind(this))
+			})
 
-		}.bind(this))
+		})
 	})
-}.bind(this));
+});
 
 gulp.task('watchcopyRootFiles', function () {
 	gulp.watch(['frontend/src/*'], ['copyRootFiles']);
-}.bind(this));
+});
 
 
 // =========== HTML ===========
@@ -471,11 +467,11 @@ gulp.task('watchCopyCSS', function () {
 
 gulp.task('copyStatic', ['copyFonts', 'copyImages', 'copyRootFiles', 'copyHTML', 'copyCSS'], function () {
 
-}.bind(this));
+});
 
 gulp.task('watchCopyStatic', ['watchCopyFonts', 'watchCopyImages', 'watchcopyRootFiles', 'watchCopyHTML', 'watchCopyCSS'], function () {
 
-}.bind(this));
+});
 
 
 
@@ -506,9 +502,9 @@ gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 			console.log('ERROR Karma has exited with ' + exitCode)
 			onError('KARMA has crashed!!!!');
 			// process.exit()
-		}.bind(this)).start();
+		}).start();
 
-	}.bind(this));
+	});
 });
 
 
@@ -528,7 +524,7 @@ var btestRun = batch(function (events, callback) {
 		files.forEach(function (file) {
 			var filePath = path.resolve(file);
 			delete require.cache[filePath]
-		}.bind(this))
+		})
 
 		// Originally, was using gulp-jasmine, but that is only a small wrapper around jasmine and only does two things:
 		// 1. delete files from require.cache (which it wasen't doing correcly, and had to be done here too)
@@ -547,15 +543,15 @@ var btestRun = batch(function (events, callback) {
 			};
 		})
 
-		jasmine.addReporter(new jasmineReporter());
+		jasmine.addReporter(new JasmineReporter());
 		jasmine.execute();
 		jasmine.onComplete(function (passedAll) {
 			callback()
-		}.bind(this))
-	}.bind(this));
+		})
+	});
 }, function (err) {
 	onError('BATCH FAILED!' + err);
-}.bind(this));
+});
 
 
 
