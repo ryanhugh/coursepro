@@ -42,9 +42,10 @@ fdescribe('Graph', function () {
 		var $scope = $rootScope.$new();
 
 		var html = $templateCache.get('graph.html');
+		if (!html) {
+			elog('nope')
+		}
 		
-		console.error($templateCache.get('yooooo'),'here')
-
 		// IF WE want to inject this it can be done
 		// _$location_.path('/graph/neu.edu/201710/CS/7780_1224558283');
 		

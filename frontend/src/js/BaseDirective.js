@@ -22,7 +22,7 @@ function BaseDirective() {
 		this[injectName] = arguments[i]
 	};
 
-	if (this.constructor.instance) {
+	if (this.constructor.instance && this.$scope) {
 		console.error('already have instance of ',this,'?')
 	}
 

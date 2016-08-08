@@ -4,6 +4,7 @@ module.exports = function (config) {
       "static/js/vender.tests.js",
       "static/js/app.tests.js",
       "static/js/html.js",
+      "static/css/allthecss.css",
     ],
     plugins: [
       'karma-chrome-launcher',
