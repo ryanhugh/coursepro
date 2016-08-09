@@ -236,6 +236,21 @@ Graph.prototype.updateHeight = function (tree) {
 	tree.foreignObject.parentNode.setAttribute('height', tree.height)
 };
 
+
+Graph.prototype.updateWidth = function (tree) {
+	if (!tree.isExpanded) {
+		tree.width = this.nodeWidth;
+	}
+	else if (tree.sections.length > 0) {
+		tree.width = 780;
+	}
+	else {
+		tree.width = Math.max(576, Math.min(780, tree.desc.length))
+	}
+	tree.foreignObject.setAttribute('width', tree.width)
+};
+
+
 Graph.prototype.checkPos = function (node) {
 	if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
 		elog('invalid x or y!', node)
@@ -353,8 +368,6 @@ Graph.prototype.onTick = function (e) {
 	this.linkElements.attr("points", function (d) {
 		this.checkPos(d.target);
 		this.checkPos(d.source);
-
-
 		return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
 	}.bind(this))
 
@@ -391,17 +404,11 @@ Graph.prototype.loadNodes = function (callback) {
 		this.container[0][0].removeChild(this.container[0][0].firstChild);
 	}
 
-
 	var nodesAndLinks = treeMgr.treeToD3(this.tree);
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
 
-
-
 	this.estimateNodePositions();
-
-
-
 
 	this.nodes.forEach(function (node) {
 		node.height = this.nodeHeight;
@@ -505,6 +512,26 @@ Graph.prototype.loadNodes = function (callback) {
 
 		$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
 
+		// Update the height of the svg whenever the height of the panel changes
+		// hopefully this isn't to slow...
+		newScope.$watch(function ($scope) {
+			return $scope.tree.foreignObject.lastChild.offsetHeight
+		}.bind(this), function (newVal, oldVal, $scope) {
+			if (newVal === oldVal) {
+				return;
+			}
+			this.updateHeight($scope.tree);
+		}.bind(this));
+
+		newScope.$watch(function ($scope) {
+			return $scope.tree.foreignObject.lastChild.offsetWidth
+		}.bind(this), function (newVal, oldVal, $scope) {
+			if (newVal === oldVal) {
+				return;
+			}
+			this.updateWidth($scope.tree);
+		}.bind(this));
+
 		// Note that a digest cycle needs to run for this new html to be rendered by the browser. It runs after the current event loop is done because this function is called 
 		// inside a digest loop. 
 	}
@@ -533,16 +560,17 @@ Graph.prototype.loadNodes = function (callback) {
 
 	this.force.alpha(.03)
 
+	return callback()
+
 	// Wait until after angular is done compiling the DOM to get the height of DOM elements
-	this.$timeout(function () {
-		this.nodes.forEach(function (node) {
-			this.updateHeight(node);
-		}.bind(this));
+	// this.$timeout(function () {
+	// 	this.nodes.forEach(function (node) {
+			
+	// 	}.bind(this));
 
-		callback()
 
-		// False here prevents another digest cycle from running by this timeout
-	}.bind(this), 0, false);
+	// 	// False here prevents another digest cycle from running by this timeout
+	// }.bind(this), 0, false);
 };
 
 

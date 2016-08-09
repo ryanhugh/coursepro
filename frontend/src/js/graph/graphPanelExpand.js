@@ -32,16 +32,6 @@ GraphPanelExpand.prototype.increaseShowing = function (tree) {
 };
 
 
-GraphPanelExpand.prototype.calculatePanelWidth = function (tree) {
-
-	if (tree.sections.length > 0) {
-		return 780;
-	}
-	else {
-		return Math.max(576, Math.min(780, tree.desc.length))
-	}
-};
-
 GraphPanelExpand.prototype.getTreePanel = function (tree) {
 	var panels = tree.foreignObject.getElementsByClassName('treePanel');
 	if (panels.length != 1) {
@@ -123,14 +113,6 @@ GraphPanelExpand.prototype.onExpandClick = function (tree, openPanel, callback) 
 			if (err) {
 				console.log("ERRor loading loadSections", err)
 			}
-			//if it worked, calculate the panel width
-			else if (tree.isExpanded) {
-				tree.width = this.calculatePanelWidth(tree);
-			}
-			else {
-				tree.width = Graph.instance.nodeWidth;
-			}
-			tree.foreignObject.setAttribute('width', tree.width)
 
 			//$scope references just the $scope of the tree that was updated, 
 			// this.$scope references everything, and contains $scope
@@ -212,12 +194,13 @@ GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
 	}
 
 
-	this.$timeout(function () {
-		user.toggleListContainsClass(macros.SELECTED_LIST, tree, false, function (err) {
-			if (err) {
-				elog(err);
-				return;
-			}
+	user.toggleListContainsClass(macros.SELECTED_LIST, tree, false, function (err) {
+		if (err) {
+			elog(err);
+			return callback();
+		}
+		tree.$scope.$apply(function () {
+
 
 			// Run the entire big tree through all of treeMgr again
 			// this is needed to rediscover any common prereqs, recalculate depths, and pretty much 
@@ -403,18 +386,18 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 		this.rootNodeId = tree._id;
 
 		// setTimeout(function () {
-			//this is undone when openPanel is done, a couple lines down
-			// var panel = this.getTreePanel(tree);
-			// panel.style.visibility = 'hidden'
+		//this is undone when openPanel is done, a couple lines down
+		// var panel = this.getTreePanel(tree);
+		// panel.style.visibility = 'hidden'
 
-			this.openPanel(tree, function (err) {
+		this.openPanel(tree, function (err) {
 				if (err) {
 					elog(err);
 				}
 
 				// panel.style.visibility = ''
 			}.bind(this))
-		// }.bind(this), 0)
+			// }.bind(this), 0)
 
 	}
 
@@ -453,7 +436,7 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
 
 GraphPanelExpand.fnName = 'GraphPanelExpand'
-GraphPanelExpand.$inject = ['$document','$timeout'];
+GraphPanelExpand.$inject = ['$document', '$timeout'];
 
 
 GraphPanelExpand.prototype.GraphPanelExpand = GraphPanelExpand;

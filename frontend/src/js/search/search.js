@@ -44,11 +44,12 @@ function Search() {
 
 	// this.$scope.addSubject = this.addSubject.bind(this)
 	this.search()
+	debugger
 }
 
 Search.fnName = 'Search'
 	// Search.isPage = true;
-Search.$inject = ['$scope', '$location', '$routeParams']
+Search.$inject = ['$scope', '$location', '$routeParams', 'classService']
 	// Search.urls = ['/search/:host/:termId/:subject?/:searchText?']
 
 //prototype constructor
@@ -203,7 +204,7 @@ Search.prototype.isActive = function (aClass) {
 	return this.$routeParams.classUid === aClass.classUid && this.$routeParams.subject === aClass.subject
 }
 
-Search.link = function($scope, element, attrs) {
+Search.link = function ($scope, element, attrs) {
 	// alert('hi')
 }
 

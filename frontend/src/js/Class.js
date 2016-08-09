@@ -675,6 +675,14 @@ Class.prototype.loadSections = function (callback) {
 	}.bind(this))
 };
 
+Class.prototype.updateHeightTest = function() {
+	debugger
+};
+
+Class.prototype.getHeight = function() {
+	return this.foreignObject.lastChild.offsetHeight
+};
+
 
 
 module.exports = Class;

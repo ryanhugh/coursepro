@@ -20,8 +20,19 @@ else {
 	console.log('Service worker not supported')
 }
 
-var angularModule = angular.module('app', [require('angular-route'), require('angular-ui-bootstrap'), require('angular-animate'), 'selectize', 'ui.calendar', 'templates', 'infinite-scroll'], ['$rootScopeProvider', '$compileProvider', function ($rootScopeProvider, $compileProvider) {
-	
+var dependencies = [
+	require('angular-route'),
+	require('angular-ui-bootstrap'),
+	require('angular-animate'),
+	// require('angular-q-promisify'),
+	'selectize',
+	'ui.calendar',
+	'templates',
+	'infinite-scroll'
+]
+
+var angularModule = angular.module('app', dependencies, ['$rootScopeProvider', '$compileProvider', function ($rootScopeProvider, $compileProvider) {
+
 	//max depth for a tree, if it reaches this angular will barf
 	$rootScopeProvider.digestTtl(20);
 
@@ -49,6 +60,7 @@ angularModule.factory('$exceptionHandler', function () {
 		throw exception;
 	};
 });
+
 
 
 
@@ -180,26 +192,26 @@ DirectiveMgr.prototype.addController = function (directive) {
 	}
 };
 
-DirectiveMgr.prototype.addDirective = function(Directive) {
+DirectiveMgr.prototype.addDirective = function (Directive) {
 	if (!Directive.directiveName) {
 		Directive.directiveName = this.calculateName(Directive)
 	}
-	
+
 	if (!Directive.$inject) {
 		console.warn('no $inject?');
 		Directive.$inject = []
 	}
-	
+
 	if (_(Directive.$inject).includes('$scope')) {
 		elog('Cant inject a $scope into a directive, only controllers. Use the link function in directives.')
 	}
-	
-	function AngularDirective () {
+
+	function AngularDirective() {
 		var args = [].slice.call(arguments)
-		// http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-		return new (Function.prototype.bind.apply(Directive, [null].concat(args)))
+			// http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
+		return new(Function.prototype.bind.apply(Directive, [null].concat(args)))
 	}
-	
+
 	AngularDirective.$inject = Directive.$inject;
 
 	angularModule.directive(Directive.directiveName, AngularDirective);
@@ -214,6 +226,16 @@ DirectiveMgr.prototype.addRawController = function (controller) {
 	};
 
 	angularModule.controller(controller.controllerName, controller)
+};
+
+
+DirectiveMgr.prototype.addService = function (service) {
+
+	if (!service.serviceName) {
+		service.serviceName = this.calculateName(service)
+	};
+
+	angularModule.service(service.serviceName, service)
 };
 
 DirectiveMgr.prototype.DirectiveMgr = DirectiveMgr;
