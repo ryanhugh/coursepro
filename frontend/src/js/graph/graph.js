@@ -130,9 +130,6 @@ Graph.prototype.collide = function (node1, node2) {
 	}
 
 	var dx = Math.min(node1.x + this.getWidth(node1) - node2.x, node2.x + this.getWidth(node2) - node1.x, 20) / 2;
-	if (isNaN(dx) || dx === undefined) {
-		elog('bad')
-	}
 	if (node1.x < node2.x) {
 		node1.x -= dx;
 		node2.x += dx;
@@ -234,6 +231,12 @@ Graph.prototype.updateHeight = function (tree) {
 	tree.foreignObject.parentNode.setAttribute('height', tree.height)
 };
 
+Graph.prototype.checkPos = function(node) {
+	if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
+		elog('invalid x or y!', node)
+	}
+}
+
 
 Graph.prototype.estimateNodePositions = function () {
 	var nodes = this.nodes;
@@ -274,9 +277,7 @@ Graph.prototype.estimateNodePositions = function () {
 	}.bind(this))
 
 	nodes.forEach(function (node) {
-		if (node.x === undefined || isNaN(node.x) || node.y === undefined || isNaN(node.y)) {
-			elog('nope!', node)
-		}
+		this.checkPos(node);
 	}.bind(this))
 
 }
@@ -507,9 +508,7 @@ Graph.prototype.go = function (tree, callback) {
 			this.force.on("tick", function (e) {
 
 				this.nodes.forEach(function (node) {
-					if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
-						elog('wtf1', node)
-					}
+					this.checkPos(node);
 				}.bind(this))
 
 
@@ -541,9 +540,6 @@ Graph.prototype.go = function (tree, callback) {
 									continue;
 								}
 								var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
-								if (isNaN(diff) || diff === undefined) {
-									elog('noooooo')
-								}
 								if (Math.abs(diff) > 100) {
 									continue;
 								}
@@ -561,41 +557,33 @@ Graph.prototype.go = function (tree, callback) {
 				};
 
 				this.nodes.forEach(function (node) {
-					if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
-						elog('wtf2', node)
-					}
+					this.checkPos(node);
 				}.bind(this))
 
 
 				this.linkElements.attr("points", function (d) {
-					if (d.target.x === undefined || isNaN(d.target.x) || isNaN(d.target.y) || d.target.y === undefined) {
-						elog('wtf3', d.target)
-					}
-
-					if (d.source.x === undefined || isNaN(d.source.x) || isNaN(d.source.y) || d.source.y === undefined) {
-						elog('wtf4', d.source)
-					}
+					this.checkPos(d.target);
+					this.checkPos(d.source);
+					
 
 					return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
 				}.bind(this))
 
-				this.nodeElements.attr("transform", function (d) {
-					if (d.x === undefined || isNaN(d.x) || isNaN(d.y) || d.y === undefined) {
-						elog('wtf5', d)
-					}
+				this.nodeElements.attr("transform", function (node) {
+					this.checkPos(node);
 
-					if (d.isCoreq) {
+					if (node.isCoreq) {
 
-						var x = d.lowestParent.x - d.width / 2;
-						var y = d.lowestParent.y - d.height / 2;
+						var x = node.lowestParent.x - node.width / 2;
+						var y = node.lowestParent.y - node.height / 2;
 
-						x += (d.coreqIndex + 1) * 30
-						y -= (d.coreqIndex + 1) * 39
+						x += (node.coreqIndex + 1) * 30
+						y -= (node.coreqIndex + 1) * 39
 
 						return "translate(" + x + "," + y + ")";
 					}
 					else {
-						return "translate(" + (d.x - d.width / 2) + "," + (d.y - d.height / 2) + ")";
+						return "translate(" + (node.x - node.width / 2) + "," + (node.y - node.height / 2) + ")";
 					}
 				}.bind(this));
 			}.bind(this))
