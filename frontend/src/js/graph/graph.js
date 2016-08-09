@@ -52,6 +52,11 @@ function Graph() {
 	this.nodes = []
 
 	this.tree = null;
+	
+	// When calculating the position of all the nodes for the first time, 
+	// initially, focus more on grouping similar nodes together,
+	// and then increase the y multiplyer to move the nodes to the correct y coordinate. 
+	this.yCoordAttractionMultiplyer = 1;
 
 
 	var path = {};
@@ -87,7 +92,7 @@ Graph.prototype.getSvgHeight = function () {
 	return this.$window.innerHeight - macros.NAVBAR_HEIGHT;
 }
 
-Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile', '$document', '$window']
+Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile', '$document', '$window','$timeout']
 
 Graph.isPage = true;
 Graph.urls = ['/graph/:host/:termId/:subject?/:classUid?']
@@ -289,9 +294,88 @@ Graph.prototype.calculateGraphSize = function () {
 
 	this.force.size([this.graphWidth, this.graphHeight])
 
-	this.svg.attr("width", this.graphWidth)
-		.attr("height", this.graphHeight)
-};
+	this.svg.attr("width", this.graphWidth).attr("height", this.graphHeight)
+}
+
+
+Graph.prototype.onTick = function(e) {
+	
+	this.nodes.forEach(function (node) {
+		this.checkPos(node);
+	}.bind(this))
+
+
+	for (var k = 0; k < this.nodes.length; k++) {
+		var currNode = this.nodes[k];
+
+		if (currNode.isCoreq) {
+			continue;
+		}
+
+		// collision
+		for (var j = k + 1; j < this.nodes.length; j++) {
+			var testingCollisionAgainst = this.nodes[j];
+			if (testingCollisionAgainst.isCoreq) {
+				continue;
+			}
+			this.collide(currNode, testingCollisionAgainst)
+		}
+
+		//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
+		currNode.y += (treeMgr.getYGuessFromDepth(currNode.depth) - currNode.y) * e.alpha * this.yCoordAttractionMultiplyer;
+
+
+		// collision between children on different depths
+		if (!currNode.allChildrenAtSameDepth) {
+			for (var i = 0; i < currNode.prereqs.values.length; i++) {
+				for (var j = i + 1; j < currNode.prereqs.values.length; j++) {
+					if (currNode.prereqs.values[i].depth === currNode.prereqs.values[j].depth) {
+						continue;
+					}
+					var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
+					if (Math.abs(diff) > 100) {
+						continue;
+					}
+					if (diff < 0) {
+						currNode.prereqs.values[i].x -= (100 + diff) / 2;
+						currNode.prereqs.values[j].x += (100 + diff) / 2;
+					}
+					else {
+						currNode.prereqs.values[i].x += (100 - diff) / 2;
+						currNode.prereqs.values[j].x -= (100 - diff) / 2;
+					}
+				}
+			}
+		}
+		this.checkPos(currNode);
+	};
+
+	this.linkElements.attr("points", function (d) {
+		this.checkPos(d.target);
+		this.checkPos(d.source);
+		
+
+		return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
+	}.bind(this))
+
+	this.nodeElements.attr("transform", function (node) {
+		this.checkPos(node);
+
+		if (node.isCoreq) {
+
+			var x = node.lowestParent.x - node.width / 2;
+			var y = node.lowestParent.y - node.height / 2;
+
+			x += (node.coreqIndex + 1) * 30
+			y -= (node.coreqIndex + 1) * 39
+
+			return "translate(" + x + "," + y + ")";
+		}
+		else {
+			return "translate(" + (node.x - node.width / 2) + "," + (node.y - node.height / 2) + ")";
+		}
+	}.bind(this));
+}
 
 // This is called when the graph is first loaded, and whenever a panel on the graph is selected. 
 Graph.prototype.loadNodes = function (callback) {
@@ -400,6 +484,7 @@ Graph.prototype.loadNodes = function (callback) {
 		})
 		.call(this.nodeDrag)
 
+	// Create the new elements manually, instead of using ng-repeat because ng-repeat is wayyy to slow. 
 	var html = '<div ng-include="\'panel.html\'"></div>'
 
 	for (var i = 0; i < this.nodeElements[0].length; i++) {
@@ -419,10 +504,13 @@ Graph.prototype.loadNodes = function (callback) {
 		this.nodes[i].foreignObject = foreignObject[0][0]
 
 		$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
-
-		newScope.$apply();
-
-		this.updateHeight(this.nodes[i])
+		
+		// Note that a digest cycle needs to run for this new html to be rendered by the browser. It runs after the current event loop is done because this function is called 
+		// inside a digest loop. 
+	}
+	
+	if (!this.$scope.$$phase) {
+		console.error('need to run compile code in a digest loop!')
 	}
 
 
@@ -430,7 +518,7 @@ Graph.prototype.loadNodes = function (callback) {
 	// This entire fn should be in a setTimeout because of the scope problems, but 
 	// that causes conflicts with d3 sometimes running another tick in between when
 	// this fn was called and the setTimeout... 
-	this.$scope.$apply();
+	// this.$scope.$apply();
 
 	this.nodes.forEach(function (node) {
 		this.sortCoreqs(node);
@@ -444,197 +532,127 @@ Graph.prototype.loadNodes = function (callback) {
 	this.force.start();
 
 	this.force.alpha(.03)
+	
+	
+	this.$timeout(function(){
+		this.nodes.forEach(function(node){
+			this.updateHeight(node);
+		}.bind(this));
+		
+		callback()
+		
+		// False here prevents another digest cycle from running by this timeout
+	}.bind(this),0,false);
 
-	callback()
 };
 
 
 Graph.prototype.go = function (tree, callback) {
 	this.isLoading = true;
 	downloadTree.fetchFullTree(tree, function (err, tree) {
-		this.isLoading = false;
-		if (err) {
-			return callback(err);
-		};
-
-
-		// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
-		// setTimeout(function () {
-		// this.$scope.$apply()
-
-		treeMgr.go(tree);
-		this.tree = tree;
-
-		this.force = d3.layout.force()
-			.charge(function (node) {
-				return -20000 - node.coreqs.values.length * 7000
+		this.$scope.$apply(function(){
+			this.isLoading = false;
+			if (err) {
+				return callback(err);
+			};
+	
+	
+			// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
+			// setTimeout(function () {
+			// this.$scope.$apply()
+	
+			treeMgr.go(tree);
+			this.tree = tree;
+	
+			this.force = d3.layout.force()
+				.charge(function (node) {
+					return -20000 - node.coreqs.values.length * 7000
+				}.bind(this))
+				.gravity(0.2)
+				.linkDistance(5)
+	
+			// Use querySelector instead of getElementById in case this.$document is a document fragment.
+			// (It could be in testing and im phantomJS document fragments don't have getElementById but do have querySelector).
+			var d3GraphId = d3.select(this.$document[0].querySelector('#d3GraphId'))
+	
+			this.svg = d3GraphId.append("svg")
+	
+			this.calculateGraphSize();
+	
+	
+			// can move this to the same as above? this was a separate #d3graphId selector
+			d3GraphId.on("mousedown", function () {
+				d3.event.stopPropagation();
 			}.bind(this))
-			.gravity(0.2)
-			.linkDistance(5)
-
-		// Use querySelector instead of getElementById in case this.$document is a document fragment.
-		// (It could be in testing and im phantomJS document fragments don't have getElementById but do have querySelector).
-		var d3GraphId = d3.select(this.$document[0].querySelector('#d3GraphId'))
-
-		this.svg = d3GraphId.append("svg")
-
-		this.calculateGraphSize();
-
-
-		// can move this to the same as above? this was a separate #d3graphId selector
-		d3GraphId.on("mousedown", function () {
-			d3.event.stopPropagation();
-		}.bind(this))
-
-
-		this.container = this.svg.append("g");
-
-		var zoom = d3.behavior.zoom()
-			.scaleExtent([.1, 1.5])
-			.on("zoom", function () {
-				this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-			}.bind(this));
-
-		this.svg.call(zoom)
-
-		this.loadNodes(function () {
-			var multiplyer = 1;
-
-			this.classCount = treeMgr.countClassesInTree(tree);
-			if (this.classCount === 0) {
-				elog('0 classes found?', tree)
-			}
-
-			this.force.on("tick", function (e) {
-
-				this.nodes.forEach(function (node) {
-					this.checkPos(node);
-				}.bind(this))
-
-
-				for (var k = 0; k < this.nodes.length; k++) {
-					var currNode = this.nodes[k];
-
-					if (currNode.isCoreq) {
-						continue;
-					}
-
-					// collision
-					for (var j = k + 1; j < this.nodes.length; j++) {
-						var testingCollisionAgainst = this.nodes[j];
-						if (testingCollisionAgainst.isCoreq) {
-							continue;
-						}
-						this.collide(currNode, testingCollisionAgainst)
-					}
-
-					//possible to get the staticly set width and height here, node[0][node.index].lastChild.width.value
-					currNode.y += (treeMgr.getYGuessFromDepth(currNode.depth) - currNode.y) * e.alpha * multiplyer;
-
-
-					// collision between children on different depths
-					if (!currNode.allChildrenAtSameDepth) {
-						for (var i = 0; i < currNode.prereqs.values.length; i++) {
-							for (var j = i + 1; j < currNode.prereqs.values.length; j++) {
-								if (currNode.prereqs.values[i].depth === currNode.prereqs.values[j].depth) {
-									continue;
-								}
-								var diff = currNode.prereqs.values[i].x - currNode.prereqs.values[j].x;
-								if (Math.abs(diff) > 100) {
-									continue;
-								}
-								if (diff < 0) {
-									currNode.prereqs.values[i].x -= (100 + diff) / 2;
-									currNode.prereqs.values[j].x += (100 + diff) / 2;
-								}
-								else {
-									currNode.prereqs.values[i].x += (100 - diff) / 2;
-									currNode.prereqs.values[j].x -= (100 - diff) / 2;
-								}
-							}
-						}
-					}
-				};
-
-				this.nodes.forEach(function (node) {
-					this.checkPos(node);
-				}.bind(this))
-
-
-				this.linkElements.attr("points", function (d) {
-					this.checkPos(d.target);
-					this.checkPos(d.source);
-					
-
-					return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
-				}.bind(this))
-
-				this.nodeElements.attr("transform", function (node) {
-					this.checkPos(node);
-
-					if (node.isCoreq) {
-
-						var x = node.lowestParent.x - node.width / 2;
-						var y = node.lowestParent.y - node.height / 2;
-
-						x += (node.coreqIndex + 1) * 30
-						y -= (node.coreqIndex + 1) * 39
-
-						return "translate(" + x + "," + y + ")";
-					}
-					else {
-						return "translate(" + (node.x - node.width / 2) + "," + (node.y - node.height / 2) + ")";
-					}
+	
+	
+			this.container = this.svg.append("g");
+	
+			var zoom = d3.behavior.zoom()
+				.scaleExtent([.1, 1.5])
+				.on("zoom", function () { 
+					this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 				}.bind(this));
+	
+			this.svg.call(zoom)
+	
+			this.loadNodes(function () {
+				this.yCoordAttractionMultiplyer = 1;
+	
+				this.classCount = treeMgr.countClassesInTree(tree);
+				if (this.classCount === 0) {
+					elog('0 classes found?', tree)
+				}
+				this.force.on('tick',this.onTick.bind(this));
+	
+				this.force.start();
+	
+				// Two step process:
+				// make nodes find the nodes near them
+				var safety = 0;
+				// D3 cuts off at .005 alpha and freezes everything
+				// the higher it is, the faster it loads, but it will not be done when it moves to the next step
+				// You'll want to try out different, "small" values for this
+				// perhaps make this higher if on slower hardware??
+				while (this.force.alpha() > 0.005) {
+					this.force.tick();
+					if (safety++ > 500) {
+						// Avoids infinite looping in case this solution was a bad idea
+						break;
+					}
+				}
+	
+				//2. make nodes go towards their depth level
+				this.yCoordAttractionMultiplyer = 10;
+				this.force.start();
+	
+				safety = 0;
+				while (this.force.alpha() > 0.01) {
+					this.force.tick();
+					if (safety++ > 500) {
+						break;
+					}
+				}
+	
+	
+				// Center the root node by translating the container <g> inside the svg
+				zoom.translate([this.getSvgWidth() / 2 - this.tree.x, 0])
+	
+				// Zoom in a little, (this number is arbitrary)
+				// zoom.scale(1.16) // DO want to do this, but causes bug where not centered
+				zoom.event(this.svg)
+	
+				// zoom.center([this.tree.x,this.tree.y])
+				// zoom.event(this.svg)
+	
+	
+				this.$scope.tree = tree;
+				// setTimeout(function () {
+				// 	this.$scope.$apply();
+				// }.bind(this), 0);
+				callback(null, tree)
+	
 			}.bind(this))
-
-			this.force.start();
-
-			// Two step process:
-			// make nodes find the nodes near them
-			var safety = 0;
-			// D3 cuts off at .005 alpha and freezes everything
-			// the higher it is, the faster it loads, but it will not be done when it moves to the next step
-			// You'll want to try out different, "small" values for this
-			// perhaps make this higher if on slower hardware??
-			while (this.force.alpha() > 0.005) {
-				this.force.tick();
-				if (safety++ > 500) {
-					// Avoids infinite looping in case this solution was a bad idea
-					break;
-				}
-			}
-
-			//2. make nodes go towards their depth level
-			multiplyer = 10;
-			this.force.start();
-
-			safety = 0;
-			while (this.force.alpha() > 0.01) {
-				this.force.tick();
-				if (safety++ > 500) {
-					break;
-				}
-			}
-
-
-			// Center the root node by translating the container <g> inside the svg
-			zoom.translate([this.getSvgWidth() / 2 - this.tree.x, 0])
-
-			// Zoom in a little, (this number is arbitrary)
-			// zoom.scale(1.16) // DO want to do this, but causes bug where not centered
-			zoom.event(this.svg)
-
-			// zoom.center([this.tree.x,this.tree.y])
-			// zoom.event(this.svg)
-
-
-			this.$scope.tree = tree;
-			setTimeout(function () {
-				this.$scope.$apply();
-			}.bind(this), 0);
-			callback(null, tree)
-
 		}.bind(this))
 	}.bind(this))
 };
