@@ -52,7 +52,7 @@ function Graph() {
 	this.nodes = []
 
 	this.tree = null;
-	
+
 	// When calculating the position of all the nodes for the first time, 
 	// initially, focus more on grouping similar nodes together,
 	// and then increase the y multiplyer to move the nodes to the correct y coordinate. 
@@ -92,7 +92,7 @@ Graph.prototype.getSvgHeight = function () {
 	return this.$window.innerHeight - macros.NAVBAR_HEIGHT;
 }
 
-Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile', '$document', '$window','$timeout']
+Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile', '$document', '$window', '$timeout']
 
 Graph.isPage = true;
 Graph.urls = ['/graph/:host/:termId/:subject?/:classUid?']
@@ -236,7 +236,7 @@ Graph.prototype.updateHeight = function (tree) {
 	tree.foreignObject.parentNode.setAttribute('height', tree.height)
 };
 
-Graph.prototype.checkPos = function(node) {
+Graph.prototype.checkPos = function (node) {
 	if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
 		elog('invalid x or y!', node)
 	}
@@ -298,8 +298,8 @@ Graph.prototype.calculateGraphSize = function () {
 }
 
 
-Graph.prototype.onTick = function(e) {
-	
+Graph.prototype.onTick = function (e) {
+
 	this.nodes.forEach(function (node) {
 		this.checkPos(node);
 	}.bind(this))
@@ -353,7 +353,7 @@ Graph.prototype.onTick = function(e) {
 	this.linkElements.attr("points", function (d) {
 		this.checkPos(d.target);
 		this.checkPos(d.source);
-		
+
 
 		return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
 	}.bind(this))
@@ -504,11 +504,11 @@ Graph.prototype.loadNodes = function (callback) {
 		this.nodes[i].foreignObject = foreignObject[0][0]
 
 		$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
-		
+
 		// Note that a digest cycle needs to run for this new html to be rendered by the browser. It runs after the current event loop is done because this function is called 
 		// inside a digest loop. 
 	}
-	
+
 	if (!this.$scope.$$phase) {
 		console.error('need to run compile code in a digest loop!')
 	}
@@ -532,80 +532,80 @@ Graph.prototype.loadNodes = function (callback) {
 	this.force.start();
 
 	this.force.alpha(.03)
-	
+
 	// Wait until after angular is done compiling the DOM to get the height of DOM elements
-	this.$timeout(function(){
-		this.nodes.forEach(function(node){
+	this.$timeout(function () {
+		this.nodes.forEach(function (node) {
 			this.updateHeight(node);
 		}.bind(this));
-		
+
 		callback()
-		
+
 		// False here prevents another digest cycle from running by this timeout
-	}.bind(this),0,false);
+	}.bind(this), 0, false);
 };
 
 
 Graph.prototype.go = function (tree, callback) {
 	this.isLoading = true;
 	downloadTree.fetchFullTree(tree, function (err, tree) {
-		this.$scope.$apply(function(){
+		this.$scope.$apply(function () {
 			this.isLoading = false;
 			if (err) {
 				return callback(err);
 			};
-	
-	
+
+
 			// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
 			// setTimeout(function () {
 			// this.$scope.$apply()
-	
+
 			treeMgr.go(tree);
 			this.tree = tree;
-	
+
 			this.force = d3.layout.force()
 				.charge(function (node) {
 					return -20000 - node.coreqs.values.length * 7000
 				}.bind(this))
 				.gravity(0.2)
 				.linkDistance(5)
-	
+
 			// Use querySelector instead of getElementById in case this.$document is a document fragment.
 			// (It could be in testing and im phantomJS document fragments don't have getElementById but do have querySelector).
 			var d3GraphId = d3.select(this.$document[0].querySelector('#d3GraphId'))
-	
+
 			this.svg = d3GraphId.append("svg")
-	
+
 			this.calculateGraphSize();
-	
-	
+
+
 			// can move this to the same as above? this was a separate #d3graphId selector
 			d3GraphId.on("mousedown", function () {
 				d3.event.stopPropagation();
 			}.bind(this))
-	
-	
+
+
 			this.container = this.svg.append("g");
-	
+
 			var zoom = d3.behavior.zoom()
 				.scaleExtent([.1, 1.5])
-				.on("zoom", function () { 
+				.on("zoom", function () {
 					this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 				}.bind(this));
-	
+
 			this.svg.call(zoom)
-	
+
 			this.loadNodes(function () {
 				this.yCoordAttractionMultiplyer = 1;
-	
+
 				this.classCount = treeMgr.countClassesInTree(tree);
 				if (this.classCount === 0) {
 					elog('0 classes found?', tree)
 				}
-				this.force.on('tick',this.onTick.bind(this));
-	
+				this.force.on('tick', this.onTick.bind(this));
+
 				this.force.start();
-	
+
 				// Two step process:
 				// make nodes find the nodes near them
 				var safety = 0;
@@ -620,11 +620,11 @@ Graph.prototype.go = function (tree, callback) {
 						break;
 					}
 				}
-	
+
 				//2. make nodes go towards their depth level
 				this.yCoordAttractionMultiplyer = 10;
 				this.force.start();
-	
+
 				safety = 0;
 				while (this.force.alpha() > 0.01) {
 					this.force.tick();
@@ -632,25 +632,25 @@ Graph.prototype.go = function (tree, callback) {
 						break;
 					}
 				}
-	
-	
+
+
 				// Center the root node by translating the container <g> inside the svg
 				zoom.translate([this.getSvgWidth() / 2 - this.tree.x, 0])
-	
+
 				// Zoom in a little, (this number is arbitrary)
 				// zoom.scale(1.16) // DO want to do this, but causes bug where not centered
 				zoom.event(this.svg)
-	
+
 				// zoom.center([this.tree.x,this.tree.y])
 				// zoom.event(this.svg)
-	
-	
+
+
 				this.$scope.tree = tree;
 				// setTimeout(function () {
 				// 	this.$scope.$apply();
 				// }.bind(this), 0);
 				callback(null, tree)
-	
+
 			}.bind(this))
 		}.bind(this))
 	}.bind(this))
