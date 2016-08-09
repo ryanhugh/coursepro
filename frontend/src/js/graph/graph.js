@@ -533,7 +533,7 @@ Graph.prototype.loadNodes = function (callback) {
 
 	this.force.alpha(.03)
 	
-	
+	// Wait until after angular is done compiling the DOM to get the height of DOM elements
 	this.$timeout(function(){
 		this.nodes.forEach(function(node){
 			this.updateHeight(node);
@@ -543,7 +543,6 @@ Graph.prototype.loadNodes = function (callback) {
 		
 		// False here prevents another digest cycle from running by this timeout
 	}.bind(this),0,false);
-
 };
 
 
