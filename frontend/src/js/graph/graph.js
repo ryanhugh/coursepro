@@ -236,18 +236,21 @@ Graph.prototype.updateHeight = function (tree) {
 	tree.foreignObject.parentNode.setAttribute('height', tree.height)
 };
 
-
-Graph.prototype.updateWidth = function (tree) {
-	if (!tree.isExpanded) {
-		tree.width = this.nodeWidth;
+Graph.prototype.getNodeWidth = function(node) {
+	if (!node.isExpanded) {
+		return this.nodeWidth;
 	}
-	else if (tree.sections.length > 0) {
-		tree.width = 780;
+	else if (node.sections.length > 0) {
+		return 780;
 	}
 	else {
-		tree.width = Math.max(576, Math.min(780, tree.desc.length))
+		return Math.max(576, Math.min(780, node.desc.length))
 	}
-	tree.foreignObject.setAttribute('width', tree.width)
+};
+
+Graph.prototype.updateWidth = function (node) {
+	node.width = this.getNodeWidth(node);
+	node.foreignObject.setAttribute('width', node.width)
 };
 
 
@@ -524,7 +527,7 @@ Graph.prototype.loadNodes = function (callback) {
 		}.bind(this));
 
 		newScope.$watch(function ($scope) {
-			return $scope.tree.foreignObject.lastChild.offsetWidth
+			return this.getNodeWidth($scope.tree)
 		}.bind(this), function (newVal, oldVal, $scope) {
 			if (newVal === oldVal) {
 				return;
