@@ -995,13 +995,13 @@ app.post('/logError', function (req, res) {
 
 // serve the webpage
 app.get('/', function (req, res) {
-	res.sendFile('frontend/static/index.html', {
+	res.sendFile('dist/index.html', {
 		"root": process.cwd()
 	});
 });
 
 
-app.use(express.static('frontend/static'));
+app.use(express.static('dist'));
 
 app.get("/*", function (req, res, next) {
 

@@ -4,7 +4,7 @@
 
 NOW:
 unit tests graph
-
+keys.js in shared dir
 
 
 REFACTOR STUFF:
@@ -12,6 +12,11 @@ switch to poylmer
 separate node and classes
 d3 v4?
 
+
+
+
+UNIT TESTS:
+run all graph unit tests.js (data/tests/runAllGraphSelections_broken.js)
 
 
 

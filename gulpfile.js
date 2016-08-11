@@ -40,9 +40,44 @@ var fs = require('fs-extra')
 var memoize = require('./memoize')
 var macros = require('./backend/macros')
 
+var KARMA_CONFIG = {
+	files: [
+		"dist/js/vender.tests.js",
+		"dist/js/app.tests.js",
+		"dist/js/html.js",
+		"dist/css/allthecss.css",
+	],
+	plugins: [
+		'karma-chrome-launcher',
+		'karma-phantomjs-launcher',
+		'karma-jasmine',
+		'karma-logcapture-reporter',
+		'karma-mocha-reporter',
+	],
+	frameworks: ['jasmine'],
+	preprocessors: {},
+	browsers: ['PhantomJS'],
+	reporters: ['logcapture', 'progress', 'mocha'],
+	client: {
+		captureConsole: true
+	},
+	// reporters: ['spec'],
+	specReporter: {
+		maxLogLines: 8, // limit number of lines logged per test 
+		suppressErrorSummary: true, // do not print error summary 
+		suppressFailed: true, // do not print information about failed tests 
+		suppressPassed: true, // do not print information about passed tests 
+		suppressSkipped: true, // do not print information about skipped tests 
+		showSpecTiming: false // print the time elapsed for each spec 
+	},
+	mochaReporter: {
+		output: 'minimal'
+	},
+}
 
 
-var UGLIFY_JS_OPTIONS = {
+
+var UGLIFY_JS_CONFIG = {
 	drop_console: true,
 	unsafe: true,
 	collapse_vars: true,
@@ -74,11 +109,11 @@ gulp.task('uglifyCSS', function () {
 	return gulp.src('frontend/css/homepage/*.css')
 		// .pipe(concat('allthecss.css'))
 		.pipe(uncss({
-			html: ['frontend/static/index.html']
+			html: ['dist/index.html']
 		}))
 		// .pipe(addsrc('frontend/css/all/*.css'))
 		.pipe(concat('allthecss.css'))
-		.pipe(gulp.dest('frontend/static/css'));
+		.pipe(gulp.dest('dist/css'));
 });
 
 gulp.task('watchUglifyCSS', function () {
@@ -120,7 +155,7 @@ function onError(error) {
 // this fn would have to change a bit too
 var getFilesToProcess = memoize(function (includeTests, callback) {
 
-	glob('frontend/src/js/**/*.js', function (err, files) {
+	glob('frontend/js/**/*.js', function (err, files) {
 		if (err) {
 			return callback(err)
 		}
@@ -242,14 +277,14 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 						options: {
 							ie_proof: false
 						},
-						compress: UGLIFY_JS_OPTIONS
+						compress: UGLIFY_JS_CONFIG
 					})));
 				}
 
 				// This adds about 30-40 ms, would benefit a lot from some memoize stream things
 				stream = injectMacros(stream)
 
-				stream = stream.pipe(gulp.dest('./frontend/static/js'));
+				stream = stream.pipe(gulp.dest('./dist/js'));
 
 				stream.on('end', function () {
 
@@ -311,28 +346,28 @@ gulp.task('compressJS', function (callback) {
 // This includes anything that is the same between prod, dev, and testing
 // includes fonts, images, root files (robots.txt and index.html), css, and html
 gulp.task('copyFonts', function () {
-	return gulp.src('frontend/src/fonts/*')
-		.pipe(gulp.dest('frontend/static/fonts'));
+	return gulp.src('frontend/fonts/*')
+		.pipe(gulp.dest('dist/fonts'));
 });
 
 gulp.task('watchCopyFonts', function () {
-	gulp.watch(['frontend/src/fonts/*'], ['copyFonts']);
+	gulp.watch(['frontend/fonts/*'], ['copyFonts']);
 });
 
 
 gulp.task('copyImages', function () {
-	return gulp.src('frontend/src/images/*').pipe(gulp.dest('frontend/static/images'));
+	return gulp.src('frontend/images/*').pipe(gulp.dest('dist/images'));
 });
 
 gulp.task('watchCopyImages', function () {
-	gulp.watch(['frontend/src/images/*'], ['copyImages']);
+	gulp.watch(['frontend/images/*'], ['copyImages']);
 });
 
 // Copy everything that isn't a folder from the src/ dir to the static/ dir
 gulp.task('copyRootFiles', function (callback) {
 
 	// List all files and folders in the root src/ dir
-	glob("frontend/src/*", function (err, results) {
+	glob("frontend/*", function (err, results) {
 		if (err) {
 			return callback(err);
 		}
@@ -374,7 +409,7 @@ gulp.task('copyRootFiles', function (callback) {
 					var stream = gulp.src(file);
 
 					stream = injectMacros(stream)
-					
+
 					// sw.js is the only file that runs through this stuff now
 					if (file.endsWith('.js')) {
 
@@ -385,12 +420,12 @@ gulp.task('copyRootFiles', function (callback) {
 								options: {
 									ie_proof: false
 								},
-								compress: UGLIFY_JS_OPTIONS
+								compress: UGLIFY_JS_CONFIG
 							})))
 						}
 					}
 
-					stream.pipe(gulp.dest('./frontend/static'))
+					stream.pipe(gulp.dest('./dist'))
 						.on('error', function (err) {
 							onError(err)
 						})
@@ -411,7 +446,7 @@ gulp.task('copyRootFiles', function (callback) {
 });
 
 gulp.task('watchcopyRootFiles', function () {
-	gulp.watch(['frontend/src/*'], ['copyRootFiles']);
+	gulp.watch(['frontend/*'], ['copyRootFiles']);
 });
 
 
@@ -419,7 +454,7 @@ gulp.task('watchcopyRootFiles', function () {
 
 gulp.task('copyHTML', function () {
 	return gulp
-		.src('./frontend/src/js/**/*.html')
+		.src('./frontend/js/**/*.html')
 		.pipe(flatten())
 		.pipe(htmlmin({
 			collapseWhitespace: true,
@@ -430,11 +465,11 @@ gulp.task('copyHTML', function () {
 			standalone: true
 		}))
 		.pipe(concat('html.js'))
-		.pipe(gulp.dest('./frontend/static/js'))
+		.pipe(gulp.dest('./dist/js'))
 })
 
 gulp.task('watchCopyHTML', function () {
-	gulp.watch(['frontend/src/js/**/*.html'], ['copyHTML']);
+	gulp.watch(['frontend/js/**/*.html'], ['copyHTML']);
 });
 
 // =========== CSS ===========
@@ -442,7 +477,7 @@ gulp.task('watchCopyHTML', function () {
 // cssnano is too slow and takes a couple seconds
 gulp.task('copyCSS', function (callback) {
 
-	return gulp.src(['frontend/src/css/*', '!frontend/src/css/*.min.css'])
+	return gulp.src(['frontend/css/*', '!frontend/css/*.min.css'])
 		.pipe(concat('allthecss.css'))
 		.pipe(cssnano({
 			discardComments: {
@@ -452,14 +487,14 @@ gulp.task('copyCSS', function (callback) {
 		// .pipe(cleanCSS({
 		// 	keepSpecialComments: 0
 		// }))
-		.pipe(addsrc('frontend/src/css/*.min.css'))
+		.pipe(addsrc('frontend/css/*.min.css'))
 		.pipe(concat('allthecss.css'))
-		.pipe(gulp.dest('frontend/static/css'));
+		.pipe(gulp.dest('dist/css'));
 });
 
 
 gulp.task('watchCopyCSS', function () {
-	gulp.watch(['frontend/src/css/*'], ['copyCSS']);
+	gulp.watch(['frontend/css/*'], ['copyCSS']);
 });
 
 
@@ -496,9 +531,7 @@ gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 		}
 		hasCompiledOnce = true;
 
-		new karma.Server({
-			configFile: __dirname + '/frontend/karma.conf.js',
-		}, function (exitCode) {
+		new karma.Server(KARMA_CONFIG, function (exitCode) {
 			console.log('ERROR Karma has exited with ' + exitCode)
 			onError('KARMA has crashed!!!!');
 			// process.exit()
