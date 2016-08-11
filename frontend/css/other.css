@@ -1,0 +1,710 @@
+ 
+
+body {
+  position: relative;
+}
+
+.bs-docs-footer {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  margin-top: 100px;
+  color: #767676;
+  text-align: center;
+  border-top: 1px solid #e5e5e5;
+}
+
+@media (min-width:768px) {
+  .bs-docs-footer p {
+    margin-bottom: 0;
+  }
+}
+
+:hover>.anchorjs-link {
+  opacity: .75;
+  -webkit-transition: color .16s linear;
+  -o-transition: color .16s linear;
+  transition: color .16s linear;
+}
+
+:hover>.anchorjs-link:hover {
+  text-decoration: none;
+  opacity: 1;
+}
+
+html {
+  font-size: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+h2,
+h3,
+p,
+figure,
+input {
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  border: 0;
+}
+
+footer,
+nav,
+section,
+figure {
+  display: block;
+}
+
+button {
+  border: 0;
+  font: inherit;
+  vertical-align: middle;
+}
+
+@media print {
+  body {
+    color: #000;
+  }
+
+  a,
+  a:link,
+  a:visited {
+    color: #000;
+    text-decoration: none;
+  }
+}
+
+html {
+  font-family: "Myriad Set Pro","Helvetica Neue","Helvetica","Arial",sans-serif;
+  font-size: 112.5%;
+}
+
+body {
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: normal;
+  background-color: #fff;
+  color: #333;
+  font-style: normal;
+}
+
+@media only screen and (max-width: 1068px) {
+  body {
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  body {
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+}
+
+body,
+input,
+select,
+button {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -moz-font-feature-settings: 'liga', 'kern';
+}
+
+a {
+  color: #08c;
+}
+
+a:visited,
+a:link,
+a:active {
+  text-decoration: none;
+}
+
+h2,
+h3 {
+  margin: 0 0 0.45em 0;
+}
+
+p {
+  margin: 0 0 1em 0;
+}
+
+.row {
+  position: relative;
+  z-index: 1;
+}
+
+.row:before,
+.row:after {
+  content: ' ';
+  display: table;
+}
+
+.row:after {
+  clear: both;
+}
+
+.column {
+  position: relative;
+  z-index: 1;
+  min-height: 2px;
+  margin: 0;
+  padding: 0;
+  float: left;
+}
+
+.large-offset-1 {
+  margin-left: 8.3333%;
+}
+
+.large-offset-4 {
+  margin-left: 33.3333%;
+}
+
+.large-6 {
+  width: 50%;
+}
+
+.large-8 {
+  width: 66.6667%;
+}
+
+.large-centered {
+  margin-left: auto;
+  margin-right: auto;
+  float: none;
+}
+
+@media only screen and (max-width: 1068px) {
+  .medium-offset-5 {
+    margin-left: 41.6667%;
+  }
+
+  .medium-6 {
+    width: 50%;
+  }
+
+  .medium-8 {
+    width: 66.6667%;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .small-offset-0 {
+    margin-left: 0;
+  }
+
+  .small-12 {
+    width: 100%;
+  }
+
+  .small-centered {
+    margin-left: auto;
+    margin-right: auto;
+    float: none;
+  }
+}
+
+@font-face {
+  font-family: "AppleIcons";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/v/mac/home/s/ac-assets/ac-appleicons/fonts/appleicons_text.eot");
+  src: url("/v/mac/home/s/ac-assets/ac-appleicons/fonts/appleicons_text.eot?#iefix") format("embedded-opentype"),url("/fonts/appleicons_text.woff") format("woff"),url("/fonts/appleicons_text.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "AppleIcons";
+  font-style: normal;
+  font-weight: 200;
+  src: url("/v/mac/home/s/ac-assets/ac-appleicons/fonts/appleicons_thin.eot");
+  src: url("/v/mac/home/s/ac-assets/ac-appleicons/fonts/appleicons_thin.eot?#iefix") format("embedded-opentype"),url("/fonts/appleicons_thin.woff") format("woff"),url("/fonts/appleicons_thin.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "AppleIcons";
+  font-style: normal;
+  font-weight: 100;
+  src: url("/v/mac/home/s/ac-assets/ac-appleicons/fonts/appleicons_ultralight.eot");
+  src: url("/v/mac/home/s/ac-assets/ac-appleicons/fonts/appleicons_ultralight.eot?#iefix") format("embedded-opentype"),url("/fonts/appleicons_ultralight.woff") format("woff"),url("/fonts/appleicons_ultralight.ttf") format("truetype");
+}
+
+p {
+  margin-bottom: 8px;
+}
+
+.fp-section-content {
+  margin-left: auto;
+  margin-right: auto;
+  width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 1;
+  height: 100%;
+}
+
+@media only screen and (min-width: 1442px) {
+  .fp-section-content {
+    width: 980px;
+  }
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-section-content {
+    width: 692px;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-section-content {
+    width: 90%;
+  }
+}
+
+.fp-billboard {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 7px;
+}
+
+.fp-billboard,
+.fp-billboard a {
+  color: #fff;
+}
+
+.fp-billboard-image {
+  position: relative;
+  background-size: cover !important;
+  background-position: center top;
+  min-height: 600px;
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-billboard-image {
+    min-height: 450px;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-billboard-image {
+    min-height: 293px;
+  }
+}
+
+.fp-billboard-image::before {
+  content: "";
+  display: block;
+  padding-bottom: 41.6667%;
+}
+
+.fp-billboard-wrapper {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.fp-billboard-content {
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.fp-billboard-copy {
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: normal;
+  margin-bottom: 0.2778em;
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-billboard-copy {
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-billboard-copy {
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+}
+
+.fp-billboard-center {
+  text-align: center;
+}
+
+.fp-billboard-center .fp-billboard-content {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fp-billboard-center .fp-billboard-copy {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-billboard-inline-small .fp-billboard-wrapper {
+    position: relative;
+  }
+
+  .fp-billboard-inline-small .fp-billboard-content {
+    position: relative;
+    top: auto;
+    -webkit-transform: translateY(0);
+    -ms-transform: translateY(0);
+    transform: translateY(0);
+    padding-top: 25px;
+    padding-bottom: 32px;
+    color: #333;
+    text-align: left;
+  }
+}
+
+.fp-product-content {
+  text-align: center;
+}
+
+.fp-product-headline {
+  font-size: 72px;
+  line-height: 1.0556;
+  font-weight: 200;
+  letter-spacing: -0.024em;
+  margin-bottom: 0;
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-product-headline {
+    font-size: 64px;
+    line-height: 1.0625;
+    font-weight: 200;
+    letter-spacing: -0.02em;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-product-headline {
+    font-size: 42px;
+    line-height: 1.1429;
+    font-weight: 200;
+    letter-spacing: -0.01em;
+  }
+}
+
+.fp-product-subheadline {
+  font-size: 28px;
+  line-height: 1.1429;
+  font-weight: 200;
+  letter-spacing: normal;
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-product-subheadline {
+    font-size: 24px;
+    line-height: 1.1667;
+    font-weight: 200;
+    letter-spacing: normal;
+  }
+}
+
+.fp-product-moreblock {
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: normal;
+  margin-top: 0.625em;
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-product-moreblock {
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-product-moreblock {
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+}
+
+@-moz-document url-prefix()  {
+  .button {
+    line-height: 31px;
+    padding-top: 1px;
+  }
+}
+
+@-moz-document url-prefix()  {
+  .button-buynow,
+  .button-compact {
+    line-height: 21px;
+    padding-top: 1px;
+  }
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media only screen and (max-width: 735px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+.small-only {
+  display: none;
+}
+
+@media only screen and (max-width: 735px) {
+  .small-only {
+    display: block;
+  }
+}
+
+.fp-product-subheadline {
+  font-size: 42px;
+  line-height: 1.1429;
+  font-weight: 200;
+  letter-spacing: -0.01em;
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-product-subheadline {
+    font-size: 32px;
+    line-height: 1.125;
+    font-weight: 200;
+    letter-spacing: 0em;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-product-subheadline {
+    font-size: 28px;
+    line-height: 1.1429;
+    font-weight: 200;
+    letter-spacing: 0em;
+  }
+}
+
+.fp-moreblock {
+  font-size: 24px;
+  line-height: 1.3542;
+  font-weight: 200;
+  letter-spacing: normal;
+  line-height: 2.5em;
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-moreblock {
+    font-size: 24px;
+    line-height: 1.3542;
+    font-weight: 200;
+    letter-spacing: normal;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-moreblock {
+    font-size: 20px;
+    line-height: 1.4;
+    font-weight: 200;
+    letter-spacing: normal;
+  }
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-moreblock {
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+}
+
+@media only screen and (max-width: 1068px) and (max-width: 1068px) {
+  .fp-moreblock {
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+}
+
+@media only screen and (max-width: 1068px) and (max-width: 735px) {
+  .fp-moreblock {
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+}
+
+.fp-billboard {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.fp-product {
+  padding-bottom: 140px;
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-product {
+    padding-bottom: 90px;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-product {
+    padding-bottom: 60px;
+  }
+}
+
+.fp-product .fp-product-content {
+  position: relative;
+}
+
+.fp-product.fp-product-macbook-pro {
+  position: relative;
+  z-index: 1;
+  padding-top: 255px;
+  padding-bottom: 245px;
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-product.fp-product-macbook-pro {
+    padding-top: 135px;
+    padding-bottom: 105px;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-product.fp-product-macbook-pro {
+    padding-top: 57px;
+    padding-bottom: 0;
+  }
+}
+
+.fp-product.fp-product-macbook-air {
+  position: relative;
+  z-index: 1;
+  padding-top: 263px;
+  padding-bottom: 280px;
+  background: -webkit-linear-gradient(#fff, #fafafa);
+  background: linear-gradient(#fff, #fafafa);
+}
+
+@media only screen and (max-width: 1068px) {
+  .fp-product.fp-product-macbook-air {
+    padding-top: 183px;
+    padding-bottom: 145px;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-product.fp-product-macbook-air {
+    padding-top: 70px;
+    padding-bottom: 60px;
+  }
+}
+
+.fp-product.fp-product-macbook-air .image-macbookair {
+  background-repeat: no-repeat;
+  background-size: 927px 474px;
+  height: 474px;
+  width: 927px;
+  position: absolute;
+  top: -115px;
+  left: -183px;
+}
+
+
+@media only screen and (max-width: 1068px) {
+  .fp-product.fp-product-macbook-air .image-macbookair {
+    background-size: 643px 380px;
+    height: 380px;
+    width: 643px;
+  }
+}
+
+
+@media only screen and (max-width: 735px) {
+  .fp-product.fp-product-macbook-air .image-macbookair {
+    background-size: 303px 156px;
+    height: 156px;
+    width: 303px;
+  }
+}
+
+
+@media only screen and (max-width: 1068px) {
+  .fp-product.fp-product-macbook-air .image-macbookair {
+    top: -135px;
+    left: -120px;
+  }
+}
+
+@media only screen and (max-width: 735px) {
+  .fp-product.fp-product-macbook-air .image-macbookair {
+    position: static;
+    margin: 12px auto 0;
+  }
+}
+
+.fp-product-accessories {
+  margin-bottom: 0;
+}
+
+.fp-education .image-macforeducation {
+  background-repeat: no-repeat;
+  background-size: 1440px 597px;
+}
+
+
+@media only screen and (max-width: 1068px) {
+  .fp-education .image-macforeducation {
+    background-size: 1068px 452px;
+  }
+}
+
+
+@media only screen and (max-width: 735px) {
+  .fp-education {
+    padding-top: 15px;
+  }
+}

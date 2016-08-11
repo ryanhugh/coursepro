@@ -1,4 +1,4 @@
-frontend/static/*
+dist/*
 *.db
 node_modules
 *.log

@@ -1,0 +1,50 @@
+<div style="position: fixed;left: 0;bottom: 0;height: 100%;background: white;width: 300px;box-shadow: grey 0 0 5px;border: 1px solid grey;padding-top: 100px;">
+	<div class="list-group">
+		
+		
+	  <a ng-repeat = "aClass in search.classes" class="list-group-item {{search.isActive(aClass)?'active':''}}" href="" ng-click="search.onClick(aClass)">
+	    <h4 class="list-group-item-heading">{{::aClass.subject}} {{::aClass.classId}}</h4>
+	    <p class="list-group-item-text">{{::aClass.name}}</p>
+	  </a>
+	  
+	  <!--<a class="list-group-item">-->
+	  <!--  <h4 class="list-group-item-heading">List group item heading</h4>-->
+	  <!--  <p class="list-group-item-text">THis is sample text that could be the description of a class</p>-->
+	  <!--</a>-->
+	  
+	</div>
+</div>
+
+
+<!--<div class="container">-->
+
+<!--    <div style="padding-top:70px"></div>-->
+
+
+<!--    <h2 style="margin:0;display:inline-block">-->
+<!--        Search-->
+<!--    </h2>-->
+
+<!--    <div style="display:inline-block;padding-left: 175px;vertical-align: top;">-->
+<!--        <form style="white-space: nowrap;width: 221px;display: inline-block;">-->
+<!--            <input class="form-control" type="text" ng-model="search.searchText" style="display: inline-block;" placeholder="Search for..."></input>-->
+<!--            <button type="submit" class="btn btn-primary" ng-click="search.onEnter()" style="vertical-align: top;">-->
+<!--                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>-->
+<!--            </button>-->
+<!--        </form>-->
+<!--    </div>-->
+
+    <!-- <span>in</span> -->
+
+<!--    <div subject-class-selector focus-selector="{{focusSelector}}" only-subject="true" style="width: 257px;display: inline-block;margin-left: 92px;vertical-align: bottom;"></div>-->
+
+
+<!--    <div class-list></div>-->
+
+<!--    <div class="spinner-loader" style="margin:0 auto;margin-left: 50%;margin-top: 120px;" ng-class="search.isLoading?'':'noDisplay'"></div>-->
+
+
+<!--    <div ng-if="classes.length == 0" style="display: inline-block;text-align: center;width: 100%;font-size: 20px;padding-top: 27px;">Nothing Found</div>-->
+
+
+<!--</div>-->

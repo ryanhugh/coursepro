@@ -1,0 +1,44 @@
+<!-- cant use uiselect because of performance issues http://plnkr.co/edit/ddOIJGozWDdHDVNC4Cu6?p=preview -->
+<!-- 
+<ui-select ng-model="subjectClassSelector.selectedSubject" theme="bootstrap" >
+    <ui-select-match placeholder="Select a subject...">{{$select.selected.text}}</ui-select-match>
+    <ui-select-choices repeat="subject in subjects">
+        {{subject.text}}
+    </ui-select-choices>
+</ui-select>
+ -->
+<!-- 
+<select2 ng-model="subjectClassSelector.selectedSubject" s2-options="val.id as val.text for val in subjects">
+    <option ng-repeat = "subject in subjects" value="{{subject.id}}">{{subject.text}}</option> 
+</select2><!-- 
+
+ 
+<style type="text/css">
+.dropdown-active {
+    background: #F5F5F5 !important;
+    outline: initial !important;
+    border-color: transparent !important;
+    box-shadow: initial !important;
+}
+
+.selectize-input>input::-webkit-input-placeholder::before {
+    color: black;
+    content: "Line 1\A Line 2\A Line 3\A";
+}
+</style>
+
+ -->
+
+<style type="text/css">
+.selectize-control {
+    width: 261px;
+    display: inline-block;
+    margin-right: 8px;
+    margin-left: 8px;
+    vertical-align: top;
+}
+</style>
+
+<selectize ng-if="subjects" placeholder='Select Subject...' options='subjects' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedSubject" ng-focused="{{focusSelector}}" required='true'></selectize>
+
+<selectize ng-if="subjectClassSelector.showClassesSelector" placeholder='Select Class...' options='classes' config="{maxItems: 1}" ng-model="subjectClassSelector.selectedClass" required='true' id="subjectSelectorId"></selectize>

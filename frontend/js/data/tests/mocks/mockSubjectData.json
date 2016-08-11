@@ -1,0 +1,859 @@
+[{
+	"_id": "56f21e3dea47044a0568cc2e",
+	"subject": "BNSC",
+	"text": "Behavioral Neuroscience",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22082ea47044a0569539b",
+	"subject": "HSTY",
+	"text": "History - CPS Sem",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22160ea47044a0569872b",
+	"subject": "GENS",
+	"text": "General Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22470ea47044a056a3df3",
+	"subject": "ABRS",
+	"text": "Study Abroad - Science",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2248fea47044a056a4579",
+	"subject": "CMMN",
+	"text": "Communicatn Studies - CPS Sem",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f224acea47044a056a4ca7",
+	"subject": "BIOC",
+	"text": "Biochemistry",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2253dea47044a056a6eb5",
+	"subject": "PHLS",
+	"text": "Philosophy - CPS Sem",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f225feea47044a056a9be1",
+	"subject": "LACS",
+	"text": "Latin Am & Carib Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2262bea47044a056aa6f4",
+	"subject": "NNMD",
+	"text": "Nanomedicine",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22698ea47044a056ac069",
+	"subject": "NAVY",
+	"text": "Navy ROTC",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f226b6ea47044a056ac78b",
+	"subject": "INSH",
+	"text": "Interdisc Studies - Soc Sc/Hum",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f226b6ea47044a056ac7a0",
+	"subject": "DSSH",
+	"text": "Data Science - CSSH",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22728ea47044a056ae230",
+	"subject": "ENSY",
+	"text": "Energy Systems",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22749ea47044a056ae92d",
+	"subject": "DS",
+	"text": "Data Science",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2278bea47044a056afa49",
+	"subject": "ENCP",
+	"text": "Engineering Cooperative Ed",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f227b4ea47044a056b046d",
+	"subject": "ENLR",
+	"text": "Engineering Leadership",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f227d9ea47044a056b0da3",
+	"subject": "BINF",
+	"text": "Bioinformatics",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f227f3ea47044a056b13e8",
+	"subject": "EVRN",
+	"text": "Earth & Environ Sci - CPS Sem",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22802ea47044a056b179a",
+	"subject": "ARTS",
+	"text": "Art - Studio",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2280dea47044a056b1a1b",
+	"subject": "MECN",
+	"text": "Managerial Economics",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22817ea47044a056b1c36",
+	"subject": "ENVS",
+	"text": "Environmental Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22838ea47044a056b24e2",
+	"subject": "ENGR",
+	"text": "Engineering Interdisciplinary",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22840ea47044a056b2724",
+	"subject": "ASNS",
+	"text": "Asian Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22850ea47044a056b2abd",
+	"subject": "MGMT",
+	"text": "Management",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22865ea47044a056b301b",
+	"subject": "HUSV",
+	"text": "Human Services",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22879ea47044a056b3517",
+	"subject": "PMST",
+	"text": "Pharmaceutics",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2288eea47044a056b3b13",
+	"subject": "LING",
+	"text": "Linguistics",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2289eea47044a056b3ee4",
+	"subject": "AMSL",
+	"text": "American Sign Language",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228a8ea47044a056b4152",
+	"subject": "TELE",
+	"text": "Telecommunication Systems",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228b2ea47044a056b4476",
+	"subject": "EDUC",
+	"text": "Education",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228bdea47044a056b472c",
+	"subject": "MARS",
+	"text": "Marine Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228d2ea47044a056b4c5f",
+	"subject": "AFAM",
+	"text": "African-American Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228d8ea47044a056b4d6b",
+	"subject": "MUST",
+	"text": "Music Technology",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228d8ea47044a056b4db9",
+	"subject": "HONR",
+	"text": "Honors Program",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228e6ea47044a056b51c9",
+	"subject": "ARMY",
+	"text": "Army ROTC",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228e6ea47044a056b51db",
+	"subject": "TECE",
+	"text": "Entrepreneurship Technological",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228e6ea47044a056b51dc",
+	"subject": "GSND",
+	"text": "Game Science and Design",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228f0ea47044a056b53a6",
+	"subject": "LITR",
+	"text": "Culture - Literature",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228f5ea47044a056b55a1",
+	"subject": "SCHM",
+	"text": "Supply Chain Management",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f228fdea47044a056b5746",
+	"subject": "GBST",
+	"text": "Global Studies - CPS Sem",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22900ea47044a056b589c",
+	"subject": "FRNH",
+	"text": "French",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2290fea47044a056b5bb8",
+	"subject": "ANTH",
+	"text": "Anthropology",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22916ea47044a056b5db7",
+	"subject": "THTR",
+	"text": "Theatre",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22916ea47044a056b5e1a",
+	"subject": "INTP",
+	"text": "Interpreting",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22924ea47044a056b629f",
+	"subject": "EMGT",
+	"text": "Engineering Management",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22929ea47044a056b63ff",
+	"subject": "HSCI",
+	"text": "Health Science",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22929ea47044a056b6405",
+	"subject": "HBRW",
+	"text": "Hebrew",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2292eea47044a056b6563",
+	"subject": "MATL",
+	"text": "Materials Engineering",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22934ea47044a056b66a9",
+	"subject": "PA",
+	"text": "Physician Assistant",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22934ea47044a056b66b5",
+	"subject": "GAME",
+	"text": "Game Design",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22939ea47044a056b6817",
+	"subject": "EESC",
+	"text": "Coop/Exper Ed - Science",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2293dea47044a056b6907",
+	"subject": "EXSC",
+	"text": "Cardiopulmonary & Exercise Sci",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2293fea47044a056b69a4",
+	"subject": "ARTE",
+	"text": "Art - General",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2293fea47044a056b69cc",
+	"subject": "COOP",
+	"text": "Cooperative Education",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2293fea47044a056b69d3",
+	"subject": "CINE",
+	"text": "Media - Cinema Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22943ea47044a056b6b4a",
+	"subject": "LW",
+	"text": "Law (for Non-Law School Stu)",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22943ea47044a056b6b6c",
+	"subject": "GRMN",
+	"text": "German",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22943ea47044a056b6b70",
+	"subject": "SPNS",
+	"text": "Spanish",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22948ea47044a056b6cc7",
+	"subject": "ECNM",
+	"text": "Economics - CPS Sem",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22948ea47044a056b6cc8",
+	"subject": "EEAM",
+	"text": "Coop/Exper Ed - Arts/Med/Dsgn",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22948ea47044a056b6ccb",
+	"subject": "LARC",
+	"text": "Landscape Architecture",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22952ea47044a056b6f5b",
+	"subject": "MUSC",
+	"text": "Music",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2295dea47044a056b7228",
+	"subject": "PORT",
+	"text": "Portuguese",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2295dea47044a056b7270",
+	"subject": "ENVR",
+	"text": "Earth & Environmental Sciences",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22964ea47044a056b7424",
+	"subject": "JRNL",
+	"text": "Journalism",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22964ea47044a056b745d",
+	"subject": "PHTH",
+	"text": "Public Health",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22964ea47044a056b7464",
+	"subject": "ARTH",
+	"text": "Art - History",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22967ea47044a056b74ec",
+	"subject": "DEAF",
+	"text": "Deaf Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22967ea47044a056b754c",
+	"subject": "SMFA",
+	"text": "School of Museum of Fine Arts",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2296cea47044a056b76ed",
+	"subject": "MEIE",
+	"text": "Mech & Industrial Engineering",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2296cea47044a056b7712",
+	"subject": "INFO",
+	"text": "Information Systems Program",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22971ea47044a056b782d",
+	"subject": "SBSY",
+	"text": "Sustainable Building Systems",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22972ea47044a056b790a",
+	"subject": "IA",
+	"text": "Information Assurance",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22977ea47044a056b7a26",
+	"subject": "POLS",
+	"text": "Political Science",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2297cea47044a056b7b2d",
+	"subject": "ARAB",
+	"text": "Arabic",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2297eea47044a056b7c34",
+	"subject": "CHNS",
+	"text": "Chinese",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22981ea47044a056b7dd1",
+	"subject": "CLTR",
+	"text": "Culture",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22981ea47044a056b7de6",
+	"subject": "OR",
+	"text": "Operations Research",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22981ea47044a056b7e38",
+	"subject": "GE",
+	"text": "General Engineering",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22986ea47044a056b7f86",
+	"subject": "SUEN",
+	"text": "Sustainable Urban Environments",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22987ea47044a056b7fa8",
+	"subject": "ARCH",
+	"text": "Architecture",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22987ea47044a056b7fb5",
+	"subject": "HRMG",
+	"text": "Human Resources Management",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22987ea47044a056b7fc9",
+	"subject": "LPSC",
+	"text": "Law and Public Policy",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22987ea47044a056b7fd2",
+	"subject": "ENGW",
+	"text": "English Writing",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22987ea47044a056b7ff3",
+	"subject": "PHMD",
+	"text": "Pharmacy Practice",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22987ea47044a056b7ffe",
+	"subject": "SLPA",
+	"text": "Speech-Lang Path & Audiology",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2298cea47044a056b8194",
+	"subject": "AFRS",
+	"text": "African Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2298cea47044a056b81b4",
+	"subject": "ARTG",
+	"text": "Art - Design",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2298cea47044a056b81ee",
+	"subject": "RSSN",
+	"text": "Russian",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2298cea47044a056b821a",
+	"subject": "BIOT",
+	"text": "Biotechnology",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22992ea47044a056b83d6",
+	"subject": "ARTD",
+	"text": "Art - Media Arts",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22992ea47044a056b83dc",
+	"subject": "ORGB",
+	"text": "Organizational Behavior",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22992ea47044a056b83dd",
+	"subject": "MATM",
+	"text": "Mathematics - CPS Sem",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22992ea47044a056b840f",
+	"subject": "HINF",
+	"text": "Health Informatics",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22992ea47044a056b8415",
+	"subject": "ENTR",
+	"text": "Entrepreneurship & Innovation",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22992ea47044a056b8416",
+	"subject": "INTL",
+	"text": "International Affairs",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22995ea47044a056b8442",
+	"subject": "PPUA",
+	"text": "Pub Policy and Urban Affairs",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22996ea47044a056b8578",
+	"subject": "INTB",
+	"text": "International Business",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22996ea47044a056b8580",
+	"subject": "BUSN",
+	"text": "Business Administration",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22996ea47044a056b858e",
+	"subject": "FSEM",
+	"text": "First-Year Seminar",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22996ea47044a056b85a1",
+	"subject": "ESLG",
+	"text": "English as Scnd Lang - CPS Sem",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f22996ea47044a056b85b2",
+	"subject": "CSYE",
+	"text": "Computer Systems Engineering",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299bea47044a056b86ac",
+	"subject": "PT",
+	"text": "Physical Therapy",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299bea47044a056b86d3",
+	"subject": "CAEP",
+	"text": "Counseling and Applied Ed Psyc",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299bea47044a056b8712",
+	"subject": "PHIL",
+	"text": "Philosophy",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299bea47044a056b8774",
+	"subject": "IE",
+	"text": "Industrial Engineering",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299bea47044a056b8781",
+	"subject": "MKTG",
+	"text": "Marketing",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299bea47044a056b87ad",
+	"subject": "ITLN",
+	"text": "Italian",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299bea47044a056b87b0",
+	"subject": "JPNS",
+	"text": "Japanese",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299bea47044a056b87b8",
+	"subject": "PHYS",
+	"text": "Physics",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299cea47044a056b87c2",
+	"subject": "WMNS",
+	"text": "Women's/Gender/Sexualty Stdies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299cea47044a056b87c8",
+	"subject": "ECON",
+	"text": "Economics",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f2299cea47044a056b87e0",
+	"subject": "MGSC",
+	"text": "Management Science",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a0ea47044a056b8868",
+	"subject": "BIOL",
+	"text": "Biology",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a0ea47044a056b8943",
+	"subject": "BIOE",
+	"text": "Bioengineering",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a0ea47044a056b8965",
+	"subject": "MATH",
+	"text": "Mathematics",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a0ea47044a056b896c",
+	"subject": "CIVE",
+	"text": "Civil & Environmental Engineer",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a0ea47044a056b89a4",
+	"subject": "IS",
+	"text": "Information Science",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a0ea47044a056b89b2",
+	"subject": "EESH",
+	"text": "Coop/Exper Ed - Soc Sci/Hum",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a5ea47044a056b8ac6",
+	"subject": "ACCT",
+	"text": "Accounting",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a5ea47044a056b8b6a",
+	"subject": "PHSC",
+	"text": "Pharmaceutical Science",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a6ea47044a056b8b9d",
+	"subject": "COMM",
+	"text": "Communication Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a6ea47044a056b8bbd",
+	"subject": "CHME",
+	"text": "Chemical Engineering",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a6ea47044a056b8bce",
+	"subject": "MSCR",
+	"text": "Media and Screen Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229a6ea47044a056b8bdc",
+	"subject": "ENGL",
+	"text": "English",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229aaea47044a056b8c17",
+	"subject": "HLTH",
+	"text": "Health Sci - Interdisciplinary",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229aaea47044a056b8c3f",
+	"subject": "HIST",
+	"text": "History",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229aaea47044a056b8c84",
+	"subject": "SOCL",
+	"text": "Sociology",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229aaea47044a056b8c93",
+	"subject": "ABRB",
+	"text": "Study Abroad - Business",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229aaea47044a056b8ca1",
+	"subject": "EEMB",
+	"text": "Ecology, Evolutn & Marine Biol",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229aaea47044a056b8d0c",
+	"subject": "CHEM",
+	"text": "Chemistry & Chemical Biology",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229abea47044a056b8d45",
+	"subject": "PSYC",
+	"text": "Psychology",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229abea47044a056b8d49",
+	"subject": "NRSG",
+	"text": "Nursing",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229abea47044a056b8d66",
+	"subject": "FINA",
+	"text": "Finance & Insurance",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229abea47044a056b8d6c",
+	"subject": "CS",
+	"text": "Computer Science",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229abea47044a056b8d91",
+	"subject": "MUSI",
+	"text": "Music Industry",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229acea47044a056b8dca",
+	"subject": "STRT",
+	"text": "Strategy",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229acea47044a056b8dcd",
+	"subject": "MISM",
+	"text": "Management Information Systems",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229afea47044a056b8e04",
+	"subject": "JWSS",
+	"text": "Jewish Studies",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229afea47044a056b8e3d",
+	"subject": "ME",
+	"text": "Mechanical Engineering",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229b0ea47044a056b8e6b",
+	"subject": "EECE",
+	"text": "Electrical and Comp Engineerng",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229b0ea47044a056b8ef4",
+	"subject": "ARTF",
+	"text": "Art - Fundamentals",
+	"host": "neu.edu",
+	"termId": "201710"
+}, {
+	"_id": "56f229b0ea47044a056b8f43",
+	"subject": "CRIM",
+	"text": "Criminal Justice",
+	"host": "neu.edu",
+	"termId": "201710"
+}]
