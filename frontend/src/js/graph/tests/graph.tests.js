@@ -9,11 +9,6 @@ var Class = require('../../Class')
 
 
 
-
-// it('works', function () {
-// 	Graph
-// });
-
 function MockWindow() {
 
 	this.innerWidth = 1920;
@@ -23,8 +18,6 @@ function MockWindow() {
 MockWindow.prototype.addEventListener = function (type, fn) {
 	// implement if needed
 };
-
-
 
 
 
