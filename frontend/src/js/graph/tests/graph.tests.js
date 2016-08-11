@@ -23,7 +23,7 @@ MockWindow.prototype.addEventListener = function (type, fn) {
 
 //this will need mock term and that term needs to have a .subjects that are valid
 
-fdescribe('Graph', function () {
+describe('Graph', function () {
 	//same as the app in directive manager
 	beforeEach(angular.mock.module('app'));
 
@@ -78,14 +78,14 @@ fdescribe('Graph', function () {
 
 	it('works', function (done) {
 
-		var aClass = Class.create({
+		var aClass = {
 			"host": "neu.edu",
 			"classUid": "7780_1224558283",
 			"termId": "201710",
 			"subject": "CS",
-		});
+		};
 
-		graph.go(aClass, function (err) {
+		graph.go(aClass, function (err, aClass) {
 
 			expect(!!aClass.foreignObject);
 			expect(aClass.x).toBe((win.innerWidth - macros.SEARCH_WIDTH) / 2);
@@ -100,14 +100,14 @@ fdescribe('Graph', function () {
 	it('should also work for 4800', function (done) {
 
 
-		var aClass = Class.create({
+		var aClass = {
 			"host": "neu.edu",
 			"classUid": "4800_1303374065",
 			"termId": "201710",
 			"subject": "CS",
-		});
+		};
 
-		graph.go(aClass, function (err) {
+		graph.go(aClass, function (err, aClass) {
 
 			console.log(aClass);
 

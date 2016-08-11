@@ -11,7 +11,6 @@ services instead of settimeout
 
 
 for the graph, could keep the scope separate, run apply, and then merge?
-would the popup still work if we used addCOntroller instead of add controller?
 
 
 

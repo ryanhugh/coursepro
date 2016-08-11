@@ -81,6 +81,12 @@ function Graph() {
 
 	this.$scope.addClass = this.addClass.bind(this)
 
+	this.$scope.$on('$destroy',function () {
+		if (this.force) {
+			this.force.stop();
+		}
+	}.bind(this))
+
 	this.$window.addEventListener('resize', function () {
 		this.calculateGraphSize();
 	}.bind(this))
@@ -575,6 +581,10 @@ Graph.prototype.go = function (tree, callback) {
 			treeMgr.go(tree);
 			this.tree = tree;
 			this.$scope.tree = tree;
+
+			if (this.force) {
+				this.force.stop();
+			}
 
 			this.force = d3.layout.force()
 				.charge(function (node) {
