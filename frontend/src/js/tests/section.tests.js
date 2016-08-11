@@ -72,416 +72,412 @@ var _ = require('lodash')
 
 
 // it should either be 1. hidden, or have a times[0][0] that has > 0 length
-describe('Section', function () {
 
+it('data status works', function (done) {
 
-	it('data status works', function (done) {
-
-		//works with _id
-		var section = Section.create({
-			_id: '56f21f93ea47044a05691b3e',
-		});
-
-		expect(section.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED);
-
-		section.download(function (err) {
-			expect(err).toBe(null);
-			expect(section.dataStatus).toBe(macros.DATASTATUS_DONE);
-			done()
-		}.bind(this))
-
-		expect(section.dataStatus).toBe(macros.DATASTATUS_LOADING);
+	//works with _id
+	var section = Section.create({
+		_id: '56f21f93ea47044a05691b3e',
 	});
 
+	expect(section.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED);
 
-	it('ensures memoize works and that download was not swapped', function (done) {
+	section.download(function (err) {
+		expect(err).toBe(null);
+		expect(section.dataStatus).toBe(macros.DATASTATUS_DONE);
+		done()
+	}.bind(this))
 
-		//works with _id
-		var section = Section.create({
-			_id: '56f21f93ea47044a05691b3e',
-		});
+	expect(section.dataStatus).toBe(macros.DATASTATUS_LOADING);
+});
 
-		var download = section.download;
 
-		expect(section.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
+it('ensures memoize works and that download was not swapped', function (done) {
+
+	//works with _id
+	var section = Section.create({
+		_id: '56f21f93ea47044a05691b3e',
+	});
+
+	var download = section.download;
+
+	expect(section.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
+
+	section.download(function () {
+		expect(section.dataStatus).toBe(macros.DATASTATUS_DONE)
+		expect(section.download).toBe(download)
 
 		section.download(function () {
 			expect(section.dataStatus).toBe(macros.DATASTATUS_DONE)
 			expect(section.download).toBe(download)
-
-			section.download(function () {
-				expect(section.dataStatus).toBe(macros.DATASTATUS_DONE)
-				expect(section.download).toBe(download)
-				done()
-			}.bind(this))
-			expect(section.dataStatus).toBe(macros.DATASTATUS_DONE)
-
+			done()
 		}.bind(this))
-		expect(section.dataStatus).toBe(macros.DATASTATUS_LOADING)
+		expect(section.dataStatus).toBe(macros.DATASTATUS_DONE)
+
+	}.bind(this))
+	expect(section.dataStatus).toBe(macros.DATASTATUS_LOADING)
+});
+
+
+describe('.create', function () {
+	it('ensures you need a lot of stuff or _id to create Section', function () {
+
+		// works with keys
+		expect(Section.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'CS',
+			classUid: '2511',
+			crn: '11722',
+		})).not.toBe(null);
+
+		//dosent work
+		expect(Section.create({
+			host: 'neu.edu',
+			termId: '201630',
+			subject: 'CS'
+		})).toBe(null);
+
+		//works with _id
+		var section = Section.create({
+			_id: '56f21f93ea47044a05691b3e',
+		});
+
+		expect(section).not.toBe(null);
+
+	});
+});
+
+
+describe('.meetsOnWeekends', function () {
+	it('false when meetin only on weekdays', function (done) {
+
+		var section = Section.create({
+			_id: '56f21f93ea47044a05691b3e',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			expect(section.meetsOnWeekends()).toBe(false);
+			done()
+		}.bind(this));
 	});
 
+	it('true when meeting on sat', function (done) {
 
-	describe('.create', function () {
-		it('ensures you need a lot of stuff or _id to create Section', function () {
-
-			// works with keys
-			expect(Section.create({
-				host: 'neu.edu',
-				termId: '201630',
-				subject: 'CS',
-				classUid: '2511',
-				crn: '11722',
-			})).not.toBe(null);
-
-			//dosent work
-			expect(Section.create({
-				host: 'neu.edu',
-				termId: '201630',
-				subject: 'CS'
-			})).toBe(null);
-
-			//works with _id
-			var section = Section.create({
-				_id: '56f21f93ea47044a05691b3e',
-			});
-
-			expect(section).not.toBe(null);
-
-		});
-	});
-
-
-	describe('.meetsOnWeekends', function () {
-		it('false when meetin only on weekdays', function (done) {
-
-			var section = Section.create({
-				_id: '56f21f93ea47044a05691b3e',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				expect(section.meetsOnWeekends()).toBe(false);
-				done()
-			}.bind(this));
+		var section = Section.create({
+			_id: '56f2203fea47044a05694349',
 		});
 
-		it('true when meeting on sat', function (done) {
-
-			var section = Section.create({
-				_id: '56f2203fea47044a05694349',
-			});
-
-			section.download(function () {
-				expect(section.meetsOnWeekends()).toBe(true);
-				done()
-			}.bind(this));
-
-		});
-
-
-		it('true when meeting on sun', function (done) {
-			var section = Section.create({
-				_id: '56f220d9ea47044a05696720',
-			});
-
-			section.download(function () {
-				expect(section.meetsOnWeekends()).toBe(true);
-				done()
-			}.bind(this));
-
-		});
-		it('true when not meeting', function (done) {
-			var section = Section.create({
-				_id: '56f223b4ea47044a056a11c1',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				expect(section.meetsOnWeekends()).toBe(false);
-				done()
-			}.bind(this));
-
-		});
-	});
-
-
-
-	describe('.getAllMeetingMoments', function () {
-		it('works', function (done) {
-
-			var section = Section.create({
-				_id: '56f223b4ea47044a056a11c1',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				expect(section.getAllMeetingMoments().length).toBe(0);
-				done()
-			}.bind(this));
-
-
-			var section = Section.create({
-				_id: '56f21f93ea47044a05691b3e',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				var a = section.getAllMeetingMoments()[0];
-
-				//11 45 am
-				expect(a.start.unix()).toBe(733500);
-				expect(a.end.unix()).toBe(739500);
-				expect(section.getAllMeetingMoments().length).toBe(1);
-				done()
-			}.bind(this));
-
-		});
-	});
-
-	describe('.getWeekDaysAsBooleans', function () {
-		it('works', function (done) {
-
-			var section = Section.create({
-				_id: '56f223b4ea47044a056a11c1',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				expect(_(section.getWeekDaysAsBooleans()).includes(true)).toBe(false);
-				done()
-			}.bind(this));
-
-
-		});
-
-		it('work2s', function (done) {
-
-			var section = Section.create({
-				_id: '56f22254ea47044a0569bf99',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				var theList = section.getWeekDaysAsBooleans();
-
-				expect(theList.length).toBe(7);
-				expect(theList[0]).toBe(false);
-				expect(theList[1]).toBe(true);
-				expect(theList[2]).toBe(false);
-				expect(theList[3]).toBe(true);
-				expect(theList[4]).toBe(true);
-				expect(theList[5]).toBe(false);
-				expect(theList[6]).toBe(false);
-				done()
-			}.bind(this));
-
-		});
-	});
-
-	describe('.getWeekDaysAsStringArray', function () {
-		it('works1', function (done) {
-
-			var section = Section.create({
-				_id: '56f223b4ea47044a056a11c1',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				var theList = section.getWeekDaysAsStringArray();
-
-				expect(theList.length).toBe(0);
-				done()
-			}.bind(this));
-
-		});
-		it('works2', function (done) {
-
-			var section = Section.create({
-				_id: '56f22254ea47044a0569bf99',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				var theList = section.getWeekDaysAsStringArray();
-
-				expect(theList.length).toBe(3);
-				expect(theList[0]).toBe('Monday');
-				expect(theList[1]).toBe('Wednesday');
-				expect(theList[2]).toBe('Thursday');
-				done()
-			}.bind(this));
-
-		});
-	});
-
-	describe('.getHasExam', function () {
-		it('works', function (done) {
-			var section = Section.create({
-				_id: '56f223b4ea47044a056a11c1',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				expect(section.getHasExam()).toBe(false);
-				done()
-			}.bind(this));
-
-		});
-
-		it('works2', function (done) {
-			var section = Section.create({
-				_id: '56f2203fea47044a05694349',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-
-				expect(section.getHasExam()).toBe(true);
-				done()
-			}.bind(this));
-
-		});
-	});
-	describe('.getExamMoments', function () {
-		it('works', function (done) {
-			var section = Section.create({
-				_id: '56f223b4ea47044a056a11c1',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				expect(section.getExamMoments()).toBe(null);
-				done()
-			}.bind(this));
-		});
-
-		it('exam times works', function (done) {
-
-			var section = Section.create({
-				_id: '56f2203fea47044a05694349',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				var examTimes = section.getExamMoments();
-
-				expect(examTimes.start.unix()).toBe(833100);
-				expect(examTimes.end.unix()).toBe(839100);
-				done()
-			}.bind(this));
-		});
-
-
+		section.download(function () {
+			expect(section.meetsOnWeekends()).toBe(true);
+			done()
+		}.bind(this));
 
 	});
 
 
-
-	describe('.getProfs', function () {
-		it('works', function (done) {
-			var section = Section.create({
-				_id: '56f223b4ea47044a056a11c1',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				expect(section.getProfs()[0]).toBe("Bob Jones");
-				expect(section.getProfs()[1]).toBe("Leena Razzaq");
-				expect(section.getProfs().length).toBe(2);
-				done()
-			}.bind(this));
-
+	it('true when meeting on sun', function (done) {
+		var section = Section.create({
+			_id: '56f220d9ea47044a05696720',
 		});
+
+		section.download(function () {
+			expect(section.meetsOnWeekends()).toBe(true);
+			done()
+		}.bind(this));
+
+	});
+	it('true when not meeting', function (done) {
+		var section = Section.create({
+			_id: '56f223b4ea47044a056a11c1',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			expect(section.meetsOnWeekends()).toBe(false);
+			done()
+		}.bind(this));
+
+	});
+});
+
+
+
+describe('.getAllMeetingMoments', function () {
+	it('works', function (done) {
+
+		var section = Section.create({
+			_id: '56f223b4ea47044a056a11c1',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			expect(section.getAllMeetingMoments().length).toBe(0);
+			done()
+		}.bind(this));
+
+
+		var section = Section.create({
+			_id: '56f21f93ea47044a05691b3e',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			var a = section.getAllMeetingMoments()[0];
+
+			//11 45 am
+			expect(a.start.unix()).toBe(733500);
+			expect(a.end.unix()).toBe(739500);
+			expect(section.getAllMeetingMoments().length).toBe(1);
+			done()
+		}.bind(this));
+
+	});
+});
+
+describe('.getWeekDaysAsBooleans', function () {
+	it('works', function (done) {
+
+		var section = Section.create({
+			_id: '56f223b4ea47044a056a11c1',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			expect(_(section.getWeekDaysAsBooleans()).includes(true)).toBe(false);
+			done()
+		}.bind(this));
+
+
+	});
+
+	it('work2s', function (done) {
+
+		var section = Section.create({
+			_id: '56f22254ea47044a0569bf99',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			var theList = section.getWeekDaysAsBooleans();
+
+			expect(theList.length).toBe(7);
+			expect(theList[0]).toBe(false);
+			expect(theList[1]).toBe(true);
+			expect(theList[2]).toBe(false);
+			expect(theList[3]).toBe(true);
+			expect(theList[4]).toBe(true);
+			expect(theList[5]).toBe(false);
+			expect(theList[6]).toBe(false);
+			done()
+		}.bind(this));
+
+	});
+});
+
+describe('.getWeekDaysAsStringArray', function () {
+	it('works1', function (done) {
+
+		var section = Section.create({
+			_id: '56f223b4ea47044a056a11c1',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			var theList = section.getWeekDaysAsStringArray();
+
+			expect(theList.length).toBe(0);
+			done()
+		}.bind(this));
+
+	});
+	it('works2', function (done) {
+
+		var section = Section.create({
+			_id: '56f22254ea47044a0569bf99',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			var theList = section.getWeekDaysAsStringArray();
+
+			expect(theList.length).toBe(3);
+			expect(theList[0]).toBe('Monday');
+			expect(theList[1]).toBe('Wednesday');
+			expect(theList[2]).toBe('Thursday');
+			done()
+		}.bind(this));
+
+	});
+});
+
+describe('.getHasExam', function () {
+	it('works', function (done) {
+		var section = Section.create({
+			_id: '56f223b4ea47044a056a11c1',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			expect(section.getHasExam()).toBe(false);
+			done()
+		}.bind(this));
+
+	});
+
+	it('works2', function (done) {
+		var section = Section.create({
+			_id: '56f2203fea47044a05694349',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+
+			expect(section.getHasExam()).toBe(true);
+			done()
+		}.bind(this));
+
+	});
+});
+describe('.getExamMoments', function () {
+	it('works', function (done) {
+		var section = Section.create({
+			_id: '56f223b4ea47044a056a11c1',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			expect(section.getExamMoments()).toBe(null);
+			done()
+		}.bind(this));
+	});
+
+	it('exam times works', function (done) {
+
+		var section = Section.create({
+			_id: '56f2203fea47044a05694349',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			var examTimes = section.getExamMoments();
+
+			expect(examTimes.start.unix()).toBe(833100);
+			expect(examTimes.end.unix()).toBe(839100);
+			done()
+		}.bind(this));
 	});
 
 
-	describe('.getLocations', function () {
-		it('works', function (done) {
-			var section = Section.create({
-				_id: '56f2203fea47044a05694349',
-			});
 
-			section.download(function (err) {
-				expect(err).toBe(null);
-				var locations = section.getLocations()
-				expect(locations.length).toBe(1);
-				expect(locations[0]).toBe("West Village H 210");
-				done()
-			}.bind(this));
+});
+
+
+
+describe('.getProfs', function () {
+	it('works', function (done) {
+		var section = Section.create({
+			_id: '56f223b4ea47044a056a11c1',
 		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			expect(section.getProfs()[0]).toBe("Bob Jones");
+			expect(section.getProfs()[1]).toBe("Leena Razzaq");
+			expect(section.getProfs().length).toBe(2);
+			done()
+		}.bind(this));
+
+	});
+});
+
+
+describe('.getLocations', function () {
+	it('works', function (done) {
+		var section = Section.create({
+			_id: '56f2203fea47044a05694349',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			var locations = section.getLocations()
+			expect(locations.length).toBe(1);
+			expect(locations[0]).toBe("West Village H 210");
+			done()
+		}.bind(this));
+	});
+});
+
+
+
+describe('.getUniqueStartTimes', function () {
+	it('works', function (done) {
+		var section = Section.create({
+			_id: '56f22254ea47044a0569bf8d',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			var times = section.getUniqueStartTimes()
+			expect(times.length).toBe(1);
+			expect(times[0]).toBe("4:35 pm");
+
+			times = section.getUniqueStartTimes(false)
+			expect(times.length).toBe(2);
+			expect(times[0]).toBe("4:35 pm");
+			expect(times[1]).toBe("4:40 pm");
+			done()
+		}.bind(this));
+	});
+});
+
+
+describe('.getUniqueEndTimes', function () {
+	it('works', function (done) {
+		var section = Section.create({
+			_id: '56f22254ea47044a0569bf8d',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			var times = section.getUniqueEndTimes()
+			expect(times.length).toBe(1);
+			expect(times[0]).toBe("5:40 pm");
+
+			times = section.getUniqueEndTimes(false)
+			expect(times.length).toBe(2);
+			expect(times[0]).toBe("5:40 pm");
+			expect(times[1]).toBe("7:26 pm");
+			done()
+		}.bind(this));
+	});
+});
+
+describe('.getHasWaitList', function () {
+	it('works', function (done) {
+		var section = Section.create({
+			_id: '56f22254ea47044a0569bf8d',
+		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			expect(section.getHasWaitList()).toBe(false);
+			done()
+		}.bind(this));
+
 	});
 
-
-
-	describe('.getUniqueStartTimes', function () {
-		it('works', function (done) {
-			var section = Section.create({
-				_id: '56f22254ea47044a0569bf8d',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				var times = section.getUniqueStartTimes()
-				expect(times.length).toBe(1);
-				expect(times[0]).toBe("4:35 pm");
-
-				times = section.getUniqueStartTimes(false)
-				expect(times.length).toBe(2);
-				expect(times[0]).toBe("4:35 pm");
-				expect(times[1]).toBe("4:40 pm");
-				done()
-			}.bind(this));
+	it('has a wait list when wait remaining > 0', function (done) {
+		var section = Section.create({
+			_id: '56f21f93ea47044a05691b3e',
 		});
+
+		section.download(function (err) {
+			expect(err).toBe(null);
+			expect(section.getHasWaitList()).toBe(true);
+			done()
+		}.bind(this));
+
 	});
-
-
-	describe('.getUniqueEndTimes', function () {
-		it('works', function (done) {
-			var section = Section.create({
-				_id: '56f22254ea47044a0569bf8d',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				var times = section.getUniqueEndTimes()
-				expect(times.length).toBe(1);
-				expect(times[0]).toBe("5:40 pm");
-
-				times = section.getUniqueEndTimes(false)
-				expect(times.length).toBe(2);
-				expect(times[0]).toBe("5:40 pm");
-				expect(times[1]).toBe("7:26 pm");
-				done()
-			}.bind(this));
-		});
-	});
-
-	describe('.getHasWaitList', function () {
-		it('works', function (done) {
-			var section = Section.create({
-				_id: '56f22254ea47044a0569bf8d',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				expect(section.getHasWaitList()).toBe(false);
-				done()
-			}.bind(this));
-
-		});
-
-		it('has a wait list when wait remaining > 0', function (done) {
-			var section = Section.create({
-				_id: '56f21f93ea47044a05691b3e',
-			});
-
-			section.download(function (err) {
-				expect(err).toBe(null);
-				expect(section.getHasWaitList()).toBe(true);
-				done()
-			}.bind(this));
-
-		});
-	});
-
 });

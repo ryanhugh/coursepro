@@ -5,12 +5,13 @@
 NOW:
 unit tests graph
 remove unneccesary describe in the tests
-the setTimouts are breaking the unit tests. can remove them and hide graph visibility while loading?
-swap out the settimoues for $timeout?
-services instead of settimeout
 
 
-for the graph, could keep the scope separate, run apply, and then merge?
+
+
+REFACTOR STUFF:
+switch to poylmer
+separate node and classes
 
 
 
