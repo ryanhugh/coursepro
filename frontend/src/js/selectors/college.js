@@ -1,8 +1,8 @@
 'use strict';
 var BaseSelector = require('./baseSelector').BaseSelector;
 
-var user = require('../user')
-var Host = require('../Host')
+var user = require('../data/user')
+var Host = require('../data/Host')
 
 function College() {
 	BaseSelector.prototype.constructor.apply(this, arguments);

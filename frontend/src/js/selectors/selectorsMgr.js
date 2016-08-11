@@ -5,7 +5,7 @@ var macros = require('../macros')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var user = require('../user')
+var user = require('../data/user')
 
 var College = require('./college')
 var Term = require('./term')
@@ -28,7 +28,7 @@ function SelectorsMgr() {
 		this.term,
 	]
 
-	this.$scope.$on('$routeChangeSuccess', this.updateSelectors.bind(this));
+	this.$scope.$on('$routeChangeSuccess', this.updateSelectors.bind(this)); 
 	this.updateSelectors();
 }
 

@@ -5,7 +5,7 @@ var async = require('async')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var Class = require('../Class')
+var Class = require('../data/Class')
 
 function List() {
 	BaseDirective.prototype.constructor.apply(this, arguments);

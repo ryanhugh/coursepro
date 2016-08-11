@@ -6,7 +6,7 @@ var queue = require('d3-queue').queue;
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var Class = require('../Class')
+var Class = require('../data/Class')
 
 
 function Search() {

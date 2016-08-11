@@ -7,10 +7,10 @@ var request = require('../request')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var user = require('../user')
-var Term = require('../Term')
+var user = require('../data/user')
+var Term = require('../data/Term')
 
-var Class = require('../Class')
+var Class = require('../data/Class')
 
 function Settings() {
 	BaseDirective.prototype.constructor.apply(this, arguments);

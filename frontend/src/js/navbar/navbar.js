@@ -3,7 +3,7 @@ var macros = require('../macros')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var user = require('../user')
+var user = require('../data/user')
 
 function NavBar() {
 	BaseDirective.prototype.constructor.apply(this, arguments);

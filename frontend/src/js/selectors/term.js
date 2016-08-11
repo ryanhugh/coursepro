@@ -1,8 +1,8 @@
 'use strict';
 var BaseSelector = require('./baseSelector').BaseSelector;
 
-var user = require('../user')
-var Term = require('../Term')
+var user = require('../data/user')
+var Term = require('../data/Term')
 
 function TermSelector() {
 	BaseSelector.prototype.constructor.apply(this, arguments);

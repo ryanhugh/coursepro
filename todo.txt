@@ -4,15 +4,13 @@
 
 NOW:
 unit tests graph
-remove unneccesary describe in the tests
-
 
 
 
 REFACTOR STUFF:
 switch to poylmer
 separate node and classes
-
+d3 v4?
 
 
 

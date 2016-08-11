@@ -5,7 +5,7 @@ var async = require('async')
 
 var request = require('../request')
 var macros = require('../macros')
-var Class = require('../Class')
+var Class = require('../data/Class')
 
 
 function DownloadTree() {

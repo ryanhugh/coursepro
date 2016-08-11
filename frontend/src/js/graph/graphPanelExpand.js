@@ -5,7 +5,7 @@ var macros = require('../macros')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var treeMgr = require('./treeMgr')
-var user = require('../user')
+var user = require('../data/user')
 var Graph = require('./graph')
 
 function GraphPanelExpand() {

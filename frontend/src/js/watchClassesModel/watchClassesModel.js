@@ -4,7 +4,7 @@ var request = require('../request')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var user = require('../user')
+var user = require('../data/user')
 
 
 function WatchClassesModel() {

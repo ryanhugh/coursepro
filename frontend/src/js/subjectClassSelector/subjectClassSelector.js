@@ -5,8 +5,8 @@ var macros = require('../macros')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var Term = require('../Term')
-var user = require('../user')
+var Term = require('../data/Term')
+var user = require('../data/user')
 
 
 function SubjectClassSelector() {

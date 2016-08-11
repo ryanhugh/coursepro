@@ -2,7 +2,7 @@
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var user = require('../user')
+var user = require('../data/user')
 
 function ClassList() {
 	BaseDirective.prototype.constructor.apply(this, arguments);

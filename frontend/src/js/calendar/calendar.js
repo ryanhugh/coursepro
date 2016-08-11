@@ -5,7 +5,7 @@ var queue = require('d3-queue').queue;
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
-var user = require('../user')
+var user = require('../data/user')
 
 function Calendar($scope) {
 	BaseDirective.prototype.constructor.apply(this, arguments);

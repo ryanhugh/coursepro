@@ -2,8 +2,8 @@
 var macros = require('../macros');
 var _ = require('lodash')
 
-var Class = require('../Class')
-var user = require('../user');
+var Class = require('../data/Class')
+var user = require('../data/user');
 
 function TreeMgr() {
 
