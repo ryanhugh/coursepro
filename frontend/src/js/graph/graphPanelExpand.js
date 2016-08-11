@@ -18,6 +18,8 @@ function GraphPanelExpand() {
 	this.$document.keydown(this.onKeyDown.bind(this))
 }
 
+macros.inherent(BaseDirective, GraphPanelExpand)
+
 GraphPanelExpand.prototype.bringExpandedPanelsToFront = function () {
 	this.openOrder.forEach(function (tree) {
 		Graph.instance.bringToFront(tree);
@@ -193,7 +195,7 @@ GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
 			elog(err);
 			return callback();
 		}
-		tree.$scope.$apply(function () {
+		this.timeout(function () {
 
 
 			// Run the entire big tree through all of treeMgr again
@@ -209,8 +211,9 @@ GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
 				// After all the graph stuff is done, shink this panel back to avoid the redraw
 				tree.showSelectPanel = false;
 				tree.isExpanded = false;
-				// tree.$scope.$apply();
-				// Graph.instance.updateHeight(tree)
+				tree.$scope.$apply();
+				Graph.instance.updateWidth(tree);
+				Graph.instance.updateHeight(tree)
 				clearTimeout(tree.graphPanelPromptTimeout);
 				callback()
 			}.bind(this))
@@ -378,7 +381,7 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 	if (!tree.lowestParent && tree._id != this.rootNodeId) {
 		this.rootNodeId = tree._id;
 
-		setTimeout(function () {
+		this.timeout(function () {
 			//this is undone when openPanel is done, a couple lines down
 			// var panel = this.getTreePanel(tree);
 			// panel.style.visibility = 'hidden'
@@ -390,7 +393,7 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
 				// panel.style.visibility = ''
 			}.bind(this))
-		}.bind(this), 0)
+		}.bind(this))
 
 	}
 

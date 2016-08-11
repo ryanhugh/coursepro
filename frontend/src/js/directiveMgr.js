@@ -201,6 +201,10 @@ DirectiveMgr.prototype.addDirective = function (Directive) {
 		console.warn('no $inject?');
 		Directive.$inject = []
 	}
+	
+	if (!_(Directive.$inject).includes('$timeout')) {
+		Directive.$inject.push('$timeout')
+	}
 
 	if (_(Directive.$inject).includes('$scope')) {
 		elog('Cant inject a $scope into a directive, only controllers. Use the link function in directives.')
@@ -225,6 +229,10 @@ DirectiveMgr.prototype.addRawController = function (controller) {
 		controller.controllerName = this.calculateName(controller)
 	};
 
+	if (!_(controller.$inject).includes('$timeout')) {
+		controller.$inject.push('$timeout')
+	}
+
 	angularModule.controller(controller.controllerName, controller)
 };
 
@@ -234,6 +242,10 @@ DirectiveMgr.prototype.addService = function (service) {
 	if (!service.serviceName) {
 		service.serviceName = this.calculateName(service)
 	};
+
+	if (!_(service.$inject).includes('$timeout')) {
+		service.$inject.push('$timeout')
+	}
 
 	angularModule.service(service.serviceName, service)
 };
