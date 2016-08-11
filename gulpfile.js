@@ -233,7 +233,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 				bundler = bundler.external(node_module_dependencies)
 			}
 
-			// These names are hardcoded into index.html and into the karma.conf.js
+			// These names are hardcoded into index.html and into the KARMA_CONFIG at the top of this file
 			// and maybe in server.js
 			var name = '';
 			if (compileRequire) {
