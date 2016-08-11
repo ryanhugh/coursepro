@@ -44,12 +44,12 @@ function Search() {
 
 	// this.$scope.addSubject = this.addSubject.bind(this)
 	this.search()
-	debugger
+	// debugger
 }
 
 Search.fnName = 'Search'
 	// Search.isPage = true;
-Search.$inject = ['$scope', '$location', '$routeParams', 'classService']
+Search.$inject = ['$scope', '$location', '$routeParams']
 	// Search.urls = ['/search/:host/:termId/:subject?/:searchText?']
 
 //prototype constructor

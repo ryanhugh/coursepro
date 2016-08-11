@@ -36,6 +36,8 @@ function Graph() {
 	this.nodeWidth = 174
 	this.nodeHeight = 50;
 
+	this.selectPanelWidth = 300;
+
 	// main d3 force, defined in go
 	this.force = null;
 
@@ -226,17 +228,31 @@ Graph.prototype.sortCoreqs = function (tree) {
 	this.bringToFront(tree);
 };
 
-Graph.prototype.updateHeight = function (tree) {
 
-	// update the height of the panel
-	tree.height = tree.foreignObject.lastChild.offsetHeight
 
-	//update the foreign object and the g with the new height
-	tree.foreignObject.setAttribute('height', tree.height)
-	tree.foreignObject.parentNode.setAttribute('height', tree.height)
+Graph.prototype.updatePos = function (node) {
+	var value;
+	if (node.isCoreq) {
+
+		var x = node.lowestParent.x - node.width / 2;
+		var y = node.lowestParent.y - node.height / 2;
+
+		x += (node.coreqIndex + 1) * 30
+		y -= (node.coreqIndex + 1) * 39
+
+		value = "translate(" + x + "," + y + ")";
+	}
+	else {
+		value = "translate(" + (node.x - node.width / 2) + "," + (node.y - node.height / 2) + ")";
+	}
+
+	node.foreignObject.parentElement.setAttribute('transform', value);
 };
 
-Graph.prototype.getNodeWidth = function(node) {
+Graph.prototype.getNodeWidth = function (node) {
+	if (node.showSelectPanel) {
+		return this.selectPanelWidth;
+	}
 	if (!node.isExpanded) {
 		return this.nodeWidth;
 	}
@@ -250,7 +266,20 @@ Graph.prototype.getNodeWidth = function(node) {
 
 Graph.prototype.updateWidth = function (node) {
 	node.width = this.getNodeWidth(node);
-	node.foreignObject.setAttribute('width', node.width)
+	node.foreignObject.setAttribute('width', node.width);
+	this.updatePos(node);
+};
+
+
+Graph.prototype.updateHeight = function (tree) {
+
+	// update the height of the panel
+	tree.height = tree.foreignObject.lastChild.offsetHeight
+
+	//update the foreign object and the g with the new height
+	tree.foreignObject.setAttribute('height', tree.height)
+	tree.foreignObject.parentNode.setAttribute('height', tree.height)
+	this.updatePos(tree);
 };
 
 
@@ -374,22 +403,9 @@ Graph.prototype.onTick = function (e) {
 		return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
 	}.bind(this))
 
-	this.nodeElements.attr("transform", function (node) {
+	this.nodes.forEach(function (node) {
 		this.checkPos(node);
-
-		if (node.isCoreq) {
-
-			var x = node.lowestParent.x - node.width / 2;
-			var y = node.lowestParent.y - node.height / 2;
-
-			x += (node.coreqIndex + 1) * 30
-			y -= (node.coreqIndex + 1) * 39
-
-			return "translate(" + x + "," + y + ")";
-		}
-		else {
-			return "translate(" + (node.x - node.width / 2) + "," + (node.y - node.height / 2) + ")";
-		}
+		this.updatePos(node)
 	}.bind(this));
 }
 
@@ -506,7 +522,6 @@ Graph.prototype.loadNodes = function (callback) {
 		newScope.tree = this.nodes[i]
 		this.nodes[i].$scope = newScope
 
-
 		var foreignObject = d3.select(this.nodeElements[0][i]).append('foreignObject')
 			.attr("width", this.nodeWidth)
 			.attr("height", this.nodeHeight);
@@ -514,46 +529,22 @@ Graph.prototype.loadNodes = function (callback) {
 		this.nodes[i].foreignObject = foreignObject[0][0]
 
 		$(foreignObject.append("xhtml:div")[0][0]).append(this.$compile(html)(newScope))
-
-		// Update the height of the svg whenever the height of the panel changes
-		// hopefully this isn't to slow...
-		newScope.$watch(function ($scope) {
-			return $scope.tree.foreignObject.lastChild.offsetHeight
-		}.bind(this), function (newVal, oldVal, $scope) {
-			if (newVal === oldVal) {
-				return;
-			}
-			this.updateHeight($scope.tree);
-		}.bind(this));
-
-		newScope.$watch(function ($scope) {
-			return this.getNodeWidth($scope.tree)
-		}.bind(this), function (newVal, oldVal, $scope) {
-			if (newVal === oldVal) {
-				return;
-			}
-			this.updateWidth($scope.tree);
-		}.bind(this));
-
-		// Note that a digest cycle needs to run for this new html to be rendered by the browser. It runs after the current event loop is done because this function is called 
-		// inside a digest loop. 
 	}
-
-	if (!this.$scope.$$phase) {
-		console.error('need to run compile code in a digest loop!')
-	}
-
 
 	// Scope needs to be updated after adding a new scope for each element above
 	// This entire fn should be in a setTimeout because of the scope problems, but 
 	// that causes conflicts with d3 sometimes running another tick in between when
-	// this fn was called and the setTimeout... 
-	// this.$scope.$apply();
+	// this fn was called and the setTimeout. Also, don't bother running this.$scope.$apply
+	// or newScope.$apply because the $apply runs on the $rootScope and updates all scopes in the entire page. 
+	this.$scope.$apply();
 
+	// Update height, width after digest loop
+	// sorting the coreqs can be done whenever
 	this.nodes.forEach(function (node) {
+		this.updateWidth(node);
+		this.updateHeight(node);
 		this.sortCoreqs(node);
-	}.bind(this))
-
+	}.bind(this));
 
 	this.force.nodes(this.nodes)
 		.links(this.links)
@@ -564,23 +555,13 @@ Graph.prototype.loadNodes = function (callback) {
 	this.force.alpha(.03)
 
 	return callback()
-
-	// Wait until after angular is done compiling the DOM to get the height of DOM elements
-	// this.$timeout(function () {
-	// 	this.nodes.forEach(function (node) {
-			
-	// 	}.bind(this));
-
-
-	// 	// False here prevents another digest cycle from running by this timeout
-	// }.bind(this), 0, false);
 };
 
 
 Graph.prototype.go = function (tree, callback) {
 	this.isLoading = true;
 	downloadTree.fetchFullTree(tree, function (err, tree) {
-		this.$scope.$apply(function () {
+		setTimeout(function () {
 			this.isLoading = false;
 			if (err) {
 				return callback(err);
@@ -593,6 +574,7 @@ Graph.prototype.go = function (tree, callback) {
 
 			treeMgr.go(tree);
 			this.tree = tree;
+			this.$scope.tree = tree;
 
 			this.force = d3.layout.force()
 				.charge(function (node) {
@@ -674,16 +656,9 @@ Graph.prototype.go = function (tree, callback) {
 
 				// zoom.center([this.tree.x,this.tree.y])
 				// zoom.event(this.svg)
-
-
-				this.$scope.tree = tree;
-				// setTimeout(function () {
-				// 	this.$scope.$apply();
-				// }.bind(this), 0);
 				callback(null, tree)
-
 			}.bind(this))
-		}.bind(this))
+		}.bind(this), 0)
 	}.bind(this))
 };
 

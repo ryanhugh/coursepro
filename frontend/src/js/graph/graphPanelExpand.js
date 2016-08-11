@@ -103,9 +103,8 @@ GraphPanelExpand.prototype.onExpandClick = function (tree, openPanel, callback) 
 			elog("ERROR", err);
 			// return callback(err)
 		}
-
 		//setTimeout 0 because $scope.$update()
-		this.$timeout(function () {
+		setTimeout(function () {
 			tree.isExpanded = openPanel;
 			tree.showSelectPanel = false;
 
@@ -123,7 +122,8 @@ GraphPanelExpand.prototype.onExpandClick = function (tree, openPanel, callback) 
 
 			this.updateScope(tree, false);
 
-			Graph.instance.updateHeight(tree)
+			Graph.instance.updateWidth(tree);
+			Graph.instance.updateHeight(tree);
 			this.bringExpandedPanelsToFront();
 
 			// and tell d3 to move the panel back to where it should be
@@ -140,13 +140,7 @@ GraphPanelExpand.prototype.togglePanelPrompt = function (tree, callback) {
 		tree.showSelectPanel = !tree.showSelectPanel;
 		tree.$scope.$apply()
 
-		if (tree.showSelectPanel) {
-			tree.width = 300
-		}
-		else {
-			tree.width = Graph.instance.nodeWidth
-		}
-		tree.foreignObject.setAttribute('width', tree.width)
+		Graph.instance.updateWidth(tree);
 		Graph.instance.updateHeight(tree);
 
 		// and tell d3 to move the panel back to where it should be
@@ -215,8 +209,8 @@ GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
 				// After all the graph stuff is done, shink this panel back to avoid the redraw
 				tree.showSelectPanel = false;
 				tree.isExpanded = false;
-				tree.$scope.$apply();
-				Graph.instance.updateHeight(tree)
+				// tree.$scope.$apply();
+				// Graph.instance.updateHeight(tree)
 				clearTimeout(tree.graphPanelPromptTimeout);
 				callback()
 			}.bind(this))
@@ -382,22 +376,21 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 	//if only this panel, expand it
 	//&& treeMgr.countClassesInTree(tree) === 1
 	if (!tree.lowestParent && tree._id != this.rootNodeId) {
-		// return;
 		this.rootNodeId = tree._id;
 
-		// setTimeout(function () {
-		//this is undone when openPanel is done, a couple lines down
-		// var panel = this.getTreePanel(tree);
-		// panel.style.visibility = 'hidden'
+		setTimeout(function () {
+			//this is undone when openPanel is done, a couple lines down
+			// var panel = this.getTreePanel(tree);
+			// panel.style.visibility = 'hidden'
 
-		this.openPanel(tree, function (err) {
+			this.openPanel(tree, function (err) {
 				if (err) {
 					elog(err);
 				}
 
 				// panel.style.visibility = ''
 			}.bind(this))
-			// }.bind(this), 0)
+		}.bind(this), 0)
 
 	}
 
@@ -423,20 +416,9 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
 }
 
-// GraphPanelExpand.prototype.compile = function(tele, b,c,d) {
-// 	return {
-// 		pre: function (scope, iElem, iAttrs) {
-// 			debugger	
-// 		},
-// 		post: function (scope, iElem, iAttrs) {
-// 			debugger
-// 		}
-// 	}
-// };
-
 
 GraphPanelExpand.fnName = 'GraphPanelExpand'
-GraphPanelExpand.$inject = ['$document', '$timeout'];
+GraphPanelExpand.$inject = ['$document'];
 
 
 GraphPanelExpand.prototype.GraphPanelExpand = GraphPanelExpand;
