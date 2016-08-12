@@ -248,33 +248,6 @@ it('should work when same class created with prereqs', function () {
 });
 
 
-it('clone works', function (done) {
-
-
-	var aClass = Class.create({
-		"host": "neu.edu",
-		"classUid": "1801_75365412",
-		"termId": "201710",
-		"subject": "CS",
-	});
-
-	aClass.download(function () {
-
-		var other = aClass.clone();
-
-		expect(aClass.download).not.toBe(other.download)
-		expect(aClass.classUid).toBe(other.classUid)
-
-		// And that clones can download sections
-		other.loadSections(function (err) {
-			expect(!err).toBe(true);
-			expect(other.sections[0].dataStatus).toBe(macros.DATASTATUS_DONE)
-			done()
-		}.bind(this))
-
-	}.bind(this))
-});
-
 
 it('can load sections', function (done) {
 

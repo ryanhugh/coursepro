@@ -19,9 +19,18 @@ function RequisiteBranch(data) {
 	 	elog('invalid values for req branch')
 	}
 	
+
+	this.prereqs = {
+		type: data.type,
+		values: data.values.slice(0)
+	}
+
+
+	this.coreqs = {
+		type: 'or',
+		values: []
+	}
 	
-	this.type = data.type;
-	this.values = data.values
 }
 
 

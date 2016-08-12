@@ -6,6 +6,7 @@ var _ = require('lodash')
 var request = require('../request')
 var Node = require('./Node')
 var user = require('../data/user');
+var RequisiteBranch = require('../data/RequisiteBranch');
 
 function TreeMgr() {
 
@@ -322,10 +323,10 @@ TreeMgr.prototype.mergeDuplicateClasses = function (node) {
 
 	var currNode;
 	while ((currNode = stack.shift())) {
-		if (currNode.isClass) {
-			stack = stack.concat(currNode.prereqs.values)
-			continue
-		}
+		// if (currNode.isClass) {
+		// 	stack = stack.concat(currNode.prereqs.values)
+		// 	continue
+		// }
 		if (_(deletedNodes).includes(currNode)) {
 			continue;
 		}
@@ -338,7 +339,7 @@ TreeMgr.prototype.mergeDuplicateClasses = function (node) {
 				matchingClasses.push(listNode);
 			}
 		}.bind(this))
-		
+
 
 		//at minimum this tree exists in the classList, so it should be at least 1
 		if (matchingClasses.length === 0) {
@@ -511,15 +512,16 @@ TreeMgr.prototype.groupByCommonPrereqs = function (node, prereqType) {
 	if (maxScore >= 0 && matchParents.length > 1 && matchChildren.length > 1) {
 		console.log('all matching nodes:', matchChildren)
 
-		var newNode = Node.create({
-			isClass: false,
-		})
+		var newNode = Node.create(new RequisiteBranch({
+			type: prereqType,
+			values: matchChildren
+		}));
+
 		newNode.allParents = matchParents;
 		newNode.prereqs = {
 			type: prereqType,
-			values: matchChildren
+			values: matchChildren 
 		}
-		newNode.generateIdFromPrereqs();
 
 		matchParents.forEach(function (parent) {
 
@@ -1001,14 +1003,14 @@ TreeMgr.prototype.ensureInvariants = function (node, foundRootNode) {
 
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 TreeMgr.prototype.go = function (node) {
-	
+
 	// plan: wrap tree in nodes in between download tree and treemgr.
 	// so the wrap only happens on init and not on select
 	// tree is never modified outside .download() where all the changes happen internally
 	// all changes to the graph prereqs happen at the node level
 	// and all nodes will only be recreated on init
-	
-	
+
+
 
 
 	// flatten coreqs and remove coreqs coreqs

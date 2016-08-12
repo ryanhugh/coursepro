@@ -1,10 +1,12 @@
 'use strict';
 var treeMgr = require('../../graph/treeMgr')
+var Node = require('../../graph/Node')
 var downloadTree = require('../../graph/downloadTree')
 
 describe('fetchFullTree', function () {
 	it('makes sure fetchFullTree is constant on constant data', function () {
 
+		localStorage.clear()
 
 		downloadTree.fetchFullTree({
 			host: 'neu.edu',
@@ -14,9 +16,11 @@ describe('fetchFullTree', function () {
 		}, function (err, tree) {
 			expect(err).toBe(null);
 
-			treeMgr.go(tree)
+			var rootNode = Node.create(tree);
 
-			expect(treeMgr.countClassesInTree(tree)).toBe(13);
+			treeMgr.go(rootNode)
+
+			expect(treeMgr.countClassesInTree(rootNode)).toBe(13);
 		}.bind(this))
 
 	});
