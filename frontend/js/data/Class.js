@@ -7,8 +7,11 @@ var moment = require('moment')
 var macros = require('../macros')
 var request = require('../request')
 var Section = require('./Section')
+var RequisiteBranch = reequire('./RequisiteBranch')
 
 var BaseData = require('./BaseData')
+
+
 
 
 function Class(config) {
@@ -53,8 +56,6 @@ function Class(config) {
 	this.crns = [];
 
 	this.allParents = []
-	
-	var bValue = undefined;
 }
 
 
@@ -73,7 +74,7 @@ Class.API_ENDPOINT = '/listClasses'
 Class.isValidCreatingData = function (config) {
 	if (config.isString || config.isClass === false) {
 		return true;
-	};
+	}
 
 	// Can make a class with clasid, not recommended and not geruentted to only have 1 or 0 results
 
@@ -85,6 +86,8 @@ Class.isValidCreatingData = function (config) {
 	return BaseData.isValidCreatingData.apply(this, arguments);
 };
 
+
+//THis is going to be moved into the node.js file when it is made and and 
 Class.prototype.generateIdFromPrereqs = function () {
 	if (this.isClass && this._id) {
 		return;
@@ -169,6 +172,8 @@ Class.prototype.convertServerRequisites = function (data) {
 		}
 		//given a branch in the prereqs
 		else if (data.values && data.type) {
+			
+			//THIS NEEDS TO BE CHANGED TO NEW REQUITEBRANCH()
 			data = {
 				prereqs: data,
 				isClass: false,
@@ -184,7 +189,7 @@ Class.prototype.convertServerRequisites = function (data) {
 		}
 		if (!data.termId) {
 			data.termId = this.termId
-		};
+		}
 
 
 		retVal = this.constructor.create(data, false)
@@ -217,12 +222,12 @@ Class.prototype.internalDownload = function (callback) {
 		var errorMsg = 'data status was not not started, and called class.download?' + this.dataStatus
 		elog(errorMsg, this)
 		return callback(errorMsg, this)
-	};
+	}
 	if (this.isString || !this.isClass) {
 		var errorMsg = "class.download called on string or node"
 		elog(errorMsg, this)
 		return callback(errorMsg)
-	};
+	}
 
 
 	BaseData.prototype.internalDownload.call(this, function (err, body) {
