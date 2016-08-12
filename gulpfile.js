@@ -296,7 +296,8 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 			bundler.on('update', rebundle);
 			rebundle();
 		}).catch(function (err) {
-			console.log('recursiveDeps FAILED!', err)
+			// console.log('recursiveDeps FAILED!', err,JSON.stringify(err),arguments)
+			onError(err)
 			if (err) {
 				console.log(err.stack);
 			}

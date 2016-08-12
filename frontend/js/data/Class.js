@@ -7,7 +7,7 @@ var moment = require('moment')
 var macros = require('../macros')
 var request = require('../request')
 var Section = require('./Section')
-var RequisiteBranch = reequire('./RequisiteBranch')
+var RequisiteBranch = require('./RequisiteBranch')
 
 var BaseData = require('./BaseData')
 
@@ -34,14 +34,6 @@ function Class(config) {
 	//loading status of the sections
 	this.sectionsLoadingStatus = macros.DATASTATUS_NOTSTARTED;
 
-	// graph links, both up and down
-	this.upwardLinks = []
-	this.downwardLinks = []
-
-	// Determined in tree mgr to avoid having to calculate every tick
-	this.allChildrenAtSameDepth = true;
-
-
 	this.prereqs = {
 		type: 'or',
 		values: []
@@ -54,8 +46,6 @@ function Class(config) {
 	}
 
 	this.crns = [];
-
-	this.allParents = []
 }
 
 
@@ -301,7 +291,7 @@ Class.prototype.updateWithData = function (config) {
 		this.resetRequisites();
 	}
 	if (config.allParents) {
-		this.allParents = config.allParents
+		elog('no')
 	}
 
 
@@ -350,7 +340,6 @@ Class.prototype.updateWithData = function (config) {
 
 
 Class.prototype.resetRequisites = function () {
-	this.allParents = []
 	if (this.serverPrereqs) {
 		this.prereqs.type = this.serverPrereqs.type
 		this.prereqs.values = []
@@ -507,31 +496,6 @@ Class.prototype.compareTo = function (otherClass) {
 
 
 
-
-//REPLACE THIS WITH THE JAWN FROM BASEDATA
-// returns {
-// 	obj:{host:,termid,...},
-// 	str:'neu.edu/201630/CS...'
-// }
-Class.prototype.getPath = function () {
-	var retVal = {
-		obj: {},
-		str: []
-	}
-
-	var path = ['host', 'termId', 'subject', 'classUid']
-	for (var i = 0; i < path.length; i++) {
-		if (this[path[i]]) {
-			retVal.obj[path[i]] = this[path[i]]
-			retVal.str.push(path[i])
-		}
-		else {
-			return retVal;
-		}
-	}
-	return retVal;
-};
-
 Class.prototype.getHeighestProfCount = function () {
 	var count = 0;
 
@@ -576,32 +540,6 @@ Class.prototype.sectionsHaveExam = function () {
 	return false;
 };
 
-
-//is can also be called through treeMgr, which will add class count of the tree
-Class.prototype.logTree = function (body) {
-	if (!body.type) {
-		elog('ERROR not given a tree type', body);
-		return;
-	}
-
-	if (!this.host || !this.termId || !this.subject || !this.classUid) {
-		elog("ERROR cant log class without host, termid, subject, classUid")
-		return;
-	};
-
-	//add host, termId, subject, and classUid
-	body = _.merge(this.getPath().obj, body);
-
-	request({
-		url: '/log',
-		body: body,
-		useCache: false
-	}, function (err, response) {
-		if (err) {
-			elog("ERROR: couldn't log tree size :(", err, response, body);
-		}
-	}.bind(this))
-}
 
 
 Class.prototype.loadSections = function (callback) {

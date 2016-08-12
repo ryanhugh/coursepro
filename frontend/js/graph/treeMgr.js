@@ -707,16 +707,33 @@ TreeMgr.prototype.groupByHonors = function (tree) {
 	}.bind(this));
 };
 
-
-TreeMgr.prototype.logTree = function (tree, body) {
+TreeMgr.prototype.logRootNode = function (rootNode, body) {
 
 	//tell the server how big this tree is
-	body.classCount = this.countClassesInTree(tree);
+	body.classCount = this.countClassesInTree(rootNode);
 
-	console.log('The tree is ', body.classCount, ' big');
-	tree.logTree(body)
+	console.log('The graph is ', body.classCount, ' big');
 
+	if (!body.type) {
+		elog('ERROR not given a tree type', body);
+		return;
+	}
+
+	//add host, termId, subject, and classUid
+	body = _.merge(rootNode.class.getIdentifer().full.obj, body);
+
+	request({
+		url: '/log',
+		body: body,
+		useCache: false
+	}, function (err, response) {
+		if (err) {
+			elog("ERROR: couldn't log tree size :(", err, response, body);
+		}
+	}.bind(this))
 };
+
+
 TreeMgr.prototype.defaultTo = function (tree, type) {
 
 	//if this class is a coreq to another class, remove its coreqs
@@ -740,8 +757,8 @@ TreeMgr.prototype.getYGuessFromDepth = function (depth) {
 
 // guess node positions attempts to estimate the output position of the d3 graph
 // set it to false if nodes already have positions
-TreeMgr.prototype.treeToD3 = function (tree) {
-	var nodes = this.findFlattendClassList(tree, true).sort(function (a, b) {
+TreeMgr.prototype.treeToD3 = function (rootNode) {
+	var nodes = this.findFlattendClassList(rootNode, true).sort(function (a, b) {
 		if (a.depth < b.depth) {
 			return -1;
 		}
@@ -812,7 +829,6 @@ TreeMgr.prototype.resetTree = function (tree) {
 			continue;
 		}
 		visited.push(currTree)
-		currTree.resetRequisites()
 		currTree.isExpanded = false;
 		currTree.showSelectPanel = false;
 		currTree.x = undefined

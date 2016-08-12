@@ -21,48 +21,48 @@ function GraphPanelExpand() {
 macros.inherent(BaseDirective, GraphPanelExpand)
 
 GraphPanelExpand.prototype.bringExpandedPanelsToFront = function () {
-	this.openOrder.forEach(function (tree) {
-		Graph.instance.bringToFront(tree);
+	this.openOrder.forEach(function (node) {
+		Graph.instance.bringToFront(node);
 	}.bind(this))
 };
 
-GraphPanelExpand.prototype.increaseShowing = function (tree) {
-	tree.showingSectionCount += 10;
+GraphPanelExpand.prototype.increaseShowing = function (node) {
+	node.showingSectionCount += 10;
 	setTimeout(function () {
-		Graph.instance.updateHeight(tree)
+		Graph.instance.updateHeight(node)
 	}.bind(this), 0)
 };
 
 
-GraphPanelExpand.prototype.getTreePanel = function (tree) {
-	var panels = tree.foreignObject.getElementsByClassName('treePanel');
+GraphPanelExpand.prototype.getTreePanel = function (node) {
+	var panels = node.foreignObject.getElementsByClassName('treePanel');
 	if (panels.length != 1) {
 		elog('should be 1 panel per node')
 	}
 	return panels[0];
 };
 
-GraphPanelExpand.prototype.getNodeIsSelected = function (tree) {
-	return user.getListIncludesClass(macros.SELECTED_LIST, tree);
+GraphPanelExpand.prototype.getNodeIsSelected = function (node) {
+	return user.getListIncludesClass(macros.SELECTED_LIST, node.class);
 };
 
-// the given scope is the scope of a tree inside a recursions
-GraphPanelExpand.prototype.updateScope = function (tree, isMouseOver) {
+// the given scope is the scope of a node inside a recursions
+GraphPanelExpand.prototype.updateScope = function (node, isMouseOver) {
 	if (isMouseOver) {
-		this.setUpwardLines(tree, 8)
-		this.setDownwardLines(tree, 8)
+		this.setUpwardLines(node, 8)
+		this.setDownwardLines(node, 8)
 	}
 	else {
-		this.setUpwardLines(tree, 4)
-		this.setDownwardLines(tree, 4)
+		this.setUpwardLines(node, 4)
+		this.setDownwardLines(node, 4)
 	}
 
 
-	if (!tree.showSelectPanel) {
+	if (!node.showSelectPanel) {
 
 		// Manually change the style of the node because AngularJS is just too slow. 
-		var panel = this.getTreePanel(tree);
-		if (tree.isExpanded) {
+		var panel = this.getTreePanel(node);
+		if (node.isExpanded) {
 			panel.style['box-shadow'] = 'gray 0px 0px 9px'
 			panel.style.cursor = '';
 		}
@@ -78,12 +78,12 @@ GraphPanelExpand.prototype.updateScope = function (tree, isMouseOver) {
 	}
 
 	// Run these regardless if the showSelctedPanel is shown or not
-	if (!tree.isExpanded) {
+	if (!node.isExpanded) {
 		if (isMouseOver) {
-			Graph.instance.bringToFront(tree)
+			Graph.instance.bringToFront(node)
 		}
-		else if (tree.isCoreq) {
-			Graph.instance.sortCoreqs(tree.lowestParent)
+		else if (node.isCoreq) {
+			Graph.instance.sortCoreqs(node.lowestParent)
 		}
 
 		this.bringExpandedPanelsToFront()
@@ -92,40 +92,40 @@ GraphPanelExpand.prototype.updateScope = function (tree, isMouseOver) {
 };
 
 
-// if a panel in a tree is clicked
-GraphPanelExpand.prototype.onExpandClick = function (tree, openPanel, callback) {
+// if a panel in a node is clicked
+GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
 
 
 	//this returns instantly if already loaded
-	tree.loadSections(function (err) {
+	node.class.loadSections(function (err) {
 		if (err) {
 			elog("ERROR", err);
 			// return callback(err)
 		}
 		//setTimeout 0 because $scope.$update()
 		setTimeout(function () {
-			tree.isExpanded = openPanel;
-			tree.showSelectPanel = false;
+			node.isExpanded = openPanel;
+			node.showSelectPanel = false;
 
 			//if it failed, toggle isExpanded and update the scope
 			if (err) {
 				console.log("ERRor loading loadSections", err)
 			}
 
-			//$scope references just the $scope of the tree that was updated, 
+			//$scope references just the $scope of the node that was updated, 
 			// this.$scope references everything, and contains $scope
 
 
-			//update the dom with the new $scope and tree
-			tree.$scope.$apply()
+			//update the dom with the new $scope and node
+			node.$scope.$apply()
 
-			this.updateScope(tree, false);
+			this.updateScope(node, false);
 
-			Graph.instance.updateWidth(tree);
-			Graph.instance.updateHeight(tree);
+			Graph.instance.updateWidth(node);
+			Graph.instance.updateHeight(node);
 			this.bringExpandedPanelsToFront();
 
 			// and tell d3 to move the panel back to where it should be
@@ -136,14 +136,14 @@ GraphPanelExpand.prototype.onExpandClick = function (tree, openPanel, callback) 
 	}.bind(this))
 };
 
-GraphPanelExpand.prototype.togglePanelPrompt = function (tree, callback) {
+GraphPanelExpand.prototype.togglePanelPrompt = function (node, callback) {
 	setTimeout(function () {
-		clearTimeout(tree.graphPanelPromptTimeout);
-		tree.showSelectPanel = !tree.showSelectPanel;
-		tree.$scope.$apply()
+		clearTimeout(node.graphPanelPromptTimeout);
+		node.showSelectPanel = !node.showSelectPanel;
+		node.$scope.$apply()
 
-		Graph.instance.updateWidth(tree);
-		Graph.instance.updateHeight(tree);
+		Graph.instance.updateWidth(node);
+		Graph.instance.updateHeight(node);
 
 		// and tell d3 to move the panel back to where it should be
 		Graph.instance.force.alpha(.0051)
@@ -152,45 +152,45 @@ GraphPanelExpand.prototype.togglePanelPrompt = function (tree, callback) {
 	}.bind(this), 0)
 };
 
-GraphPanelExpand.prototype.openPanelPrompt = function (tree, callback) {
+GraphPanelExpand.prototype.openPanelPrompt = function (node, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
-	if (tree.isExpanded || tree.showSelectPanel) {
+	if (node.isExpanded || node.showSelectPanel) {
 		return callback();
 	}
-	this.togglePanelPrompt(tree, callback);
-	this.updateScope(tree, true)
+	this.togglePanelPrompt(node, callback);
+	this.updateScope(node, true)
 };
 
-GraphPanelExpand.prototype.closePanelPrompt = function (tree, callback) {
+GraphPanelExpand.prototype.closePanelPrompt = function (node, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
-	if (tree.isExpanded || !tree.showSelectPanel) {
+	if (node.isExpanded || !node.showSelectPanel) {
 		return callback()
 	}
-	this.togglePanelPrompt(tree, callback);
+	this.togglePanelPrompt(node, callback);
 	setTimeout(function () {
-		this.updateScope(tree, false);
+		this.updateScope(node, false);
 	}.bind(this), 0)
 };
 
 
 
-// if a panel in a tree is clicked
-GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
+// if a panel in a node is clicked
+GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
 
-	// Selecting this node will not change the tree, don't allow it to be selected.
-	if (!tree.wouldSatisfyNode && !user.getListIncludesClass(macros.SELECTED_LIST, tree)) {
+	// Selecting this node will not change the node, don't allow it to be selected.
+	if (!node.wouldSatisfyNode && !user.getListIncludesClass(macros.SELECTED_LIST, node.class)) {
 		return callback();
 	}
 
 
-	user.toggleListContainsClass(macros.SELECTED_LIST, tree, false, function (err) {
+	user.toggleListContainsClass(macros.SELECTED_LIST, node.class, false, function (err) {
 		if (err) {
 			elog(err);
 			return callback();
@@ -198,23 +198,23 @@ GraphPanelExpand.prototype.onPanelSelect = function (tree, callback) {
 		this.timeout(function () {
 
 
-			// Run the entire big tree through all of treeMgr again
+			// Run the entire big node through all of treeMgr again
 			// this is needed to rediscover any common prereqs, recalculate depths, and pretty much 
 			// everything else that treeMgr does. 
 
 			// comment from the other code:
 			// this is needed because in some cases, nodes can be affected that are children of a select node's ansestors, and that no longer need to have a line
 			// to one that was just satisfied, so can make graph simpler for it
-			treeMgr.go(Graph.instance.tree)
+			treeMgr.go(Graph.instance.rootNode)
 			Graph.instance.loadNodes(function () {
 
 				// After all the graph stuff is done, shink this panel back to avoid the redraw
-				tree.showSelectPanel = false;
-				tree.isExpanded = false;
-				tree.$scope.$apply();
-				Graph.instance.updateWidth(tree);
-				Graph.instance.updateHeight(tree)
-				clearTimeout(tree.graphPanelPromptTimeout);
+				node.showSelectPanel = false;
+				node.isExpanded = false;
+				node.$scope.$apply();
+				Graph.instance.updateWidth(node);
+				Graph.instance.updateHeight(node)
+				clearTimeout(node.graphPanelPromptTimeout);
 				callback()
 			}.bind(this))
 		}.bind(this))
@@ -229,68 +229,68 @@ GraphPanelExpand.prototype.onKeyDown = function (event) {
 	};
 
 
-	var tree = this.openOrder.shift();
-	if (!tree) {
+	var node = this.openOrder.shift();
+	if (!node) {
 		return;
 	};
-	this.closePanel(tree)
+	this.closePanel(node)
 };
 
-GraphPanelExpand.prototype.canClosePanel = function (tree) {
-	return tree.lowestParent || tree.prereqs.values.length > 0
+GraphPanelExpand.prototype.canClosePanel = function (node) {
+	return node.lowestParent || node.prereqs.values.length > 0
 }
 
-GraphPanelExpand.prototype.openPanel = function (tree, callback) {
+GraphPanelExpand.prototype.openPanel = function (node, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-	if (tree.isExpanded || tree.isString) {
+	if (node.isExpanded || node.class.isString) {
 
 		elog('openPanel was called and the panel is already open?')
-		if (tree.isString) {
+		if (node.isString) {
 			return callback();
 		}
 	}
 
 	ga('send', {
 		'hitType': 'pageview',
-		'page': '/listSections/' + tree.getIdentifer().full.str,
+		'page': '/listSections/' + node.class.getIdentifer().full.str,
 		'title': 'Coursepro.io'
 	});
 
 
-	this.openOrder.push(tree)
+	this.openOrder.push(node)
 
-	this.onExpandClick(tree, true, callback)
+	this.onExpandClick(node, true, callback)
 };
 
-GraphPanelExpand.prototype.closePanel = function (tree, callback) {
+GraphPanelExpand.prototype.closePanel = function (node, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-	if (!this.canClosePanel(tree)) {
+	if (!this.canClosePanel(node)) {
 		return callback()
 	}
-	if (!tree.isExpanded) {
+	if (!node.isExpanded) {
 		elog('closePanel was called and the panel is already closed?')
 	}
 
 	ga('send', {
 		'hitType': 'pageview',
-		'page': '/closePanel/' + tree.getIdentifer().full.str,
+		'page': '/closePanel/' + node.class.getIdentifer().full.str,
 		'title': 'Coursepro.io'
 	});
 
-	_.pull(this.openOrder, tree)
+	_.pull(this.openOrder, node)
 
-	this.onExpandClick(tree, false, callback)
+	this.onExpandClick(node, false, callback)
 };
 
-GraphPanelExpand.prototype.setUpwardLines = function (tree, lineWidth) {
+GraphPanelExpand.prototype.setUpwardLines = function (node, lineWidth) {
 
 	var linesToSkip = [];
-	tree.allParents.forEach(function (parent) {
-		if (parent.prereqs.type == 'and' && !tree.isClass) {
+	node.allParents.forEach(function (parent) {
+		if (parent.prereqs.type == 'and' && !node.isClass) {
 			linesToSkip = linesToSkip.concat(parent.downwardLinks)
 			return;
 		}
@@ -300,7 +300,7 @@ GraphPanelExpand.prototype.setUpwardLines = function (tree, lineWidth) {
 		this.setUpwardLines(parent, lineWidth)
 	}.bind(this))
 
-	tree.upwardLinks.forEach(function (link) {
+	node.upwardLinks.forEach(function (link) {
 		if (_(linesToSkip).includes(link)) {
 			return;
 		}
@@ -310,12 +310,12 @@ GraphPanelExpand.prototype.setUpwardLines = function (tree, lineWidth) {
 
 };
 
-GraphPanelExpand.prototype.setDownwardLines = function (tree, lineWidth) {
-	tree.downwardLinks.forEach(function (link) {
+GraphPanelExpand.prototype.setDownwardLines = function (node, lineWidth) {
+	node.downwardLinks.forEach(function (link) {
 		link.style.strokeWidth = lineWidth + 'px';
 	}.bind(this));
 
-	tree.prereqs.values.forEach(function (child) {
+	node.prereqs.values.forEach(function (child) {
 		if (child.isClass) {
 			return;
 		}
@@ -324,22 +324,22 @@ GraphPanelExpand.prototype.setDownwardLines = function (tree, lineWidth) {
 };
 
 
-GraphPanelExpand.prototype.onMouseOver = function (tree) {
-	this.updateScope(tree, true);
+GraphPanelExpand.prototype.onMouseOver = function (node) {
+	this.updateScope(node, true);
 }
 
-GraphPanelExpand.prototype.onMouseOut = function (tree) {
-	this.updateScope(tree, false);
+GraphPanelExpand.prototype.onMouseOut = function (node) {
+	this.updateScope(node, false);
 };
 
 
-GraphPanelExpand.prototype.startPromptTimer = function (tree, event) {
-	clearTimeout(tree.graphPanelPromptTimeout);
-	if (tree.isCoreq) {
+GraphPanelExpand.prototype.startPromptTimer = function (node, event) {
+	clearTimeout(node.graphPanelPromptTimeout);
+	if (node.isCoreq) {
 		return;
 	}
-	tree.graphPanelPromptTimeout = setTimeout(function () {
-		var coords = tree.foreignObject.getBoundingClientRect();
+	node.graphPanelPromptTimeout = setTimeout(function () {
+		var coords = node.foreignObject.getBoundingClientRect();
 		// If graph is still where the mouse used to be
 		// (cannot get current mouse pos without another event)
 		if (event.clientX < coords.left) {
@@ -355,38 +355,38 @@ GraphPanelExpand.prototype.startPromptTimer = function (tree, event) {
 			return;
 		}
 		else {
-			this.openPanelPrompt(tree);
+			this.openPanelPrompt(node);
 		}
 	}.bind(this), 1500)
 };
 
-//this is called once when $scope.tree === undefined, when the root node first loads
+//this is called once when $scope.node === undefined, when the root node first loads
 GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
-	// The graph-panel-expand is on a child element of the tree element, so the passed in scope is a child of the 
+	// The graph-panel-expand is on a child element of the node element, so the passed in scope is a child of the 
 	// scope we need
-	var tree = $scope.tree;
-	$scope = tree.$scope;
+	var node = $scope.node;
+	$scope = node.$scope;
 	$scope.graphPanelExpand = this;
 
 
 	element = element.parent()
 
-	if (!tree.lowestParent) {
+	if (!node.lowestParent) {
 		this.openOrder = []
 	};
 
 	//if only this panel, expand it
-	//&& treeMgr.countClassesInTree(tree) === 1
-	if (!tree.lowestParent && tree._id != this.rootNodeId) {
-		this.rootNodeId = tree._id;
+	//&& treeMgr.countClassesInTree(node) === 1
+	if (!node.lowestParent && node.class._id != this.rootNodeId) {
+		this.rootNodeId = node.class._id;
 
 		this.timeout(function () {
 			//this is undone when openPanel is done, a couple lines down
-			// var panel = this.getTreePanel(tree);
+			// var panel = this.getTreePanel(node);
 			// panel.style.visibility = 'hidden'
 
-			this.openPanel(tree, function (err) {
+			this.openPanel(node, function (err) {
 				if (err) {
 					elog(err);
 				}
@@ -398,23 +398,23 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 	}
 
 	element.on('mouseover', function (event) {
-		this.onMouseOver(tree)
-		this.startPromptTimer(tree, event);
+		this.onMouseOver(node)
+		this.startPromptTimer(node, event);
 	}.bind(this))
 
 	element.on('mousemove', function (event) {
-		this.startPromptTimer(tree, event);
+		this.startPromptTimer(node, event);
 	}.bind(this))
 
 	element.on('mouseout', function () {
-		clearTimeout(tree.graphPanelPromptTimeout);
-		this.onMouseOut(tree)
+		clearTimeout(node.graphPanelPromptTimeout);
+		this.onMouseOut(node)
 	}.bind(this))
 
 	var closeElement = element.find(attrs.panelClose)
 
 	closeElement.on('click', function () {
-		this.closePanel(tree);
+		this.closePanel(node);
 	}.bind(this))
 
 }

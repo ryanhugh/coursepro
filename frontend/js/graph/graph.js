@@ -10,6 +10,7 @@ var BaseDirective = require('../BaseDirective')
 //tree stuff
 var downloadTree = require('./downloadTree')
 var treeMgr = require('./treeMgr')
+var Node = require('./Node')
 
 var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
 
@@ -20,15 +21,8 @@ var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
 function Graph() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
-	//updated on tree callback
-	// used to show Nothing Found! or not
-	this.classCount = null;
-
-	//controls the state of the spinner
-	this.isLoading = false;
-
 	this.graphWidth = this.getSvgWidth();
-
+ 
 	this.graphHeight = this.getSvgHeight();
 
 	// This is the default for nodes, and is what is allways used for collision
@@ -113,10 +107,10 @@ Graph.prototype.addClass = function (aClass) {
 	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))
 };
 
-Graph.prototype.getWidth = function (tree) {
+Graph.prototype.getWidth = function (node) {
 	var width = Math.min(200, this.nodeWidth);
-	if (tree.coreqs.values.length > 0) {
-		width += tree.coreqs.values.length * 34
+	if (node.coreqs.values.length > 0) {
+		width += node.coreqs.values.length * 34
 	}
 	else {
 		width += 17
@@ -213,25 +207,25 @@ Graph.prototype.addToDom = function (node) {
 
 
 // change z index of a node
-Graph.prototype.bringToFront = function (tree) {
+Graph.prototype.bringToFront = function (node) {
 
 	// find the g element that is a parent of the foreignObject, and move it to the end of its children
 	// in svgs this is how zindex works
-	var g = tree.foreignObject.parentElement;
+	var g = node.foreignObject.parentElement;
 	var gParentElement = g.parentElement;
 	g.remove();
 	gParentElement.appendChild(g)
 };
 
-Graph.prototype.sortCoreqs = function (tree) {
-	if (tree.coreqs.values.length == 0) {
+Graph.prototype.sortCoreqs = function (node) {
+	if (node.coreqs.values.length == 0) {
 		return;
 	}
 
-	for (var i = tree.coreqs.values.length - 1; i >= 0; i--) {
-		this.bringToFront(tree.coreqs.values[i]);
+	for (var i = node.coreqs.values.length - 1; i >= 0; i--) {
+		this.bringToFront(node.coreqs.values[i]);
 	}
-	this.bringToFront(tree);
+	this.bringToFront(node);
 };
 
 
@@ -277,15 +271,15 @@ Graph.prototype.updateWidth = function (node) {
 };
 
 
-Graph.prototype.updateHeight = function (tree) {
+Graph.prototype.updateHeight = function (node) {
 
 	// update the height of the panel
-	tree.height = tree.foreignObject.lastChild.offsetHeight
+	node.height = node.foreignObject.lastChild.offsetHeight
 
 	//update the foreign object and the g with the new height
-	tree.foreignObject.setAttribute('height', tree.height)
-	tree.foreignObject.parentNode.setAttribute('height', tree.height)
-	this.updatePos(tree);
+	node.foreignObject.setAttribute('height', node.height)
+	node.foreignObject.parentNode.setAttribute('height', node.height)
+	this.updatePos(node);
 };
 
 
@@ -429,7 +423,7 @@ Graph.prototype.loadNodes = function (callback) {
 		this.container[0][0].removeChild(this.container[0][0].firstChild);
 	}
 
-	var nodesAndLinks = treeMgr.treeToD3(this.tree);
+	var nodesAndLinks = treeMgr.treeToD3(this.rootNode);
 	this.links = nodesAndLinks.links;
 	this.nodes = nodesAndLinks.nodes;
 
@@ -525,7 +519,7 @@ Graph.prototype.loadNodes = function (callback) {
 		var newScope = this.$scope.$new();
 
 		// set up the links between tree and scope and foreignObject
-		newScope.tree = this.nodes[i]
+		newScope.node = this.nodes[i]
 		this.nodes[i].$scope = newScope
 
 		var foreignObject = d3.select(this.nodeElements[0][i]).append('foreignObject')
@@ -564,23 +558,24 @@ Graph.prototype.loadNodes = function (callback) {
 };
 
 
-Graph.prototype.go = function (tree, callback) {
-	this.isLoading = true;
-	downloadTree.fetchFullTree(tree, function (err, tree) {
+Graph.prototype.go = function (config, callback) {
+	downloadTree.fetchFullTree(config, function (err, rootClass) {
 		setTimeout(function () {
-			this.isLoading = false;
 			if (err) {
 				return callback(err);
 			};
+
+
+			var rootNode = Node.create(rootClass);
 
 
 			// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
 			// setTimeout(function () {
 			// this.$scope.$apply()
 
-			treeMgr.go(tree);
-			this.tree = tree;
-			this.$scope.tree = tree;
+			treeMgr.go(rootNode);
+			this.rootNode = rootNode;
+			// this.$scope.tree = tree;
 
 			if (this.force) {
 				this.force.stop();
@@ -621,9 +616,9 @@ Graph.prototype.go = function (tree, callback) {
 			this.loadNodes(function () {
 				this.yCoordAttractionMultiplyer = 1;
 
-				this.classCount = treeMgr.countClassesInTree(tree);
+				this.classCount = treeMgr.countClassesInTree(rootNode);
 				if (this.classCount === 0) {
-					elog('0 classes found?', tree)
+					elog('0 classes found?', rootNode)
 				}
 				this.force.on('tick', this.onTick.bind(this));
 
@@ -658,7 +653,7 @@ Graph.prototype.go = function (tree, callback) {
 
 
 				// Center the root node by translating the container <g> inside the svg
-				zoom.translate([this.getSvgWidth() / 2 - this.tree.x, 0])
+				zoom.translate([this.getSvgWidth() / 2 - this.rootNode.x, 0])
 
 				// Zoom in a little, (this number is arbitrary)
 				// zoom.scale(1.16) // DO want to do this, but causes bug where not centered
@@ -666,28 +661,28 @@ Graph.prototype.go = function (tree, callback) {
 
 				// zoom.center([this.tree.x,this.tree.y])
 				// zoom.event(this.svg)
-				callback(null, tree)
+				callback(null, this.rootNode)
 			}.bind(this))
 		}.bind(this), 0)
 	}.bind(this))
 };
 
-Graph.prototype.createGraph = function (tree, callback) {
+Graph.prototype.createGraph = function (config, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
 
 	//process tree takes in a callback
-	this.go(tree, function (err, tree) {
+	this.go(config, function (err, rootNode) {
 		if (err) {
-			console.log('error processing tree', err, tree);
+			elog('processing graph', err, config);
 			return callback(err);
 		}
 
-		treeMgr.logTree(tree, {
-			type: 'createTree'
+		treeMgr.logRootNode(rootNode, {
+			type: 'createGraph'
 		})
-		callback(null, tree);
+		callback(null, rootNode);
 	}.bind(this));
 }
 
@@ -711,7 +706,7 @@ Graph.prototype.showClasses = function (classList, callback) {
 
 
 
-	var treeParams = {
+	var graphParams = {
 		host: this.$routeParams.host,
 		termId: this.$routeParams.termId,
 		subject: this.$routeParams.subject,
@@ -723,7 +718,7 @@ Graph.prototype.showClasses = function (classList, callback) {
 		hidden: true
 	}
 
-	this.go(treeParams, callback)
+	this.go(graphParams, callback)
 }
 
 
