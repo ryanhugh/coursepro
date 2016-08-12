@@ -520,7 +520,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (node, prereqType) {
 		newNode.allParents = matchParents;
 		newNode.prereqs = {
 			type: prereqType,
-			values: matchChildren 
+			values: matchChildren
 		}
 
 		matchParents.forEach(function (parent) {
@@ -832,7 +832,10 @@ TreeMgr.prototype.removeAllParents = function (node) {
 TreeMgr.prototype.simplifyIfSelected = function (node) {
 	var satisfyingNode = this.getSatisfyingNode(node);
 	if (!node.savePrereqsForThisGraph) {
-		node.savePrereqsForThisGraph = node.prereqs
+		node.savePrereqsForThisGraph = {
+			values: node.prereqs.values.slice(0),
+			type: node.prereqs.type
+		}
 	}
 	if (satisfyingNode) {
 
@@ -843,7 +846,10 @@ TreeMgr.prototype.simplifyIfSelected = function (node) {
 		}
 	}
 	else {
-		node.prereqs = node.savePrereqsForThisGraph
+		node.prereqs = {
+			values: node.savePrereqsForThisGraph.values.slice(0),
+			type: node.savePrereqsForThisGraph.type
+		}
 	}
 
 	node.prereqs.values.forEach(function (child) {
