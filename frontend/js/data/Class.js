@@ -29,7 +29,9 @@ function Class(config) {
 	this.isClass = true;
 
 	// A class that is listed as a prereq for another class on the site, but this class dosen't actually exist
-	this.missing = false;
+	// Currently, missing prereqs are not even added as prereqs for classes because I can't think of any reason to list classes
+	// that don't exist anywhere on the site. Could be changed in future, the fitlter is in this file. 
+	// this.missing = false;
 
 	//instances of Section()
 	this.sections = []
@@ -193,10 +195,33 @@ Class.prototype.internalDownload = function (callback) {
 	}.bind(this))
 }
 
+
+Class.prototype.removeMissingClasses = function (data) {
+	if (data.values) {
+		var retVal = [];
+		data.values.forEach(function (subData) {
+			if (subData.missing) {
+				return;
+			}
+			subData = this.removeMissingClasses(subData);
+			retVal.push(subData)
+		}.bind(this))
+
+		return {
+			type: data.type,
+			values: retVal
+		};
+	}
+	return data;
+};
+
 // called once
 Class.prototype.updateWithData = function (config) {
 	if (config instanceof Class || config.updateWithData) {
 		elog('wtf', config)
+	}
+	if (config.missing) {
+		elog('hooooo')
 	}
 
 
@@ -224,6 +249,14 @@ Class.prototype.updateWithData = function (config) {
 		else {
 			this[attrName] = config[attrName]
 		}
+	}
+
+	// Remove any prereqs or coreqs that are missing
+	if (config.prereqs) {
+		config.prereqs = this.removeMissingClasses(config.prereqs)
+	}
+	if (config.coreqs) {
+		config.coreqs = this.removeMissingClasses(config.coreqs)
 	}
 
 	if (config.prereqs && !_.isEqual(config.prereqs, this.serverPrereqs)) {
@@ -269,13 +302,6 @@ Class.prototype.updateWithData = function (config) {
 	}
 
 
-	if (config.missing && config.classId && !config.classUid) {
-
-		// Backend failed to find class with this id, don't bother looking again
-		this.dataStatus = macros.DATASTATUS_FAIL;
-	}
-
-
 	if (!config.prettyUrl && config.url) {
 		this.prettyUrl = config.url;
 	};
@@ -310,10 +336,7 @@ Class.prototype.resetRequisites = function () {
 
 		//add the prereqs to this node, and convert server data
 		this.serverPrereqs.values.forEach(function (subTree) {
-			if (!subTree.missing) {
-				this.prereqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
-			}
-
+			this.prereqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
 		}.bind(this))
 
 		this.prereqs.values.sort(function (a, b) {

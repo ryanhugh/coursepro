@@ -5,8 +5,11 @@ var macros = require('../macros')
 var Class = require('../data/Class')
 
 function Node(classOrRequisiteBranch) {
-	console.warn("the isClass check is temp");
-	if (classOrRequisiteBranch instanceof Class && classOrRequisiteBranch.isClass !== false) {
+	if (classOrRequisiteBranch.isClass === false) {
+		elog('nope')
+	}
+
+	if (classOrRequisiteBranch instanceof Class) {
 		this.isClass = true;
 	}
 	else {
