@@ -514,7 +514,7 @@ TreeMgr.prototype.groupByCommonPrereqs = function (node, prereqType) {
 
 		var newNode = Node.create(new RequisiteBranch({
 			type: prereqType,
-			values: matchChildren
+			values: []
 		}));
 
 		newNode.allParents = matchParents;
@@ -670,7 +670,7 @@ TreeMgr.prototype.groupByHonors = function (node) {
 			else if (node.class.honors && !child.class.honors) {
 				for (var i = 0; i < node.coreqs.values.length; i++) {
 					var currNode = node.coreqs.values[i];
-					if (currNode == subnode) {
+					if (currNode == child) {
 						continue;
 					}
 					// Intentinally using classId instead of classUid.
@@ -825,6 +825,10 @@ TreeMgr.prototype.removeAllParents = function (node) {
 
 };
 
+
+// This can skip an arbitrary number of nodes, so run it without allParents so
+// you dont need to loop through all those nodes and remove their connections to nodes not removed by this operation
+// and so dont need to remove connection from nodes not removed here to nodes that are
 TreeMgr.prototype.simplifyIfSelected = function (node) {
 	var satisfyingNode = this.getSatisfyingNode(node);
 	if (!node.savePrereqsForThisGraph) {
@@ -927,6 +931,10 @@ TreeMgr.prototype.savePrereqsForThisGraph = function (node) {
 TreeMgr.prototype.ensureInvariants = function (node, foundRootNode) {
 	if (foundRootNode === undefined) {
 		foundRootNode = false;
+	}
+
+	if (!(node instanceof Node)) {
+		elog()
 	}
 
 	// nodes are in parents children
