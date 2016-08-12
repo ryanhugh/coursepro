@@ -17,6 +17,10 @@ simplifyTree in treemgr needs a fixing
 remove prereqsForThisGraph and serverPrereqs and the other backup prereqs crap savePrereqsForThisGraph
 
 
+BUGS:
+think about how the prereqs are going to be saved when nodes are selected, what will happen when they are unselected
+if the graph is loaded with stuff selected and they are unselected does it work?
+
 
 UNIT TESTS:
 run all graph unit tests.js (data/tests/runAllGraphSelections_broken.js)

@@ -847,9 +847,15 @@ TreeMgr.prototype.simplifyIfSelected = function (node) {
 	}
 	else {
 		node.prereqs = {
-			values: node.savePrereqsForThisGraph.values.slice(0),
+			values: [],
 			type: node.savePrereqsForThisGraph.type
 		}
+
+		node.savePrereqsForThisGraph.values.forEach(function (child) {
+			node.prereqs.values.push(child);
+		}.bind(this))
+
+
 	}
 
 	node.prereqs.values.forEach(function (child) {

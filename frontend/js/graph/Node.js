@@ -37,25 +37,10 @@ function Node(classOrRequisiteBranch) {
 	}
 
 
-	// Create new nodes for the prereqs too
-	this.prereqs.type = classOrRequisiteBranch.prereqs.type
-	classOrRequisiteBranch.prereqs.values.forEach(function (child) {
-		this.prereqs.values.push(this.constructor.create(child));
-	}.bind(this))
-
-
-
 	this.coreqs = {
 		type: 'or',
 		values: []
 	}
-
-	// And the coreqs
-	this.coreqs.type = classOrRequisiteBranch.coreqs.type
-	classOrRequisiteBranch.coreqs.values.forEach(function (child) {
-		this.coreqs.values.push(this.constructor.create(child));
-	}.bind(this))
-
 
 	// Pointer to the angular scope
 	this.$scope = null;
@@ -106,12 +91,38 @@ function Node(classOrRequisiteBranch) {
 }
 
 
+Node.createShallow = function (aClass) {
+	if (!aClass) {
+		elog('need class for node')
+		return null;
+	}
+
+	return new this(aClass);
+}
+
+
 Node.create = function (aClass) {
 	if (!aClass) {
 		elog('need class for node')
 		return null;
 	}
-	return new this(aClass);
+
+	var instance = new this(aClass);
+
+	// Create new nodes for the prereqs too
+	instance.prereqs.type = aClass.prereqs.type
+	aClass.prereqs.values.forEach(function (child) {
+		instance.prereqs.values.push(instance.constructor.create(child));
+	}.bind(this))
+
+
+	// And the coreqs
+	instance.coreqs.type = aClass.coreqs.type
+	aClass.coreqs.values.forEach(function (child) {
+		instance.coreqs.values.push(instance.constructor.createShallow(child));
+	}.bind(this))
+
+	return instance;
 };
 
 
