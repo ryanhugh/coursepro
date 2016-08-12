@@ -77,52 +77,6 @@ Class.isValidCreatingData = function (config) {
 };
 
 
-//THis is going to be moved into the node.js file when it is made and and 
-Class.prototype.generateIdFromPrereqs = function () {
-	if (this.isClass && this._id) {
-		return;
-	}
-
-	// If not a class, re create the id in case prereqs changed
-
-	if (this.isString) {
-		this._id = this.host + this.termId + this.desc
-		return;
-	}
-
-	else if (this.isClass && this.dataStatus === macros.DATASTATUS_FAIL) {
-		this._id = this.host + this.termId + this.subject;
-		if (this.classUid) {
-			this._id = this._id + this.classUid
-		}
-		else if (this.classId) {
-			this._id = this._id + this.classId
-		}
-		return;
-	}
-
-
-	if (this.prereqs.values.length < 2) {
-		elog('not enough prereqs to generate _id from!')
-	}
-
-	this.prereqs.values.sort(function (a, b) {
-		return a.compareTo(b);
-	}.bind(this))
-
-	var ids = [];
-	this.prereqs.values.forEach(function (subTree) {
-		ids.push(subTree._id)
-	}.bind(this))
-	if (ids.length === 0) {
-		elog('cannot make id!', this)
-	}
-	this._id = ids.join('')
-	if (this._id.length < 3) {
-		elog('couldnt make an id!', this._id, this)
-	}
-};
-
 
 
 Class.prototype.convertServerRequisites = function (data) {
@@ -407,49 +361,6 @@ Class.prototype.equals = function (other) {
 	return false;
 };
 
-
-Class.prototype.clone = function () {
-	var other = new Class();
-
-	for (var attrName in this) {
-		if (this[attrName] instanceof HTMLElement) {
-			elog('cant clone a HTMLElement in class clone', this[attrName])
-			continue;
-		}
-		else if ((typeof this[attrName]) === 'function') {
-			continue;
-		}
-		else if (Array.isArray(this[attrName])) {
-			var canClone = true;
-			for (var i = 0; i < this[attrName].length; i++) {
-				if (this[attrName] instanceof HTMLElement) {
-					canClone = false;
-					break;
-				}
-			}
-			if (canClone) {
-				other[attrName] = _.cloneDeep(this[attrName])
-			}
-			else {
-				elog('cant clone a HTMLElement in class clone', this[attrName])
-				other[attrName] = this[attrName]
-			}
-		}
-
-		// Don't deepclone sections, the same Section() is used for both class instances below
-		else if (attrName == 'sections') {
-			continue;
-		}
-		other[attrName] = _.cloneDeep(this[attrName])
-	}
-
-	other.sections = [];
-	this.sections.forEach(function (section) {
-		other.sections.push(section);
-	}.bind(this))
-
-	return other;
-};
 
 
 
