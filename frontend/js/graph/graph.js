@@ -256,11 +256,11 @@ Graph.prototype.getNodeWidth = function (node) {
 	if (!node.isExpanded) {
 		return this.nodeWidth;
 	}
-	else if (node.sections.length > 0) {
+	else if (node.class.sections.length > 0) {
 		return 780;
 	}
 	else {
-		return Math.max(576, Math.min(780, node.desc.length))
+		return Math.max(576, Math.min(780, node.class.desc.length))
 	}
 };
 
