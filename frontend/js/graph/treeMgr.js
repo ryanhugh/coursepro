@@ -1016,6 +1016,14 @@ TreeMgr.prototype.ensureInvariants = function (tree, foundRootNode) {
 
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
 TreeMgr.prototype.go = function (tree) {
+	
+	// plan: wrap tree in nodes in between download tree and treemgr.
+	// so the wrap only happens on init and not on select
+	// tree is never modified outside .download() where all the changes happen internally
+	// all changes to the graph prereqs happen at the node level
+	// and all nodes will only be recreated on init
+	
+	
 
 	this.resetTree(tree);
 
