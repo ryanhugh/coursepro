@@ -136,7 +136,7 @@ Class.prototype.convertServerRequisites = function (data) {
 	var retVal = {};
 
 	//already processed node, just process the prereqs and coreqs
-	if (data.internalDownload) {
+	if (data instanceof BaseData) {
 		retVal = data;
 
 		var newCoreqs = [];
@@ -169,8 +169,6 @@ Class.prototype.convertServerRequisites = function (data) {
 		}
 		//given a branch in the prereqs
 		else if (data.values && data.type) {
-
-			//HOW DO WE KNOW TO APPEND TO PREREQS?
 			data = {
 				prereqs: data,
 				isClass: false,
