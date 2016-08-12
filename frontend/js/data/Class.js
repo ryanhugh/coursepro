@@ -28,6 +28,9 @@ function Class(config) {
 	//when this is false this is only required to have a .prereqs and coreqs
 	this.isClass = true;
 
+	// A class that is listed as a prereq for another class on the site, but this class dosen't actually exist
+	this.missing = false;
+
 	//instances of Section()
 	this.sections = []
 
@@ -102,6 +105,21 @@ Class.prototype.convertServerRequisites = function (data) {
 
 		data.prereqs.values = newPrereqs;
 	}
+	//given a branch in the prereqs
+	else if (data.values && data.type) {
+
+		var newValues = [];
+		data.values.forEach(function (subTree) {
+			newValues.push(this.convertServerRequisites(subTree))
+		}.bind(this))
+
+
+		retVal = new RequisiteBranch({
+			type: data.type,
+			values: newValues
+		});
+	}
+
 	//need to create a new Class()
 	else {
 
@@ -114,15 +132,7 @@ Class.prototype.convertServerRequisites = function (data) {
 
 			}
 		}
-		//given a branch in the prereqs
-		else if (data.values && data.type) {
-			
-			//THIS NEEDS TO BE CHANGED TO NEW REQUITEBRANCH()
-			data = {
-				prereqs: data,
-				isClass: false,
-			}
-		}
+		// else data is a normal class that has a .subject and a .classUid
 
 
 		//the leafs of the prereq trees returned from the server dosent have host or termId,
@@ -400,6 +410,12 @@ Class.prototype.compareTo = function (otherClass) {
 		return 1;
 	}
 	else if (this.name < otherClass.name) {
+		return -1;
+	}
+	else if (this.classUid > otherClass.classUid) {
+		return 1;
+	}
+	else if (this.classUid < otherClass.classUid) {
 		return -1;
 	}
 	return 0

@@ -123,10 +123,10 @@ Node.prototype.getId = function () {
 		}
 		else if (this.class.dataStatus === macros.DATASTATUS_FAIL) {
 			var id = this.class.host + this.class.termId + this.class.subject;
-			if (this.classUid) {
-				return id + this.classUid
+			if (this.class.classUid) {
+				return id + this.class.classUid
 			}
-			else if (this.classId) {
+			else if (this.class.classId) {
 				return id + this.classId
 			}
 			else {
@@ -219,7 +219,7 @@ Node.prototype.clone = function () {
 };
 
 
-Node.prototype.compareTo = function(other) {
+Node.prototype.compareTo = function (other) {
 	if (this.isClass && other.isClass) {
 		return this.class.compareTo(other.class);
 	}
@@ -229,8 +229,6 @@ Node.prototype.compareTo = function(other) {
 	else if (!this.isClass && other.isClass) {
 		return 1;
 	}
-
-	console.warn('is this called??');
 	if (this.prereqs.values.length > other.prereqs.values.length) {
 		return -1
 	}
@@ -238,7 +236,8 @@ Node.prototype.compareTo = function(other) {
 		return 1;
 	}
 	else {
-		elog("?")
+		// More could be added here, but I don't think is is ever called
+		elog("need more sorting on node compareTo", this, other);
 		return 0;
 	}
 };
