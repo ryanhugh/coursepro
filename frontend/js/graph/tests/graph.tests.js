@@ -21,6 +21,17 @@ MockWindow.prototype.addEventListener = function (type, fn) {
 
 
 
+function isWithinBound(value, goalValue, delta) {
+	if (typeof value !== 'number' || typeof goalValue != 'number' || typeof delta !== 'number') {
+		elog('no')
+		return false;
+	}
+
+	return value > goalValue - delta && value < goalValue + delta;
+}
+
+
+
 //this will need mock term and that term needs to have a .subjects that are valid
 
 describe('Graph', function () {
@@ -88,7 +99,7 @@ describe('Graph', function () {
 		graph.go(aClass, function (err, aClass) {
 
 			expect(!!aClass.foreignObject);
-			expect(aClass.x).toBe((win.innerWidth - macros.SEARCH_WIDTH) / 2);
+			expect(isWithinBound(aClass.x, (win.innerWidth - macros.SEARCH_WIDTH) / 2, 5))
 			expect(aClass.y > 0 && aClass.y < graph.graphHeight);
 
 
@@ -143,7 +154,7 @@ describe('Graph', function () {
 			expect(rightPrerq.wouldSatisfyNode).toBe(true);
 			expect(leftPrereq.wouldSatisfyNode).toBe(true);
 
-			// expect(aClass.x).toBe((win.innerWidth - macros.SEARCH_WIDTH) / 2);
+			// expect(isWithinBound(aClass.x, (win.innerWidth - macros.SEARCH_WIDTH) / 2, 5))
 			// expect(aClass.y > 0 && aClass.y < graph.graphHeight);
 
 
