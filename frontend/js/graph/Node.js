@@ -90,7 +90,7 @@ function Node(classOrRequisiteBranch) {
 	// }
 }
 
-
+// Creates a class, but dosen't copy over prereqs. Used for the first layer of coreqs so it dosen't recurse any more
 Node.createShallow = function (aClass) {
 	if (!aClass) {
 		elog('need class for node')

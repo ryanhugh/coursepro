@@ -10,7 +10,7 @@ var fs = require('fs')
 
 
 function DatabaseDumps() {
-
+	BaseProcessor.prototype.constructor.apply(this, arguments);
 }
 
 
@@ -47,9 +47,10 @@ DatabaseDumps.prototype.saveRows = function (endpoint, results, callback) {
 			var rowData = classLists[attrName]
 
 			// Replace any non-alphanumeric character with an underscore
-			var folderName = './frontend/static/' + endpoint + '/' + rowData.host.replace(/[^A-Za-z0-9.]+/g, "_");
+			var folderName = './dist/' + endpoint + '/' + rowData.host.replace(/[^A-Za-z0-9.]+/g, "_");
 			var fileName = folderName + '/' + rowData.termId.replace(/[^A-Za-z0-9.]+/g, "_");
 
+			// ALSO MAKE THESE CHANGES IN SERACH INDEX.JS
 			// NEED TO MAKE THESE ^^ CHANGES IN THE FRONTEND AND UNIT TESTS
 
 			mkdirp(folderName, function (err) {
