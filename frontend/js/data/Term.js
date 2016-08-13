@@ -2,6 +2,7 @@
 var macros = require('../macros')
 var BaseData = require('./BaseData');
 var Subject = require('./Subject');
+var Keys = require('../../../common/Keys')
 
 
 function Term(config) {

@@ -102,7 +102,10 @@ DatabaseDumps.prototype.go = function (query, callback) {
 
 	q.defer(function (callback) {
 		classesDB.find(searchQuery, {
-			skipValidation: true
+			skipValidation: true,
+			shouldBeOnlyOne: false,
+			sanitize: true,
+			removeControllers: true
 		}, function (err, results) {
 			if (err) {
 				return callback(err)
@@ -115,7 +118,10 @@ DatabaseDumps.prototype.go = function (query, callback) {
 
 	q.defer(function (callback) {
 		sectionsDB.find(searchQuery, {
-			skipValidation: true
+			skipValidation: true,
+			shouldBeOnlyOne: false,
+			sanitize: true,
+			removeControllers: true
 		}, function (err, results) {
 			if (err) {
 				return callback(err)
@@ -128,7 +134,10 @@ DatabaseDumps.prototype.go = function (query, callback) {
 
 	q.defer(function (callback) {
 		subjectsDB.find(searchQuery, {
-			skipValidation: true
+			skipValidation: true,
+			shouldBeOnlyOne: false,
+			sanitize: true,
+			removeControllers: true
 		}, function (err, results) {
 			if (err) {
 				return callback(err)
@@ -160,7 +169,7 @@ if (require.main === module) {
 		host: 'neu.edu',
 		termId: "201710"
 	}, function (err, results) {
-
+		console.log("done,",err, results);
 
 	}.bind(this));
 }

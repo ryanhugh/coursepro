@@ -4,6 +4,7 @@ var async = require('async')
 
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
+var Keys = require('../../../common/Keys')
 
 var Class = require('../data/Class')
 
@@ -49,7 +50,7 @@ List.prototype.go = function () {
 			function (callback) {
 
 				//create all the classes
-				Class.createMany(this.$routeParams, function (err, classes) {
+				Class.createMany(Keys.create(this.$routeParams), function (err, classes) {
 					callback(err, classes)
 				}.bind(this))
 			}.bind(this)
