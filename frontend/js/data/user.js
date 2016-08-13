@@ -6,6 +6,7 @@ var macros = require('../macros')
 var request = require('../request')
 var Class = require('./Class')
 var Section = require('./Section')
+var Keys = require('../../../common/Keys')
 
 function User() {
 
@@ -544,10 +545,10 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				}
 			}
 
-			var keys = section.getIdentifer().full.obj;
+			var keys = Keys.create(section)
 			var addToDBSections = true;
 			for (var i = 0; i < this.dbData.lists[listName].sections.length; i++) {
-				if (_.isEqual(this.dbData.lists[listName].sections[i], keys)) {
+				if (keys.propsEqual(this.dbData.lists[listName].sections[i])) {
 					addToDBSections = false;
 					break;
 				}
@@ -559,7 +560,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				this.lists[listName].sections.push(section);
 			}
 			if (addToDBSections) {
-				this.dbData.lists[listName].sections.push(keys)
+				this.dbData.lists[listName].sections.push(keys.getObj())
 			}
 
 		}.bind(this))
@@ -574,10 +575,10 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				}
 			}
 
-			var keys = aClass.getIdentifer().full.obj;
+			var keys = Keys.create(aClass)
 			var addToDBClasses = true;
 			for (var i = 0; i < this.dbData.lists[listName].classes.length; i++) {
-				if (_.isEqual(this.dbData.lists[listName].classes[i], keys)) {
+				if (keys.propsEqual(this.dbData.lists[listName].classes[i])) {
 					addToDBClasses = false;
 					break;
 				}
@@ -589,7 +590,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				this.lists[listName].classes.push(aClass);
 			}
 			if (addToDBClasses) {
-				this.dbData.lists[listName].classes.push(keys)
+				this.dbData.lists[listName].classes.push(keys.getObj())
 			}
 		}.bind(this))
 
@@ -676,7 +677,7 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 
 	classes.forEach(function (aClass) {
 
-		var classKey = aClass.getIdentifer().full.obj;
+		var classKey = Keys.create(aClass).getObj();
 
 		//remove it from this.lists
 		var matchingClasses = _.filter(this.lists[listName].classes, classKey);
@@ -690,7 +691,7 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 	}.bind(this))
 
 	sections.forEach(function (section) {
-		var sectionKey = section.getIdentifer().full.obj;
+		var sectionKey = Keys.create(section).getObj();
 
 		//remove it from this.lists
 		var matchingSections = _.filter(this.lists[listName].sections, sectionKey);
@@ -822,8 +823,12 @@ User.prototype.toggleListContainsSection = function (listName, section, callback
 	//and tell server
 	else {
 
-		var keys = section.getIdentifer().required.obj;
-		var classInstance = Class.create(keys);
+		var classInstance = Class.create({
+			host: section.host,
+			termId: section.termId,
+			subject: section.subject,
+			classUid: section.classUid
+		});
 		if (classInstance.dataStatus === macros.DATASTATUS_NOTSTARTED) {
 			console.warn('had to load class in toggleListContainsSection :(')
 		}

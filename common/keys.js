@@ -87,17 +87,17 @@ Keys.prototype.getHashWithEndpoint = function (endpoint) {
 	return endpoint + '/' + this.getHash()
 };
 
-Keys.prototype.getHashWithGivenProps = function (arr) {
-	var retVal = {};
-	for (var i = 0; i < arr.length; i++) {
-		if (arr[i] !== allKeys[i]) {
-			elog(arr[i], allKeys[i])
-			break;
-		}
-		retVal[arr[i]] = this[arr[i]]
-	}
-	return retVal;
-};
+// Keys.prototype.getHashWithGivenProps = function (arr) {
+// 	var retVal = {};
+// 	for (var i = 0; i < arr.length; i++) {
+// 		if (arr[i] !== allKeys[i]) {
+// 			elog(arr[i], allKeys[i])
+// 			break;
+// 		}
+// 		retVal[arr[i]] = this[arr[i]]
+// 	}
+// 	return retVal;
+// };
 
 // Used in BaseData to go from a class that has everything to the classUid to what should be requested from the server
 Keys.prototype.getMinimumKeys = function() {
@@ -135,6 +135,18 @@ Keys.prototype.containsAllProperties = function (arr) {
 	}
 	return true;
 };
+
+// Keys.prototype.containsMinimumProperties = function() {
+// 		var retVal = {};
+// 	for (var i = 0; i < minData; i++) {
+// 		var currValue = this[allKeys[i]];
+// 		if (!currValue) {
+// 			break;
+// 		}
+// 		retVal[allKeys[i]] = currValue
+// 	}
+// 	return Keys.create(retVal);
+// };
 
 
 Keys.prototype.equals = function (other) {

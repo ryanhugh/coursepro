@@ -73,8 +73,6 @@ function Graph() {
 		this.$scope.focusSelector = true;
 	}
 
-	this.$scope.addClass = this.addClass.bind(this)
-
 	this.$scope.$on('$destroy',function () {
 		if (this.force) {
 			this.force.stop();
@@ -99,13 +97,6 @@ Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile',
 Graph.isPage = true;
 Graph.urls = ['/graph/:host/:termId/:subject?/:classUid?']
 Graph.fnName = 'Graph'
-
-Graph.prototype.addClass = function (aClass) {
-
-	var obj = aClass.getIdentifer().full.obj;
-
-	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))
-};
 
 Graph.prototype.getWidth = function (node) {
 	var width = Math.min(200, this.nodeWidth);

@@ -7,6 +7,7 @@ var request = require('../request')
 var Node = require('./Node')
 var user = require('../data/user');
 var RequisiteBranch = require('../data/RequisiteBranch');
+var Keys = require('../../../common/Keys')
 
 function TreeMgr() {
 
@@ -712,7 +713,7 @@ TreeMgr.prototype.logRootNode = function (rootNode, body) {
 	}
 
 	//add host, termId, subject, and classUid
-	body = _.merge(rootNode.class.getIdentifer().full.obj, body);
+	body = _.merge(Keys.create(rootNode.class).getObj(), body);
 
 	request({
 		url: '/log',
