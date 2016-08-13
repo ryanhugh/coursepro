@@ -5,8 +5,10 @@ var request = require('../request')
 var queue = require('d3-queue').queue;
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
-
+var request = require('../request')
 var Class = require('../data/Class')
+var elasticlunr = require('elasticlunr');
+
 
 
 function Search() {
@@ -17,6 +19,28 @@ function Search() {
 	// Updated on search, used in ng-repeat
 	this.classes = [];
 
+
+	this.searchIndex = null;
+
+
+	var host = this.$routeParams.host;
+	var termId = this.$routeParams.termId;
+
+
+
+
+
+	request({
+		url: '/getSearchIndex/' + host + '/' + termId,
+		host: this.$routeParams.host,
+		termId: this.$routeParams.termId
+	}, function (err, result) {
+
+		console.log("Got search index data!");
+
+		this.searchIndex = elasticlunr.Index.load(result);
+
+	}.bind(this))
 
 
 
@@ -29,11 +53,11 @@ function Search() {
 	// 		this.$scope.focusSelector = true;
 	// 	}
 
-	// 	//wait for a subject and a search term
-	// 	if (this.$routeParams.subject && this.$routeParams.searchText) {
-	// 		this.searchText = this.$routeParams.searchText
-	// 		this.go()
-	// 	}
+	//wait for a subject and a search term
+	if (this.$routeParams.host && this.$routeParams.termId) {
+		// this.searchText = this.$routeParams.searchText
+		// this.go()
+	}
 
 	// 	setTimeout(function () {
 	// 		this.$scope.$apply();
@@ -44,19 +68,66 @@ function Search() {
 
 	// this.$scope.addSubject = this.addSubject.bind(this)
 	this.search()
-	// debugger
+		// debugger
 }
 
 Search.fnName = 'Search'
 	// Search.isPage = true;
-Search.$inject = ['$scope', '$location', '$routeParams']
-	// Search.urls = ['/search/:host/:termId/:subject?/:searchText?']
+Search.$inject = ['$scope', '$location', '$routeParams','$timeout']
+	// Search.urls = ['/search/:host/:termId/:searchText?']
 
 //prototype constructor
 Search.prototype = Object.create(BaseDirective.prototype);
 Search.prototype.constructor = Search;
 
 Search.prototype.go = function () {
+	if (!this.searchIndex || !this.searchText) {
+		console.warn('fix me')
+		return
+	}
+
+	// Return with a ref: and a score: 
+	var results = this.searchIndex.search(this.searchText)
+
+	var classes = [];
+
+	results.forEach(function (result) {
+		classes.push(Class.create({
+			key: '/listClasses/' + result.ref
+		}))
+	}.bind(this))
+
+	var q = queue();
+
+	classes.forEach(function (aClass) {
+		q.defer(function (callback) {
+			aClass.download(function (err) {
+				callback(err)
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
+
+	q.awaitAll(function (err) {
+		if (err) {
+			elog(err);
+		}
+
+		this.classes = classes;
+		this.timeout(function () {
+			this.classes = classes;
+			this.$scope.$apply()
+		}.bind(this))
+
+
+	}.bind(this))
+
+	// this.classes = classes;
+
+	return;
+
+
+
+
 	if (!this.$routeParams.subject || !this.$routeParams.searchText) {
 		console.log("tried to run search go but don't have subject or searchText", this.$routeParams);
 		return;

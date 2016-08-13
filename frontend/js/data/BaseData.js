@@ -12,7 +12,7 @@ function BaseData(config) {
 
 	// this.updateWithData(config);
 	for (var attrName in config) {
-		this[attrName] = config[attrName] 
+		this[attrName] = config[attrName]
 	}
 
 	// This self = this is only used for debugging
@@ -37,7 +37,7 @@ BaseData.doObjectsMatchWithKeys = function (keys, a, b) {
 }
 
 BaseData.isValidCreatingData = function (config) {
-	if (config._id) {
+	if (config._id || config.key) {
 		return true;
 	}
 
@@ -85,17 +85,26 @@ BaseData.create = function (config) {
 
 
 	// create the key
-	for (var i = 0; i < allKeys.length; i++) {
-		if (!config[allKeys[i]]) {
-			canCache = false;
+	if (!config.key) {
+		for (var i = 0; i < allKeys.length; i++) {
+			if (!config[allKeys[i]]) {
+				canCache = false;
+			}
 		}
 	}
+
 
 	//seach instance cache for matching instance
 	// hash all searches with host + termId + subject + classUid + crn and then lookup in the table
 	//note that we are not cloning the cacheItem, for speed
+	var key;
 	if (canCache) {
-		var key = this.getKeyFromConfig(config);
+		if (config.key) {
+			key = config.key
+		}
+		else {
+			key = this.API_ENDPOINT + '/' + this.getKeyFromConfig(config);
+		}
 
 		if (key && instanceCache[key]) {
 			var instance = instanceCache[key];
@@ -117,7 +126,6 @@ BaseData.create = function (config) {
 	}
 	else {
 		if (canCache) {
-			var key = this.getKeyFromConfig(config);
 			if (key) {
 				if (instanceCache[key]) {
 					console.log("WTF there was no match a ms ago!");
@@ -248,6 +256,9 @@ BaseData.prototype.getIdentifer = function () {
 };
 
 BaseData.getKeyFromConfig = function (config) {
+	if (config.key) {
+		return config.key
+	}
 
 	var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
 
@@ -320,7 +331,7 @@ BaseData.download = function (config, callback) {
 	// this.optionalPath
 	// ["classUid"]
 
-	if (!config.body._id) {
+	if (!config.body._id && !config.body.key) {
 		if (!config.body.host && _(this.requiredPath).includes('host')) {
 			elog('nope')
 		}
@@ -330,29 +341,37 @@ BaseData.download = function (config, callback) {
 
 	}
 
-
-
-	var keys = this.requiredPath.concat(this.optionalPath)
+	var hashStr;
 	var isFullHashIndex = true
-	var hash = [this.API_ENDPOINT];
-	for (var i = 0; i < keys.length; i++) {
-		var attrName = keys[i]
-		var keyValue = config.body[attrName]
-		if (keyValue) {
-			hash.push(keyValue)
-		}
-		else {
-			isFullHashIndex = false;
-			break;
-		};
+	if (config.body.key) {
+		hashStr = config.body.key
 	}
-	var hashStr = hash.join('/')
+	else {
+		var keys = this.requiredPath.concat(this.optionalPath)
+		var hash = [this.API_ENDPOINT];
+		for (var i = 0; i < keys.length; i++) {
+			var attrName = keys[i]
+			var keyValue = config.body[attrName]
+			if (keyValue) {
+				hash.push(keyValue)
+			}
+			else {
+				isFullHashIndex = false;
+				break;
+			};
+		}
+		hashStr = hash.join('/')
+	}
+
 
 	if (isFullHashIndex && resultsHash[hashStr]) {
 		setTimeout(function () {
 			callback(null, [resultsHash[hashStr]])
 		}.bind(this), 0)
 		return;
+	}
+	if (config.body.key && !resultsHash[hashStr]) {
+		elog('had key but no value?')
 	}
 
 	// Get all the data in this term
@@ -489,6 +508,9 @@ BaseData.prototype.internalDownload = function (callback) {
 	else if (this._id) {
 		lookup._id = this._id
 	}
+	else if (this.key) {
+		lookup.key = this.key;
+	}
 	else {
 		elog('dont have _id or host?', this)
 	}
@@ -517,7 +539,6 @@ BaseData.prototype.internalDownload = function (callback) {
 			console.log('base data download results.length = 0', this, lookup)
 			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(null, this)
-
 		}
 		else if (_(instances).includes(this)) {
 			return callback(null, this);

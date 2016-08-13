@@ -272,7 +272,7 @@ Class.prototype.updateWithData = function (config) {
 
 	}
 
-	if (config.coreqs && !_.isEqual(config.prereqs, this.serverCoreqs)) {
+	if (config.coreqs && !_.isEqual(config.coreqs, this.serverCoreqs)) {
 		if (this.serverCoreqs) {
 			elog('wtf')
 		}
