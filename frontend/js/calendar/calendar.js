@@ -1,7 +1,8 @@
 'use strict';
 var queue = require('d3-queue').queue;
 
-
+var _ = require('lodash')
+var macros = require('../macros')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
