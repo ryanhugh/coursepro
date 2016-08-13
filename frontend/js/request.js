@@ -168,7 +168,7 @@ Request.prototype.fireRequest = function (config, callback) {
 	var body = _.cloneDeep(config.body);
 
 	//add the userid
-	if (config.type === 'POST') {
+	if (config.method === 'POST') {
 
 		if (config.body.userId) {
 			console.log('error config.body had a userId??')
@@ -237,9 +237,9 @@ Request.prototype.fireRequest = function (config, callback) {
 	}.bind(this);
 
 
-	xmlhttp.open(config.type, config.url, true);
+	xmlhttp.open(config.method, config.url, true);
 	xmlhttp.setRequestHeader("Content-type", "application/json");
-	if (config.type === 'POST') {
+	if (config.method === 'POST') {
 		xmlhttp.send(JSON.stringify(body));
 	}
 	else {
@@ -249,9 +249,17 @@ Request.prototype.fireRequest = function (config, callback) {
 
 
 //config.auth : weather or not to send loginKey, default no
-//useCache : weather or not to use cache, default yes
+//config.useCache : weather or not to use cache, ignored at not used right now
+//config.url : the url
+//config.method : the http method. default is POST if there is (a config.body or a config.keys), and GET if there is not
+//config.body: the body to send with post requests
+//config.keys: an instance of Keys to convert into a body before sending
 Request.prototype.go = function (config, callback) {
 	config = _.cloneDeep(config)
+
+	if (config.method) {
+		elog()
+	}
 
 	//default values
 	if (!callback) {
@@ -266,23 +274,28 @@ Request.prototype.go = function (config, callback) {
 		}
 	}
 
+	//Copy keys to body, if keys given
+	if (config.keys) {
+		config.body = config.keys.getObj()
+	}
+
 	//default is post if body is given else get
-	if (!config.type) {
+	if (!config.method) {
 		if (config.body) {
-			config.type = 'POST'
+			config.method = 'POST'
 		}
 		else {
-			config.type = 'GET'
+			config.method = 'GET'
 		}
 	}
 
-	if (!config.body && config.type == "POST") {
+	if (!config.body && config.method == "POST") {
 		config.body = {}
 	};
 
 
-	if (!_(['POST', 'GET']).includes(config.type)) {
-		elog('dropping request unknown method type', config.type);
+	if (!_(['POST', 'GET']).includes(config.method)) {
+		elog('dropping request unknown method type', config.method);
 		return callback('internal error');
 	};
 

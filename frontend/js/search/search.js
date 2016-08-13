@@ -93,7 +93,7 @@ Search.prototype.go = function () {
 
 	results.forEach(function (result) {
 		classes.push(Class.create({
-			key: '/listClasses/' + result.ref
+			hash: result.ref
 		}))
 	}.bind(this))
 

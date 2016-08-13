@@ -4,6 +4,7 @@ var async = require('async')
 var request = require('../request')
 var macros = require('../macros')
 var memoize = require('../../../memoize')
+var Keys = require('../../../common/Keys')
 
 var instanceCache = {};
 
@@ -26,29 +27,13 @@ function BaseData(config) {
 	})
 }
 
-BaseData.doObjectsMatchWithKeys = function (keys, a, b) {
-	for (var i = 0; i < keys.length; i++) {
-		var key = keys[i]
-		if (!a[key] || !b[key] || a[key] != b[key]) {
-			return false
-		}
-	}
-	return true;
-}
-
 BaseData.isValidCreatingData = function (config) {
-	if (config._id || config.key) {
+	if (config._id || config.hash) {
 		return true;
 	}
 
-	var keys = this.requiredPath.concat(this.optionalPath)
-	for (var i = 0; i < keys.length; i++) {
-		var attrName = keys[i]
-		if (!config[attrName]) {
-			return false;
-		};
-	}
-	return true;
+	var propNames = this.requiredPath.concat(this.optionalPath)
+	return Keys.create(config).containsAllProperties(propNames);
 };
 
 
@@ -85,12 +70,8 @@ BaseData.create = function (config) {
 
 
 	// create the key
-	if (!config.key) {
-		for (var i = 0; i < allKeys.length; i++) {
-			if (!config[allKeys[i]]) {
-				canCache = false;
-			}
-		}
+	if (!config.hash) {
+		canCache = Keys.create(config).containsAllProperties(allKeys);
 	}
 
 
@@ -99,11 +80,11 @@ BaseData.create = function (config) {
 	//note that we are not cloning the cacheItem, for speed
 	var key;
 	if (canCache) {
-		if (config.key) {
-			key = config.key
+		if (config.hash) {
+			key = config.hash
 		}
 		else {
-			key = this.API_ENDPOINT + '/' + this.getKeyFromConfig(config);
+			key = Keys.create(config).getHashWithEndpoint(this.API_ENDPOINT);
 		}
 
 		if (key && instanceCache[key]) {
@@ -150,12 +131,7 @@ BaseData.prototype.equals = function (other) {
 	if (this.dataStatus != macros.DATASTATUS_DONE || other.dataStatus != macros.DATASTATUS_DONE) {
 		elog('BaseData comparing nodes that are not both done', this, other)
 	}
-	var thisStr = this.getIdentifer().full.str;
-	var otherStr = other.getIdentifer().full.str;
-	if (!thisStr || !otherStr) {
-		elog('BaseData equals something is null?', thisStr, otherStr)
-	}
-	return thisStr === otherStr;
+	return Keys.create(this).equals(Keys.create(other))
 };
 
 
@@ -256,8 +232,8 @@ BaseData.prototype.getIdentifer = function () {
 };
 
 BaseData.getKeyFromConfig = function (config) {
-	if (config.key) {
-		return config.key
+	if (config.hash) {
+		return config.hash
 	}
 
 	var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
@@ -287,18 +263,14 @@ var resultsHash = {};
 
 BaseData.downloadResultsGroup = memoize(function (config, callback) {
 
-	console.log("Downloading + Building hash for " + this.API_ENDPOINT, JSON.stringify(config.body));
+	console.log("Downloading + Building hash for " + this.API_ENDPOINT, JSON.stringify(config.keys));
 
 	var requestConfig = {};
 	if (this.bypassResultsCache) {
 		requestConfig = config
 	}
 	else {
-		var string = this.getKeyFromConfig(config.body);
-		requestConfig.url = this.API_ENDPOINT + '/' + string;
-
-		//mirrors databaseDump.js
-		requestConfig.url = requestConfig.url;
+		requestConfig.url = config.keys.getHashWithEndpoint(this.API_ENDPOINT);
 	}
 
 	request(requestConfig, function (err, results) {
@@ -308,7 +280,7 @@ BaseData.downloadResultsGroup = memoize(function (config, callback) {
 
 		// load it into the hash map
 		results.forEach(function (result) {
-			var hash = this.API_ENDPOINT + '/' + this.getKeyFromConfig(result)
+			var hash = Keys.create(result).getHashWithEndpoint(this.API_ENDPOINT)
 			resultsHash[hash] = result;
 		}.bind(this))
 
@@ -316,53 +288,16 @@ BaseData.downloadResultsGroup = memoize(function (config, callback) {
 	}.bind(this))
 
 }, function (config) {
-	return this.API_ENDPOINT + '/' + BaseData.getKeyFromConfig(config.body)
+	return config.keys.getHashWithEndpoint(this.API_ENDPOINT)
 })
 
 
 //all requests from all trafic go through here
 BaseData.download = function (config, callback) {
 
-	// HERE, can be given 2 types:
-	// host + ... + classUid, which can just index hash and done
-	// .. and missing classUid, in which you would just loop over O(n)...
-	// 	this.requiredPath
-	// ["host", "termId", "subject"]
-	// this.optionalPath
-	// ["classUid"]
 
-	if (!config.body._id && !config.body.key) {
-		if (!config.body.host && _(this.requiredPath).includes('host')) {
-			elog('nope')
-		}
-		if (!config.body.termId && _(this.requiredPath).includes('termId')) {
-			elog('nope')
-		}
-
-	}
-
-	var hashStr;
-	var isFullHashIndex = true
-	if (config.body.key) {
-		hashStr = config.body.key
-	}
-	else {
-		var keys = this.requiredPath.concat(this.optionalPath)
-		var hash = [this.API_ENDPOINT];
-		for (var i = 0; i < keys.length; i++) {
-			var attrName = keys[i]
-			var keyValue = config.body[attrName]
-			if (keyValue) {
-				hash.push(keyValue)
-			}
-			else {
-				isFullHashIndex = false;
-				break;
-			};
-		}
-		hashStr = hash.join('/')
-	}
-
+	var hashStr = config.keys.getHashWithEndpoint(this.API_ENDPOINT)
+	var isFullHashIndex = config.keys.containsAllProperties(this.requiredPath.concat(this.optionalPath));
 
 	if (isFullHashIndex && resultsHash[hashStr]) {
 		setTimeout(function () {
@@ -370,20 +305,14 @@ BaseData.download = function (config, callback) {
 		}.bind(this), 0)
 		return;
 	}
-	if (config.body.key && !resultsHash[hashStr]) {
+	if (config.keys.hash && !resultsHash[hashStr]) {
 		elog('had key but no value?')
 	}
 
 	// Get all the data in this term
 	var requestQuery = {
 		url: this.API_ENDPOINT,
-		body: {}
-	}
-	if (config.body.host) {
-		requestQuery.body.host = config.body.host
-	}
-	if (config.body.termId) {
-		requestQuery.body.termId = config.body.termId
+		keys: config.keys.getMinimumKeys()
 	}
 
 	this.downloadResultsGroup(requestQuery, function (err, results, resultsHash) {
@@ -393,7 +322,7 @@ BaseData.download = function (config, callback) {
 
 		//If looking up a host or a term, the requestQuery will be the same as the config.
 		// If thats the case, just return all the results
-		if (_.isEqual(config.body, requestQuery.body)) {
+		if (config.keys.equals(requestQuery.keys)) {
 			return callback(null, results)
 		}
 
@@ -407,19 +336,12 @@ BaseData.download = function (config, callback) {
 			return callback(null, []);
 		}
 		else {
-			console.warn('Missed cache, searching for ', JSON.stringify(config.body));
+			console.warn('Missed cache, searching for ', JSON.stringify(config.keys));
 
 			var matches = [];
 			for (var i = 0; i < results.length; i++) {
 				var row = results[i];
-				var isMatch = true;
-				for (var attrName in config.body) {
-					if (config.body[attrName] != row[attrName]) {
-						isMatch = false;
-						break;
-					}
-				}
-				if (isMatch) {
+				if (config.keys.containsAllProperties(row)) {
 					matches.push(row)
 				}
 			}
@@ -431,7 +353,7 @@ BaseData.download = function (config, callback) {
 
 BaseData.downloadGroup = memoize(function (config, callback) {
 
-	//download with the given body, and then create a class instance from each one
+	//download with the given keys, and then create a class instance from each one
 	this.download(config, function (err, results) {
 		if (err) {
 			return callback(err)
@@ -454,13 +376,13 @@ BaseData.downloadGroup = memoize(function (config, callback) {
 
 	}.bind(this))
 }, function (config) {
-	return BaseData.getKeyFromConfig(config.body);
+	return config.keys.getHashWithEndpoint(this.API_ENDPOINT);
 })
 
-BaseData.createMany = function (body, callback) {
+BaseData.createMany = function (keysObj, callback) {
 
 	this.downloadGroup({
-		body: body
+		keys: Keys.create(keysObj)
 	}, function (err, instances) {
 		if (err) {
 			elog("error", err);
@@ -481,53 +403,12 @@ BaseData.prototype.internalDownload = function (callback) {
 		callback = function () {}
 	}
 
-
-	// var lookup = this.getIdentifer().required.lookup
-	// var lookupStr = this.getIdentifer().required.str
-
-
-	var lookup = {};
-	if (this.host) {
-		lookup.host = this.host
-
-		if (this.termId) {
-			lookup.termId = this.termId
-		}
-
-		// var resultsQuery = {}
-		if (this.subject) {
-			lookup.subject = this.subject
-		}
-		if (this.classUid) {
-			lookup.classUid = this.classUid
-		}
-		if (this.crn) {
-			lookup.crn = this.crn
-		}
-	}
-	else if (this._id) {
-		lookup._id = this._id
-	}
-	else if (this.key) {
-		lookup.key = this.key;
-	}
-	else {
-		elog('dont have _id or host?', this)
-	}
-
 	this.dataStatus = macros.DATASTATUS_LOADING;
-
+	var keys = Keys.create(this);
 	this.constructor.downloadGroup({
-		body: lookup
+		keys: keys
 	}, function (err, instances, results) {
 		this.dataStatus = macros.DATASTATUS_DONE;
-
-		// if (err) {
-		// 	err = 'http error' + err;
-		// }
-		// else if (results.error) {
-		// 	err = 'results.error' + err
-		// }
 
 		if (err) {
 			elog(err)
@@ -547,18 +428,8 @@ BaseData.prototype.internalDownload = function (callback) {
 
 
 			// cache will match if used keys, must of used _id or something if here
-			var keys = this.getIdentifer().full.lookup;
 			for (var i = 0; i < results.length; i++) {
-
-				var isMatch = true;
-
-				for (var currKey in keys) {
-					if (results[i][currKey] !== this[currKey]) {
-						isMatch = false;
-					}
-				}
-
-				if (isMatch) {
+				if (keys.propsEqual(results[i])) {
 					this.updateWithData(results[i])
 					console.warn('cache miss!', keys)
 					return callback(null, this);
