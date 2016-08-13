@@ -60,6 +60,7 @@ TreeMgr.prototype.simplifyTree = function (node) {
 		var childId = child.getId();
 		for (var i = 0; i < newPrereqs.length; i++) {
 			if (newPrereqs[i].getId() === childId) {
+				child.DELETED3 = true
 				return;
 			}
 		}
