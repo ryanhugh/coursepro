@@ -68,27 +68,31 @@ BaseData.create = function (config) {
 
 	var allKeys = this.requiredPath.concat(this.optionalPath);
 
-
+	var keys = Keys.create(config)
 	// create the key
 	if (!config.hash) {
-		canCache = Keys.create(config).containsAllProperties(allKeys);
+		canCache = keys.containsAllProperties(allKeys);
+	}
+
+	if (keys._id) {
+		console.warn('_id is depriciated yooo')
 	}
 
 
 	//seach instance cache for matching instance
 	// hash all searches with host + termId + subject + classUid + crn and then lookup in the table
 	//note that we are not cloning the cacheItem, for speed
-	var key;
+	var hash;
 	if (canCache) {
-		key = Keys.create(config).getHashWithEndpoint(this.API_ENDPOINT);
+		hash = keys.getHashWithEndpoint(this.API_ENDPOINT);
 
-		if (key && instanceCache[key]) {
-			var instance = instanceCache[key];
+		if (hash && instanceCache[hash]) {
+			var instance = instanceCache[hash];
 			instance.updateWithData(config);
-			return instanceCache[key]
+			return instanceCache[hash]
 		}
-		else if (!key) {
-			elog('no key?', config)
+		else if (!hash) {
+			elog('no hash?', config)
 		}
 	};
 
@@ -102,15 +106,15 @@ BaseData.create = function (config) {
 	}
 	else {
 		if (canCache) {
-			if (key) {
-				if (instanceCache[key]) {
+			if (hash) {
+				if (instanceCache[hash]) {
 					console.log("WTF there was no match a ms ago!");
 				}
-				instanceCache[key] = instance;
+				instanceCache[hash] = instance;
 				return instance;
 			}
 			else {
-				elog('invalid key post instance', key, config)
+				elog('invalid hash post instance', hash, config)
 			}
 		};
 		return instance

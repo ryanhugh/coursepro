@@ -66,11 +66,6 @@ function Graph() {
 		setTimeout(function () {
 			this.createGraph(path)
 		}.bind(this), 0);
-		this.$scope.focusSelector = false;
-	}
-	else {
-		elog('not supported yet')
-		this.$scope.focusSelector = true;
 	}
 
 	this.$scope.$on('$destroy',function () {
