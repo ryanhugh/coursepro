@@ -3,6 +3,7 @@ var queue = require('d3-queue').queue
 var mkdirp = require('mkdirp');
 var fs = require('fs')
 var elasticlunr = require('elasticlunr');
+var path = require('path')
 
 var macros = require('../macros')
 var BaseProcessor = require('./baseProcessor').BaseProcessor;
@@ -17,41 +18,11 @@ function CreateSearchIndex() {
 }
 
 
-
-
 CreateSearchIndex.prototype = Object.create(BaseProcessor.prototype);
 CreateSearchIndex.prototype.constructor = CreateSearchIndex;
 
 
-
-CreateSearchIndex.prototype.getKeyFromConfig = function (config) {
-
-	var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
-
-	var key = [];
-
-	// create the key
-	for (var i = 0; i < allKeys.length; i++) {
-		if (!config[allKeys[i]]) {
-			break
-		}
-		key.push(config[allKeys[i]].replace(/[^A-Za-z0-9.]+/g, "_"));
-	}
-	if (key.length > 0) {
-		return key.join('/')
-	}
-	else if (config._id) {
-		return config._id
-	}
-	else {
-		// Possible if looking up all hosts
-		return '';
-	}
-};
-
-
 CreateSearchIndex.prototype.go = function (query, callback) {
-	console.log("hi");
 	var q = queue()
 
 	var sections;
