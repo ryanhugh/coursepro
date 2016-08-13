@@ -1,12 +1,15 @@
 'use strict';
-var macros = require('../macros')
-var BaseProcessor = require('./baseProcessor').BaseProcessor;
-var elasticlunr = require('elasticlunr');
-var classesDB = require('../databases/classesDB');
-var sectionsDB = require('../databases/sectionsDB');
 var queue = require('d3-queue').queue
 var mkdirp = require('mkdirp');
 var fs = require('fs')
+var elasticlunr = require('elasticlunr');
+
+var macros = require('../macros')
+var BaseProcessor = require('./baseProcessor').BaseProcessor;
+var classesDB = require('../databases/classesDB');
+var sectionsDB = require('../databases/sectionsDB');
+var Keys = require('../../common/Keys')
+
 
 
 function CreateSearchIndex() {
@@ -100,13 +103,11 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 		index.addField('subject');
 
 		classes.forEach(function (aClass) {
-			aClass.key = this.getKeyFromConfig(aClass)
+			aClass.key = Keys.create(aClass).getHash()
 			index.addDoc(aClass)
 		}.bind(this))
 
 		var searchIndexString = JSON.stringify(index.toJSON());
-
-		var aClass = classes[0];
 
 		if (!query.termId) {
 			elog('not implemented yet!!!')
@@ -114,10 +115,10 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 
 		var endpoint = 'getSearchIndex'
 
-		// Replace any non-alphanumeric character with an underscore
-		var folderName = './dist/' + endpoint + '/' + query.host.replace(/[^A-Za-z0-9.]+/g, "_");
-		var fileName = folderName + '/' + query.termId.replace(/[^A-Za-z0-9.]+/g, "_");
+		var keys = Keys.create(query)
 
+		var fileName = path.join('.', 'dist', keys.getHashWithEndpoint(endpoint));
+		var folderName = path.dirname(fileName);
 
 		mkdirp(folderName, function (err) {
 			if (err) {
@@ -134,11 +135,7 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 				return callback()
 			}.bind(this));
 		}.bind(this));
-
-
 	}.bind(this))
-
-
 };
 
 CreateSearchIndex.prototype.CreateSearchIndex = CreateSearchIndex;

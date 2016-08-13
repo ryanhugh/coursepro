@@ -1,12 +1,15 @@
 'use strict';
-var BaseProcessor = require('./baseProcessor').BaseProcessor;
-var macros = require('../macros')
-var classesDB = require('../databases/classesDB')
-var sectionsDB = require('../databases/sectionsDB')
-var subjectsDB = require('../databases/subjectsDB')
 var mkdirp = require('mkdirp');
 var queue = require('d3-queue').queue
 var fs = require('fs')
+var path = require('path')
+
+var macros = require('../macros')
+var BaseProcessor = require('./baseProcessor').BaseProcessor;
+var classesDB = require('../databases/classesDB')
+var sectionsDB = require('../databases/sectionsDB')
+var subjectsDB = require('../databases/subjectsDB')
+var Keys = require('../../common/Keys')
 
 
 function DatabaseDumps() {
@@ -46,9 +49,13 @@ DatabaseDumps.prototype.saveRows = function (endpoint, results, callback) {
 		q.defer(function (callback) {
 			var rowData = classLists[attrName]
 
-			// Replace any non-alphanumeric character with an underscore
-			var folderName = './dist/' + endpoint + '/' + rowData.host.replace(/[^A-Za-z0-9.]+/g, "_");
-			var fileName = folderName + '/' + rowData.termId.replace(/[^A-Za-z0-9.]+/g, "_");
+			var keys = Keys.create({
+				host: rowData.host,
+				termId: rowData.termId
+			});
+
+			var fileName = path.join('.', 'dist', keys.getHashWithEndpoint(endpoint));
+			var folderName = path.dirname(fileName);
 
 			// ALSO MAKE THESE CHANGES IN SERACH INDEX.JS
 			// NEED TO MAKE THESE ^^ CHANGES IN THE FRONTEND AND UNIT TESTS
@@ -110,7 +117,7 @@ DatabaseDumps.prototype.go = function (query, callback) {
 			if (err) {
 				return callback(err)
 			}
-			this.saveRows('listClasses', results, function (err) {
+			this.saveRows('/listClasses', results, function (err) {
 				return callback(err)
 			}.bind(this))
 		}.bind(this))
@@ -126,7 +133,7 @@ DatabaseDumps.prototype.go = function (query, callback) {
 			if (err) {
 				return callback(err)
 			}
-			this.saveRows('listSections', results, function (err) {
+			this.saveRows('/listSections', results, function (err) {
 				return callback(err)
 			}.bind(this))
 		}.bind(this))
@@ -142,13 +149,11 @@ DatabaseDumps.prototype.go = function (query, callback) {
 			if (err) {
 				return callback(err)
 			}
-			this.saveRows('listSubjects', results, function (err) {
+			this.saveRows('/listSubjects', results, function (err) {
 				return callback(err)
 			}.bind(this))
 		}.bind(this))
 	}.bind(this))
-
-	console.warn("NEED TO ADD TERM AND COLLEG EHERE TOOOO");
 
 	q.awaitAll(function (err) {
 		callback(err)
@@ -169,7 +174,7 @@ if (require.main === module) {
 		host: 'neu.edu',
 		termId: "201710"
 	}, function (err, results) {
-		console.log("done,",err, results);
+		console.log("done,", err, results);
 
 	}.bind(this));
 }
