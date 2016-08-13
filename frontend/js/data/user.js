@@ -194,12 +194,9 @@ User.prototype.sendRequest = function (config, callback) {
 		return callback('internal error')
 	};
 
-	config.type = 'POST'
+	config.method = 'POST'
 	config.useCache = false;
 
-	if (config.tree) {
-		config.body = config.tree.getIdentifer().full.obj;
-	}
 	if (!config.body) {
 		config.body = {}
 	}
@@ -209,7 +206,6 @@ User.prototype.sendRequest = function (config, callback) {
 	this.activeRequestCount++;
 
 	this.lastRequestTime = new Date().getTime()
-		// console.log("resettting time!",this.lastRequestTime);
 
 	request(config, function (err, response) {
 

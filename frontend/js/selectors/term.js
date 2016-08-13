@@ -3,6 +3,7 @@ var BaseSelector = require('./baseSelector').BaseSelector;
 
 var user = require('../data/user')
 var Term = require('../data/Term')
+var Keys = require('../../../common/Keys')
 
 function TermSelector() {
 	BaseSelector.prototype.constructor.apply(this, arguments);
@@ -26,9 +27,11 @@ TermSelector.prototype.download = function (callback) {
 		callback = function () {}
 	}
 
-	Term.createMany({
+	var keys = Keys.create({
 		host: selectorsMgr.college.getValue(),
-	}, function (err, terms) {
+	})
+
+	Term.createMany(keys, function (err, terms) {
 		if (err) {
 			elog(err)
 			return callback(err)

@@ -3,6 +3,7 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
 var user = require('../data/user')
+var Keys = require('../../../common/Keys')
 
 function ClassList() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
@@ -46,17 +47,11 @@ function ClassList() {
 
 	}.bind(this), true)
 
-
-	this.$scope.loadMore = function () {
-		var more = this.unrenderedClasses.shift()
-		if (more) {
-			this.renderedClasses.push(more)
-		};
-	}.bind(this);
+	this.$scope.loadMore = this.loadMore.bind(this)
 }
 
 ClassList.fnName = 'ClassList'
-ClassList.$inject = ['$scope', '$timeout', '$attrs']
+ClassList.$inject = ['$scope', '$timeout']
 
 ClassList.prototype.onClick = function (aClass, subScope) {
 	aClass.loadSections(function (err) {
@@ -77,11 +72,16 @@ ClassList.prototype.onClick = function (aClass, subScope) {
 
 	ga('send', {
 		'hitType': 'pageview',
-		'page': '/listSections/' + aClass.getIdentifer().full.str,
+		'page': Keys.create(aClass).getHashWithEndpoint('/listSections'),
 		'title': 'Coursepro.io'
 	});
+};
 
-
+ClassList.prototype.loadMore = function () {
+	var more = this.unrenderedClasses.shift()
+	if (more) {
+		this.renderedClasses.push(more)
+	};
 };
 
 

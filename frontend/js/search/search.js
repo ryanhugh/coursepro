@@ -81,7 +81,10 @@ Search.prototype = Object.create(BaseDirective.prototype);
 Search.prototype.constructor = Search;
 
 Search.prototype.go = function () {
-	if (!this.searchIndex || !this.searchText) {
+	if (!this.searchText) {
+		return;
+	}
+	if (!this.searchIndex) {
 		console.warn('fix me')
 		return
 	}

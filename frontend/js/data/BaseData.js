@@ -80,12 +80,7 @@ BaseData.create = function (config) {
 	//note that we are not cloning the cacheItem, for speed
 	var key;
 	if (canCache) {
-		if (config.hash) {
-			key = config.hash
-		}
-		else {
-			key = Keys.create(config).getHashWithEndpoint(this.API_ENDPOINT);
-		}
+		key = Keys.create(config).getHashWithEndpoint(this.API_ENDPOINT);
 
 		if (key && instanceCache[key]) {
 			var instance = instanceCache[key];
@@ -231,34 +226,6 @@ BaseData.prototype.getIdentifer = function () {
 	}
 };
 
-BaseData.getKeyFromConfig = function (config) {
-	if (config.hash) {
-		return config.hash
-	}
-
-	var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
-
-	var key = [];
-
-	// create the key
-	for (var i = 0; i < allKeys.length; i++) {
-		if (!config[allKeys[i]]) {
-			break
-		}
-		key.push(config[allKeys[i]].replace(/[^A-Za-z0-9.]+/g, "_"));
-	}
-	if (key.length > 0) {
-		return key.join('/')
-	}
-	else if (config._id) {
-		return config._id
-	}
-	else {
-		// Possible if looking up all hosts
-		return '';
-	}
-};
-
 var resultsHash = {};
 
 BaseData.downloadResultsGroup = memoize(function (config, callback) {
@@ -299,7 +266,7 @@ BaseData.download = function (config, callback) {
 	var hashStr = config.keys.getHashWithEndpoint(this.API_ENDPOINT)
 	var isFullHashIndex = config.keys.containsAllProperties(this.requiredPath.concat(this.optionalPath));
 
-	if (isFullHashIndex && resultsHash[hashStr]) {
+	if (resultsHash[hashStr]) {
 		setTimeout(function () {
 			callback(null, [resultsHash[hashStr]])
 		}.bind(this), 0)
@@ -379,10 +346,10 @@ BaseData.downloadGroup = memoize(function (config, callback) {
 	return config.keys.getHashWithEndpoint(this.API_ENDPOINT);
 })
 
-BaseData.createMany = function (keysObj, callback) {
+BaseData.createMany = function (keys, callback) {
 
 	this.downloadGroup({
-		keys: Keys.create(keysObj)
+		keys: keys
 	}, function (err, instances) {
 		if (err) {
 			elog("error", err);

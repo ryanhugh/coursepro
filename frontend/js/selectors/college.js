@@ -1,8 +1,10 @@
 'use strict';
 var BaseSelector = require('./baseSelector').BaseSelector;
+var macros = require('../macros')
 
 var user = require('../data/user')
 var Host = require('../data/Host')
+var Keys = require('../../../common/Keys')
 
 function College() {
 	BaseSelector.prototype.constructor.apply(this, arguments);
@@ -17,9 +19,9 @@ function College() {
 //prototype constructor
 College.prototype = Object.create(BaseSelector.prototype);
 College.prototype.constructor = College;
-
+ 
 College.prototype.onSelect = function (value) {
-	user.setValue('lastSelectedCollege', value)
+	user.setValue(macros.LAST_SELECTED_COLLEGE, value)
 };
 
 College.prototype.download = function(callback) {
@@ -27,7 +29,7 @@ College.prototype.download = function(callback) {
 		callback = function () {}
 	}
 
-	Host.createMany({}, function (err, colleges) {
+	Host.createMany(Keys.create({}), function (err, colleges) {
 
 		var retVal = [];
 		colleges.forEach(function (college) {

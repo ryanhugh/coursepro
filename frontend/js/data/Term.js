@@ -28,7 +28,7 @@ Term.prototype.loadSubjects = function (callback) {
 			return callback(err)
 		}
 
-		Subject.createMany(this.getIdentifer().full.obj, function (err, subjects) {
+		Subject.createMany(Keys.create(this), function (err, subjects) {
 			if (err) {
 				return callback(err)
 			}

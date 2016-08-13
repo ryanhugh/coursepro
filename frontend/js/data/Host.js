@@ -2,6 +2,7 @@
 var macros = require('../macros')
 var BaseData = require('./BaseData');
 var Term = require('./Term');
+var Keys = require('../../../common/Keys')
 
 
 function Host(config) {
@@ -27,7 +28,7 @@ Host.prototype.loadTerms = function (callback) {
 			return callback(err)
 		}
 
-		Term.createMany(this.getIdentifer().full.obj, function (err, terms) {
+		Term.createMany(Keys.create(this), function (err, terms) {
 			if (err) {
 				return callback(err)
 			}
