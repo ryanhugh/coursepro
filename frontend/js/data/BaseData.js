@@ -7,6 +7,7 @@ var memoize = require('../../../memoize')
 var Keys = require('../../../common/Keys')
 
 var instanceCache = {};
+var resultsHash = {};
 
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
@@ -133,104 +134,6 @@ BaseData.prototype.equals = function (other) {
 	return Keys.create(this).equals(Keys.create(other))
 };
 
-
-
-//returns
-// {
-//  required: {
-//      obj: {
-//          host: 'neu.edu',
-//          termId: '201630',
-//          subject: 'CS',
-//      },
-//      //if it has the _id, this is _id, if not it is the same as min.obj
-//      lookup: {
-//          _id:
-//      }
-//      str: 'neu.edu/201630'
-//  },
-
-//  //if it has the data needed, if not -> null
-//  optional: {
-//      obj: {
-//          classId: '4800',
-//          termId: '201630'
-//      },
-//      lookup: {
-//          _id: ''
-//      }
-//      str: 'neu.edu/201630'
-//  },
-
-//  //optional + required
-//  full: {
-//      obj: {
-//          classId: '4800',
-//          termId: '201630'
-//      },
-//      lookup: {
-//          _id: ''
-//      }
-//      str: 'neu.edu/201630'
-//  }
-// }
-
-
-//along with the function below this, it returns three things:
-// required: the min data required to lookup a thing (depening on what inherents this) for Class it would be host, termId, subject
-// optional: the extra data to get (usally) a single instance. empty if required does this already
-// full: required + optional
-BaseData.prototype.getIdentiferWithKeys = function (keys, isOptional) {
-	var retVal = {
-		obj: {},
-		str: [],
-		lookup: {}
-	}
-
-	if (isOptional && this._id) {
-		return retVal;
-	};
-
-	for (var i = 0; i < keys.length; i++) {
-		var value = this[keys[i]]
-
-		if (value === undefined) {
-			retVal.obj = null;
-			retVal.str = null;
-			break;
-		}
-		else {
-			retVal.obj[keys[i]] = value
-			retVal.str.push(value.replace(/[^A-Za-z0-9.]+/g, "_"))
-		}
-	}
-
-	if (retVal.str) {
-		retVal.str = retVal.str.join('/')
-	};
-
-	if (retVal.obj) {
-		retVal.lookup = retVal.obj
-	}
-	else if (this._id) {
-		retVal.lookup = {
-			_id: this._id
-		}
-	}
-	return retVal;
-};
-
-
-//calls the above fn twice, one 
-BaseData.prototype.getIdentifer = function () {
-	return {
-		required: this.getIdentiferWithKeys(this.constructor.requiredPath),
-		optional: this.getIdentiferWithKeys(this.constructor.optionalPath, true),
-		full: this.getIdentiferWithKeys(this.constructor.requiredPath.concat(this.constructor.optionalPath))
-	}
-};
-
-var resultsHash = {};
 
 BaseData.downloadResultsGroup = memoize(function (config, callback) {
 
@@ -431,7 +334,7 @@ BaseData.prototype.updateWithData = function (config) {
 
 // needs to be overriden
 BaseData.prototype.compareTo = function () {
-	elog("BaseData compare to called!!")
+	elog()
 };
 
 module.exports = BaseData

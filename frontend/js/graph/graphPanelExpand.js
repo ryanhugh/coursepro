@@ -7,6 +7,7 @@ var BaseDirective = require('../BaseDirective')
 var treeMgr = require('./treeMgr')
 var user = require('../data/user')
 var Graph = require('./graph')
+var Keys = require('../../../common/Keys')
 
 function GraphPanelExpand() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
@@ -254,7 +255,7 @@ GraphPanelExpand.prototype.openPanel = function (node, callback) {
 
 	ga('send', {
 		'hitType': 'pageview',
-		'page': '/listSections/' + node.class.getIdentifer().full.str,
+		'page': Keys.create(node.class).getHashWithEndpoint('/listSections'),
 		'title': 'Coursepro.io'
 	});
 
@@ -277,7 +278,9 @@ GraphPanelExpand.prototype.closePanel = function (node, callback) {
 
 	ga('send', {
 		'hitType': 'pageview',
-		'page': '/closePanel/' + node.class.getIdentifer().full.str,
+
+		// NOTE WHEN REFACTORING this isnt actually a valid enpoint, just used for GA
+		'page': Keys.create(node.class).getHashWithEndpoint('/closePanel'),
 		'title': 'Coursepro.io'
 	});
 
