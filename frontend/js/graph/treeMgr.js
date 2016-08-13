@@ -20,19 +20,6 @@ TreeMgr.prototype.simplifyTree = function (node) {
 		return;
 	}
 
-	//remove duplicates
-	var newPrereqs = [];
-	node.prereqs.values.forEach(function (child) {
-		var childId = child.getId();
-		for (var i = 0; i < newPrereqs.length; i++) {
-			if (newPrereqs[i].getId() === childId) {
-				return;
-			}
-		}
-		newPrereqs.push(child);
-	}.bind(this))
-	node.prereqs.values = newPrereqs;
-
 
 	//if values is only 1 long to a circle, delete circle and bring lines straight to parent
 	//if values is only 1 long from panel to circle, same as above
@@ -57,9 +44,28 @@ TreeMgr.prototype.simplifyTree = function (node) {
 				node[attrName] = child[attrName]
 			}
 		}
-
 	};
 
+
+	//recursion
+	//This was moved to before remove duplicates because need run the deduplicating code (above) on both this node and all its prereqs
+	//before getId will work
+	node.prereqs.values.forEach(function (child) {
+		this.simplifyTree(child);
+	}.bind(this))
+
+	//remove duplicates
+	var newPrereqs = [];
+	node.prereqs.values.forEach(function (child) {
+		var childId = child.getId();
+		for (var i = 0; i < newPrereqs.length; i++) {
+			if (newPrereqs[i].getId() === childId) {
+				return;
+			}
+		}
+		newPrereqs.push(child);
+	}.bind(this))
+	node.prereqs.values = newPrereqs;
 
 
 	//if type of dep is the same, merge cs 2800
@@ -82,11 +88,6 @@ TreeMgr.prototype.simplifyTree = function (node) {
 	if (node.prereqs.values.length === 1) {
 		node.prereqs.type = 'or'
 	}
-
-	//recursion
-	node.prereqs.values.forEach(function (child) {
-		this.simplifyTree(child);
-	}.bind(this))
 }
 
 // one part of the above function that runs after the node injection that changes allParents...
