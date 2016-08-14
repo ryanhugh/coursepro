@@ -13,7 +13,6 @@ var htmlmin = require('gulp-htmlmin');
 var notify = require("gulp-notify");
 var addsrc = require('gulp-add-src');
 var replace = require('gulp-replace');
-var iife = require("gulp-iife");
 
 
 // for backend unit tests
@@ -428,7 +427,6 @@ gulp.task('copyRootFiles', function (callback) {
 
 
 						// This wraps the code in an anonymous function that is called immediately. Helps uglifyJS uglify more things. 
-						// stream = stream.pipe(iife())
 						if (macros.PRODUCTION) {
 							stream = stream.pipe(streamify(uglify({
 								options: {
