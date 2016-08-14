@@ -217,26 +217,14 @@ Class.prototype.removeMissingClasses = function (data) {
 
 // called once
 Class.prototype.updateWithData = function (config) {
-	if (config instanceof Class || config.updateWithData) {
+	if (config instanceof Class) {
 		elog('wtf', config)
 	}
-	if (config.missing) {
-		elog('hooooo')
+
+	if (config.title || config.allParents || config.missing || config.updateWithData) {
+		elog();
 	}
-
-
-	if (config.title) {
-		elog("wtf class has a name not a title");
-	}
-
-	// if (this.prereqs.values.length > 0 && config.prereqs) {
-	// 	elog('yo')
-	// }
-
-	// if (this.coreqs.values.length > 0 && config.coreqs) {
-	// 	elog('yo')
-	// }
-
+	
 	//copy over all other attr given
 	for (var attrName in config) {
 
@@ -297,10 +285,7 @@ Class.prototype.updateWithData = function (config) {
 		}
 	}
 
-	if (config.allParents) {
-		elog()
-	}
-
+	
 
 	//name and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
 	//setting the innerHTML instead of innerText will work too, but this is better

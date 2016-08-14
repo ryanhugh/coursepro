@@ -7,8 +7,6 @@ var async = require('async')
 function Request(config, callback) {
 	this.LOADINGSTATUS_LOADING = 0;
 	this.LOADINGSTATUS_DONE = 1;
-
-	this.cache = [];
 }
 
 Request.prototype.randomString = function () {
@@ -58,113 +56,7 @@ Request.prototype.findDiff = function (src, dest) {
 }
 
 
-//if config matches, return the body
-//if the config.body is fully contained within the body of any cache item, return the body
-//else return no
-Request.prototype.searchCache = function (config, callback) {
-	for (var i = 0; i < this.cache.length; i++) {
-		var cacheItem = this.cache[i];
-
-
-		if (config.url !== cacheItem.config.url) {
-			continue;
-		}
-
-		//this cache item was more specific than what we are looking for, cant possibly have everything we need
-		if (_.keys(cacheItem.config.body).length > _.keys(config.body).length) {
-			continue;
-		}
-
-
-
-		var diff = this.findDiff(config.body, cacheItem.config.body);
-
-		//they had different query attributes
-		if (diff.different.length > 0) {
-			continue;
-		}
-
-		//cache item had query attributes not on this config.body
-		if (diff.destOnly.length > 0) {
-			continue;
-		};
-
-		//everything was the same
-		if (diff.srcOnly.length === 0) {
-
-			//clone return object
-			if (cacheItem.loadingStatus === this.LOADINGSTATUS_LOADING) {
-				cacheItem.callbacks.push(callback);
-			}
-			else if (cacheItem.loadingStatus === this.LOADINGSTATUS_DONE) {
-				callback(null, _.cloneDeep(cacheItem.body));
-			}
-			else {
-				console.log("ERROR what is this ", cacheItem.loadingStatus);
-			}
-			return true;
-		}
-		//it is ok for cacheItem to be srcOnly 1 of the attributes - eg all cs classes
-		// looked up for the selectors, and then a specific class looked up for the tree
-		if (diff.srcOnly.length !== 1) {
-			console.log('warning: cacheItem.config is srcOnly more than 1 attr?', diff, config, cacheItem.config);
-		}
-
-
-		async.waterfall([
-			function (callback) {
-
-
-				//if the item in the cache is still loading, add a callback to fire and then process when its done
-				if (cacheItem.loadingStatus === this.LOADINGSTATUS_LOADING) {
-					cacheItem.callbacks.push(callback);
-				}
-
-				else if (cacheItem.loadingStatus === this.LOADINGSTATUS_DONE) {
-					return callback(null, cacheItem.body);
-				}
-				else {
-					console.log("ERROR wtf is cacheitem loading status", cacheItem.loadingStatus);
-					return callback('internal error');
-				}
-			}.bind(this)
-		], function (err, supersetResults) {
-			if (err) {
-				return callback(err);
-			}
-
-
-			//nothing found last time, no need to continue
-			if (cacheItem.body.length === 0) {
-				callback(null, []);
-			}
-			else {
-
-				//ok, loop through the cache body and puck the ones that match the srcOnly attributes
-				var attrToCheck = _.pick(config.body, diff.srcOnly);
-				var matches = _.filter(cacheItem.body, attrToCheck)
-
-				callback(null, _.cloneDeep(matches));
-			}
-
-		}.bind(this))
-		return true;
-
-	}
-	return false;
-}
-
-
 Request.prototype.fireRequest = function (config, callback) {
-
-	var cacheItem = {
-		loadingStatus: this.LOADINGSTATUS_LOADING,
-		config: config,
-		callbacks: []
-	}
-
-	this.cache.push(cacheItem)
-
 	var body = _.cloneDeep(config.body);
 
 	//add the userid
@@ -204,11 +96,6 @@ Request.prototype.fireRequest = function (config, callback) {
 
 			console.log('error, bad code recievied', xmlhttp.status, err, config)
 
-			//also need to call all the other callbacks
-			cacheItem.callbacks.forEach(function (callback) {
-				callback(err);
-			}.bind(this))
-
 			return callback(err);
 		}
 
@@ -218,22 +105,7 @@ Request.prototype.fireRequest = function (config, callback) {
 			console.log("ERROR networking error bad reqeust?", config);
 		}
 
-		if (config.useCache) {
-
-			cacheItem.body = response;
-			cacheItem.loadingStatus = this.LOADINGSTATUS_DONE;
-
-			callback(null, _.cloneDeep(response));
-			cacheItem.callbacks.forEach(function (callback) {
-				callback(null, _.cloneDeep(response));
-			}.bind(this))
-		}
-		// Avoid all the cloning if not using cache
-		else {
-			callback(null, response)
-		}
-
-
+		callback(null, response)
 	}.bind(this);
 
 
@@ -248,8 +120,6 @@ Request.prototype.fireRequest = function (config, callback) {
 }
 
 
-//config.auth : weather or not to send loginKey, default no
-//config.useCache : weather or not to use cache, ignored at not used right now
 //config.url : the url
 //config.method : the http method. default is POST if there is (a config.body or a config.keys), and GET if there is not
 //config.body: the body to send with post requests
@@ -257,7 +127,7 @@ Request.prototype.fireRequest = function (config, callback) {
 Request.prototype.go = function (config, callback) {
 	config = _.cloneDeep(config)
 
-	if (config.method) {
+	if (config.type) {
 		elog()
 	}
 
@@ -299,47 +169,9 @@ Request.prototype.go = function (config, callback) {
 		return callback('internal error');
 	};
 
-	if (config.useCache === undefined) {
-		config.useCache = true;
-	}
-	config.useCache = false;
-
-
-
-	async.waterfall([
-		function (callback) {
-
-			//if use cache, search cache
-			//if cache it, return
-			if (config.useCache && this.searchCache(config, callback)) {
-
-				//the cache calls the callback
-				return;
-			}
-
-			//else fire request (which adds to cache)
-			else {
-				this.fireRequest(config, callback);
-			}
-		}.bind(this)
-
-	], function (err, results) {
-		if (err) {
-			return callback(err);
-		}
-
-		if (config.resultsQuery) {
-
-			var matches = _.filter(results, config.resultsQuery);
-			return callback(null, _.cloneDeep(matches));
-
-		}
-		else {
-			return callback(null, results);
-		}
-
-
-	}.bind(this))
+	this.fireRequest(config, function (err, results) {
+		return callback(err, results);
+	}.bind(this));
 }
 
 var instance = new Request();
