@@ -438,7 +438,6 @@ gulp.task('copyRootFiles', function (callback) {
 					}
 					else {
 						stream = gulp.src(file);
-						
 					}
 
 
@@ -450,7 +449,7 @@ gulp.task('copyRootFiles', function (callback) {
 							onError(err)
 						})
 						.on('end', function () {
-							console.log("Done",fileName);
+							console.log("Done", fileName);
 							callback()
 						})
 
