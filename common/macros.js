@@ -17,6 +17,13 @@ function Macros() {
 
 	//endpoints
 
+	this.LIST_COLLEGES = '/listColleges'
+	this.LIST_TERMS = '/listTerms'
+	this.LIST_SUBJECTS = '/listSubjects'
+	this.LIST_CLASSES = '/listClasses'
+	this.LIST_SECTIONS = '/listSections'
+
+	// this.
 
 
 	// 30 min

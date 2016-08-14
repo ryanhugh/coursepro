@@ -11,6 +11,7 @@ var https = require('https')
 var async = require('async')
 
 
+var Keys = require('../common/Keys')
 var macros = require('./macros')
 var pageDataMgr = require('./pageDataMgr');
 
@@ -247,23 +248,6 @@ app.use(function (req, res, next) {
 });
 
 
-app.post('/listColleges', function (req, res) {
-	collegeNamesDB.find({}, {
-		shouldBeOnlyOne: false,
-		sanitize: true
-	}, function (err, names) {
-		if (err) {
-			console.log('error college names failed', req.url, err);
-			res.status(500);
-			res.send('internal server error :/');
-			return;
-		};
-
-
-		res.send(JSON.stringify(names));
-	});
-})
-
 app.post('/getCurrentCollege', function (req, res) {
 
 	var ip = req.connection.remoteAddress;
@@ -311,6 +295,23 @@ app.post('/getCurrentCollege', function (req, res) {
 }.bind(this))
 
 
+
+app.post('/listColleges', function (req, res) {
+	collegeNamesDB.find({}, {
+		shouldBeOnlyOne: false,
+		sanitize: true
+	}, function (err, names) {
+		if (err) {
+			console.log('error college names failed', req.url, err);
+			res.status(500);
+			res.send('internal server error :/');
+			return;
+		};
+
+
+		res.send(JSON.stringify(names));
+	});
+})
 
 app.post('/listTerms', function (req, res) {
 
