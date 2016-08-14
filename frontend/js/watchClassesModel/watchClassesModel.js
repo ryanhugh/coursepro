@@ -1,6 +1,8 @@
 'use strict';
-var request = require('../request')
+var moment = require('moment')
 
+var macros = require('../macros')
+var request = require('../request')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
@@ -107,6 +109,10 @@ WatchClassesModel.prototype.removeClassFromWatchList = function () {
 		}.bind(this))
 
 	}.bind(this))
+};
+
+WatchClassesModel.prototype.getTimeDuration = function() {
+	return moment.duration(macros.DB_REFRESH_INTERVAL).asMinutes()
 };
 
 

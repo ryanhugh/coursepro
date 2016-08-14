@@ -137,14 +137,6 @@ function Macros() {
 	this.OLD_PAGEDATA = 1500
 
 
-
-	// 30 min
-	// interval for a updater.js
-	// if this is changed also change the description in WatchClassesModel.js
-	this.DB_REFRESH_INTERVAL = 1800000
-		// this.DB_REFRESH_INTERVAL = 300000
-
-
 	//enable or disable sending emails
 	//by default, only send if in PRODUCTION
 	if (this.PRODUCTION) {
