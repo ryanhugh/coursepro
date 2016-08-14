@@ -122,7 +122,12 @@ gulp.task('watchUglifyCSS', function () {
 
 function injectMacros(stream) {
 	for (var attrName in macros) {
-		stream = stream.pipe(replace('macros.' + attrName, String(macros[attrName]), {
+
+		// Whitelist of the types to copy to frontend
+		if (!_(['number', 'boolean', 'string']).includes(typeof macros[attrName])) {
+			continue;
+		}
+		stream = stream.pipe(replace('macros.' + attrName, JSON.stringify(macros[attrName]), {
 			skipBinary: true
 		}))
 	}

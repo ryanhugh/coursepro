@@ -1,25 +1,18 @@
 'use strict';
+var commonMacros = require('../../common/macros')
 var request = require('./request')
 window.jQuery = window.$ = require('jquery')
 
 //used just to define constance used mostly in treeMgr, also in render.js
 function Macros() {
+	commonMacros.Macros.prototype.constructor.apply(this, arguments);
 
 
-	//states of trees
+	//states of classes
 	this.DATASTATUS_NOTSTARTED = 0;
 	this.DATASTATUS_LOADING = 1;
 	this.DATASTATUS_DONE = 2;
 	this.DATASTATUS_FAIL = 3;
-
-	// Two user variables used to keep track of the last selected college and term. 
-	this.LAST_SELECTED_COLLEGE = 'lastSelectedCollege';
-	this.LAST_SELECTED_TERM = 'lastSelectedTerm';
-
-	// Three lists in use for user.
-	this.SAVED_LIST = 'saved';
-	this.WATCHING_LIST = 'watching';
-	this.SELECTED_LIST = 'selected';
 
 	// These is also hardcoded into the css
 	this.SEARCH_WIDTH = 300;
@@ -54,7 +47,7 @@ function Macros() {
 				}
 				outputString.push(str)
 			}.bind(this))
-
+ 
 			bodyString = {
 				msg: outputString.join('')
 			}
@@ -75,17 +68,8 @@ function Macros() {
 	}
 }
 
-Macros.prototype.inherent = function (Baseclass, Subclass) {
+commonMacros.inherent(commonMacros.Macros, Macros)
 
-	//copy static methods
-	for (var attrName in Baseclass) {
-		Subclass[attrName] = Baseclass[attrName]
-	}
-
-	//prototype constructor
-	Subclass.prototype = Object.create(Baseclass.prototype);
-	Subclass.prototype.constructor = Subclass;
-};
 
 
 Macros.prototype.Macros = Macros;

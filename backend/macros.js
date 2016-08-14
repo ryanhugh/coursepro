@@ -1,10 +1,12 @@
 'use strict';
 var fs = require('fs')
 var _ = require('lodash')
+var commonMacros = require('../common/macros')
 
 
 
 function Macros() {
+	commonMacros.Macros.prototype.constructor.apply(this, arguments);
 
 
 
@@ -174,6 +176,9 @@ function Macros() {
 
 	this.VERBOSE = false;
 }
+
+
+commonMacros.inherent(commonMacros.Macros, Macros)
 
 
 module.exports = new Macros();
