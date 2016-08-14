@@ -3,11 +3,13 @@ var fs = require('fs')
 var _ = require('lodash')
 
 
-//change the current working directory to the directory with package.json
-//gulp does this automatically too, but it is not ran on 'node file.js'
-function fixCWD() {
+
+function Macros() {
 
 
+
+	//change the current working directory to the directory with package.json
+	//gulp does this automatically too, but it is not ran on 'node file.js'
 	while (1) {
 		try {
 			fs.statSync('.git');
@@ -18,20 +20,20 @@ function fixCWD() {
 			process.chdir('..');
 			continue;
 		}
-		return;
+		break;
 	}
-}
-fixCWD();
-
-global.elog = function () {
-	console.log.apply(console, arguments)
-	console.log(new Error('elog Trace').stack)
-}.bind(this)
 
 
-//setup different targets
-function setupTargetStates() {
 
+	// set up elog
+	global.elog = function () {
+		console.log.apply(console, arguments)
+		console.log(new Error('elog Trace').stack)
+	}.bind(this)
+
+
+
+	// Set up macros.PRODUCTION, macros.DEVELOPMENT, etc
 	var mode;
 	process.argv.slice(2).forEach(function (command) {
 		if (!mode) {
@@ -61,110 +63,117 @@ function setupTargetStates() {
 
 
 		if (command === 'prod') {
-			exports.PRODUCTION = true;
+			this.PRODUCTION = true;
 		}
 		else if (command === 'dev' || command === 'spider') {
-			exports.DEVELOPMENT = true;
+			this.DEVELOPMENT = true;
 			if (command == 'spider') {
-				exports.SPIDER = true;
+				this.SPIDER = true;
 			}
 		}
 		else if (_(command).includes('test')) {
-			exports.UNIT_TESTS = true;
+			this.UNIT_TESTS = true;
 		}
 		else {
 			console.log('WARNING Unknown GULP mode ', command, process.argv)
 			console.log('this is from b macros.js')
 			console.log('setting to DEVELOPMENT mode!')
-			exports.DEVELOPMENT = true;
+			this.DEVELOPMENT = true;
 		}
 	}
 	else {
 		console.log("Not running from gulp, setting to dev mode")
-		exports.DEVELOPMENT = true;
+		this.DEVELOPMENT = true;
 	}
 
 
 	//Set all the stuff that wasen't set to false
-	if (exports.PRODUCTION === undefined) {
-		exports.PRODUCTION = false
+	if (this.PRODUCTION === undefined) {
+		this.PRODUCTION = false
 	}
-	if (exports.DEVELOPMENT === undefined) {
-		exports.DEVELOPMENT = false
+	if (this.DEVELOPMENT === undefined) {
+		this.DEVELOPMENT = false
 	}
-	if (exports.SPIDER === undefined) {
-		exports.SPIDER = false
+	if (this.SPIDER === undefined) {
+		this.SPIDER = false
 	}
-	if (exports.UNIT_TESTS === undefined) {
-		exports.UNIT_TESTS = false;
+	if (this.UNIT_TESTS === undefined) {
+		this.UNIT_TESTS = false;
 	}
 
+
+
+
+
+
+	//setup database ip and mongo db name
+	var databaseIp = '52.20.189.150'
+
+
+	var databaseName = null;
+
+	if (this.PRODUCTION) {
+		databaseName = 'coursepro_prod'
+	}
+	else if (this.DEVELOPMENT) {
+		databaseName = 'coursepro_dev'
+	}
+	else if (this.UNIT_TESTS) {
+		databaseName = 'coursepro_tests'
+		databaseName = 'coursepro_dev'
+	}
+
+	this.DATABASE_URL = databaseIp + '/' + databaseName;
+
+
+
+
+
+	//if a page data is newer that this, there is a cache hit 
+	//ms
+	// this.OLD_PAGEDATA = 300000
+	this.OLD_PAGEDATA = 1500
+
+
+
+	// 30 min
+	// interval for a updater.js
+	// if this is changed also change the description in WatchClassesModel.js
+	this.DB_REFRESH_INTERVAL = 1800000
+		// this.DB_REFRESH_INTERVAL = 300000
+
+
+	//enable or disable sending emails
+	//by default, only send if in PRODUCTION
+	if (this.PRODUCTION) {
+		this.SEND_EMAILS = true;
+		this.QUIET_LOGGING = true;
+
+		//so express dosent spit out trace backs to the user
+		process.env.NODE_ENV = 'production';
+	}
+	else {
+		this.SEND_EMAILS = false
+		this.QUIET_LOGGING = false;
+	}
+
+	// don't spit out a lot of stuff in normal mode
+	if (this.SPIDER) {
+		this.QUIET_LOGGING = false;
+	}
+	else {
+		this.QUIET_LOGGING = true;
+
+	}
+
+
+
+	// this.SEND_EMAILS = true;
+
+
+
+	this.VERBOSE = false;
 }
-setupTargetStates()
-
-//setup database ip and mongo db name
-var databaseIp = '52.20.189.150'
 
 
-var databaseName = null;
-
-if (exports.PRODUCTION) {
-	databaseName = 'coursepro_prod'
-}
-else if (exports.DEVELOPMENT) {
-	databaseName = 'coursepro_dev'
-}
-else if (exports.UNIT_TESTS) {
-	databaseName = 'coursepro_tests'
-	databaseName = 'coursepro_dev'
-}
-
-exports.DATABASE_URL = databaseIp + '/' + databaseName;
-
-
-
-//if a page data is newer that this, there is a cache hit 
-//ms
-// exports.OLD_PAGEDATA = 300000
-exports.OLD_PAGEDATA = 1500
-
-
-// 30 min
-// interval for a updater.js
-// if this is changed also change the description in WatchClassesModel.js
-exports.DB_REFRESH_INTERVAL = 1800000
-	// exports.DB_REFRESH_INTERVAL = 300000
-
-
-
-
-//enable or disable sending emails
-//by default, only send if in PRODUCTION
-if (exports.PRODUCTION) {
-	exports.SEND_EMAILS = true;
-	exports.QUIET_LOGGING = true;
-
-	//so express dosent spit out trace backs to the user
-	process.env.NODE_ENV = 'production';
-}
-else {
-	exports.SEND_EMAILS = false
-	exports.QUIET_LOGGING = false;
-}
-
-// don't spit out a lot of stuff in normal mode
-if (exports.SPIDER) {
-	exports.QUIET_LOGGING = false;
-}
-else {
-	exports.QUIET_LOGGING = true;
-
-}
-
-
-
-// exports.SEND_EMAILS = true;
-
-
-
-exports.VERBOSE = false;
+module.exports = new Macros();
