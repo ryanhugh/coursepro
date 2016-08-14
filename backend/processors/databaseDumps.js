@@ -57,9 +57,6 @@ DatabaseDumps.prototype.saveRows = function (endpoint, results, callback) {
 			var fileName = path.join('.', 'dist', keys.getHashWithEndpoint(endpoint));
 			var folderName = path.dirname(fileName);
 
-			// ALSO MAKE THESE CHANGES IN SERACH INDEX.JS
-			// NEED TO MAKE THESE ^^ CHANGES IN THE FRONTEND AND UNIT TESTS
-
 			mkdirp(folderName, function (err) {
 				if (err) {
 					return callback(err);
