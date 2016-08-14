@@ -259,36 +259,46 @@ Class.prototype.updateWithData = function (config) {
 		config.coreqs = this.removeMissingClasses(config.coreqs)
 	}
 
-	if (config.prereqs && !_.isEqual(config.prereqs, this.serverPrereqs)) {
-		if (this.serverPrereqs) {
-			elog('wtf already have prereqs, given prereqs', config)
-		}
-		else if (!config.prereqs.values || !config.prereqs.type) {
+	if (config.prereqs) {
+		if (!config.prereqs.values || !config.prereqs.type) {
 			elog('prereqs need values ad type')
 		}
 		else {
-			this.serverPrereqs = _.cloneDeep(config.prereqs)
-		}
+			this.prereqs.type = config.prereqs.type
+			this.prereqs.values = []
 
+			//add the prereqs to this node, and convert server data
+			config.prereqs.values.forEach(function (subTree) {
+				this.prereqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
+			}.bind(this))
+
+			this.prereqs.values.sort(function (a, b) {
+				return a.compareTo(b)
+			}.bind(this))
+		}
 	}
 
-	if (config.coreqs && !_.isEqual(config.coreqs, this.serverCoreqs)) {
-		if (this.serverCoreqs) {
-			elog('wtf')
-		}
-		else if (!config.coreqs.values || !config.coreqs.type) {
+	if (config.coreqs) {
+		if (!config.coreqs.values || !config.coreqs.type) {
 			elog('coreqs need values ad type')
 		}
 		else {
-			this.serverCoreqs = _.cloneDeep(config.coreqs)
+			this.coreqs.type = config.coreqs.type
+			this.coreqs.values = []
+
+			//add the coreqs to this node, and convert server data
+			config.coreqs.values.forEach(function (subTree) {
+				this.coreqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
+			}.bind(this))
+
+			this.coreqs.values.sort(function (a, b) {
+				return a.compareTo(b)
+			}.bind(this))
 		}
 	}
 
-	if (config.coreqs || config.prereqs) {
-		this.resetRequisites();
-	}
 	if (config.allParents) {
-		elog('no')
+		elog()
 	}
 
 
@@ -329,49 +339,6 @@ Class.prototype.updateWithData = function (config) {
 };
 
 
-Class.prototype.resetRequisites = function () {
-	if (this.serverPrereqs) {
-		this.prereqs.type = this.serverPrereqs.type
-		this.prereqs.values = []
-
-		//add the prereqs to this node, and convert server data
-		this.serverPrereqs.values.forEach(function (subTree) {
-			this.prereqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
-		}.bind(this))
-
-		this.prereqs.values.sort(function (a, b) {
-			return a.compareTo(b)
-		}.bind(this))
-	}
-	else {
-
-		this.prereqs = {
-			type: 'or',
-			values: []
-		}
-	}
-
-	if (this.serverCoreqs) {
-		this.coreqs.type = this.serverCoreqs.type
-		this.coreqs.values = []
-
-		//add the coreqs to this node, and convert server data
-		this.serverCoreqs.values.forEach(function (subTree) {
-			this.coreqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
-		}.bind(this))
-
-		this.coreqs.values.sort(function (a, b) {
-			return a.compareTo(b)
-		}.bind(this))
-	}
-	else {
-
-		this.coreqs = {
-			type: 'or',
-			values: []
-		}
-	}
-};
 
 Class.prototype.equals = function (other) {
 	if (!this.isClass || !other.isClass) {

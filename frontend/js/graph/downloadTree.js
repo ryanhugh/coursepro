@@ -46,10 +46,6 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 			continue;
 		}
 		else if (subTree.dataStatus === macros.DATASTATUS_NOTSTARTED || subTree.dataStatus === macros.DATASTATUS_LOADING) {
-			// if (!subTree.prereqs || !subTree.coreqs) {
-			// 	console.log('subTree already loaded but dosent have prereqs or coreqs?', subTree);
-			// 	continue;
-			// }
 			treeIsDone = false;
 
 			// subTree is asigned to above, so need to keep another reference to this one for the async operation
@@ -57,7 +53,6 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 			var currTree = subTree;
 			q.defer(function (callback) {
 				currTree.download(function (err, currTree) {
-					// currTree.resetRequisites();
 					callback(err)
 				}.bind(this))
 			}.bind(this))
