@@ -3,10 +3,8 @@ var _ = require('lodash')
 var async = require('async')
 
 //lightweight json only wrapper around xmlhttp
-//aggresive caching and never fires the same request twice
-function Request(config, callback) {
-	this.LOADINGSTATUS_LOADING = 0;
-	this.LOADINGSTATUS_DONE = 1;
+function Request() {
+	
 }
 
 Request.prototype.randomString = function () {
