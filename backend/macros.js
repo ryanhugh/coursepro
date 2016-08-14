@@ -24,7 +24,7 @@ function fixCWD() {
 fixCWD();
 
 global.elog = function () {
-	console.log.apply(console,arguments)
+	console.log.apply(console, arguments)
 	console.log(new Error('elog Trace').stack)
 }.bind(this)
 
@@ -133,7 +133,7 @@ exports.OLD_PAGEDATA = 1500
 // interval for a updater.js
 // if this is changed also change the description in WatchClassesModel.js
 exports.DB_REFRESH_INTERVAL = 1800000
-// exports.DB_REFRESH_INTERVAL = 300000
+	// exports.DB_REFRESH_INTERVAL = 300000
 
 
 
@@ -145,7 +145,7 @@ if (exports.PRODUCTION) {
 	exports.QUIET_LOGGING = true;
 
 	//so express dosent spit out trace backs to the user
-	process.env.NODE_ENV='production';
+	process.env.NODE_ENV = 'production';
 }
 else {
 	exports.SEND_EMAILS = false
@@ -158,7 +158,7 @@ if (exports.SPIDER) {
 }
 else {
 	exports.QUIET_LOGGING = true;
-	
+
 }
 
 
