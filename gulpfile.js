@@ -36,7 +36,7 @@ var _ = require('lodash')
 var path = require('path')
 var queue = require('d3-queue').queue;
 var fs = require('fs-extra')
-var memoize = require('./memoize')
+var memoize = require('./common/memoize')
 var macros = require('./backend/macros')
 
 var KARMA_CONFIG = {
