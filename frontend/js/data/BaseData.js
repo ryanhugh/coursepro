@@ -291,7 +291,7 @@ BaseData.prototype.internalDownload = function (callback) {
 		}
 
 		if (instances.length == 0) {
-			console.log('base data download results.length = 0', this, lookup)
+			console.log('base data download results.length = 0', this, keys)
 			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(null, this)
 		}
@@ -311,7 +311,7 @@ BaseData.prototype.internalDownload = function (callback) {
 			}
 
 			// This class does not exist in database :/
-			console.log('found other classes in this subject, but could not find this one', lookup)
+			console.log('found other classes in this subject, but could not find this one', keys)
 			this.dataStatus = macros.DATASTATUS_FAIL;
 			return callback(null, this)
 		}

@@ -113,9 +113,19 @@ CreateSearchIndex.prototype.CreateSearchIndex = CreateSearchIndex;
 module.exports = new CreateSearchIndex();
 
 if (require.main === module) {
+	// module.exports.go({
+	// 	host: 'neu.edu',
+	// 	termId: "201710"
+	// }, function (err, results) {
+	// 	console.log(err, results);
+
+	// }.bind(this));
+	// 
+	// swarthmore.edu/201604
+
 	module.exports.go({
-		host: 'neu.edu',
-		termId: "201710"
+		host: 'swarthmore.edu',
+		termId: "201604"
 	}, function (err, results) {
 		console.log(err, results);
 

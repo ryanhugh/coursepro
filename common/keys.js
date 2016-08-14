@@ -1,5 +1,8 @@
 'use strict';
 
+// This is used in both sw.js, the backend, and the frontend.
+// So anything that is required is is added many different places
+
 // Used in both frontend and backend and service worker to get key from an object
 
 
@@ -100,7 +103,7 @@ Keys.prototype.getHashWithEndpoint = function (endpoint) {
 // };
 
 // Used in BaseData to go from a class that has everything to the classUid to what should be requested from the server
-Keys.prototype.getMinimumKeys = function() {
+Keys.prototype.getMinimumKeys = function () {
 	var retVal = {};
 	for (var i = 0; i < minData; i++) {
 		var currValue = this[allKeys[i]];
@@ -113,7 +116,7 @@ Keys.prototype.getMinimumKeys = function() {
 };
 
 
-Keys.prototype.getObj = function() {
+Keys.prototype.getObj = function () {
 	var retVal = {};
 
 	for (var i = 0; i < allKeys.length; i++) {
@@ -159,21 +162,34 @@ Keys.prototype.equals = function (other) {
 // Same as equals but dosen't do an instance check
 // so can be used to compare to a row or and instance of Class or something
 Keys.prototype.propsEqual = function (other) {
-
-	for (var i = 0; i < allKeys.length; i++) {
-		var propName = allKeys[i];
-
-		//When reached the end, done
-		if (this[propName] === undefined && other[propName] === undefined) {
+	if (this._id) {
+		return this._id === other._id;
+	}
+	else if (this.hash) {
+		if (this.hash === other.hash) {
 			return true;
 		}
-		if (this[propName] !== other[propName]) {
-			return false;
+		else if (other.host) {
+			elog()
 		}
+		return false;
 	}
-	return true;
+	else {
 
+		for (var i = 0; i < allKeys.length; i++) {
+			var propName = allKeys[i];
 
+			//When reached the end, done
+			if (this[propName] === undefined && other[propName] === undefined) {
+				return true;
+			}
+			if (this[propName] !== other[propName]) {
+				return false;
+			}
+		}
+		return true;
+	}
+	elog()
 };
 
 

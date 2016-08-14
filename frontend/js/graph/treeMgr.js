@@ -225,7 +225,15 @@ TreeMgr.prototype.sortTree = function (node) {
 TreeMgr.prototype.countClassesInTree = function (node) {
 
 	// This accounts for circular references in the graph
-	return this.findFlattendClassList(node, true, true).length;
+	var classList = this.findFlattendClassList(node, true, true);
+
+	var count = 0;
+	classList.forEach(function (node) {
+		if (node.isClass) {
+			count++
+		}
+	}.bind(this))
+	return count;
 }
 
 

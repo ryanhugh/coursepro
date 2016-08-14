@@ -6,6 +6,7 @@ var mockSubjectData = require('./mocks/mockSubjectData.json')
 var mockHostData = require('./mocks/mockHostData.json')
 var mockTermData = require('./mocks/mockTermData.json')
 var mockSectionData = require('./mocks/mockSectionData.json')
+var mockSearchIndex = require('./mocks/mockSearchIndex.json')
 
 localStorage.clear()
 
@@ -14,7 +15,8 @@ var mockData = {
 	'listTerms': mockTermData,
 	'listSubjects': mockSubjectData,
 	'listClasses': mockClassData,
-	'listSections': mockSectionData
+	'listSections': mockSectionData,
+	'getSearchIndex': mockSearchIndex
 }
 
 window.elog = console.error.bind(console);
@@ -54,7 +56,7 @@ XMLHttpRequest.prototype.open = function (method, url, isAsync) {
 	this.method = method;
 	this.url = url;
 
-}; 
+};
 
 XMLHttpRequest.prototype.setRequestHeader = function () {
 
@@ -113,29 +115,35 @@ XMLHttpRequest.prototype.send = function (json) {
 			var thisMockData = mockData[endpoint]
 
 			if (!thisMockData) {
-				elog('unit test error: dont have url for request')
+				elog('unit test error: dont have url for request', endpoint)
 			}
 
 
-			var retVal = [];
-			thisMockData.forEach(function (data) {
+			var retVal;
+			if (endpoint === 'getSearchIndex') {
+				retVal = thisMockData
+			}
+			else {
+				retVal = [];
+				thisMockData.forEach(function (data) {
 
-				for (var attrName in body) {
-					if (attrName === 'userId') {
-						continue;
+					for (var attrName in body) {
+						if (attrName === 'userId') {
+							continue;
+						}
+						if (body[attrName] != data[attrName]) {
+							return;
+						}
 					}
-					if (body[attrName] != data[attrName]) {
-						return;
-					}
-				}
-				// dont need to clone because json stringify'ing below
-				retVal.push(data);
+					// dont need to clone because json stringify'ing below
+					retVal.push(data);
 
-			}.bind(this))
+				}.bind(this))
 
-			if (retVal.length == 0) {
-				elog("unit test error: dont have data for query", body);
-			};
+				if (retVal.length == 0) {
+					elog("unit test error: dont have data for query", body);
+				};
+			}
 			this.response = JSON.stringify(retVal)
 		}
 
