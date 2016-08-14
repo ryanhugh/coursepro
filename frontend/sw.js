@@ -45,14 +45,6 @@ var postToCache = [
 	'/listSections',
 ]
 
-var keys = [
-	'host',
-	'termId',
-	'subject',
-	'classUid',
-	'crn'
-]
-
 function shouldCachePost(url) {
 	for (var i = postToCache.length - 1; i >= 0; i--) {
 		if (url.endsWith(postToCache[i])) {
@@ -114,15 +106,15 @@ function go(request, requestForCache) {
 
 addEventListener('fetch', function (event) {
 
-	if (event.request.url.startsWith('data:')) {
-		return;
-	}
-
-	if (event.request.method != 'GET' && !shouldCachePost(event.request.url)) {
-		return;
-	}
-
 	var url = event.request.url;
+	if (url.startsWith('data:')) {
+		return;
+	}
+
+	if (event.request.method != 'GET' && !shouldCachePost(url)) {
+		return;
+	}
+
 	if (macros.DEVELOPMENT && (url.endsWith('.js') || url.endsWith('.css') || url.endsWith('/'))) {
 		return;
 	}
@@ -131,13 +123,8 @@ addEventListener('fetch', function (event) {
 	if (shouldCachePost(url)) {
 		event.respondWith(event.request.clone().text().then(function (text) {
 			var body = JSON.parse(text);
-			var newEndingUrl = [];
 
-			for (var i = 0; i < keys.length; i++) {
-				newEndingUrl.push(body[keys[i]])
-			}
-
-			var newUrl = url + '/' + newEndingUrl.join('/')
+			var newUrl = Keys.create(body).getHashWithEndpoint(url)
 
 			return go(event.request, new Request(newUrl))
 		}.bind(this)))
