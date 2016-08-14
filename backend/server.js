@@ -34,9 +34,6 @@ else {
 }
 
 
-
-var search = require('./search');
-
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(compress()); // gzip the output
@@ -475,38 +472,6 @@ app.post('/listSections', function (req, res) {
 	})
 })
 
-
-app.post('/search', function (req, res) {
-	if (!req.body.value || !req.body.host || !req.body.termId || !req.body.subject) {
-		console.log('error:no search value,host,termid, or subject given');
-		console.log(req.body);
-		res.send('ya dun goofed lol');
-		return;
-	}
-
-	search.search(req.body, function (err, results) {
-		if (err) {
-			console.log(err);
-			res.send('{"error":"Internal server error"}');
-			return;
-		}
-
-		// console.log(JSON.stringify({count:results.length,searchTerm:req.body.value}));
-
-		res.send(results);
-	}.bind(this));
-
-	// console.log('searching for ')
-
-
-
-	//add all of these attributes together and make sure each element of search.split(' ') is in the sum of strings
-
-	//search through class descrption, classId, name subject
-
-	//search through section crn, meetings(profs, where)
-
-})
 
 
 // this is disabled for now just because it slows down the server too much
