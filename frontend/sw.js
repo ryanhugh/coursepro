@@ -4,8 +4,9 @@
 // https://serviceworke.rs/
 // This was created from this: https://googlechrome.github.io/samples/service-worker/read-through-caching/
 // and many other places on the internet
+var Keys = require('../common/Keys')
 
- 
+
 // macros.DEVELOPMENT and macros.PRODUCTION are swapped with true and false by gulp-replace
 // this is just here so it dosen't crash if this isn't ran through gulp-replace
 var macros = {};

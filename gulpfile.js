@@ -406,16 +406,29 @@ gulp.task('copyRootFiles', function (callback) {
 				q.defer(function (callback) {
 
 					var fileName = path.basename(file);
+					var stream;
 
-					var stream = gulp.src(file);
 
-					stream = injectMacros(stream)
 
 					// sw.js is the only file that runs through this stuff now
 					if (file.endsWith('.js')) {
 
+						var bundler = browserify({
+							entries: [file],
+						}, {
+							basedir: __dirname,
+							debug: false,
+							fullPaths: false,
+						});
+
+
+						stream = bundler.bundle();
+
+						stream = stream.pipe(source(fileName));
+
+
 						// This wraps the code in an anonymous function that is called immediately. Helps uglifyJS uglify more things. 
-						stream = stream.pipe(iife())
+						// stream = stream.pipe(iife())
 						if (macros.PRODUCTION) {
 							stream = stream.pipe(streamify(uglify({
 								options: {
@@ -425,12 +438,21 @@ gulp.task('copyRootFiles', function (callback) {
 							})))
 						}
 					}
+					else {
+						stream = gulp.src(file);
+						
+					}
+
+
+					stream = injectMacros(stream)
+
 
 					stream.pipe(gulp.dest('./dist'))
 						.on('error', function (err) {
 							onError(err)
 						})
 						.on('end', function () {
+							console.log("Done",fileName);
 							callback()
 						})
 
