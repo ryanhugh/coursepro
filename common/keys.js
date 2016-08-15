@@ -55,6 +55,9 @@ function Keys(obj, endpoint) {
 		if (obj.hash.startsWith('/list') || obj.hash.startsWith('/')) {
 			elog(obj)
 		}
+
+		// console.log('made with hash')
+		// console.trace()
 		// A obj hash SHOULD NOT START WITH /LISTsomething
 		// the api endpoint is added below
 		this.hash = obj.hash

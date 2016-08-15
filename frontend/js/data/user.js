@@ -517,14 +517,6 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		return callback()
 	};
 
-	classes.slice(0).forEach(function (aClass) {
-		if (!aClass.isClass) {
-			elog('tried to save a class that !isClass', aClass)
-			_.pull(classes, aClass)
-		}
-	}.bind(this))
-
-
 	this.loadList(listName, function (err) {
 		if (err) {
 			return callback(err)

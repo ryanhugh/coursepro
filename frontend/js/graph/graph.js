@@ -680,6 +680,10 @@ Graph.prototype.showClasses = function (classList, callback) {
 		return;
 	};
 
+	// Need to clean up this fn, and change the prereqs to nodes instead of classes if going to be used again
+	elog()
+	return;
+
 	//this is ghetto
 	//remove the prereqs from classes so we don't load all the result's prereqs
 	classList.forEach(function (aClass) {
@@ -700,7 +704,6 @@ Graph.prototype.showClasses = function (classList, callback) {
 			type: 'or',
 			values: classList
 		},
-		isClass: false,
 		hidden: true
 	}
 

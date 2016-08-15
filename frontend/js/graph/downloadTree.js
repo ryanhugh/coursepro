@@ -41,7 +41,7 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 		}
 		visited.push(subTree)
 
-		if (!subTree.isClass || subTree.isString) {
+		if (subTree.isString) {
 			toProcess = toProcess.concat(subTree.coreqs.values).concat(subTree.prereqs.values)
 			continue;
 		}

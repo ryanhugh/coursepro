@@ -51,7 +51,6 @@ describe('.create', function () {
 		aClass.download(function () {
 			expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE)
 			expect(aClass._id).toBe("575102d1b462e991061ca594")
-			expect(aClass.prereqs.values[0].isClass).toBe(true)
 			expect(aClass.prereqs.values[0].isString).toBe(true)
 			expect(aClass.prereqs.values[0].desc).toBe("Language Placement JP201")
 			done()

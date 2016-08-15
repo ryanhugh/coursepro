@@ -6,7 +6,7 @@ var Class = require('../data/Class')
 
 function Node(classOrRequisiteBranch) {
 	if (classOrRequisiteBranch.isClass === false) {
-		elog('nope')
+		elog()
 	}
 
 	if (classOrRequisiteBranch instanceof Class) {
