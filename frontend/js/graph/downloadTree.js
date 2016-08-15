@@ -6,6 +6,7 @@ var async = require('async')
 var request = require('../request')
 var macros = require('../macros')
 var Class = require('../data/Class')
+var RequisiteBranch = require('../data/RequisiteBranch')
 
 
 function DownloadTree() {
@@ -41,7 +42,7 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 		}
 		visited.push(subTree)
 
-		if (subTree.isString) {
+		if (subTree.isString || (subTree instanceof RequisiteBranch)) {
 			toProcess = toProcess.concat(subTree.coreqs.values).concat(subTree.prereqs.values)
 			continue;
 		}
