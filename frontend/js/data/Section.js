@@ -158,7 +158,15 @@ Section.prototype.getLocations = function (ignoreExams) {
 			retVal.push(where);
 		};
 	}.bind(this))
-	return retVal;
+
+	// If it is at least 1 long with TBAs remove, return the array without any TBAs
+	var noTBAs = _.pull(retVal.slice(0),'TBA');
+	if (noTBAs.length > 0) {
+		return noTBAs
+	}
+	else {
+		return retVal;
+	}
 };
 
 Section.prototype.getUniqueStartTimes = function (ignoreExams) {

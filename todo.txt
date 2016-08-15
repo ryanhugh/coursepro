@@ -24,6 +24,8 @@ if the graph is loaded with stuff selected and they are unselected does it work?
 bug on is 1500 comma at end of location
 dont change the search term or result when a result is selected
 the bug with swarthmore in create search index
+ghetto trig needs improvement
+
 
 UNIT TESTS:
 run all graph unit tests.js (data/tests/runAllGraphSelections_broken.js)
