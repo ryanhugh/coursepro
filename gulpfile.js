@@ -26,7 +26,7 @@ var recursiveDeps = require('recursive-deps');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var watchify = require('watchify')
-var glob = require('glob')
+var globby = require('globby');
 var karma = require('karma')
 var cssnano = require('gulp-cssnano');
 // var cleanCSS = require('gulp-clean-css'); 
@@ -159,10 +159,7 @@ function onError(error) {
 // this fn would have to change a bit too
 var getFilesToProcess = memoize(function (includeTests, callback) {
 
-	glob('frontend/js/**/*.js', function (err, files) {
-		if (err) {
-			return callback(err)
-		}
+	globby(['common/**/*.js', 'frontend/js/**/*.js']).then(function (files) {
 		if (includeTests) {
 			return callback(null, files);
 		}
@@ -176,7 +173,12 @@ var getFilesToProcess = memoize(function (includeTests, callback) {
 		})
 
 		return callback(null, filesToProccess)
-	});
+	}).catch(function (err) {
+		onError('glob failed' + err)
+		if (err.stack) {
+			console.log(err.stack);
+		}
+	}.bind(this));;
 })
 
 //watch is allways on, to turn off (or add the option back) 
@@ -372,10 +374,7 @@ gulp.task('watchCopyImages', function () {
 gulp.task('copyRootFiles', function (callback) {
 
 	// List all files and folders in the root src/ dir
-	glob("frontend/*", function (err, results) {
-		if (err) {
-			return callback(err);
-		}
+	globby(["frontend/*"]).then(function (results) {
 
 		var files = [];
 
@@ -467,7 +466,12 @@ gulp.task('copyRootFiles', function (callback) {
 			})
 
 		})
-	})
+	}).catch(function (err) {
+		onError('glob failed' + err)
+		if (err.stack) {
+			console.log(err.stack);
+		}
+	}.bind(this));
 });
 
 gulp.task('watchcopyRootFiles', function () {
@@ -578,7 +582,9 @@ gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 // which messed up a lot of stuff
 var btestRun = batch(function (events, callback) {
 
-	glob('backend/**/*.js', function (err, files) {
+
+
+	globby(['backend/**/*.js','common/**/*.js']).then(function (files) {
 		files.forEach(function (file) {
 			var filePath = path.resolve(file);
 			delete require.cache[filePath]
@@ -606,16 +612,24 @@ var btestRun = batch(function (events, callback) {
 		jasmine.onComplete(function (passedAll) {
 			callback()
 		})
-	});
+	}).catch(function (err) {
+		onError('glob failed' + err)
+		if (err.stack) {
+			console.log(err.stack);
+		}
+	}.bind(this));
 }, function (err) {
 	onError('BATCH FAILED!' + err);
+	if (err.stack) {
+		console.log(err.stack)
+	}
 });
 
 
 
 gulp.task('btest', function () {
 	btestRun();
-	gulp.watch(['backend/**/*.js'], btestRun);
+	gulp.watch(['backend/**/*.js','common/**/*.js'], btestRun);
 });
 
 gulp.task('test', ['btest', 'ftest'], function () {});

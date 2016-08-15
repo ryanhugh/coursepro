@@ -4,29 +4,39 @@
 // So anything that is required is is added many different places
 
 // Used in both frontend and backend and service worker to get key from an object
-
+var macros = require('./macros')
 
 // ADD CHECKS for each url to make sure have min required data
 
 
 var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
+var enpoints = [macros.LIST_COLLEGES, macros.LIST_TERMS, macros.LIST_SUBJECTS, macros.LIST_CLASSES, macros.LIST_SECTIONS]
 var minData = 2;
 
-function Keys(obj) {
+function Keys(obj, endpoint) {
 	if (obj instanceof Keys || !obj) {
 		elog('welp')
 	}
 
+
 	// Prefer obj over hash and _id
 	if (obj.host) {
+		var endpointIndex;
+		if (endpoint) {
+			endpointIndex = enpoints.indexOf(endpoint)
+		}
 		var i;
 		for (i = 0; i < allKeys.length; i++) {
 			var currValue = obj[allKeys[i]];
-			if (currValue) {
-				this[allKeys[i]] = currValue;
+			if (!currValue) {
+				break
+			}
+			else if (endpointIndex && i > endpointIndex) {
+				elog(obj, endpoint)
+				break;
 			}
 			else {
-				break;
+				this[allKeys[i]] = currValue;
 			}
 		}
 
@@ -35,29 +45,30 @@ function Keys(obj) {
 			if (obj[allKeys[i]]) {
 
 				// Shouldn't have any keys after first one that isn't present
-				elog()
+				elog(obj, endpoint)
 			}
 		}
 	}
 
+	// this hash shall be "neu.edu/201710/..."
 	else if (obj.hash) {
+		if (obj.hash.startsWith('/list') || obj.hash.startsWith('/')) {
+			elog(obj)
+		}
 		// A obj hash SHOULD NOT START WITH /LISTsomething
-		// this hash shall be "neu.edu/201710/..."
 		// the api endpoint is added below
 		this.hash = obj.hash
 	}
 	else if (obj._id) {
 		this._id = obj._id
 	}
-
-
-	// add checks here.
-	// There are not currently any because if looking for all hosts it could be created with no obj
-
+	else if (endpoint !== undefined && endpoint !== macros.LIST_COLLEGES) {
+		elog(obj, enpoint);
+	}
 }
 
-Keys.create = function (obj) {
-	return new this(obj);
+Keys.create = function (obj, enpoint) {
+	return new this(obj,enpoint);
 };
 
 // returns neu.edu/201710/CS/4800_4444444/1234, etc
@@ -89,18 +100,6 @@ Keys.prototype.getHash = function () {
 Keys.prototype.getHashWithEndpoint = function (endpoint) {
 	return endpoint + '/' + this.getHash()
 };
-
-// Keys.prototype.getHashWithGivenProps = function (arr) {
-// 	var retVal = {};
-// 	for (var i = 0; i < arr.length; i++) {
-// 		if (arr[i] !== allKeys[i]) {
-// 			elog(arr[i], allKeys[i])
-// 			break;
-// 		}
-// 		retVal[arr[i]] = this[arr[i]]
-// 	}
-// 	return retVal;
-// };
 
 // Used in BaseData to go from a class that has everything to the classUid to what should be requested from the server
 Keys.prototype.getMinimumKeys = function () {
@@ -138,19 +137,6 @@ Keys.prototype.containsAllProperties = function (arr) {
 	}
 	return true;
 };
-
-// Keys.prototype.containsMinimumProperties = function() {
-// 		var retVal = {};
-// 	for (var i = 0; i < minData; i++) {
-// 		var currValue = this[allKeys[i]];
-// 		if (!currValue) {
-// 			break;
-// 		}
-// 		retVal[allKeys[i]] = currValue
-// 	}
-// 	return Keys.create(retVal);
-// };
-
 
 Keys.prototype.equals = function (other) {
 	if (!(other instanceof Keys)) {
@@ -207,8 +193,5 @@ Keys.prototype.propsEqual = function (other) {
 // endpoint string here
 // -- grab from dump database, server, all the datas, and ctrl f frontedn backend
 
-
-
-// replace BaseData.getIdentifyer
 
 module.exports = Keys

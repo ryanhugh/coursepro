@@ -293,7 +293,7 @@ app.post('/getCurrentCollege', function (req, res) {
 
 
 
-app.post('/listColleges', function (req, res) {
+app.post(macros.LIST_COLLEGES, function (req, res) {
 	collegeNamesDB.find({}, {
 		shouldBeOnlyOne: false,
 		sanitize: true
@@ -310,7 +310,7 @@ app.post('/listColleges', function (req, res) {
 	});
 })
 
-app.post('/listTerms', function (req, res) {
+app.post(macros.LIST_TERMS, function (req, res) {
 
 	if (!req.body.host) {
 		console.log('error, no host given body:');
@@ -336,7 +336,7 @@ app.post('/listTerms', function (req, res) {
 	})
 })
 
-app.post('/listSubjects', function (req, res) {
+app.post(macros.LIST_SUBJECTS, function (req, res) {
 
 	if (!req.body.host || !req.body.termId) {
 		console.log('error, no host or termId given body:');
@@ -365,9 +365,9 @@ app.post('/listSubjects', function (req, res) {
 		res.send(JSON.stringify(subjects));
 	})
 })
+ 
 
-
-app.post('/listClasses', function (req, res) {
+app.post(macros.LIST_CLASSES, function (req, res) {
 
 	if ((!req.body.host || !req.body.termId) && !req.body._id) {
 		console.log('error, no host or termId or subject given body:');
@@ -420,7 +420,7 @@ app.post('/listClasses', function (req, res) {
 	})
 })
 
-app.post('/listSections', function (req, res) {
+app.post(macros.LIST_SECTIONS, function (req, res) {
 
 	if ((!req.body.host || !req.body.termId) && !req.body._id) {
 		console.log('error, no host or termId or subject or classId given body:');

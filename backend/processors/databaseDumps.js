@@ -114,7 +114,7 @@ DatabaseDumps.prototype.go = function (query, callback) {
 			if (err) {
 				return callback(err)
 			}
-			this.saveRows('/listClasses', results, function (err) {
+			this.saveRows(macros.LIST_CLASSES, results, function (err) {
 				return callback(err)
 			}.bind(this))
 		}.bind(this))
@@ -130,7 +130,7 @@ DatabaseDumps.prototype.go = function (query, callback) {
 			if (err) {
 				return callback(err)
 			}
-			this.saveRows('/listSections', results, function (err) {
+			this.saveRows(macros.LIST_SECTIONS, results, function (err) {
 				return callback(err)
 			}.bind(this))
 		}.bind(this))
@@ -146,7 +146,7 @@ DatabaseDumps.prototype.go = function (query, callback) {
 			if (err) {
 				return callback(err)
 			}
-			this.saveRows('/listSubjects', results, function (err) {
+			this.saveRows(macros.LIST_SUBJECTS, results, function (err) {
 				return callback(err)
 			}.bind(this))
 		}.bind(this))
