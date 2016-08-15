@@ -20,14 +20,12 @@ function Search() {
 	// Updated on search, used in ng-repeat
 	this.classes = [];
 
-	this.searchIndex = null;
-
 	//wait for a subject and a search term
 	if (this.$routeParams.host && this.$routeParams.termId) {
 		this.loadSearchIndex(_.noop);
 	}
 
-	this.search()
+	// this.search()
 }
 
 Search.fnName = 'Search'
@@ -53,8 +51,8 @@ Search.prototype.loadSearchIndex = memoize(function (callback) {
 
 		console.log("Got search index data!");
 
-		this.searchIndex = elasticlunr.Index.load(result);
-		return callback()
+		var searchIndex = elasticlunr.Index.load(result);
+		return callback(null, searchIndex)
 	}.bind(this))
 }, function () {
 	return this.$routeParams.host + this.$routeParams.termId
@@ -67,10 +65,13 @@ Search.prototype.go = function () {
 		return;
 	}
 
-	this.loadSearchIndex(function () {
+	this.loadSearchIndex(function (err, searchIndex) {
+		if (err) {
+			elog(err)
+		}
 
 		// Return with a ref: and a score: 
-		var results = this.searchIndex.search(this.searchText)
+		var results = searchIndex.search(this.searchText)
 
 		var classes = [];
 
@@ -104,22 +105,6 @@ Search.prototype.go = function () {
 		}.bind(this))
 	}.bind(this))
 }
-
-
-
-Search.prototype.onEnter = function () {
-	if (!this.$routeParams.subject || !this.searchText) {
-		return;
-	};
-
-
-	this.searchText = this.searchText.trim().replace(/\s+/g, '').toLowerCase();
-
-	var obj = this.$routeParams;
-
-	this.$location.path('/search/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(this.searchText))
-};
-
 
 // NEw
 Search.prototype.search = function () {
@@ -183,9 +168,6 @@ Search.prototype.search = function () {
 			elog(err);
 			return;
 		}
-
-
-
 		this.$scope.$apply();
 	}.bind(this))
 }
@@ -193,24 +175,12 @@ Search.prototype.search = function () {
 
 Search.prototype.onClick = function (aClass) {
 	var obj = aClass;
-	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))
+	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid)).replace().reload(false)
 }
 
 Search.prototype.isActive = function (aClass) {
 	return this.$routeParams.classUid === aClass.classUid && this.$routeParams.subject === aClass.subject
 }
-
-Search.link = function ($scope, element, attrs) {
-	// alert('hi')
-}
-
-
-
-Search.prototype.addSubject = function (subject) {
-	this.$route.updateParams({
-		subject: subject.subject
-	})
-};
 
 Search.prototype.Search = Search;
 module.exports = Search;

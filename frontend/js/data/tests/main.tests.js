@@ -7,6 +7,7 @@ var mockHostData = require('./mocks/mockHostData.json')
 var mockTermData = require('./mocks/mockTermData.json')
 var mockSectionData = require('./mocks/mockSectionData.json')
 var mockSearchIndex = require('./mocks/mockSearchIndex.json')
+var Keys = require('../../../../common/Keys')
 
 localStorage.clear()
 
@@ -86,30 +87,6 @@ XMLHttpRequest.prototype.send = function (json) {
 					elog('no userId in request?')
 				}
 			}
-			else {
-
-				body = {};
-				if (urlSplit[2]) {
-					body.host = urlSplit[2]
-				}
-
-				if (urlSplit[3]) {
-					body.termId = urlSplit[3]
-				}
-
-				if (urlSplit[4]) {
-					body.subject = urlSplit[4]
-				}
-
-				if (urlSplit[5]) {
-					body.classUid = urlSplit[5]
-				}
-
-				if (urlSplit[6]) {
-					body.crn = urlSplit[6]
-				}
-			}
-
 
 
 			var thisMockData = mockData[endpoint]
@@ -126,22 +103,27 @@ XMLHttpRequest.prototype.send = function (json) {
 			else {
 				retVal = [];
 				thisMockData.forEach(function (data) {
-
-					for (var attrName in body) {
-						if (attrName === 'userId') {
-							continue;
-						}
-						if (body[attrName] != data[attrName]) {
-							return;
-						}
+					var match = false;
+					if (body) {
+						match = Keys.create(body).propsEqual(data);
 					}
-					// dont need to clone because json stringify'ing below
-					retVal.push(data);
+					else {
+						match = Keys.create({
+							host: data.host,
+							termId: data.termId
+						}).getHashWithEndpoint('/' + endpoint) === this.url
+					}
+
+					if (match) {
+
+						// dont need to clone because json stringify'ing below
+						retVal.push(data);
+					}
 
 				}.bind(this))
 
 				if (retVal.length == 0) {
-					elog("unit test error: dont have data for query", body);
+					elog("unit test error: dont have data for query", endpoint, this.url);
 				};
 			}
 			this.response = JSON.stringify(retVal)

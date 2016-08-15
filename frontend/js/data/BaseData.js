@@ -137,10 +137,14 @@ BaseData.prototype.equals = function (other) {
 
 BaseData.downloadResultsGroup = memoize(function (config, callback) {
 
-	console.log("Downloading + Building hash for " + this.API_ENDPOINT, JSON.stringify(config.keys));
+	console.log("Downloading + Building hash for " + this.API_ENDPOINT, config.keys.getObj());
 
 	var requestConfig = {};
 	if (this.bypassResultsCache) {
+		requestConfig = config
+	}
+	else if (config.keys._id) {
+		console.warn('cant do fancy caching when given _id')
 		requestConfig = config
 	}
 	else {
@@ -162,7 +166,12 @@ BaseData.downloadResultsGroup = memoize(function (config, callback) {
 	}.bind(this))
 
 }, function (config) {
-	return config.keys.getHashWithEndpoint(this.API_ENDPOINT)
+	if (config.keys._id) {
+		return this.API_ENDPOINT + '/' + config.keys._id
+	}
+	else {
+		return config.keys.getHashWithEndpoint(this.API_ENDPOINT)
+	}
 })
 
 
@@ -250,7 +259,12 @@ BaseData.downloadGroup = memoize(function (config, callback) {
 
 	}.bind(this))
 }, function (config) {
-	return config.keys.getHashWithEndpoint(this.API_ENDPOINT);
+	if (config.keys._id) {
+		return this.API_ENDPOINT + '/' + config.keys._id
+	}
+	else {
+		return config.keys.getHashWithEndpoint(this.API_ENDPOINT)
+	}
 })
 
 BaseData.createMany = function (keys, callback) {

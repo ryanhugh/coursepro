@@ -15,7 +15,7 @@ var minData = 2;
 
 function Keys(obj, endpoint, config) {
 	if (obj instanceof Keys || !obj) {
-		elog('welp',obj)
+		elog('welp', obj)
 	}
 
 	if (endpoint) {
@@ -84,7 +84,7 @@ Keys.createWithHash = function (obj, endpoint) {
 	});
 };
 
-Keys.prototype.createWithClassId = function(obj, endpoint) {
+Keys.prototype.createWithClassId = function (obj, endpoint) {
 	return new this(obj, endpoint, {
 		classId: true
 	})
@@ -122,6 +122,10 @@ Keys.prototype.getHashWithEndpoint = function (endpoint) {
 
 // Used in BaseData to go from a class that has everything to the classUid to what should be requested from the server
 Keys.prototype.getMinimumKeys = function () {
+	if (this._id || this.hash) {
+		console.warn("cant get min keys when have id or hash")
+		return this;
+	}
 	var retVal = {};
 	for (var i = 0; i < minData; i++) {
 		var currValue = this[allKeys[i]];
@@ -135,16 +139,31 @@ Keys.prototype.getMinimumKeys = function () {
 
 
 Keys.prototype.getObj = function () {
-	var retVal = {};
-
-	for (var i = 0; i < allKeys.length; i++) {
-		var currValue = this[allKeys[i]];
-		if (!currValue) {
-			break;
+	if (this._id) {
+		return {
+			_id: this._id
 		}
-		retVal[allKeys[i]] = currValue;
 	}
-	return retVal;
+	else if (this.hash) {
+		// Can't get obj if given hash
+		elog()
+		return {
+			hash: this.hash
+		}
+	}
+	else {
+
+		var retVal = {};
+
+		for (var i = 0; i < allKeys.length; i++) {
+			var currValue = this[allKeys[i]];
+			if (!currValue) {
+				break;
+			}
+			retVal[allKeys[i]] = currValue;
+		}
+		return retVal;
+	}
 };
 
 
