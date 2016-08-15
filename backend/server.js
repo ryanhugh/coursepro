@@ -429,34 +429,7 @@ app.post(macros.LIST_SECTIONS, function (req, res) {
 		return;
 	};
 
-	var lookup = {}
-
-	if (req.body._id) {
-		lookup._id = req.body._id
-	}
-	else {
-		lookup = {
-			host: req.body.host,
-			termId: req.body.termId,
-		}
-
-		if (req.body.subject) {
-			lookup.subject = req.body.subject
-		}
-
-		if (req.body.classUid) {
-			lookup.classUid = req.body.classUid
-		}
-		else if (req.body.classId) {
-			lookup.classId = req.body.classId
-		}
-
-		if (req.body.crn) {
-			lookup.crn = req.body.crn;
-		}
-	}
-
-
+	var lookup = Keys.create(req.body,macros.LIST_SECTIONS).toObj()
 
 	sectionsDB.find(lookup, {
 		shouldBeOnlyOne: false,

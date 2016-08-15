@@ -21,13 +21,6 @@ function Class(config) {
 	//true, if for instance "AP placement exam, etc"
 	this.isString = false;
 
-
-	//turn to false to be a node in a graph
-	//this can happen if a request gets back multiple classes (eg (hon) an norm)
-	//and for complex nodes in prereqs (a or b) and c
-	//when this is false this is only required to have a .prereqs and coreqs
-	this.isClass = true;
-
 	// A class that is listed as a prereq for another class on the site, but this class dosen't actually exist
 	// Currently, missing prereqs are not even added as prereqs for classes because I can't think of any reason to list classes
 	// that don't exist anywhere on the site. Could be changed in future, the fitlter is in this file. 
@@ -67,7 +60,7 @@ Class.API_ENDPOINT = '/listClasses'
 
 
 Class.isValidCreatingData = function (config) {
-	if (config.isString || config.isClass === false) {
+	if (config.isString) {
 		return true;
 	}
 
@@ -128,7 +121,6 @@ Class.prototype.convertServerRequisites = function (data) {
 		//basic string
 		if ((typeof data) == 'string') {
 			data = {
-				isClass: true,
 				isString: true,
 				desc: data,
 
@@ -165,7 +157,7 @@ Class.prototype.internalDownload = function (callback) {
 		callback = function () {}
 	}
 
-	if (!this.isClass || this.prereqs.length > 0 || this.desc || this.lastUpdateTime !== undefined || this.isString) {
+	if (this.prereqs.length > 0 || this.desc || this.lastUpdateTime !== undefined || this.isString) {
 		this.dataStatus = macros.DATASTATUS_DONE
 		return callback(null, this)
 	}
@@ -179,8 +171,8 @@ Class.prototype.internalDownload = function (callback) {
 		elog(errorMsg, this)
 		return callback(errorMsg, this)
 	}
-	if (this.isString || !this.isClass) {
-		var errorMsg = "class.download called on string or node"
+	if (this.isString) {
+		var errorMsg = "class.download called on string"
 		elog(errorMsg, this)
 		return callback(errorMsg)
 	}
@@ -326,12 +318,6 @@ Class.prototype.updateWithData = function (config) {
 
 
 Class.prototype.equals = function (other) {
-	if (!this.isClass || !other.isClass) {
-		// look into the git history if attempting to implement, this, started a while ago and then deleted it
-		elog('dosent support comparing non classes yet')
-		return false;
-	}
-
 	// both strings
 	if (this.isString && other.isString) {
 		return this.desc === other.desc;
@@ -453,7 +439,7 @@ Class.prototype.loadSections = function (callback) {
 	};
 
 
-	if (!this.isClass || this.isString) {
+	if (this.isString) {
 		elog('ERROR cant load sections of !class or string')
 		return callback('!class or string')
 	};
