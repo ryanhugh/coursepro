@@ -142,6 +142,7 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 				index.addField('subject');
 				index.addField('profs');
 				index.addField('locations');
+				index.addField('crns')
 
 				for (var attrName2 in termData.classHash) {
 					var searchResultData = termData.classHash[attrName2];
@@ -172,6 +173,9 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 
 					toIndex.profs = profs.join(' ')
 					toIndex.locations = locations.join(' ')
+					if (searchResultData.class.crns) {
+						toIndex.crns = searchResultData.class.crns.join(' ')
+					}
 					index.addDoc(toIndex)
 				}
 
