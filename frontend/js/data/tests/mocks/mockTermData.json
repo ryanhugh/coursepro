@@ -1,56 +1,97 @@
 [{
-	"_id": "56f229a6ea47044a056b8bf0",
+	"_id": "5750fb7e473a61d0fab25d96",
+	"termId": "201602",
+	"text": "Spring 2016",
+	"host": "swarthmore.edu",
+	"startDate": "16819",
+	"endDate": "16935"
+}, {
+	"_id": "5750fb92473a61d0fab25da2",
+	"termId": "201604",
+	"text": "Fall 2016",
+	"host": "swarthmore.edu",
+	"startDate": "17042",
+	"endDate": "17154"
+}, {
+	"_id": "57510190b462e991061c04a2",
+	"termId": "201652",
+	"text": "Summer 2016 Semester",
+	"host": "neu.edu/law",
+}, {
+	"_id": "57510389b462e991061d03f1",
 	"termId": "201660",
 	"text": "Summer 2 2016",
-	"host": "neu.edu"
+	"host": "neu.edu",
+	"startDate": "16987",
+	"endDate": "17040"
 }, {
-	"_id": "56f229abea47044a056b8d9f",
-	"termId": "201540",
-	"text": "Summer 1 2015",
-	"host": "neu.edu"
+	"_id": "5751038ab462e991061d03ff",
+	"termId": "201658",
+	"text": "Summer 2016 Quarter",
+	"host": "neu.edu/law",
 }, {
-	"_id": "56f229b0ea47044a056b8e81",
-	"termId": "201640",
-	"text": "Summer 1 2016",
-	"host": "neu.edu"
+	"_id": "5751038eb462e991061d041d",
+	"termId": "201655",
+	"text": "Summer 2016",
+	"host": "neu.edu/cps",
 }, {
-	"_id": "56f229b0ea47044a056b8ef7",
-	"termId": "201550",
-	"text": "Summer Full 2015",
-	"host": "neu.edu"
+	"_id": "57510397b462e991061d042c",
+	"termId": "201628",
+	"text": "Winter 2016 Quarter",
+	"host": "neu.edu/law",
 }, {
-	"_id": "56f229b0ea47044a056b8f6b",
-	"termId": "201710",
-	"text": "Fall 2016",
-	"host": "neu.edu"
+	"_id": "5751040fb462e991061d0467",
+	"termId": "201625",
+	"text": "Winter 2016",
+	"host": "neu.edu/cps",
 }, {
-	"_id": "56f229b0ea47044a056b8f89",
-	"termId": "201650",
-	"text": "Summer Full 2016",
-	"host": "neu.edu"
+	"_id": "5751047db462e991061d048c",
+	"termId": "201635",
+	"text": "Spring 2016",
+	"host": "neu.edu/cps",
 }, {
-	"_id": "56f229b0ea47044a056b8f8b",
-	"termId": "201560",
-	"text": "Summer 2 2015",
-	"host": "neu.edu"
+	"_id": "57510481b462e991061d0497",
+	"termId": "201632",
+	"text": "Spring 2016 Semester",
+	"host": "neu.edu/law",
 }, {
-	"_id": "56f229b1ea47044a056b8f90",
+	"_id": "575104abb462e991061d049e",
+	"termId": "201638",
+	"text": "Spring 2016 Quarter",
+	"host": "neu.edu/law",
+}, {
+	"_id": "5751051fb462e991061d04b9",
 	"termId": "201630",
 	"text": "Spring 2016",
-	"host": "neu.edu"
-}, {
-	"_id": "56f229b1ea47044a056b8fb6",
-	"termId": "201610",
-	"text": "Fall 2015",
-	"host": "neu.edu"
-}, {
-	"_id": "56f229b1ea47044a056b8fbf",
-	"termId": "201530",
-	"text": "Spring 2015",
-	"host": "neu.edu"
-}, {
-	"_id": "56f229b1ea47044a056b8fc0",
-	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched",
 	"host": "neu.edu",
-	"lastUpdateTime": 1458695980802
+	"startDate": "16811",
+	"endDate": "16921"
+}, {
+	"_id": "57510521b462e991061d04c3",
+	"termId": "201710",
+	"text": "Fall 2016",
+	"host": "neu.edu",
+	"startDate": "17051",
+	"endDate": "17152"
+}, {
+	"_id": "57510521b462e991061d04c8",
+	"termId": "201640",
+	"text": "Summer 1 2016",
+	"host": "neu.edu",
+	"startDate": "16930",
+	"endDate": "16984"
+}, {
+	"_id": "57510538b462e991061d04cf",
+	"termId": "201650",
+	"text": "Summer Full 2016",
+	"host": "neu.edu",
+	"startDate": "16930",
+	"endDate": "17033"
+}, {
+	"_id": "111111111111111111111111",
+	"termId": "999999",
+	"text": "Fall 2016",
+	"host": "neu.edu",
+	"startDate": "999999",
+	"endDate": "9999999"
 }]

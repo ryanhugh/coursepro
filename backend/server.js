@@ -245,7 +245,7 @@ app.use(function (req, res, next) {
 });
 
 
-app.post('/getCurrentCollege', function (req, res) {
+app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 
 	var ip = req.connection.remoteAddress;
 	if (req.body.ip) {

@@ -241,7 +241,7 @@ Keys.prototype.propsEqual = function (other) {
 			var propName = allKeys[i];
 
 			//When reached the end, done
-			if (this[propName] === undefined && other[propName] === undefined) {
+			if (this[propName] === undefined) {
 				return true;
 			}
 			if (this[propName] !== other[propName]) {

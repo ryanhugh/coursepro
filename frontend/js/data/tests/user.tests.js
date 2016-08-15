@@ -1,9 +1,10 @@
 'use strict';
 
+localStorage.clear()
+
 var user = require('../user')
 var Class = require('../Class')
 var Section = require('../Section')
-
 
 describe('validateEmail', function () {
 	it('can pass and fail emails', function () {
@@ -87,11 +88,10 @@ describe('user', function () {
 	}.bind(this))
 
 
-	it('should upgrade or something', function() {
+	it('should upgrade or something', function () {
 		localStorage.dbData = '{"lists":{"saved":{"classes":["56f22470ea47044a056a3dd8"],"sections":["56f2246eea47044a056a3d7e"]}},"vars":{"lastSelectedCollege":"neu.edu","lastSelectedTerm":"201710"}}';
 
 		user.loadFromLocalStorage();
-
 
 		var localData = JSON.parse(localStorage.dbData);
 		expect(localData.version).toBe(user.constructor.DBDATA_VERSION);
@@ -100,4 +100,11 @@ describe('user', function () {
 	});
 
 
+	it('should behave...', function (done) {
+		user.setValue(macros.LAST_SELECTED_COLLEGE, 'neu.edu');
+		user.guessTerm(function (err, term) {
+			expect(term).toBe('201710')
+			done()
+		}.bind(this))
+	});
 });

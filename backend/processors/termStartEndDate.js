@@ -164,20 +164,14 @@ TermStartEndDate.prototype.go = function (baseQuery, callback) {
 }
 
 
-TermStartEndDate.prototype.tests = function () {
-	this.go({
-		host: 'neu.edu'
-	}, function (err) {
-		console.log("DONE!", err);
-	}.bind(this))
-
-};
-
-
 TermStartEndDate.prototype.TermStartEndDate = TermStartEndDate;
 
 module.exports = new TermStartEndDate();
 
 if (require.main === module) {
-	module.exports.tests();
+	this.go({
+		host: 'neu.edu'
+	}, function (err) {
+		console.log("DONE!", err);
+	}.bind(this))
 }

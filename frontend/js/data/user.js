@@ -1,10 +1,14 @@
 'use strict';
 var _ = require('lodash')
 var queue = require('d3-queue').queue;
-var macros = require('../macros')
+var async = require('async')
+var moment = require('moment')
 
+var macros = require('../macros')
+var memoize = require('../../../common/memoize')
 var request = require('../request')
 var Class = require('./Class')
+var Term = require('./Term')
 var Section = require('./Section')
 var Keys = require('../../../common/Keys')
 
@@ -13,8 +17,9 @@ function User() {
 	//all the data on the db schema for users is copied to this object
 	//and updated on some events
 	// perhaps change vv to dataChangeTrigger + type? no, because there is only 1 state, authenticated+with data, or neither. 
-
 	this.onAuthFinishTriggers = []
+
+	this.onDataStabilizeTriggers = [];
 
 	//data in the server
 	//email and name are copied to this when done loading
@@ -55,7 +60,11 @@ function User() {
 	// the status of downloading the data from the server. If don't have login key, this stays at not started. 
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED
 
+	// Whether onDataStabilize has been called or not. 
+	this.hasStabilized = false;
+
 	this.loadFromLocalStorage();
+
 }
 
 User.DBDATA_VERSION = 2;
@@ -87,16 +96,18 @@ User.prototype.loadFromLocalStorage = function () {
 			//TODO: copy the old _ids to the new format
 
 
-			this.saveData()
-
+			this.onDataStabilize()
 		}
 
 		// valid local data
 		else if (localData.version == this.constructor.DBDATA_VERSION) {
 			this.dbData = localData;
+			this.onDataStabilize()
 		}
 	}
-
+	else {
+		this.onDataStabilize()
+	}
 };
 
 
@@ -119,6 +130,7 @@ User.prototype.getAuthenticated = function () {
 
 // same as below but only fires when finished logging in with google
 User.prototype.onAuthenticate = function (name, callback) {
+
 	if (this.dataStatus === macros.DATASTATUS_DONE) {
 		return callback();
 	}
@@ -139,19 +151,159 @@ User.prototype.onAuthFinish = function (name, callback) {
 
 	//lol just fire it now
 	// if don't have loginKey or already done loading
-	if (!this.getAuthenticated() || this.dataStatus === macros.DATASTATUS_DONE) {
+	if (this.hasStabilized === true) {
 		return callback();
 	}
 	else {
 
-		this.onAuthFinishTriggers.push({
+		this.onDataStabilizeTriggers.push({
 			name: name,
 			trigger: callback
 		})
+	}
+};
 
+// Called when the data on this is stabilized. 
+// Guestimates the host and termId and then fires the triggers
+User.prototype.onDataStabilize = function (callback) {
+	if (!callback) {
+		callback = function () {}
+	}
+	this.saveData()
+
+	if (this.hasStabilized) {
+		elog()
+	}
+	this.hasStabilized = true;
+
+
+
+	async.waterfall([function (callback) {
+
+		if (this.getValue(macros.LAST_SELECTED_COLLEGE)) {
+			return callback()
+		}
+		else {
+			this.guessHost(function (err) {
+				if (err) {
+					elog(err)
+				}
+				return callback()
+			}.bind(this))
+		}
+	}.bind(this), function (callback) {
+		if (this.getValue(macros.LAST_SELECTED_TERM)) {
+			return callback()
+		}
+		else {
+			this.guessTerm(function (err) {
+				if (err) {
+					elog(err)
+				}
+				return callback()
+			}.bind(this))
+		}
+
+	}.bind(this)], function (err) {
+		if (err) {
+			elog(err);
+		}
+		//and fire off the triggers
+		this.onDataStabilizeTriggers.forEach(function (trigger) {
+			trigger.trigger();
+		}.bind(this))
+
+		//remove all triggers on success
+		this.onDataStabilizeTriggers = []
+
+		callback()
+	}.bind(this))
+};
+
+
+User.prototype.guessHost = function (callback) {
+	if (!callback) {
+		callback = function () {}
+	}
+	request({
+		url: macros.GET_CURRENT_COLLEGE,
+		method: "POST"
+	}, function (err, body) {
+		if (err) {
+			elog(err);
+			return callback()
+		}
+
+		if (body && body.host) {
+			this.setValue(macros.LAST_SELECTED_COLLEGE, body.host)
+		}
+		return callback()
+	}.bind(this))
+};
+
+User.prototype.guessTerm = function (callback) {
+	if (!callback) {
+		callback = function () {}
+	}
+	var host = this.getValue(macros.LAST_SELECTED_COLLEGE)
+	if (!host) {
+		return callback()
 	}
 
+	Term.createMany(Keys.create({
+		host: host
+	}), function (err, terms) {
+		console.warn(err, terms);
+
+		var newTerms = []
+
+		terms.forEach(function (term) {
+
+			var startDate = moment((parseInt(term.startDate) + 1) * 24 * 60 * 60 * 1000);
+			var endDate = moment((parseInt(term.endDate) + 1) * 24 * 60 * 60 * 1000);
+
+			// If the endDate of the semester is in less than 45 days, skip
+			if (endDate.clone().subtract(45, 'days').diff(moment()) < 0) {
+				return;
+			}
+
+			//Less than 80 days in this term, remove summer classes and other short terms
+			if (endDate.diff(startDate, 'days') < 80) {
+				return;
+			}
+			newTerms.push(term)
+		}.bind(this))
+
+		newTerms.sort(function (a, b) {
+			var aStart = parseInt(a.startDate)
+			var bStart = parseInt(b.startDate);
+			if (aStart < bStart) {
+				return -1
+			}
+			else if (aStart > bStart) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
+		}.bind(this))
+
+		if (newTerms.length > 0) {
+			this.setValue(macros.LAST_SELECTED_TERM, newTerms[0].termId, function (err) {
+				return callback(null, newTerms[0].termId)
+			}.bind(this))
+		}
+		else {
+			return callback()
+		}
+	}.bind(this))
 };
+
+
+
+
+
+
 User.prototype.removeTriggers = function (name) {
 	var triggersToRemove = _.filter(this.onAuthFinishTriggers, {
 		name: name
@@ -238,7 +390,7 @@ User.prototype.sendRequest = function (config, callback) {
 
 
 //download user data
-User.prototype.download = function (callbackOrConfig, callback) {
+User.prototype.download = memoize(function (callbackOrConfig, callback) {
 	var config = {};
 
 	if (typeof callbackOrConfig == 'function') {
@@ -321,21 +473,23 @@ User.prototype.download = function (callbackOrConfig, callback) {
 			}
 		}
 
-		//and fire off the triggers
-		this.onAuthFinishTriggers.forEach(function (trigger) {
-			trigger.trigger();
-		}.bind(this))
-
-		//remove all triggers on success
-		this.onAuthFinishTriggers = []
-
-		this.saveData()
-
 		q.awaitAll(function (err) {
-			return callback(err, this)
+
+			//and fire off the triggers
+			this.onAuthFinishTriggers.forEach(function (trigger) {
+				trigger.trigger();
+			}.bind(this))
+
+			//remove all triggers on success
+			this.onAuthFinishTriggers = []
+
+			this.onDataStabilize(function (err) {
+				return callback(err, this)
+			}.bind(this))
+
 		}.bind(this))
 	}.bind(this))
-};
+});
 
 
 // http://stackoverflow.com/a/46181/11236
@@ -643,20 +797,6 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 	}.bind(this));
 };
 
-//can either be a class or a section
-// User.prototype.isAuthAndLoaded = function (instance) {
-//     if (!this.getAuthenticated()) {
-//         elog("assertAuthAndLoaded called when not authenticated!");
-//         return null;
-//     }
-
-//     if (instance.dataStatus !== macros.DATASTATUS_DONE) {
-//         elog('assertAuthAndLoaded given ', instance)
-//         return false;
-//     };
-//     return true;
-// };
-
 User.prototype.removeFromList = function (listName, classes, sections, callback) {
 	if (!callback) {
 		callback = function () {}
@@ -784,18 +924,6 @@ User.prototype.getList = function (listName) {
 	return this.lists[listName]
 };
 
-// User.prototype.setListIncludesSection = function (listName, section) {
-//  if (!this.isAuthAndLoaded(section)) {
-//      return null;
-//  }
-
-//  //and tell the server
-//  this.addToList(listName, [], [section], function (err) {
-//      if (err) {
-//          console.log("ERROR", err);
-//      };
-//  }.bind(this))
-// };
 
 User.prototype.toggleListContainsSection = function (listName, section, callback) {
 	if (!callback) {

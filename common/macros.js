@@ -25,6 +25,8 @@ function Macros() {
 
 	this.GET_SEARCH_INDEX = '/getSearchIndex'
 
+	this.GET_CURRENT_COLLEGE = '/getCurrentCollege'
+
 	// this.
 
 
