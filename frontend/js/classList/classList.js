@@ -2,6 +2,7 @@
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
+var macros = require('../macros')
 var user = require('../data/user')
 var Keys = require('../../../common/Keys')
 
@@ -72,7 +73,7 @@ ClassList.prototype.onClick = function (aClass, subScope) {
 
 	ga('send', {
 		'hitType': 'pageview',
-		'page': Keys.create(aClass).getHashWithEndpoint('/listSections'),
+		'page': Keys.create(aClass).getHashWithEndpoint(macros.LIST_SECTIONS),
 		'title': 'Coursepro.io'
 	});
 };
