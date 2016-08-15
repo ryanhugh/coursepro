@@ -493,12 +493,12 @@ UsersDB.prototype.getUsersWatchCache = function (callback) {
 			this.classWatchCache.sections = {};
 
 			results.forEach(function (user) {
-				if (!user.lists || !user.lists.watching) {
+				if (!user.lists || !user.lists[macros.WATCHING_LIST]) {
 					return;
 				};
 
 
-				user.lists.watching.classes.forEach(function (_id) {
+				user.lists[macros.WATCHING_LIST].classes.forEach(function (_id) {
 
 					//create the list if it dosent exist
 					if (!this.classWatchCache.classes[_id]) {
@@ -509,7 +509,7 @@ UsersDB.prototype.getUsersWatchCache = function (callback) {
 					this.classWatchCache.classes[_id].push(user)
 				}.bind(this))
 
-				user.lists.watching.sections.forEach(function (_id) {
+				user.lists[macros.WATCHING_LIST].sections.forEach(function (_id) {
 
 
 					if (!this.classWatchCache.sections[_id]) {
