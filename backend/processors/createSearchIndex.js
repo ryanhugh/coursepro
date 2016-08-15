@@ -62,6 +62,7 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 		if (err) {
 			return callback(err)
 		}
+		
 
 		var index = elasticlunr();
 
@@ -84,11 +85,9 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 			elog('not implemented yet!!!')
 		}
 
-		var endpoint = 'getSearchIndex'
-
 		var keys = Keys.create(query)
 
-		var fileName = path.join('.', 'dist', keys.getHashWithEndpoint(endpoint));
+		var fileName = path.join('.', 'dist', keys.getHashWithEndpoint(macros.GET_SEARCH_INDEX));
 		var folderName = path.dirname(fileName);
 
 		mkdirp(folderName, function (err) {
@@ -101,7 +100,7 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 					return callback(err);
 				}
 
-				console.log("Successfully saved", endpoint, query.host, query.termId);
+				console.log("Successfully saved", macros.GET_SEARCH_INDEX, query.host, query.termId);
 
 				return callback()
 			}.bind(this));

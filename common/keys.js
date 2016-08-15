@@ -1,21 +1,25 @@
 'use strict';
 
+// This file is used to manage the {host:, termId: subject:...} objects used to get more data. 
 // This is used in both sw.js, the backend, and the frontend.
-// So anything that is required is is added many different places
-
-// Used in both frontend and backend and service worker to get key from an object
+// So anything that is required is is added many different places. 
 var macros = require('./macros')
 
-// ADD CHECKS for each url to make sure have min required data
+
+// feature request from server.js: add classId if not given classUid and given host+termId+subject
 
 
 var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
-var enpoints = [macros.LIST_COLLEGES, macros.LIST_TERMS, macros.LIST_SUBJECTS, macros.LIST_CLASSES, macros.LIST_SECTIONS]
+var endpoints = [macros.LIST_COLLEGES, macros.LIST_TERMS, macros.LIST_SUBJECTS, macros.LIST_CLASSES, macros.LIST_SECTIONS]
 var minData = 2;
 
-function Keys(obj, endpoint) {
+function Keys(obj, endpoint, hashAllowed) {
 	if (obj instanceof Keys || !obj) {
 		elog('welp')
+	}
+
+	if (endpoint) {
+		this.endpoint = endpoint
 	}
 
 
@@ -23,7 +27,7 @@ function Keys(obj, endpoint) {
 	if (obj.host) {
 		var endpointIndex;
 		if (endpoint) {
-			endpointIndex = enpoints.indexOf(endpoint)
+			endpointIndex = endpoints.indexOf(endpoint)
 		}
 		var i;
 		for (i = 0; i < allKeys.length; i++) {
@@ -52,8 +56,8 @@ function Keys(obj, endpoint) {
 
 	// this hash shall be "neu.edu/201710/..."
 	else if (obj.hash) {
-		if (obj.hash.startsWith('/list') || obj.hash.startsWith('/')) {
-			elog(obj)
+		if (obj.hash.startsWith('/list') || obj.hash.startsWith('/') || !hashAllowed) {
+			elog(obj, endpoint, hashAllowed)
 		}
 
 		// console.log('made with hash')
@@ -66,12 +70,16 @@ function Keys(obj, endpoint) {
 		this._id = obj._id
 	}
 	else if (endpoint !== undefined && endpoint !== macros.LIST_COLLEGES) {
-		elog(obj, enpoint);
+		elog(obj, endpoint);
 	}
 }
 
-Keys.create = function (obj, enpoint) {
-	return new this(obj,enpoint);
+Keys.create = function (obj, endpoint) {
+	return new this(obj, endpoint, false);
+};
+
+Keys.createWithHash = function (obj, endpoint) {
+	return new this(obj, endpoint, true);
 };
 
 // returns neu.edu/201710/CS/4800_4444444/1234, etc
@@ -135,6 +143,43 @@ Keys.prototype.getObj = function () {
 Keys.prototype.containsAllProperties = function (arr) {
 	for (var i = 0; i < arr.length; i++) {
 		if (!this[arr[i]]) {
+			return false
+		}
+	}
+	return true;
+};
+
+
+// Ensure that have minimum data required to create an instance or lookup by something
+// This is one prop than need to lookup one row
+// eg. for subject this requrest host and termId
+Keys.prototype.isValid = function (endpoint) {
+	if (!endpoint) {
+		if (this.endpoint) {
+			endpoint = this.endpoint
+		}
+		else {
+			// Need an endpoint from somewhere to check if this is valid
+			elog()
+			return false
+		}
+	}
+
+	if (this._id) {
+		return true;
+	}
+
+	var endpointIndex = endpoints.indexOf(endpoint);
+
+	for (var i = 0; i < endpointIndex; i++) {
+		if (!this[allKeys[i]]) {
+			return false;
+		}
+	}
+
+	i++;
+	for (; i < allKeys.length; i++) {
+		if (this[allKeys[i]]) {
 			return false
 		}
 	}

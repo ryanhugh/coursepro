@@ -17,4 +17,23 @@
 		"EllucianTermsParser": ["57265a89d4a30537f913dc2d"]
 	},
 	"updatedByParent": false
+}, {
+
+	"_id": "111111111111111111111111",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched",
+	"host": "neu.edu",
+	"termId": "201602",
+	"text": "Spring 2016",
+	"lastUpdateTime": 1.462130831844e+12,
+	"deps": {},
+	"updatedByParent": false
+}, {
+	"_id": "111111111111111111111111",
+	"url": "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched",
+	"host": "neu.edu",
+	"termId": "111111",
+	"text": "Spring 1111",
+	"lastUpdateTime": 1.462130831844e+12,
+	"deps": {},
+	"updatedByParent": false
 }]

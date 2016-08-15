@@ -69,7 +69,7 @@ BaseData.create = function (config) {
 
 	var allKeys = this.requiredPath.concat(this.optionalPath);
 
-	var keys = Keys.create(config)
+	var keys = Keys.createWithHash(config)
 	// create the key
 	if (!config.hash) {
 		canCache = keys.containsAllProperties(allKeys);
@@ -278,7 +278,7 @@ BaseData.prototype.internalDownload = function (callback) {
 	}
 
 	this.dataStatus = macros.DATASTATUS_LOADING;
-	var keys = Keys.create(this);
+	var keys = Keys.createWithHash(this);
 	this.constructor.downloadGroup({
 		keys: keys
 	}, function (err, instances, results) {

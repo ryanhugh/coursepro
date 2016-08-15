@@ -4,7 +4,6 @@
 
 NOW:
 unit tests graph
-keys.js in shared dir
 
 
 REFACTOR STUFF:
@@ -13,12 +12,10 @@ d3 v4?
 simplifyTree in treemgr needs a fixing
  - dont copy stuff between nodes
  - and fix coreqs too?
-remove prereqsForThisGraph and serverPrereqs and the other backup prereqs crap savePrereqsForThisGraph
+remove prereqsForThisGraph and the other backup prereqs crap savePrereqsForThisGraph
 
 
 depriciate _id in frontend
-
-remove the request cloning cache 
 
 BUGS:
 think about how the prereqs are going to be saved when nodes are selected, what will happen when they are unselected

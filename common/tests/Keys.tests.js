@@ -86,3 +86,26 @@ it('containsAllProperties should work', function() {
 }); 
 
  
+ it('isValid should work', function() {
+ 	
+	var obj = {
+		host: 'neu.edu',
+		termId: '201710',
+		subject: 'CS',
+	}
+	var keys = Keys.create(obj);
+
+	expect(keys.isValid(macros.list_SECTIONS)).toBe(false)
+	expect(keys.isValid(macros.LIST_SUBJECTS)).toBe(true)
+	expect(keys.isValid(macros.LIST_CLASSES)).toBe(true)
+	expect(keys.isValid(macros.LIST_COLLEGES)).toBe(false)
+
+
+
+	var obj = {
+		host: 'neu.edu',
+		termId: '201710',
+	}
+	var keys = Keys.create(obj,macros.LIST_TERMS);
+	expect(keys.isValid()).toBe(true)
+ });

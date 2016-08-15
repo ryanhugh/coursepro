@@ -130,3 +130,36 @@ it('filters bad objects', function (done) {
 
 
 });
+
+
+it('list terms works', function (done) {
+
+	needle.post('http://localhost:8123/listTerms', {
+		host: 'neu.edu',
+		termId: '201602'
+	}, {
+		json: true
+	}, function (err, resp, body) {
+		expect(err).toBe(null);
+		var results = JSON.parse(body);
+		expect(results.length).toBe(1);
+		expect(results[0].host).toBe('neu.edu')
+		done()
+	}.bind(this))
+});
+
+
+
+it('list terms works', function (done) {
+
+	needle.post('http://localhost:8123/listTerms', {
+		host: 'neu.edu'
+	}, {
+		json: true
+	}, function (err, resp, body) {
+		expect(err).toBe(null);
+		var results = JSON.parse(body);
+		expect(results.length > 1).toBe(true);
+		done()
+	}.bind(this))
+});

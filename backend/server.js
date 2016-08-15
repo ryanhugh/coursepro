@@ -312,16 +312,17 @@ app.post(macros.LIST_COLLEGES, function (req, res) {
 
 app.post(macros.LIST_TERMS, function (req, res) {
 
-	if (!req.body.host) {
+	var keys = Keys.create(req.body, macros.LIST_TERMS)
+
+	if (!keys.isValid()) {
 		console.log('error, no host given body:');
 		console.log(req.body)
 		res.send('{"error":"no host given (expected JSON)"}')
 		return;
 	};
 
-	termsDB.find({
-		host: req.body.host
-	}, {
+
+	termsDB.find(keys.getObj(), {
 		shouldBeOnlyOne: false,
 		sanitize: true,
 		removeControllers: true
@@ -338,7 +339,9 @@ app.post(macros.LIST_TERMS, function (req, res) {
 
 app.post(macros.LIST_SUBJECTS, function (req, res) {
 
-	if (!req.body.host || !req.body.termId) {
+	var keys = Keys.create(req.body, macros.LIST_SUBJECTS);
+
+	if (!keys.isValid()) {
 		console.log('error, no host or termId given body:');
 		console.log(req.body)
 		res.status(400);
@@ -346,11 +349,7 @@ app.post(macros.LIST_SUBJECTS, function (req, res) {
 		return;
 	};
 
-
-	subjectsDB.find({
-		host: req.body.host,
-		termId: req.body.termId
-	}, {
+	subjectsDB.find(keys.getObj(), {
 		shouldBeOnlyOne: false,
 		sanitize: true,
 		removeControllers: true
@@ -365,11 +364,13 @@ app.post(macros.LIST_SUBJECTS, function (req, res) {
 		res.send(JSON.stringify(subjects));
 	})
 })
- 
+
 
 app.post(macros.LIST_CLASSES, function (req, res) {
 
-	if ((!req.body.host || !req.body.termId) && !req.body._id) {
+	var keys = Keys.create(req.body, macros.LIST_CLASSES);
+
+	if (!keys.isValid()) {
 		console.log('error, no host or termId or subject given body:');
 		console.log(req.body)
 		res.status(400);
@@ -377,34 +378,13 @@ app.post(macros.LIST_CLASSES, function (req, res) {
 		return;
 	};
 
-	var lookup = {}
+	var lookup = keys.getObj()
 
-	if (req.body._id) {
-		lookup._id = req.body._id
+
+	// Add classId if it is given and classUid is not given
+	if (req.body.classId && !lookup.classUid) {
+		lookup.classId = req.body.classId;
 	}
-	else {
-
-		lookup = {
-			host: req.body.host,
-			termId: req.body.termId,
-		}
-
-		if (req.body.subject) {
-			lookup.subject = req.body.subject
-		}
-
-
-		//add classUid if its given
-		if (req.body.classUid) {
-			lookup.classUid = req.body.classUid;
-		}
-		//add class id if its given
-		else if (req.body.classId) {
-			lookup.classId = req.body.classId;
-		};
-	}
-
-
 
 	classesDB.find(lookup, {
 		shouldBeOnlyOne: false,
@@ -422,16 +402,17 @@ app.post(macros.LIST_CLASSES, function (req, res) {
 
 app.post(macros.LIST_SECTIONS, function (req, res) {
 
-	if ((!req.body.host || !req.body.termId) && !req.body._id) {
+	var keys = Keys.create(req.body, macros.LIST_SECTIONS).toObj()
+
+	if (!keys.isValid()) {
 		console.log('error, no host or termId or subject or classId given body:');
 		console.log(req.body)
 		res.send('{"error":"no host or termId or subject or classId given (expected JSON)"}')
 		return;
 	};
 
-	var lookup = Keys.create(req.body,macros.LIST_SECTIONS).toObj()
 
-	sectionsDB.find(lookup, {
+	sectionsDB.find(keys.getObj(), {
 		shouldBeOnlyOne: false,
 		sanitize: true
 	}, function (err, classes) {
@@ -584,101 +565,6 @@ app.get('/unsubscribe', function (req, res) {
 	})
 })
 
-
-function getClassAndSectionIdFromPath(body, callback) {
-
-	async.waterfall([
-
-			function (callback) {
-
-				//if given _id need to find class to get host,termId,subject,classId
-
-				//we need both _ids and host, term etc, 
-				//technically the section lookup could occur at the same time as this request if host, termId, etc given
-				if (body._id) {
-					classesDB.find({
-							_id: body._id
-						}, {
-							shouldBeOnlyOne: true
-						},
-						function (err, doc) {
-							callback(err, [doc]);
-						}.bind(this))
-				}
-				else {
-					classesDB.find({
-							host: body.host,
-							termId: body.termId,
-							subject: body.subject,
-							classId: body.classId
-						}, {
-							shouldBeOnlyOne: false
-						},
-						function (err, docs) {
-							callback(err, docs);
-						}.bind(this))
-				}
-			}.bind(this),
-
-			//the aClass here is either the given host,termId, ect, or the details from the class above
-			function (classes, callback) {
-				if (classes.length === 0) {
-					return callback('No classes or sections found with that host, termId, subject, and classId')
-				};
-
-
-				sectionsDB.find({
-						host: classes[0].host,
-						termId: classes[0].termId,
-						subject: classes[0].subject,
-						classId: classes[0].classId
-					}, {
-						shouldBeOnlyOne: false,
-					},
-					function (err, sections) {
-
-						//only include classes whose crns are in classes
-						var crns = [];
-						classes.forEach(function (aClass) {
-							crns = crns.concat(aClass.crns)
-						}.bind(this))
-
-
-						var outputSections = [];
-						sections.forEach(function (section) {
-							if (_(crns).includes(section.crn)) {
-								outputSections.push(section)
-							};
-						}.bind(this))
-
-
-						callback(err, classes, outputSections)
-					}.bind(this))
-
-			}.bind(this)
-		],
-		function (err, classes, sections) {
-			if (err) {
-				console.log("ERROR", err);
-				return callback(err)
-			};
-
-			//get a list of the _id's of the sections
-			var sectionMongoIds = [];
-			sections.forEach(function (section) {
-				sectionMongoIds.push(section._id)
-			}.bind(this))
-
-			//get a list of the _id's for the classes
-			var classesMongoIds = [];
-			classes.forEach(function (theClass) {
-				classesMongoIds.push(theClass._id)
-			}.bind(this))
-
-			return callback(null, classesMongoIds, sectionMongoIds);
-		}.bind(this)
-	)
-}
 
 //verifies that the given mongo ids and section ids are all valid
 function verifyClassSectionIds(classMongoIds, sectionMongoIds, callback) {
@@ -957,6 +843,8 @@ app.post("/*", function (req, res, next) {
 });
 
 
+// In unit tests, close the old server if one existed and make another one
+// In dev/prod, log an error if there was a server
 if (macros.UNIT_TESTS) {
 
 	var q = queue();

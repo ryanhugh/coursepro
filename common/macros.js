@@ -23,6 +23,8 @@ function Macros() {
 	this.LIST_CLASSES = '/listClasses'
 	this.LIST_SECTIONS = '/listSections'
 
+	this.GET_SEARCH_INDEX = '/getSearchIndex'
+
 	// this.
 
 
