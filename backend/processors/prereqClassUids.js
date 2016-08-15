@@ -143,7 +143,7 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 			if (aClass.prereqs) {
 				toUpdate.prereqs = this.updatePrereqs(aClass.prereqs, aClass.host, aClass.termId, keyToRows);
 
-				console.log(JSON.stringify(toUpdate.prereqs));
+				// console.log(JSON.stringify(toUpdate.prereqs));
 
 				// and simplify tree again
 				toUpdate.prereqs = ellucianRequisitesParser.simplifyRequirements(toUpdate.prereqs)
@@ -189,17 +189,23 @@ PrereqClassUids.prototype.go = function (baseQuery, callback) {
 	}.bind(this))
 };
 
-PrereqClassUids.prototype.tests = function () {
-
-
-	this.go({
-		host: 'neu.edu'
-	}, function (err) {
-		console.log("DONE!", err);
-	}.bind(this))
-
-};
-
 
 PrereqClassUids.prototype.PrereqClassUids = PrereqClassUids;
 module.exports = new PrereqClassUids();
+
+
+
+if (require.main === module) {
+	// module.exports.go({
+	// 	host: 'neu.edu'
+	// }, function (err) {
+	// 	console.log("DONE!", err);
+	// })
+
+	module.exports.go({
+		host: 'swarthmore.edu'
+	}, function (err) {
+		console.log("DONE!", err);
+	})
+	// 
+}

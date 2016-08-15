@@ -13,9 +13,9 @@ var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
 var endpoints = [macros.LIST_COLLEGES, macros.LIST_TERMS, macros.LIST_SUBJECTS, macros.LIST_CLASSES, macros.LIST_SECTIONS]
 var minData = 2;
 
-function Keys(obj, endpoint, hashAllowed) {
+function Keys(obj, endpoint, config) {
 	if (obj instanceof Keys || !obj) {
-		elog('welp')
+		elog('welp',obj)
 	}
 
 	if (endpoint) {
@@ -56,8 +56,8 @@ function Keys(obj, endpoint, hashAllowed) {
 
 	// this hash shall be "neu.edu/201710/..."
 	else if (obj.hash) {
-		if (obj.hash.startsWith('/list') || obj.hash.startsWith('/') || !hashAllowed) {
-			elog(obj, endpoint, hashAllowed)
+		if (obj.hash.startsWith('/list') || obj.hash.startsWith('/') || !config.hashAllowed) {
+			elog(obj, endpoint, config.hashAllowed)
 		}
 
 		// console.log('made with hash')
@@ -75,11 +75,19 @@ function Keys(obj, endpoint, hashAllowed) {
 }
 
 Keys.create = function (obj, endpoint) {
-	return new this(obj, endpoint, false);
+	return new this(obj, endpoint, {});
 };
 
 Keys.createWithHash = function (obj, endpoint) {
-	return new this(obj, endpoint, true);
+	return new this(obj, endpoint, {
+		hashAllowed: true
+	});
+};
+
+Keys.prototype.createWithClassId = function(obj, endpoint) {
+	return new this(obj, endpoint, {
+		classId: true
+	})
 };
 
 // returns neu.edu/201710/CS/4800_4444444/1234, etc

@@ -1,7 +1,6 @@
 'use strict'
 
 var classesDB = require('../databases/classesDB')
-var macros = require('../macros')
 
 function BaseProcessor() {
 

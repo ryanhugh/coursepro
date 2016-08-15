@@ -34,7 +34,7 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 			if (err) {
 				return callback(err)
 			}
-			console.log("got sections");
+			console.log("got sections", results.length);
 			sections = results;
 			return callback()
 		}.bind(this))
@@ -52,59 +52,154 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 			if (results.length === 0) {
 				return callback('no classes?')
 			}
-			console.log("got classes");
+			console.log("got classes", results.length);
 			classes = results;
 			return callback()
 		}.bind(this))
 	}.bind(this))
 
+	var errorCount = 0;
+
 	q.awaitAll(function (err) {
 		if (err) {
 			return callback(err)
 		}
-		
 
-		var index = elasticlunr();
-
-		index.saveDocument(false)
-
-		index.setRef('key');
-		index.addField('desc');
-		index.addField('name');
-		index.addField('classId');
-		index.addField('subject');
+		var classLists = {};
 
 		classes.forEach(function (aClass) {
-			aClass.key = Keys.create(aClass).getHash()
-			index.addDoc(aClass)
-		}.bind(this))
 
-		var searchIndexString = JSON.stringify(index.toJSON());
+			var termHash = Keys.create({
+				host: aClass.host,
+				termId: aClass.termId
+			}).getHash()
 
-		if (!query.termId) {
-			elog('not implemented yet!!!')
-		}
+			var classHash = Keys.create(aClass).getHash()
 
-		var keys = Keys.create(query)
-
-		var fileName = path.join('.', 'dist', keys.getHashWithEndpoint(macros.GET_SEARCH_INDEX));
-		var folderName = path.dirname(fileName);
-
-		mkdirp(folderName, function (err) {
-			if (err) {
-				return callback(err);
+			if (!classLists[termHash]) {
+				classLists[termHash] = {
+					classHash: {},
+					host: aClass.host,
+					termId: aClass.termId
+				}
 			}
 
-			fs.writeFile(fileName, searchIndexString, function (err) {
-				if (err) {
-					return callback(err);
+			classLists[termHash].classHash[classHash] = {
+				class: aClass,
+				sections: []
+			}
+		}.bind(this));
+
+
+		sections.forEach(function (section) {
+
+			var termHash = Keys.create({
+				host: section.host,
+				termId: section.termId
+			}).getHash()
+
+			var classHash = Keys.create({
+				host: section.host,
+				termId: section.termId,
+				subject: section.subject,
+				classUid: section.classUid,
+			}).getHash()
+
+
+			if (!classLists[termHash]) {
+				// The objects should all have been created when looping over the classes. 
+				elog('dont have obj in section for loop?', termHash, classHash, section)
+				errorCount++;
+				return;
+			}
+
+			if (!classLists[termHash].classHash[classHash]) {
+				elog('no class exists with same data?', classHash, section.url)
+				errorCount++;
+				return
+			}
+
+			classLists[termHash].classHash[classHash].sections.push(section)
+		}.bind(this))
+
+
+		var q = queue();
+
+		for (var attrName in classLists) {
+			q.defer(function (callback) {
+
+				var termData = classLists[attrName]
+				var keys = Keys.create(termData)
+
+				var index = elasticlunr();
+
+				index.saveDocument(false)
+
+				index.setRef('key');
+				index.addField('desc');
+				index.addField('name');
+				index.addField('classId');
+				index.addField('subject');
+				index.addField('profs');
+				index.addField('locations');
+
+				for (var attrName2 in termData.classHash) {
+					var searchResultData = termData.classHash[attrName2];
+
+					var toIndex = {
+						classId: searchResultData.class.classId,
+						desc: searchResultData.class.desc,
+						subject: searchResultData.class.subject,
+						name: searchResultData.class.name,
+						key: Keys.create(searchResultData.class).getHash(),
+					}
+
+					var profs = [];
+					var locations = [];
+					searchResultData.sections.forEach(function (section) {
+						if (section.meetings) {
+							section.meetings.forEach(function (meeting) {
+								if (meeting.profs) {
+									profs = profs.concat(meeting.profs)
+								}
+								if (meeting.where) {
+									locations.push(meeting.where)
+								}
+							}.bind(this))
+						}
+					}.bind(this))
+
+
+					toIndex.profs = profs.join(' ')
+					toIndex.locations = locations.join(' ')
+					index.addDoc(toIndex)
 				}
 
-				console.log("Successfully saved", macros.GET_SEARCH_INDEX, query.host, query.termId);
 
-				return callback()
-			}.bind(this));
-		}.bind(this));
+				var searchIndexString = JSON.stringify(index.toJSON());
+
+
+
+				var fileName = path.join('.', 'dist', keys.getHashWithEndpoint(macros.GET_SEARCH_INDEX));
+				var folderName = path.dirname(fileName);
+
+				mkdirp(folderName, function (err) {
+					if (err) {
+						return callback(err);
+					}
+
+					fs.writeFile(fileName, searchIndexString, function (err) {
+						if (err) {
+							return callback(err);
+						}
+
+						console.log("Successfully saved", macros.GET_SEARCH_INDEX, query.host, query.termId, 'errorCount:', errorCount);
+
+						return callback()
+					}.bind(this));
+				}.bind(this));
+			}.bind(this))
+		}
 	}.bind(this))
 };
 
@@ -112,21 +207,19 @@ CreateSearchIndex.prototype.CreateSearchIndex = CreateSearchIndex;
 module.exports = new CreateSearchIndex();
 
 if (require.main === module) {
-	// module.exports.go({
-	// 	host: 'neu.edu',
-	// 	termId: "201710"
-	// }, function (err, results) {
-	// 	console.log(err, results);
-
-	// }.bind(this));
-	// 
-	// swarthmore.edu/201604
-
 	module.exports.go({
-		host: 'swarthmore.edu',
-		termId: "201604"
+		host: 'neu.edu',
+		termId: "201710"
 	}, function (err, results) {
 		console.log(err, results);
 
 	}.bind(this));
+
+	// module.exports.go({
+	// 	host: 'swarthmore.edu',
+	// 	termId: "201604"
+	// }, function (err, results) {
+	// 	console.log(err, results);
+
+	// }.bind(this));
 }
