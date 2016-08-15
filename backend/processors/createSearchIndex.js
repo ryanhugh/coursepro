@@ -211,19 +211,18 @@ CreateSearchIndex.prototype.CreateSearchIndex = CreateSearchIndex;
 module.exports = new CreateSearchIndex();
 
 if (require.main === module) {
-	module.exports.go({
-		host: 'neu.edu',
-		termId: "201710"
-	}, function (err, results) {
-		console.log(err, results);
-
-	}.bind(this));
-
 	// module.exports.go({
-	// 	host: 'swarthmore.edu',
-	// 	termId: "201604"
+	// 	host: 'neu.edu',
+	// 	termId: "201710"
 	// }, function (err, results) {
 	// 	console.log(err, results);
 
 	// }.bind(this));
+
+	module.exports.go({
+		host: 'swarthmore.edu'
+	}, function (err, results) {
+		console.log(err, results);
+
+	}.bind(this));
 }

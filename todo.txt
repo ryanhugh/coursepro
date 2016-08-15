@@ -21,7 +21,6 @@ depriciate _id in frontend
 BUGS:
 think about how the prereqs are going to be saved when nodes are selected, what will happen when they are unselected
 if the graph is loaded with stuff selected and they are unselected does it work?
-bug on is 1500 comma at end of location
 dont change the search term or result when a result is selected
 the bug with swarthmore in create search index
 ghetto trig needs improvement
