@@ -175,7 +175,7 @@ Search.prototype.search = function () {
 
 Search.prototype.onClick = function (aClass) {
 	var obj = aClass;
-	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid)).replace().reload(false)
+	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))
 }
 
 Search.prototype.isActive = function (aClass) {
