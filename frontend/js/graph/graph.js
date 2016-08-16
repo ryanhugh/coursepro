@@ -545,6 +545,9 @@ Graph.prototype.loadNodes = function (callback) {
 
 
 Graph.prototype.go = function (config, callback) {
+	if (!callback) {
+		callback = function () {}
+	}
 	downloadTree.fetchFullTree(config, function (err, rootClass) {
 		setTimeout(function () {
 			if (err) {

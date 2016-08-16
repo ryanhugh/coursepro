@@ -25,7 +25,7 @@ dont change the search term or result when a result is selected
 ghetto trig needs improvement
 load classes on page start and if they havent been loaded on search (for lookup by hash)
 clear localstorage before user runs and make sure XMLHTTPRequest is mocked out before user is ran too
-
+http://localhost/#/graph/neu.edu/201710/HIST/4701_1656814500
 
 UNIT TESTS:
 run all graph unit tests.js (data/tests/runAllGraphSelections_broken.js)

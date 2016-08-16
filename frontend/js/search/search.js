@@ -3,22 +3,18 @@ var _ = require('lodash')
 var queue = require('d3-queue').queue;
 var elasticlunr = require('elasticlunr');
 
+var Keys = require('../../../common/Keys')
 var memoize = require('../../../common/memoize')
 var request = require('../request')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var request = require('../request')
 var Class = require('../data/Class')
-
+// var Graph = require('../graph/graph')
 
 
 function Search() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
-
-	this.searchText = ''
-
-	// Updated on search, used in ng-repeat
-	this.classes = [];
 
 	//wait for a subject and a search term
 	if (this.$routeParams.host && this.$routeParams.termId) {
@@ -28,13 +24,20 @@ function Search() {
 	// this.search()
 }
 
+
+// Keep the search text and results outside of the instance so it survives route changes and other stuff
+Search.searchText = ''
+
+// Updated on search, used in ng-repeat
+Search.classes = []
+
+
 Search.fnName = 'Search'
 Search.$inject = ['$scope', '$location', '$routeParams', '$timeout']
 
 //prototype constructor
 Search.prototype = Object.create(BaseDirective.prototype);
 Search.prototype.constructor = Search;
-
 
 
 Search.prototype.loadSearchIndex = memoize(function (callback) {
@@ -60,8 +63,8 @@ Search.prototype.loadSearchIndex = memoize(function (callback) {
 
 
 Search.prototype.go = function () {
-	if (!this.searchText) {
-		this.classes = []
+	if (!this.constructor.searchText) {
+		this.constructor.classes = []
 		return;
 	}
 
@@ -71,7 +74,7 @@ Search.prototype.go = function () {
 		}
 
 		// Return with a ref: and a score: 
-		var results = searchIndex.search(this.searchText)
+		var results = searchIndex.search(this.constructor.searchText)
 
 		var classes = [];
 
@@ -96,9 +99,9 @@ Search.prototype.go = function () {
 				elog(err);
 			}
 
-			this.classes = classes;
+			this.constructor.classes = classes;
 			this.timeout(function () {
-				this.classes = classes;
+				this.constructor.classes = classes;
 				this.$scope.$apply()
 			}.bind(this))
 
@@ -113,7 +116,7 @@ Search.prototype.search = function () {
 
 	// class = JSON.stringify()
 
-	this.classes = []
+	this.constructor.classes = []
 
 
 	// stuff i need to take
@@ -160,7 +163,7 @@ Search.prototype.search = function () {
 				callback(err)
 			}.bind(this))
 		}.bind(this))
-		this.classes.push(aClass)
+		this.constructor.classes.push(aClass)
 	}.bind(this))
 
 	q.awaitAll(function (err) {
@@ -175,7 +178,10 @@ Search.prototype.search = function () {
 
 Search.prototype.onClick = function (aClass) {
 	var obj = aClass;
-	this.$location.path('/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid))
+	var url = '/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid)
+	this.$location.path(url)
+	// window.history.pushState("", "", '#' + url);
+	// Graph.instance.go(Keys.create(aClass).getObj())
 }
 
 Search.prototype.isActive = function (aClass) {
