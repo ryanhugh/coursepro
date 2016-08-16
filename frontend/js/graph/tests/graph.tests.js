@@ -120,8 +120,6 @@ describe('Graph', function () {
 
 		graph.go(aClass, function (err, aClass) {
 
-			console.log(aClass);
-
 			expect(!!aClass.foreignObject);
 
 			expect(aClass.prereqs.values.length).toBe(2);
