@@ -294,6 +294,10 @@ User.prototype.guessTerm = function (callback) {
 			}.bind(this))
 		}
 		else {
+			if (terms.length > 0) {
+				elog('terms.length > 0 but no newterms')
+			}
+
 			return callback()
 		}
 	}.bind(this))
