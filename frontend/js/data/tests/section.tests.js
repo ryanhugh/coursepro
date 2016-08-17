@@ -77,7 +77,12 @@ it('data status works', function (done) {
 
 	//works with _id
 	var section = Section.create({
-		_id: '56f21f93ea47044a05691b3e',
+		"crn": "11722",
+		"host": "neu.edu",
+		"termId": "201610",
+		"subject": "CS",
+		"classUid": "2511",
+
 	});
 
 	expect(section.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED);
@@ -96,7 +101,12 @@ it('ensures memoize works and that download was not swapped', function (done) {
 
 	//works with _id
 	var section = Section.create({
-		_id: '56f21f93ea47044a05691b3e',
+		"crn": "11722",
+		"host": "neu.edu",
+		"termId": "201610",
+		"subject": "CS",
+		"classUid": "2511",
+
 	});
 
 	var download = section.download;
@@ -140,7 +150,12 @@ describe('.create', function () {
 
 		//works with _id
 		var section = Section.create({
-			_id: '56f21f93ea47044a05691b3e',
+			"crn": "11722",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511",
+
 		});
 
 		expect(section).not.toBe(null);
@@ -153,7 +168,12 @@ describe('.meetsOnWeekends', function () {
 	it('false when meetin only on weekdays', function (done) {
 
 		var section = Section.create({
-			_id: '56f21f93ea47044a05691b3e',
+			"crn": "11722",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511",
+
 		});
 
 		section.download(function (err) {
@@ -166,7 +186,12 @@ describe('.meetsOnWeekends', function () {
 	it('true when meeting on sat', function (done) {
 
 		var section = Section.create({
-			_id: '56f2203fea47044a05694349',
+			"crn": "16096",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511",
+
 		});
 
 		section.download(function () {
@@ -179,7 +204,11 @@ describe('.meetsOnWeekends', function () {
 
 	it('true when meeting on sun', function (done) {
 		var section = Section.create({
-			_id: '56f220d9ea47044a05696720',
+			"crn": "13181",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511",
 		});
 
 		section.download(function () {
@@ -190,7 +219,11 @@ describe('.meetsOnWeekends', function () {
 	});
 	it('true when not meeting', function (done) {
 		var section = Section.create({
-			_id: '56f223b4ea47044a056a11c1',
+			"crn": "18124",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511"
 		});
 
 		section.download(function (err) {
@@ -208,7 +241,11 @@ describe('.getAllMeetingMoments', function () {
 	it('works', function (done) {
 
 		var section = Section.create({
-			_id: '56f223b4ea47044a056a11c1',
+			"crn": "18124",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511"
 		});
 
 		section.download(function (err) {
@@ -219,7 +256,11 @@ describe('.getAllMeetingMoments', function () {
 
 
 		var section = Section.create({
-			_id: '56f21f93ea47044a05691b3e',
+			"crn": "11722",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511",
 		});
 
 		section.download(function (err) {
@@ -240,7 +281,11 @@ describe('.getWeekDaysAsBooleans', function () {
 	it('works', function (done) {
 
 		var section = Section.create({
-			_id: '56f223b4ea47044a056a11c1',
+			"crn": "18124",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511"
 		});
 
 		section.download(function (err) {
@@ -255,7 +300,11 @@ describe('.getWeekDaysAsBooleans', function () {
 	it('work2s', function (done) {
 
 		var section = Section.create({
-			_id: '56f22254ea47044a0569bf99',
+			"crn": "10663",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2500",
 		});
 
 		section.download(function (err) {
@@ -280,7 +329,11 @@ describe('.getWeekDaysAsStringArray', function () {
 	it('works1', function (done) {
 
 		var section = Section.create({
-			_id: '56f223b4ea47044a056a11c1',
+			"crn": "18124",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511"
 		});
 
 		section.download(function (err) {
@@ -295,7 +348,11 @@ describe('.getWeekDaysAsStringArray', function () {
 	it('works2', function (done) {
 
 		var section = Section.create({
-			_id: '56f22254ea47044a0569bf99',
+			"crn": "10663",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2500",
 		});
 
 		section.download(function (err) {
@@ -315,7 +372,11 @@ describe('.getWeekDaysAsStringArray', function () {
 describe('.getHasExam', function () {
 	it('works', function (done) {
 		var section = Section.create({
-			_id: '56f223b4ea47044a056a11c1',
+			"crn": "18124",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511"
 		});
 
 		section.download(function (err) {
@@ -328,7 +389,11 @@ describe('.getHasExam', function () {
 
 	it('works2', function (done) {
 		var section = Section.create({
-			_id: '56f2203fea47044a05694349',
+			"crn": "16096",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511",
 		});
 
 		section.download(function (err) {
@@ -343,7 +408,11 @@ describe('.getHasExam', function () {
 describe('.getExamMoments', function () {
 	it('works', function (done) {
 		var section = Section.create({
-			_id: '56f223b4ea47044a056a11c1',
+			"crn": "18124",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511"
 		});
 
 		section.download(function (err) {
@@ -356,7 +425,11 @@ describe('.getExamMoments', function () {
 	it('exam times works', function (done) {
 
 		var section = Section.create({
-			_id: '56f2203fea47044a05694349',
+			"crn": "16096",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511",
 		});
 
 		section.download(function (err) {
@@ -378,7 +451,11 @@ describe('.getExamMoments', function () {
 describe('.getProfs', function () {
 	it('works', function (done) {
 		var section = Section.create({
-			_id: '56f223b4ea47044a056a11c1',
+			"crn": "18124",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511"
 		});
 
 		section.download(function (err) {
@@ -396,7 +473,11 @@ describe('.getProfs', function () {
 describe('.getLocations', function () {
 	it('works', function (done) {
 		var section = Section.create({
-			_id: '56f2203fea47044a05694349',
+			"crn": "16096",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511",
 		});
 
 		section.download(function (err) {
@@ -414,7 +495,11 @@ describe('.getLocations', function () {
 describe('.getUniqueStartTimes', function () {
 	it('works', function (done) {
 		var section = Section.create({
-			_id: '56f22254ea47044a0569bf8d',
+			"crn": "14492",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2500",
 		});
 
 		section.download(function (err) {
@@ -436,7 +521,11 @@ describe('.getUniqueStartTimes', function () {
 describe('.getUniqueEndTimes', function () {
 	it('works', function (done) {
 		var section = Section.create({
-			_id: '56f22254ea47044a0569bf8d',
+			"crn": "14492",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2500",
 		});
 
 		section.download(function (err) {
@@ -457,7 +546,11 @@ describe('.getUniqueEndTimes', function () {
 describe('.getHasWaitList', function () {
 	it('works', function (done) {
 		var section = Section.create({
-			_id: '56f22254ea47044a0569bf8d',
+			"crn": "14492",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2500",
 		});
 
 		section.download(function (err) {
@@ -470,7 +563,12 @@ describe('.getHasWaitList', function () {
 
 	it('has a wait list when wait remaining > 0', function (done) {
 		var section = Section.create({
-			_id: '56f21f93ea47044a05691b3e',
+			"crn": "11722",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511",
+
 		});
 
 		section.download(function (err) {
