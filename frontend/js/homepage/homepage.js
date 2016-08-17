@@ -17,7 +17,7 @@ function Homepage() {
 
 	setTimeout(function () {
 		document.getElementById('homepageSearchInputId').focus()
-	}.bind(this),0)
+	}.bind(this), 0)
 
 }
 
@@ -38,8 +38,7 @@ Homepage.prototype.onUserUpdate = function () {
 };
 
 
-Homepage.prototype.focusSearch = function (event) {
-	console.log(event);
+Homepage.prototype.focusSearch = function () {
 	search.searchText = this.searchText;
 	this.showSearch = true;
 	this.searchText = ''
@@ -47,8 +46,6 @@ Homepage.prototype.focusSearch = function (event) {
 	setTimeout(function () {
 		search.focusSearchBox()
 	}.bind(this), 0)
-
-
 };
 
 Homepage.prototype.Homepage = Homepage;
