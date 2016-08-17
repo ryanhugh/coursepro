@@ -97,6 +97,9 @@ var UGLIFY_JS_CONFIG = {
 
 process.on('uncaughtException', function (err) {
 	onError('Restart gulp' + err)
+	if (err.stack) {
+		console.log(err.stack)
+	}
 });
 
 

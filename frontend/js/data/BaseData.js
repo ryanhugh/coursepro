@@ -12,11 +12,6 @@ var resultsHash = {};
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
 
-	// this.updateWithData(config);
-	for (var attrName in config) {
-		this[attrName] = config[attrName]
-	}
-
 	// This self = this is only used for debugging
 	var self = this;
 	var downloadConfig;
@@ -70,7 +65,7 @@ BaseData.create = function (config) {
 	var allKeys = this.requiredPath.concat(this.optionalPath);
 
 	var keys = Keys.createWithHash(config)
-	// create the key
+		// create the key
 	if (!config.hash) {
 		canCache = keys.containsAllProperties(allKeys);
 	}
@@ -180,7 +175,14 @@ BaseData.download = function (config, callback) {
 
 
 	var hashStr = config.keys.getHashWithEndpoint(this.API_ENDPOINT)
-	var isFullHashIndex = config.keys.containsAllProperties(this.requiredPath.concat(this.optionalPath));
+
+	var isFullHashIndex;
+	if (config.keys.hash) {
+		isFullHashIndex = true;
+	}
+	else {
+		isFullHashIndex = config.keys.containsAllProperties(this.requiredPath.concat(this.optionalPath));
+	}
 
 	if (resultsHash[hashStr]) {
 		setTimeout(function () {
@@ -188,9 +190,7 @@ BaseData.download = function (config, callback) {
 		}.bind(this), 0)
 		return;
 	}
-	if (config.keys.hash && !resultsHash[hashStr]) {
-		elog('had key but no value?')
-	}
+
 
 	// Get all the data in this term
 	var requestQuery = {
@@ -216,6 +216,9 @@ BaseData.download = function (config, callback) {
 			return callback(null, [result])
 		}
 		else if (isFullHashIndex && !result) {
+			if (config.keys.hash) {
+				elog()
+			}
 			return callback(null, []);
 		}
 		else {

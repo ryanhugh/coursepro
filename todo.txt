@@ -26,7 +26,13 @@ ghetto trig needs improvement
 load classes on page start and if they havent been loaded on search (for lookup by hash)
 clear localstorage before user runs and make sure XMLHTTPRequest is mocked out before user is ran too
 http://localhost/#/graph/neu.edu/201710/HIST/4701_1656814500
+http://localhost/#/graph/neu.edu/201710/EXSC/5230_766102858
 scroll down in search results and limit the number that appear until you scroll down
+
+add a warning in keys.getminkeys that dosent crash when using host or term (or just do this logic in base data?)
+add a warning in hash comparison when thing
+
+
 
 UNIT TESTS:
 run all graph unit tests.js (data/tests/runAllGraphSelections_broken.js)

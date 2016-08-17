@@ -27,7 +27,7 @@ function GoogleAnalytics() {
 		useCache: false
 	}, function (err, response) {
 		if (err) {
-			elog("ERROR: couldn't log new page :(", err, response, body);
+			elog("ERROR: couldn't log new page :(", err, response);
 		}
 	}.bind(this))
 

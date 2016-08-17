@@ -44,6 +44,21 @@ function Class(config) {
 	}
 
 	this.crns = [];
+
+	// Object.defineProperty(this, 'hash', {
+	// 	set: function (value) {
+	// 		elog('set hash!!!')
+	// 		console.log(new Error().stack)
+	// 	}.bind(this),
+	// 	get: function (value) {
+	// 		// elog('set hash!!!')
+	// 		// console.log(new Error().stack)
+	// 	}.bind(this)
+	// })
+
+
+
+
 }
 
 
@@ -216,13 +231,13 @@ Class.prototype.updateWithData = function (config) {
 	if (config.title || config.allParents || config.missing || config.updateWithData) {
 		elog();
 	}
-	
+
 	//copy over all other attr given
 	for (var attrName in config) {
 
 		//dont copy over some attr
 		//these are copied below and processed a bit
-		if (_(['coreqs', 'prereqs', 'download']).includes(attrName) || config[attrName] === undefined) {
+		if (_(['coreqs', 'prereqs', 'download', 'hash']).includes(attrName) || config[attrName] === undefined) {
 			continue;
 		}
 
@@ -277,7 +292,7 @@ Class.prototype.updateWithData = function (config) {
 		}
 	}
 
-	
+
 
 	//name and description could have HTML entities in them, like &#x2260;, which we need to convert to actuall text
 	//setting the innerHTML instead of innerText will work too, but this is better
@@ -311,6 +326,10 @@ Class.prototype.updateWithData = function (config) {
 	}
 	else if (this.sections.length > 0 && config.crns && config.crns.length > 0 && !_.isEqual(this.crns, config.crns)) {
 		elog('updateWithData called but already have sections?', this, config)
+	}
+
+	if (this.hash) {
+		elog()
 	}
 
 };

@@ -5,6 +5,7 @@ var googleAuthLibrary = require('google-auth-library')
 var queue = require('d3-queue').queue;
 var diff = require('deep-diff').diff
 
+var macros = require('../macros')
 var BaseDB = require('./baseDB').BaseDB;
 var emailMgr = require('../emailMgr');
 

@@ -10,6 +10,7 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var request = require('../request')
 var Class = require('../data/Class')
+var user = require('../data/user')
 // var Graph = require('../graph/graph')
 
 
@@ -17,11 +18,11 @@ function Search() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	//wait for a subject and a search term
-	if (this.$routeParams.host && this.$routeParams.termId) {
+	if (this.getHost() && this.getTermId()) {
 		this.loadSearchIndex(_.noop);
 	}
 
-	// this.search()
+	// this.setRyanClasses()
 }
 
 
@@ -39,10 +40,43 @@ Search.$inject = ['$scope', '$location', '$routeParams', '$timeout']
 Search.prototype = Object.create(BaseDirective.prototype);
 Search.prototype.constructor = Search;
 
+// 1. Check this.$routeParams
+// 2. if that is null, check user.getValue(macros.LAST_SELECTED_TERM)
+// 3. return null
+Search.prototype.getHost = function() {
+	
+	if (this.$routeParams.host) {
+		return this.$routeParams.host
+	}
+
+	var host = user.getValue(macros.LAST_SELECTED_COLLEGE);
+	if (host) {
+		return host
+	}
+	else {
+		return null
+	}
+};
+
+Search.prototype.getTermId = function() {
+	
+	if (this.$routeParams.termId) {
+		return this.$routeParams.termId
+	}
+
+	var termId = user.getValue(macros.LAST_SELECTED_TERM)
+	if (termId) {
+		return termId
+	}
+	else {
+		return null;
+	}
+};
+
 
 Search.prototype.loadSearchIndex = memoize(function (callback) {
-	var host = this.$routeParams.host
-	var termId = this.$routeParams.termId
+	var host = this.getHost()
+	var termId = this.getTermId();
 	if (!host || !termId) {
 		return callback('need host and term')
 	}
@@ -80,7 +114,9 @@ Search.prototype.go = function () {
 
 		results.forEach(function (result) {
 			classes.push(Class.create({
-				hash: result.ref
+				hash: result.ref,
+				host: this.getHost(),
+				termId: this.getTermId()
 			}))
 		}.bind(this))
 
@@ -109,8 +145,12 @@ Search.prototype.go = function () {
 	}.bind(this))
 }
 
-// NEw
-Search.prototype.search = function () {
+Search.focusSearchBox = function () {
+	document.getElementById('leftSearchBoxID').focus()	
+}
+
+
+Search.prototype.setRyanClasses = function () {
 
 	// search here
 

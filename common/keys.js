@@ -24,7 +24,7 @@ function Keys(obj, endpoint, config) {
 
 
 	// Prefer obj over hash and _id
-	if (obj.host) {
+	if (obj.host && !obj.hash) {
 		var endpointIndex;
 		if (endpoint) {
 			endpointIndex = endpoints.indexOf(endpoint)
@@ -65,6 +65,13 @@ function Keys(obj, endpoint, config) {
 		// A obj hash SHOULD NOT START WITH /LISTsomething
 		// the api endpoint is added below
 		this.hash = obj.hash
+
+		if (obj.host) {
+			this.host = obj.host
+			if (obj.termId) {
+				this.termId = obj.termId
+			}
+		}
 	}
 	else if (obj._id) {
 		this._id = obj._id
@@ -122,14 +129,11 @@ Keys.prototype.getHashWithEndpoint = function (endpoint) {
 
 // Used in BaseData to go from a class that has everything to the classUid to what should be requested from the server
 Keys.prototype.getMinimumKeys = function () {
-	if (this._id || this.hash) {
-		console.warn("cant get min keys when have id or hash")
-		return this;
-	}
 	var retVal = {};
 	for (var i = 0; i < minData; i++) {
 		var currValue = this[allKeys[i]];
 		if (!currValue) {
+			// elog()
 			break;
 		}
 		retVal[allKeys[i]] = currValue
@@ -230,9 +234,9 @@ Keys.prototype.propsEqual = function (other) {
 		if (this.hash === other.hash) {
 			return true;
 		}
-		else if (other.host) {
-			elog()
-		}
+		// else if (other.host) {
+		// 	elog()
+		// }
 		return false;
 	}
 	else {
