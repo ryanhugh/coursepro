@@ -28,8 +28,9 @@ function SelectorsMgr() {
 		this.term,
 	]
 
-	this.$scope.$on('$routeChangeSuccess', this.updateSelectors.bind(this)); 
+	this.$scope.$on('$routeChangeSuccess', this.updateSelectors.bind(this));
 	this.updateSelectors();
+	user.onAuthFinish(this.constructor.name, this.updateSelectors.bind(this))
 }
 
 SelectorsMgr.fnName = 'SelectorsMgr'
@@ -39,9 +40,46 @@ SelectorsMgr.$inject = ['$scope', '$routeParams', '$route', '$location']
 SelectorsMgr.prototype = Object.create(BaseDirective.prototype);
 SelectorsMgr.prototype.constructor = SelectorsMgr;
 
+SelectorsMgr.prototype.getHost = function () {
+
+	if (this.$routeParams.host) {
+		return this.$routeParams.host
+	}
+
+	var host = user.getValue(macros.LAST_SELECTED_COLLEGE);
+	if (host) {
+		return host
+	}
+	else {
+		return null
+	}
+};
+
+SelectorsMgr.prototype.getTermId = function () {
+
+	if (this.$routeParams.termId) {
+		return this.$routeParams.termId
+	}
+
+	var termId = user.getValue(macros.LAST_SELECTED_TERM)
+	if (termId) {
+		return termId
+	}
+	else {
+		return null;
+	}
+};
+
+
+
 SelectorsMgr.prototype.updateSelectors = function () {
 
-	var params = this.$routeParams;
+	// var params = this.$routeParams;
+	var params = {
+		host: this.getHost(),
+		termId: this.getTermId()
+	}
+
 	if (_.isEqual(params, {})) {
 
 		//if no route and no value in college, 
