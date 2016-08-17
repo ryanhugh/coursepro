@@ -22,7 +22,7 @@
 
                 <p ng-if="user.getValue(macros.LAST_SELECTED_TERM)" class="fp-billboard-copy" style="font-size: 20px;padding-top: 13px;">
                     <div class="input-group" style="margin: 0 auto;">
-                        <input type="text" class="form-control" placeholder="Search for..." ng-model="homepage.searchText" ng-change="homepage.focusSearch($event)" style="width: 300px;height: 45px;">
+                        <input type="text" id="homepageSearchInputId" class="form-control" placeholder="Search for..." ng-model="homepage.searchText" ng-change="homepage.focusSearch($event)" style="width: 300px;height: 45px;">
                     </div>
 
                 </p>

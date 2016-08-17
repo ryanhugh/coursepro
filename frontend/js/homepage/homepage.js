@@ -15,6 +15,10 @@ function Homepage() {
 
 	user.onAuthFinish(this.constructor.fnName, this.onUserUpdate.bind(this))
 
+	setTimeout(function () {
+		document.getElementById('homepageSearchInputId').focus()
+	}.bind(this),0)
+
 }
 
 Homepage.fnName = 'Homepage'
