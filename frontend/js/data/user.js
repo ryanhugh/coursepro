@@ -8,6 +8,7 @@ var macros = require('../macros')
 var memoize = require('../../../common/memoize')
 var request = require('../request')
 var Class = require('./Class')
+var Section = require('./Section')
 var Term = require('./Term')
 var Section = require('./Section')
 var Keys = require('../../../common/Keys')
@@ -174,8 +175,6 @@ User.prototype.onDataStabilize = function (callback) {
 	if (this.hasStabilized) {
 		elog()
 	}
-	this.hasStabilized = true;
-
 
 
 	async.waterfall([function (callback) {
@@ -204,10 +203,63 @@ User.prototype.onDataStabilize = function (callback) {
 			}.bind(this))
 		}
 
+	}.bind(this), function (callback) {
+		var host = this.getValue(macros.LAST_SELECTED_COLLEGE);
+		var termId = this.getValue(macros.LAST_SELECTED_TERM);
+		if (!host || !termId) {
+			return callback()
+		}
+
+		var keys = Keys.create({
+			host: host,
+			termId: termId
+		})
+
+		//Prefetch the term and host data for this term
+
+		var q = queue();
+
+		q.defer(function (callback) {
+
+			// Get all the data in this term
+			var requestQuery = {
+				url: macros.LIST_CLASSES,
+				keys: keys
+			}
+
+			Class.downloadResultsGroup(requestQuery, function (err) {
+				return callback(err)
+			}.bind(this))
+		}.bind(this))
+
+		q.defer(function (callback) {
+
+			// Get all the data in this term
+			var requestQuery = {
+				url: macros.LIST_SECTIONS,
+				keys: keys
+			}
+
+			Section.downloadResultsGroup(requestQuery, function (err) {
+				return callback(err)
+			}.bind(this))
+		}.bind(this))
+
+		q.awaitAll(function (err) {
+			callback(err)
+		}.bind(this))
+
 	}.bind(this)], function (err) {
 		if (err) {
 			elog(err);
 		}
+
+		if (this.hasStabilized) {
+			elog()
+		}
+		this.hasStabilized = true;
+
+
 		//and fire off the triggers
 		this.onDataStabilizeTriggers.forEach(function (trigger) {
 			trigger.trigger();
@@ -253,7 +305,6 @@ User.prototype.guessTerm = function (callback) {
 	Term.createMany(Keys.create({
 		host: host
 	}), function (err, terms) {
-		console.warn(err, terms);
 
 		var newTerms = []
 

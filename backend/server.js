@@ -252,7 +252,8 @@ app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 		ip = req.body.ip
 	}
 	if (ip === '::1') {
-		res.send('{"error":"cant do a rdns of localhost"}');
+		// res.send('{"error":"cant do a rdns of localhost"}');
+		res.send('{"host":"neu.edu"}');
 		return;
 	}
 

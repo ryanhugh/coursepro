@@ -13,6 +13,8 @@ function Homepage() {
 
 	this.showSearch = false;
 
+	user.onAuthFinish(this.constructor.fnName, this.onUserUpdate.bind(this))
+
 }
 
 Homepage.fnName = 'Homepage'
@@ -25,18 +27,26 @@ Homepage.prototype = Object.create(BaseDirective.prototype);
 Homepage.prototype.constructor = Homepage;
 
 
-Homepage.prototype.focusSearch = function(event) {
+Homepage.prototype.onUserUpdate = function () {
+	setTimeout(function () {
+		this.$scope.$apply()
+	}.bind(this), 0)
+};
+
+
+Homepage.prototype.focusSearch = function (event) {
 	console.log(event);
-	search.searchText= this.searchText;
+	search.searchText = this.searchText;
 	this.showSearch = true;
+	this.searchText = ''
 
 	setTimeout(function () {
 		search.focusSearchBox()
-	}.bind(this),0)
+	}.bind(this), 0)
 
 
 };
 
 Homepage.prototype.Homepage = Homepage;
 module.exports = Homepage;
-directiveMgr.addController(Homepage) 
+directiveMgr.addController(Homepage)

@@ -179,10 +179,7 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 					index.addDoc(toIndex)
 				}
 
-
 				var searchIndexString = JSON.stringify(index.toJSON());
-
-
 
 				var fileName = path.join('.', 'dist', keys.getHashWithEndpoint(macros.GET_SEARCH_INDEX));
 				var folderName = path.dirname(fileName);
@@ -197,7 +194,7 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 							return callback(err);
 						}
 
-						console.log("Successfully saved", macros.GET_SEARCH_INDEX, query.host, query.termId, 'errorCount:', errorCount);
+						console.log("Successfully saved", fileName, 'errorCount:', errorCount);
 
 						return callback()
 					}.bind(this));
@@ -211,18 +208,18 @@ CreateSearchIndex.prototype.CreateSearchIndex = CreateSearchIndex;
 module.exports = new CreateSearchIndex();
 
 if (require.main === module) {
-	// module.exports.go({
-	// 	host: 'neu.edu',
-	// 	termId: "201710"
-	// }, function (err, results) {
-	// 	console.log(err, results);
-
-	// }.bind(this));
-
 	module.exports.go({
-		host: 'swarthmore.edu'
+		host: 'neu.edu',
+		// termId: "201710"
 	}, function (err, results) {
 		console.log(err, results);
 
 	}.bind(this));
+
+	// module.exports.go({
+	// 	host: 'swarthmore.edu'
+	// }, function (err, results) {
+	// 	console.log(err, results);
+
+	// }.bind(this));
 }

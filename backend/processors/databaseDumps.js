@@ -169,7 +169,7 @@ module.exports = new DatabaseDumps();
 if (require.main === module) {
 	module.exports.go({
 		host: 'neu.edu',
-		termId: "201710"
+		// termId: "201710"
 	}, function (err, results) {
 		console.log("done,", err, results);
 

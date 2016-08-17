@@ -11,7 +11,7 @@ var BaseDirective = require('../BaseDirective')
 var request = require('../request')
 var Class = require('../data/Class')
 var user = require('../data/user')
-// var Graph = require('../graph/graph')
+	// var Graph = require('../graph/graph')
 
 
 function Search() {
@@ -43,8 +43,8 @@ Search.prototype.constructor = Search;
 // 1. Check this.$routeParams
 // 2. if that is null, check user.getValue(macros.LAST_SELECTED_TERM)
 // 3. return null
-Search.prototype.getHost = function() {
-	
+Search.prototype.getHost = function () {
+
 	if (this.$routeParams.host) {
 		return this.$routeParams.host
 	}
@@ -58,8 +58,8 @@ Search.prototype.getHost = function() {
 	}
 };
 
-Search.prototype.getTermId = function() {
-	
+Search.prototype.getTermId = function () {
+
 	if (this.$routeParams.termId) {
 		return this.$routeParams.termId
 	}
@@ -85,14 +85,30 @@ Search.prototype.loadSearchIndex = memoize(function (callback) {
 		host: host,
 		termId: termId
 	}, function (err, result) {
+		if (err) {
+			elog(err);
+			return;
+		}
 
-		console.log("Got search index data!");
+		console.log("Got search index data!",host,termId);
 
 		var searchIndex = elasticlunr.Index.load(result);
-		return callback(null, searchIndex)
+
+		// Todo: optimize this and hopefully move it server side
+		var searchConfig = {}
+		searchIndex.getFields().forEach(function (field) {
+			searchConfig[field] = {
+				boost: 1,
+				bool: "OR",
+				expand: false
+			};
+		});
+
+
+		return callback(null, searchIndex, searchConfig)
 	}.bind(this))
 }, function () {
-	return this.$routeParams.host + this.$routeParams.termId
+	return this.getHost() + this.getTermId()
 })
 
 
@@ -102,13 +118,13 @@ Search.prototype.go = function () {
 		return;
 	}
 
-	this.loadSearchIndex(function (err, searchIndex) {
+	this.loadSearchIndex(function (err, searchIndex, searchConfig) {
 		if (err) {
 			elog(err)
 		}
 
 		// Return with a ref: and a score: 
-		var results = searchIndex.search(this.constructor.searchText)
+		var results = searchIndex.search(this.constructor.searchText, searchConfig)
 
 		var classes = [];
 
@@ -146,7 +162,7 @@ Search.prototype.go = function () {
 }
 
 Search.focusSearchBox = function () {
-	document.getElementById('leftSearchBoxID').focus()	
+	document.getElementById('leftSearchBoxID').focus()
 }
 
 
@@ -220,8 +236,8 @@ Search.prototype.onClick = function (aClass) {
 	var obj = aClass;
 	var url = '/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid)
 	this.$location.path(url)
-	// window.history.pushState("", "", '#' + url);
-	// Graph.instance.go(Keys.create(aClass).getObj())
+		// window.history.pushState("", "", '#' + url);
+		// Graph.instance.go(Keys.create(aClass).getObj())
 }
 
 Search.prototype.isActive = function (aClass) {
