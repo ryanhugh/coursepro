@@ -14,7 +14,7 @@ var endpoints = [macros.LIST_COLLEGES, macros.LIST_TERMS, macros.LIST_SUBJECTS, 
 var minData = 2;
 
 function Keys(obj, endpoint, config) {
-	if (obj instanceof Keys || !obj) {
+	if (obj instanceof Keys || !obj || (obj._id && !obj.hash && !obj.host)) {
 		elog('welp', obj)
 	}
 
@@ -72,9 +72,6 @@ function Keys(obj, endpoint, config) {
 				this.termId = obj.termId
 			}
 		}
-	}
-	else if (obj._id) {
-		this._id = obj._id
 	}
 	else if (endpoint !== undefined && endpoint !== macros.LIST_COLLEGES) {
 		elog(obj, endpoint);
@@ -143,12 +140,7 @@ Keys.prototype.getMinimumKeys = function () {
 
 
 Keys.prototype.getObj = function () {
-	if (this._id) {
-		return {
-			_id: this._id
-		}
-	}
-	else if (this.hash) {
+	if (this.hash) {
 		// Can't get obj if given hash
 		elog()
 		return {
@@ -196,10 +188,6 @@ Keys.prototype.isValid = function (endpoint) {
 		}
 	}
 
-	if (this._id) {
-		return true;
-	}
-
 	var endpointIndex = endpoints.indexOf(endpoint);
 
 	for (var i = 0; i < endpointIndex; i++) {
@@ -227,10 +215,7 @@ Keys.prototype.equals = function (other) {
 // Same as equals but dosen't do an instance check
 // so can be used to compare to a row or and instance of Class or something
 Keys.prototype.propsEqual = function (other) {
-	if (this._id) {
-		return this._id === other._id;
-	}
-	else if (this.hash) {
+	if (this.hash) {
 		if (this.hash === other.hash) {
 			return true;
 		}

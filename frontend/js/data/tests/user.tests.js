@@ -23,7 +23,10 @@ describe('user', function () {
 
 	it('add to lists works', function (done) {
 		Class.create({
-			_id: '575102d1b462e991061ca594'
+			"classUid": "5000_202147161",
+			"host": "neu.edu",
+			"termId": "201710",
+			"subject": "GE",
 		}).download(function (err, aClass) {
 			expect(err || null).toBe(null)
 
@@ -56,7 +59,11 @@ describe('user', function () {
 
 	it('add to lists works with section', function (done) {
 		Section.create({
-			_id: '56f21f93ea47044a05691b3e'
+			"crn": "11722",
+			"host": "neu.edu",
+			"termId": "201610",
+			"subject": "CS",
+			"classUid": "2511",
 		}).download(function (err, section) {
 			expect(err || null).toBe(null)
 

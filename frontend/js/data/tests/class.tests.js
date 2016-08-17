@@ -4,7 +4,7 @@ var macros = require('../../macros')
 var _ = require('lodash')
 
 describe('.create', function () {
-	it('ensures you need classUid or _id to create class', function () {
+	it('ensures you cant create class with only host, termId, and subject', function () {
 
 		expect(Class.create({
 			host: 'neu.edu',

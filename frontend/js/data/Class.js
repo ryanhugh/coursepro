@@ -44,21 +44,6 @@ function Class(config) {
 	}
 
 	this.crns = [];
-
-	// Object.defineProperty(this, 'hash', {
-	// 	set: function (value) {
-	// 		elog('set hash!!!')
-	// 		console.log(new Error().stack)
-	// 	}.bind(this),
-	// 	get: function (value) {
-	// 		// elog('set hash!!!')
-	// 		// console.log(new Error().stack)
-	// 	}.bind(this)
-	// })
-
-
-
-
 }
 
 

@@ -24,7 +24,7 @@ function BaseData(config) {
 }
 
 BaseData.isValidCreatingData = function (config) {
-	if (config._id || config.hash) {
+	if (config.hash) {
 		return true;
 	}
 
@@ -68,10 +68,6 @@ BaseData.create = function (config) {
 		// create the key
 	if (!config.hash) {
 		canCache = keys.containsAllProperties(allKeys);
-	}
-
-	if (keys._id) {
-		console.warn('_id is depriciated yooo')
 	}
 
 
@@ -138,10 +134,6 @@ BaseData.downloadResultsGroup = memoize(function (config, callback) {
 	if (this.bypassResultsCache) {
 		requestConfig = config
 	}
-	else if (config.keys._id) {
-		console.warn('cant do fancy caching when given _id')
-		requestConfig = config
-	}
 	else {
 		requestConfig.url = config.keys.getHashWithEndpoint(this.API_ENDPOINT);
 	}
@@ -161,12 +153,7 @@ BaseData.downloadResultsGroup = memoize(function (config, callback) {
 	}.bind(this))
 
 }, function (config) {
-	if (config.keys._id) {
-		return this.API_ENDPOINT + '/' + config.keys._id
-	}
-	else {
-		return config.keys.getHashWithEndpoint(this.API_ENDPOINT)
-	}
+	return config.keys.getHashWithEndpoint(this.API_ENDPOINT)
 })
 
 
@@ -256,18 +243,14 @@ BaseData.downloadGroup = memoize(function (config, callback) {
 			instances.push(instance)
 		}.bind(this))
 
-		// Return results too in case lookup was done with a baseData by _id's or something other than the cache
+		// Return results too so can manually look through all of them in case the cache missed. This used to be
+		// the only way to find classes when given _id. 
 		// and the serverData needs to be found and given to the instance
 		return callback(null, instances, results)
 
 	}.bind(this))
 }, function (config) {
-	if (config.keys._id) {
-		return this.API_ENDPOINT + '/' + config.keys._id
-	}
-	else {
-		return config.keys.getHashWithEndpoint(this.API_ENDPOINT)
-	}
+	return config.keys.getHashWithEndpoint(this.API_ENDPOINT)
 })
 
 BaseData.createMany = function (keys, callback) {
@@ -318,11 +301,11 @@ BaseData.prototype.internalDownload = function (callback) {
 		else {
 
 
-			// cache will match if used keys, must of used _id or something if here
+			// cache will match if used keys, really shouldn't get here ever.
 			for (var i = 0; i < results.length; i++) {
 				if (keys.propsEqual(results[i])) {
 					this.updateWithData(results[i])
-					console.warn('cache miss!', keys)
+					elog('cache miss!', keys)
 					return callback(null, this);
 				}
 			}

@@ -75,7 +75,7 @@ var _ = require('lodash')
 
 it('data status works', function (done) {
 
-	//works with _id
+	//basic lookup works
 	var section = Section.create({
 		"crn": "11722",
 		"host": "neu.edu",
@@ -148,18 +148,12 @@ describe('.create', function () {
 			subject: 'CS'
 		})).toBe(null);
 
-		//works with _id
+		//works with hash
 		var section = Section.create({
-			"crn": "11722",
-			"host": "neu.edu",
-			"termId": "201610",
-			"subject": "CS",
-			"classUid": "2511",
-
+			"hash": "neu.edu/201610/CS/2511/11722"
 		});
 
 		expect(section).not.toBe(null);
-
 	});
 });
 
