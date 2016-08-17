@@ -7,11 +7,11 @@ describe('.compareTo', function () {
 	it('works', function () {
 
 		var hosts = [
-			new Host({
+			Host.create({
 				host: 'neu.edu',
 				title: 'Northeastern University'
 			}),
-			new Host({
+			Host.create({
 				host: 'zzzzz',
 				title: 'ZZZZZ'
 			})
@@ -27,11 +27,11 @@ describe('.compareTo', function () {
 	it('works', function () {
 
 		var hosts = [
-			new Host({
+			Host.create({
 				host: 'neu.edu',
 				title: 'ZZZZZ'
 			}),
-			new Host({
+			Host.create({
 				host: 'aaaa',
 				title: 'ZZZZZ'
 			})
@@ -49,7 +49,7 @@ describe('.compareTo', function () {
 describe('.download', function () {
 	it('works', function (done) {
 
-		var host = new Host({
+		var host = Host.create({
 			host: 'neu.edu'
 		});
 

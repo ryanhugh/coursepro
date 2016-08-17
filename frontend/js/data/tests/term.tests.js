@@ -7,11 +7,11 @@ describe('.compareTo', function () {
 	it('works', function () {
 
 		var terms = [
-			new Term({
+			Term.create({
 				host: 'neu.edu',
 				termId: '201630'
 			}),
-			new Term({
+			Term.create({
 				host: 'neu.edu',
 				termId: '201710'
 			})

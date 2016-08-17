@@ -7,11 +7,11 @@ describe('.compareTo', function () {
 	it('works', function () {
 
 		var subjects = [
-			new Subject({
+			Subject.create({
 				subject: 'AAA',
 				text: 'Computer Science'
 			}),
-			new Subject({
+			Subject.create({
 				subject: 'EECE',
 				text: 'Electronics or something'
 			})
@@ -29,8 +29,9 @@ describe('.compareTo', function () {
 describe('.download', function () {
 	it('works', function (done) {
 
-		var subject = new Subject({
-			_id: '56f22160ea47044a0569872b'
+		var subject = Subject.create({
+			"host": "neu.edu",
+			"termId": "201710"
 		});
 
 		subject.download(function (err) {

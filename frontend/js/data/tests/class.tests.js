@@ -13,10 +13,13 @@ describe('.create', function () {
 		})).toBe(null);
 	});
 
-	it('ensures memoize works and that download was not swapped', function (done) {
+	fit('ensures memoize works and that download was not swapped', function (done) {
 
 		var aClass = Class.create({
-			_id: '575102d1b462e991061ca594'
+			"classUid": "5000_202147161",
+			"host": "neu.edu",
+			"termId": "201710",
+			"subject": "GE",
 		});
 
 		var download = aClass.download;
@@ -43,7 +46,10 @@ describe('.create', function () {
 	it('ensures loading data state changes and data loaded', function (done) {
 
 		var aClass = Class.create({
-			_id: '575102d1b462e991061ca594'
+			"classUid": "5000_202147161",
+			"host": "neu.edu",
+			"termId": "201710",
+			"subject": "GE",
 		});
 
 		expect(aClass.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
