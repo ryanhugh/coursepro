@@ -23,13 +23,11 @@ think about how the prereqs are going to be saved when nodes are selected, what 
 if the graph is loaded with stuff selected and they are unselected does it work?
 dont change the search term or result when a result is selected
 ghetto trig needs improvement
-load classes on page start and if they havent been loaded on search (for lookup by hash)
 clear localstorage before user runs and make sure XMLHTTPRequest is mocked out before user is ran too
 http://localhost/#/graph/neu.edu/201710/HIST/4701_1656814500
 http://localhost/#/graph/neu.edu/201710/EXSC/5230_766102858
 scroll down in search results and limit the number that appear until you scroll down
 optimize the search, look into weight and expand=true and config in backend
-focus search on homepage load
 
 add a warning in keys.getminkeys that dosent crash when using host or term (or just do this logic in base data?)
 add a warning in hash comparison when thing
