@@ -29,6 +29,7 @@ http://localhost/#/graph/neu.edu/201710/HIST/4701_1656814500
 http://localhost/#/graph/neu.edu/201710/EXSC/5230_766102858
 scroll down in search results and limit the number that appear until you scroll down
 optimize the search, look into weight and expand=true and config in backend
+focus search on homepage load
 
 add a warning in keys.getminkeys that dosent crash when using host or term (or just do this logic in base data?)
 add a warning in hash comparison when thing

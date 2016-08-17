@@ -21,6 +21,15 @@ function Search() {
 	if (this.getHost() && this.getTermId()) {
 		this.loadSearchIndex(_.noop);
 	}
+	else {
+
+		// If it wasen't immitiatly avalible, wait for user to load and then it might be
+		user.onAuthFinish(this.constructor.fnName, function () {
+			if (this.getHost() && this.getTermId()) {
+				this.loadSearchIndex(_.noop);
+			}
+		}.bind(this))
+	}
 
 	// this.setRyanClasses()
 }
@@ -90,7 +99,7 @@ Search.prototype.loadSearchIndex = memoize(function (callback) {
 			return;
 		}
 
-		console.log("Got search index data!",host,termId);
+		console.log("Got search index data!", host, termId);
 
 		var searchIndex = elasticlunr.Index.load(result);
 
