@@ -28,7 +28,7 @@ function Keys(obj, endpoint, config) {
 	}
 
 
-	// Prefer obj over hash and _id
+	// Prefer obj over hash
 	if (obj.host && !obj.hash) {
 		var endpointIndex;
 		if (endpoint) {
@@ -93,11 +93,11 @@ Keys.createWithHash = function (obj, endpoint) {
 	});
 };
 
-Keys.prototype.createWithClassId = function (obj, endpoint) {
-	return new this(obj, endpoint, {
-		classId: true
-	})
-};
+// Keys.prototype.createWithClassId = function (obj, endpoint) {
+// 	return new this(obj, endpoint, {
+// 		classId: true
+// 	})
+// };
 
 // returns neu.edu/201710/CS/4800_4444444/1234, etc
 Keys.prototype.getHash = function () {
