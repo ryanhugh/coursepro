@@ -6,7 +6,7 @@
 
 
     <div class="list-group">
-        <a ng-repeat="aClass in search.constructor.classes" class="list-group-item {{search.isActive(aClass)?'active':''}}" href="" ng-click="search.onClick(aClass)">
+        <a ng-repeat="aClass in search.constructor.classes" class="list-group-item {{search.isActive(aClass)?'active':''}}" href="" ng-click="search.onClick(aClass)" style="border-radius: 0">
             <h4 class="list-group-item-heading">{{::aClass.subject}} {{::aClass.classId}}</h4>
             <p class="list-group-item-text">{{::aClass.name}}</p>
         </a>
