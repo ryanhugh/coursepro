@@ -1,4 +1,4 @@
-<div graph-panel-expand ng-click="node.isCoreq?graphPanelExpand.openPanel(node):graphPanelExpand.onPanelClick(node)">
+<div graph-panel-expand ng-click="graphPanelExpand.onPanelClick(node)">
 
     <!-- main panel -->
     <div class="panel {{node.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="node.isClass && !node.showSelectPanel" panel-close=".closePanel">

@@ -850,6 +850,9 @@ TreeMgr.prototype.simplifyIfSelected = function (node) {
 	}
 	if (satisfyingNode) {
 
+		satisfyingNode.allParents = [];
+		satisfyingNode.lowestParent = null;
+
 		// make a new object so don't mess with savePrereqsForThisGraph
 		node.prereqs = {
 			values: [satisfyingNode],
@@ -863,6 +866,8 @@ TreeMgr.prototype.simplifyIfSelected = function (node) {
 		}
 
 		node.savePrereqsForThisGraph.values.forEach(function (child) {
+			child.allParents = [];
+			child.lowestParent = null;
 			node.prereqs.values.push(child);
 		}.bind(this))
 

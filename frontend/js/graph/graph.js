@@ -233,6 +233,11 @@ Graph.prototype.updatePos = function (node) {
 		value = "translate(" + (node.x - node.width / 2) + "," + (node.y - node.height / 2) + ")";
 	}
 
+	if (!node.foreignObject || !node.foreignObject.parentElement) {
+		elog()
+		return;
+	}
+
 	node.foreignObject.parentElement.setAttribute('transform', value);
 };
 
