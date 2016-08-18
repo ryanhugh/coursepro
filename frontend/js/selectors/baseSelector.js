@@ -120,7 +120,7 @@ BaseSelector.prototype.setup = function (config, callback) {
 	}.bind(this));
 }
 
-BaseSelector.prototype.onSelect = function() {
+BaseSelector.prototype.onSelect = function () {
 	elog('onSelect not overridden')
 };
 
@@ -131,7 +131,7 @@ BaseSelector.prototype.setupSelector = function (values, config) {
 	if (config.shouldOpen === undefined) {
 		config.shouldOpen = true;
 	}
-	console.log("setup called on ",this.constructor.name);
+	console.log("setup called on ", this.constructor.name);
 
 	this.values = values;
 	this.reset();
@@ -179,7 +179,7 @@ BaseSelector.prototype.setupSelector = function (values, config) {
 			return
 		};
 
-		if (newValue!=this.help_id) {
+		if (newValue != this.help_id) {
 			//override in college and term to set user last used value		
 			this.onSelect(newValue);
 		}
