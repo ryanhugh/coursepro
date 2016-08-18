@@ -30,6 +30,10 @@ function Search() {
 		}.bind(this))
 	}
 
+
+	this.$scope.loadMore2 = this.loadMore2.bind(this)
+
+
 	// this.setRyanClasses()
 }
 
@@ -38,8 +42,8 @@ function Search() {
 Search.searchText = ''
 
 // Updated on search, used in ng-repeat
-Search.classes = []
-
+Search.renderedClasses = []
+Search.unrenderedClasses = []
 
 Search.fnName = 'Search'
 Search.$inject = ['$scope', '$location', '$routeParams', '$timeout']
@@ -134,6 +138,8 @@ Search.prototype.go = function () {
 		// Return with a ref: and a score: 
 		var results = searchIndex.search(this.constructor.searchText, searchConfig)
 
+		console.log("Search results length:", results.length);
+
 		var classes = [];
 
 		results.forEach(function (result) {
@@ -159,9 +165,15 @@ Search.prototype.go = function () {
 				elog(err);
 			}
 
-			this.constructor.classes = classes;
 			this.timeout(function () {
-				this.constructor.classes = classes;
+
+				this.constructor.unrenderedClasses = [];
+				this.constructor.renderedClasses = [];
+
+				// Put the first 15 in rendered classses and the rest in unrenderedClasses
+
+				this.constructor.renderedClasses = classes.slice(0, 15);
+				this.constructor.unrenderedClasses = classes.slice(15);
 				this.$scope.$apply()
 			}.bind(this))
 
@@ -173,6 +185,12 @@ Search.focusSearchBox = function () {
 	document.getElementById('leftSearchBoxID').focus()
 }
 
+Search.prototype.loadMore2 = function () {
+	var more = this.constructor.unrenderedClasses.shift()
+	if (more) {
+		this.constructor.renderedClasses.push(more)
+	};
+};
 
 Search.prototype.setRyanClasses = function () {
 

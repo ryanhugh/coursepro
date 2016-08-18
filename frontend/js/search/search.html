@@ -1,4 +1,24 @@
-<div style="position: fixed;left: 0;bottom: 0;height: 100%;background: white;width: 300px;box-shadow: grey 0 0 5px;border: 1px solid grey;padding-top: 50px;">
+<style type="text/css">
+#searchContainerID {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    background: white;
+    width: 300px;
+    box-shadow: grey 0 0 5px;
+    border: 1px solid grey;
+    padding-top: 50px;
+    overflow-y: scroll;
+}
+
+#searchContainerID::-webkit-scrollbar {
+    display: none;
+}
+</style>
+
+
+<div id="searchContainerID">
 
     <div class="input-group" style="width:100%">
         <input type="text" id="leftSearchBoxID" class="form-control" placeholder="Search for..." ng-model="search.constructor.searchText" ng-change="search.go()" ng-model-options="{ debounce: 75 }">
@@ -6,9 +26,11 @@
 
 
     <div class="list-group">
-        <a ng-repeat="aClass in search.constructor.classes" class="list-group-item {{search.isActive(aClass)?'active':''}}" href="" ng-click="search.onClick(aClass)" style="border-radius: 0">
-            <h4 class="list-group-item-heading">{{::aClass.subject}} {{::aClass.classId}}</h4>
-            <p class="list-group-item-text">{{::aClass.name}}</p>
-        </a>
+        <div infinite-scroll='loadMore2()' infinite-scroll-distance='2' testbinding="true">
+            <a ng-repeat="aClass in search.constructor.renderedClasses" class="list-group-item {{search.isActive(aClass)?'active':''}}" href="" ng-click="search.onClick(aClass)" style="border-radius: 0">
+                <h4 class="list-group-item-heading">{{::aClass.subject}} {{::aClass.classId}}</h4>
+                <p class="list-group-item-text">{{::aClass.name}}</p>
+            </a>
+        </div>
     </div>
 </div>
