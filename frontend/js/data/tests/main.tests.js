@@ -9,7 +9,24 @@ var mockSectionData = require('./mocks/mockSectionData.json')
 var mockSearchIndex = require('./mocks/mockSearchIndex.json')
 var Keys = require('../../../../common/Keys')
 
+var Section = require('../Section')
+var Class = require('../Class')
+var Subject = require('../Subject')
+var Term = require('../Term')
+var Host = require('../Host')
+
 localStorage.clear()
+
+beforeEach(function () {
+	Section.clearCacheForTesting()
+	Class.clearCacheForTesting()
+	Subject.clearCacheForTesting()
+	Term.clearCacheForTesting()
+	Host.clearCacheForTesting()
+	localStorage.clear()
+}.bind(this))
+
+
 
 var mockData = {
 	'listColleges': mockHostData,

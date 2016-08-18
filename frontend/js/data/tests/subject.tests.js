@@ -9,11 +9,15 @@ describe('.compareTo', function () {
 		var subjects = [
 			Subject.create({
 				subject: 'AAA',
-				text: 'Computer Science'
+				text: 'Computer Science',
+				host: 'neu.edu',
+				termId: '201710'
 			}),
 			Subject.create({
 				subject: 'EECE',
-				text: 'Electronics or something'
+				text: 'Electronics or something',
+				host: 'neu.edu',
+				termId: '201710'
 			})
 		];
 
@@ -25,13 +29,14 @@ describe('.compareTo', function () {
 	});
 });
 
-
+ 
 describe('.download', function () {
 	it('works', function (done) {
 
 		var subject = Subject.create({
 			"host": "neu.edu",
-			"termId": "201710"
+			"termId": "201710",
+			"subject": "GENS"
 		});
 
 		subject.download(function (err) {

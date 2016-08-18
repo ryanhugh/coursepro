@@ -4,6 +4,7 @@ var macros = require('../../macros')
 var _ = require('lodash')
 
 describe('.create', function () {
+
 	it('ensures you cant create class with only host, termId, and subject', function () {
 
 		expect(Class.create({
@@ -13,7 +14,7 @@ describe('.create', function () {
 		})).toBe(null);
 	});
 
-	fit('ensures memoize works and that download was not swapped', function (done) {
+	it('ensures memoize works and that download was not swapped', function (done) {
 
 		var aClass = Class.create({
 			"classUid": "5000_202147161",

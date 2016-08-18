@@ -11,16 +11,6 @@ var resultsHash = {};
 
 function BaseData(config) {
 	this.dataStatus = macros.DATASTATUS_NOTSTARTED;
-
-	// This self = this is only used for debugging
-	var self = this;
-	var downloadConfig;
-	this.download = memoize(function (callback) {
-		if (this != self) {
-			elog("instance failure!??!?!?", this, self)
-		}
-		this.internalDownload(callback)
-	})
 }
 
 BaseData.isValidCreatingData = function (config) {
@@ -272,7 +262,7 @@ BaseData.createMany = function (keys, callback) {
 }
 
 
-BaseData.prototype.internalDownload = function (callback) {
+BaseData.prototype.download = memoize(function (callback) {
 	if (!callback) {
 		callback = function () {}
 	}
@@ -299,8 +289,6 @@ BaseData.prototype.internalDownload = function (callback) {
 			return callback(null, this);
 		}
 		else {
-
-
 			// cache will match if used keys, really shouldn't get here ever.
 			for (var i = 0; i < results.length; i++) {
 				if (keys.propsEqual(results[i])) {
@@ -317,7 +305,9 @@ BaseData.prototype.internalDownload = function (callback) {
 		}
 
 	}.bind(this))
-};
+}, function () {
+	return Keys.create(this).getHashWithEndpoint(this.constructor.API_ENDPOINT)
+});
 
 
 // Class and section override this to do some reorginizing of the server data
@@ -335,6 +325,26 @@ BaseData.prototype.updateWithData = function (config) {
 // needs to be overriden
 BaseData.prototype.compareTo = function () {
 	elog()
+};
+
+BaseData.clearCacheForTesting = function () {
+	resultsHash = {};
+	instanceCache = {}
+
+	// Re memoize all the memoized fn's
+	if (this.prototype.download.unmemoized) {
+		this.prototype.download = memoize(this.prototype.download.unmemoized, this.prototype.download.hasher)
+	}
+	// Re memoize all the memoized fn's
+	if (BaseData.prototype.download.unmemoized) {
+		BaseData.prototype.download = memoize(BaseData.prototype.download.unmemoized, BaseData.prototype.download.hasher)
+	}
+	if (this.downloadResultsGroup.unmemoized) {
+		this.downloadResultsGroup = memoize(this.downloadResultsGroup.unmemoized, this.downloadResultsGroup.hasher)
+	}
+	if (this.downloadGroup.unmemoized) {
+		this.downloadGroup = memoize(this.downloadGroup.unmemoized, this.downloadGroup.hasher)
+	}
 };
 
 module.exports = BaseData

@@ -152,7 +152,7 @@ Class.prototype.convertServerRequisites = function (data) {
 	return retVal;
 }
 
-Class.prototype.internalDownload = function (callback) {
+Class.prototype.download = function (callback) {
 	if (!callback) {
 		callback = function () {}
 	}
@@ -178,7 +178,7 @@ Class.prototype.internalDownload = function (callback) {
 	}
 
 
-	BaseData.prototype.internalDownload.call(this, function (err, body) {
+	BaseData.prototype.download.call(this, function (err, body) {
 		if (err) {
 			elog('http error...', err);
 			return callback(err)

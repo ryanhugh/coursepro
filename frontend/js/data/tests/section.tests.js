@@ -247,7 +247,10 @@ describe('.getAllMeetingMoments', function () {
 			expect(section.getAllMeetingMoments().length).toBe(0);
 			done()
 		}.bind(this));
+	});
 
+
+	it('works 2', function (done) {
 
 		var section = Section.create({
 			"crn": "11722",

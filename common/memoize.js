@@ -65,5 +65,6 @@ module.exports = function (fn, hasher) {
     });
     memoized.memo = memo;
     memoized.unmemoized = fn;
+    memoized.hasher = hasher;
     return memoized;
 };
