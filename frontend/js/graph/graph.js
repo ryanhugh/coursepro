@@ -265,6 +265,11 @@ Graph.prototype.updateWidth = function (node) {
 
 Graph.prototype.updateHeight = function (node) {
 
+	if (!node.foreignObject || !node.foreignObject.parentNode) {
+		elog()
+		return;
+	}
+
 	// update the height of the panel
 	node.height = node.foreignObject.lastChild.offsetHeight
 

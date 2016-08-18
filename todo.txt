@@ -30,6 +30,8 @@ dem help texts
 add a warning in keys.getminkeys that dosent crash when using host or term (or just do this logic in base data?)
 add a warning in hash comparison when thing
 
+super rare bug with selecting node + removing duplicate nodes where it would select a node, that node would be removed in the dedupe process, and then try to expand that node and crash
+
 
 
 UNIT TESTS:
