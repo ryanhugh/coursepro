@@ -168,10 +168,19 @@ module.exports = new DatabaseDumps();
 
 if (require.main === module) {
 	module.exports.go({
-		host: 'neu.edu',
+		host: 'swarthmore.edu',
 		// termId: "201710"
 	}, function (err, results) {
 		console.log("done,", err, results);
 
 	}.bind(this));
+
+
+	// module.exports.go({
+	// 	host: 'neu.edu',
+	// 	// termId: "201710"
+	// }, function (err, results) {
+	// 	console.log("done,", err, results);
+
+	// }.bind(this));
 }

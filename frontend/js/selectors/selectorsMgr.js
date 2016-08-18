@@ -17,7 +17,7 @@ function SelectorsMgr() {
 	//allow circular dependencies
 	window.selectorsMgr = this;
 
-	//these must be made in this order, because they keep references to the next one (except class)
+	//these must be made in this order, because they keep references to the next one (except the last one)
 
 	this.term = new Term();
 	this.college = new College();
@@ -151,28 +151,10 @@ SelectorsMgr.prototype.finish = function (callback) {
 	};
 
 	user.setValue(macros.LAST_SELECTED_COLLEGE, collegeVal)
-
 	user.setValue(macros.LAST_SELECTED_TERM, termId)
 
-	var toUpdate = {}
-
-
-	//clear out other route Params
-	for (var attrName in this.$routeParams) {
-		toUpdate[attrName] = null
-	}
-
-	if (this.$routeParams.host !== undefined) {
-		toUpdate.host = collegeVal
-	}
-
-	if (this.$routeParams.termId !== undefined) {
-		toUpdate.termId = termId
-	};
-
-	this.$route.updateParams(toUpdate)
-
-	this.$route.reload()
+	// This used to update the $routeParams, but now it just updates user vars and redirects back to the homepage.
+	this.$location.path('/')
 
 	setTimeout(function () {
 		this.$scope.$root.$apply()
