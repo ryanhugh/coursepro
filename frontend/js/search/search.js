@@ -102,8 +102,6 @@ Search.prototype.loadSearchIndex = memoize(function (callback) {
 			return;
 		}
 
-		console.log("Got search index data!", host, termId);
-
 		var searchIndex = elasticlunr.Index.load(result);
 
 		// Todo: optimize this and hopefully move it server side
@@ -174,7 +172,11 @@ Search.prototype.go = function () {
 
 				this.constructor.renderedClasses = classes.slice(0, 15);
 				this.constructor.unrenderedClasses = classes.slice(15);
-				this.$scope.$apply()
+				this.$scope.$apply();
+
+				// Scroll to the top of the search results
+				document.getElementById('searchResultsId').scrollTop = 0;
+
 			}.bind(this))
 
 		}.bind(this))

@@ -9,12 +9,19 @@
     box-shadow: grey 0 0 5px;
     border: 1px solid grey;
     padding-top: 50px;
-    overflow-y: scroll;
 }
 
-#searchContainerID::-webkit-scrollbar {
+#searchResultsId::-webkit-scrollbar {
     display: none;
 }
+
+#searchResultsId {
+    overflow-y: scroll;
+    max-height: 100%;
+    max-height: calc(100% - 30px);
+}
+
+
 </style>
 
 
@@ -25,7 +32,7 @@
     </div>
 
 
-    <div class="list-group">
+    <div class="list-group" id="searchResultsId">
         <div infinite-scroll='loadMore2()' infinite-scroll-distance='2' testbinding="true">
             <a ng-repeat="aClass in search.constructor.renderedClasses" class="list-group-item {{search.isActive(aClass)?'active':''}}" href="" ng-click="search.onClick(aClass)" style="border-radius: 0">
                 <h4 class="list-group-item-heading">{{::aClass.subject}} {{::aClass.classId}}</h4>
