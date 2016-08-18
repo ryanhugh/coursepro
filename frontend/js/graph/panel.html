@@ -1,4 +1,4 @@
-<div graph-panel-expand ng-click="node.isCoreq?graphPanelExpand.openPanel(node):graphPanelExpand.openPanelPrompt(node)">
+<div graph-panel-expand ng-click="node.isCoreq?graphPanelExpand.openPanel(node):graphPanelExpand.onPanelClick(node)">
 
     <!-- main panel -->
     <div class="panel {{node.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="node.isClass && !node.showSelectPanel" panel-close=".closePanel">
@@ -10,7 +10,7 @@
                 <!-- was 48 -->
                 <!-- <div ng-if="node.class.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = node.class" list-icon='{{macros.SAVED_LIST}}' toggle-sections='true' toggle='class' style="display:inline-block;margin-right: 6px;"></div> -->
 
-                <span ng-if="graphPanelExpand.canClosePanel(node)" class="glyphicon glyphicon-remove" ng-click="graphPanelExpand.closePanel(node)" aria-hidden="true" style="cursor: pointer;display:inline-block;font-size: 17px;"></span>
+                <span ng-if="graphPanelExpand.canClosePanel(node)" class="glyphicon glyphicon-remove" ng-click="graphPanelExpand.closePanel(node);$event.stopPropagation();" aria-hidden="true" style="cursor: pointer;display:inline-block;font-size: 17px;"></span>
                 <!-- <div ng-init="class = node.class" list-icon='{{macros.WATCHING_LIST}}' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
             </span>
 

@@ -177,6 +177,21 @@ GraphPanelExpand.prototype.closePanelPrompt = function (node, callback) {
 	}.bind(this), 0)
 };
 
+GraphPanelExpand.prototype.onPanelClick = function(node, callback) {
+	if (!callback) {
+		callback = function(){}
+	}
+	
+	if (node.isExpanded) {
+		return callback()
+	}
+	if (!node.lowestParent) {
+		this.openPanel(node, callback);
+	}
+	else {
+		this.openPanelPrompt(node, callback);
+	}
+}
 
 
 // if a panel in a node is clicked
