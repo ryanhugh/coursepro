@@ -257,21 +257,115 @@ Node.prototype.compareTo = function (other) {
 };
 
 
-
-
-Node.prototype.getParentString = function() {
+Node.prototype.getParentString = function () {
 
 	var currNode = this.lowestParent;
-	
+
 	while (currNode) {
 		if (currNode.isClass) {
 			return currNode.class.subject + ' ' + currNode.class.classId
 		}
 		currNode = currNode.lowestParent;
 	}
-	
+
 	return null;
 }
+
+
+// change z index of a node
+Node.prototype.bringToFront = function () {
+
+	// find the g element that is a parent of the foreignObject, and move it to the end of its children
+	// in svgs this is how zindex works
+	var g = this.foreignObject.parentElement;
+	var gParentElement = g.parentElement;
+	g.remove();
+	gParentElement.appendChild(g)
+};
+
+Node.prototype.sortCoreqs = function () {
+	if (this.coreqs.values.length == 0) {
+		return;
+	}
+
+	for (var i = this.coreqs.values.length - 1; i >= 0; i--) {
+		this.coreqs.values[i].bringToFront();
+	}
+	this.bringToFront();
+};
+
+
+
+Node.prototype.updatePos = function () {
+
+	if (!this.foreignObject || !this.foreignObject.parentElement) {
+		elog()
+		return;
+	}
+
+	var value;
+	if (this.isCoreq) {
+
+		var x = this.lowestParent.x - this.width / 2;
+		var y = this.lowestParent.y - this.height / 2;
+
+		x += (this.coreqIndex + 1) * 30
+		y -= (this.coreqIndex + 1) * 39
+
+		value = "translate(" + x + "," + y + ")";
+	}
+	else {
+		value = "translate(" + (this.x - this.width / 2) + "," + (this.y - this.height / 2) + ")";
+	}
+
+	this.foreignObject.parentElement.setAttribute('transform', value);
+};
+
+Node.prototype.getWidth = function () {
+	if (this.showSelectPanel) {
+		return macros.SELECT_PANEL_WIDTH;
+	}
+	else if (!this.isExpanded) {
+		return macros.NODE_WIDTH;
+	}
+	else if (this.class.sections.length > 0) {
+		return macros.NODE_EXPANDED_MAX_WIDTH;
+	}
+	else {
+		return Math.max(macros.NODE_EXPANDED_MIN_WIDTH, Math.min(macros.NODE_EXPANDED_MAX_WIDTH, this.class.desc.length))
+	}
+};
+
+Node.prototype.updateWidth = function () {
+	this.width = this.getWidth();
+	this.foreignObject.setAttribute('width', this.width);
+	this.updatePos();
+};
+
+
+Node.prototype.updateHeight = function () {
+
+	if (!this.foreignObject || !this.foreignObject.parentNode) {
+		elog()
+		return;
+	}
+
+	// update the height of the panel
+	this.height = this.foreignObject.lastChild.offsetHeight
+
+	//update the foreign object and the g with the new height
+	this.foreignObject.setAttribute('height', this.height)
+	this.foreignObject.parentNode.setAttribute('height', this.height)
+	this.updatePos();
+};
+
+
+Node.prototype.checkPos = function () {
+	if (this.x === undefined || isNaN(this.x) || isNaN(this.y) || this.y === undefined) {
+		elog('invalid x or y!', this)
+	}
+}
+
 
 
 module.exports = Node;

@@ -23,14 +23,14 @@ macros.inherent(BaseDirective, GraphPanelExpand)
 
 GraphPanelExpand.prototype.bringExpandedPanelsToFront = function () {
 	this.openOrder.forEach(function (node) {
-		Graph.instance.bringToFront(node);
+		node.bringToFront();
 	}.bind(this))
 };
 
 GraphPanelExpand.prototype.increaseShowing = function (node) {
 	node.showingSectionCount += 10;
 	setTimeout(function () {
-		Graph.instance.updateHeight(node)
+		node.updateHeight()
 	}.bind(this), 0)
 };
 
@@ -81,10 +81,10 @@ GraphPanelExpand.prototype.updateScope = function (node, isMouseOver) {
 	// Run these regardless if the showSelctedPanel is shown or not
 	if (!node.isExpanded) {
 		if (isMouseOver) {
-			Graph.instance.bringToFront(node)
+			node.bringToFront()
 		}
 		else if (node.isCoreq) {
-			Graph.instance.sortCoreqs(node.lowestParent)
+			node.lowestParent.sortCoreqs()
 		}
 
 		this.bringExpandedPanelsToFront()
@@ -125,8 +125,8 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 
 			this.updateScope(node, false);
 
-			Graph.instance.updateWidth(node);
-			Graph.instance.updateHeight(node);
+			node.updateWidth();
+			node.updateHeight();
 			this.bringExpandedPanelsToFront();
 
 			// and tell d3 to move the panel back to where it should be
@@ -143,8 +143,8 @@ GraphPanelExpand.prototype.togglePanelPrompt = function (node, callback) {
 		node.showSelectPanel = !node.showSelectPanel;
 		node.$scope.$apply()
 
-		Graph.instance.updateWidth(node);
-		Graph.instance.updateHeight(node);
+		node.updateWidth();
+		node.updateHeight();
 
 		// and tell d3 to move the panel back to where it should be
 		Graph.instance.force.alpha(.0051)
@@ -228,8 +228,8 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 				node.showSelectPanel = false;
 				node.isExpanded = false;
 				node.$scope.$apply();
-				Graph.instance.updateWidth(node);
-				Graph.instance.updateHeight(node)
+				node.updateWidth();
+				node.updateHeight()
 				clearTimeout(node.graphPanelPromptTimeout);
 				callback()
 			}.bind(this))

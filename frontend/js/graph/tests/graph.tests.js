@@ -146,8 +146,8 @@ describe('Graph', function () {
 				rightPrerq = aClass.prereqs.values[0];
 				leftPrereq = aClass.prereqs.values[1];
 			}
-			expect(leftPrereq.x + graph.nodeWidth < aClass.x)
-			expect(rightPrerq.x - graph.nodeWidth > aClass.x)
+			expect(leftPrereq.x + macros.NODE_WIDTH < aClass.x)
+			expect(rightPrerq.x - macros.NODE_WIDTH > aClass.x)
 
 			expect(rightPrerq.wouldSatisfyNode).toBe(true);
 			expect(leftPrereq.wouldSatisfyNode).toBe(true);

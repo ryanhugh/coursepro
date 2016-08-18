@@ -18,6 +18,15 @@ function Macros() {
 	this.SEARCH_WIDTH = 300;
 	this.NAVBAR_HEIGHT = 50;
 
+	// This is the default for nodes, and is what is allways used for collision
+	// When a panel expands to the prompt and to a expanded panel, node.width changes. 
+	this.NODE_WIDTH = 174;
+	this.NODE_HEIGHT = 50;
+	this.NODE_EXPANDED_MAX_WIDTH = 780;
+	this.NODE_EXPANDED_MIN_WIDTH = 576;
+
+	this.SELECT_PANEL_WIDTH = 300;
+
 	// In unit tests, window.elog is defined in main.tests.js to be just console.error
 	if (!macros.UNIT_TESTS) {
 		//used all over the place for logging erros

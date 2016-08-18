@@ -26,12 +26,6 @@ function Graph() {
  
 	this.graphHeight = this.getSvgHeight();
 
-	// This is the default for nodes, and is what is allways used for collision
-	// When a panel expands to the prompt and to a expanded panel, tree.width changes, but this does not
-	this.nodeWidth = 174
-	this.nodeHeight = 50;
-
-	this.selectPanelWidth = 300;
 
 	// main d3 force, defined in go
 	this.force = null;
@@ -95,7 +89,7 @@ Graph.urls = ['/graph/:host/:termId/:subject?/:classUid?']
 Graph.fnName = 'Graph'
 
 Graph.prototype.getWidth = function (node) {
-	var width = Math.min(200, this.nodeWidth);
+	var width = Math.min(200, macros.NODE_WIDTH);
 	if (node.coreqs.values.length > 0) {
 		width += node.coreqs.values.length * 34
 	}
@@ -192,101 +186,6 @@ Graph.prototype.addToDom = function (node) {
 };
 
 
-
-// change z index of a node
-Graph.prototype.bringToFront = function (node) {
-
-	// find the g element that is a parent of the foreignObject, and move it to the end of its children
-	// in svgs this is how zindex works
-	var g = node.foreignObject.parentElement;
-	var gParentElement = g.parentElement;
-	g.remove();
-	gParentElement.appendChild(g)
-};
-
-Graph.prototype.sortCoreqs = function (node) {
-	if (node.coreqs.values.length == 0) {
-		return;
-	}
-
-	for (var i = node.coreqs.values.length - 1; i >= 0; i--) {
-		this.bringToFront(node.coreqs.values[i]);
-	}
-	this.bringToFront(node);
-};
-
-
-
-Graph.prototype.updatePos = function (node) {
-	var value;
-	if (node.isCoreq) {
-
-		var x = node.lowestParent.x - node.width / 2;
-		var y = node.lowestParent.y - node.height / 2;
-
-		x += (node.coreqIndex + 1) * 30
-		y -= (node.coreqIndex + 1) * 39
-
-		value = "translate(" + x + "," + y + ")";
-	}
-	else {
-		value = "translate(" + (node.x - node.width / 2) + "," + (node.y - node.height / 2) + ")";
-	}
-
-	if (!node.foreignObject || !node.foreignObject.parentElement) {
-		elog()
-		return;
-	}
-
-	node.foreignObject.parentElement.setAttribute('transform', value);
-};
-
-Graph.prototype.getNodeWidth = function (node) {
-	if (node.showSelectPanel) {
-		return this.selectPanelWidth;
-	}
-	if (!node.isExpanded) {
-		return this.nodeWidth;
-	}
-	else if (node.class.sections.length > 0) {
-		return 780;
-	}
-	else {
-		return Math.max(576, Math.min(780, node.class.desc.length))
-	}
-};
-
-Graph.prototype.updateWidth = function (node) {
-	node.width = this.getNodeWidth(node);
-	node.foreignObject.setAttribute('width', node.width);
-	this.updatePos(node);
-};
-
-
-Graph.prototype.updateHeight = function (node) {
-
-	if (!node.foreignObject || !node.foreignObject.parentNode) {
-		elog()
-		return;
-	}
-
-	// update the height of the panel
-	node.height = node.foreignObject.lastChild.offsetHeight
-
-	//update the foreign object and the g with the new height
-	node.foreignObject.setAttribute('height', node.height)
-	node.foreignObject.parentNode.setAttribute('height', node.height)
-	this.updatePos(node);
-};
-
-
-Graph.prototype.checkPos = function (node) {
-	if (node.x === undefined || isNaN(node.x) || isNaN(node.y) || node.y === undefined) {
-		elog('invalid x or y!', node)
-	}
-}
-
-
 Graph.prototype.estimateNodePositions = function () {
 	var nodes = this.nodes;
 	if (nodes[0].x === undefined) {
@@ -326,7 +225,7 @@ Graph.prototype.estimateNodePositions = function () {
 	}.bind(this))
 
 	nodes.forEach(function (node) {
-		this.checkPos(node);
+		node.checkPos();
 	}.bind(this))
 
 }
@@ -345,7 +244,7 @@ Graph.prototype.calculateGraphSize = function () {
 Graph.prototype.onTick = function (e) {
 
 	this.nodes.forEach(function (node) {
-		this.checkPos(node);
+		node.checkPos();
 	}.bind(this))
 
 
@@ -391,18 +290,18 @@ Graph.prototype.onTick = function (e) {
 				}
 			}
 		}
-		this.checkPos(currNode);
+		currNode.checkPos();
 	};
 
 	this.linkElements.attr("points", function (d) {
-		this.checkPos(d.target);
-		this.checkPos(d.source);
+		d.target.checkPos();
+		d.source.checkPos();
 		return d.target.x + ',' + d.target.y + ' ' + ((d.source.x + d.target.x) / 2) + ',' + ((d.source.y + d.target.y) / 2) + ' ' + d.source.x + ',' + d.source.y
 	}.bind(this))
 
 	this.nodes.forEach(function (node) {
-		this.checkPos(node);
-		this.updatePos(node)
+		node.checkPos();
+		node.updatePos();
 	}.bind(this));
 }
 
@@ -427,8 +326,8 @@ Graph.prototype.loadNodes = function (callback) {
 	this.estimateNodePositions();
 
 	this.nodes.forEach(function (node) {
-		node.height = this.nodeHeight;
-		node.width = this.nodeWidth
+		node.height = macros.NODE_HEIGHT;
+		node.width = macros.NODE_WIDTH
 	}.bind(this))
 
 	this.linkElements = this.container.selectAll(".link")
@@ -500,8 +399,8 @@ Graph.prototype.loadNodes = function (callback) {
 		.data(this.nodes)
 		.enter().append("g")
 		.attr("class", "node")
-		.attr("width", this.nodeWidth)
-		.attr("height", this.nodeHeight)
+		.attr("width", macros.NODE_WIDTH)
+		.attr("height", macros.NODE_HEIGHT)
 		.on("mousedown", function () {
 			d3.event.stopPropagation();
 		})
@@ -520,8 +419,8 @@ Graph.prototype.loadNodes = function (callback) {
 		this.nodes[i].$scope = newScope
 
 		var foreignObject = d3.select(this.nodeElements[0][i]).append('foreignObject')
-			.attr("width", this.nodeWidth)
-			.attr("height", this.nodeHeight);
+			.attr("width", macros.NODE_WIDTH)
+			.attr("height", macros.NODE_HEIGHT);
 
 		this.nodes[i].foreignObject = foreignObject[0][0]
 
@@ -538,9 +437,9 @@ Graph.prototype.loadNodes = function (callback) {
 	// Update height, width after digest loop
 	// sorting the coreqs can be done whenever
 	this.nodes.forEach(function (node) {
-		this.updateWidth(node);
-		this.updateHeight(node);
-		this.sortCoreqs(node);
+		node.updateWidth();
+		node.updateHeight();
+		node.sortCoreqs();
 	}.bind(this));
 
 	this.force.nodes(this.nodes)
@@ -568,14 +467,12 @@ Graph.prototype.go = function (config, callback) {
 
 			var rootNode = Node.create(rootClass);
 
-
 			// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
 			// setTimeout(function () {
 			// this.$scope.$apply()
 
 			treeMgr.go(rootNode);
 			this.rootNode = rootNode;
-			// this.$scope.tree = tree;
 
 			if (this.force) {
 				this.force.stop();
