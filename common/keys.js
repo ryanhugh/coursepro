@@ -8,6 +8,11 @@ var macros = require('./macros')
 
 // feature request from server.js: add classId if not given classUid and given host+termId+subject
 
+// Copied from lodash source to avoid depending on it here. It wound't be that bad if is needed though. 
+function startsWith(string, target) {
+	return string.slice(0, target.length) == target;
+}
+
 
 var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
 var endpoints = [macros.LIST_COLLEGES, macros.LIST_TERMS, macros.LIST_SUBJECTS, macros.LIST_CLASSES, macros.LIST_SECTIONS]
@@ -56,7 +61,7 @@ function Keys(obj, endpoint, config) {
 
 	// this hash shall be "neu.edu/201710/..."
 	else if (obj.hash) {
-		if (obj.hash.startsWith('/list') || obj.hash.startsWith('/') || !config.hashAllowed) {
+		if (startsWith(obj.hash, '/list') || startsWith(obj.hash, '/') || !config.hashAllowed) {
 			elog(obj, endpoint, config.hashAllowed)
 		}
 
@@ -97,7 +102,7 @@ Keys.prototype.createWithClassId = function (obj, endpoint) {
 // returns neu.edu/201710/CS/4800_4444444/1234, etc
 Keys.prototype.getHash = function () {
 	if (this.hash) {
-		if (this.hash.startsWith('/list')) {
+		if (startsWith(this.hash, '/list')) {
 			elog()
 		}
 		return this.hash
