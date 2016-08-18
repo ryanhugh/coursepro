@@ -37,9 +37,7 @@
 
 
             <div style="padding: 9px;text-align: left" ng-if="!node.wouldSatisfyNode && !graphPanelExpand.getNodeIsSelected(node)">
-                This class is required
-                
-                <span ng-if = "node.getParentString()">for <br/> {{node.getParentString()}}</span>
+                This class is required<span ng-if = "node.getParentString()"> for <br/> {{node.getParentString()}}</span>.
             </div>
 
         </div>
