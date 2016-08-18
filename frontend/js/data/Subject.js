@@ -2,7 +2,7 @@
 var macros = require('../macros')
 var BaseData = require('./BaseData');
 var Class = require('./Class');
-
+var Keys = require('../../../common/Keys') 
 
 function Subject(config) {
 	BaseData.prototype.constructor.apply(this, arguments);

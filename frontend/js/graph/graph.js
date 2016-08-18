@@ -12,6 +12,7 @@ var downloadTree = require('./downloadTree')
 var treeMgr = require('./treeMgr')
 var Node = require('./Node')
 
+var SelectHelpModel = require('../selectHelpModel/selectHelpModel')
 var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
  
 
@@ -726,6 +727,11 @@ Graph.prototype.getCollegeName = function () {
 Graph.prototype.openWatchModel = function ($scope) {
 	WatchClassesModel.open(this, $scope.tree)
 };
+
+
+Graph.prototype.openSelectHelpModel = function() {
+	SelectHelpModel.open(this)
+}
 
 
 Graph.prototype.Graph = Graph;

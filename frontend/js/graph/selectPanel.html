@@ -23,7 +23,7 @@
                     Unselect this class!
                 </div>
                 <div style="padding: 6px;text-align: left;padding-top: 1px;">
-                    <a>More info</a>
+                    <a ng-click="graph.openSelectHelpModel();$event.stopPropagation()">More info</a>
                 </div>
                 <div style="padding-top: 5px;">
                     <div class="panel {{graphPanelExpand.getNodeIsSelected(node)?'panel-info':'panel-primary'}}" style="margin: 0 auto;width: 87px;">
@@ -37,8 +37,9 @@
 
 
             <div style="padding: 9px;text-align: left" ng-if="!node.wouldSatisfyNode && !graphPanelExpand.getNodeIsSelected(node)">
-                This class is required for
-                <br/> {{graph.rootNode.class.subject}} {{graph.rootNode.class.classId}}
+                This class is required
+                
+                <span ng-if = "node.getParentString()">for <br/> {{node.getParentString()}}</span>
             </div>
 
         </div>

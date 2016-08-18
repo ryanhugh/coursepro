@@ -92,8 +92,14 @@ Search.prototype.loadSearchIndex = memoize(function (callback) {
 	if (!host || !termId) {
 		return callback('need host and term')
 	}
+	
+	var url = Keys.create({
+		host: host,
+		termId: termId
+	}).getHashWithEndpoint('/getSearchIndex');
+	
 	request({
-		url: '/getSearchIndex/' + host + '/' + termId,
+		url: url,
 		host: host,
 		termId: termId
 	}, function (err, result) {

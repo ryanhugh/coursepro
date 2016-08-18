@@ -258,4 +258,20 @@ Node.prototype.compareTo = function (other) {
 
 
 
+
+Node.prototype.getParentString = function() {
+
+	var currNode = this.lowestParent;
+	
+	while (currNode) {
+		if (currNode.isClass) {
+			return currNode.class.subject + ' ' + currNode.class.classId
+		}
+		currNode = currNode.lowestParent;
+	}
+	
+	return null;
+}
+
+
 module.exports = Node;

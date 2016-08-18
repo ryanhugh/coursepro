@@ -1,0 +1,40 @@
+
+<!-- prevent flash of uncompiled html on screen -->
+<div style="display:none" ng-style="{display:model.doneRendering?'':'none'}">
+
+	<div class="modal-header">
+		<button type="button" class="close" aria-label="Close" ng-click = "model.close()">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<h4 class="modal-title" id="myModalLabel">Selecting Prerequisites</h4>
+	</div>
+	<div class="modal-body">
+		
+		<div>
+			<img src="/images/dark_class.png" style="vertical-align: top"/> 
+			<div style="display: inline-block;width: 377px;padding-top: 20px">
+				Dark Blue classes are required prerequisites. 
+				These appear if a class requires that you take all of the classes from a list of classes. 
+				For example, if class A requires that you take classes B, C, and D, all three prerquisites will show up as dark blue. 
+			</div>
+		</div>
+		<div>
+			<div style="display: inline-block;width: 340px;padding-top: 20px">
+				With Light Blue classes you have a choice. 
+				You can pick any of the light blue prerequisites connected to a class to satisfiy that class. 
+				For example, if class A requires class B, C, or D. Classes B, C, and D will show as light blue underneath class A.
+				When one of them is selected, the others will disappear and the remaining one will turn dark blue. 
+			</div>
+			<img src="/images/light_class.png" style="vertical-align: top"/> 
+		</div>
+
+		<br>
+		Got questions? Feel free to send us an email at <a href="mailto:coursepro@coursepro.io"> coursepro@coursepro.io </a>
+
+
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default" ng-click = "model.close()">Close</button>
+	</div>
+
+</div> 

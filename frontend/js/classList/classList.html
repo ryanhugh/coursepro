@@ -56,7 +56,7 @@
 
 <uib-accordion close-others="false">
     <div infinite-scroll='loadMore()' infinite-scroll-distance='2'>
-        <div ng-repeat="class in classList.renderedClasses" style="padding-top:5px">
+        <div ng-repeat="class in classList.renderedClasses track by class._id" style="padding-top:5px">
             <uib-accordion-group is-open="isOpen" ng-click="classList.onClick(class,this)">
                 <uib-accordion-heading>
 

@@ -204,7 +204,7 @@ BaseData.download = function (config, callback) {
 			var matches = [];
 			for (var i = 0; i < results.length; i++) {
 				var row = results[i];
-				if (config.keys.containsAllProperties(row)) {
+				if (config.keys.propsEqual(row)) {
 					matches.push(row)
 				}
 			}

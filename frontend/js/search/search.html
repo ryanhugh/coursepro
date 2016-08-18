@@ -34,7 +34,7 @@
 
     <div class="list-group" id="searchResultsId">
         <div infinite-scroll='loadMore2()' infinite-scroll-distance='2' testbinding="true">
-            <a ng-repeat="aClass in search.constructor.renderedClasses" class="list-group-item {{search.isActive(aClass)?'active':''}}" href="" ng-click="search.onClick(aClass)" style="border-radius: 0">
+            <a ng-repeat="aClass in search.constructor.renderedClasses track by aClass._id" class="list-group-item {{search.isActive(aClass)?'active':''}}" href="" ng-click="search.onClick(aClass)" style="border-radius: 0">
                 <h4 class="list-group-item-heading">{{::aClass.subject}} {{::aClass.classId}}</h4>
                 <p class="list-group-item-text">{{::aClass.name}}</p>
             </a>
