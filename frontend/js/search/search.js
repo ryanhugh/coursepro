@@ -11,7 +11,6 @@ var BaseDirective = require('../BaseDirective')
 var request = require('../request')
 var Class = require('../data/Class')
 var user = require('../data/user')
-	// var Graph = require('../graph/graph')
 
 
 function Search() {
@@ -245,8 +244,6 @@ Search.prototype.onClick = function (aClass) {
 	var obj = aClass;
 	var url = '/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid)
 	this.$location.path(url)
-		// window.history.pushState("", "", '#' + url);
-		// Graph.instance.go(Keys.create(aClass).getObj())
 }
 
 Search.prototype.isActive = function (aClass) {
