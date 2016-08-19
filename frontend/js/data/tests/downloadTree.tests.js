@@ -17,7 +17,8 @@ it('makes sure fetchFullTree is constant on constant data', function (done) {
 
 		treeMgr.go(rootNode)
 
-		expect(treeMgr.countClassesInTree(rootNode)).toBe(13);
+		// This used to be 13 before the prereqs of unselected nodes were removed
+		expect(treeMgr.countClassesInTree(rootNode)).toBe(4);
 		done()
 	}.bind(this))
 

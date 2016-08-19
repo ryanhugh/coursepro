@@ -32,10 +32,17 @@ add a warning in hash comparison when thing
 
 super rare bug with selecting node + removing duplicate nodes where it would select a node, that node would be removed in the dedupe process, and then try to expand that node and crash
 the Class -> RequisiteBranch tree need to be simplified, which is appearing as bugs in get prereq string. can apply ghetto solution in mean time
+http://localhost/#/graph/neu.edu/201710/EECE/5684_1371522404
+ -- demos both the Class tree bug above 
+ -- and the satisfying string bubble
+
+make that one unit test test the entire tree again, instead of cutting off at 4 nodes
+
+homepage.js get search string from homepage search box if this.searchText is '' when copying to search.UNIT
 
 
 
-UNIT TESTS:
+js TESTS:
 run all graph unit tests.js (data/tests/runAllGraphSelections_broken.js)
 
 
