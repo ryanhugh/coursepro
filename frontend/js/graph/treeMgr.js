@@ -870,12 +870,29 @@ TreeMgr.prototype.simplifyIfSelected = function (node) {
 			child.lowestParent = null;
 			node.prereqs.values.push(child);
 		}.bind(this))
-
-
 	}
 
 	node.prereqs.values.forEach(function (child) {
 		this.simplifyIfSelected(child);
+	}.bind(this));
+};
+
+TreeMgr.prototype.removeLightBluePrereqs = function (node) {
+	if (!node.savePrereqsForThisGraph) {
+		node.savePrereqsForThisGraph = {
+			values: node.prereqs.values.slice(0),
+			type: node.prereqs.type
+		}
+	}
+	if (node.wouldSatisfyNode) {
+		node.prereqs = {
+			values: [],
+			type: 'and'
+		}
+	}
+
+	node.prereqs.values.forEach(function (child) {
+		this.removeLightBluePrereqs(child);
 	}.bind(this));
 };
 
@@ -910,7 +927,7 @@ TreeMgr.prototype.getSatisfyingNode = function (node) {
 
 TreeMgr.prototype.setWouldSatisfy = function (node) {
 	if (node.isCoreq) {
-		node.wouldSatisfyNode = node.lowestParent.wouldSatisfyNode
+		node.wouldSatisfyNode = node.allParents[0].wouldSatisfyNode
 	}
 	else {
 		node.wouldSatisfyNode = this.wouldSatisfyNode(node)
@@ -1064,12 +1081,19 @@ TreeMgr.prototype.go = function (node) {
 	this.groupByHonors(node);
 
 
-	// SImplifyTree requires _id's but simplifyIfSelected changes what the _ids whould be generated to so have to update them again
+	// SimplifyTree requires _id's but simplifyIfSelected changes what the _ids whould be generated to so have to update them again
 	this.simplifyTree(node)
 	this.simplifyIfSelected(node);
 
 	this.sortTree(node);
 
+	this.addAllParentRelations(node);
+	this.setWouldSatisfy(node);
+	this.removeAllParents(node);
+
+	// This requires that would satisfy boolean was added to the nodes, which is done above. However, this can only be done when nodes have parents, 
+	// and this step can only be done when they dont 
+	this.removeLightBluePrereqs(node);
 	this.addAllParentRelations(node);
 
 	this.skipNodesPostStuff(node);

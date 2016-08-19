@@ -142,7 +142,7 @@ Search.prototype.go = function () {
 		// Return with a ref: and a score: 
 		var results = searchIndex.search(this.constructor.searchText, searchConfig)
 
-		console.log("Search results length:", results.length);
+		// console.log("Search results length:", results.length);
 
 		var classes = [];
 
