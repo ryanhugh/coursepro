@@ -1,6 +1,7 @@
 'use strict';
 var _ = require('lodash')
 var macros = require('../macros')
+var queue = require('d3-queue').queue
 
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
@@ -99,9 +100,23 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 		callback = function () {}
 	};
 
+	var q = queue()
+
+	q.defer(function (callback) {
+		node.class.loadSections(function (err) {
+			callback(err)
+		}.bind(this))
+	}.bind(this))
+
+	q.defer(function (callback) {
+		node.class.downloadPrereqs(function (err) {
+			callback(err)
+		}.bind(this))
+	}.bind(this))
+
 
 	//this returns instantly if already loaded
-	node.class.loadSections(function (err) {
+	q.awaitAll(function (err) {
 		if (err) {
 			elog("ERROR", err);
 			// return callback(err)

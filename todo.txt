@@ -31,6 +31,7 @@ add a warning in keys.getminkeys that dosent crash when using host or term (or j
 add a warning in hash comparison when thing
 
 super rare bug with selecting node + removing duplicate nodes where it would select a node, that node would be removed in the dedupe process, and then try to expand that node and crash
+the Class -> RequisiteBranch tree need to be simplified, which is appearing as bugs in get prereq string. can apply ghetto solution in mean time
 
 
 

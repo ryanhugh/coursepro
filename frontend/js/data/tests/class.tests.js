@@ -278,3 +278,49 @@ it('can load sections', function (done) {
 		}.bind(this))
 	});
 });
+
+
+it('prereqs as string works', function (done) {
+	Class.create({
+		"classUid": "4910_549728731",
+		"host": "neu.edu",
+		"termId": "201710",
+		"subject": "CS",
+	}).download(function (err, aClass) {
+		expect(!err).toBe(true);
+
+		aClass.downloadPrereqs(function (err) {
+			expect(!err).toBe(true);
+
+			expect(aClass.getPrereqsString()).toBe('CS 3500 and CS 3800')
+
+
+			done()
+		}.bind(this))
+
+	}.bind(this))
+});
+
+
+it('should behave...', function (done) {
+	Class.create({
+		"classUid": "5000_202147161",
+		"host": "neu.edu",
+		"termId": "201710",
+		"subject": "GE",
+	}).download(function (err, aClass) {
+		expect(!err).toBe(true);
+
+		aClass.downloadPrereqs(function (err) {
+			expect(!err).toBe(true);
+
+			expect(aClass.getPrereqsString()).toBe('Language Placement JP201')
+
+			done()
+		}.bind(this))
+
+	}.bind(this))
+
+
+
+});

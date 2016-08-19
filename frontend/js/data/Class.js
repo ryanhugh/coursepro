@@ -432,6 +432,82 @@ Class.prototype.sectionsHaveExam = function () {
 	return false;
 };
 
+Class.prototype.getPrereqsString = function () {
+	var retVal = [];
+	this.prereqs.values.forEach(function (childBranch) {
+		if (!(childBranch instanceof RequisiteBranch)) {
+			if (childBranch.isString) {
+				retVal.push(childBranch.desc)
+			}
+			else if (childBranch.dataStatus !== macros.DATASTATUS_DONE) {
+				elog(childBranch)
+				retVal.push('some ' + childBranch.subject + ' class')
+			}
+			else {
+				retVal.push(childBranch.subject + ' ' + childBranch.classId)
+			}
+		}
+		//Ghetto fix until this tree is simplified
+		else if (childBranch.prereqs.values.length === 1) {
+			retVal.push(childBranch.getPrereqsString())
+		}
+		else {
+			retVal.push('(' + childBranch.getPrereqsString() + ')')
+		}
+	}.bind(this))
+
+	// Dedupe retVal
+	// If two classes have the same classId (eg. CS 2500 and CS 2500 (hon))
+	// remove one of them
+	retVal = _.uniq(retVal);
+
+	if (retVal.length === 0) {
+		return 'None'
+	}
+	else {
+		retVal = retVal.join(' ' + this.prereqs.type + ' ')
+
+		return retVal;
+	}
+};
+
+
+
+Class.prototype.getCoreqsString = function () {
+	var retVal = [];
+	this.coreqs.values.forEach(function (childBranch) {
+		if (!(childBranch instanceof RequisiteBranch)) {
+			if (childBranch.isString) {
+				retVal.push(childBranch.desc)
+			}
+			else if (childBranch.dataStatus !== macros.DATASTATUS_DONE) {
+				elog(childBranch)
+				retVal.push('some ' + childBranch.subject + ' class')
+			}
+			else {
+				retVal.push(childBranch.subject + ' ' + childBranch.classId)
+			}
+		}
+		else {
+			elog('need to have classes as coreqs, not RequisiteBranch')
+			retVal.push('something')
+		}
+	}.bind(this))
+
+	// Dedupe retVal
+	// If two classes have the same classId (eg. CS 2500 and CS 2500 (hon))
+	// remove one of them
+	retVal = _.uniq(retVal);
+
+	if (retVal.length === 0) {
+		return 'None'
+	}
+	else {
+		retVal = retVal.join(' ' + this.coreqs.type + ' ')
+
+		return retVal;
+	}
+};
 
 
 Class.prototype.loadSections = function (callback) {
@@ -507,6 +583,34 @@ Class.prototype.loadSections = function (callback) {
 		}.bind(this))
 	}.bind(this))
 };
+
+
+// Downloads the first layer of prereqs
+Class.prototype.downloadPrereqs = function (callback) {
+	var q = queue()
+	this.prereqs.values.forEach(function (childBranch) {
+		if (childBranch instanceof RequisiteBranch) {
+			q.defer(function (callback) {
+				childBranch.downloadPrereqs(function (err) {
+					callback(err)
+				}.bind(this))
+			}.bind(this))
+		}
+		else if (!childBranch.isString) {
+			q.defer(function (callback) {
+				childBranch.download(function (err) {
+					callback(err)
+				}.bind(this))
+			}.bind(this))
+		}
+	}.bind(this))
+
+	q.awaitAll(function (err) {
+		callback(err)
+	}.bind(this))
+};
+
+
 
 
 module.exports = Class;
