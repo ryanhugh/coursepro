@@ -3,10 +3,13 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var search = require('../search/search')
 var user = require('../data/user')
+var macros = require('../macros')
 
 function Homepage() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	this.$scope.user = user;
+	this.host = user.getValue(macros.LAST_SELECTED_COLLEGE)
+	this.term = user.getValue(macros.LAST_SELECTED_TERM)
 
 
 	this.searchText = ''
@@ -29,6 +32,10 @@ Homepage.isPage = true
 //prototype constructor
 Homepage.prototype = Object.create(BaseDirective.prototype);
 Homepage.prototype.constructor = Homepage;
+
+Homepage.prototype.getHost = function() {
+	return user.getValue(macros.LAST_SELECTED_TERM);
+};
 
 
 Homepage.prototype.onUserUpdate = function () {
