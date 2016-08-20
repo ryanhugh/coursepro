@@ -19,11 +19,6 @@ TermStartEndDate.prototype = Object.create(BaseProcessor.prototype);
 TermStartEndDate.prototype.constructor = TermStartEndDate;
 
 
-// runs on all hosts
-TermStartEndDate.prototype.supportsHost = function (host) {
-	return true;
-};
-
 TermStartEndDate.prototype.runOnTerm = function (query, callback) {
 
 	sectionsDB.find(query, {

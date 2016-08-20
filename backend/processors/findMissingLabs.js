@@ -19,11 +19,6 @@ FindMissingLabs.prototype.constructor = FindMissingLabs;
 
 
 
-// runs on all hosts
-FindMissingLabs.prototype.supportsHost = function (host) {
-	return true;
-};
-
 var count = 0;
 
 

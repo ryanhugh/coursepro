@@ -12,10 +12,11 @@ var processors = [
 	require('./processors/addClassUids'),
 	require('./processors/prereqClassUids'),
 	require('./processors/termStartEndDate'),
-	
+
 	// Add new processors here
-	
-	require('./processors/databaseDumps')
+
+	require('./processors/databaseDumps'),
+	require('./processors/createSearchIndex')
 ]
 
 var emailMgr = require('./emailMgr');
@@ -70,27 +71,25 @@ PageDataMgr.prototype.go = function (pageData, callback) {
 		var q = queue();
 		processors.forEach(function (processor) {
 			console.log("Running", processor.constructor.name);
-			if (processor.supportsHost(pageData.dbData.host)) {
-				q.defer(function (callback) {
+			q.defer(function (callback) {
 
-					var query = {
-						host: pageData.dbData.host
+				var query = {
+					host: pageData.dbData.host
+				}
+				var toCopy = ['termId', 'subject', 'classId', 'crn'];
+				toCopy.forEach(function (term) {
+					if (pageData.dbData[term]) {
+						query[term] = pageData.dbData[term]
 					}
-					var toCopy = ['termId', 'subject', 'classId', 'crn'];
-					toCopy.forEach(function (term) {
-						if (pageData.dbData[term]) {
-							query[term] = pageData.dbData[term]
-						}
-					}.bind(this))
-					processor.go(query, function (err) {
-						if (err) {
-							console.log("ERROR processor", processor, 'errored out', err);
-							return callback(err)
-						}
-						return callback()
-					}.bind(this))
 				}.bind(this))
-			}
+				processor.go(query, function (err) {
+					if (err) {
+						console.log("ERROR processor", processor, 'errored out', err);
+						return callback(err)
+					}
+					return callback()
+				}.bind(this))
+			}.bind(this))
 		}.bind(this))
 
 		q.awaitAll(function (err) {

@@ -18,13 +18,6 @@ PrereqClassUids.prototype = Object.create(BaseProcessor.prototype);
 PrereqClassUids.prototype.constructor = PrereqClassUids;
 
 
-// runs on all hosts
-PrereqClassUids.prototype.supportsHost = function (host) {
-	return true;
-};
-
-
-
 PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyToRows) {
 	for (var i = prereqs.values.length - 1; i >= 0; i--) {
 		var prereqEntry = prereqs.values[i]
