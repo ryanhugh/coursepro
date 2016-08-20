@@ -130,16 +130,16 @@ module.exports = new AddClassUids();
 if (require.main === module) {
 
 
-	// module.exports.go({
-	// 	host: 'neu.edu'
-	// }, function (err) {
-	// 	console.log("DONE!", err);
-	// })
-
 	module.exports.go({
-		host: 'swarthmore.edu'
+		host: 'neu.edu'
 	}, function (err) {
 		console.log("DONE!", err);
 	})
+
+	// module.exports.go({
+	// 	host: 'swarthmore.edu'
+	// }, function (err) {
+	// 	console.log("DONE!", err);
+	// })
 
 }

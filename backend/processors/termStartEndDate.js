@@ -24,9 +24,16 @@ TermStartEndDate.prototype.runOnTerm = function (query, callback) {
 	sectionsDB.find(query, {
 		skipValidation: true
 	}, function (err, docs) {
+		if (err) {
+			return callback(err)
+		}
 		var startDates = {};
 		var endDates = {};
 		var meetingCount = 0;
+
+		if (docs.length === 0) {
+			elog('No sections in db???', query, docs);
+		}
 
 		docs.forEach(function (doc) {
 
@@ -164,7 +171,7 @@ TermStartEndDate.prototype.TermStartEndDate = TermStartEndDate;
 module.exports = new TermStartEndDate();
 
 if (require.main === module) {
-	this.go({
+	module.exports.go({
 		host: 'neu.edu'
 	}, function (err) {
 		console.log("DONE!", err);
