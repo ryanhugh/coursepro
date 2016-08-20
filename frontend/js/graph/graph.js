@@ -14,7 +14,7 @@ var Node = require('./Node')
 
 var SelectHelpModel = require('../selectHelpModel/selectHelpModel')
 var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
- 
+
 
 //thing that calls on download tree, treeMgr, render, popup and help
 //manages the page that generates the tree graphs
@@ -23,7 +23,7 @@ function Graph() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	this.graphWidth = this.getSvgWidth();
- 
+
 	this.graphHeight = this.getSvgHeight();
 
 
@@ -63,7 +63,7 @@ function Graph() {
 		}.bind(this), 0);
 	}
 
-	this.$scope.$on('$destroy',function () {
+	this.$scope.$on('$destroy', function () {
 		if (this.force) {
 			this.force.stop();
 		}
@@ -636,7 +636,7 @@ Graph.prototype.openWatchModel = function ($scope) {
 };
 
 
-Graph.prototype.openSelectHelpModel = function() {
+Graph.prototype.openSelectHelpModel = function () {
 	SelectHelpModel.open(this)
 }
 

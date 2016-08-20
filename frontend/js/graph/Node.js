@@ -75,19 +75,15 @@ function Node(classOrRequisiteBranch) {
 
 
 	// For D3
-	this.x = 0;
-	this.y = 0;
+	// X and Y are set to undefined to start.
+	// When they are undefined, graph.js will estimate their position based on other nearby nodes. 
+	this.x;
+	this.y;
 	this.height = 0;
 	this.width = 0;
 
 	// Used by D3 internally, never touched externally
 	this.weight = 0;
-
-	// After getId is ran once, the value is stored here so the fn dosen't have to run again
-	// this._id = null;
-	// if (this.class) {
-	// 	this._id = this.class._id;
-	// }
 }
 
 // Creates a class, but dosen't copy over prereqs. Used for the first layer of coreqs so it dosen't recurse any more
