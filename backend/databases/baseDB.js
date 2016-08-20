@@ -3,6 +3,7 @@ var _ = require('lodash');
 var path = require("path");
 var monk = require('monk')
 var fs = require('fs')
+var async = require('async')
 
 var macros = require('../macros')
 
@@ -181,8 +182,8 @@ BaseDB.prototype.stopUpdates = function () {
 BaseDB.prototype.isValidLookupValues = function (lookupValues) {
 	if (lookupValues._id && lookupValues._id.length != 24) {
 		console.log('_id is included and is not 24 chars long, and therefore is invalid ', lookupValues._id, lookupValues._id.length, typeof lookupValues._id)
-		console.log('more stuff', _.cloneDeep(lookupValues._id),lookupValues._id.constructor)
-		// console.log("");
+		console.log('more stuff', _.cloneDeep(lookupValues._id), lookupValues._id.constructor)
+			// console.log("");
 		return false;
 	};
 
@@ -197,7 +198,7 @@ BaseDB.prototype.isValidLookupValues = function (lookupValues) {
 // changes the _id to a string if it is not already
 BaseDB.prototype.standardizeQuery = function (query) {
 	if (query._id && typeof (query._id) != 'string') {
-		console.log('chaning id of ', query._id, 'to a string', _.cloneDeep(query._id),(typeof query._id))
+		console.log('chaning id of ', query._id, 'to a string', _.cloneDeep(query._id), (typeof query._id))
 		query._id = query._id.toString()
 	};
 	return query;
@@ -259,7 +260,7 @@ BaseDB.prototype.find = function (lookupValues, config, callback) {
 	if (!config.shouldBeOnlyOne) {
 		config.shouldBeOnlyOne = false;
 	};
-	
+
 	lookupValues = this.standardizeQuery(lookupValues);
 
 	if (!config.skipValidation && !this.isValidLookupValues(lookupValues)) {
@@ -267,9 +268,14 @@ BaseDB.prototype.find = function (lookupValues, config, callback) {
 		return callback('invalid search')
 	};
 
-
-
-	this.table.find(lookupValues, function (err, docs) {
+	async.retry({
+		times: 10,
+		internal: 5000,
+	}, function (callback) {
+		this.table.find(lookupValues, function (err, docs) {
+			callback(err, docs)
+		}.bind(this))
+	}.bind(this), function (err, docs) {
 
 		//get the call stack out of the monk callback so a usefull error is throw if one is thrown
 		setTimeout(function () {
