@@ -19,7 +19,7 @@ var endpoints = [macros.LIST_COLLEGES, macros.LIST_TERMS, macros.LIST_SUBJECTS, 
 var minData = 2;
 
 function Keys(obj, endpoint, config) {
-	if (obj instanceof Keys || !obj || (obj._id && !obj.hash && !obj.host)) {
+	if (obj instanceof Keys || !obj || (obj._id && !obj.hash && !obj.host) || (obj.isString && !config.stringAllowed)) {
 		elog('welp', obj)
 	}
 
@@ -28,8 +28,14 @@ function Keys(obj, endpoint, config) {
 	}
 
 
+	// Get string off object if creating with string
+	if (obj.desc && config.stringAllowed) {
+		this.desc = obj.desc
+		this.isString = true
+	}
+
 	// Prefer obj over hash
-	if (obj.host && !obj.hash) {
+	else if (obj.host && !obj.hash) {
 		var endpointIndex;
 		if (endpoint) {
 			endpointIndex = endpoints.indexOf(endpoint)
@@ -93,6 +99,12 @@ Keys.createWithHash = function (obj, endpoint) {
 	});
 };
 
+Keys.createWithString = function (obj) {
+	return new this(obj, null, {
+		stringAllowed: true
+	})
+}
+
 // Keys.prototype.createWithClassId = function (obj, endpoint) {
 // 	return new this(obj, endpoint, {
 // 		classId: true
@@ -101,6 +113,10 @@ Keys.createWithHash = function (obj, endpoint) {
 
 // returns neu.edu/201710/CS/4800_4444444/1234, etc
 Keys.prototype.getHash = function () {
+	if (this.isString) {
+		elog()
+		return null;
+	}
 	if (this.hash) {
 		if (startsWith(this.hash, '/list')) {
 			elog()
@@ -126,11 +142,19 @@ Keys.prototype.getHash = function () {
 };
 
 Keys.prototype.getHashWithEndpoint = function (endpoint) {
+	if (this.isString) {
+		elog()
+		return null;
+	}
 	return endpoint + '/' + this.getHash()
 };
 
 // Used in BaseData to go from a class that has everything to the classUid to what should be requested from the server
 Keys.prototype.getMinimumKeys = function () {
+	if (this.isString) {
+		elog()
+		return null;
+	}
 	var retVal = {};
 	for (var i = 0; i < minData; i++) {
 		var currValue = this[allKeys[i]];
@@ -145,6 +169,12 @@ Keys.prototype.getMinimumKeys = function () {
 
 
 Keys.prototype.getObj = function () {
+	if (this.isString) {
+		return {
+			isString: true,
+			desc: this.desc
+		}
+	}
 	if (this.hash) {
 		// Can't get obj if given hash
 		elog()
@@ -169,6 +199,9 @@ Keys.prototype.getObj = function () {
 
 
 Keys.prototype.containsAllProperties = function (arr) {
+	if (this.isString) {
+		return false;
+	}
 	for (var i = 0; i < arr.length; i++) {
 		if (!this[arr[i]]) {
 			return false
@@ -182,6 +215,9 @@ Keys.prototype.containsAllProperties = function (arr) {
 // This is one prop than need to lookup one row
 // eg. for subject this requrest host and termId
 Keys.prototype.isValid = function (endpoint) {
+	if (this.isString) {
+		return false
+	}
 	if (!endpoint) {
 		if (this.endpoint) {
 			endpoint = this.endpoint
@@ -220,6 +256,12 @@ Keys.prototype.equals = function (other) {
 // Same as equals but dosen't do an instance check
 // so can be used to compare to a row or and instance of Class or something
 Keys.prototype.propsEqual = function (other) {
+	if (this.isString && other.isString) {
+		return this.desc === other.desc
+	}
+	else if (this.isString || other.isString) {
+		return false;
+	}
 	if (this.hash) {
 		if (this.hash === other.hash) {
 			return true;

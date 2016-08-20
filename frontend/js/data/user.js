@@ -755,7 +755,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				}
 			}
 			if (addToSections != addToDBSections) {
-				elog('hi')
+				elog()
 			}
 			if (addToSections) {
 				this.lists[listName].sections.push(section);
@@ -776,8 +776,14 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				}
 			}
 
-			var keys = Keys.create(aClass)
 			var addToDBClasses = true;
+			var keys;
+			if (aClass.isString) {
+				keys = Keys.createWithString(aClass)
+			}
+			else {
+				keys = Keys.create(aClass)
+			}
 			for (var i = 0; i < this.dbData.lists[listName].classes.length; i++) {
 				if (keys.propsEqual(this.dbData.lists[listName].classes[i])) {
 					addToDBClasses = false;
@@ -785,7 +791,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				}
 			}
 			if (addToClasses != addToDBClasses) {
-				elog('hi')
+				elog()
 			}
 			if (addToClasses) {
 				this.lists[listName].classes.push(aClass);
@@ -796,11 +802,11 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		}.bind(this))
 
 		if (this.dbData.lists[listName].sections.length != this.lists[listName].sections.length) {
-			elog('no')
+			elog()
 		}
 
 		if (this.dbData.lists[listName].classes.length != this.lists[listName].classes.length) {
-			elog('no')
+			elog()
 		}
 
 
@@ -864,7 +870,13 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 
 	classes.forEach(function (aClass) {
 
-		var classKey = Keys.create(aClass).getObj();
+		var classKey;
+		if (aClass.isString) {
+			classKey = Keys.createWithString(aClass).getObj();
+		}
+		else {
+			classKey = Keys.create(aClass).getObj();
+		}
 
 		//remove it from this.lists
 		var matchingClasses = _.filter(this.lists[listName].classes, classKey);
@@ -1023,7 +1035,17 @@ User.prototype.toggleListContainsClass = function (listName, aClass, addSections
 		callback = function () {}
 	}
 
-	aClass.loadSections(function (err) {
+	var q = queue();
+
+	if (!aClass.isString) {
+		q.defer(function (callback) {
+			aClass.loadSections(function (err) {
+				callback(err)
+			}.bind(this))
+		}.bind(this))
+	}
+
+	q.awaitAll(function (err) {
 		if (err) {
 			return callback(err)
 		}

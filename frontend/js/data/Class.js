@@ -74,6 +74,15 @@ Class.isValidCreatingData = function (config) {
 	return BaseData.isValidCreatingData.apply(this, arguments);
 };
 
+Class.create = function (config) {
+	if (config.isString) {
+		var instance = new this(config);
+		instance.updateWithData(config);
+		return instance
+	}
+	return BaseData.create.call(this, config)
+}
+
 
 
 

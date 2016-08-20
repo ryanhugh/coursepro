@@ -907,18 +907,19 @@ TreeMgr.prototype.getSatisfyingNode = function (node) {
 		if (child.isClass) {
 
 			// make user support classes that are strings
-			if (child.class.isString) {
-				elog('Cant check child that isnt a string not supported yet!')
-				continue;
-			}
+			// if (child.class.isString) {
+			// 	elog('Cant check child that isnt a string not supported yet!')
+			// 	continue;
+			// }
 
 			if (user.getListIncludesClass(macros.SELECTED_LIST, child.class)) {
 				return child;
 			}
 		}
 		else {
-			if (this.getSatisfyingNode(child)) {
-				return child;
+			var satisfyingNode = this.getSatisfyingNode(child);
+			if (satisfyingNode) {
+				return satisfyingNode;
 			}
 		}
 	}
@@ -953,15 +954,6 @@ TreeMgr.prototype.wouldSatisfyNode = function (node) {
 	}
 
 	return false;
-};
-
-TreeMgr.prototype.savePrereqsForThisGraph = function (node) {
-
-	node.prereqsForThisGraph = node.prereqs
-
-	node.prereqs.values.forEach(function (child) {
-		this.savePrereqsForThisGraph(child);
-	}.bind(this));
 };
 
 
@@ -1052,6 +1044,54 @@ TreeMgr.prototype.ensureInvariants = function (node, foundRootNode) {
 	}.bind(this));
 };
 
+TreeMgr.prototype.resetRequisites = function (node) {
+	if (!node.backupPrereqs) {
+		node.backupPrereqs = {
+			values: node.prereqs.values.slice(0),
+			type: node.prereqs.type
+		}
+	}
+	else {
+
+		node.prereqs = {
+			values: [],
+			type: node.backupPrereqs.type
+		}
+
+		node.backupPrereqs.values.forEach(function (child) {
+			child.allParents = [];
+			child.lowestParent = null;
+			node.prereqs.values.push(child);
+		}.bind(this))
+	}
+	if (!node.backupCoreqs) {
+		node.backupCoreqs = {
+			values: node.coreqs.values.slice(0),
+			type: node.coreqs.type
+		}
+	}
+	else {
+		node.coreqs = {
+			values: [],
+			type: node.backupCoreqs.type
+		}
+
+		node.backupCoreqs.values.forEach(function (child) {
+			child.allParents = [];
+			child.lowestParent = null;
+			node.coreqs.values.push(child);
+		}.bind(this))
+	}
+
+
+	node.prereqs.values.forEach(function (child) {
+		this.resetRequisites(child);
+	}.bind(this));
+
+	node.coreqs.values.forEach(function (child) {
+		this.resetRequisites(child);
+	}.bind(this));
+};
 
 
 // http://localhost/#/graph/swarthmore.edu/201604/MATH/043
@@ -1063,6 +1103,7 @@ TreeMgr.prototype.go = function (node) {
 	// all changes to the graph prereqs happen at the node level
 	// and all nodes will only be recreated on init
 
+	this.resetRequisites(node);
 
 
 
@@ -1127,8 +1168,6 @@ TreeMgr.prototype.go = function (node) {
 
 	this.calculateIfChildrenAtSameDepth(node);
 	this.setWouldSatisfy(node);
-
-	this.savePrereqsForThisGraph(node);
 
 	this.ensureInvariants(node);
 }
