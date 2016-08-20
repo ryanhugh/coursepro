@@ -18,7 +18,6 @@ remove prereqsForThisGraph and the other backup prereqs crap savePrereqsForThisG
 
 
 BUGS:
-think about how the prereqs are going to be saved when nodes are selected, what will happen when they are unselected
 if the graph is loaded with stuff selected and they are unselected does it work?
 ghetto trig needs improvement
 clear localstorage before user runs and make sure XMLHTTPRequest is mocked out before user is ran too
@@ -39,6 +38,11 @@ http://localhost/#/graph/neu.edu/201710/EECE/5684_1371522404
 make that one unit test test the entire tree again, instead of cutting off at 4 nodes
 
 homepage.js get search string from homepage search box if this.searchText is '' when copying to search.UNIT
+dont scroll up on search results when scroll down and select a diff result
+
+
+prevet the nodes from spazing on every select
+
 
 
 
