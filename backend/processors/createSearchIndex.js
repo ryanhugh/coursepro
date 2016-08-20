@@ -201,6 +201,10 @@ CreateSearchIndex.prototype.go = function (query, callback) {
 				}.bind(this));
 			}.bind(this))
 		}
+
+		q.awaitAll(function (err) {
+			callback(err)
+		}.bind(this))
 	}.bind(this))
 };
 
