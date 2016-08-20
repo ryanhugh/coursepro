@@ -68,36 +68,32 @@ PageDataMgr.prototype.go = function (pageData, callback) {
 		}
 		// run the processors
 
-		var q = queue();
-		processors.forEach(function (processor) {
+		async.eachSeries(processors, function (processor, callback) {
 			console.log("Running", processor.constructor.name);
-			q.defer(function (callback) {
 
-				var query = {
-					host: pageData.dbData.host
+			var query = {
+				host: pageData.dbData.host
+			}
+			var toCopy = ['termId', 'subject', 'classId', 'crn'];
+			toCopy.forEach(function (term) {
+				if (pageData.dbData[term]) {
+					query[term] = pageData.dbData[term]
 				}
-				var toCopy = ['termId', 'subject', 'classId', 'crn'];
-				toCopy.forEach(function (term) {
-					if (pageData.dbData[term]) {
-						query[term] = pageData.dbData[term]
-					}
-				}.bind(this))
-				processor.go(query, function (err) {
-					if (err) {
-						console.log("ERROR processor", processor, 'errored out', err);
-						return callback(err)
-					}
-					return callback()
-				}.bind(this))
 			}.bind(this))
-		}.bind(this))
-
-		q.awaitAll(function (err) {
+			processor.go(query, function (err) {
+				if (err) {
+					console.log("ERROR processor", processor, 'errored out', err);
+					return callback(err)
+				}
+				return callback()
+			}.bind(this))
+		}.bind(this), function (err) {
 			if (err) {
 				console.log("ERROR some processor failed, aborting", err);
 			}
 			callback(err, pageData)
 		}.bind(this))
+
 	}.bind(this))
 };
 
