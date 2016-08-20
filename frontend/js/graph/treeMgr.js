@@ -884,7 +884,7 @@ TreeMgr.prototype.removeLightBluePrereqs = function (node) {
 			type: node.prereqs.type
 		}
 	}
-	if (node.wouldSatisfyNode) {
+	if (node.wouldSatisfyNode && node.isClass) {
 		node.prereqs = {
 			values: [],
 			type: 'and'
@@ -927,11 +927,13 @@ TreeMgr.prototype.getSatisfyingNode = function (node) {
 };
 
 TreeMgr.prototype.setWouldSatisfy = function (node) {
-	if (node.isCoreq) {
-		node.wouldSatisfyNode = node.allParents[0].wouldSatisfyNode
-	}
-	else {
-		node.wouldSatisfyNode = this.wouldSatisfyNode(node)
+	if (node.isClass) {
+		if (node.isCoreq) {
+			node.wouldSatisfyNode = node.allParents[0].wouldSatisfyNode
+		} 
+		else {
+			node.wouldSatisfyNode = this.wouldSatisfyNode(node)
+		}
 	}
 
 	node.prereqs.values.forEach(function (child) {
