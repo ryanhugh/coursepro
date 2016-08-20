@@ -160,7 +160,7 @@ Section.prototype.getLocations = function (ignoreExams) {
 	}.bind(this))
 
 	// If it is at least 1 long with TBAs remove, return the array without any TBAs
-	var noTBAs = _.pull(retVal.slice(0),'TBA');
+	var noTBAs = _.pull(retVal.slice(0), 'TBA');
 	if (noTBAs.length > 0) {
 		return noTBAs
 	}
@@ -232,6 +232,12 @@ Section.prototype.compareTo = function (other) {
 
 	if (this.meetings.length == 0 && other.meetings.length === 0) {
 		return 0;
+	}
+	if (this.meetings.length > 0 && other.meetings.length == 0) {
+		return -1
+	}
+	else if (this.meetings.length === 0 && other.meetings.length > 0) {
+		return 1
 	}
 
 	if (this.meetings[0].times.length === 0) {

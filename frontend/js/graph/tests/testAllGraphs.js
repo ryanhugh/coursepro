@@ -9,6 +9,23 @@ var Keys = require('../../../../common/Keys')
 	// As a "fuzzing" attempt to find bugs
 	// Run by specifying #testAllGraphs after debug.html in karma
 	// 
+	// 
+	// 
+	// 
+
+var _error = console.error.bind(console)
+
+
+var didError = false;
+console.error = function () {
+	didError = true;
+	_error(arguments)
+}.bind(this)
+
+window.elog = function () {
+	console.error.call(console,arguments)
+	didError = true;
+}.bind(this)
 
 // if (_(location.hash).includes('testAllGraphs')) {
 	console.log("Running testAllGraphs!");
@@ -34,6 +51,10 @@ var Keys = require('../../../../common/Keys')
 						elog(err)
 						return callback(err)
 					}
+					if (didError) {
+						console.log("Node caused error:",row.host, row.termId, row.subject, row.classUid);
+					}
+					didError = false;
 					// expect(!err).toBe(true)
 
 

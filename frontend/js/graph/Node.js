@@ -246,6 +246,14 @@ Node.prototype.compareTo = function (other) {
 		return 1;
 	}
 	else {
+
+		for (var i = 0; i < this.prereqs.values.length; i++) {
+			var retVal = other.prereqs.values[i].compareTo(this.prereqs.values[i]);
+			if (retVal !== 0) {
+				return retVal
+			}
+		}
+
 		// More could be added here, but I don't think is is ever called
 		elog("need more sorting on node compareTo", this, other);
 		return 0;
@@ -375,7 +383,7 @@ Node.prototype.timeout = function (fn, ms) {
 	}.bind(this), ms)
 
 
-	this.$scope.$on('$destroy',function () {
+	this.$scope.$on('$destroy', function () {
 		clearTimeout(timer);
 	}.bind(this))
 
