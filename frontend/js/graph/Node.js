@@ -362,6 +362,25 @@ Node.prototype.checkPos = function () {
 	}
 }
 
+Node.prototype.timeout = function (fn, ms) {
+	if (ms === undefined) {
+		ms = 0;
+	}
+	var timer = setTimeout(function () {
+		if (this.$scope.$$destroyed) {
+			console.log("wtf, scope was destroyed");
+			return;
+		}
+		fn()
+	}.bind(this), ms)
+
+
+	this.$scope.$on('$destroy',function () {
+		clearTimeout(timer);
+	}.bind(this))
+
+};
+
 
 
 module.exports = Node;

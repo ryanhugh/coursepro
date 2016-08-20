@@ -73,7 +73,7 @@ function Macros() {
 				this.SPIDER = true;
 			}
 		}
-		else if (_(command).includes('test')) {
+		else if (_(command).includes('test') && command != 'testAllGraphs') {
 			this.UNIT_TESTS = true;
 		}
 		else {

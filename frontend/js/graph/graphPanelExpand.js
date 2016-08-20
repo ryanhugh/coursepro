@@ -122,7 +122,7 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 			// return callback(err)
 		}
 		//setTimeout 0 because $scope.$update()
-		setTimeout(function () {
+		node.timeout(function () {
 			node.isExpanded = openPanel;
 			node.showSelectPanel = false;
 
@@ -226,7 +226,7 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 			elog(err);
 			return callback();
 		}
-		this.timeout(function () {
+		node.timeout(function () {
 
 
 			// Run the entire big node through all of treeMgr again
@@ -454,7 +454,7 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
 
 GraphPanelExpand.fnName = 'GraphPanelExpand'
-GraphPanelExpand.$inject = ['$document'];
+GraphPanelExpand.$inject = ['$document','$timeout'];
 
 
 GraphPanelExpand.prototype.GraphPanelExpand = GraphPanelExpand;

@@ -160,19 +160,27 @@ function onError(error) {
 // This assumes that the list of files never changes.
 // Support for adding/removing files would need some stuff to change in compileJS(how much?) and 
 // this fn would have to change a bit too
-var getFilesToProcess = memoize(function (includeTests, callback) {
+var getFilesToProcess = memoize(function (config, callback) {
 
 	globby(['common/**/*.js', 'frontend/js/**/*.js']).then(function (files) {
-		if (includeTests) {
-			return callback(null, files);
-		}
-
 		var filesToProccess = [];
 
 		files.forEach(function (file) {
-			if (!_(file).includes('tests')) {
-				filesToProccess.push(file)
-			};
+			if (config.includeTests) {
+				if (!_(file).includes('testAllGraphs')) {
+					filesToProccess.push(file)
+				}
+			}
+			else if (config.testAllGraphs) {
+				if (!_(file).includes('tests') || _(file).includes('testAllGraphs')) {
+					filesToProccess.push(file)
+				}
+			}
+			else {
+				if (!_(file).includes('tests') && !_(file).includes('testAllGraphs')) {
+					filesToProccess.push(file)
+				}
+			}
 		})
 
 		return callback(null, filesToProccess)
@@ -184,16 +192,17 @@ var getFilesToProcess = memoize(function (includeTests, callback) {
 	}.bind(this));;
 })
 
+
 //watch is allways on, to turn off (or add the option back) 
 // turn fullPaths back to shouldWatch and only run bundler = watchify(bundler) is shouldWatch is true
 // http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
-function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
+function compileJSBundle(config, compileRequire, callback) {
 	if (compileRequire === undefined) {
 		compileRequire = false;
 	}
 
 
-	getFilesToProcess(includeTests, function (err, filesToProccess) {
+	getFilesToProcess(config, function (err, filesToProccess) {
 		if (err) {
 			return callback(err)
 		}
@@ -246,7 +255,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 			// and maybe in server.js
 			var name = '';
 			if (compileRequire) {
-				if (includeTests) {
+				if (config.includeTests) {
 					name = 'vender.tests.js'
 				}
 				else {
@@ -254,7 +263,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 				}
 			}
 			else {
-				if (includeTests) {
+				if (config.includeTests) {
 					name = 'app.tests.js'
 				}
 				else {
@@ -281,7 +290,7 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 				stream = stream.pipe(source(name));
 
 
-				if (shouldUglify) {
+				if (config.uglifyJS) {
 					stream = stream.pipe(streamify(uglify({
 						options: {
 							ie_proof: false
@@ -314,15 +323,15 @@ function compileJSBundle(shouldUglify, includeTests, compileRequire, callback) {
 	});
 }
 
-function compileJS(uglifyJS, includeTests, callback) {
+function compileJS(config, callback) {
 	var q = queue();
 
 	q.defer(function (callback) {
-		compileJSBundle(uglifyJS, includeTests, true, callback);
+		compileJSBundle(config, true, callback);
 	});
 
 	q.defer(function (callback) {
-		compileJSBundle(uglifyJS, includeTests, false, callback);
+		compileJSBundle(config, false, callback);
 	});
 
 	q.awaitAll(function (err) {
@@ -333,12 +342,18 @@ function compileJS(uglifyJS, includeTests, callback) {
 
 //production
 gulp.task('uglifyJS', function (callback) {
-	compileJS(true, false, callback);
+	compileJS({
+		uglifyJS: true,
+		includeTests: false
+	}, callback);
 });
 
 //development
 gulp.task('compressJS', function (callback) {
-	compileJS(false, false, callback);
+	compileJS({
+		uglifyJS: false,
+		includeTests: false
+	}, callback);
 });
 
 
@@ -552,12 +567,14 @@ gulp.task('dev', ['compressJS', 'copyStatic', 'watchCopyStatic'], function () {
 	require('./backend/server')
 })
 
-
 gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 
 	// This is called every time the js is rebundled, and we only want to start the karma server once
 	var hasCompiledOnce = false;
-	compileJS(false, true, function () {
+	compileJS({
+		uglifyJS: false,
+		includeTests: true
+	}, function () {
 		if (hasCompiledOnce) {
 			return;
 		}
@@ -568,7 +585,25 @@ gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 			onError('KARMA has crashed!!!!');
 			// process.exit()
 		}).start();
+	});
+});
 
+
+gulp.task('testAllGraphs', ['copyStatic', 'watchCopyStatic'], function () {
+
+	// This is called every time the js is rebundled, and we only want to start the karma server once
+	var hasCompiledOnce = false;
+	compileJS({
+		uglifyJS: false,
+		includeTests: false,
+		testAllGraphs: true
+	}, function () {
+		if (hasCompiledOnce) {
+			return;
+		}
+		hasCompiledOnce = true;
+
+		require('./backend/server')
 	});
 });
 
@@ -587,7 +622,7 @@ var btestRun = batch(function (events, callback) {
 
 
 
-	globby(['backend/**/*.js','common/**/*.js']).then(function (files) {
+	globby(['backend/**/*.js', 'common/**/*.js']).then(function (files) {
 		files.forEach(function (file) {
 			var filePath = path.resolve(file);
 			delete require.cache[filePath]
@@ -632,7 +667,7 @@ var btestRun = batch(function (events, callback) {
 
 gulp.task('btest', function () {
 	btestRun();
-	gulp.watch(['backend/**/*.js','common/**/*.js'], btestRun);
+	gulp.watch(['backend/**/*.js', 'common/**/*.js'], btestRun);
 });
 
 gulp.task('test', ['btest', 'ftest'], function () {});
