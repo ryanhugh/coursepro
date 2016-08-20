@@ -1,11 +1,11 @@
-var macros = require('./backend/macros')
-var collegeNamesDB = require('./backend/databases/collegeNamesDB')
-var termsDB = require('./backend/databases/termsDB')
-var classesDB = require('./backend/databases/classesDB')
-var linksDB = require('./backend/databases/linksDB')
-var sectionsDB = require('./backend/databases/sectionsDB')
-var subjectsDB = require('./backend/databases/subjectsDB')
-var userDB = require('./backend/databases/usersDB')
+var macros = require('../backend/macros')
+var collegeNamesDB = require('../backend/databases/collegeNamesDB')
+var termsDB = require('../backend/databases/termsDB')
+var classesDB = require('../backend/databases/classesDB')
+var linksDB = require('../backend/databases/linksDB')
+var sectionsDB = require('../backend/databases/sectionsDB')
+var subjectsDB = require('../backend/databases/subjectsDB')
+var userDB = require('../backend/databases/usersDB')
 
 
 if (macros.PRODUCTION) {
