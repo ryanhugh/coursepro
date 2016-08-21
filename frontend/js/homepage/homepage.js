@@ -8,7 +8,7 @@ var macros = require('../macros')
 function Homepage() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
 	this.$scope.user = user;
-	this.host = user.getValue(macros.LAST_SELECTED_COLLEGE)
+	this.host = 
 	this.term = user.getValue(macros.LAST_SELECTED_TERM)
 
 
@@ -19,7 +19,10 @@ function Homepage() {
 	user.onAuthFinish(this.constructor.fnName, this.onUserUpdate.bind(this))
 
 	setTimeout(function () {
-		document.getElementById('homepageSearchInputId').focus()
+		var searchBox = document.getElementById('homepageSearchInputId');
+		if (searchBox) {
+			searchBox.focus()
+		}
 	}.bind(this), 0)
 
 }

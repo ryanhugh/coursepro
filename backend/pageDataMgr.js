@@ -279,25 +279,25 @@ PageDataMgr.prototype.main = function () {
 
 
 
-	// this.go(PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched'), function () {
-	// 	console.log('all done!! neu')
-
-	// }.bind(this));
-	// 
-	
-	var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=EECE&crse_numb_in=2160');
-	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
-
-	pageData.dbData.termId = '201710';
-	pageData.dbData.host = 'neu.edu'
-	pageData.dbData.subject = 'EECE'
-
-	console.log(pageData);
-
-	this.go(pageData, function () {
+	this.go(PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched'), function () {
 		console.log('all done!! neu')
 
 	}.bind(this));
+	// 
+	
+	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=EECE&crse_numb_in=2160');
+	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
+
+	// pageData.dbData.termId = '201710';
+	// pageData.dbData.host = 'neu.edu'
+	// pageData.dbData.subject = 'EECE'
+
+	// console.log(pageData);
+
+	// this.go(pageData, function () {
+	// 	console.log('all done!! neu')
+
+	// }.bind(this));
 
 	// this.go(PageData.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'), function () {
 	// 	console.log('all done!! swath')
