@@ -1,9 +1,0 @@
-GET /udcprod8/bwckctlg.p_disp_listcrse?schd_in=%25&term_in=201710&subj_in=EECE&crse_in=2160 HTTP/1.1
-Host: wl11gp.neu.edu
-Connection: keep-alive
-Cache-Control: no-cache
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36
-Postman-Token: 3218382a-dc16-6011-ebb2-2096a4440689
-Accept: */*
-Accept-Encoding: gzip, deflate, sdch
-Accept-Language: en-US,en;q=0.8
