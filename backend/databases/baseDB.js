@@ -112,8 +112,8 @@ BaseDB.prototype.updateDatabase = function (newData, oldData, callback) {
 				console.log("ERROR", err);
 				return callback(err)
 			};
-			if (numReplaced !== 1) {
-				console.log('ERROR: updated !==0?', numReplaced, newData);
+			if (numReplaced.nModified !== 1) {
+				console.log('ERROR: updated !==1?', numReplaced.nModified, newData);
 			};
 			callback(null, newData);
 		}.bind(this));
@@ -248,7 +248,10 @@ BaseDB.prototype.update = function (query, updateQuery, config, callback) {
 	}
 
 	// Monk messes with the _id of the query, so clone it before sending to monk
-	this.table.update(_.cloneDeep(query), updateQuery, mongoConfig, function (err, changeCount) {
+	this.table.update(_.cloneDeep(query), updateQuery, mongoConfig, function (err) {
+		if (err) {
+			return callback(err)
+		}
 		this.find(query, config, function (err, docs) {
 			callback(err, docs);
 		}.bind(this))
