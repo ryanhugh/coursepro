@@ -53,7 +53,7 @@ EllucianSectionParser.prototype.parseElement = function (pageData, element) {
 		var tableData = this.parseTable(element);
 
 		if (!tableData || tableData._rowCount === 0 || !tableData.capacity || !tableData.actual || !tableData.remaining) {
-			console.log('ERROR: invalid table in section parser', tableData, pageData.dbData.url);
+			elog('ERROR: invalid table in section parser', tableData, pageData.dbData.url);
 			return;
 		}
 

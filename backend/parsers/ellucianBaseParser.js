@@ -16,7 +16,7 @@ EllucianBaseParser.prototype.constructor = EllucianBaseParser;
 EllucianBaseParser.prototype.classListURLtoClassInfo = function (catalogURL) {
 	var catalogParsed = new URI(catalogURL);
 	if (!catalogParsed || catalogParsed.host() === '') {
-		console.log('error given invalid catalog url?', catalogURL);
+		elog('error given invalid catalog url?', catalogURL);
 		return;
 	}
 
@@ -24,28 +24,28 @@ EllucianBaseParser.prototype.classListURLtoClassInfo = function (catalogURL) {
 
 	var term_in = query.term_in;
 	if (!term_in || term_in === '') {
-		console.log('error cant get class url, invalid term', catalogURL)
+		elog('error cant get class url, invalid term', catalogURL)
 		return;
 	}
 
 	var subj = query.one_subj;
 	if (!subj || subj === '') {
-		console.log('error, cant get class url, invalid subj', catalogURL);
+		elog('error, cant get class url, invalid subj', catalogURL);
 		return;
 	}
 
 	var startcrse = query.sel_crse_strt;
 	if (!startcrse || startcrse === '') {
-		console.log('error, cant get class url, invalid startcrse', catalogURL);
+		elog('error, cant get class url, invalid startcrse', catalogURL);
 		return;
 	}
 	var endcrse = query.sel_crse_end;
 	if (!endcrse || endcrse === '') {
-		console.log('error, cant get class url, invalid endcrse', catalogURL);
+		elog('error, cant get class url, invalid endcrse', catalogURL);
 		return;
 	}
 	if (startcrse != endcrse) {
-		console.log('error, startcrse!=endcrse??', catalogURL, startcrse, endcrse);
+		elog('error, startcrse!=endcrse??', catalogURL, startcrse, endcrse);
 		return;
 	}
 	return {
@@ -58,7 +58,7 @@ EllucianBaseParser.prototype.classListURLtoClassInfo = function (catalogURL) {
 EllucianBaseParser.prototype.createClassListUrl = function (siteURL, termId, subject) {
 	var baseURL = this.getBaseURL(siteURL);
 	if (!baseURL) {
-		console.log('could not find base url of ', siteURL)
+		elog('could not find base url of ', siteURL)
 		return;
 	};
 
@@ -75,7 +75,7 @@ EllucianBaseParser.prototype.createClassListUrl = function (siteURL, termId, sub
 EllucianBaseParser.prototype.createCatalogUrl = function (siteURL, termId, subject, classId) {
 	var baseURL = this.getBaseURL(siteURL);
 	if (!baseURL) {
-		console.log('could not find base url of ', siteURL)
+		elog('could not find base url of ', siteURL)
 		return;
 	};
 
@@ -100,21 +100,21 @@ EllucianBaseParser.prototype.createCatalogUrl = function (siteURL, termId, subje
 EllucianBaseParser.prototype.createClassURL = function (siteURL, termId, subject, classId) {
 	var baseURL = this.getBaseURL(siteURL);
 	if (!baseURL) {
-		console.log('could not find base url of ', siteURL)
+		elog('could not find base url of ', siteURL)
 		return;
 	};
 
 
 	baseURL = new URI(baseURL);
 
-	// var retVal = new URI(baseURL);
-	var retVal = new URI('bwckctlg.p_disp_listcrse?schd_in=%25')
+	var retVal = new URI('bwckctlg.p_disp_listcrse')
 
 	retVal.setQuery('term_in', termId);
 	retVal.setQuery('subj_in', subject);
 	retVal.setQuery('crse_in', classId);
 
-	return retVal.absoluteTo(baseURL).toString();
+	// URI will encoder the % here to a '%25', which will cause the website to return no results.
+	return retVal.absoluteTo(baseURL).toString() + '&schd_in=%';
 };
 
 EllucianBaseParser.prototype.sectionURLtoInfo = function (sectionURL) {
@@ -124,7 +124,7 @@ EllucianBaseParser.prototype.sectionURLtoInfo = function (sectionURL) {
 	var retVal = {}
 
 	if (!query.crn_in) {
-		console.log('could not find crn_in sectionURL!', sectionURL);
+		elog('could not find crn_in sectionURL!', sectionURL);
 		return;
 	}
 	else {

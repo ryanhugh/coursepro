@@ -133,6 +133,10 @@ Pointer.prototype.request = function (url, options, callback) {
 		options = {}
 	};
 
+	if (_(url).includes('%25')) {
+		elog('!!!', url, options)
+	}
+
 
 	var urlParsed = new URI(url);
 	if (urlParsed.scheme() == 'https' && urlParsed.port() != '' && urlParsed.port() != '443' && !this.didShowHttpsWarning) {

@@ -123,7 +123,6 @@ PageData.prototype.setParser = function (parser) {
 		console.log('error tried to set to invalid parser', parser);
 		return false;
 	}
-
 	if (this.parser) {
 		elog('error, tried to set parser, already have a parser', this.parser.constructor.name, parser.constructor.name);
 		return false;

@@ -161,7 +161,7 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 
 EllucianCatalogParser.prototype.parseElement = function (pageData, element) {
 	if (!pageData.dbData.termId) {
-		console.log('error!!! in ellucianCatalogParser but dont have a terid', pageData)
+		elog('error!!! in ellucianCatalogParser but dont have a termId', pageData)
 		return;
 	};
 
@@ -174,7 +174,7 @@ EllucianCatalogParser.prototype.parseElement = function (pageData, element) {
 
 
 		if (pageData.parsingData.foundClass) {
-			console.log('error found multiple classes ignoring the second one', pageData.dbData.url)
+			elog('error found multiple classes ignoring the second one', pageData.dbData.url)
 			return;
 		};
 

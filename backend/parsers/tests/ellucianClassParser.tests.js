@@ -429,18 +429,3 @@ it('removes dead classes', function () {
 	expect(pageData.deps.length).toBe(0)
 });
 
-
-// it('classUid should work', function() {
-
-// 	var url = 'some url'
-// 	var pageData = PageData.create({
-// 		dbData: {
-// 			url: url,
-// 			desc: '',
-// 			classId: '2160',
-// 			name: 'Embedded Design Enabling Robotics',
-// 		}
-// 	});
-
-
-// });

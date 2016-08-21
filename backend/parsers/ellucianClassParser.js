@@ -420,7 +420,9 @@ EllucianClassParser.prototype.parseElement = function (pageData, element) {
 	if (element.type != 'tag') {
 		return;
 	}
-
+	if (!element.parent) {
+		return;
+	}
 
 	if (element.name == 'a' && element.attribs.href && element.parent.attribs.class == 'ddtitle' && element.parent.attribs.scope == 'colgroup') {
 		this.parseClassData(pageData, element.parent.parent);
