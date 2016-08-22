@@ -23,64 +23,58 @@ console.error = function () {
 }.bind(this)
 
 window.elog = function () {
-	console.error.call(console,arguments)
+	console.error.apply(console, arguments)
 	didError = true;
 }.bind(this)
 
-// if (_(location.hash).includes('testAllGraphs')) {
-	console.log("Running testAllGraphs!");
 
-	var q = queue(1);
+console.log("Running testAllGraphs!");
 
-	Class.downloadResultsGroup({
-		keys: Keys.create({
-			host: 'neu.edu',
-			termId: '201710'
-		})
-	}, function (err, results) {
+var q = queue(1);
 
-		results.forEach(function (row) {
-			q.defer(function (callback) {
-				graph.instance.go({
-					host: row.host,
-					termId: row.termId,
-					subject: row.subject,
-					classUid: row.classUid
-				}, function (err) {
-					if (err) {
-						elog(err)
-						return callback(err)
-					}
-					if (didError) {
-						console.log("Node caused error:",row.host, row.termId, row.subject, row.classUid);
-					}
-					didError = false;
-					// expect(!err).toBe(true)
+Class.downloadResultsGroup({
+	keys: Keys.create({
+		host: 'neu.edu',
+		termId: '201710'
+	})
+}, function (err, results) {
 
-
+	results.forEach(function (row) {
+		q.defer(function (callback) {
+			graph.instance.go({
+				host: row.host,
+				termId: row.termId,
+				subject: row.subject,
+				classUid: row.classUid
+			}, function (err) {
+				if (err) {
+					elog(err)
+					return callback(err)
+				}
+				if (didError) {
+					console.log("Node caused error:", row.host, row.termId, row.subject, row.classUid);
+				}
+				didError = false;
+				// expect(!err).toBe(true)
 
 
 
-					callback()
-				}.bind(this))
+
+
+				callback()
 			}.bind(this))
 		}.bind(this))
+	}.bind(this))
 
-		q.awaitAll(function (err) {
-			if (err) {
-				elog(err)
-			}
-			console.log("DONE!!!");
-			done()
-		}.bind(this))
-
-
+	q.awaitAll(function (err) {
+		if (err) {
+			elog(err)
+		}
+		console.log("DONE!!!");
+		done()
 	}.bind(this))
 
 
+}.bind(this))
 
 
-
-
-
-// }
