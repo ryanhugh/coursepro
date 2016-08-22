@@ -343,7 +343,12 @@ Node.prototype.getWidth = function () {
 		return macros.NODE_EXPANDED_MAX_WIDTH;
 	}
 	else {
-		return Math.max(macros.NODE_EXPANDED_MIN_WIDTH, Math.min(macros.NODE_EXPANDED_MAX_WIDTH, this.class.desc.length))
+		if (this.class.desc) {
+			return Math.max(macros.NODE_EXPANDED_MIN_WIDTH, Math.min(macros.NODE_EXPANDED_MAX_WIDTH, this.class.desc.length))
+		}
+		else {
+			return macros.NODE_EXPANDED_MIN_WIDTH
+		}
 	}
 };
 

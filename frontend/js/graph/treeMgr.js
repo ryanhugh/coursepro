@@ -51,6 +51,25 @@ TreeMgr.prototype.simplifyTree = function (node) {
 		}
 	};
 
+	var isDirty = true;
+	var newPrereqs = [];
+	while (isDirty) {
+		isDirty = false;
+
+		// Make sure there are no prereqs that are RequisiteBranches that only have 1 prereq
+		node.prereqs.values.forEach(function (child) {
+			if (!child.isClass && child.prereqs.values.length === 1) {
+				newPrereqs.push(child.prereqs.values[0])
+				isDirty = true;
+			}
+			else {
+				newPrereqs.push(child)
+			}
+		}.bind(this))
+
+		node.prereqs.values = newPrereqs
+	}
+
 
 	//recursion
 	//This was moved to before remove duplicates because need run the deduplicating code (above) on both this node and all its prereqs
