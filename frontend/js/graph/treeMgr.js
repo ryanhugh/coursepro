@@ -119,7 +119,7 @@ TreeMgr.prototype.dedupeNode = function(node) {
 	//This was moved to before remove duplicates because need run the deduplicating code (above) on both this node and all its prereqs
 	//before getId will work
 	node.prereqs.values.forEach(function (child) {
-		this.simplifyTree(child);
+		this.dedupeNode(child);
 	}.bind(this))
 }
 

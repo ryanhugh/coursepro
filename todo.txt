@@ -3,6 +3,13 @@
 so whats going on is there is a duplicate in the prereeq, and so nothing is simplified because it has 2 prerqs
 so it gets to the dedupe spot and one is removed and then the tree is invalid
 
+Node caused error: neu.edu 201710 EECE 3468_836564747
+app.js:6229 Node caused error: neu.edu 201710 EECE 4572_1968623007
+app.js:6229 Node caused error: neu.edu 201710 EECE 4642_422645136
+app.js:6229 Node caused error: neu.edu 201710 EECE 4644_1205468833
+app.js:6229 Node caused error: neu.edu 201710 EECE 4646_1115006387
+app.js:6229 Node caused error: neu.edu 201710 EECE 5680_388143988
+app.js:6229 Node caused error: neu.edu 201710 EECE 7990_1790949652
 
 
 NOW:
