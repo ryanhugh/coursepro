@@ -40,8 +40,6 @@ homepage.js get search string from homepage search box if this.searchText is '' 
 dont scroll up on search results when scroll down and select a diff result
 
 
-prevet the nodes from spazing on every select
-
 
 
 

@@ -33,6 +33,7 @@ var cssnano = require('gulp-cssnano');
 
 //other stuff
 var _ = require('lodash')
+var moment = require('moment')
 var path = require('path')
 var queue = require('d3-queue').queue;
 var fs = require('fs-extra')
@@ -674,8 +675,20 @@ gulp.task('test', ['btest', 'ftest'], function () {});
 
 
 
-// when spider is running, it is the only thing that could be updating that college at that time
-gulp.task('spider', function () {
+gulp.task('teeOutput', function () {
+	var fileName = path.join('scripts', moment().format('MMMMD_hh.mm') + '_spider.log')
+
+	var access = fs.createWriteStream(fileName);
+	var _processOut = process.stdout.write.bind(process.stdout);
+	process.stdout.write = process.stderr.write = function () {
+		access.write.apply(access, arguments)
+		_processOut.apply(process.stdout, arguments)
+	}.bind(this);
+})
+
+
+// when spider is running, it is the only thing that could be updating that college in mongoDB at that time
+gulp.task('spider', ['teeOutput'], function () {
 	require('./backend/pageDataMgr').main()
 });
 
