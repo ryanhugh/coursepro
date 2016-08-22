@@ -5,12 +5,18 @@
 
         <div class="panel-heading">
 
-            <span ng-show="node.isExpanded" style="float: right;margin-top: -5px;margin-right: -10px;">
+            <span ng-show="node.isExpanded" style="float: right;margin-top: -5px;margin-right: -10px;font-size: 17px;color:white">
 
                 <!-- was 48 -->
                 <!-- <div ng-if="node.class.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = node.class" list-icon='{{macros.SAVED_LIST}}' toggle-sections='true' toggle='class' style="display:inline-block;margin-right: 6px;"></div> -->
 
-                <span ng-if="graphPanelExpand.canClosePanel(node)" class="glyphicon glyphicon-remove" ng-click="graphPanelExpand.closePanel(node);$event.stopPropagation();" aria-hidden="true" style="cursor: pointer;display:inline-block;font-size: 17px;"></span>
+                <a href="{{::node.class.prettyUrl}}" target="_blank">
+                    <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{::node.class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="margin-right:4px;color:white">
+                    </div>
+                </a>
+
+
+                <span ng-if="graphPanelExpand.canClosePanel(node)" class="glyphicon glyphicon-remove" ng-click="graphPanelExpand.closePanel(node);$event.stopPropagation();" aria-hidden="true" style="cursor: pointer;display:inline-block;" uib-tooltip="Close (Esc)" tooltip-class="listIconTooltip" tooltip-append-to-body="true"></span>
                 <!-- <div ng-init="class = node.class" list-icon='{{macros.WATCHING_LIST}}' toggle-sections='true' toggle='class' style="position: absolute;top: 5px;right: 27px;"></div> -->
             </span>
 
@@ -33,22 +39,24 @@
                         {{node.class.desc}}
                     </div>
 
-                    <div style="white-space: normal;margin-bottom:10px;line-height:15px">
-                        Prerequisites: {{node.class.getPrereqsString()}}
-                        <br/>
-                        Corequisites: {{node.class.getCoreqsString()}}
-                    </div>
-
-
-
-
-
-                    <div style="text-align: center;margin-bottom: -20px;">
-                        <a class="linkToClassWatchModel" ng-click="graph.openWatchModel(this)">Get notified if this class changes
-                            <br> or if any seats open up!</a>
+                    <div style="text-align: center;margin-bottom: -30px;">
+                        <div style="color: #888888;font-size: 30px;display: inline-block;" class="glyphicon glyphicon-envelope"></div>
+                        <a class="linkToClassWatchModel" ng-click="graph.openWatchModel(this)" style="cursor:pointer;display: inline-block;vertical-align: top;margin-left: 5px;color: #333;">Get notified when
+                            <br> seats open up!</a>
                     </div>
                     <div>
-                        <div style="text-align:left;display: inline-block;max-width: 50%;line-height: 15px;">
+                        <div style="text-align: left;display: inline-block;line-height: 15px;width: 35%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap">
+                            Prerequisites: {{node.class.getPrereqsString()}}
+                            <br/> Corequisites: {{node.class.getCoreqsString()}}
+                            <br>
+
+                            <br>
+                        </div>
+                        <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;">
+                            <span ng-if="::node.class.getLastUpdateString()">
+                                Updated {{::node.class.getLastUpdateString()}}
+                            </span>
+                            <br>
                             <span ng-if="node.class.maxCredits">
                                 <span ng-if="node.class.maxCredits === node.class.minCredits">
                                     {{node.class.maxCredits}}
@@ -58,13 +66,6 @@
                                 </span>
                                 credits
                             </span>
-                            <br>
-                            <span ng-if="::node.class.getLastUpdateString()">
-                                Updated {{::node.class.getLastUpdateString()}}
-                            </span>
-                        </div>
-                        <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;">
-                            <a target="_blank" href="{{node.class.prettyUrl}}">View on {{node.class.host}}</a>
                         </div>
                     </div>
 
@@ -165,10 +166,8 @@
 
                             <td>
                                 <a href="{{::section.url}}" target="_blank">
-
-                                    <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{::node.class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                    <div style="color:black" class="glyphicon glyphicon-globe" uib-tooltip="View on {{::node.class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
                                     </div>
-
                                 </a>
                             </td>
                             <!-- 
