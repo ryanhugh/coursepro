@@ -632,7 +632,7 @@ Graph.prototype.getCollegeName = function () {
 
 
 Graph.prototype.openWatchModel = function ($scope) {
-	WatchClassesModel.open(this, $scope.tree)
+	WatchClassesModel.open(this, $scope.node)
 };
 
 

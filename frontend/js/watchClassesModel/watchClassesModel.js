@@ -48,12 +48,15 @@ function WatchClassesModel() {
 }
 
 WatchClassesModel.fnName = 'WatchClassesModel'
-WatchClassesModel.$inject = ['$scope', '$uibModalInstance', '$timeout', 'tree']
+WatchClassesModel.$inject = ['$scope', '$uibModalInstance', '$timeout', 'node']
 
 //called from controllers wanting to open this
-WatchClassesModel.open = function (caller, tree) {
+WatchClassesModel.open = function (caller, node) {
 	if (!caller.$uibModal) {
 		elog('tried to open a WatchClassesModel but caller does not have a $uibModal')
+	}
+	if (!node) {
+		elog()
 	}
 
 	caller.$uibModal.open({
@@ -61,13 +64,13 @@ WatchClassesModel.open = function (caller, tree) {
 		templateUrl: directiveMgr.getHTMLPathFromClass(WatchClassesModel),
 		controller: WatchClassesModel,
 		resolve: {
-			tree: tree
+			node: node
 		}
 	})
 };
 
 WatchClassesModel.prototype.addClassToWatchList = function () {
-	user.addToList(macros.WATCHING_LIST, [this.tree], this.tree.sections, function (err, msg) {
+	user.addToList(macros.WATCHING_LIST, [this.node], this.node.class.sections, function (err, msg) {
 
 		this.error = false;
 
@@ -75,8 +78,8 @@ WatchClassesModel.prototype.addClassToWatchList = function () {
 			this.error = true;
 			this.subscribeMsg = err;
 		}
-		else if (this.tree.name) {
-			this.subscribeMsg = 'Successfully registered for updates on ' + this.tree.name + '!'
+		else if (this.node.class.name) {
+			this.subscribeMsg = 'Successfully registered for updates on ' + this.node.class.name + '!'
 		}
 		else {
 			this.subscribeMsg = 'Successfully registered for updates!'
@@ -90,7 +93,7 @@ WatchClassesModel.prototype.addClassToWatchList = function () {
 
 WatchClassesModel.prototype.removeClassFromWatchList = function () {
 
-	user.removeFromList(macros.WATCHING_LIST, [this.tree], this.tree.sections, function (err, msg) {
+	user.removeFromList(macros.WATCHING_LIST, [this.node], this.node.class.sections, function (err, msg) {
 		var string = '';
 		if (err) {
 			this.unsubscribeMsg = err

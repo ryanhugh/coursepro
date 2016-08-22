@@ -443,9 +443,7 @@ User.prototype.sendRequest = function (config, callback) {
 	}.bind(this))
 };
 
-
-//download user data
-User.prototype.download = memoize(function (callbackOrConfig, callback) {
+User.prototype.download = function (callbackOrConfig, callback) {
 	var config = {};
 
 	if (typeof callbackOrConfig == 'function') {
@@ -460,6 +458,13 @@ User.prototype.download = memoize(function (callbackOrConfig, callback) {
 		callback = function () {}
 	};
 
+
+	this.internalDownload(config, callback)
+};
+
+
+//download user data
+User.prototype.internalDownload = memoize(function (config, callback) {
 	if (this.dataStatus === macros.DATASTATUS_DONE) {
 		return callback(null, this)
 	};
@@ -837,7 +842,6 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 
 		if (initClassCount == finalClassCount && initSectionCount == finalSectionCount) {
 			console.log("warning only added classes that already existed, still telling server");
-			// return callback()
 		};
 
 		if (this.getAuthenticated()) {
