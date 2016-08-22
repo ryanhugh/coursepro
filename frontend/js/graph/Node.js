@@ -1,6 +1,6 @@
 'use strict';
-
 var _ = require('lodash')
+
 var macros = require('../macros')
 var Class = require('../data/Class')
 
@@ -123,7 +123,7 @@ Node.create = function (aClass) {
 
 
 // its better to return a random number than to return null in case of error
-Node.prototype.getId = function () {
+Node.prototype.getIdInternal = function () {
 	if (this.isClass) {
 		if (this.class._id) {
 			return this.class._id;
@@ -175,6 +175,13 @@ Node.prototype.getId = function () {
 		}
 		return id
 	}
+};
+
+Node.prototype.getId = function() {
+	if (!this._id) {
+		this._id = this.getIdInternal()
+	}
+	return this._id;
 };
 
 

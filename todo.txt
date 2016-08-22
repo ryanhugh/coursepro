@@ -1,5 +1,8 @@
 
 
+so whats going on is there is a duplicate in the prereeq, and so nothing is simplified because it has 2 prerqs
+so it gets to the dedupe spot and one is removed and then the tree is invalid
+
 
 
 NOW:

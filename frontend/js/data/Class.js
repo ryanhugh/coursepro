@@ -457,7 +457,7 @@ Class.prototype.getPrereqsString = function () {
 			}
 		}
 		//Ghetto fix until this tree is simplified
-		else if (childBranch.prereqs.values.length === 1) {
+		else if (_.uniq(childBranch.prereqs.values).length === 1) {
 			retVal.push(childBranch.getPrereqsString())
 		}
 		else {

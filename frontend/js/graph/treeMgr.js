@@ -23,10 +23,10 @@ TreeMgr.prototype.simplifyTree = function (node) {
 
 	//if values is only 1 long to a circle, delete circle and bring lines straight to parent
 	//if values is only 1 long from panel to circle, same as above
-	if (node.prereqs.values.length == 1) {
+	while (node.prereqs.values.length == 1 && !node.prereqs.values[0].isClass) {
 		if (!node.prereqs.values[0].isClass) {
 			node.prereqs.type = node.prereqs.values[0].prereqs.type;
-			node.prereqs.values = node.prereqs.values[0].prereqs.values;
+			node.prereqs.values = node.prereqs.values[0].prereqs.values.slice(0);
 		}
 
 		if (!node.isClass) {
@@ -41,7 +41,12 @@ TreeMgr.prototype.simplifyTree = function (node) {
 
 			//then copy up all the child values
 			for (var attrName in child) {
-				node[attrName] = child[attrName]
+				if (Array.isArray(child[attrName])) {
+					node[attrName] = child[attrName].slice(0)
+				}
+				else {
+					node[attrName] = child[attrName]
+				}
 			}
 		}
 	};
@@ -54,20 +59,27 @@ TreeMgr.prototype.simplifyTree = function (node) {
 		this.simplifyTree(child);
 	}.bind(this))
 
+};
+
+TreeMgr.prototype.dedupeNode = function(node) {
+
 	//remove duplicates
-	var newPrereqs = [];
+	// This is a map of the _ids to the child
+	var needsSimplification = false;
+	var newPrereqs = {};
 	node.prereqs.values.forEach(function (child) {
 		var childId = child.getId();
-		for (var i = 0; i < newPrereqs.length; i++) {
-			if (newPrereqs[i].getId() === childId) {
-				child.DELETED3 = true
-				return;
-			}
+		if (newPrereqs[childId]) {
+			needsSimplification = true;
+			newPrereqs[childId].DELETED3 = true
 		}
-		newPrereqs.push(child);
+		newPrereqs[childId] = child
 	}.bind(this))
-	node.prereqs.values = newPrereqs;
+	node.prereqs.values = _.values(newPrereqs);
 
+	if (needsSimplification) {
+		this.simplifyTree(node);
+	}
 
 	//if type of dep is the same, merge cs 2800
 	newPrereqs = [];
@@ -84,11 +96,12 @@ TreeMgr.prototype.simplifyTree = function (node) {
 	node.prereqs.values = newPrereqs
 
 
-	//just changes the single red lines to blue
-	//if there is only 1 option it dosent matter if its "or" or "and"
-	if (node.prereqs.values.length === 1) {
-		node.prereqs.type = 'or'
-	}
+	//recursion
+	//This was moved to before remove duplicates because need run the deduplicating code (above) on both this node and all its prereqs
+	//before getId will work
+	node.prereqs.values.forEach(function (child) {
+		this.simplifyTree(child);
+	}.bind(this))
 }
 
 // one part of the above function that runs after the node injection that changes allParents...
@@ -1126,6 +1139,7 @@ TreeMgr.prototype.go = function (node) {
 
 	// SimplifyTree requires _id's but simplifyIfSelected changes what the _ids whould be generated to so have to update them again
 	this.simplifyTree(node)
+	this.dedupeNode(node)
 	this.simplifyIfSelected(node);
 
 	this.sortTree(node);
