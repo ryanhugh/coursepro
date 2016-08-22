@@ -324,3 +324,41 @@ it('should behave...', function (done) {
 
 
 });
+
+
+it('should remove missing prereqs and dedupe stuf', function () {
+
+	var aClass = Class.create({
+		"classUid": "5000_202147161",
+		"host": "neu.edu",
+		"termId": "201710",
+		"subject": "GE",
+	})
+
+
+	aClass.updateWithData({
+		prereqs:{
+			type:'or',
+			values:[
+			{
+				subject:'HI',
+				classUid:'123'
+			},
+			{
+				subject:'HI',
+				classUid:'123'
+			},
+			{
+				subject:'NO',
+				missing:true,
+				classId:'999'
+			}
+			]
+		}
+	})
+
+	expect(aClass.prereqs.values.length).toBe(1);
+	expect(aClass.prereqs.values[0].subject).toBe('HI')
+	expect(aClass.prereqs.values[0].classUid).toBe('123')
+
+});

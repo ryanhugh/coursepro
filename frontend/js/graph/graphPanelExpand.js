@@ -200,7 +200,10 @@ GraphPanelExpand.prototype.onPanelClick = function(node, callback) {
 	if (node.isExpanded) {
 		return callback()
 	}
-	if (!node.lowestParent || node.isCoreq) {
+	else if (node.class.isString) {
+		this.onPanelSelect(node, callback);
+	}
+	else if (!node.lowestParent || node.isCoreq) {
 		this.openPanel(node, callback);
 	}
 	else {

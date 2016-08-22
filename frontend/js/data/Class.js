@@ -200,12 +200,33 @@ Class.prototype.download = function (callback) {
 Class.prototype.removeMissingClasses = function (data) {
 	if (data.values) {
 		var retVal = [];
+		var subClassesHash = {}
 		data.values.forEach(function (subData) {
 			if (subData.missing) {
 				return;
 			}
+
+			// Check to see if it duplicates any classes already found in this data.values
+			if (subData.subject && subData.classUid) {
+				var key = subData.subject + subData.classUid;
+				if (subClassesHash[key]) {
+					return;
+				}
+				subClassesHash[key] = true;
+			}	
+
+
 			subData = this.removeMissingClasses(subData);
-			retVal.push(subData)
+
+			if (subData.values && subData.type) {
+				// If all the prereqs are missing and were all removed, don't add
+				if (subData.values.length > 0) {
+					retVal.push(subData)
+				}
+			}
+			else {
+				retVal.push(subData)
+			}
 		}.bind(this))
 
 		return {

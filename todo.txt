@@ -1,15 +1,6 @@
 
 
-so whats going on is there is a duplicate in the prereeq, and so nothing is simplified because it has 2 prerqs
-so it gets to the dedupe spot and one is removed and then the tree is invalid
-
-Node caused error: neu.edu 201710 EECE 3468_836564747
-app.js:6229 Node caused error: neu.edu 201710 EECE 4572_1968623007
-app.js:6229 Node caused error: neu.edu 201710 EECE 4642_422645136
-app.js:6229 Node caused error: neu.edu 201710 EECE 4644_1205468833
-app.js:6229 Node caused error: neu.edu 201710 EECE 4646_1115006387
-app.js:6229 Node caused error: neu.edu 201710 EECE 5680_388143988
-app.js:6229 Node caused error: neu.edu 201710 EECE 7990_1790949652
+graph panel expand for expanding !classes needs to be fixed (direct to select if possible, and if not possible to select, nothing)
 
 
 NOW:
@@ -29,10 +20,6 @@ remove prereqsForThisGraph and the other backup prereqs crap savePrereqsForThisG
 BUGS:
 ghetto trig needs improvement
 clear localstorage before user runs and make sure XMLHTTPRequest is mocked out before user is ran too
-http://localhost/#/graph/neu.edu/201710/HIST/4701_1656814500
-http://localhost/#/graph/neu.edu/201710/ARCH/1110_1538310571
- -- HIST 1201_1036195285 exists as a prereq but not as a class
- -- pretty sure this is because prereqClassUids.js dosent' change prereqs that is has already processed and addclassUids was reran after prereqclassuids.js. would need to rerun scrapers to get original classIds in the prereqs, then go through the processors for this to work. 
 http://localhost/#/graph/neu.edu/201710/ENVR/5230_2113370045
  -- how to select classes here?
 optimize the search, look into weight and expand=true and config in backend
