@@ -1,6 +1,6 @@
-
-
-graph panel expand for expanding !classes needs to be fixed (direct to select if possible, and if not possible to select, nothing)
+TODO: refactor backend to use obj instead of _id and let user use backed data
+http://localhost/#/graph/neu.edu/201710/INFO/7275_563324658 (below)
+panel.html make prereqs easier to read
 
 
 NOW:
@@ -19,6 +19,8 @@ remove prereqsForThisGraph and the other backup prereqs crap savePrereqsForThisG
 
 BUGS:
 ghetto trig needs improvement
+http://localhost/#/graph/neu.edu/201710/INFO/7275_563324658
+ -- one of the prereqs is a prereq for another prereq, which is causing an elog
 clear localstorage before user runs and make sure XMLHTTPRequest is mocked out before user is ran too
 http://localhost/#/graph/neu.edu/201710/ENVR/5230_2113370045
  -- how to select classes here?

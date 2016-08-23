@@ -56,9 +56,10 @@ function Macros() {
 				}
 				outputString.push(str)
 			}.bind(this))
- 
+
 			bodyString = {
-				msg: outputString.join('')
+				msg: outputString.join(''),
+				url: location.hash
 			}
 
 			//use a separate calls stack in case this throws an error, it will not affect code that calls this

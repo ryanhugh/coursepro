@@ -46,8 +46,10 @@
                     </div>
                     <div>
                         <div style="text-align: left;display: inline-block;line-height: 15px;width: 35%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap">
-                            Prerequisites: {{node.class.getPrereqsString()}}
-                            <br/> Corequisites: {{node.class.getCoreqsString()}}
+
+                            <span uib-tooltip="Prerequisites: {{node.class.getPrereqsString()}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">Prerequisites: {{node.class.getPrereqsString()}}</span>
+                            <br/> 
+                            <span uib-tooltip="Corequisites: {{node.class.getCoreqsString()}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">Corequisites: {{node.class.getCoreqsString()}}</span>
                             <br>
 
                             <br>

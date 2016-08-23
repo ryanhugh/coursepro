@@ -568,25 +568,34 @@ app.get('/unsubscribe', function (req, res) {
 
 
 //verifies that the given mongo ids and section ids are all valid
-function verifyClassSectionIds(classMongoIds, sectionMongoIds, callback) {
+function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 
 	var q = queue();
+	var classIds = []
+	var sectionIds = [];
 
 	var allValid = true;
 
-	classMongoIds.forEach(function (classMongoId) {
+	classObjects.forEach(function (classObj) {
 		q.defer(function (callback) {
-			classesDB.find({
-				_id: classMongoId
-			}, {
+
+			var keys = Keys.create(classObj, macros.LIST_CLASSES);
+			if (!keys.isValid()) {
+				allValid = false;
+				return callback()
+			}
+
+			classesDB.find(keys.getObj(), {
 				shouldBeOnlyOne: true
 			}, function (err, aClass) {
 				if (err) {
 					console.log("err", err);
 					return callback(err)
 				}
-
-				if (!aClass) {
+				if (aClass) {
+					classIds.push(aClass._id)
+				}
+				else {
 					allValid = false;
 				}
 				callback()
@@ -595,19 +604,27 @@ function verifyClassSectionIds(classMongoIds, sectionMongoIds, callback) {
 	}.bind(this))
 
 
-	sectionMongoIds.forEach(function (sectionMongoId) {
+	sectionObjects.forEach(function (sectionObj) {
 		q.defer(function (callback) {
-			sectionsDB.find({
-				_id: sectionMongoId
-			}, {
+
+			var keys = Keys.create(sectionObj, macros.LIST_SECTIONS)
+			if (!keys.isValid()) {
+				allValid = false;
+				return callback()
+			}
+
+			sectionsDB.find(keys.getObj(), {
 				shouldBeOnlyOne: true
-			}, function (err, sections) {
+			}, function (err, section) {
 				if (err) {
 					console.log("err", err);
 					return callback(err)
 				}
 
-				if (!sections) {
+				if (section) {
+					sectionIds.push(section._id)
+				}
+				else {
 					allValid = false;
 				}
 				callback()
@@ -619,7 +636,7 @@ function verifyClassSectionIds(classMongoIds, sectionMongoIds, callback) {
 		if (err) {
 			return callback(err)
 		}
-		return callback(null, allValid)
+		return callback(null, classIds, sectionIds, allValid)
 	}.bind(this))
 }
 
@@ -627,7 +644,7 @@ function verifyClassSectionIds(classMongoIds, sectionMongoIds, callback) {
 app.post('/addToUserLists', function (req, res) {
 	if (!req.body.loginKey || !req.body.listName || !req.body.classes || !req.body.sections) {
 		res.send(JSON.stringify({
-			error: 'addIdsToLists needs loginKey as json and listName'
+			error: 'addToUserLists needs loginKey as json and listName'
 		}))
 		return;
 	};
@@ -640,7 +657,7 @@ app.post('/addToUserLists', function (req, res) {
 		return;
 	};
 
-	verifyClassSectionIds(req.body.classes, req.body.sections, function (err, allValid) {
+	verifyClassSectionObjs(req.body.classes, req.body.sections, function (err, classIds, sectionIds, allValid) {
 		if (err) {
 			res.send(JSON.stringify({
 				error: 'error',
@@ -658,7 +675,7 @@ app.post('/addToUserLists', function (req, res) {
 		};
 
 		//register for the class
-		usersDB.addIdsToLists(req.body.listName, req.body.classes, req.body.sections, req.body.loginKey, function (err, clientMsg) {
+		usersDB.addIdsToLists(req.body.listName, classIds, sectionIds, req.body.loginKey, function (err, clientMsg) {
 
 			if (err) {
 				console.log('ERROR couldnt add class', req.body.classesMongoIds, ' id to user', req.body.loginKey)
@@ -690,7 +707,7 @@ app.post('/removeFromUserLists', function (req, res) {
 		return;
 	};
 
-	verifyClassSectionIds(req.body.classes, req.body.sections, function (err, allValid) {
+	verifyClassSectionObjs(req.body.classes, req.body.sections, function (err, classIds, sectionIds, allValid) {
 		if (err) {
 			res.send(JSON.stringify({
 				error: 'error',
@@ -708,7 +725,7 @@ app.post('/removeFromUserLists', function (req, res) {
 		};
 
 		//register for the class
-		usersDB.removeIdsFromLists(req.body.listName, req.body.classes, req.body.sections, req.body.loginKey, function (err, clientMsg) {
+		usersDB.removeIdsFromLists(req.body.listName, classIds, sectionIds, req.body.loginKey, function (err, clientMsg) {
 
 			if (err) {
 				console.log('ERROR couldnt add class', req.body.classesMongoIds, ' id to user', req.body.loginKey)

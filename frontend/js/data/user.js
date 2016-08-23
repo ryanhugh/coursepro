@@ -81,7 +81,7 @@ User.prototype.loadFromLocalStorage = function () {
 	if (localStorage.dbData) {
 		var localData = JSON.parse(localStorage.dbData);
 
-		if (localData.loginKey) {
+		if (localData.loginKey && 0) {
 
 			// cool, user logged in with google before, download the rest of the data from the server
 			this.dbData.loginKey = localData.loginKey
@@ -490,47 +490,52 @@ User.prototype.internalDownload = memoize(function (config, callback) {
 		}
 		this.dataStatus = macros.DATASTATUS_DONE;
 
-		if (!user.loginKey) {
-			console.log("didn't get a login key?", user, err)
-			return callback('error')
-		}
-
-		// this.dbData.loginKey = user.loginKey;
-		// this.dbData.email = user.email;
-
-		// Keep a reference to the local lists, and add them after the serverLists have been downloaded
-		var localLists = this.lists;
-		var localVars = this.dbData.vars;
-
-		//copy the attrs to this.dbData
-		for (var attrName in user) {
-			this.dbData[attrName] = user[attrName]
-		}
-
-		// reset lists, because we just changed this.dbData.lists and we need to reload any lists
-		this.lists = {}
-
 		var q = queue();
 
-		// Merge the lists and don't call download callback until server has localLists. 
-		for (var listName in localLists) {
-			q.defer(function (callback) {
-				this.addToList(listName, localLists[listName].classes, localLists[listName].sections, callback);
-			}.bind(this));
-		}
+		this.dbData.loginKey = user.loginKey;
+		this.dbData.email = user.email;
+		if (0) {
 
-		//Merge the vars
-		for (var varName in localVars) {
-			if (this.dbData.vars[varName] && this.dbData.vars[varName] != localVars[varName]) {
-				elog('remove var ' + varName + 'already exists and is set to ' + this.dbData.vars[varName], 'not overrideing to ', localVars[varName])
+			if (!user.loginKey) {
+				console.log("didn't get a login key?", user, err)
+				return callback('error')
 			}
-			else {
+
+
+			// Keep a reference to the local lists, and add them after the serverLists have been downloaded
+			var localLists = this.lists;
+			var localVars = this.dbData.vars;
+
+			//copy the attrs to this.dbData
+			for (var attrName in user) {
+				this.dbData[attrName] = user[attrName]
+			}
+
+			// reset lists, because we just changed this.dbData.lists and we need to reload any lists
+			this.lists = {}
+
+
+			// Merge the lists and don't call download callback until server has localLists. 
+			for (var listName in localLists) {
 				q.defer(function (callback) {
-					this.setValue(varName, localVars[varName], function (err) {
-						callback(err)
-					}.bind(this))
-				}.bind(this))
+					this.addToList(listName, localLists[listName].classes, localLists[listName].sections, callback);
+				}.bind(this));
 			}
+
+			//Merge the vars
+			for (var varName in localVars) {
+				if (this.dbData.vars[varName] && this.dbData.vars[varName] != localVars[varName]) {
+					elog('remove var ' + varName + 'already exists and is set to ' + this.dbData.vars[varName], 'not overrideing to ', localVars[varName])
+				}
+				else {
+					q.defer(function (callback) {
+						this.setValue(varName, localVars[varName], function (err) {
+							callback(err)
+						}.bind(this))
+					}.bind(this))
+				}
+			}
+
 		}
 
 		q.awaitAll(function (err) {
@@ -543,9 +548,12 @@ User.prototype.internalDownload = memoize(function (config, callback) {
 			//remove all triggers on success
 			this.onAuthFinishTriggers = []
 
-			this.onDataStabilize(function (err) {
-				return callback(err, this)
-			}.bind(this))
+			if (!this.hasStabilized) {
+				this.onDataStabilize(function (err) {
+					return callback(err, this)
+				}.bind(this))
+			}
+
 
 		}.bind(this))
 	}.bind(this))
@@ -690,8 +698,7 @@ User.prototype.getAllClassesInLists = function () {
 	for (var listName in this.lists) {
 		this.lists[listName].classes.forEach(function (aClass) {
 
-			//only include if not already in there
-			//cant use _.uniq because there could be different instances of the same class
+			// Only add if not already in there
 			for (var i = 0; i < this.lists[listName].classes.length; i++) {
 				this.lists[listName].classes[i].equals(aClass)
 				return;
@@ -740,6 +747,9 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		var initClassCount = this.lists[listName].classes.length
 		var initSectionCount = this.lists[listName].sections.length
 
+		var sectionObjs = [];
+		var classesObjs = [];
+
 		//add the section, but make sure to not add duplicate section
 		//it could be a different instance of that same section
 		sections.forEach(function (section) {
@@ -751,7 +761,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				}
 			}
 
-			var keys = Keys.create(section)
+			var keys = Keys.create(section, macros.LIST_SECTIONS)
 			var addToDBSections = true;
 			for (var i = 0; i < this.dbData.lists[listName].sections.length; i++) {
 				if (keys.propsEqual(this.dbData.lists[listName].sections[i])) {
@@ -761,6 +771,9 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 			}
 			if (addToSections != addToDBSections) {
 				elog()
+			}
+			if (addToSections || addToDBSections) {
+				sectionObjs.push(keys.getObj())
 			}
 			if (addToSections) {
 				this.lists[listName].sections.push(section);
@@ -797,6 +810,14 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 			}
 			if (addToClasses != addToDBClasses) {
 				elog()
+			}
+			if (addToClasses || addToDBClasses) {
+				if (aClass.isString) {
+					elog('Cant add string to db')
+				}
+				else {
+					classesObjs.push(keys.getObj())
+				}
 			}
 			if (addToClasses) {
 				this.lists[listName].classes.push(aClass);
@@ -844,19 +865,19 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 			console.log("warning only added classes that already existed, still telling server");
 		};
 
+		this.saveData()
 		if (this.getAuthenticated()) {
 			this.sendRequest({
 				url: '/addToUserLists',
 				isMsg: true,
 				body: {
 					listName: listName,
-					classes: classIds,
-					sections: sectionIds
+					classes: classesObjs,
+					sections: sectionObjs
 				}
 			}, callback)
 		}
 		else {
-			this.saveData()
 			return callback()
 		}
 	}.bind(this));
@@ -872,6 +893,9 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 	var initClassCount = this.lists[listName].classes.length
 	var initSectionCount = this.lists[listName].sections.length
 
+	var classObjs = []
+	var sectionObjs = []
+
 	classes.forEach(function (aClass) {
 
 		var classKey;
@@ -880,6 +904,7 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 		}
 		else {
 			classKey = Keys.create(aClass).getObj();
+			classObjs.push(classKey)
 		}
 
 		//remove it from this.lists
@@ -895,6 +920,8 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 
 	sections.forEach(function (section) {
 		var sectionKey = Keys.create(section).getObj();
+
+		sectionObjs.push(sectionKey)
 
 		//remove it from this.lists
 		var matchingSections = _.filter(this.lists[listName].sections, sectionKey);
@@ -930,20 +957,19 @@ User.prototype.removeFromList = function (listName, classes, sections, callback)
 		}
 	}.bind(this))
 
-
+	this.saveData()
 	if (this.getAuthenticated()) {
 		this.sendRequest({
 			url: '/removeFromUserLists',
 			isMsg: true,
 			body: {
 				listName: listName,
-				classes: classIds,
-				sections: sectionIds
+				classes: classObjs,
+				sections: sectionObjs
 			}
 		}, callback)
 	}
 	else {
-		this.saveData()
 		return callback()
 	}
 };
