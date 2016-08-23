@@ -6,6 +6,10 @@ function BaseProcessor() {
 
 }
 
+BaseProcessor.prototype.preUpdateParse = function(query, callback) {
+	return callback()
+};
+
 
 // If config.useClassId, will return {
 // 	'neu.edu201602STAT002':[aClass,aClass]

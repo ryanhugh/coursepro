@@ -22,6 +22,7 @@ var processors = [
 var emailMgr = require('./emailMgr');
 var dbUpdater = require('./databases/updater')
 var classesDB = require('./databases/classesDB')
+var linksDB = require('./databases/linksDB')
 
 
 
@@ -56,44 +57,114 @@ PageDataMgr.prototype.getParsers = function () {
 	return parsers;
 };
 
+
+PageDataMgr.prototype.getQuery = function (pageData) {
+	var query = {
+		host: pageData.dbData.host
+	}
+	var toCopy = ['termId', 'subject', 'classId', 'crn'];
+	toCopy.forEach(function (term) {
+		if (pageData.dbData[term]) {
+			query[term] = pageData.dbData[term]
+		}
+	}.bind(this))
+	return query;
+};
+
 // This is the main starting point for processing a page data. 
 // this completes in two large steps:
-// 1. parse the website (~20-40 min)
+// 1. parse the website (~20-120 min)
 // 2. run the processors (~1 min per processor)
 PageDataMgr.prototype.go = function (pageData, callback) {
-	this.processPageData(pageData, function (err, pageData) {
-		if (err) {
-			console.log("err", err);
-			return callback(err)
-		}
-		// run the processors
 
-		async.eachSeries(processors, function (processor, callback) {
-			console.log("Running", processor.constructor.name);
+	//unless this is the initial starting point the parser will be set when loading from db or from parent
+	if (!pageData.parser && pageData.dbData.url && pageData.findSupportingParser() === false) {
+		return callback("Need parser, or url to get parser and a supporting parser to parse this pagedata", pageData.dbData);
+	}
 
-			var query = {
-				host: pageData.dbData.host
-			}
-			var toCopy = ['termId', 'subject', 'classId', 'crn'];
-			toCopy.forEach(function (term) {
-				if (pageData.dbData[term]) {
-					query[term] = pageData.dbData[term]
-				}
-			}.bind(this))
-			processor.go(query, function (err) {
+	async.waterfall([
+		function (callback) {
+			pageData.loadFromDB(function (err) {
 				if (err) {
-					console.log("ERROR processor", processor, 'errored out', err);
+					elog("error ", err);
+					return callback(err);
+				}
+				callback()
+			}.bind(this))
+		}.bind(this),
+		function (callback) {
+
+
+			// If it has an _id, it was in the database and is currently being updated.
+			// If not, this is the first time this is being parsed. 
+			if (pageData.dbData._id) {
+
+				var query = this.getQuery(pageData)
+
+				// Run the before update hook
+				async.eachSeries(processors, function (processor, callback) {
+					console.log("Running Pre update hook:", processor.constructor.name);
+
+					processor.preUpdateParse(query, function (err) {
+						if (err) {
+							console.log("ERROR processor", processor, 'errored out', err, ' on preUpdateParse');
+							return callback(err)
+						}
+						return callback()
+					}.bind(this))
+				}.bind(this), function (err) {
+					if (err) {
+						console.log("ERROR some processor preUpdateParse failed, aborting", err);
+					}
+					callback(err)
+				}.bind(this))
+			}
+			else {
+				console.log("Not running preupdate hook for ", pageData.dbData.url);
+				return callback()
+			}
+
+		}.bind(this),
+		function (callback) {
+
+			// Run the parsing
+			this.processPageData(pageData, function (err, pageData) {
+				if (err) {
+					elog("err", err);
 					return callback(err)
 				}
 				return callback()
 			}.bind(this))
-		}.bind(this), function (err) {
-			if (err) {
-				console.log("ERROR some processor failed, aborting", err);
-			}
-			callback(err, pageData)
-		}.bind(this))
+		}.bind(this),
+		function (callback) {
 
+			var query = this.getQuery(pageData)
+
+			// Run the processors
+			async.eachSeries(processors, function (processor, callback) {
+				console.log("Running", processor.constructor.name);
+
+				processor.go(query, function (err) {
+					if (err) {
+						console.log("ERROR processor", processor, 'errored out', err);
+						return callback(err)
+					}
+					return callback()
+				}.bind(this))
+			}.bind(this), function (err) {
+				if (err) {
+					console.log("ERROR some processor failed, aborting", err);
+				}
+				callback(err)
+			}.bind(this))
+		}.bind(this)
+
+		// Done
+	], function (err) {
+		if (err) {
+			return callback(err);
+		}
+		callback(null, pageData)
 	}.bind(this))
 };
 
@@ -117,7 +188,7 @@ PageDataMgr.prototype.processPageData = function (pageData, callback) {
 
 	//settting the parser should set the db
 	if (!pageData.database) {
-		console.log('error dont have a url or a db', pageData);
+		elog('error dont have a url or a db', pageData);
 		return callback('no db');
 	}
 
@@ -127,7 +198,7 @@ PageDataMgr.prototype.processPageData = function (pageData, callback) {
 	if (pageData.dbLoadingStatus == pageData.DBLOAD_NONE) {
 		pageData.loadFromDB(function (err) {
 			if (err) {
-				console.log("error ", err);
+				elog("error ", err);
 				return callback(err);
 			}
 			else {
@@ -137,7 +208,7 @@ PageDataMgr.prototype.processPageData = function (pageData, callback) {
 		return;
 	}
 	else if (pageData.dbLoadingStatus == pageData.DBLOAD_RUNNING) {
-		console.log('error, wtf db status is loading in pagedatamgr go');
+		elog('error, wtf db status is loading in pagedatamgr go');
 		return callback('internal error')
 	}
 	else if (pageData.dbLoadingStatus == pageData.DBLOAD_DONE) {
@@ -156,7 +227,7 @@ PageDataMgr.prototype.processPageAfterDbLoad = function (pageData, callback) {
 	//this will happen when parent loaded this from cache with just an _id
 	if (pageData.dbData.url && !pageData.parser) {
 		if (!pageData.findSupportingParser()) {
-			console.log('error cant find parser after second try');
+			elog('error cant find parser after second try');
 			return callback("NOSUPPORT");
 		}
 	}
@@ -168,9 +239,9 @@ PageDataMgr.prototype.processPageAfterDbLoad = function (pageData, callback) {
 	else {
 		pageData.parser.parse(pageData, function (err) {
 			if (err) {
-				console.log('Error, pagedata parse call failed', err)
+				elog('Error, pagedata parse call failed', err)
 				if (pageData.dbData.lastUpdateTime) {
-					console.log('ERROR: url in cache but could not update', pageData.dbData.url, pageData.dbData)
+					elog('ERROR: url in cache but could not update', pageData.dbData.url, pageData.dbData)
 					return callback("NOUPDATE");
 				}
 				else {
@@ -187,14 +258,14 @@ PageDataMgr.prototype.processPageAfterDbLoad = function (pageData, callback) {
 PageDataMgr.prototype.finish = function (pageData, callback) {
 	pageData.processDeps(function (err) {
 		if (err) {
-			console.log('ERROR processing deps', err)
+			elog('ERROR processing deps', err)
 			return callback(err)
 		}
 
 
 		pageData.database.updateDatabaseFromPageData(pageData, function (err, newdbData) {
 			if (err) {
-				console.log('error adding to db?', err);
+				elog('error adding to db?', err);
 				return callback(err);
 			}
 			pageData.dbData = newdbData;
@@ -268,7 +339,7 @@ PageDataMgr.prototype.main = function () {
 	// })
 
 	// // if (!pageData) {
-	// // 	console.log('ERROR unable to create page data with _id of ', classMongoId, '????')
+	// // 	elog('ERROR unable to create page data with _id of ', classMongoId, '????')
 	// // 	return callback('error')
 	// // }
 	// pageData.database = classesDB;
@@ -279,25 +350,29 @@ PageDataMgr.prototype.main = function () {
 
 
 
-	this.go(PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched'), function () {
-		console.log('all done!! neu')
-
-	}.bind(this));
-	// 
-	
-	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=EECE&crse_numb_in=2160');
-	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
-
-	// pageData.dbData.termId = '201710';
-	// pageData.dbData.host = 'neu.edu'
-	// pageData.dbData.subject = 'EECE'
-
-	// console.log(pageData);
-
-	// this.go(pageData, function () {
+	// this.go(PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched'), function () {
 	// 	console.log('all done!! neu')
 
 	// }.bind(this));
+	// 
+
+	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=EECE&crse_numb_in=2160');
+	var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
+
+	pageData.dbData.termId = '201710';
+	pageData.dbData.host = 'neu.edu'
+	pageData.dbData.subject = 'EECE'
+
+	// pageData.database = linksDB;
+	pageData.findSupportingParser()
+
+
+	// console.log(pageData);
+
+	this.go(pageData, function () {
+		console.log('all done!! neu')
+
+	}.bind(this));
 
 	// this.go(PageData.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'), function () {
 	// 	console.log('all done!! swath')
