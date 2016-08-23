@@ -1,7 +1,9 @@
 TODO: refactor backend to use obj instead of _id and let user use backed data
 http://localhost/#/graph/neu.edu/201710/INFO/7275_563324658 (below)
 panel.html make prereqs easier to read
-
+make sure each parser runs quickly when only parsing one class and keep track of orig prereq cause diff yo
+ --- going to change the updater to a processor that has a beforeParsing callback that dumps the db and then a postProcessing (or just the normal callback) that checks against the db. 
+search suggestions
 
 NOW:
 unit tests graph

@@ -65,7 +65,7 @@ BaseDB.prototype.shouldUpdateDB = function (newData, oldData) {
 			if (attrName != 'lastUpdateTime' || macros.VERBOSE) {
 				console.log('updating db because of change in', attrName)
 				if (attrName === 'deps') {
-					console.log(newData[attrName], oldData[attrName]);
+					console.log('Change in deps:',newData[attrName], oldData[attrName]);
 				}
 			};
 
