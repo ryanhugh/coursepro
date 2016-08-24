@@ -277,7 +277,7 @@ GraphPanelExpand.prototype.onKeyDown = function (event) {
 };
 
 GraphPanelExpand.prototype.canClosePanel = function (node) {
-	return node.lowestParent || node.prereqs.values.length > 0
+	return node.lowestParent || node.prereqs.values.length > 0 || node.coreqs.values.length > 0
 }
 
 GraphPanelExpand.prototype.openPanel = function (node, callback) {
@@ -287,7 +287,7 @@ GraphPanelExpand.prototype.openPanel = function (node, callback) {
 	if (node.isExpanded || node.class.isString) {
 
 		elog('openPanel was called and the panel is already open?')
-		if (node.isString) {
+		if (node.class.isString) {
 			return callback();
 		}
 	}

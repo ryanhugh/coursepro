@@ -237,6 +237,26 @@ Class.prototype.removeMissingClasses = function (data) {
 	return data;
 };
 
+Class.prototype.flattenCoreqs = function() {
+	
+	var stack = this.coreqs.values.slice(0);
+	var curr;
+	var classes = []
+
+	while ((curr = stack.pop())) {
+		if (curr instanceof Class) {
+			classes.push(curr)
+		}
+		else {
+			// If it is a requisite branch, the classes needed are under prereqs...
+			stack = stack.concat(curr.prereqs.values.slice(0))
+		}
+	}
+
+	this.coreqs.values = classes;
+};
+
+
 // called once
 Class.prototype.updateWithData = function (config) {
 	if (config instanceof Class) {
@@ -300,6 +320,8 @@ Class.prototype.updateWithData = function (config) {
 			config.coreqs.values.forEach(function (subTree) {
 				this.coreqs.values.push(this.convertServerRequisites(_.cloneDeep(subTree)))
 			}.bind(this))
+
+			this.flattenCoreqs()
 
 			this.coreqs.values.sort(function (a, b) {
 				return a.compareTo(b)
