@@ -126,7 +126,7 @@ EmailMgr.prototype.generateDBDataURL = function (dbData) {
 	var url = []
 
 
-	var urlParts = ['host', 'termId', 'subject', 'classId'];
+	var urlParts = ['host', 'termId', 'subject', 'classUid'];
 
 	for (var i = 0; i <= urlParts.length; i++) {
 		if (dbData[urlParts[i]]) {
@@ -189,8 +189,14 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newDat
 
 	diff.forEach(function (diffAttr) {
 		var diffDescription = this.sectionAttrDescriptions[diffAttr.path[0]]
-		if (diffDescription) {
-			email.push(diffDescription + ' changed<br>')
+		if (!diffDescription) {
+			return;
+		}
+
+		var toAdd = diffDescription + ' changed<br>'
+
+		if (!_(email).includes(toAdd)) {
+			email.push(toAdd)
 			console.log('DIFF of class/section:', diffAttr)
 		}
 	}.bind(this))
@@ -219,7 +225,13 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (toEmails, oldData, newData,
 
 	diff.forEach(function (diffAttr) {
 		var diffDescription = this.classAttrDescriptions[diffAttr.path[0]]
-		if (diffDescription) {
+		if (!diffDescription) {
+			return;
+		}
+
+		var toAdd = diffDescription + ' changed<br>'
+
+		if (!_(email).includes(toAdd)) {
 			email.push(diffDescription + ' changed<br>')
 		}
 	}.bind(this))
