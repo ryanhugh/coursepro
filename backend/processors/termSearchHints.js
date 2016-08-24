@@ -9,6 +9,12 @@ var sectionsDB = require('../databases/sectionsDB')
 var termsDB = require('../databases/termsDB')
 var Keys = require('../../common/Keys')
 
+
+// Genereates the hints to put in the search box for each term
+// could also change this to be most seats capacity instead of most seats taken, or highest avg seat capacity of a class
+// also add where and profs
+
+
 function TermSearchHints() {
 
 }
@@ -92,6 +98,14 @@ TermSearchHints.prototype.go = function (query, callback) {
 		}.bind(this))
 
 		var hints = [highestClasses[0].class.name, highestClasses[1].class.subject + ' ' +  highestClasses[1].class.classId]
+
+		if (query.host === 'neu.edu') {
+			hints.push('Leena Razzaq')
+			hints.push('International Village')
+			hints.push('Physics 1')
+			hints.push('Calculus 2')
+			hints.push('Banking')
+		}
 
 		console.log("Settings search hints to ", hints);
 

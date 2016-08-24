@@ -9,7 +9,7 @@ var macros = require('../macros')
 
 
 function Updater() {
-	
+
 	//don't run when spidering
 	if (macros.SPIDER) {
 		return;
@@ -44,23 +44,8 @@ Updater.prototype.updateClassFromMongoId = function (classMongoId, callback) {
 	}
 	pageData.database = classesDB;
 
-	pageData.loadFromDB(function (err) {
-		if (err) {
-			console.log('error loading from db??', err)
-			return;
-		}
-
-		// console.log('done top level pagedata fetching from db ', pageData)
-		//updatedByParent:true
-		if (!pageData.dbData.url || pageData.dbData.updatedByParent) {
-			console.log('does not have url or updated by parent, skipping', pageData.dbData._id)
-			return callback('skipping class that is updated by parent, fetch that _id to update');
-		};
-
-
-		pageDataMgr.go(pageData, function (err, pageData) {
-			callback(err)
-		}.bind(this));
+	pageDataMgr.go(pageData, function (err, pageData) {
+		callback(err)
 
 	}.bind(this))
 };

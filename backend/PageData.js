@@ -155,7 +155,7 @@ PageData.prototype.loadFromDB = function (callback) {
 
 	if (this.dbLoadingStatus != this.DBLOAD_NONE) {
 		console.log('told to load, but already loaded???')
-		return;
+		return callback();
 	}
 
 	var lookupValues = {}
