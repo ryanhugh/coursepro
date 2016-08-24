@@ -36,51 +36,6 @@ NotifyOnChanges.prototype = Object.create(BaseProcessor.prototype);
 NotifyOnChanges.prototype.constructor = NotifyOnChanges;
 
 
-NotifyOnChanges.prototype.getSectionsAndClasses = function (query, callback) {
-	var classes = []
-	var sections = []
-
-	var q = queue();
-
-	q.defer(function (callback) {
-		classesDB.find(query, {
-			skipValidation: true,
-			shouldBeOnlyOne: false,
-			sanitize: true,
-			removeControllers: true
-		}, function (err, results) {
-			if (err) {
-				return callback(err)
-			}
-			classes = results
-			return callback()
-		}.bind(this))
-	}.bind(this))
-
-	q.defer(function (callback) {
-		sectionsDB.find(query, {
-			skipValidation: true,
-			shouldBeOnlyOne: false,
-			sanitize: true,
-			removeControllers: true
-		}, function (err, results) {
-			if (err) {
-				return callback(err)
-			}
-			sections = results
-			return callback()
-		}.bind(this))
-	}.bind(this))
-
-
-	q.awaitAll(function (err) {
-		if (err) {
-			return callback(err)
-		}
-		return callback(null, classes, sections)
-	}.bind(this))
-
-};
 
 
 NotifyOnChanges.prototype.preUpdateParse = function (query, callback) {

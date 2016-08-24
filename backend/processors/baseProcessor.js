@@ -1,6 +1,8 @@
 'use strict'
+var queue = require('d3-queue').queue
 
 var classesDB = require('../databases/classesDB')
+var sectionsDB = require('../databases/sectionsDB')
 
 function BaseProcessor() {
 
@@ -8,6 +10,52 @@ function BaseProcessor() {
 
 BaseProcessor.prototype.preUpdateParse = function(query, callback) {
 	return callback()
+};
+
+
+BaseProcessor.prototype.getSectionsAndClasses = function (query, callback) {
+	var classes = []
+	var sections = []
+
+	var q = queue();
+
+	q.defer(function (callback) {
+		classesDB.find(query, {
+			skipValidation: true,
+			shouldBeOnlyOne: false,
+			sanitize: true,
+			removeControllers: true
+		}, function (err, results) {
+			if (err) {
+				return callback(err)
+			}
+			classes = results
+			return callback()
+		}.bind(this))
+	}.bind(this))
+
+	q.defer(function (callback) {
+		sectionsDB.find(query, {
+			skipValidation: true,
+			shouldBeOnlyOne: false,
+			sanitize: true,
+			removeControllers: true
+		}, function (err, results) {
+			if (err) {
+				return callback(err)
+			}
+			sections = results
+			return callback()
+		}.bind(this))
+	}.bind(this))
+
+
+	q.awaitAll(function (err) {
+		if (err) {
+			return callback(err)
+		}
+		return callback(null, classes, sections)
+	}.bind(this))
 };
 
 

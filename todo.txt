@@ -1,7 +1,10 @@
 TODO: refactor backend to use obj instead of _id and let user use backed data
 http://localhost/#/graph/neu.edu/201710/INFO/7275_563324658 (below)
+http://localhost/#/graph/neu.edu/201710/CHEM/2319_516153705
 panel.html make prereqs easier to read
 search suggestions
+ -- class name of class with most sections that dosent say Lab in title
+ -- subject + classId of class in 2ed place above ^
 
 NOW:
 unit tests graph
