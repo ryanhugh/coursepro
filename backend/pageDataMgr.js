@@ -14,7 +14,7 @@ var processors = [
 	require('./processors/termStartEndDate'),
 
 	// Add new processors here
-
+	require('./processors/notifyOnChanges'),
 	require('./processors/databaseDumps'),
 	require('./processors/createSearchIndex')
 ]

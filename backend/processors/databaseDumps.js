@@ -93,7 +93,6 @@ DatabaseDumps.prototype.go = function (query, callback) {
 		return;
 	}
 
-
 	var searchQuery = {
 		host: query.host
 	}

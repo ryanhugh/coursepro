@@ -28,21 +28,21 @@ SectionsDB.prototype.isValidLookupValues = function (lookupValues) {
 };
 
 
-SectionsDB.prototype.updateDatabase = function (newData, oldData, callback) {
-	if (!callback) {
-		callback = function () {}
-	}
+// SectionsDB.prototype.updateDatabase = function (newData, oldData, callback) {
+// 	if (!callback) {
+// 		callback = function () {}
+// 	}
 
-	// if nothing changed, return
-	if (!this.shouldUpdateDB(newData, oldData)) {
-		return callback(null, newData);
-	}
+// 	// if nothing changed, return
+// 	if (!this.shouldUpdateDB(newData, oldData)) {
+// 		return callback(null, newData);
+// 	}
 
-	// if someone is watching this class, email them
-	usersDB.sectionUpdated(oldData,newData);
+// 	// if someone is watching this class, email them
+// 	usersDB.sectionUpdated(oldData,newData);
 
-	BaseDB.prototype.updateDatabase.call(this, newData, oldData, callback);
-}
+// 	BaseDB.prototype.updateDatabase.call(this, newData, oldData, callback);
+// }
 
 SectionsDB.prototype.SectionsDB = SectionsDB;
 module.exports = new SectionsDB();

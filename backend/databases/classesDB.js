@@ -30,21 +30,21 @@ ClassesDB.prototype.isValidLookupValues = function (lookupValues) {
 	}
 };
 
-ClassesDB.prototype.updateDatabase = function (newData, oldData, callback) {
-	if (!callback) {
-		callback = function () {}
-	}
+// ClassesDB.prototype.updateDatabase = function (newData, oldData, callback) {
+// 	if (!callback) {
+// 		callback = function () {}
+// 	}
 
-	// if nothing changed, return
-	if (!this.shouldUpdateDB(newData, oldData)) {
-		return callback(null, newData);
-	}
+// 	// if nothing changed, return
+// 	if (!this.shouldUpdateDB(newData, oldData)) {
+// 		return callback(null, newData);
+// 	}
 
-	// if someone is watching this class, email them
-	usersDB.classUpdated(oldData, newData);
+// 	// if someone is watching this class, email them
+// 	// usersDB.classUpdated(oldData, newData);
 
-	BaseDB.prototype.updateDatabase.call(this, newData, oldData, callback);
-}
+// 	BaseDB.prototype.updateDatabase.call(this, newData, oldData, callback);
+// }
 
 
 ClassesDB.prototype.ClassesDB = ClassesDB;

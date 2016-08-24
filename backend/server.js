@@ -582,6 +582,7 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 			var keys = Keys.create(classObj, macros.LIST_CLASSES);
 			if (!keys.isValid()) {
 				allValid = false;
+				console.log("Invalid class obj given!", classObj, keys);
 				return callback()
 			}
 
@@ -596,6 +597,7 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 					classIds.push(aClass._id)
 				}
 				else {
+					console.log("Could not find with class keys!", keys.getObj());
 					allValid = false;
 				}
 				callback()
@@ -610,6 +612,7 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 			var keys = Keys.create(sectionObj, macros.LIST_SECTIONS)
 			if (!keys.isValid()) {
 				allValid = false;
+				console.log("Invalid section obj given!", sectionObj, keys);
 				return callback()
 			}
 
@@ -625,6 +628,7 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 					sectionIds.push(section._id)
 				}
 				else {
+					console.log("Could not find with section keys!", keys.getObj());
 					allValid = false;
 				}
 				callback()

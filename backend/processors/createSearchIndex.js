@@ -23,6 +23,12 @@ CreateSearchIndex.prototype.constructor = CreateSearchIndex;
 
 
 CreateSearchIndex.prototype.go = function (query, callback) {
+	if (query.subject || query.classUid || query.classId) {
+		console.log("Not creating another search index when running on a subject or a class");
+		return callback()
+	}
+
+
 	var q = queue()
 
 	var sections;

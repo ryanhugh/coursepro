@@ -4,6 +4,7 @@ var async = require('async');
 var googleAuthLibrary = require('google-auth-library')
 var queue = require('d3-queue').queue;
 var diff = require('deep-diff').diff
+var memoize = require('../../common/memoize')
 
 var macros = require('../macros')
 var BaseDB = require('./baseDB').BaseDB;
@@ -15,6 +16,9 @@ var OAuth2 = new googleAuth.OAuth2()
 
 function UsersDB() {
 
+	// How long to tkeep a cache of user data, in min. 
+	this.CLASS_WATCH_CACHE_TIMEOUT = 5;
+
 	//cache of user data
 	//maps class._id to users
 	//and section._id to users
@@ -22,7 +26,6 @@ function UsersDB() {
 		classes: {},
 		sections: {},
 		lastUpdateTime: 0,
-		timeout: 300000 // 5 min
 	};
 
 
@@ -477,61 +480,58 @@ UsersDB.prototype.authenticateUser = function (idToken, callback) {
 	}.bind(this));
 }
 
-UsersDB.prototype.getUsersWatchCache = function (callback) {
+UsersDB.prototype.getUsersWatchCache = memoize(function (callback) {
 
-	var currTime = new Date().getTime()
+	console.log("Generating the user watch cache");
 
-	//if class list is too old
-	if (this.classWatchCache.lastUpdateTime + this.classWatchCache.timeout < currTime) {
-		this.find({}, {
-			skipValidation: true,
-			shouldBeOnlyOne: false
-		}, function (err, results) {
-			if (err) {
-				return callback(err);
+	this.find({}, {
+		skipValidation: true,
+		shouldBeOnlyOne: false
+	}, function (err, results) {
+		if (err) {
+			return callback(err);
+		};
+		this.classWatchCache.classes = {};
+		this.classWatchCache.sections = {};
+
+		results.forEach(function (user) {
+			if (!user.lists || !user.lists[macros.WATCHING_LIST]) {
+				return;
 			};
-			this.classWatchCache.classes = {};
-			this.classWatchCache.sections = {};
-
-			results.forEach(function (user) {
-				if (!user.lists || !user.lists[macros.WATCHING_LIST]) {
-					return;
-				};
 
 
-				user.lists[macros.WATCHING_LIST].classes.forEach(function (_id) {
+			user.lists[macros.WATCHING_LIST].classes.forEach(function (_id) {
 
-					//create the list if it dosent exist
-					if (!this.classWatchCache.classes[_id]) {
-						this.classWatchCache.classes[_id] = []
-					}
+				//create the list if it dosent exist
+				if (!this.classWatchCache.classes[_id]) {
+					this.classWatchCache.classes[_id] = []
+				}
 
-					//add this user to the list
-					this.classWatchCache.classes[_id].push(user)
-				}.bind(this))
+				//add this user to the list
+				this.classWatchCache.classes[_id].push(user)
+			}.bind(this))
 
-				user.lists[macros.WATCHING_LIST].sections.forEach(function (_id) {
+			user.lists[macros.WATCHING_LIST].sections.forEach(function (_id) {
 
 
-					if (!this.classWatchCache.sections[_id]) {
-						this.classWatchCache.sections[_id] = []
-					}
+				if (!this.classWatchCache.sections[_id]) {
+					this.classWatchCache.sections[_id] = []
+				}
 
-					//add this user to the list
-					this.classWatchCache.sections[_id].push(user)
-
-				}.bind(this))
+				//add this user to the list
+				this.classWatchCache.sections[_id].push(user)
 
 			}.bind(this))
 
-			this.classWatchCache.lastUpdateTime = currTime
-			callback(null, this.classWatchCache)
 		}.bind(this))
-	}
-	else {
+
 		callback(null, this.classWatchCache)
-	}
-};
+	}.bind(this))
+}, function () {
+
+	// Cache the return value of this function for 5 min
+	return Math.floor(Date.now() / (1000 * 60 * this.CLASS_WATCH_CACHE_TIMEOUT))
+}.bind(this));
 
 //users id map is this.classWatchCache.classes or this.classWatchCache.sections
 UsersDB.prototype.rowUpdatedTrigger = function (oldData, newData, idUsersMap, callback) {

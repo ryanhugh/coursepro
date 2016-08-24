@@ -441,8 +441,15 @@ PageData.prototype.setData = function (name, value) {
 		}
 
 		if (!_.isEqual(this.dbData[name], value)) {
+
+			var propsToIgnore = {
+				'lastUpdateTime': true,
+				'prereqs': true,
+				'coreqs': true
+			}
+
 			//only log change in last update time if in verbose mode
-			if (name != 'lastUpdateTime' || macros.VERBOSE) {
+			if (propsToIgnore[name]) {
 				console.log('warning, overriding pageData.dbData.' + name + ' from:', JSON.stringify(this.dbData[name]), 'to:', JSON.stringify(value))
 			}
 		}
