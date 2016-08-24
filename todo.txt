@@ -1,8 +1,7 @@
 TODO: refactor backend to use obj instead of _id and let user use backed data
 panel.html make prereqs easier to read
-search suggestions
- -- class name of class with most sections that dosent say Lab in title
- -- subject + classId of class in 2ed place above ^
+figure out why auto updater is not working
+
 
 NOW:
 unit tests graph
