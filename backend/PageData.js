@@ -449,7 +449,7 @@ PageData.prototype.setData = function (name, value) {
 			}
 
 			//only log change in last update time if in verbose mode
-			if (propsToIgnore[name]) {
+			if (!propsToIgnore[name]) {
 				console.log('warning, overriding pageData.dbData.' + name + ' from:', JSON.stringify(this.dbData[name]), 'to:', JSON.stringify(value))
 			}
 		}
