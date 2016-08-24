@@ -110,7 +110,7 @@ app.use(function (req, res, next) {
 app.use(function (req, res, next) {
 
 	//send redirect request
-	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost', '10.0.0.7']).includes(req.hostname)) {
+	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost', '10.0.0.7']).includes(req.hostname) && 0) {
 
 		logData(req, {
 			msg: {
@@ -260,7 +260,7 @@ app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 	dns.reverse(ip, function (err, results) {
 		if (err) {
 			elog(ip, err);
-			res.send('{"error":"internal server error :/"}' + ip + err + JSON.stringify(req.body));
+			res.send('{"error":"internal server error :/"}');
 			return;
 		}
 		if (results.length < 1) {

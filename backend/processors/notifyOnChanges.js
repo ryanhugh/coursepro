@@ -89,7 +89,7 @@ NotifyOnChanges.prototype.go = function (query, callback) {
 
 			// This could fire if classes were removed/added during parsing, but should not fire too many times each parsing
 			if (!classHash[hash]) {
-				console.log("Dont have updated class in dump??", hash, newClass);
+				console.log("Dont have updated class in dump??", hash, newClass, classHash);
 			}
 
 			q.defer(function (callback) {
@@ -113,6 +113,9 @@ NotifyOnChanges.prototype.go = function (query, callback) {
 		}.bind(this))
 
 		q.awaitAll(function (err) {
+
+			this.classes = [];
+			this.sections = []
 			return callback(err)
 		}.bind(this))
 

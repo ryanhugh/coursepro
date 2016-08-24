@@ -18,12 +18,12 @@ body {
                 <p class="fp-billboard-copy" style="font-size: 28px;">Plan For Success</p>
 
 
-                <p ng-if="!user.getValue(macros.LAST_SELECTED_TERM)" class="fp-billboard-copy" style="font-size: 20px;padding-top: 13px;">
-                    <a ng-click="homepage.openSelectors()">Select your College></a>
+                <p ng-if="!user.getValue(macros.LAST_SELECTED_COLLEGE)" class="fp-billboard-copy" style="font-size: 20px;padding-top: 13px;">
+                    <a ng-click="homepage.openCollegeSelector()">Select your College></a>
                 </p>
 
-                <p ng-if="!user.getValue(macros.LAST_SELECTED_COLLEGE)" class="fp-billboard-copy" style="font-size: 20px;padding-top: 13px;">
-                    <a ng-click="homepage.openSelectors()">Select your Term></a>
+                <p ng-if="!user.getValue(macros.LAST_SELECTED_TERM) && user.getValue(macros.LAST_SELECTED_COLLEGE)" class="fp-billboard-copy" style="font-size: 20px;padding-top: 13px;">
+                    <a ng-click="homepage.openTermSelector()">Select your Term></a>
                 </p>
 
                 <div ng-if="user.getValue(macros.LAST_SELECTED_TERM) && user.getValue(macros.LAST_SELECTED_COLLEGE)" class="input-group" style="margin: 0 auto;">
