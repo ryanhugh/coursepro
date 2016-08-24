@@ -1,8 +1,6 @@
 TODO: refactor backend to use obj instead of _id and let user use backed data
 http://localhost/#/graph/neu.edu/201710/INFO/7275_563324658 (below)
 panel.html make prereqs easier to read
-make sure each parser runs quickly when only parsing one class and keep track of orig prereq cause diff yo
- --- going to change the updater to a processor that has a beforeParsing callback that dumps the db and then a postProcessing (or just the normal callback) that checks against the db. 
 search suggestions
 
 NOW:
@@ -428,10 +426,11 @@ settings:
 ------else match all
 ------if class is not hon only match non hon
 -- hide broken classes (classes that don't exist in the db but are listed as a prereq) (like all the classes that make that warning appear)
+-- show prereqs of light blue classes
 -- hide classes with no sections
 -- maximum number of classes (419 just too much...)
 -- depth max
--- ignore graduate classes?
+-- ignore classes with classId > some number? for neu masters is > 5000 idk about other colleges
 later:
 -- d3 vs wide mode?
 -- render up and down/ or just down or just up

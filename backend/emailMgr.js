@@ -201,6 +201,11 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newDat
 		}
 	}.bind(this))
 
+	if (email.length === 0) {
+		console.log("Only properties not whitelisted changed, not sending email");
+		return;
+	}
+
 
 	email.push('<br><a href="https://coursepro.io/#' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
 
@@ -235,6 +240,11 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (toEmails, oldData, newData,
 			email.push(diffDescription + ' changed<br>')
 		}
 	}.bind(this))
+	
+	if (email.length === 0) {
+		console.log("Only properties not whitelisted changed, not sending email");
+		return;
+	}
 
 	email.push('<br><a href="https://coursepro.io/#' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
 
