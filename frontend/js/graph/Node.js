@@ -177,7 +177,7 @@ Node.prototype.getIdInternal = function () {
 	}
 };
 
-Node.prototype.getId = function() {
+Node.prototype.getId = function () {
 	if (!this._id) {
 		this._id = this.getIdInternal()
 	}
@@ -382,6 +382,10 @@ Node.prototype.checkPos = function () {
 	}
 }
 
+
+// Starts a timer for a given number of ms.
+// The timer is canceled if this node's $scope is destroyed before the timer is fired
+// Use when starting timers that depend on the existace of this node when they are fired. 
 Node.prototype.timeout = function (fn, ms) {
 	if (ms === undefined) {
 		ms = 0;
@@ -398,8 +402,32 @@ Node.prototype.timeout = function (fn, ms) {
 	this.$scope.$on('$destroy', function () {
 		clearTimeout(timer);
 	}.bind(this))
-
 };
+
+
+
+// Returns true if the given node is a direct prereq, or a prereq of any prereq (grandchild prereq)
+Node.prototype.containsClassAsPrereq = function (node) {
+	var contains = false;
+	// var nodeId = node.getId()
+
+	for (var i = 0; i < this.prereqs.values.length; i++) {
+		var child = this.prereqs.values[i]
+		if (child === node) {
+			return true;
+		}
+	}
+
+	for (var i = 0; i < this.prereqs.values.length; i++) {
+		var child = this.prereqs.values[i]
+		if (child.containsClassAsPrereq(node)) {
+			return true;
+		}
+	}
+
+	return false;
+};
+
 
 
 

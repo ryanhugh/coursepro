@@ -192,11 +192,11 @@ GraphPanelExpand.prototype.closePanelPrompt = function (node, callback) {
 	}.bind(this), 0)
 };
 
-GraphPanelExpand.prototype.onPanelClick = function(node, callback) {
+GraphPanelExpand.prototype.onPanelClick = function (node, callback) {
 	if (!callback) {
-		callback = function(){}
+		callback = function () {}
 	}
-	
+
 	if (node.isExpanded) {
 		return callback()
 	}
@@ -245,10 +245,16 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 				// After all the graph stuff is done, shink this panel back to avoid the redraw
 				node.showSelectPanel = false;
 				node.isExpanded = false;
+				clearTimeout(node.graphPanelPromptTimeout);
 				node.$scope.$apply();
+
+				if (!Graph.instance.rootNode.containsClassAsPrereq(node)) {
+					console.log("Not taking any action because this node was removed by treeMgr");
+					return;
+				}
+
 				node.updateWidth();
 				node.updateHeight()
-				clearTimeout(node.graphPanelPromptTimeout);
 				callback()
 			}.bind(this))
 		}.bind(this))
@@ -457,7 +463,7 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
 
 GraphPanelExpand.fnName = 'GraphPanelExpand'
-GraphPanelExpand.$inject = ['$document','$timeout'];
+GraphPanelExpand.$inject = ['$document', '$timeout'];
 
 
 GraphPanelExpand.prototype.GraphPanelExpand = GraphPanelExpand;
