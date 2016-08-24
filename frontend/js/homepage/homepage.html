@@ -1,3 +1,9 @@
+<style type="text/css">
+body {
+    overflow: hidden
+}
+</style>
+
 <div search style="z-index: 2;position: relative;" ng-show="homepage.showSearch">
 </div>
 
@@ -21,7 +27,7 @@
                 </p>
 
                 <div ng-if="user.getValue(macros.LAST_SELECTED_TERM) && user.getValue(macros.LAST_SELECTED_COLLEGE)" class="input-group" style="margin: 0 auto;">
-                    <input type="text" id="homepageSearchInputId" class="form-control" placeholder="Search for..." ng-model="homepage.searchText" ng-change="homepage.focusSearch($event)" style="width: 300px;height: 45px;">
+                    <input type="text" id="homepageSearchInputId" class="form-control" placeholder="{{homepage.getPlaceholderText()}}" ng-model="homepage.searchText" ng-change="homepage.focusSearch($event)" style="width: 300px;height: 45px;margin-top: 4px;">
                 </div>
 
             </div>

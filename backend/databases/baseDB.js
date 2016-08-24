@@ -246,9 +246,13 @@ BaseDB.prototype.update = function (query, updateQuery, config, callback) {
 
 		mongoConfig[attrName] = config[attrName]
 	}
+	
+	if (!config.shouldBeOnlyOne) {
+		mongoConfig.multi = true
+	}
 
 	// Monk messes with the _id of the query, so clone it before sending to monk
-	this.table.update(_.cloneDeep(query), updateQuery, mongoConfig, function (err) {
+	this.table.update(_.cloneDeep(query), updateQuery, mongoConfig, function (err, a) {
 		if (err) {
 			return callback(err)
 		}

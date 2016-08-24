@@ -4,6 +4,7 @@ var BaseDirective = require('../BaseDirective')
 var search = require('../search/search')
 var user = require('../data/user')
 var macros = require('../macros')
+var Term = require('../data/Term')
 
 function Homepage() {
 	BaseDirective.prototype.constructor.apply(this, arguments);
@@ -12,6 +13,8 @@ function Homepage() {
 	this.searchText = ''
 
 	this.showSearch = false;
+
+	// this.placeholderText = 'Search for...'
 
 	user.onAuthFinish(this.constructor.fnName, this.onUserUpdate.bind(this))
 
@@ -33,15 +36,43 @@ Homepage.isPage = true
 Homepage.prototype = Object.create(BaseDirective.prototype);
 Homepage.prototype.constructor = Homepage;
 
-Homepage.prototype.getHost = function() {
-	return user.getValue(macros.LAST_SELECTED_TERM);
+Homepage.prototype.getPlaceholderText = function () {
+	return this.placeholderText
 };
 
-
 Homepage.prototype.onUserUpdate = function () {
-	setTimeout(function () {
-		this.$scope.$apply()
-	}.bind(this), 0)
+	// setTimeout(function () {
+
+		var host = user.getValue(macros.LAST_SELECTED_COLLEGE)
+		var termId = user.getValue(macros.LAST_SELECTED_TERM)
+
+		if (host && termId) {
+
+			var term = Term.create({
+				host: host,
+				termId: termId
+			})
+
+			term.download(function (err, term) {
+				if (err) {
+					return;
+				}
+
+				if (term.searchHints) {
+					this.placeholderText = 'Search "' + term.searchHints[Math.floor(Math.random()*term.searchHints.length)] + '" ...'
+				}
+				else {
+					this.placeholderText = 'Search for...'
+				}
+
+				setTimeout(function () {
+					this.$scope.$apply()
+				}.bind(this), 0)
+			}.bind(this))
+		}
+
+		// this.$scope.$apply()
+	// }.bind(this), 0)
 };
 
 

@@ -20,14 +20,16 @@ TermSearchHints.prototype.constructor = TermSearchHints;
 
 
 TermSearchHints.prototype.go = function (query, callback) {
+	if (query.termId || query.subject || query.classId || query.classUid) {
+		return callback()
+	}
 
 	this.getSectionsAndClasses(query, function (err, classes, sections) {
 		if (err) {
 			return callback(err)
 		}
 
-		var highestSections = [];
-
+		var highestClasses = [];
 		var sectionHash = {}
 
 		sections.forEach(function (section) {
@@ -61,12 +63,7 @@ TermSearchHints.prototype.go = function (query, callback) {
 				}).getHash()
 
 
-
 				var section = sectionHash[hash];
-
-
-
-
 				if (!section.meetings || section.meetings.length === 0) {
 					return;
 				}
@@ -79,89 +76,35 @@ TermSearchHints.prototype.go = function (query, callback) {
 				score: score
 			}
 
-			if (highestSections.length < 2) {
-				highestSections.push(thisObj)
+			if (highestClasses.length < 2) {
+				highestClasses.push(thisObj)
 				return;
 			}
 			else {
 
-				if (score > highestSections[0].score) {
-					highestSections[0] = thisObj
+				if (score > highestClasses[0].score) {
+					highestClasses[0] = thisObj
 				}
-				else if (score > highestSections[1].score) {
-					highestSections[1] = thisObj
+				else if (score > highestClasses[1].score) {
+					highestClasses[1] = thisObj
 				}
 			}
 		}.bind(this))
 
-		console.log(highestSections[0].class.name, highestSections[1].class.subject, highestSections[1].class.classId, highestSections[1].class.name);
-		console.log(highestSections[0].score, highestSections[1].score);
+		var hints = [highestClasses[0].class.name, highestClasses[1].class.subject + ' ' +  highestClasses[1].class.classId]
 
+		console.log("Settings search hints to ", hints);
 
-		// var highest2 = [];
-
-		// var max = sections[0];
-		// var maxScore = 0;
-
-		// sections.forEach(function (section) {
-		// 	var score = section.seatsCapacity - section.seatsRemaining;
-
-
-
-		// 	var hash = Keys.create({
-		// 		host: section.host,
-		// 		termId: section.termId,
-		// 		subject: section.subject,
-		// 		classUid: section.classUid
-		// 	}).getHash();
-
-
-		// 	// console.log(classHash[hash],hash,maxScore);
-
-		// 	var aClass = classHash[hash]
-
-		// 	aClass.score = score
-
-		// 	if (!aClass.name.match(/General|Fundamentals|Principals|Introduction|First\-Year/gi)) {
-		// 		return;
-		// 	}
-
-		// 	if (highest2.length < 2) {
-		// 		highest2.push(aClass)
-		// 		return;
-		// 	}
-		// 	else {
-
-		// 		if (score > highest2[0].score) {
-		// 			highest2[0] = aClass
-		// 		}
-		// 		else if (score > highest2[1].score) {
-		// 			highest2[1] = aClass
-		// 		}
-		// 	}
-
-		// }.bind(this))
-
-		// var hash = Keys.create({
-		// 	host: max.host,
-		// 	termId: max.termId,
-		// 	subject: max.subject,
-		// 	classUid: max.classUid
-		// }).getHash();
-
-
-		// console.log(highest2[0], highest2[1]);
-
-
-
-
+		termsDB.update(query, {
+			$set: {
+				searchHints: hints
+			}
+		}, {
+			shouldBeOnlyOne: false
+		}, function (err, results) {
+			callback(err, hints)
+		}.bind(this))
 	}.bind(this))
-
-
-
-
-
-
 };
 
 
@@ -173,7 +116,7 @@ module.exports = new TermSearchHints();
 if (require.main === module) {
 	module.exports.go({
 		host: 'neu.edu',
-		termId: "201710"
+		// termId: "201710"
 	}, function (err, results) {
 		console.log("done,", err, results);
 

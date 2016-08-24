@@ -175,6 +175,12 @@ BaseData.download = function (config, callback) {
 		keys: config.keys.getMinimumKeys()
 	}
 
+	if (this.API_ENDPOINT === macros.LIST_TERMS) {
+		requestQuery.keys = Keys.create({
+			host: config.keys.host
+		})
+	}
+
 	this.downloadResultsGroup(requestQuery, function (err, results, resultsHash) {
 		if (err) {
 			return callback(err);
