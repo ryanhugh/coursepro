@@ -1,6 +1,10 @@
 TODO: refactor backend to use obj instead of _id and let user use backed data
 panel.html make prereqs easier to read
 figure out why auto updater is not working
+https://192.168.1.36/#/graph/neu.edu/201710/ECON/4634_804141251
+ --- if a child reqbranch has a hon and non hon of same classId needs to not have () around it
+
+hide scroll bar in ff
 
 
 NOW:

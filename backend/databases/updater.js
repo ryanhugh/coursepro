@@ -20,7 +20,7 @@ function Updater() {
 		this.onInterval();
 	};
 
-	if (!macros.UNIT_TESTS) {
+	if (!macros.UNIT_TESTS && 0) {
 		//30 min
 		setInterval(this.onInterval.bind(this), macros.DB_REFRESH_INTERVAL)
 	}

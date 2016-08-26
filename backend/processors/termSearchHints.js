@@ -101,10 +101,12 @@ TermSearchHints.prototype.go = function (query, callback) {
 
 		if (query.host === 'neu.edu') {
 			hints.push('Leena Razzaq')
-			hints.push('International Village')
 			hints.push('Physics 1')
 			hints.push('Calculus 2')
 			hints.push('Banking')
+			hints.push('Robotics')
+			hints.push('PHYS 1151')
+			hints.push('PHIL 1101')
 		}
 
 		console.log("Settings search hints to ", hints);

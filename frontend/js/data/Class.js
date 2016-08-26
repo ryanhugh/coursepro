@@ -166,6 +166,12 @@ Class.prototype.download = function (callback) {
 		callback = function () {}
 	}
 
+	if (this.isString) {
+		var errorMsg = "class.download called on string"
+		elog(errorMsg, this)
+		return callback(errorMsg)
+	}
+	
 	if (this.prereqs.length > 0 || this.desc || this.lastUpdateTime !== undefined || this.isString) {
 		this.dataStatus = macros.DATASTATUS_DONE
 		return callback(null, this)
@@ -173,17 +179,6 @@ Class.prototype.download = function (callback) {
 
 	if (this.dataStatus === macros.DATASTATUS_FAIL) {
 		return callback(null, this)
-	}
-
-	if (this.dataStatus !== macros.DATASTATUS_NOTSTARTED) {
-		var errorMsg = 'data status was not not started, and called class.download?' + this.dataStatus
-		elog(errorMsg, this)
-		return callback(errorMsg, this)
-	}
-	if (this.isString) {
-		var errorMsg = "class.download called on string"
-		elog(errorMsg, this)
-		return callback(errorMsg)
 	}
 
 
