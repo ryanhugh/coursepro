@@ -129,8 +129,7 @@
 
                             <td>
                                 <span ng-repeat="location in ::section.getLocations()">
-                                    <span ng-if="location != 'TBA' || section.getLocations().length <= 1"> {{::location}} </span>
-                                    <span ng-if="!$last">, </span>
+                                    <span ng-if="location != 'TBA' || section.getLocations().length <= 1">{{::location}}</span><span ng-if="!$last">,&nbsp;</span>
                                 </span>
                             </td>
 

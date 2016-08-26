@@ -115,6 +115,24 @@ EllucianSectionParser.prototype.parseElement = function (pageData, element) {
 			console.log('warning, nothing matchied credits', pageData.dbData.url, text);
 		}
 
+
+		// HONORS NOTES
+		// swathmore and sju have "honors" in title 
+		// https://myswat.swarthmore.edu/pls/bwckschd.p_disp_detail_sched?term_in=201602&crn_in=25340
+		// https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_course_detail?cat_term_in=201602&subj_code_in=MATH&crse_numb_in=016H
+		// https://ssb.sju.edu/pls/PRODSSB/bwckctlg.p_disp_course_detail?cat_term_in=201610&subj_code_in=CHM&crse_numb_in=126
+
+		// clemson has Honors in attributes 
+		// HOWEVER it also has a "includes honors sections" in the dsecription
+		// https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_detail_sched?term_in=201608&crn_in=87931
+
+		// gatech has honors in title
+		// neu has it in attributes, as different sections in same class
+		// https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?term_in=201710&subj_in=CS&crse_in=1800&schd_in=LEC
+		// 
+		// TLDR: class.honors = sectionHtml.includes('honors')
+
+
 		// grab honors (honours is canadian spelling)
 		if (_(text).includes('honors') || _(text).includes('honours')) {
 			pageData.setParentData('honors', true)
