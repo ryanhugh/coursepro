@@ -1,39 +1,5 @@
 
-spacing bug if multiple locations on class list
-node.class.sections[0].meetings.push(node.prereqs.values[0].class.sections[0].meetings[0])
 
-
-put a line between years?
-
-/logError called "class load failed" if failed to load class and then on a separate call to class.load sections
-
-unit tests?
- - testing errors shouldnt bring up debugger
-merge list, search, starred?
-
-play with hiding private properties?
- -- nah
- do something with instance, cache, maybe a branch or remove it or something...
- user.getauthenticated also has dead code
-
-
-TODO SOON
-1. marketing when ok - post on other pages with examples
-
-3. add lastUpdateTime to server - for this to work for terms + subjects, need to copy lastUPdateTIme from parent to children in db (and rerun scrapers)
-and add it to collegeNames somehow (and add the ids for the neu.edu/law)
-
-
-
-4. put base data cache on branch
-make the base data cache not ghetto
-need some way to call download when a data is loading and have it just return when done - test?
-if .create called again with more data, need to update existing instance
-more notes in BaseData.js
-
-
-6. need some way for keys to distignuish between classes - this will help for instance cache and
-a 2500 (hon) should just bring up the (hon) and non hon should just bring up non-hon
 
 
 7. localhost#/neu.edu/latest/CS/4800

@@ -1052,6 +1052,10 @@ TreeMgr.prototype.ensureInvariants = function (node, foundRootNode) {
 		elog('found node that isnt loaded?')
 	}
 
+	if (node.coreqs.values.length > 2) {
+		elog("More than 2 coreqs?")
+	}
+
 	// only 1 node with 0 parents
 	if (node.allParents.length === 0) {
 		if (foundRootNode) {
