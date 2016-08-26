@@ -1,7 +1,6 @@
 
 
 
-make that one unit test test the entire tree again, instead of cutting off at 4 nodes
 
 homepage.js get search string from homepage search box if this.searchText is '' when copying to search.UNIT
 dont scroll up on search results when scroll down and select a diff result

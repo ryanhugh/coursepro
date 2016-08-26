@@ -86,7 +86,7 @@ Homepage.prototype.openTermSelector = function () {
 };
 
 Homepage.prototype.focusSearch = function () {
-	search.searchText = this.searchText;
+	search.setSearchText(this.searchText);
 	this.showSearch = true;
 	this.searchText = ''
 

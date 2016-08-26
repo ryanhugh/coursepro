@@ -70,6 +70,11 @@ Search.prototype.getHost = function () {
 	}
 };
 
+Search.setSearchText = function(text) {
+	this.searchText = text;
+	document.getElementById('leftSearchBoxID').value = text
+};
+
 Search.prototype.getTermId = function () {
 
 	if (this.$routeParams.termId) {
