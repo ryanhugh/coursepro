@@ -4,6 +4,7 @@ body {
 }
 </style>
 
+<!-- Do this instead of ng-if or ng-hide so the panel is rendered by Angular and the browser when the page loads, and not when the user starts typing. -->
 <div search style="z-index: 2;position: relative;" ng-style="{'visibility':homepage.showSearch?'':'hidden'}">
 </div>
 
