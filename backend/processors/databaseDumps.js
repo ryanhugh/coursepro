@@ -86,12 +86,14 @@ DatabaseDumps.prototype.saveRows = function (endpoint, results, callback) {
 
 
 
-DatabaseDumps.prototype.go = function (query, callback) {
-
-	// Don't run if only one class was updated
-	if (query.classUid || query.classId) {
-		return;
+DatabaseDumps.prototype.go = function (queries, callback) {
+	if (!this.isUpdatingEntireTerm(queries)) {
+		return callback()
 	}
+	
+
+	// Get all the classes in a term, or all the classes in the entire host
+	var query = this.getQueryOverlap(queries)
 
 	var searchQuery = {
 		host: query.host
@@ -104,12 +106,7 @@ DatabaseDumps.prototype.go = function (query, callback) {
 	var q = queue()
 
 	q.defer(function (callback) {
-		classesDB.find(searchQuery, {
-			skipValidation: true,
-			shouldBeOnlyOne: false,
-			sanitize: true,
-			removeControllers: true
-		}, function (err, results) {
+		this.getClasses([searchQuery], function (err, results) {
 			if (err) {
 				return callback(err)
 			}
@@ -120,12 +117,7 @@ DatabaseDumps.prototype.go = function (query, callback) {
 	}.bind(this))
 
 	q.defer(function (callback) {
-		sectionsDB.find(searchQuery, {
-			skipValidation: true,
-			shouldBeOnlyOne: false,
-			sanitize: true,
-			removeControllers: true
-		}, function (err, results) {
+		this.getSections([searchQuery], function (err, results) {
 			if (err) {
 				return callback(err)
 			}

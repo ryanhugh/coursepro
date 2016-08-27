@@ -83,32 +83,30 @@ PrereqClassUids.prototype.updatePrereqs = function (prereqs, host, termId, keyTo
 // if an entire college needs to be updated, it could be just {host:'neu.edu'}
 // at minimum it will be a host
 // or if just one class {host, termId, subject, classId}
-PrereqClassUids.prototype.go = function (baseQuery, callback) {
-	if (!baseQuery.host) {
-		elog('no host in PrereqClassUids?')
-		return callback('no')
+PrereqClassUids.prototype.go = function (baseQueries, callback) {
+
+	for (var i = 0; i < baseQueries.length; i++) {
+		var baseQuery = baseQueries[i]
+		if (!baseQuery.host) {
+			elog('no host in PrereqClassUids?')
+			return callback('no')
+		}
 	}
+
 
 	var q = queue();
 	var classesToUpdate = [];
 
 	// find classes that need to be updated
 	q.defer(function (callback) {
-		classesDB.find(baseQuery, {
-			skipValidation: true
-		}, function (err, results) {
-			if (err) {
-				console.log(err);
-				return callback(err)
-			}
-			classesToUpdate = results;
-			callback()
-		}.bind(this));
+		this.getClasses(baseQueries, function (err, classes) {
+			classesToUpdate = classes;
+		}.bind(this))
 	}.bind(this))
 
 	var keyToRows = {};
 	q.defer(function (callback) {
-		this.getClassHash(baseQuery, {
+		this.getClassHash(baseQueries, {
 			useClassId: true
 		}, function (err, theKeyToRow) {
 			if (err) {

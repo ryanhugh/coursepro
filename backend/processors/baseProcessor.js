@@ -1,6 +1,7 @@
 'use strict'
 var queue = require('d3-queue').queue
 
+var Keys = require('../../common/Keys')
 var classesDB = require('../databases/classesDB')
 var sectionsDB = require('../databases/sectionsDB')
 
@@ -8,47 +9,92 @@ function BaseProcessor() {
 
 }
 
-BaseProcessor.prototype.preUpdateParse = function(query, callback) {
+BaseProcessor.prototype.preUpdateParse = function (query, callback) {
 	return callback()
 };
 
+BaseProcessor.prototype.getClasses = function (queries, callback) {
+	var classes = [];
 
-BaseProcessor.prototype.getSectionsAndClasses = function (query, callback) {
+	var q = queue();
+
+	queries.forEach(function (query) {
+		q.defer(function (callback) {
+			classesDB.find(query, {
+				skipValidation: true,
+				shouldBeOnlyOne: false,
+				sanitize: true,
+				removeControllers: true
+			}, function (err, results) {
+				if (err) {
+					return callback(err)
+				}
+				classes = classes.concat(results)
+				return callback()
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
+
+	q.awaitAll(function (err) {
+		callback(err)
+	}.bind(this))
+};
+
+
+BaseProcessor.prototype.getSections = function(queries, callback) {
+	var sections = [];
+
+	var q = queue();
+
+	queries.forEach(function (query) {
+		q.defer(function (callback) {
+			sectionsDB.find(query, {
+				skipValidation: true,
+				shouldBeOnlyOne: false,
+				sanitize: true,
+				removeControllers: true
+			}, function (err, results) {
+				if (err) {
+					return callback(err)
+				}
+				sections = sections.concat(results)
+				return callback()
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
+
+	q.awaitAll(function (err) {
+		callback(err)
+	}.bind(this))
+};
+
+
+BaseProcessor.prototype.getSectionsAndClasses = function (queries, callback) {
 	var classes = []
 	var sections = []
 
 	var q = queue();
 
 	q.defer(function (callback) {
-		classesDB.find(query, {
-			skipValidation: true,
-			shouldBeOnlyOne: false,
-			sanitize: true,
-			removeControllers: true
-		}, function (err, results) {
-			if (err) {
-				return callback(err)
-			}
-			classes = results
-			return callback()
-		}.bind(this))
-	}.bind(this))
-
-	q.defer(function (callback) {
-		sectionsDB.find(query, {
-			skipValidation: true,
-			shouldBeOnlyOne: false,
-			sanitize: true,
-			removeControllers: true
-		}, function (err, results) {
+		this.getSections(queries, function (err, results) {
 			if (err) {
 				return callback(err)
 			}
 			sections = results
-			return callback()
+			callback()
 		}.bind(this))
 	}.bind(this))
 
+	q.defer(function (callback) {
+		this.getClasses(queries, function (err, results) {
+			if (err) {
+				return callback(err)
+			}
+
+			classes = results
+			callback()
+		}.bind(this))
+	}.bind(this))
 
 	q.awaitAll(function (err) {
 		if (err) {
@@ -59,13 +105,58 @@ BaseProcessor.prototype.getSectionsAndClasses = function (query, callback) {
 };
 
 
+// Get the minimum part of queries that overlap. eg,
+// if given query {host:'neu.edu',termId:'201710'} and {host:'neu.edu',termId:'201630'}, the result would be {host:'neu.edu'}
+BaseProcessor.prototype.getQueryOverlap = function(queries) {
+	if (queries.length === 0) {
+		elog()
+		return {}
+	}
+	var retVal = {}
+
+	var currValue;
+	for (var i = 0; i < Keys.allKeys.length; i++) {
+		var keyName = Keys.allKeys[i];
+
+		// Not supported yet
+		if (keyName === 'classUid' || keyName === 'classId') {
+			elog()
+			break
+		}
+		currValue = queries[0][keyName]
+		for (var j = 0; j < queries.length; j++) {
+			if (queries[j][keyName] != currValue) {
+				return retVal;
+			}
+		}
+
+		retVal[keyName] = currValue;
+	}	
+	return retVal;
+};
+
+BaseProcessor.prototype.isUpdatingEntireTerm = function(queries) {
+	// Don't run if only updating one class
+	var shouldRun = false;
+	for (var i = 0; i < queries.length; i++) {
+		var query = queries[i];
+		if (!query.subject) {
+			shouldRun = true;
+			break;
+		}
+	}
+
+	return shouldRun;
+};
+
+
 // If config.useClassId, will return {
 // 	'neu.edu201602STAT002':[aClass,aClass]
 // }
 // if !config.useClassId, will return {
 // 	'neu.edu201602STAT002_6876877897': aClass
 // }
-BaseProcessor.prototype.getClassHash = function (query, configOrCallback, callback) {
+BaseProcessor.prototype.getClassHash = function (queries, configOrCallback, callback) {
 	var config;
 	if (typeof configOrCallback === 'function') {
 		callback = configOrCallback
@@ -79,14 +170,16 @@ BaseProcessor.prototype.getClassHash = function (query, configOrCallback, callba
 		elog('dont have callback?')
 	}
 
+
 	// and find all classes that could be matched
+	var queryOverlap = this.getQueryOverlap(queries);
 	var matchingQuery = {
-		host: query.host
+		host: queryOverlap.host
 	}
 
 	// if base query specified term, we can specify it here too and still find all the classes needed
-	if (query.termId) {
-		matchingQuery.termId = query.termId
+	if (queryOverlap.termId) {
+		matchingQuery.termId = queryOverlap.termId
 	}
 
 
@@ -123,7 +216,7 @@ BaseProcessor.prototype.getClassHash = function (query, configOrCallback, callba
 				key += aClass.classUid
 
 				if (keyToRows[key]) {
-					elog('duplicate classUid???',keyToRows[key],aClass)
+					elog('duplicate classUid???', keyToRows[key], aClass)
 				}
 
 				keyToRows[key] = aClass

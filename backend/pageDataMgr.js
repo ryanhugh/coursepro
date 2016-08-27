@@ -76,22 +76,37 @@ PageDataMgr.prototype.getQuery = function (pageData) {
 // 1. If updated the data in the DB (aka not the first time this data has been parsed) run the preUpdateParse hook
 // 1. parse the website (~20-120 min)
 // 2. run the processors (~1 min per processor)
-PageDataMgr.prototype.go = function (pageData, callback) {
+PageDataMgr.prototype.go = function (pageDatas, callback) {
 
-	//unless this is the initial starting point the parser will be set when loading from db or from parent
-	if (!pageData.parser && pageData.dbData.url && pageData.findSupportingParser() === false) {
-		return callback("Need parser, or url to get parser and a supporting parser to parse this pagedata", pageData.dbData);
+	for (var i = 0; i < pageDatas.length; i++) {
+		var pageData = pageDatas[i]
+
+		//unless this is the initial starting point the parser will be set when loading from db or from parent
+		if (!pageData.parser && pageData.dbData.url && pageData.findSupportingParser() === false) {
+			return callback("Need parser, or url to get parser and a supporting parser to parse this pagedata", pageData.dbData);
+		}
 	}
+
 
 	async.waterfall([
 		function (callback) {
-			pageData.loadFromDB(function (err) {
-				if (err) {
-					elog("error ", err);
-					return callback(err);
-				}
-				callback()
+
+			var q = queue();
+
+			q.defer(function (callback) {
+				pageData.loadFromDB(function (err) {
+					if (err) {
+						elog("error ", err);
+						return callback(err);
+					}
+					callback()
+				}.bind(this))
 			}.bind(this))
+
+			q.awaitAll(function (err) {
+				return callback(err)
+			}.bind(this))
+
 		}.bind(this),
 		function (callback) {
 

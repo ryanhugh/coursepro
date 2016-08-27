@@ -14,7 +14,6 @@ function startsWith(string, target) {
 }
 
 
-var allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
 var endpoints = [macros.LIST_COLLEGES, macros.LIST_TERMS, macros.LIST_SUBJECTS, macros.LIST_CLASSES, macros.LIST_SECTIONS]
 var minData = 2;
 
@@ -41,8 +40,8 @@ function Keys(obj, endpoint, config) {
 			endpointIndex = endpoints.indexOf(endpoint)
 		}
 		var i;
-		for (i = 0; i < allKeys.length; i++) {
-			var currValue = obj[allKeys[i]];
+		for (i = 0; i < Keys.allKeys.length; i++) {
+			var currValue = obj[Keys.allKeys[i]];
 			if (!currValue) {
 				break
 			}
@@ -51,13 +50,13 @@ function Keys(obj, endpoint, config) {
 				break;
 			}
 			else {
-				this[allKeys[i]] = currValue;
+				this[Keys.allKeys[i]] = currValue;
 			}
 		}
 
 		i++;
-		for (; i < allKeys.length; i++) {
-			if (obj[allKeys[i]]) {
+		for (; i < Keys.allKeys.length; i++) {
+			if (obj[Keys.allKeys[i]]) {
 
 				// Shouldn't have any keys after first one that isn't present
 				elog(obj, endpoint)
@@ -105,6 +104,9 @@ Keys.createWithString = function (obj) {
 	})
 }
 
+
+Keys.allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
+
 // Keys.prototype.createWithClassId = function (obj, endpoint) {
 // 	return new this(obj, endpoint, {
 // 		classId: true
@@ -126,11 +128,11 @@ Keys.prototype.getHash = function () {
 	var key = [];
 
 	// create the key
-	for (var i = 0; i < allKeys.length; i++) {
-		if (!this[allKeys[i]]) {
+	for (var i = 0; i < Keys.allKeys.length; i++) {
+		if (!this[Keys.allKeys[i]]) {
 			break
 		}
-		key.push(this[allKeys[i]].replace(/[^A-Za-z0-9.]+/g, "_"));
+		key.push(this[Keys.allKeys[i]].replace(/[^A-Za-z0-9.]+/g, "_"));
 	}
 	if (key.length > 0) {
 		return key.join('/')
@@ -157,12 +159,12 @@ Keys.prototype.getMinimumKeys = function () {
 	}
 	var retVal = {};
 	for (var i = 0; i < minData; i++) {
-		var currValue = this[allKeys[i]];
+		var currValue = this[Keys.allKeys[i]];
 		if (!currValue) {
 			// elog()
 			break;
 		}
-		retVal[allKeys[i]] = currValue
+		retVal[Keys.allKeys[i]] = currValue
 	}
 	return Keys.create(retVal);
 };
@@ -186,12 +188,12 @@ Keys.prototype.getObj = function () {
 
 		var retVal = {};
 
-		for (var i = 0; i < allKeys.length; i++) {
-			var currValue = this[allKeys[i]];
+		for (var i = 0; i < Keys.allKeys.length; i++) {
+			var currValue = this[Keys.allKeys[i]];
 			if (!currValue) {
 				break;
 			}
-			retVal[allKeys[i]] = currValue;
+			retVal[Keys.allKeys[i]] = currValue;
 		}
 		return retVal;
 	}
@@ -232,14 +234,14 @@ Keys.prototype.isValid = function (endpoint) {
 	var endpointIndex = endpoints.indexOf(endpoint);
 
 	for (var i = 0; i < endpointIndex; i++) {
-		if (!this[allKeys[i]]) {
+		if (!this[Keys.allKeys[i]]) {
 			return false;
 		}
 	}
 
 	i++;
-	for (; i < allKeys.length; i++) {
-		if (this[allKeys[i]]) {
+	for (; i < Keys.allKeys.length; i++) {
+		if (this[Keys.allKeys[i]]) {
 			return false
 		}
 	}
@@ -273,8 +275,8 @@ Keys.prototype.propsEqual = function (other) {
 	}
 	else {
 
-		for (var i = 0; i < allKeys.length; i++) {
-			var propName = allKeys[i];
+		for (var i = 0; i < Keys.allKeys.length; i++) {
+			var propName = Keys.allKeys[i];
 
 			//When reached the end, done
 			if (this[propName] === undefined) {

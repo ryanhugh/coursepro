@@ -5,6 +5,7 @@ var angular = require('angular')
 require('bootstrap')
 require('fullcalendar')
 
+
 if ('serviceWorker' in navigator) {
 	if (!macros.UNIT_TESTS) {
 		navigator.serviceWorker.register('sw.js').then(function (reg) {
@@ -28,7 +29,7 @@ var dependencies = [
 	'selectize',
 	'ui.calendar',
 	'templates',
-	'infinite-scroll'
+	'infinite-scroll',
 ]
 
 var angularModule = angular.module('app', dependencies, ['$rootScopeProvider', '$compileProvider', function ($rootScopeProvider, $compileProvider) {

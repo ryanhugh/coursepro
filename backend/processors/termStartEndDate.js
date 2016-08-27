@@ -111,17 +111,28 @@ TermStartEndDate.prototype.runOnTerm = function (query, callback) {
 
 
 
-TermStartEndDate.prototype.go = function (baseQuery, callback) {
+TermStartEndDate.prototype.go = function (baseQueries, callback) {
 
 	// Don't run if only updating one class
-	if (baseQuery.host && baseQuery.termId && baseQuery.subject && baseQuery.classId) {
-		return callback();
+	var shouldRun = false;
+	for (var i = 0; i < baseQueries.length; i++) {
+		var baseQuery = baseQueries[i];
+		if (!baseQuery.subject) {
+			shouldRun = true;
+			break;
+		}
 	}
 
-	if (baseQuery.host && baseQuery.termId) {
+	if (!shouldRun) {
+		return callback()
+	}
+
+	var query = this.getQueryOverlap(baseQueries);
+
+	if (query.host && query.termId) {
 		return this.runOnTerm({
-			host: baseQuery.host,
-			termId: baseQuery.termId
+			host: query.host,
+			termId: query.termId
 		}, function (err, result) {
 			if (err) {
 				return callback(err)
@@ -135,7 +146,7 @@ TermStartEndDate.prototype.go = function (baseQuery, callback) {
 
 		//For each term in the host, update the 
 		termsDB.find({
-			host: baseQuery.host
+			host: query.host
 		}, {
 			skipValidation: true
 		}, function (err, terms) {

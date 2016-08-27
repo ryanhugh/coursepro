@@ -38,13 +38,12 @@ NotifyOnChanges.prototype.constructor = NotifyOnChanges;
 
 
 
-NotifyOnChanges.prototype.preUpdateParse = function (query, callback) {
-
+NotifyOnChanges.prototype.preUpdateParse = function (queries, callback) {
 	if (this.classes.length !== 0 || this.sections.length !== 0) {
 		elog('classes or sections not [] on start?', this.classes.length, this.classes[0], this.sections.length, this.sections[0])
 	}
 
-	this.getSectionsAndClasses(query, function (err, classes, sections) {
+	this.getSectionsAndClasses(queries, function (err, classes, sections) {
 		if (err) {
 			return callback(err)
 		}
@@ -57,14 +56,14 @@ NotifyOnChanges.prototype.preUpdateParse = function (query, callback) {
 
 
 
-NotifyOnChanges.prototype.go = function (query, callback) {
+NotifyOnChanges.prototype.go = function (queries, callback) {
 
 	if (this.classes.length === 0 && this.sections.length === 0) {
 		console.log("NotifyOnChanges has no classes or sections stored, exiting")
 		return callback()
 	}
 
-	this.getSectionsAndClasses(query, function (err, classes, sections) {
+	this.getSectionsAndClasses(queries, function (err, classes, sections) {
 		if (err) {
 			return callback(err)
 		}

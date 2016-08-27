@@ -931,7 +931,9 @@ async.parallel([
 				}.bind(this))
 			}
 			q.awaitAll(function (err) {
-				elog(err);
+				if (err) {
+					elog(err);
+				}
 				global.expressHttpsServer = server.listen(8443);
 			}.bind(this))
 

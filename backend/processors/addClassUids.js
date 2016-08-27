@@ -44,16 +44,7 @@ AddClassUids.prototype.getClassUid = function (classId, title) {
 };
 
 
-
-// base query is the key shared by all classes that need to be updated
-// if an entire college needs to be updated, it could be just {host:'neu.edu'}
-// at minimum it will be a host
-// or if just one class {host, termId, subject, classId}
-AddClassUids.prototype.go = function (baseQuery, callback) {
-	if (!baseQuery.host) {
-		elog('no host in AddClassUids?')
-		return callback('no')
-	}
+AddClassUids.prototype.processSingleQuery = function (query, callback) {
 
 	classesDB.find(baseQuery, {
 		skipValidation: true
@@ -106,19 +97,43 @@ AddClassUids.prototype.go = function (baseQuery, callback) {
 							callback(err)
 						}.bind(this))
 					}.bind(this))
-
-
-
 				}.bind(this))
 			}
-
-
 		}.bind(this))
 
 
 		updateQueue.awaitAll(function (err) {
 			callback(err, results);
 		}.bind(this))
+	}.bind(this))
+};
+
+
+
+// base query is the key shared by all classes that need to be updated
+// if an entire college needs to be updated, it could be just {host:'neu.edu'}
+// at minimum it will be a host
+// or if just one class {host, termId, subject, classId}
+AddClassUids.prototype.go = function (baseQuerys, callback) {
+	for (var i = 0; i < baseQuerys.length; i++) {
+		var baseQuery = baseQuerys[i]
+
+		if (!baseQuery.host) {
+			elog('no host in AddClassUids?')
+			return callback('no')
+		}
+	}
+
+	var q = queue()
+
+	baseQuerys.forEach(function (query) {
+		q.defer(function (callback) {
+			this.processSingleQuery(query, callback)
+		}.bind(this))
+	}.bind(this))
+
+	q.awaitAll(function (err) {
+		callback(err)
 	}.bind(this))
 };
 
