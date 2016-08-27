@@ -93,13 +93,15 @@ PageDataMgr.prototype.go = function (pageDatas, callback) {
 
 			var q = queue();
 
-			q.defer(function (callback) {
-				pageData.loadFromDB(function (err) {
-					if (err) {
-						elog("error ", err);
-						return callback(err);
-					}
-					callback()
+			pageDatas.forEach(function (pageData) {
+				q.defer(function (callback) {
+					pageData.loadFromDB(function (err) {
+						if (err) {
+							elog("error ", err);
+							return callback(err);
+						}
+						callback()
+					}.bind(this))
 				}.bind(this))
 			}.bind(this))
 
@@ -110,18 +112,27 @@ PageDataMgr.prototype.go = function (pageDatas, callback) {
 		}.bind(this),
 		function (callback) {
 
+			var updateQueries = [];
 
-			// If it has an _id, it was in the database and is currently being updated.
-			// If not, this is the first time this is being parsed. 
-			if (pageData.dbData._id) {
+			pageDatas.forEach(function (pageData) {
+				// If it has an _id, it was in the database and is currently being updated.
+				// If not, this is the first time this is being parsed. 
+				if (pageData.dbData._id) {
+					var query = this.getQuery(pageData)
+					updateQueries.push(query)
+				}
+			}.bind(this))
 
-				var query = this.getQuery(pageData)
+
+
+
+			if (updateQueries.length > 0) {
 
 				// Run the before update hook
 				async.eachSeries(processors, function (processor, callback) {
 					console.log("Running Pre update hook:", processor.constructor.name);
 
-					processor.preUpdateParse(query, function (err) {
+					processor.preUpdateParse(updateQueries, function (err) {
 						if (err) {
 							console.log("ERROR processor", processor, 'errored out', err, ' on preUpdateParse');
 							return callback(err)
@@ -136,31 +147,47 @@ PageDataMgr.prototype.go = function (pageDatas, callback) {
 				}.bind(this))
 			}
 			else {
-				console.log("Not running preupdate hook for ", pageData.dbData.url);
+				console.log("Not running preupdate hook for pageDatas");
 				return callback()
 			}
 
 		}.bind(this),
 		function (callback) {
 
-			// Run the parsing
-			this.processPageData(pageData, function (err, pageData) {
-				if (err) {
-					elog("err", err);
-					return callback(err)
-				}
-				return callback()
+			var q = queue();
+
+			pageDatas.forEach(function (pageData) {
+				q.defer(function (callback) {
+					// Run the parsing
+					this.processPageData(pageData, function (err, pageData) {
+						if (err) {
+							elog("err", err);
+							return callback(err)
+						}
+						return callback()
+					}.bind(this))
+				}.bind(this))
 			}.bind(this))
+
+			q.awaitAll(function (err) {
+				callback(err)
+			}.bind(this))
+
 		}.bind(this),
 		function (callback) {
 
-			var query = this.getQuery(pageData)
+			var queries = [];
+
+			pageDatas.forEach(function (pageData) {
+				queries.push(this.getQuery(pageData))
+			}.bind(this))
+
 
 			// Run the processors
 			async.eachSeries(processors, function (processor, callback) {
 				console.log("Running", processor.constructor.name);
 
-				processor.go(query, function (err) {
+				processor.go(queries, function (err) {
 					if (err) {
 						console.log("ERROR processor", processor, 'errored out', err);
 						return callback(err)
@@ -385,7 +412,7 @@ PageDataMgr.prototype.main = function () {
 
 	// console.log(pageData);
 
-	this.go(pageData, function () {
+	this.go([pageData], function () {
 		console.log('all done!! neu')
 
 	}.bind(this));

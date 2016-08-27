@@ -16,39 +16,16 @@ function Updater() {
 	}
 
 	//run updater on boot if in production
-	if (macros.PRODUCTION) {
+	if (macros.PRODUCTION || 1) {
 		this.onInterval();
 	};
 
-	if (!macros.UNIT_TESTS && 0) {
+	if (!macros.UNIT_TESTS) {
 		//30 min
 		setInterval(this.onInterval.bind(this), macros.DB_REFRESH_INTERVAL)
 	}
 }
 
-Updater.prototype.updateClassFromMongoId = function (classMongoId, callback) {
-	if (!callback) {
-		callback = function () {}
-	};
-
-	var pageData = PageData.create({
-		dbData: {
-			_id: classMongoId
-
-		}
-	})
-
-	if (!pageData) {
-		console.log('ERROR unable to create page data with _id of ', classMongoId, '????')
-		return callback('error')
-	}
-	pageData.database = classesDB;
-
-	pageDataMgr.go(pageData, function (err, pageData) {
-		callback(err)
-
-	}.bind(this))
-};
 
 //update all classes that are being watched
 Updater.prototype.onInterval = function () {
@@ -63,11 +40,33 @@ Updater.prototype.onInterval = function () {
 
 		console.log("updating ", classIds.length, ' classes', classIds);
 
+		var pageDatas = []
+
 		for (var classMongoId in classWatchCache.classes) {
+			var pageData = PageData.create({
+				dbData: {
+					_id: classMongoId
 
-			this.updateClassFromMongoId(classMongoId)
+				}
+			})
 
+			if (!pageData) {
+				console.log('ERROR unable to create page data with _id of ', classMongoId, '????')
+				return callback('error')
+			}
+			pageData.database = classesDB;
+
+			pageDatas.push(pageData)
 		}
+
+		pageDataMgr.go(pageDatas, function (err, pageData) {
+			if (err) {
+				elog('Error updating classes on setInterval!',err)
+			}
+			else {
+				console.log("Done running onInterval");
+			}
+		}.bind(this))
 	}.bind(this))
 };
 

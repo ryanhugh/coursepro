@@ -97,10 +97,7 @@ var UGLIFY_JS_CONFIG = {
 
 
 process.on('uncaughtException', function (err) {
-	onError('Restart gulp' + err)
-	if (err.stack) {
-		console.log(err.stack)
-	}
+	onError('Restart gulp' , err)
 });
 
 
@@ -138,24 +135,31 @@ function injectMacros(stream) {
 	return stream;
 }
 
-function onError(error) {
+function onError() {
 
-	if (!error.message) {
-		error = {
-			message: error
+	var args = [];
+	for (var i = 0; i < arguments.length; i++) {
+		args[i] = arguments[i];
+	}
+
+	var notificationMsg = []
+
+	args.forEach(function (obj) {
+		// print the erroror (can replace with gulp-util)
+		if (obj && obj.stack) {
+			console.error(obj.stack);
+			notificationMsg.push(obj.stack)
 		}
-	}
+		else {
+			notificationMsg.push(obj)
+			console.error(obj);
+		}
+	}.bind(this))
 
-
-	// print the erroror (can replace with gulp-util)
-	console.log(error.message);
-	if (error.stack) {
-		console.log(error.stack);
-	}
 	notify.onError({
-		message: 'Error: ' + error.message,
+		message: 'Error: ' + notificationMsg.join(' '),
 		sound: false // deactivate sound?
-	})(error);
+	})();
 }
 
 // This assumes that the list of files never changes.
@@ -186,10 +190,7 @@ var getFilesToProcess = memoize(function (config, callback) {
 
 		return callback(null, filesToProccess)
 	}).catch(function (err) {
-		onError('glob failed' + err)
-		if (err.stack) {
-			console.log(err.stack);
-		}
+		onError('glob failed' , err)
 	}.bind(this));;
 })
 
@@ -317,9 +318,6 @@ function compileJSBundle(config, compileRequire, callback) {
 		}).catch(function (err) {
 			// console.log('recursiveDeps FAILED!', err,JSON.stringify(err),arguments)
 			onError(err)
-			if (err) {
-				console.log(err.stack);
-			}
 		});
 	});
 }
@@ -486,10 +484,7 @@ gulp.task('copyRootFiles', function (callback) {
 
 		})
 	}).catch(function (err) {
-		onError('glob failed' + err)
-		if (err.stack) {
-			console.log(err.stack);
-		}
+		onError('glob failed' , err)
 	}.bind(this));
 });
 
@@ -582,8 +577,7 @@ gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 		hasCompiledOnce = true;
 
 		new karma.Server(KARMA_CONFIG, function (exitCode) {
-			console.log('ERROR Karma has exited with ' + exitCode)
-			onError('KARMA has crashed!!!!');
+			onError('KARMA has crashed!!!!',exitCode);
 			// process.exit()
 		}).start();
 	});
@@ -652,16 +646,10 @@ var btestRun = batch(function (events, callback) {
 			callback()
 		})
 	}).catch(function (err) {
-		onError('glob failed' + err)
-		if (err.stack) {
-			console.log(err.stack);
-		}
+		onError('glob failed' , err)
 	}.bind(this));
 }, function (err) {
-	onError('BATCH FAILED!' + err);
-	if (err.stack) {
-		console.log(err.stack)
-	}
+	onError('BATCH FAILED!' , err);
 });
 
 
