@@ -1053,6 +1053,7 @@ TreeMgr.prototype.ensureInvariants = function (node, foundRootNode) {
 	}
 
 	if (node.coreqs.values.length > 2) {
+		// If this fails, need to add more padding between this group of classes and the above row
 		elog("More than 2 coreqs?")
 	}
 

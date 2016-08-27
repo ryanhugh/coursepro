@@ -58,6 +58,9 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
 
 
 
+// https://banners.presby.edu/prod/hzskschd.P_ViewSchedule
+// uses an old version of the site - different parser needed (easy to write, add later)
+// this specific college ^ either updated or has a newer version too and has already been scraped
 
 
 
