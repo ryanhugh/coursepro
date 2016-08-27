@@ -38,7 +38,7 @@ Updater.prototype.onInterval = function () {
 
 		var classIds = _.keys(classWatchCache.classes)
 
-		console.log("updating ", classIds.length, ' classes', classIds);
+		console.log("updating ", classIds.length, ' classes', JSON.stringify(classIds));
 
 		var pageDatas = []
 

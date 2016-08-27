@@ -689,7 +689,7 @@ app.post('/addToUserLists', function (req, res) {
 			}
 			if (clientMsg) {
 				res.send(JSON.stringify({
-					error: 'error',
+					status: 'success',
 					msg: clientMsg
 				}));
 				return;
@@ -713,6 +713,7 @@ app.post('/removeFromUserLists', function (req, res) {
 
 	verifyClassSectionObjs(req.body.classes, req.body.sections, function (err, classIds, sectionIds, allValid) {
 		if (err) {
+			elog(err)
 			res.send(JSON.stringify({
 				error: 'error',
 				msg: 'server error'
@@ -739,7 +740,7 @@ app.post('/removeFromUserLists', function (req, res) {
 			}
 			if (clientMsg) {
 				res.send(JSON.stringify({
-					error: 'error',
+					status: 'success',
 					msg: clientMsg
 				}));
 				return;
