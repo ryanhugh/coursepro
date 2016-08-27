@@ -33,6 +33,10 @@ function Graph() {
 	// the svg element, defined in go
 	this.svg = null;
 
+	// The zoom d3 object. 
+	// Used to zoom and pan around. 
+	this.zoom = null;
+
 	// the container, which is the only child of the svg, defined in go
 	this.container = null;
 
@@ -387,11 +391,13 @@ Graph.prototype.loadNodes = function (callback) {
 			if (skipThisDrag) {
 				return;
 			}
-			node.px += d3.event.dx
-			node.py += d3.event.dy
-			node.x += d3.event.dx
-			node.y += d3.event.dy
-			this.force.alpha(.007)
+			else {
+				node.px += d3.event.dx
+				node.py += d3.event.dy
+				node.x += d3.event.dx
+				node.y += d3.event.dy
+				this.force.alpha(.007)
+			}
 		}.bind(this))
 
 
@@ -401,7 +407,12 @@ Graph.prototype.loadNodes = function (callback) {
 		.attr("class", "node")
 		.attr("width", macros.NODE_WIDTH)
 		.attr("height", macros.NODE_HEIGHT)
-		.on("mousedown", function () {
+		.on("mousedown", function (node) {
+			if (!node.isExpanded) {
+				d3.event.stopPropagation();
+			}
+		})
+		.on("dblclick", function () {
 			d3.event.stopPropagation();
 		})
 		.call(this.nodeDrag)
@@ -502,13 +513,13 @@ Graph.prototype.go = function (config, callback) {
 
 			this.container = this.svg.append("g");
 
-			var zoom = d3.behavior.zoom()
+			this.zoom = d3.behavior.zoom()
 				.scaleExtent([.1, 1.5])
 				.on("zoom", function () {
 					this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 				}.bind(this));
 
-			this.svg.call(zoom)
+			this.svg.call(this.zoom)
 
 			this.loadNodes(function () {
 				this.yCoordAttractionMultiplyer = 1;
@@ -550,14 +561,8 @@ Graph.prototype.go = function (config, callback) {
 
 
 				// Center the root node by translating the container <g> inside the svg
-				zoom.translate([this.getSvgWidth() / 2 - this.rootNode.x, 0])
-
-				// Zoom in a little, (this number is arbitrary)
-				// zoom.scale(1.16) // DO want to do this, but causes bug where not centered
-				zoom.event(this.svg)
-
-				// zoom.center([this.tree.x,this.tree.y])
-				// zoom.event(this.svg)
+				this.zoom.translate([this.getSvgWidth() / 2 - this.rootNode.x, 0])
+				this.zoom.event(this.svg)
 				callback(null, this.rootNode)
 			}.bind(this))
 		}.bind(this), 0)
@@ -583,46 +588,36 @@ Graph.prototype.createGraph = function (config, callback) {
 	}.bind(this));
 }
 
+Graph.prototype.moveNodeOnScreen = function (node) {
 
-
-Graph.prototype.showClasses = function (classList, callback) {
-	if (classList.length < 1) {
-		console.log('error show classes was called with 0 classes!')
-		return;
-	};
-
-	// Need to clean up this fn, and change the prereqs to nodes instead of classes if going to be used again
-	elog()
-	return;
-
-	//this is ghetto
-	//remove the prereqs from classes so we don't load all the result's prereqs
-	classList.forEach(function (aClass) {
-
-		if (aClass.prereqs) {
-			aClass.prereqs.values = []
-		};
-
-	}.bind(this))
-
-
-
-	var graphParams = {
-		host: this.$routeParams.host,
-		termId: this.$routeParams.termId,
-		subject: this.$routeParams.subject,
-		prereqs: {
-			type: 'or',
-			values: classList
-		},
-		hidden: true
+	var padding = 20;
+	var bounds = this.svg[0][0].getBoundingClientRect()
+	var deltaY = 0;
+	var deltaX = 0;
+	var coords = node.foreignObject.getBoundingClientRect()
+	if (coords.top < padding + bounds.top) {
+		deltaY = padding + bounds.top - coords.top
+	}
+	else if (coords.top + coords.height > bounds.height + bounds.top - padding) {
+		deltaY = bounds.height + bounds.top - padding - coords.top - coords.height
 	}
 
-	this.go(graphParams, callback)
-}
+	if (coords.left < padding + bounds.left) {
+		deltaX = padding + bounds.left - coords.left
+	}
+	else if (coords.left + coords.width > bounds.width + bounds.left - padding) {
+		deltaX = bounds.width + bounds.left - padding - coords.left - coords.width
+	}
+
+	var currPos = this.zoom.translate()
 
 
-//search
+	// Center the root node by translating the container <g> inside the svg
+	this.zoom.translate([deltaX + currPos[0], deltaY + currPos[1]])
+	this.zoom.event(this.svg)
+};
+
+
 
 
 Graph.prototype.getCollegeName = function () {

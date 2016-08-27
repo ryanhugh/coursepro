@@ -117,11 +117,15 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 
 	//this returns instantly if already loaded
 	q.awaitAll(function (err) {
+
+		// If something errors, try to continue anyway,
+		// in case it is not that big of an error.
+		// There is no real good recovery option here. 
 		if (err) {
 			elog("ERROR", err);
-			// return callback(err)
 		}
-		//setTimeout 0 because $scope.$update()
+
+		//node.timeout 0 because $scope.$update()
 		node.timeout(function () {
 			node.isExpanded = openPanel;
 			node.showSelectPanel = false;
@@ -130,9 +134,6 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 			if (err) {
 				console.log("ERRor loading loadSections", err)
 			}
-
-			//$scope references just the $scope of the node that was updated, 
-			// this.$scope references everything, and contains $scope
 
 
 			//update the dom with the new $scope and node
@@ -146,6 +147,10 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 
 			// and tell d3 to move the panel back to where it should be
 			Graph.instance.force.alpha(.0051)
+
+			if (node.isExpanded) {
+				Graph.instance.moveNodeOnScreen(node);
+			}
 
 			callback()
 		}.bind(this))
