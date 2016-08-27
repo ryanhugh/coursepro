@@ -93,7 +93,7 @@ DatabaseDumps.prototype.go = function (queries, callback) {
 	
 
 	// Get all the classes in a term, or all the classes in the entire host
-	var query = this.getQueryOverlap(queries)
+	var query = this.getCommonHostAndTerm(queries)
 
 	var searchQuery = {
 		host: query.host

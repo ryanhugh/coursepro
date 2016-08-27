@@ -109,7 +109,7 @@ it('go should work', function (done) {
 		"subject": "STAT"
 	}
 
-	prereqClassUids.go(baseQuery, function (err, updatedClasses) {
+	prereqClassUids.go([baseQuery], function (err, updatedClasses) {
 		expect(updatedClasses.length).toBe(1)
 		expect(updatedClasses[0].prereqs.values[0].classUid).toBe('023_1049977931')
 		expect(updatedClasses[0].prereqs.values[0].classId).toBe(undefined)
@@ -128,7 +128,7 @@ it('can swap coreqs', function (done) {
 		"subject": "EDUC"
 	}
 
-	prereqClassUids.go(baseQuery, function (err, updatedClasses) {
+	prereqClassUids.go([baseQuery], function (err, updatedClasses) {
 		expect(updatedClasses.length).toBe(1)
 		console.log(updatedClasses[0].coreqs);
 		expect(updatedClasses[0].coreqs.values[0].classUid).toBe('016_1711862930')
@@ -151,7 +151,7 @@ it('can simplify', function (done) {
 		"subject": "STAT"
 	}
 
-	prereqClassUids.go(baseQuery, function (err, updatedClasses) {
+	prereqClassUids.go([baseQuery], function (err, updatedClasses) {
 		expect(updatedClasses.length).toBe(1)
 
 		updatedClasses[0].prereqs.values.forEach(function (prereq) {

@@ -127,7 +127,7 @@ TermStartEndDate.prototype.go = function (baseQueries, callback) {
 		return callback()
 	}
 
-	var query = this.getQueryOverlap(baseQueries);
+	var query = this.getCommonHostAndTerm(baseQueries);
 
 	if (query.host && query.termId) {
 		return this.runOnTerm({

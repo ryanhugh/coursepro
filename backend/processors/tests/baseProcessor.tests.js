@@ -3,8 +3,8 @@
 var baseProcessor = require('../baseProcessor')
 
 
-fit('should work', function () {
-	var result = baseProcessor.getQueryOverlap([{
+it('should work', function () {
+	var result = baseProcessor.getCommonHostAndTerm([{
 		host: 'neu.edu',
 		termId: '201710'
 	}, {

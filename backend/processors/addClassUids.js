@@ -45,8 +45,7 @@ AddClassUids.prototype.getClassUid = function (classId, title) {
 
 
 AddClassUids.prototype.processSingleQuery = function (query, callback) {
-
-	classesDB.find(baseQuery, {
+	classesDB.find(query, {
 		skipValidation: true
 	}, function (err, results) {
 		if (err) {
@@ -125,15 +124,22 @@ AddClassUids.prototype.go = function (baseQuerys, callback) {
 	}
 
 	var q = queue()
+	var results = []
 
 	baseQuerys.forEach(function (query) {
 		q.defer(function (callback) {
-			this.processSingleQuery(query, callback)
+			this.processSingleQuery(query, function (err, changedClasses) {
+				if (err) {
+					return callback(err)
+				}
+				results = results.concat(changedClasses)
+				callback()
+			}.bind(this))
 		}.bind(this))
 	}.bind(this))
 
 	q.awaitAll(function (err) {
-		callback(err)
+		callback(err, results)
 	}.bind(this))
 };
 

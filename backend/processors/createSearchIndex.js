@@ -22,51 +22,15 @@ CreateSearchIndex.prototype = Object.create(BaseProcessor.prototype);
 CreateSearchIndex.prototype.constructor = CreateSearchIndex;
 
 
-CreateSearchIndex.prototype.go = function (query, callback) {
+CreateSearchIndex.prototype.go = function (queries, callback) {
 	if (!this.isUpdatingEntireTerm(queries)) {
 		console.log("Not creating another search index when running on a subject or a class");
 		return callback()
 	}
 
-
-	var q = queue()
-
-	var sections;
-
-	q.defer(function (callback) {
-		sectionsDB.find(query, {
-			skipValidation: true
-		}, function (err, results) {
-			if (err) {
-				return callback(err)
-			}
-			console.log("got sections", results.length);
-			sections = results;
-			return callback()
-		}.bind(this))
-	}.bind(this))
-
-	var classes;
-
-	q.defer(function (callback) {
-		classesDB.find(query, {
-			skipValidation: true
-		}, function (err, results) {
-			if (err) {
-				return callback(err)
-			}
-			if (results.length === 0) {
-				return callback('no classes?')
-			}
-			console.log("got classes", results.length);
-			classes = results;
-			return callback()
-		}.bind(this))
-	}.bind(this))
-
 	var errorCount = 0;
 
-	q.awaitAll(function (err) {
+	this.getClassesAndSections(queries, function (err, classes, sections) {
 		if (err) {
 			return callback(err)
 		}

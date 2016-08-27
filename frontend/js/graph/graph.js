@@ -442,9 +442,6 @@ Graph.prototype.loadNodes = function (callback) {
 		node.sortCoreqs();
 	}.bind(this));
 
-	// Add the floating text boxes
-	node[0].floatingTextBox = "test text here!"
-
 	this.force.nodes(this.nodes)
 		.links(this.links)
 

@@ -100,7 +100,11 @@ PrereqClassUids.prototype.go = function (baseQueries, callback) {
 	// find classes that need to be updated
 	q.defer(function (callback) {
 		this.getClasses(baseQueries, function (err, classes) {
+			if (err) {
+				return callback(err)
+			}
 			classesToUpdate = classes;
+			callback()
 		}.bind(this))
 	}.bind(this))
 

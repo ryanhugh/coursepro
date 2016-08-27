@@ -36,7 +36,7 @@ BaseProcessor.prototype.getClasses = function (queries, callback) {
 	}.bind(this))
 
 	q.awaitAll(function (err) {
-		callback(err)
+		callback(err, classes)
 	}.bind(this))
 };
 
@@ -64,7 +64,7 @@ BaseProcessor.prototype.getSections = function(queries, callback) {
 	}.bind(this))
 
 	q.awaitAll(function (err) {
-		callback(err)
+		callback(err, sections)
 	}.bind(this))
 };
 
@@ -107,22 +107,20 @@ BaseProcessor.prototype.getSectionsAndClasses = function (queries, callback) {
 
 // Get the minimum part of queries that overlap. eg,
 // if given query {host:'neu.edu',termId:'201710'} and {host:'neu.edu',termId:'201630'}, the result would be {host:'neu.edu'}
-BaseProcessor.prototype.getQueryOverlap = function(queries) {
+BaseProcessor.prototype.getCommonHostAndTerm = function(queries) {
 	if (queries.length === 0) {
 		elog()
 		return {}
 	}
 	var retVal = {}
 
-	var currValue;
-	for (var i = 0; i < Keys.allKeys.length; i++) {
-		var keyName = Keys.allKeys[i];
+	// Nothing after termId is supported yet. 
+	var keys = ['host','termId']
 
-		// Not supported yet
-		if (keyName === 'classUid' || keyName === 'classId') {
-			elog()
-			break
-		}
+	var currValue;
+	for (var i = 0; i < keys.length; i++) {
+		var keyName = keys[i];
+
 		currValue = queries[0][keyName]
 		for (var j = 0; j < queries.length; j++) {
 			if (queries[j][keyName] != currValue) {
@@ -172,7 +170,7 @@ BaseProcessor.prototype.getClassHash = function (queries, configOrCallback, call
 
 
 	// and find all classes that could be matched
-	var queryOverlap = this.getQueryOverlap(queries);
+	var queryOverlap = this.getCommonHostAndTerm(queries);
 	var matchingQuery = {
 		host: queryOverlap.host
 	}
