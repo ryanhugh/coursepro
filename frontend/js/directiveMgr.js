@@ -4,6 +4,7 @@ var macros = require('./macros')
 var angular = require('angular')
 require('bootstrap')
 require('fullcalendar')
+require('angular-bootstrap-switch')
 
 
 if ('serviceWorker' in navigator) {
@@ -30,6 +31,7 @@ var dependencies = [
 	'ui.calendar',
 	'templates',
 	'infinite-scroll',
+	'frapontillo.bootstrap-switch',
 ]
 
 var angularModule = angular.module('app', dependencies, ['$rootScopeProvider', '$compileProvider', function ($rootScopeProvider, $compileProvider) {

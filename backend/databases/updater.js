@@ -16,7 +16,7 @@ function Updater() {
 	}
 
 	//run updater on boot if in production
-	if (macros.PRODUCTION || 1) {
+	if (macros.PRODUCTION) {
 		this.onInterval();
 	};
 

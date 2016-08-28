@@ -3,6 +3,7 @@ var _ = require('lodash')
 
 var macros = require('../macros')
 var Class = require('../data/Class')
+var user = require('../data/user')
 
 function Node(classOrRequisiteBranch) {
 	if (classOrRequisiteBranch.isClass === false) {
@@ -10,7 +11,7 @@ function Node(classOrRequisiteBranch) {
 	}
 
 	if (classOrRequisiteBranch instanceof Class) {
-		this.isClass = true;
+		this.isClass = true; 
 	}
 	else {
 		this.isClass = false;
@@ -72,6 +73,9 @@ function Node(classOrRequisiteBranch) {
 	this.isCoreq = false;
 	// Added by treemgr, is the index of this node in the paren't .coreqs.values, if this node is a coreq
 	this.coreqIndex = 0;
+
+
+	this.watchingThisClass = false;
 
 
 	// For D3
@@ -395,6 +399,21 @@ Node.prototype.checkPos = function () {
 		elog('invalid x or y!', this)
 	}
 }
+
+// This is called directly from angular
+// If given undefined as argument, return the current value
+// else, set value with given value
+Node.prototype.watchingFunc = function (value) {
+	if (value === undefined) {
+		return user.getListIncludesClass(macros.WATCHING_LIST, this.class)
+	}
+	else if (value) {
+		user.addToList(macros.WATCHING_LIST, [this.class], this.class.sections)
+	}
+	else {
+		user.removeFromList(macros.WATCHING_LIST, [this.class], this.class.sections)
+	}
+};
 
 
 // Starts a timer for a given number of ms.

@@ -39,20 +39,13 @@
                         {{node.class.desc}}
                     </div>
 
-                    <div style="text-align: center;margin-bottom: -30px;">
-                        <div style="color: #888888;font-size: 30px;display: inline-block;" class="glyphicon glyphicon-envelope"></div>
-                        <a class="linkToClassWatchModel" ng-click="graph.openWatchModel(this)" style="cursor:pointer;display: inline-block;vertical-align: top;margin-left: 5px;color: #333;">Get notified when
-                            <br> seats open up!</a>
-                    </div>
+
                     <div>
-                        <div style="text-align: left;display: inline-block;line-height: 15px;width: 35%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap">
+                        <div style="text-align: left;display: inline-block;line-height: 15px;width: 60%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap">
 
-                            <span uib-tooltip="Prerequisites: {{node.class.getPrereqsString()}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">Prerequisites: {{node.class.getPrereqsString()}}</span>
-                            <br/> 
-                            <span uib-tooltip="Corequisites: {{node.class.getCoreqsString()}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">Corequisites: {{node.class.getCoreqsString()}}</span>
-                            <br>
-
-                            <br>
+                            <span>Prerequisites: {{node.class.getPrereqsString()}}</span>
+                            <br/>
+                            <span>Corequisites: {{node.class.getCoreqsString()}}</span>
                         </div>
                         <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;">
                             <span ng-if="::node.class.getLastUpdateString()">
@@ -70,8 +63,47 @@
                             </span>
                         </div>
                     </div>
-
                 </div>
+
+                <div style="width:100%;border-top: 1px solid #ddd;height: 17px;"></div> 
+
+                <!-- <div height="10px"></div> -->
+
+                <!--  -->
+                <div class="row" ng-if ="node.lowestParent && (node.wouldSatisfyNode || graphPanelExpand.getNodeIsSelected(node))" style="margin-bottom: 28px;line-height: 16px;">
+                    <div class="col-md-8 actionTextContainer">
+                        <span style="font-size:18px">Use this class to satisfy the prerequisites of {{node.getParentString()}}?</span>
+                        <br>
+                        <span>Instead of this class, you could also pick AAAA 124 or BBBB 3333</span>
+                        <br>
+                        <span>
+                            <a href="">Learn more</a>
+                    </div>
+                    <div class="col-md-3" style="position: inherit;display: inline-block;">
+                        <input bs-switch ng-model="graphPanelExpand.selectedFun(node)" type="checkbox" ng-model-options="{ getterSetter: true }" >
+                        <!-- <input type="checkbox" checked class="selectedSwitchClass" style="display: block;margin: 0 auto;"> -->
+                    </div>
+                </div>
+
+                <div class="row" style="margin-bottom: 23px;line-height: 16px;">
+                    <div class="col-md-8 actionTextContainer">
+                        <span style="font-size:18px">Get notified when seats open up!</span>
+                        <br>
+                        <span>We check frequently and will email you if any seats open up.</span>
+                        <br>
+                        <span>
+                            <a href="">Learn more</a>
+                    </div>
+                    <div class="col-md-3" style="position: inherit;display: inline-block;">
+                        <input bs-switch ng-model="node.watchingFunc" type="checkbox" ng-model-options="{ getterSetter: true }" >
+                        <!-- <input type="checkbox" checked class="swatchingSwitchClass" style="display: block;margin: 0 auto;"> -->
+                    </div>
+                </div>
+
+
+
+                <div style="width:100%;border-bottom: 1px solid #ddd;"></div>
+
 
                 <table class="table table-striped" ng-if="node.class.sections.length>0" style="margin-bottom:0">
                     <thead>
@@ -129,7 +161,8 @@
 
                             <td>
                                 <span ng-repeat="location in ::section.getLocations()">
-                                    <span ng-if="location != 'TBA' || section.getLocations().length <= 1">{{::location}}</span><span ng-if="!$last">,&nbsp;</span>
+                                    <span ng-if="location != 'TBA' || section.getLocations().length <= 1">{{::location}}</span>
+                                    <span ng-if="!$last">,&nbsp;</span>
                                 </span>
                             </td>
 
@@ -141,7 +174,7 @@
                             <td>
 
                                 <!-- don't display the "/" until these are loaded -->
-                                <span ng-if="::(section.seatsRemaining || section.seatsCapacity)"  uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                <span ng-if="::(section.seatsRemaining || section.seatsCapacity)" uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
                                     {{::section.seatsRemaining}}/{{::section.seatsCapacity}}
                                 </span>
 

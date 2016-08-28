@@ -132,7 +132,7 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 
 			//if it failed, toggle isExpanded and update the scope
 			if (err) {
-				console.log("ERRor loading loadSections", err)
+				elog("ERRor loading loadSections", err)
 			}
 
 
@@ -151,6 +151,8 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 			if (node.isExpanded) {
 				Graph.instance.moveNodeOnScreen(node);
 			}
+
+			node.watchingThisClass = user.getListIncludesClass(node.class)
 
 			callback()
 		}.bind(this))
@@ -249,7 +251,7 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 
 				// After all the graph stuff is done, shink this panel back to avoid the redraw
 				node.showSelectPanel = false;
-				node.isExpanded = false;
+				node.isExpanded = true;
 				clearTimeout(node.graphPanelPromptTimeout);
 				node.$scope.$apply();
 
@@ -260,11 +262,26 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 
 				node.updateWidth();
 				node.updateHeight()
+				node.bringToFront()
 				callback()
 			}.bind(this))
 		}.bind(this))
 	}.bind(this))
 };
+
+
+GraphPanelExpand.prototype.selectedFun = function (node) {
+	return function (value) {
+		if (value === undefined) {
+			return user.getListIncludesClass(macros.SELECTED_LIST, node.class)
+		}
+		else {
+			this.onPanelSelect(node)
+		}
+	}.bind(this)
+};
+
+
 
 
 //called from graph.html 
