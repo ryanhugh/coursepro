@@ -238,7 +238,15 @@
                 <ng-pluralize ng-if="::node.class.dataStatus!==macros.DATASTATUS_FAIL" count="::node.class.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
             </div>
             <div ng-if="!node.isCoreq" style="text-align: center;">
-                Prerequisites
+
+                <div>
+                    Prerequisites
+                </div>
+                
+
+                <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                
+
             </div>
         </div>
     </div>
