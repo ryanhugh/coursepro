@@ -230,13 +230,13 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 		return callback();
 	}
 
+	node.timeout(function () {
 
-	user.toggleListContainsClass(macros.SELECTED_LIST, node.class, false, function (err) {
-		if (err) {
-			elog(err);
-			return callback();
-		}
-		node.timeout(function () {
+		user.toggleListContainsClass(macros.SELECTED_LIST, node.class, false, function (err) {
+			if (err) {
+				elog(err);
+				return callback();
+			}
 
 
 			// Run the entire big node through all of treeMgr again
@@ -249,8 +249,9 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 			treeMgr.go(Graph.instance.rootNode)
 			Graph.instance.loadNodes(function () {
 
-				// After all the graph stuff is done, shink this panel back to avoid the redraw
 				node.showSelectPanel = false;
+
+				// Actually, keep the panel expanded when the toggle button is clicked
 				node.isExpanded = true;
 				clearTimeout(node.graphPanelPromptTimeout);
 				node.$scope.$apply();
@@ -424,6 +425,35 @@ GraphPanelExpand.prototype.startPromptTimer = function (node, event) {
 	}.bind(this), 1500)
 };
 
+
+
+// Removes any nodes from thi.openOrder that are not in the graph or are not expanded
+GraphPanelExpand.prototype.reloadOpenOrder = function(rootNode) {
+
+	if (this.openOrder.length === 0) {
+		return;
+	}
+	
+	var newOpenOrder = []	
+
+	var stack = [rootNode]
+	var curr;
+	while ((curr = stack.pop())) {
+		if (curr.isExpanded && _(this.openOrder).includes(curr)) {
+			newOpenOrder.push(curr)
+		}
+
+
+		stack = stack.concat(curr.prereqs.values)
+	}
+
+
+	this.openOrder = newOpenOrder;
+};
+
+
+
+
 //this is called once when $scope.node === undefined, when the root node first loads
 GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
@@ -437,7 +467,7 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 	element = element.parent()
 
 	if (!node.lowestParent) {
-		this.openOrder = []
+		this.reloadOpenOrder(node)
 	};
 
 	//if only this panel, expand it

@@ -126,6 +126,16 @@ Node.create = function (aClass) {
 };
 
 
+Object.defineProperty(Node.prototype,'fixed',{
+	get: function () {
+		return this.isExpanded
+	},
+	set: function (value) {
+		this.isExpanded = value
+	}
+})
+
+
 // its better to return a random number than to return null in case of error
 Node.prototype.getIdInternal = function () {
 	if (this.isClass) {

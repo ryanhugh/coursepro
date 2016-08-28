@@ -273,6 +273,7 @@ Graph.prototype.onTick = function (e) {
 
 
 		// collision between children on different depths
+		// TODO: this needs to be converted to actual trig that makes sure that the angle between any two parents or any two children is not too small.
 		if (!currNode.allChildrenAtSameDepth) {
 			for (var i = 0; i < currNode.prereqs.values.length; i++) {
 				for (var j = i + 1; j < currNode.prereqs.values.length; j++) {

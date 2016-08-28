@@ -65,12 +65,12 @@
                     </div>
                 </div>
 
-                <div style="width:100%;border-top: 1px solid #ddd;height: 17px;"></div> 
+                <div style="width:100%;border-top: 1px solid #ddd;height: 17px;"></div>
 
                 <!-- <div height="10px"></div> -->
 
                 <!--  -->
-                <div class="row" ng-if ="node.lowestParent && (node.wouldSatisfyNode || graphPanelExpand.getNodeIsSelected(node))" style="margin-bottom: 28px;line-height: 16px;">
+                <div class="row" ng-if="node.lowestParent && (node.wouldSatisfyNode || graphPanelExpand.getNodeIsSelected(node))" style="margin-bottom: 28px;line-height: 16px;">
                     <div class="col-md-8 actionTextContainer">
                         <span style="font-size:18px">Use this class to satisfy the prerequisites of {{node.getParentString()}}?</span>
                         <br>
@@ -80,8 +80,7 @@
                             <a href="">Learn more</a>
                     </div>
                     <div class="col-md-3" style="position: inherit;display: inline-block;">
-                        <input bs-switch ng-model="graphPanelExpand.selectedFun(node)" type="checkbox" ng-model-options="{ getterSetter: true }" >
-                        <!-- <input type="checkbox" checked class="selectedSwitchClass" style="display: block;margin: 0 auto;"> -->
+                        <input bs-switch ng-model="graphPanelExpand.selectedFun(node)" type="checkbox" ng-model-options="{ getterSetter: true }" switch-on-text="YES" switch-off-text="NO">
                     </div>
                 </div>
 
@@ -95,8 +94,7 @@
                             <a href="">Learn more</a>
                     </div>
                     <div class="col-md-3" style="position: inherit;display: inline-block;">
-                        <input bs-switch ng-model="node.watchingFunc" type="checkbox" ng-model-options="{ getterSetter: true }" >
-                        <!-- <input type="checkbox" checked class="swatchingSwitchClass" style="display: block;margin: 0 auto;"> -->
+                        <input bs-switch ng-model="node.watchingFunc" type="checkbox" ng-model-options="{ getterSetter: true }">
                     </div>
                 </div>
 
@@ -226,17 +224,22 @@
 
                 0 sections this term
                 <div style="white-space: normal;">
-                    <br>Couldn't find any class info on
-                    <br> {{::node.class.host}} :( </div>
+                    An error occured while fetching the information for this class :/
+                </div>
             </div>
         </div>
 
 
         <!-- !node.isExpanded must be watching (no ::) -->
         <div ng-if="!node.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
-            <div ng-if="::node.class.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
+            <div ng-if="node.isCoreq">
+                <div ng-if="::node.class.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
 
-            <ng-pluralize ng-if="::node.class.dataStatus!==macros.DATASTATUS_FAIL" count="::node.class.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
+                <ng-pluralize ng-if="::node.class.dataStatus!==macros.DATASTATUS_FAIL" count="::node.class.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
+            </div>
+            <div ng-if="!node.isCoreq" style="text-align: center;">
+                Prerequisites
+            </div>
         </div>
     </div>
 
