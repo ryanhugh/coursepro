@@ -244,6 +244,27 @@ GraphPanelExpand.prototype.selectedFun = function (node) {
 };
 
 
+// This is called directly from angular
+// If given undefined as argument, return the current value
+// else, set value with given value
+GraphPanelExpand.prototype.watchingFunc = function (node) {
+	return function (value) {
+		if (value === undefined) {
+			return user.getListIncludesClass(macros.WATCHING_LIST, node.class)
+		}
+		else if (!user.getAuthenticated()) {
+			Graph.instance.openWatchModel(node)
+		}
+		else if (value) {
+			user.addToList(macros.WATCHING_LIST, [node.class], node.class.sections)
+		}
+		else {
+			user.removeFromList(macros.WATCHING_LIST, [node.class], node.class.sections)
+		}
+	}.bind(this)
+};
+
+
 
 
 //called from graph.html 

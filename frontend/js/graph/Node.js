@@ -414,21 +414,6 @@ Node.prototype.checkPos = function () {
 	}
 }
 
-// This is called directly from angular
-// If given undefined as argument, return the current value
-// else, set value with given value
-Node.prototype.watchingFunc = function (value) {
-	if (value === undefined) {
-		return user.getListIncludesClass(macros.WATCHING_LIST, this.class)
-	}
-	else if (value) {
-		user.addToList(macros.WATCHING_LIST, [this.class], this.class.sections)
-	}
-	else {
-		user.removeFromList(macros.WATCHING_LIST, [this.class], this.class.sections)
-	}
-};
-
 
 // Starts a timer for a given number of ms.
 // The timer is canceled if this node's $scope is destroyed before the timer is fired

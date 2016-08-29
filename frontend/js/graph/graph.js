@@ -7,6 +7,8 @@ var d3 = require('d3')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
+var user = require('../data/user')
+
 //tree stuff
 var downloadTree = require('./downloadTree')
 var treeMgr = require('./treeMgr')
@@ -40,7 +42,6 @@ function Graph() {
 	// the container, which is the only child of the svg, defined in go
 	this.container = null;
 
-
 	this.links = []
 	this.linkElements = null;
 
@@ -53,6 +54,7 @@ function Graph() {
 	// and then increase the y multiplyer to move the nodes to the correct y coordinate. 
 	this.yCoordAttractionMultiplyer = 1;
 
+	this.$scope.user = user;
 
 	var path = {};
 
@@ -601,6 +603,7 @@ Graph.prototype.moveNodeOnScreen = function (node) {
 	}
 	else if (coords.top + coords.height > bounds.height + bounds.top - padding) {
 		deltaY = bounds.height + bounds.top - padding - coords.top - coords.height
+		// TODO: dont move past the top of the screen
 	}
 
 	if (coords.left < padding + bounds.left) {
@@ -627,8 +630,8 @@ Graph.prototype.getCollegeName = function () {
 
 
 
-Graph.prototype.openWatchModel = function ($scope) {
-	WatchClassesModel.open(this, $scope.node)
+Graph.prototype.openWatchModel = function (node) {
+	WatchClassesModel.open(this, node)
 };
 
 

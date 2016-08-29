@@ -76,8 +76,7 @@
                         <br>
                         <span>Instead of this class, you could also pick {{node.neightborsString}}</span>
                         <br>
-                        <span>
-                            <a href="">Learn more</a>
+                            <a href="" ng-click="graph.openSelectHelpModel()">Learn more</a>
                     </div>
                     <div class="col-md-3" style="position: inherit;display: inline-block;">
                         <input bs-switch ng-model="graphPanelExpand.selectedFun(node)" type="checkbox" ng-model-options="{ getterSetter: true }" switch-on-text="YES" switch-off-text="NO">
@@ -88,13 +87,17 @@
                     <div class="col-md-8 actionTextContainer">
                         <span style="font-size:18px">Get notified when seats open up!</span>
                         <br>
-                        <span>We check frequently and will email you if any seats open up.</span>
+                        <span ng-if="!user.getListIncludesClass(macros.WATCHING_LIST, node.class,5)">We check frequently and will email you if any seats open up.</span>
+
+                        <span ng-if="user.getListIncludesClass(macros.WATCHING_LIST, node.class,5)">
+                            Update emails will be sent to <span style="font-weight:bold;">{{user.dbData.email}}</span> !
+                        </span>
                         <br>
-                        <span>
-                            <a href="">Learn more</a>
+                        <!-- <span>
+                            <a href="">Learn more</a> -->
                     </div>
                     <div class="col-md-3" style="position: inherit;display: inline-block;">
-                        <input bs-switch ng-model="node.watchingFunc" type="checkbox" ng-model-options="{ getterSetter: true }">
+                        <input bs-switch ng-model="graphPanelExpand.watchingFunc(node)" type="checkbox" ng-model-options="{ getterSetter: true }">
                     </div>
                 </div>
 
@@ -138,7 +141,7 @@
                         <tr ng-repeat="section in node.class.sections.slice(0, node.showingSectionCount)">
                             <td>{{::section.crn}}</td>
                             <td>{{::section.getProfs().join(', ')}}</td>
-                            <td>
+                            <td style="white-space: nowrap;">
                                 <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
 
                                     <!-- avoid calculating the string more than once -->
