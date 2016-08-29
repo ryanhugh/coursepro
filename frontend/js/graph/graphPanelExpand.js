@@ -101,18 +101,20 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 	};
 
 	var q = queue()
-
-	q.defer(function (callback) {
-		node.class.loadSections(function (err) {
-			callback(err)
+	
+	if (!node.class.isString) {
+		q.defer(function (callback) {
+			node.class.loadSections(function (err) {
+				callback(err)
+			}.bind(this))
 		}.bind(this))
-	}.bind(this))
-
-	q.defer(function (callback) {
-		node.class.downloadPrereqs(function (err) {
-			callback(err)
+	
+		q.defer(function (callback) {
+			node.class.downloadPrereqs(function (err) {
+				callback(err)
+			}.bind(this))
 		}.bind(this))
-	}.bind(this))
+	}
 
 
 	//this returns instantly if already loaded
@@ -152,52 +154,11 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 				Graph.instance.moveNodeOnScreen(node);
 			}
 
-			node.watchingThisClass = user.getListIncludesClass(node.class)
-
 			callback()
 		}.bind(this))
 	}.bind(this))
 };
 
-GraphPanelExpand.prototype.togglePanelPrompt = function (node, callback) {
-	setTimeout(function () {
-		clearTimeout(node.graphPanelPromptTimeout);
-		node.showSelectPanel = !node.showSelectPanel;
-		node.$scope.$apply()
-
-		node.updateWidth();
-		node.updateHeight();
-
-		// and tell d3 to move the panel back to where it should be
-		Graph.instance.force.alpha(.0051)
-
-		callback()
-	}.bind(this), 0)
-};
-
-GraphPanelExpand.prototype.openPanelPrompt = function (node, callback) {
-	if (!callback) {
-		callback = function () {}
-	};
-	if (node.isExpanded || node.showSelectPanel) {
-		return callback();
-	}
-	this.togglePanelPrompt(node, callback);
-	this.updateScope(node, true)
-};
-
-GraphPanelExpand.prototype.closePanelPrompt = function (node, callback) {
-	if (!callback) {
-		callback = function () {}
-	};
-	if (node.isExpanded || !node.showSelectPanel) {
-		return callback()
-	}
-	this.togglePanelPrompt(node, callback);
-	setTimeout(function () {
-		this.updateScope(node, false);
-	}.bind(this), 0)
-};
 
 GraphPanelExpand.prototype.onPanelClick = function (node, callback) {
 	if (!callback) {
@@ -207,15 +168,15 @@ GraphPanelExpand.prototype.onPanelClick = function (node, callback) {
 	if (node.isExpanded) {
 		return callback()
 	}
-	else if (node.class.isString) {
-		this.onPanelSelect(node, callback);
-	}
-	else if (!node.lowestParent || node.isCoreq) {
-		this.openPanel(node, callback);
-	}
-	else {
-		this.openPanelPrompt(node, callback);
-	}
+	this.openPanel(node, callback);
+	// else if (node.class.isString) {
+	// 	this.onPanelSelect(node, callback);
+	// }
+	// else if (!node.lowestParent || node.isCoreq) {
+	// }
+	// else {
+	// 	this.openPanelPrompt(node, callback);
+	// }
 }
 
 
@@ -307,17 +268,23 @@ GraphPanelExpand.prototype.openPanel = function (node, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-	if (node.isExpanded || node.class.isString) {
-
+	if (node.isExpanded) {
 		elog('openPanel was called and the panel is already open?')
-		if (node.class.isString) {
-			return callback();
-		}
+		return callback()
 	}
+	
+	var logUrl;
+	if (node.class.isString) {
+		logUrl = Keys.createWithString(node.class).getHash();
+	}
+	else {
+		logUrl = Keys.create(node.class).getHashWithEndpoint('/listSections')
+	}
+	
 
 	ga('send', {
 		'hitType': 'pageview',
-		'page': Keys.create(node.class).getHashWithEndpoint('/listSections'),
+		'page': logUrl,
 		'title': 'Coursepro.io'
 	});
 
@@ -337,14 +304,23 @@ GraphPanelExpand.prototype.closePanel = function (node, callback) {
 	if (!node.isExpanded) {
 		elog('closePanel was called and the panel is already closed?')
 	}
+	
+	var logUrl;
+	if (node.class.isString) {
+		logUrl = Keys.createWithString(node.class).getHash();
+	}
+	else {
+		// NOTE WHEN REFACTORING this isnt actually a valid enpoint, just used for GA
+		logUrl = Keys.create(node.class).getHashWithEndpoint('/closePanel')
+	}
+	
 
 	ga('send', {
 		'hitType': 'pageview',
-
-		// NOTE WHEN REFACTORING this isnt actually a valid enpoint, just used for GA
-		'page': Keys.create(node.class).getHashWithEndpoint('/closePanel'),
+		'page': logUrl,
 		'title': 'Coursepro.io'
 	});
+
 
 	_.pull(this.openOrder, node)
 
@@ -420,7 +396,7 @@ GraphPanelExpand.prototype.startPromptTimer = function (node, event) {
 			return;
 		}
 		else {
-			this.openPanelPrompt(node);
+			// this.openPanelPrompt(node);
 		}
 	}.bind(this), 1500)
 };

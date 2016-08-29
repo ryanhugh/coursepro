@@ -28,7 +28,8 @@ function Keys(obj, endpoint, config) {
 
 
 	// Get string off object if creating with string
-	if (obj.desc && config.stringAllowed) {
+	if (obj.desc && obj.host && config.stringAllowed) {
+		this.host = obj.host
 		this.desc = obj.desc
 		this.isString = true
 	}
@@ -106,6 +107,7 @@ Keys.createWithString = function (obj) {
 
 
 Keys.allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
+Keys.replacementRegex = /[^A-Za-z0-9.]+/g
 
 // Keys.prototype.createWithClassId = function (obj, endpoint) {
 // 	return new this(obj, endpoint, {
@@ -116,8 +118,13 @@ Keys.allKeys = ['host', 'termId', 'subject', 'classUid', 'crn']
 // returns neu.edu/201710/CS/4800_4444444/1234, etc
 Keys.prototype.getHash = function () {
 	if (this.isString) {
-		elog()
-		return null;
+		if (!this.host || !this.desc) {
+			elog()
+			return null;
+		}
+		else {
+			return this.host + '/' + this.desc.replace(Keys.replacementRegex, "_")
+		}
 	}
 	if (this.hash) {
 		if (startsWith(this.hash, '/list')) {
@@ -132,7 +139,7 @@ Keys.prototype.getHash = function () {
 		if (!this[Keys.allKeys[i]]) {
 			break
 		}
-		key.push(this[Keys.allKeys[i]].replace(/[^A-Za-z0-9.]+/g, "_"));
+		key.push(this[Keys.allKeys[i]].replace(Keys.replacementRegex, "_"));
 	}
 	if (key.length > 0) {
 		return key.join('/')

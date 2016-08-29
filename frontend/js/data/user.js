@@ -812,12 +812,12 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				elog()
 			}
 			if (addToClasses || addToDBClasses) {
-				if (aClass.isString) {
-					elog('Cant add string to db')
-				}
-				else {
-					classesObjs.push(keys.getObj())
-				}
+				// if (aClass.isString) {
+				// 	elog('Cant add string to db')
+				// }
+				// else {
+				classesObjs.push(keys.getObj())
+				// }
 			}
 			if (addToClasses) {
 				this.lists[listName].classes.push(aClass);

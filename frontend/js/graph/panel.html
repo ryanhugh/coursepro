@@ -1,7 +1,7 @@
 <div graph-panel-expand ng-click="graphPanelExpand.onPanelClick(node)">
 
     <!-- main panel -->
-    <div class="panel {{node.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="node.isClass && !node.showSelectPanel" panel-close=".closePanel">
+    <div class="panel {{node.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="node.isClass" panel-close=".closePanel">
 
         <div class="panel-heading">
 
@@ -33,8 +33,8 @@
 
         <!-- only the panel body changes on node.isExpanded -->
         <div ng-if="node.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;width:100%;padding: 0;padding-top: 15px;" ng-style="{'width':panelWidth+'px'}">
-            <div ng-if="node.class.dataStatus === macros.DATASTATUS_DONE">
-                <div style="margin-left: 15px;margin-right: 15px;padding-bottom: 12px;">
+            <div ng-if="::node.class.dataStatus === macros.DATASTATUS_DONE || node.class.isString">
+                <div style="margin-left: 15px;margin-right: 15px;padding-bottom: 12px;" ng-if="!node.class.isString">
                     <div style="white-space: normal;margin-bottom:10px;line-height:15px">
                         {{node.class.desc}}
                     </div>
@@ -65,7 +65,7 @@
                     </div>
                 </div>
 
-                <div style="width:100%;border-top: 1px solid #ddd;height: 17px;"></div>
+                <div style="width:100%;border-top: 1px solid #ddd;height: 17px;" ng-if="!node.class.isString"></div>
 
                 <!-- <div height="10px"></div> -->
 
@@ -84,7 +84,7 @@
                     </div>
                 </div>
 
-                <div class="row" style="margin-bottom: 23px;line-height: 16px;">
+                <div class="row" style="margin-bottom: 23px;line-height: 16px;" ng-if="!node.class.isString">
                     <div class="col-md-8 actionTextContainer">
                         <span style="font-size:18px">Get notified when seats open up!</span>
                         <br>
@@ -231,27 +231,34 @@
 
 
         <!-- !node.isExpanded must be watching (no ::) -->
-        <div ng-if="!node.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
-            <div ng-if="node.isCoreq">
-                <div ng-if="::node.class.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
-
-                <ng-pluralize ng-if="::node.class.dataStatus!==macros.DATASTATUS_FAIL" count="::node.class.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
+        <div ng-if="!node.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;padding-bottom:8px">
+            <div ng-if="node.isCoreq" style="padding-bottom:7px">
+            	Coreq of {{node.lowestParent.class.subject}} {{node.lowestParent.class.classId}}
+                
             </div>
             <div ng-if="!node.isCoreq" style="text-align: center;">
+	            <div ng-if="node.wouldSatisfyNode && !user.getListIncludesClass(macros.SELECTED_LIST, node.class)" style="padding-bottom:7px">
+            		<div ng-if="::node.class.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
 
-                <div>
-                    Prerequisites
-                </div>
-                
-
-                <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
-                
-
+	                <ng-pluralize ng-if="::node.class.dataStatus!==macros.DATASTATUS_FAIL" count="::node.class.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
+	            </div>
+	            
+	            <div ng-if="!node.wouldSatisfyNode || user.getListIncludesClass(macros.SELECTED_LIST, node.class)">
+	            	<div ng-if="node.prereqs.values.length === 0" style="padding-bottom:7px">
+	            		<div ng-if="node.class.prereqs.values.length === 0">
+		            		No Prerequisites
+	            		</div>
+	            	</div>
+	            	<div ng-if="node.prereqs.values.length !== 0">
+		                <div>
+		                    Prerequisites
+		                </div>
+		                <div style="height:8px"></div>
+		
+		                <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+	            	</div>
+	            </div>
             </div>
         </div>
     </div>
-
-
-
-    <div ng-if="node.showSelectPanel" ng-include="'selectPanel.html'"></div>
 </div>
