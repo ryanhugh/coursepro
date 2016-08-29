@@ -255,7 +255,7 @@ Graph.prototype.onTick = function (e) {
 	for (var k = 0; k < this.nodes.length; k++) {
 		var currNode = this.nodes[k];
 
-		if (currNode.isCoreq) {
+		if (currNode.isCoreq || currNode.isExpanded) {
 			continue;
 		}
 
