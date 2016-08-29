@@ -11,7 +11,7 @@ function Node(classOrRequisiteBranch) {
 	}
 
 	if (classOrRequisiteBranch instanceof Class) {
-		this.isClass = true; 
+		this.isClass = true;
 	}
 	else {
 		this.isClass = false;
@@ -126,7 +126,11 @@ Node.create = function (aClass) {
 };
 
 
-Object.defineProperty(Node.prototype,'fixed',{
+// When the panel is expanded, it shouldn't move at all
+// Set node.fixed to true when the panel is expanded and to false when it is closed
+// Instead of having two booleans that are allways the same state,
+// use defineProperty to ensure fixed is allways the same as isExpanded
+Object.defineProperty(Node.prototype, 'fixed', {
 	get: function () {
 		return this.isExpanded
 	},

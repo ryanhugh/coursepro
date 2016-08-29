@@ -70,10 +70,25 @@ path.link.licensing {
 .bootstrap-switch {
     display: block;
     margin: 0 auto;
+    width: 104px !important;
 }
 
 .bootstrap-switch-container {
     transform: none !important;
+    white-space: nowrap;
+    width: 153px !important;
+}
+
+.bootstrap-switch-primary, .bootstrap-switch-default, .bootstrap-switch-label  {
+    width: 51px !important;
+}
+
+.bootstrap-switch-on > .bootstrap-switch-container {
+        margin-left: 0px !important;
+}
+
+.bootstrap-switch-off > .bootstrap-switch-container {
+        margin-left: -51px !important;
 }
 
 .row {

@@ -427,6 +427,28 @@ GraphPanelExpand.prototype.reloadOpenOrder = function(rootNode) {
 	this.openOrder = newOpenOrder;
 };
 
+GraphPanelExpand.prototype.getNeighborString = function(node) {
+	var neighbors = [];
+
+	treeMgr.getUpwardNeighbors(node).forEach(function (neighbor) {
+		if (!neighbor.isClass) {
+			return;
+		}
+
+		if (neighbor === node) {
+			return;
+		}
+
+		neighbors.push(neighbor.class.subject + ' ' + neighbor.class.classId)
+	}.bind(this))
+
+	if (neighbors.length === 0) {
+		return 'some other classes';
+	}
+	else {
+		return _.uniq(neighbors).join(' or ')
+	}
+};
 
 
 
