@@ -30,6 +30,9 @@ College.prototype.download = function(callback) {
 	}
 
 	Host.createMany(Keys.create({}), function (err, colleges) {
+		if (err) {
+			return callback(err)
+		}
 
 		var retVal = [];
 		colleges.forEach(function (college) {

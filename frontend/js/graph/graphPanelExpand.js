@@ -101,14 +101,14 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 	};
 
 	var q = queue()
-	
+
 	if (!node.class.isString) {
 		q.defer(function (callback) {
 			node.class.loadSections(function (err) {
 				callback(err)
 			}.bind(this))
 		}.bind(this))
-	
+
 		q.defer(function (callback) {
 			node.class.downloadPrereqs(function (err) {
 				callback(err)
@@ -272,7 +272,7 @@ GraphPanelExpand.prototype.openPanel = function (node, callback) {
 		elog('openPanel was called and the panel is already open?')
 		return callback()
 	}
-	
+
 	var logUrl;
 	if (node.class.isString) {
 		logUrl = Keys.createWithString(node.class).getHash();
@@ -280,7 +280,7 @@ GraphPanelExpand.prototype.openPanel = function (node, callback) {
 	else {
 		logUrl = Keys.create(node.class).getHashWithEndpoint('/listSections')
 	}
-	
+
 
 	ga('send', {
 		'hitType': 'pageview',
@@ -304,7 +304,7 @@ GraphPanelExpand.prototype.closePanel = function (node, callback) {
 	if (!node.isExpanded) {
 		elog('closePanel was called and the panel is already closed?')
 	}
-	
+
 	var logUrl;
 	if (node.class.isString) {
 		logUrl = Keys.createWithString(node.class).getHash();
@@ -313,7 +313,7 @@ GraphPanelExpand.prototype.closePanel = function (node, callback) {
 		// NOTE WHEN REFACTORING this isnt actually a valid enpoint, just used for GA
 		logUrl = Keys.create(node.class).getHashWithEndpoint('/closePanel')
 	}
-	
+
 
 	ga('send', {
 		'hitType': 'pageview',
@@ -404,13 +404,13 @@ GraphPanelExpand.prototype.startPromptTimer = function (node, event) {
 
 
 // Removes any nodes from thi.openOrder that are not in the graph or are not expanded
-GraphPanelExpand.prototype.reloadOpenOrder = function(rootNode) {
+GraphPanelExpand.prototype.reloadOpenOrder = function (rootNode) {
 
 	if (this.openOrder.length === 0) {
 		return;
 	}
-	
-	var newOpenOrder = []	
+
+	var newOpenOrder = []
 
 	var stack = [rootNode]
 	var curr;
@@ -426,30 +426,6 @@ GraphPanelExpand.prototype.reloadOpenOrder = function(rootNode) {
 
 	this.openOrder = newOpenOrder;
 };
-
-GraphPanelExpand.prototype.getNeighborString = function(node) {
-	var neighbors = [];
-
-	treeMgr.getUpwardNeighbors(node).forEach(function (neighbor) {
-		if (!neighbor.isClass) {
-			return;
-		}
-
-		if (neighbor === node) {
-			return;
-		}
-
-		neighbors.push(neighbor.class.subject + ' ' + neighbor.class.classId)
-	}.bind(this))
-
-	if (neighbors.length === 0) {
-		return 'some other classes';
-	}
-	else {
-		return _.uniq(neighbors).join(' or ')
-	}
-};
-
 
 
 //this is called once when $scope.node === undefined, when the root node first loads

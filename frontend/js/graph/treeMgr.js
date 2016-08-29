@@ -80,7 +80,7 @@ TreeMgr.prototype.simplifyTree = function (node) {
 
 };
 
-TreeMgr.prototype.dedupeNode = function(node) {
+TreeMgr.prototype.dedupeNode = function (node) {
 
 	//remove duplicates
 	// This is a map of the _ids to the child
@@ -122,6 +122,38 @@ TreeMgr.prototype.dedupeNode = function(node) {
 		this.dedupeNode(child);
 	}.bind(this))
 }
+
+TreeMgr.prototype.saveNeighborsString = function (node) {
+	var children = [];
+	node.prereqs.values.forEach(function (child) {
+		if (!child.isClass) {
+			return;
+		}
+
+		children.push(child)
+	}.bind(this))
+
+	children.forEach(function (child) {
+		var neightborsSet = children.slice(0)
+		_.pull(neightborsSet, child)
+
+		neightborsSet.forEach(function (childNode, index) {
+			neightborsSet[index] = childNode.class.subject + ' ' + childNode.class.classId
+		}.bind(this))
+
+		if (neightborsSet.length === 0) {
+			child.neightborsString = 'some other classes';
+		}
+		else {
+			child.neightborsString = _.uniq(neightborsSet).join(' or ')
+		}
+
+	}.bind(this))
+
+	node.prereqs.values.forEach(function (child) {
+		this.saveNeighborsString(child)
+	}.bind(this))
+};
 
 // one part of the above function that runs after the node injection that changes allParents...
 TreeMgr.prototype.skipNodesPostStuff = function (node) {
@@ -962,7 +994,7 @@ TreeMgr.prototype.setWouldSatisfy = function (node) {
 	if (node.isClass) {
 		if (node.isCoreq) {
 			node.wouldSatisfyNode = node.allParents[0].wouldSatisfyNode
-		} 
+		}
 		else {
 			node.wouldSatisfyNode = this.wouldSatisfyNode(node)
 		}
@@ -1164,6 +1196,10 @@ TreeMgr.prototype.go = function (node) {
 	// SimplifyTree requires _id's but simplifyIfSelected changes what the _ids whould be generated to so have to update them again
 	this.simplifyTree(node)
 	this.dedupeNode(node)
+
+	// This saves a string representation of the children of this node (eg ['PHYS 1151', 'PHYS 1161'])
+	// on each node before the prereqs are mucked with
+	this.saveNeighborsString(node);
 	this.simplifyIfSelected(node);
 
 	this.sortTree(node);
