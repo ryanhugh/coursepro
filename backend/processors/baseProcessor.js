@@ -69,7 +69,7 @@ BaseProcessor.prototype.getSections = function(queries, callback) {
 };
 
 
-BaseProcessor.prototype.getSectionsAndClasses = function (queries, callback) {
+BaseProcessor.prototype.getClassesAndSections = function (queries, callback) {
 	var classes = []
 	var sections = []
 

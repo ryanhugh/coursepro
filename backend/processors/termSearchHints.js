@@ -30,7 +30,7 @@ TermSearchHints.prototype.go = function (query, callback) {
 		return callback()
 	}
 
-	this.getSectionsAndClasses(query, function (err, classes, sections) {
+	this.getClassesAndSections(query, function (err, classes, sections) {
 		if (err) {
 			return callback(err)
 		}
