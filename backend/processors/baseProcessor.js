@@ -138,6 +138,11 @@ BaseProcessor.prototype.isUpdatingEntireTerm = function (queries) {
 	var shouldRun = false;
 	for (var i = 0; i < queries.length; i++) {
 		var query = queries[i];
+
+		if (typeof query != 'object') {
+			elog(queries)
+		}
+
 		if (!query.subject) {
 			shouldRun = true;
 			break;
