@@ -185,10 +185,10 @@ if (require.main === module) {
 	module.exports.go([{
 		host: 'swarthmore.edu',
 		// termId: "201710"
-	}, function (err, results) {
+	}], function (err, results) {
 		console.log(err, results);
 
-	}.bind(this)]);
+	}.bind(this));
 
 	// module.exports.go({
 	// 	host: 'swarthmore.edu'
