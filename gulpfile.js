@@ -191,6 +191,7 @@ var getFilesToProcess = memoize(function (config, callback) {
 		return callback(null, filesToProccess)
 	}).catch(function (err) {
 		onError('glob failed' , err)
+		return callback(err)
 	}.bind(this));;
 })
 
@@ -485,6 +486,7 @@ gulp.task('copyRootFiles', function (callback) {
 		})
 	}).catch(function (err) {
 		onError('glob failed' , err)
+		callback(err)
 	}.bind(this));
 });
 
@@ -647,6 +649,7 @@ var btestRun = batch(function (events, callback) {
 		})
 	}).catch(function (err) {
 		onError('glob failed' , err)
+		callback(err)
 	}.bind(this));
 }, function (err) {
 	onError('BATCH FAILED!' , err);
