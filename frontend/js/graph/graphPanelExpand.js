@@ -233,7 +233,7 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 };
 
 // Due to a bug in chrome, opacity css on an element in a foreign object in a svg causes the element to move across the screen
-// So manually animate the font color instead. 
+// So manually animate the font alpha instead. 
 GraphPanelExpand.prototype.showChangesSaved = function (node) {
 
 	var element = node.foreignObject.querySelector('.changesSaved')
