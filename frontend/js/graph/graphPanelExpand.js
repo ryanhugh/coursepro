@@ -200,7 +200,7 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 			}
 
 
-			// Run the entire big node through all of treeMgr again
+			// Run the entire graph through all of treeMgr again
 			// this is needed to rediscover any common prereqs, recalculate depths, and pretty much 
 			// everything else that treeMgr does. 
 
@@ -211,6 +211,7 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 			Graph.instance.loadNodes(function () {
 
 				node.showSelectPanel = false;
+				node.activateForceOnClose = true;
 
 				// Actually, keep the panel expanded when the toggle button is clicked
 				node.isExpanded = true;
@@ -232,12 +233,22 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 };
 
 
+GraphPanelExpand.prototype.showChangesSaved = function (node) {
+	return;
+	var element = node.foreignObject.querySelector('.changesSaved')
+	element.classList.remove('hidden')
+	setTimeout(function () {
+		element.classList.add('hidden')
+	}.bind(this), 200)
+};
+
 GraphPanelExpand.prototype.selectedFun = function (node) {
 	return function (value) {
 		if (value === undefined) {
 			return user.getListIncludesClass(macros.SELECTED_LIST, node.class)
 		}
 		else {
+			this.showChangesSaved(node)
 			this.onPanelSelect(node)
 		}
 	}.bind(this)
@@ -256,9 +267,11 @@ GraphPanelExpand.prototype.watchingFunc = function (node) {
 			Graph.instance.openWatchModel(node)
 		}
 		else if (value) {
+			this.showChangesSaved(node)
 			user.addToList(macros.WATCHING_LIST, [node.class], node.class.sections)
 		}
 		else {
+			this.showChangesSaved(node)
 			user.removeFromList(macros.WATCHING_LIST, [node.class], node.class.sections)
 		}
 	}.bind(this)
@@ -346,6 +359,17 @@ GraphPanelExpand.prototype.closePanel = function (node, callback) {
 	_.pull(this.openOrder, node)
 
 	this.onExpandClick(node, false, callback)
+
+	if (node.activateForceOnClose) {
+		node.activateForceOnClose = false;
+		setTimeout(function () {
+			Graph.instance.force.start()
+			Graph.instance.force.alpha(.03)
+		}.bind(this))
+	}
+
+
+
 };
 
 GraphPanelExpand.prototype.setUpwardLines = function (node, lineWidth) {

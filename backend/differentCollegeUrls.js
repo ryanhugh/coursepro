@@ -3,7 +3,7 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched", //works
   "https://ssb.ccsu.edu/pls/ssb_cPROD/bwckschd.p_disp_dyn_sched", //works
   "https://ssb.cc.binghamton.edu/banner/bwckschd.p_disp_dyn_sched", //this one dosen't have this url (scroll right), figure out which parser needs this and if it would be a easy fix or naw https://ssb.cc.binghamton.edu/banner/bwckctlg.p_disp_listcrse?term_in=201510&subj_in=MDVL&crse_in=561B&schd_in=%25
-  "https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched", //ran with bingham, and only got 1 term and 0 subjects... idk. will finish quick if ran again probably
+  "https://tturedss1.tntech.edu/pls/PROD/bwckschd.p_disp_dyn_sched", //ran with bingham, and only got 1 term and 0 subjects... idk. will finish quick if ran again probably. Ran again in Aug 2016 and it looks like the term farthest in the future is added, but dosen't have any subjects. Other terms are valid. 
   "https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched", //takes 3 hours and prereqs are not parsed correcly, but everything else works
   "https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched", //works
   "https://ssb.banner.usu.edu/zprod/bwckschd.p_disp_dyn_sched", //works

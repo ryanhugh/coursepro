@@ -122,7 +122,6 @@
                 </div>
 
 
-
                 <div style="width:100%;border-bottom: 1px solid #ddd;"></div>
 
                 <div ng-if="node.class.sections.length === 0" style="padding:12px">No sections in {{node.class.name}} this term.</div>
@@ -258,7 +257,7 @@
 
         <!-- !node.isExpanded must be watching (no ::) -->
         <div ng-if="!node.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;padding-bottom:8px">
-            <div ng-if="node.isCoreq" style="padding-bottom:7px">
+            <div ng-if="node.isCoreq" style="padding-bottom:7px;white-space: nowrap;">
                 Coreq of {{node.lowestParent.class.subject}} {{node.lowestParent.class.classId}}
 
             </div>
