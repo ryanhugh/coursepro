@@ -682,7 +682,7 @@ gulp.task('teeOutput', function () {
 
 	var argvToInclude = process.argv.slice(i)
 
-	var fileName = path.join('scripts', moment().format('MMMMD_hh.mm') + '_' + argvToInclude.join('_').replace('-','') + '.log')
+	var fileName = path.join('scripts', argvToInclude.join('_').replace(/-/gi, '') + '_' + moment().format('MMMMD_hh.mm') + '.log')
 
 	var access = fs.createWriteStream(fileName);
 	var _processOut = process.stdout.write.bind(process.stdout);
@@ -698,7 +698,7 @@ gulp.task('spider', ['teeOutput'], function () {
 	var pageDataMgr = require('./backend/pageDataMgr')
 
 	var spiderIndex = process.argv.indexOf('spider')
-	if (spiderIndex + 1 === process.argv.length ) {
+	if (spiderIndex + 1 === process.argv.length) {
 		pageDataMgr.main()
 	}
 	else {
@@ -706,7 +706,7 @@ gulp.task('spider', ['teeOutput'], function () {
 		var colleges = []
 
 		process.argv.slice(spiderIndex + 1).forEach(function (collegeWithDash) {
-			colleges.push(collegeWithDash.replace(/-/gi,''))
+			colleges.push(collegeWithDash.replace(/-/gi, ''))
 		}.bind(this))
 
 		pageDataMgr.processColleges(colleges)
