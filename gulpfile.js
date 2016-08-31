@@ -37,8 +37,8 @@ var moment = require('moment')
 var path = require('path')
 var queue = require('d3-queue').queue;
 var fs = require('fs-extra')
-var memoize = require('./common/memoize')
 var macros = require('./backend/macros')
+var memoize = require('./common/memoize')
 
 var KARMA_CONFIG = {
 	files: [
@@ -97,7 +97,7 @@ var UGLIFY_JS_CONFIG = {
 
 
 process.on('uncaughtException', function (err) {
-	onError('Restart gulp' , err)
+	onError('Restart gulp', err)
 });
 
 
@@ -190,7 +190,7 @@ var getFilesToProcess = memoize(function (config, callback) {
 
 		return callback(null, filesToProccess)
 	}).catch(function (err) {
-		onError('glob failed' , err)
+		onError('glob failed', err)
 		return callback(err)
 	}.bind(this));;
 })
@@ -485,7 +485,7 @@ gulp.task('copyRootFiles', function (callback) {
 
 		})
 	}).catch(function (err) {
-		onError('glob failed' , err)
+		onError('glob failed', err)
 		callback(err)
 	}.bind(this));
 });
@@ -579,7 +579,7 @@ gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 		hasCompiledOnce = true;
 
 		new karma.Server(KARMA_CONFIG, function (exitCode) {
-			onError('KARMA has crashed!!!!',exitCode);
+			onError('KARMA has crashed!!!!', exitCode);
 			// process.exit()
 		}).start();
 	});
@@ -648,11 +648,11 @@ var btestRun = batch(function (events, callback) {
 			callback()
 		})
 	}).catch(function (err) {
-		onError('glob failed' , err)
+		onError('glob failed', err)
 		callback(err)
 	}.bind(this));
 }, function (err) {
-	onError('BATCH FAILED!' , err);
+	onError('BATCH FAILED!', err);
 });
 
 
@@ -667,7 +667,22 @@ gulp.task('test', ['btest', 'ftest'], function () {});
 
 
 gulp.task('teeOutput', function () {
-	var fileName = path.join('scripts', moment().format('MMMMD_hh.mm') + '_spider.log')
+
+	//Get all argv that is after "gulp" or "gulp.js"
+	// This is similar logic to bmacros, but bmacros just does a process.argv.slice(2)
+	for (var i = 0; i < process.argv.length; i++) {
+		if (process.argv[i].endsWith('gulp.js') || process.argv[i].endsWith('gulp')) {
+			break;
+		}
+	}
+	if (i >= process.argv.length) {
+		elog("Didn't find gulp in process.argv!", process.argv)
+	}
+	i++
+
+	var argvToInclude = process.argv.slice(i)
+
+	var fileName = path.join('scripts', moment().format('MMMMD_hh.mm') + '_' + argvToInclude.join('_').replace('-','') + '.log')
 
 	var access = fs.createWriteStream(fileName);
 	var _processOut = process.stdout.write.bind(process.stdout);
@@ -680,7 +695,22 @@ gulp.task('teeOutput', function () {
 
 // when spider is running, it is the only thing that could be updating that college in mongoDB at that time
 gulp.task('spider', ['teeOutput'], function () {
-	require('./backend/pageDataMgr').main()
+	var pageDataMgr = require('./backend/pageDataMgr')
+
+	var spiderIndex = process.argv.indexOf('spider')
+	if (spiderIndex + 1 === process.argv.length ) {
+		pageDataMgr.main()
+	}
+	else {
+		// Spider the individual colleges specified
+		var colleges = []
+
+		process.argv.slice(spiderIndex + 1).forEach(function (collegeWithDash) {
+			colleges.push(collegeWithDash.replace(/-/gi,''))
+		}.bind(this))
+
+		pageDataMgr.processColleges(colleges)
+	}
 });
 
 

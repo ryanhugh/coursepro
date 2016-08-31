@@ -3,6 +3,7 @@ var async = require('async');
 var fs = require('fs');
 var _ = require('lodash');
 var queue = require('d3-queue').queue
+var URI = require('urijs')
 
 
 var requireDir = require('require-dir');
@@ -23,6 +24,7 @@ var emailMgr = require('./emailMgr');
 var dbUpdater = require('./databases/updater')
 var classesDB = require('./databases/classesDB')
 var linksDB = require('./databases/linksDB')
+var differentCollegeUrls = require('./differentCollegeUrls');
 
 
 
@@ -321,9 +323,60 @@ PageDataMgr.prototype.finish = function (pageData, callback) {
 
 
 
-PageDataMgr.prototype.main = function () {
+// Called from the gulpfile with a list of college abbriviates to process
+// Get the urls from the file with the urls.
+// ['neu','gatech',...]
+PageDataMgr.prototype.processColleges = function (colllegeAbbrs) {
 	var PageData = require('./PageData')
 
+	var toLog = colllegeAbbrs.join(' ')
+
+	var urlsToProcess = []
+
+	differentCollegeUrls.forEach(function (url) {
+
+		var urlParsed = new URI(url)
+
+		var primaryHost = urlParsed.hostname().slice(urlParsed.subdomain().length)
+
+		if (primaryHost.startsWith('.')) {
+			primaryHost = primaryHost.slice(1)
+		}
+
+		primaryHost = primaryHost.split('.')[0]
+
+
+		if (_(colllegeAbbrs).includes(primaryHost)) {
+			_.pull(colllegeAbbrs, primaryHost)
+
+			urlsToProcess.push(url)
+		}
+	}.bind(this))
+
+	console.log("Processing ", urlsToProcess);
+
+	var pageDatas = []
+
+	urlsToProcess.forEach(function (url) {
+		var pageData = PageData.createFromURL('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched');
+		if (!PageData) {
+			elog()
+			process.exit()
+		}
+		pageDatas.push(pageData);
+
+	}.bind(this))
+
+	this.go(pageDatas, function (err) {
+		console.log('all done!!', err, toLog)
+	}.bind(this));
+};
+
+
+
+
+PageDataMgr.prototype.main = function () {
+	var PageData = require('./PageData')
 
 	// console.log(process)
 
@@ -417,9 +470,9 @@ PageDataMgr.prototype.main = function () {
 
 	// }.bind(this));
 
-	this.go([PageData.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched')], function () {
-		console.log('all done!! swath')
-	}.bind(this));
+	// this.go([PageData.createFromURL('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched')], function () {
+	// 	console.log('all done!! gatech')
+	// }.bind(this));
 
 	// 	console.log('all done!! neu')
 	// }.bind(this))
