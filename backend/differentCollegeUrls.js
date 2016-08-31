@@ -7,7 +7,7 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://prd-wlssb.temple.edu/prod8/bwckschd.p_disp_dyn_sched", //takes 3 hours and prereqs are not parsed correcly, but everything else works
   "https://bannerweb.upstate.edu/isis/bwckschd.p_disp_dyn_sched", //works
   "https://ssb.banner.usu.edu/zprod/bwckschd.p_disp_dyn_sched", //works
-  "https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckschd.p_disp_dyn_sched", // down atm?? down march 10, 2016. ports 80,443 closed, others filtered. looks like firewall still up but app down.
+  "https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckschd.p_disp_dyn_sched", // down atm?? down march 10, 2016. ports 80 and 443 closed, others filtered. looks like firewall still up but app down.
   "https://banner.uregina.ca/prod/sct/bwckschd.p_disp_dyn_sched", //takes 3 hours, works
   "https://banners.presby.edu/prod/bwckschd.p_disp_dyn_sched", // takes like 22 min, works
   "https://eagles.tamut.edu/texp/bwckschd.p_disp_dyn_sched", // collegeName capilization bug (fixed) and one subject dosent have any results, but works
