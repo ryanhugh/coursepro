@@ -358,7 +358,7 @@ PageDataMgr.prototype.processColleges = function (colllegeAbbrs) {
 	var pageDatas = []
 
 	urlsToProcess.forEach(function (url) {
-		var pageData = PageData.createFromURL('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched');
+		var pageData = PageData.createFromURL(url);
 		if (!PageData) {
 			elog()
 			process.exit()
