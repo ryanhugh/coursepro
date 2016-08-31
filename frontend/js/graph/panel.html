@@ -41,13 +41,32 @@
 
 
                     <div>
-                        <div style="text-align: left;display: inline-block;line-height: 15px;width: 80%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap">
+                        <div style="text-align: left;display: inline-block;line-height: 15px;width: calc(100% - 135px);">
 
-                            <span>Prerequisites: {{node.class.getPrereqsString()}}</span>
-                            <br/>
                             <span>Corequisites: {{node.class.getCoreqsString()}}</span>
+                            <br/>
+
+                            <span ng-init="prereqString = node.class.getPrereqsString()">
+                                Prerequisites: 
+                                <span ng-if="prereqString.length < 100">
+                                    {{prereqString}}
+                                </span>
+                                <span ng-if="prereqString.length > 100">
+
+                                    <span ng-if="!node.showFull">
+                                        {{prereqString.slice(0, 100)}}
+                                        <a ng-click="node.showFull=true" style="color: #888888;font-weight: 600;">show more &gt;&gt;</a>
+                                    </span>
+
+                                    <span ng-if="node.showFull">
+                                        {{prereqString}}
+                                        <a ng-click="node.showFull=false" style="color: #888888;font-weight: 600;">&lt;&lt; show less</a>
+                                    </span>
+                                </span>
+
+                            </span>
                         </div>
-                        <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;">
+                        <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 135px; min-width: 53px;">
                             <span ng-if="::node.class.getLastUpdateString()">
                                 Updated {{::node.class.getLastUpdateString()}}
                             </span>

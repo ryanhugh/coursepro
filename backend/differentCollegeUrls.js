@@ -56,6 +56,8 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
 // harvard https://courses.harvard.edu/search?sort=course_title+asc&start=0&submit=Search&rows=500000&q=0
 // if you remove the q param from the url, 15000+ courses come up, but cs50 is not one of those. If you search for cs50, it comes up. how to get all classes?
 
+//mit http://student.mit.edu/catalog/extsearch.cgi
+
 
 
 // https://banners.presby.edu/prod/hzskschd.P_ViewSchedule
