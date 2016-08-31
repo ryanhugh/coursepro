@@ -244,8 +244,10 @@ GraphPanelExpand.prototype.showChangesSaved = function (node) {
 	// goal grey is 136
 
 	clearInterval(node.changesSavedInterval);
-
-	var count = 0;
+	if (!element) {
+		elog('Cant animate if dont have element')
+		return;
+	}
 
 	var alphaMatch;
 

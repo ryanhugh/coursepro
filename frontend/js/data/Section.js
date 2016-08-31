@@ -214,17 +214,19 @@ Section.prototype.getHasWaitList = function () {
 
 
 Section.prototype.updateWithData = function (data) {
-
-
 	BaseData.prototype.updateWithData.call(this, data);
 
-	var newMeetings = []
 
-	this.meetings.forEach(function (serverData) {
-		newMeetings.push(new Meeting(serverData))
-	}.bind(this))
+	if (data.meetings) {
+		var newMeetings = []
 
-	this.meetings = newMeetings;
+		data.meetings.forEach(function (serverData) {
+			newMeetings.push(new Meeting(serverData))
+		}.bind(this))
+
+		this.meetings = newMeetings;
+	}
+
 };
 
 
