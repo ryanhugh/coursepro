@@ -88,8 +88,8 @@ it('standardizeClassName', function () {
 
 	expect(baseParser.standardizeClassName('Directed Reading', ['Dir Rdg:'])).toBe('Directed Reading');
 
-
-
+	// Should pick the first one when name length === 0
+	expect(baseParser.standardizeClassName('', ['hihfdsjal', 'soemthing else'])).toBe('hihfdsjal');
 });
 
 

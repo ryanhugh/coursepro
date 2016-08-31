@@ -463,6 +463,17 @@ BaseParser.prototype.standardizeClassName = function (originalName, possibleMatc
 	originalName = originalName.trim().replace(/\s+/gi, ' ')
 	originalName = this.simplifySymbols(originalName)
 
+	if (originalName.lenght === 0) {
+		console.log("Warning: originalName was empty or had only symbols");
+		if (possibleMatches.length === 0) {
+			elog('Dont have a name for a class!', originalName, possibleMatches)
+			return 'Unknown class'
+		}
+		else {
+			return possibleMatches[0]
+		}
+	}
+
 	for (var i = 0; i < possibleMatches.length; i++) {
 		possibleMatches[i] = possibleMatches[i].trim().replace(/\s+/gi, ' ')
 		possibleMatches[i] = this.simplifySymbols(possibleMatches[i])
@@ -501,14 +512,15 @@ BaseParser.prototype.standardizeClassName = function (originalName, possibleMatc
 		var nameIndex = 0;
 		for (var matchIndex = 0; matchIndex < possibleMatch.length; matchIndex++) {
 
-			if (possibleMatch[matchIndex].toLowerCase() == name[nameIndex].toLowerCase()) {
-				nameIndex++;
-			}
-
 			// done!
 			if (nameIndex >= name.length) {
 				break;
 			}
+
+			if (possibleMatch[matchIndex].toLowerCase() == name[nameIndex].toLowerCase()) {
+				nameIndex++;
+			}
+
 		}
 
 
