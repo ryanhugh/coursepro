@@ -74,8 +74,10 @@ function Node(classOrRequisiteBranch) {
 	// Added by treemgr, is the index of this node in the paren't .coreqs.values, if this node is a coreq
 	this.coreqIndex = 0;
 
+	// Interval used to keep track of the status of the "changes saved" animation.
+	// Code for this is in graphPanelExpand. 
+	this.changesSavedInterval = null;
 
-	this.watchingThisClass = false;
 
 
 	// For D3

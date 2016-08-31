@@ -15,8 +15,8 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched", //works, takes 3 hours
   "https://genisys.regent.edu/pls/prod/bwckschd.p_disp_dyn_sched",
   "https://bappas2.gram.edu:9000/pls/gram/bwckschd.p_disp_dyn_sched", //dosent work in nodejs!!!!??? works in python, browser, etc
-  "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched",
-  "https://banweb.wm.edu/pls/PROD/bwckschd.p_disp_dyn_sched",
+  "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched", // works 8/31/16, some minor errors in trello spider but nothing major 
+  "https://banweb.wm.edu/pls/PROD/bwckschd.p_disp_dyn_sched", // thier site worked on 8/31/16, but need to update spider code before can use (fatal errors)
   "https://prod-ssb-01.dccc.edu/PROD/bwckschd.p_disp_dyn_sched",
   "https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched",
   "https://xbss-prod.lasalle.edu/PROD/bwckschd.p_disp_dyn_sched",

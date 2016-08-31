@@ -41,7 +41,7 @@
 
 
                     <div>
-                        <div style="text-align: left;display: inline-block;line-height: 15px;width: calc(100% - 135px);">
+                        <div style="text-align: left;display: inline-block;line-height: 15px;width: calc(100% - 145px);">
 
                             <span>Corequisites: {{node.class.getCoreqsString()}}</span>
                             <br/>
@@ -66,7 +66,7 @@
 
                             </span>
                         </div>
-                        <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 135px; min-width: 53px;">
+                        <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 145px; min-width: 53px;">
                             <span ng-if="::node.class.getLastUpdateString()">
                                 Updated {{::node.class.getLastUpdateString()}}
                             </span>
@@ -102,7 +102,7 @@
                     </div>
                 </div>
 
-                <div class="row" style="margin-bottom: 23px;line-height: 16px;" ng-if="!node.class.isString">
+                <div class="row" style="margin-bottom: 2px;line-height: 16px;" ng-if="!node.class.isString">
                     <div class="col-md-8 actionTextContainer">
                         <span style="font-size:18px">Get notified when seats open up!</span>
                         <br>
@@ -118,8 +118,12 @@
                     </div>
                     <div class="col-md-3" style="position: inherit;display: inline-block;">
                         <input bs-switch ng-model="graphPanelExpand.watchingFunc(node)" type="checkbox" ng-model-options="{ getterSetter: true }">
+
+                        <!-- The color part of this style is animated by graph panel expand.  -->
+                        <div class="changesSaved" style="margin: 0 auto;text-align: center;padding-top: 12px;color:rgba(0,0,0,0)">Changes saved.</div>
                     </div>
                 </div>
+
 
 
                 <div style="width:100%;border-bottom: 1px solid #ddd;"></div>

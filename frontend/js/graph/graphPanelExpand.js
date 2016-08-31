@@ -232,14 +232,72 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 	}.bind(this))
 };
 
-
+// Due to a bug in chrome, opacity css on an element in a foreign object in a svg causes the element to move across the screen
+// So manually animate the font color instead. 
 GraphPanelExpand.prototype.showChangesSaved = function (node) {
-	return;
+
 	var element = node.foreignObject.querySelector('.changesSaved')
-	element.classList.remove('hidden')
-	setTimeout(function () {
-		element.classList.add('hidden')
-	}.bind(this), 200)
+
+	// .5 seconds to transition from current value to some grey color
+	// 5 sec on the grey color
+	// .5 sec to transition away
+	// goal grey is 136
+
+	clearInterval(node.changesSavedInterval);
+
+	var count = 0;
+
+	var alphaMatch;
+
+	if (element.style.color.startsWith('rgb(') || !element.style.color) {
+		alphaMatch = 1
+	}
+	else {
+
+		alphaMatch = element.style.color.match(/([\d\.]+)\)/i)
+		if (!alphaMatch) {
+			elog(element.style.color)
+			alphaMatch = 0
+		}
+		else {
+			alphaMatch = parseFloat(alphaMatch[1])
+		}
+	}
+
+	// Color match is current color of element, where 255 = white and 0 = black
+	// Go from this to 0 in .5 sec with updates every 10ms (so 50 updates)
+
+	var delta = (1 - alphaMatch) / 50
+	var currAlpha = alphaMatch;
+
+	var count = 0;
+	node.changesSavedInterval = setInterval(function () {
+		count ++;
+		if (count <= 50) {
+			currAlpha += delta;
+
+			if (currAlpha < 1) {
+				element.style.color = 'rgba(136,136,136,' + currAlpha + ')'
+			}
+		}
+
+		// Set alpha to 1
+		else if (count >= 50 && count <= 500) {
+			element.style.color = 'rgb(136,136,136)'
+		}
+
+		// Fade away
+		else if (count >= 500 && count <= 550) {
+			// Over 50 ticks, need to go from alpha =1 to alpha=0
+			delta = 1 / 50
+			var currStep = count - 500;
+			var alpha = 1 - currStep * delta;
+			element.style.color = 'rgba(136,136,136,' + alpha + ')'
+		}
+		else {
+			clearTimeout(node.changesSavedInterval)
+		}
+	}, 10)
 };
 
 GraphPanelExpand.prototype.selectedFun = function (node) {
