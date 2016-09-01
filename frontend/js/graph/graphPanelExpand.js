@@ -100,6 +100,9 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 		callback = function () {}
 	};
 
+	user.setValue(macros.EXPANDED_PANEL_ONCE, true)
+	Graph.instance.hideHelpTooltips();
+
 	var q = queue()
 
 	if (!node.class.isString) {
@@ -274,7 +277,7 @@ GraphPanelExpand.prototype.showChangesSaved = function (node) {
 
 	var count = 0;
 	node.changesSavedInterval = setInterval(function () {
-		count ++;
+		count++;
 		if (count <= 50) {
 			currAlpha += delta;
 

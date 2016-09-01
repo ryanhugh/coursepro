@@ -7,6 +7,7 @@ function Macros() {
 	// Two user variables used to keep track of the last selected college and term. 
 	this.LAST_SELECTED_COLLEGE = 'lastSelectedCollege';
 	this.LAST_SELECTED_TERM = 'lastSelectedTerm';
+	this.EXPANDED_PANEL_ONCE = 'expandedPanelOnce'
 
 
 	// Three lists in use for user.

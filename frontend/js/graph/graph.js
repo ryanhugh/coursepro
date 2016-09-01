@@ -68,6 +68,7 @@ function Graph() {
 	}
 
 	this.$scope.$on('$destroy', function () {
+		this.hideHelpTooltips()
 		if (this.force) {
 			this.force.stop();
 		}
@@ -77,6 +78,9 @@ function Graph() {
 		this.calculateGraphSize();
 	}.bind(this))
 }
+
+
+macros.inherent(BaseDirective, Graph)
 
 Graph.prototype.getSvgWidth = function () {
 	return this.$window.innerWidth - macros.SEARCH_WIDTH;
@@ -310,6 +314,43 @@ Graph.prototype.onTick = function (e) {
 	}.bind(this));
 }
 
+Graph.prototype.showHelpTooltips = function () {
+	if (user.getValue(macros.EXPANDED_PANEL_ONCE)) {
+		this.hideHelpTooltips();
+		return;
+	}
+
+	// If a panel has never been expanded, show a help tooltip above the root node
+
+	var panel = this.rootNode.foreignObject.querySelector('.panel');
+
+	var toolTip = $(panel).tooltip({
+		// container: this.$document.body,
+		container: 'body',
+		html: 'true',
+		placement: 'top',
+		trigger: 'manual',
+		title: '<span style="font-size:18px">Click to expand</span>',
+		// template:'<div class="tooltip helpToolTip" role="tooltip" style="margin-top:-175px;position: inherit !important;opacity: 1 !important"><div class="tooltip-inner"></div><div class="tooltip-arrow" style="margin: 0 auto"></div></div>'
+	})
+
+	this.timeout(function () {
+		toolTip.tooltip('show')
+	}.bind(this), 100)
+
+
+
+};
+
+Graph.prototype.hideHelpTooltips = function () {
+
+	var panel = this.rootNode.foreignObject.querySelector('.panel');
+
+	$(panel).tooltip('hide')
+};
+
+
+
 // This is called when the graph is first loaded, and whenever a panel on the graph is selected. 
 Graph.prototype.loadNodes = function (callback) {
 
@@ -454,6 +495,7 @@ Graph.prototype.loadNodes = function (callback) {
 		node.sortCoreqs();
 	}.bind(this));
 
+	this.showHelpTooltips()
 
 	this.force.nodes(this.nodes)
 		.links(this.links)
@@ -517,8 +559,17 @@ Graph.prototype.go = function (config, callback) {
 
 			this.zoom = d3.behavior.zoom()
 				.scaleExtent([.1, 1.5])
+				.on('zoomstart', function () {
+
+					// Hide the help tooltips
+					this.hideHelpTooltips()
+
+				}.bind(this))
 				.on("zoom", function () {
 					this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+				}.bind(this))
+				.on('zoomend', function () {
+					this.showHelpTooltips()
 				}.bind(this));
 
 			this.svg.call(this.zoom)
