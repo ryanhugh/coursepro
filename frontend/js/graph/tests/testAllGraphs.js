@@ -34,8 +34,10 @@ var q = queue(1);
 
 Class.downloadResultsGroup({
 	keys: Keys.create({
-		host: 'neu.edu',
-		termId: '201710'
+		// host: 'neu.edu',
+		// termId: '201710'
+		host: 'swarthmore.edu',
+		termId: '201604'
 	})
 }, function (err, results) {
 
