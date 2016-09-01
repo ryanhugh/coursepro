@@ -2,17 +2,17 @@ var page = require('webpage').create()
 var system = require('system');
 var foo = 42;
 
-page.onConsoleMessage = function(msg) {
-  system.stdout.writeLine(  msg );
+page.onConsoleMessage = function (msg) {
+  system.stdout.writeLine(msg);
 };
 
 
-phantom.onError = function(msg, trace) {
-  var msgStack = ['PHANTOM ERROR: ' + msg];
+phantom.onError = function (msg, trace) {
+  var msgStack = ['PHANTOM ERROR: ', msg];
   if (trace && trace.length) {
     msgStack.push('TRACE:');
-    trace.forEach(function(t) {
-      msgStack.push(' -> ' + (t.file || t.sourceURL) + ': ' + t.line + (t.function ? ' (in function ' + t.function +')' : ''));
+    trace.forEach(function (t) {
+      msgStack.push(' -> ' + (t.file || t.sourceURL) + ': ' + t.line + (t.function ? ' (in function ' + t.function+')' : ''));
     });
   }
   system.stdout.writeLine(msgStack.join('\n'));
@@ -20,12 +20,12 @@ phantom.onError = function(msg, trace) {
 };
 
 
-page.onError = function(msg, trace) {
-  var msgStack = ['PHANTOM ERROR: ' + msg];
+page.onError = function (msg, trace) {
+  var msgStack = ['PHANTOM ERROR: ', msg];
   if (trace && trace.length) {
     msgStack.push('TRACE:');
-    trace.forEach(function(t) {
-      msgStack.push(' -> ' + (t.file || t.sourceURL) + ': ' + t.line + (t.function ? ' (in function ' + t.function +')' : ''));
+    trace.forEach(function (t) {
+      msgStack.push(' -> ' + (t.file || t.sourceURL) + ': ' + t.line + (t.function ? ' (in function ' + t.function+')' : ''));
     });
   }
   system.stdout.writeLine(msgStack.join('\n'));
@@ -37,10 +37,10 @@ page.onError = function(msg, trace) {
 page.open(
   // 'http://localhost/#/graph/neu.edu/201710',
   'http://localhost/#/graph/clemson.edu/201608',
-  function() {
+  function () {
 
 
-    console.log( "Done" );
+    console.log("Done");
 
     // phantom.exit( 0 ); // must exit somewhere in the script
   }
