@@ -36,8 +36,11 @@ Class.downloadResultsGroup({
 	keys: Keys.create({
 		// host: 'neu.edu',
 		// termId: '201710'
-		host: 'swarthmore.edu',
-		termId: '201604'
+		// host: 'swarthmore.edu',
+		// termId: '201604'
+
+		host: 'clemson.edu',
+		termId: '201608'
 	})
 }, function (err, results) {
 	if (err) {

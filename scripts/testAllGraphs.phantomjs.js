@@ -35,7 +35,8 @@ page.onError = function(msg, trace) {
 
 
 page.open(
-  'http://localhost/#/graph/neu.edu/201710',
+  // 'http://localhost/#/graph/neu.edu/201710',
+  'http://localhost/#/graph/clemson.edu/201608',
   function() {
 
 
