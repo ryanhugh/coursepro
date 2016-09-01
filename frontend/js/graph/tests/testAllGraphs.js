@@ -39,8 +39,8 @@ Class.downloadResultsGroup({
 		// host: 'swarthmore.edu',
 		// termId: '201604'
 
-		host: 'clemson.edu',
-		termId: '201608'
+		host: 'neu.edu',
+		termId: '201710'
 	})
 }, function (err, results) {
 	if (err) {
