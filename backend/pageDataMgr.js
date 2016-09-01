@@ -13,6 +13,7 @@ var processors = [
 	require('./processors/addClassUids'),
 	require('./processors/prereqClassUids'),
 	require('./processors/termStartEndDate'),
+	require('./processors/termSearchHints'),
 
 	// Add new processors here
 	require('./processors/notifyOnChanges'),
