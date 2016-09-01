@@ -28,6 +28,8 @@ TermSearchHints.prototype.runOnHost = function (query, callback) {
 			return callback(err)
 		}
 
+		console.log("Got classes and sections for ", query.host);
+
 		var highestClasses = [];
 		var sectionHash = {}
 
@@ -135,13 +137,17 @@ TermSearchHints.prototype.go = function (queries, callback) {
 
 	hosts = _.keys(hosts)
 
+	console.log("Running on", hosts);
+
 	var hints = []
 
 	var q = queue();
-	hosts.forEach(function (hostObj) {
+	hosts.forEach(function (host) {
 		q.defer(function (callback) {
 
-			this.runOnHost(hostObj, function (err, currHints) {
+			this.runOnHost({
+				host: host
+			}, function (err, currHints) {
 				if (err) {
 					return callback(err)
 				}
@@ -167,7 +173,7 @@ module.exports = new TermSearchHints();
 
 if (require.main === module) {
 	module.exports.go([{
-		host: 'oakland.edu',
+		host: 'lasalle.edu',
 		// termId: "201710"
 	}], function (err, results) {
 		console.log("done,", err, results);
