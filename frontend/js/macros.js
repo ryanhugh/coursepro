@@ -39,7 +39,8 @@ function Macros() {
 
 			console.log.apply(console, ['ELOG'].concat(args));
 			debugger
-			console.trace();
+			// console.trace();
+			console.log(new Error().stack)
 
 			var bodyString;
 

@@ -56,7 +56,7 @@ Class.downloadResultsGroup({
 				currSubject = row.subject
 			}
 
-			if (_(row.subject).startsWith('A') || _(row.subject).startsWith('B')) {
+			if (row.subject[0] < 'N') {
 				return callback()
 			}
 
