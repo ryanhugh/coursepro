@@ -171,7 +171,9 @@ GraphPanelExpand.prototype.onPanelClick = function (node, callback) {
 	if (node.isExpanded) {
 		return callback()
 	}
-	this.openPanel(node, callback);
+	if (!node.class.isString || node.wouldSatisfyNode) {
+		this.openPanel(node, callback);
+	}
 	// else if (node.class.isString) {
 	// 	this.onPanelSelect(node, callback);
 	// }

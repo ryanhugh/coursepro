@@ -124,31 +124,45 @@ TreeMgr.prototype.dedupeNode = function (node) {
 }
 
 TreeMgr.prototype.saveNeighborsString = function (node) {
-	var children = [];
-	node.prereqs.values.forEach(function (child) {
-		if (!child.isClass) {
-			return;
-		}
 
-		children.push(child)
-	}.bind(this))
+	if (node.prereqs.type === 'or') {
+		var children = [];
 
-	children.forEach(function (child) {
-		var neightborsSet = children.slice(0)
-		_.pull(neightborsSet, child)
+		node.prereqs.values.forEach(function (child) {
+			if (!child.isClass) {
+				return;
+			}
 
-		neightborsSet.forEach(function (childNode, index) {
-			neightborsSet[index] = childNode.class.subject + ' ' + childNode.class.classId
+			children.push(child)
 		}.bind(this))
 
-		if (neightborsSet.length === 0) {
-			child.neightborsString = 'some other classes';
-		}
-		else {
-			child.neightborsString = _.uniq(neightborsSet).join(' or ')
-		}
+		children.forEach(function (child) {
+			var neightborsSet = children.slice(0)
+			_.pull(neightborsSet, child)
 
-	}.bind(this))
+			neightborsSet.forEach(function (childNode, index) {
+				if (childNode.class.isString) {
+					neightborsSet[index] = childNode.class.desc
+				}
+				else {
+					neightborsSet[index] = childNode.class.subject + ' ' + childNode.class.classId
+				}
+			}.bind(this))
+
+			// If this child has multiple parents whose prereq type is "or". 
+			if (child.neightborsString) {
+				child.neightborsString = 'some other classes'
+			}
+			else if (neightborsSet.length === 0) {
+				child.neightborsString = 'some other classes';
+			}
+			else {
+				child.neightborsString = _.uniq(neightborsSet).join(' or ')
+			}
+
+		}.bind(this))
+	}
+
 
 	node.prereqs.values.forEach(function (child) {
 		this.saveNeighborsString(child)

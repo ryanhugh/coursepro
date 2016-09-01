@@ -40,6 +40,10 @@ Updater.prototype.onInterval = function () {
 
 		console.log("updating ", classIds.length, ' classes', JSON.stringify(classIds));
 
+		if (classIds.length === 0) {
+			return;
+		}
+
 		var pageDatas = []
 
 		for (var classMongoId in classWatchCache.classes) {

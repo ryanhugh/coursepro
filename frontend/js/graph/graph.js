@@ -562,12 +562,10 @@ Graph.prototype.go = function (config, callback) {
 					this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 				}.bind(this))
 				.on('zoomend', function () {
-
+					// Only show the tooltip if zoomed in to some degree
 					if (this.zoom.scale() > .6) {
 						this.showHelpTooltips()
 					}
-
-
 				}.bind(this));
 
 			this.svg.call(this.zoom)
