@@ -159,7 +159,7 @@ function onError() {
 	notify.onError({
 		message: 'Error: ' + notificationMsg.join(' '),
 		sound: false // deactivate sound?
-	})();
+	})({});
 }
 
 // This assumes that the list of files never changes.
@@ -683,6 +683,8 @@ gulp.task('teeOutput', function () {
 	var argvToInclude = process.argv.slice(i)
 
 	var fileName = path.join('scripts', argvToInclude.join('_').replace(/-/gi, '') + '_' + moment().format('MMMMD_hh.mm') + '.log')
+
+	process.stdout.setNoDelay(true)
 
 	var access = fs.createWriteStream(fileName);
 	var _processOut = process.stdout.write.bind(process.stdout);

@@ -8,6 +8,23 @@ var _ = require('lodash');
 var pointer = require('../pointer')
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
+// Sometimes the prereqs section parens dont match, here are some examples that dont work:
+// https://lewisweb.cc.lehigh.edu/PROD/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=ISE&crse_numb_in=251
+// https://lewisweb.cc.lehigh.edu/PROD/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=ISE&crse_numb_in=251
+// https://lewisweb.cc.lehigh.edu/PROD/bwckctlg.p_disp_course_detail?cat_term_in=201620&subj_code_in=ISE&crse_numb_in=251
+// (Undergraduate level ISE 121 Minimum Grade of TR or Undergraduate level IE 121 Minimum Grade of TR) and ( (Undergraduate level ISE 220 Minimum Grade of TR or Undergraduate level IE 220 Minimum Grade of TR) ) ) or ( (Undergraduate level ISE 230 Minimum Grade of TR or Undergraduate level IE 230 Minimum Grade of TR) and (Undergraduate level ISE 240 Minimum Grade of TR or Undergraduate level IE 240 Minimum Grade of TR) ) ) 
+
+
+// This file parses the Prerequisites and Corequisites section eg: (Undergraduate level ISE 121 Minimum Grade of TR or Undergraduate level IE 121 Minimum Grade of TR)
+// (where the ISE 121 and IE 121 would be hyperlinked)
+// 
+// and converts it into a resonable JSON structure (see unit tests)
+// 
+// I wrote this in Aug 2015, and if I were to do it again I would do it totally differently https://en.wikipedia.org/wiki/Abstract_syntax_tree
+// Eg, add something to stack when hit (, and remove from stack when hit a )....
+
+
+
 function EllucianRequisitesParser() {
 	EllucianBaseParser.prototype.constructor.apply(this, arguments);
 

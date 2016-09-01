@@ -551,8 +551,9 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 
 	//if only this panel, expand it
 	//&& treeMgr.countClassesInTree(node) === 1
-	if (!node.lowestParent && node.class._id != this.rootNodeId) {
+	if (!node.lowestParent && node.class._id != this.rootNodeId && 0) {
 		this.rootNodeId = node.class._id;
+
 
 		this.timeout(function () {
 			//this is undone when openPanel is done, a couple lines down

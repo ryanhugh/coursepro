@@ -47,8 +47,6 @@ function Graph() {
 
 	this.nodes = []
 
-	this.tree = null;
-
 	// When calculating the position of all the nodes for the first time, 
 	// initially, focus more on grouping similar nodes together,
 	// and then increase the y multiplyer to move the nodes to the correct y coordinate. 
@@ -321,7 +319,7 @@ Graph.prototype.loadNodes = function (callback) {
 		node.$scope.$destroy();
 	}.bind(this))
 
-	// Remove the lines
+	// Remove everything else from the container
 	while (this.container[0][0].firstChild) {
 		this.container[0][0].removeChild(this.container[0][0].firstChild);
 	}
@@ -456,6 +454,7 @@ Graph.prototype.loadNodes = function (callback) {
 		node.sortCoreqs();
 	}.bind(this));
 
+
 	this.force.nodes(this.nodes)
 		.links(this.links)
 
@@ -500,7 +499,7 @@ Graph.prototype.go = function (config, callback) {
 				.linkDistance(5)
 
 			// Use querySelector instead of getElementById in case this.$document is a document fragment.
-			// (It could be in testing and im phantomJS document fragments don't have getElementById but do have querySelector).
+			// (It could be in testing and in phantomJS document fragments don't have getElementById but do have querySelector).
 			var d3GraphId = d3.select(this.$document[0].querySelector('#d3GraphId'))
 
 			this.svg = d3GraphId.append("svg")
@@ -603,7 +602,7 @@ Graph.prototype.moveNodeOnScreen = function (node) {
 	}
 	else if (coords.top + coords.height > bounds.height + bounds.top - padding) {
 		deltaY = bounds.height + bounds.top - padding - coords.top - coords.height
-		// TODO: dont move past the top of the screen
+			// TODO: dont move past the top of the screen
 	}
 
 	if (coords.left < padding + bounds.left) {

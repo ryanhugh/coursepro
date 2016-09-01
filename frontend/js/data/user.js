@@ -1124,7 +1124,7 @@ User.prototype.setValue = function (name, value, callback) {
 
 
 	this.dbData.vars[name] = value;
-
+	this.saveData()
 	if (this.getAuthenticated()) {
 
 		//and tell the server
@@ -1139,7 +1139,6 @@ User.prototype.setValue = function (name, value, callback) {
 
 	}
 	else {
-		this.saveData()
 		return callback()
 	}
 

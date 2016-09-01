@@ -18,15 +18,13 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched", // works 8/31/16, some minor errors in trello spider but nothing major 
   "https://banweb.wm.edu/pls/PROD/bwckschd.p_disp_dyn_sched", // thier site worked on 8/31/16, but need to update spider code before can use (fatal errors)
   "https://prod-ssb-01.dccc.edu/PROD/bwckschd.p_disp_dyn_sched",
-  "https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched",
-  "https://xbss-prod.lasalle.edu/PROD/bwckschd.p_disp_dyn_sched",
-  "https://hofstraonline.hofstra.edu/pls/HPRO/bwckschd.p_disp_dyn_sched",
-  "https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched",
-  "https://lewisweb.cc.lehigh.edu/PROD/bwckschd.p_disp_dyn_sched",
-  "https://myweb.du.edu/mdb/bwckschd.p_disp_dyn_sched",
+  "https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched", // i think i fixed the bug. need to test again. 8/31/16
+  "https://xbss-prod.lasalle.edu/PROD/bwckschd.p_disp_dyn_sched", // works 8/31/16
+  "https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched", //works
+  "https://lewisweb.cc.lehigh.edu/PROD/bwckschd.p_disp_dyn_sched", //works 8/31/16, there are 3 classes that the prereq parser cant get because they have messed up parens. 
+  "https://myweb.du.edu/mdb/bwckschd.p_disp_dyn_sched", // 8/31/16 uhhhhhhhh not really sure, it was working and then i mucked with mongodb indexes and it stopped. have mucked with indexes during spidering before so it might be something on the site that caused the code to stop. need to retry. 
   "https://ssbprod.rcgc.edu:9000/prod_ssb/bwckschd.p_disp_dyn_sched", // school aparently changed their hostname, it was gcc-ssbprod.gccnj.edu and now for the old domain dns fails now, wayback machine has it working in 2015: https://web.archive.org/web/20150316171359/https://gcc-ssbprod.gccnj.edu:9000/prod_ssb/bwckschd.p_disp_dyn_sched
   "https://pssb.stockton.edu/prod/bwckschd.p_disp_dyn_sched", //was port 9000, now is 443
-  "https://jweb.kettering.edu/cku1/bwckschd.p_disp_dyn_sched",
   "https://www8.unm.edu/pls/banp/bwckschd.p_disp_dyn_sched",
   "https://banssbprod.xavier.edu:8099/PROD/bwckschd.p_disp_dyn_sched",
   "https://appprod.udayton.edu:9000/prod/bwckschd.p_disp_dyn_sched",
@@ -64,5 +62,11 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
 // uses an old version of the site - different parser needed (easy to write, add later)
 // this specific college ^ either updated or has a newer version too and has already been scraped
 
+// https://hofstraonline.hofstra.edu/pls/HPRO/bwckschd.p_disp_dyn_sched
+// uses something similar to neu, but the page after the select subject page is a lot different... idk
+// 
 
 
+
+// http://catalog.kettering.edu/coursesaz/undergrad/chem/
+// kettering used to be this, "https://jweb.kettering.edu/cku1/bwckschd.p_disp_dyn_sched", but switched to ^^

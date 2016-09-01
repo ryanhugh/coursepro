@@ -2,6 +2,7 @@
 
     <!-- main panel -->
     <div class="panel {{node.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="node.isClass" panel-close=".closePanel">
+        <!--  uib-tooltip="Click to expand" tooltip-class="clickToExpandTooltip" tooltip-append-to-body="true" -->
 
         <div class="panel-heading">
 
@@ -86,9 +87,6 @@
 
                 <div style="width:100%;border-top: 1px solid #ddd;height: 17px;" ng-if="!node.class.isString"></div>
 
-                <!-- <div height="10px"></div> -->
-
-                <!--  -->
                 <div class="row" ng-if="node.lowestParent && (node.wouldSatisfyNode || graphPanelExpand.getNodeIsSelected(node)) && !node.isCoreq" style="margin-bottom: 28px;line-height: 16px;">
                     <div class="col-md-8 actionTextContainer">
                         <span style="font-size:18px">Use this class to satisfy the prerequisites of {{node.getParentString()}}?</span>
