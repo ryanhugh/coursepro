@@ -12,7 +12,9 @@ var Keys = require('../../common/Keys')
 
 // Genereates the hints to put in the search box for each term
 // could also change this to be most seats capacity instead of most seats taken, or highest avg seat capacity of a class
-// also add where and profs
+// Would probably be good to add more than 2 hints per collage, and would also be good to add profs
+// 
+// Also, this queries for all classes in an entire host, but then sets the hints for each term. Idealy, it would process each term individually. 
 
 
 function TermSearchHints() {
