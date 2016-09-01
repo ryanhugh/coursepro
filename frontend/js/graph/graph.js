@@ -321,31 +321,24 @@ Graph.prototype.showHelpTooltips = function () {
 	}
 
 	// If a panel has never been expanded, show a help tooltip above the root node
-
 	var panel = this.rootNode.foreignObject.querySelector('.panel');
 
 	var toolTip = $(panel).tooltip({
-		// container: this.$document.body,
 		container: 'body',
 		html: 'true',
 		placement: 'top',
 		trigger: 'manual',
 		title: '<span style="font-size:18px">Click to expand</span>',
-		// template:'<div class="tooltip helpToolTip" role="tooltip" style="margin-top:-175px;position: inherit !important;opacity: 1 !important"><div class="tooltip-inner"></div><div class="tooltip-arrow" style="margin: 0 auto"></div></div>'
 	})
 
 	this.timeout(function () {
 		toolTip.tooltip('show')
 	}.bind(this), 100)
-
-
-
 };
 
+// Hide the help tooltip over the root node created by showHelpTooltips.
 Graph.prototype.hideHelpTooltips = function () {
-
 	var panel = this.rootNode.foreignObject.querySelector('.panel');
-
 	$(panel).tooltip('hide')
 };
 
