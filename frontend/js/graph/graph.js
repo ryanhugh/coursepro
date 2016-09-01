@@ -326,7 +326,7 @@ Graph.prototype.showHelpTooltips = function () {
 	var toolTip = $(panel).tooltip({
 		container: 'body',
 		html: 'true',
-		placement: 'top',
+		placement: 'left',
 		trigger: 'manual',
 		title: '<span style="font-size:18px">Click to expand</span>',
 	})
@@ -562,7 +562,12 @@ Graph.prototype.go = function (config, callback) {
 					this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 				}.bind(this))
 				.on('zoomend', function () {
-					this.showHelpTooltips()
+
+					if (this.zoom.scale() > .6) {
+						this.showHelpTooltips()
+					}
+
+
 				}.bind(this));
 
 			this.svg.call(this.zoom)
