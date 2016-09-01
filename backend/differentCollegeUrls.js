@@ -25,7 +25,7 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://myweb.du.edu/mdb/bwckschd.p_disp_dyn_sched", // 8/31/16 uhhhhhhhh not really sure, it was working and then i mucked with mongodb indexes and it stopped. have mucked with indexes during spidering before so it might be something on the site that caused the code to stop. need to retry. 
   "https://ssbprod.rcgc.edu:9000/prod_ssb/bwckschd.p_disp_dyn_sched", // school aparently changed their hostname, it was gcc-ssbprod.gccnj.edu and now for the old domain dns fails now, wayback machine has it working in 2015: https://web.archive.org/web/20150316171359/https://gcc-ssbprod.gccnj.edu:9000/prod_ssb/bwckschd.p_disp_dyn_sched
   "https://pssb.stockton.edu/prod/bwckschd.p_disp_dyn_sched", //was port 9000, now is 443
-  "https://www8.unm.edu/pls/banp/bwckschd.p_disp_dyn_sched",
+  "https://www8.unm.edu/pls/banp/bwckschd.p_disp_dyn_sched", // took about 3 hours but it worked without any errors. 8/31/16
   "https://banssbprod.xavier.edu:8099/PROD/bwckschd.p_disp_dyn_sched",
   "https://appprod.udayton.edu:9000/prod/bwckschd.p_disp_dyn_sched",
   "https://ui2web4.apps.uillinois.edu/BANPROD4/bwckschd.p_disp_dyn_sched",

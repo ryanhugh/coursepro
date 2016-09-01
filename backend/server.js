@@ -916,6 +916,10 @@ async.parallel([
 		}
 	],
 	function (err, results) {
+		if (err) {
+			elog(err)
+			return;
+		}
 		var credentials = {
 			key: results[0],
 			cert: results[1]
