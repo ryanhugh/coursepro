@@ -8,7 +8,7 @@ page.onConsoleMessage = function (msg) {
 
 
 phantom.onError = function (msg, trace) {
-  var msgStack = ['PHANTOM ERROR: ', msg];
+  var msgStack = ['PHANTOM ERROR: ', JSON.stringify(msg, null, 4)];
   if (trace && trace.length) {
     msgStack.push('TRACE:');
     trace.forEach(function (t) {
@@ -21,7 +21,7 @@ phantom.onError = function (msg, trace) {
 
 
 page.onError = function (msg, trace) {
-  var msgStack = ['PHANTOM ERROR: ', msg];
+  var msgStack = ['PHANTOM ERROR: ', JSON.stringify(msg, null, 4)];
   if (trace && trace.length) {
     msgStack.push('TRACE:');
     trace.forEach(function (t) {

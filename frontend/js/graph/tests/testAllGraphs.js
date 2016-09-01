@@ -56,6 +56,10 @@ Class.downloadResultsGroup({
 				currSubject = row.subject
 			}
 
+			if (_(row.subject).startsWith('A') || _(row.subject).startsWith('B')) {
+				return callback()
+			}
+
 
 
 			graph.instance.go({
