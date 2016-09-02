@@ -43,7 +43,7 @@ NotifyOnChanges.prototype.preUpdateParse = function (queries, callback) {
 		elog('classes or sections not [] on start?', this.classes.length, this.classes[0], this.sections.length, this.sections[0])
 	}
 
-	this.getSectionsAndClasses(queries, function (err, classes, sections) {
+	this.getClassesAndSections(queries, function (err, classes, sections) {
 		if (err) {
 			return callback(err)
 		}
@@ -63,7 +63,7 @@ NotifyOnChanges.prototype.go = function (queries, callback) {
 		return callback()
 	}
 
-	this.getSectionsAndClasses(queries, function (err, classes, sections) {
+	this.getClassesAndSections(queries, function (err, classes, sections) {
 		if (err) {
 			return callback(err)
 		}

@@ -1,7 +1,8 @@
 <div graph-panel-expand ng-click="graphPanelExpand.onPanelClick(node)">
 
     <!-- main panel -->
-    <div class="panel {{node.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="node.isClass && !node.showSelectPanel" panel-close=".closePanel">
+    <div class="panel {{node.isRequired?'panel-primary':'panel-info'}} treePanel" ng-if="node.isClass" panel-close=".closePanel">
+        <!--  uib-tooltip="Click to expand" tooltip-class="clickToExpandTooltip" tooltip-append-to-body="true" -->
 
         <div class="panel-heading">
 
@@ -10,7 +11,7 @@
                 <!-- was 48 -->
                 <!-- <div ng-if="node.class.dataStatus !== macros.DATASTATUS_FAIL" ng-init="class = node.class" list-icon='{{macros.SAVED_LIST}}' toggle-sections='true' toggle='class' style="display:inline-block;margin-right: 6px;"></div> -->
 
-                <a href="{{::node.class.prettyUrl}}" target="_blank">
+                <a href="{{::node.class.prettyUrl}}" target="_blank" ng-if="!node.class.isString">
                     <div class="glyphicon glyphicon-globe" uib-tooltip="View on {{::node.class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true" style="margin-right:4px;color:white">
                     </div>
                 </a>
@@ -33,28 +34,40 @@
 
         <!-- only the panel body changes on node.isExpanded -->
         <div ng-if="node.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;width:100%;padding: 0;padding-top: 15px;" ng-style="{'width':panelWidth+'px'}">
-            <div ng-if="node.class.dataStatus === macros.DATASTATUS_DONE">
-                <div style="margin-left: 15px;margin-right: 15px;padding-bottom: 12px;">
+            <div ng-if="::node.class.dataStatus === macros.DATASTATUS_DONE || node.class.isString">
+                <div style="margin-left: 15px;margin-right: 15px;padding-bottom: 12px;" ng-if="!node.class.isString">
                     <div style="white-space: normal;margin-bottom:10px;line-height:15px">
                         {{node.class.desc}}
                     </div>
 
-                    <div style="text-align: center;margin-bottom: -30px;">
-                        <div style="color: #888888;font-size: 30px;display: inline-block;" class="glyphicon glyphicon-envelope"></div>
-                        <a class="linkToClassWatchModel" ng-click="graph.openWatchModel(this)" style="cursor:pointer;display: inline-block;vertical-align: top;margin-left: 5px;color: #333;">Get notified when
-                            <br> seats open up!</a>
-                    </div>
+
                     <div>
-                        <div style="text-align: left;display: inline-block;line-height: 15px;width: 35%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap">
+                        <div style="text-align: left;display: inline-block;line-height: 15px;width: calc(100% - 145px);">
 
-                            <span uib-tooltip="Prerequisites: {{node.class.getPrereqsString()}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">Prerequisites: {{node.class.getPrereqsString()}}</span>
-                            <br/> 
-                            <span uib-tooltip="Corequisites: {{node.class.getCoreqsString()}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">Corequisites: {{node.class.getCoreqsString()}}</span>
-                            <br>
+                            <span>Corequisites: {{node.class.getCoreqsString()}}</span>
+                            <br/>
 
-                            <br>
+                            <span ng-init="prereqString = node.class.getPrereqsString()">
+                                Prerequisites:
+                                <span ng-if="prereqString.length < 100">
+                                    {{prereqString}}
+                                </span>
+                                <span ng-if="prereqString.length > 100">
+
+                                    <span ng-if="!node.showFull">
+                                        {{prereqString.slice(0, 100)}}
+                                        <a ng-click="node.showFull=true" style="color: #888888;font-weight: 600;">show more &gt;&gt;</a>
+                                    </span>
+
+                                    <span ng-if="node.showFull">
+                                        {{prereqString}}
+                                        <a ng-click="node.showFull=false" style="color: #888888;font-weight: 600;">&lt;&lt; show less</a>
+                                    </span>
+                                </span>
+
+                            </span>
                         </div>
-                        <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 50%; min-width: 53px;">
+                        <div style="text-align: right; display: inline-block; float: right; white-space: normal; max-width: 145px; min-width: 53px;">
                             <span ng-if="::node.class.getLastUpdateString()">
                                 Updated {{::node.class.getLastUpdateString()}}
                             </span>
@@ -70,121 +83,168 @@
                             </span>
                         </div>
                     </div>
-
                 </div>
 
-                <table class="table table-striped" ng-if="node.class.sections.length>0" style="margin-bottom:0">
-                    <thead>
-                        <tr>
-                            <th>
-                                <span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body="true">CRN</span>
-                            </th>
-                            <th>
-                                <ng-pluralize count="node.class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
-                            </th>
+                <div style="width:100%;border-top: 1px solid #ddd;height: 17px;" ng-if="!node.class.isString"></div>
 
-                            <th>Weekdays</th>
-                            <th>Start</th>
-                            <th>End</th>
-                            <th>Location</th>
-                            <th ng-if="node.class.sectionsHaveExam()">Exam start</th>
-                            <th ng-if="node.class.sectionsHaveExam()">Exam end</th>
-                            <th ng-if="node.class.sectionsHaveExam()">Exam date</th>
-                            <th>
+                <div class="row" ng-if="node.lowestParent && (node.wouldSatisfyNode || graphPanelExpand.getNodeIsSelected(node)) && !node.isCoreq" style="margin-bottom: 28px;line-height: 16px;">
+                    <div class="col-md-8 actionTextContainer">
+                        <span style="font-size:18px">Use this class to satisfy the prerequisites of {{node.getParentString()}}?</span>
+                        <br>
+                        <span>Instead of this class, you could also pick {{graphPanelExpand.getNeighborsString(node)}}</span>
+                        <br>
+                        <a href="" ng-click="graph.openSelectHelpModel()">Learn more</a>
+                    </div>
+                    <div class="col-md-3" style="position: inherit;display: inline-block;">
+                        <input bs-switch ng-model="graphPanelExpand.selectedFun(node)" type="checkbox" ng-model-options="{ getterSetter: true }" switch-on-text="YES" switch-off-text="NO">
+                    </div>
+                </div>
 
-                                <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                                    Seats
-                                </span>
+                <div class="row" style="margin-bottom: 2px;line-height: 16px;" ng-if="!node.class.isString">
+                    <div class="col-md-8 actionTextContainer">
+                        <span style="font-size:18px">Get notified when seats open up!</span>
+                        <br>
+                        <span ng-if="!user.getListIncludesClass(macros.WATCHING_LIST, node.class,5)">We check frequently and will email you if any seats open up.</span>
 
-                            </th>
-                            <th ng-if="node.class.getHasWaitList()">Open/Total Waitlist Seats</th>
-                            <th>Link</th>
-                            <!-- <th>Email
+                        <span ng-if="user.getListIncludesClass(macros.WATCHING_LIST, node.class,5)">
+                            Update emails will be sent to
+                            <span style="font-weight:bold;">{{user.dbData.email}}</span> !
+                        </span>
+                        <br>
+                        <!-- <span>
+                            <a href="">Learn more</a> -->
+                    </div>
+                    <div class="col-md-3" style="position: inherit;display: inline-block;">
+                        <input bs-switch ng-model="graphPanelExpand.watchingFunc(node)" type="checkbox" ng-model-options="{ getterSetter: true }">
+
+                        <!-- The color part of this style is animated by graph panel expand.  -->
+                        <div class="changesSaved" style="margin: 0 auto;text-align: center;padding-top: 12px;color:rgba(0,0,0,0)">Changes saved.</div>
+                    </div>
+                </div>
+
+                <div ng-if="!node.class.isString">
+
+
+                    <div style="width:100%;border-bottom: 1px solid #ddd;"></div>
+
+                    <div ng-if="node.class.sections.length === 0" style="padding:12px">No sections in {{node.class.name}} this term.</div>
+                    <div ng-if="node.class.sections.length>0">
+                        <div style="font-size: 18px;padding: 15px 15px 10px 15px;">Sections in {{node.class.name}}</div>
+                        <table class="table table-striped" style="margin-bottom:0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body="true">CRN</span>
+                                    </th>
+                                    <th>
+                                        <ng-pluralize count="node.class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
+                                    </th>
+
+                                    <th>Weekdays</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Location</th>
+                                    <th ng-if="node.class.sectionsHaveExam()">Exam start</th>
+                                    <th ng-if="node.class.sectionsHaveExam()">Exam end</th>
+                                    <th ng-if="node.class.sectionsHaveExam()">Exam date</th>
+                                    <th>
+
+                                        <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                            Seats
+                                        </span>
+
+                                    </th>
+                                    <th ng-if="node.class.getHasWaitList()">Open/Total Waitlist Seats</th>
+                                    <th>Link</th>
+                                    <!-- <th>Email
                         <br>Notifications</th> -->
-                            <!-- <th>Saved</th> -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="section in node.class.sections.slice(0, node.showingSectionCount)">
-                            <td>{{::section.crn}}</td>
-                            <td>{{::section.getProfs().join(', ')}}</td>
-                            <td>
-                                <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
+                                    <!-- <th>Saved</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="section in node.class.sections.slice(0, node.showingSectionCount)">
+                                    <td>{{::section.crn}}</td>
+                                    <td>{{::section.getProfs().join(', ')}}</td>
+                                    <td style="white-space: nowrap;">
+                                        <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
 
-                                    <!-- avoid calculating the string more than once -->
-                                    <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip="{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
+                                            <!-- avoid calculating the string more than once -->
+                                            <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip="{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
 
-                                        <div ng-if="::section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in ::section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
-                                        </div>
+                                                <div ng-if="::section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in ::section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                                </div>
 
-                                        <div ng-if="::(!section.meetsOnWeekends())" class="weekDayBox" ng-repeat="weekDay in ::section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                                <div ng-if="::(!section.meetsOnWeekends())" class="weekDayBox" ng-repeat="weekDay in ::section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
 
-                                        </div>
-                                    </span>
-                                </span>
-                            </td>
+                                                </div>
+                                            </span>
+                                        </span>
+                                    </td>
 
-                            <td>{{::section.getUniqueStartTimes().join(", ")}}</td>
-                            <td>{{::section.getUniqueEndTimes().join(", ")}}</td>
+                                    <td>{{::section.getUniqueStartTimes().join(", ")}}</td>
+                                    <td>{{::section.getUniqueEndTimes().join(", ")}}</td>
 
-                            <td>
-                                <span ng-repeat="location in ::section.getLocations()">
-                                    <span ng-if="location != 'TBA' || section.getLocations().length <= 1">{{::location}}</span><span ng-if="!$last">,&nbsp;</span>
-                                </span>
-                            </td>
-
-
-                            <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().start.format('h:mm a')}}</td>
-                            <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().end.format('h:mm a')}}</td>
-                            <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().start.format('MMM Do')}}</td>
-
-                            <td>
-
-                                <!-- don't display the "/" until these are loaded -->
-                                <span ng-if="::(section.seatsRemaining || section.seatsCapacity)"  uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                                    {{::section.seatsRemaining}}/{{::section.seatsCapacity}}
-                                </span>
-
-                            </td>
+                                    <td>
+                                        <span ng-repeat="location in ::section.getLocations()">
+                                            <span ng-if="location != 'TBA' || section.getLocations().length <= 1">{{::location}}</span>
+                                            <span ng-if="!$last">,&nbsp;</span>
+                                        </span>
+                                    </td>
 
 
-                            <td ng-if="node.class.getHasWaitList()">
+                                    <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().start.format('h:mm a')}}</td>
+                                    <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().end.format('h:mm a')}}</td>
+                                    <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().start.format('MMM Do')}}</td>
 
-                                <!-- don't display the "/" until these are loaded -->
-                                <span ng-if="::section.waitRemaining || ::section.waitCapacity">
-                                    {{::section.waitRemaining}}/{{::section.waitCapacity}}
-                                </span>
+                                    <td>
+
+                                        <!-- don't display the "/" until these are loaded -->
+                                        <span ng-if="::(section.seatsRemaining || section.seatsCapacity)" uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                            {{::section.seatsRemaining}}/{{::section.seatsCapacity}}
+                                        </span>
+
+                                    </td>
 
 
-                                <!-- don't display the "/" until these are loaded -->
-                                <span ng-if="!section.waitRemaining && !section.waitCapacity">
-                                    0/0
-                                </span>
+                                    <td ng-if="node.class.getHasWaitList()">
+
+                                        <!-- don't display the "/" until these are loaded -->
+                                        <span ng-if="::section.waitRemaining || ::section.waitCapacity">
+                                            {{::section.waitRemaining}}/{{::section.waitCapacity}}
+                                        </span>
+
+
+                                        <!-- don't display the "/" until these are loaded -->
+                                        <span ng-if="!section.waitRemaining && !section.waitCapacity">
+                                            0/0
+                                        </span>
 
 
 
-                            </td>
+                                    </td>
 
-                            <td>
-                                <a href="{{::section.url}}" target="_blank">
-                                    <div style="color:black" class="glyphicon glyphicon-globe" uib-tooltip="View on {{::node.class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                                    </div>
-                                </a>
-                            </td>
-                            <!-- 
+                                    <td>
+                                        <a href="{{::section.url}}" target="_blank">
+                                            <div style="color:black" class="glyphicon glyphicon-globe" uib-tooltip="View on {{::node.class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <!-- 
                     <td>
                         <span list-icon='{{macros.WATCHING_LIST}}' toggle="section"></span>
                     </td> -->
 
-                            <!-- <td>
+                                    <!-- <td>
                                 <span list-icon='{{macros.SAVED_LIST}}' toggle="section" style="padding-left: 11px;"></span>
                             </td> -->
-                        </tr>
-                    </tbody>
-                </table>
+                                </tr>
+                            </tbody>
+                        </table>
 
-                <div ng-if="node.showingSectionCount<node.class.sections.length" class="showMoreButton" ng-click="graphPanelExpand.increaseShowing(node)">
-                    Show More..
+                        <div ng-if="node.showingSectionCount<node.class.sections.length" class="showMoreButton" ng-click="graphPanelExpand.increaseShowing(node)">
+                            Show More..
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -193,21 +253,41 @@
 
                 0 sections this term
                 <div style="white-space: normal;">
-                    <br>Couldn't find any class info on
-                    <br> {{::node.class.host}} :( </div>
+                    An error occured while fetching the information for this class :/
+                </div>
             </div>
         </div>
 
 
         <!-- !node.isExpanded must be watching (no ::) -->
-        <div ng-if="!node.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;">
-            <div ng-if="::node.class.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
+        <div ng-if="!node.isExpanded" class="panel-body panelBodyId" style="line-height: 14px;padding-bottom:8px">
+            <div ng-if="node.isCoreq" style="padding-bottom:7px;white-space: nowrap;">
+                Coreq of {{node.lowestParent.class.subject}} {{node.lowestParent.class.classId}}
 
-            <ng-pluralize ng-if="::node.class.dataStatus!==macros.DATASTATUS_FAIL" count="::node.class.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
+            </div>
+            <div ng-if="!node.isCoreq" style="text-align: center;">
+                <div ng-if="!node.isRequired && !user.getListIncludesClass(macros.SELECTED_LIST, node.class)" style="padding-bottom:7px">
+                    <div ng-if="::node.class.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
+
+                    <ng-pluralize ng-if="::node.class.dataStatus!==macros.DATASTATUS_FAIL" count="::node.class.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
+                </div>
+
+                <div ng-if="node.isRequired || user.getListIncludesClass(macros.SELECTED_LIST, node.class)">
+                    <div ng-if="node.prereqs.values.length === 0" style="padding-bottom:7px">
+                        <div ng-if="node.class.prereqs.values.length === 0">
+                            No Prerequisites
+                        </div>
+                    </div>
+                    <div ng-if="node.prereqs.values.length !== 0">
+                        <div>
+                            Prerequisites
+                        </div>
+                        <div style="height:8px"></div>
+
+                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-
-
-    <div ng-if="node.showSelectPanel" ng-include="'selectPanel.html'"></div>
 </div>

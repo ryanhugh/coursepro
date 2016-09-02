@@ -12,7 +12,9 @@ var Keys = require('../../common/Keys')
 
 // Genereates the hints to put in the search box for each term
 // could also change this to be most seats capacity instead of most seats taken, or highest avg seat capacity of a class
-// also add where and profs
+// Would probably be good to add more than 2 hints per collage, and would also be good to add profs
+// 
+// Also, this queries for all classes in an entire host, but then sets the hints for each term. Idealy, it would process each term individually. 
 
 
 function TermSearchHints() {
@@ -22,18 +24,13 @@ function TermSearchHints() {
 TermSearchHints.prototype = Object.create(BaseProcessor.prototype);
 TermSearchHints.prototype.constructor = TermSearchHints;
 
-
-
-
-TermSearchHints.prototype.go = function (query, callback) {
-	if (query.termId || query.subject || query.classId || query.classUid) {
-		return callback()
-	}
-
-	this.getSectionsAndClasses(query, function (err, classes, sections) {
+TermSearchHints.prototype.runOnHost = function (query, callback) {
+	this.getClassesAndSections([query], function (err, classes, sections) {
 		if (err) {
 			return callback(err)
 		}
+
+		console.log("Got classes and sections for ", query.host);
 
 		var highestClasses = [];
 		var sectionHash = {}
@@ -97,7 +94,7 @@ TermSearchHints.prototype.go = function (query, callback) {
 			}
 		}.bind(this))
 
-		var hints = [highestClasses[0].class.name, highestClasses[1].class.subject + ' ' +  highestClasses[1].class.classId]
+		var hints = [highestClasses[0].class.name, highestClasses[1].class.subject + ' ' + highestClasses[1].class.classId]
 
 		if (query.host === 'neu.edu') {
 			hints.push('Leena Razzaq')
@@ -124,16 +121,63 @@ TermSearchHints.prototype.go = function (query, callback) {
 };
 
 
+TermSearchHints.prototype.go = function (queries, callback) {
+	if (!this.isUpdatingEntireTerm(queries)) {
+		return callback()
+	}
+
+	// Dedupe the hosts so only run on each host once
+	var hosts = {};
+
+	queries.forEach(function (query) {
+		if (query.subject) {
+			return;
+		}
+
+		hosts[query.host] = true
+	}.bind(this))
+
+	hosts = _.keys(hosts)
+
+	console.log("Running on", hosts);
+
+	var hints = []
+
+	var q = queue();
+	hosts.forEach(function (host) {
+		q.defer(function (callback) {
+
+			this.runOnHost({
+				host: host
+			}, function (err, currHints) {
+				if (err) {
+					return callback(err)
+				}
+				hints = hints.concat(currHints)
+				callback()
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
+
+	q.awaitAll(function (err) {
+		if (err) {
+			return callback(err)
+		}
+		return callback(null, hints)
+	}.bind(this))
+};
+
+
 
 TermSearchHints.prototype.TermSearchHints = TermSearchHints;
 module.exports = new TermSearchHints();
 
 
 if (require.main === module) {
-	module.exports.go({
-		host: 'neu.edu',
+	module.exports.go([{
+		host: 'lasalle.edu',
 		// termId: "201710"
-	}, function (err, results) {
+	}], function (err, results) {
 		console.log("done,", err, results);
 
 	}.bind(this));

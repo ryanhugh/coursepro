@@ -8,6 +8,14 @@ var subjectsDB = require('../backend/databases/subjectsDB')
 var userDB = require('../backend/databases/usersDB')
 
 
+
+// userDB.table.remove({},function (err, i) {
+// 	console.log("done user db");
+// }.bind(this))
+
+
+// process.exit()
+
 if (macros.PRODUCTION) {
 	fjdsklajfdsjkljlkjl
 	console.log("NOOOOOO");

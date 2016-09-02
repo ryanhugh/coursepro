@@ -24,7 +24,7 @@ CreateSearchIndex.prototype.constructor = CreateSearchIndex;
 
 CreateSearchIndex.prototype.go = function (queries, callback) {
 	if (!this.isUpdatingEntireTerm(queries)) {
-		console.log("Not creating another search index when running on a subject or a class");
+		console.log("Not creating another search index when running on a subject or a class", JSON.stringify(queries));
 		return callback()
 	}
 
@@ -182,10 +182,10 @@ CreateSearchIndex.prototype.CreateSearchIndex = CreateSearchIndex;
 module.exports = new CreateSearchIndex();
 
 if (require.main === module) {
-	module.exports.go({
+	module.exports.go([{
 		host: 'neu.edu',
 		// termId: "201710"
-	}, function (err, results) {
+	}], function (err, results) {
 		console.log(err, results);
 
 	}.bind(this));

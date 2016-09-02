@@ -67,8 +67,10 @@ TermStartEndDate.prototype.runOnTerm = function (query, callback) {
 				break;
 			}
 		}
+
+		// Pick the first day if nothing was decisive.
 		if (!finalStartDate) {
-			console.log('Warning, no start date was definitive', startDates)
+			console.log('Warning, no start date was definitive', query.termId, startDates)
 			finalStartDate = startDateKeys[0];
 		}
 
@@ -87,8 +89,11 @@ TermStartEndDate.prototype.runOnTerm = function (query, callback) {
 				break;
 			}
 		}
+
+		// Pick the last day if nothing was decisive. 
+		// (the endDateKeys are in reverse chronological order)
 		if (!finalEndDate) {
-			console.log('Warning, no end date was definitive', endDates)
+			console.log('Warning, no end date was definitive', query.termId, endDates)
 			finalEndDate = endDateKeys[0];
 		}
 
@@ -150,6 +155,9 @@ TermStartEndDate.prototype.go = function (baseQueries, callback) {
 		}, {
 			skipValidation: true
 		}, function (err, terms) {
+			if (err) {
+				return callback(err)
+			}
 
 			terms.forEach(function (term) {
 				if (!term.termId) {
@@ -160,6 +168,9 @@ TermStartEndDate.prototype.go = function (baseQueries, callback) {
 						host: term.host,
 						termId: term.termId
 					}, function (err, result) {
+						if (err) {
+							return callback(err)
+						}
 
 						results.push(result)
 

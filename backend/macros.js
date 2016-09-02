@@ -43,6 +43,10 @@ function Macros() {
 			return;
 		}
 
+		if (command.startsWith('-')) {
+			return;
+		}
+
 		else if (_(mode).endsWith('test') && _(command).endsWith('test')) {
 			return;
 		}

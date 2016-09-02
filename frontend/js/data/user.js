@@ -812,12 +812,12 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				elog()
 			}
 			if (addToClasses || addToDBClasses) {
-				if (aClass.isString) {
-					elog('Cant add string to db')
-				}
-				else {
-					classesObjs.push(keys.getObj())
-				}
+				// if (aClass.isString) {
+				// 	elog('Cant add string to db')
+				// }
+				// else {
+				classesObjs.push(keys.getObj())
+				// }
 			}
 			if (addToClasses) {
 				this.lists[listName].classes.push(aClass);
@@ -1124,7 +1124,7 @@ User.prototype.setValue = function (name, value, callback) {
 
 
 	this.dbData.vars[name] = value;
-
+	this.saveData()
 	if (this.getAuthenticated()) {
 
 		//and tell the server
@@ -1139,7 +1139,6 @@ User.prototype.setValue = function (name, value, callback) {
 
 	}
 	else {
-		this.saveData()
 		return callback()
 	}
 

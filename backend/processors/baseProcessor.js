@@ -41,7 +41,7 @@ BaseProcessor.prototype.getClasses = function (queries, callback) {
 };
 
 
-BaseProcessor.prototype.getSections = function(queries, callback) {
+BaseProcessor.prototype.getSections = function (queries, callback) {
 	var sections = [];
 
 	var q = queue();
@@ -69,7 +69,7 @@ BaseProcessor.prototype.getSections = function(queries, callback) {
 };
 
 
-BaseProcessor.prototype.getSectionsAndClasses = function (queries, callback) {
+BaseProcessor.prototype.getClassesAndSections = function (queries, callback) {
 	var classes = []
 	var sections = []
 
@@ -107,7 +107,7 @@ BaseProcessor.prototype.getSectionsAndClasses = function (queries, callback) {
 
 // Get the minimum part of queries that overlap. eg,
 // if given query {host:'neu.edu',termId:'201710'} and {host:'neu.edu',termId:'201630'}, the result would be {host:'neu.edu'}
-BaseProcessor.prototype.getCommonHostAndTerm = function(queries) {
+BaseProcessor.prototype.getCommonHostAndTerm = function (queries) {
 	if (queries.length === 0) {
 		elog()
 		return {}
@@ -115,7 +115,7 @@ BaseProcessor.prototype.getCommonHostAndTerm = function(queries) {
 	var retVal = {}
 
 	// Nothing after termId is supported yet. 
-	var keys = ['host','termId']
+	var keys = ['host', 'termId']
 
 	var currValue;
 	for (var i = 0; i < keys.length; i++) {
@@ -129,15 +129,20 @@ BaseProcessor.prototype.getCommonHostAndTerm = function(queries) {
 		}
 
 		retVal[keyName] = currValue;
-	}	
+	}
 	return retVal;
 };
 
-BaseProcessor.prototype.isUpdatingEntireTerm = function(queries) {
+BaseProcessor.prototype.isUpdatingEntireTerm = function (queries) {
 	// Don't run if only updating one class
 	var shouldRun = false;
 	for (var i = 0; i < queries.length; i++) {
 		var query = queries[i];
+
+		if (typeof query != 'object') {
+			elog(queries)
+		}
+
 		if (!query.subject) {
 			shouldRun = true;
 			break;

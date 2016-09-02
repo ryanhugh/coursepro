@@ -8,6 +8,8 @@ var queue = require('d3-queue').queue
 // This find classes that are called "lab for " and "recitation for " and "Interactive Learning Seminar for PHYS 1155" 
 // that don't have coreqs and marks them as having coreqs
 // as of july 2016 there are abou 52 classes in each term in neu that this finds, and 0 at swarthmore
+// 
+// ALSO: make sure to remove any classes added to coreqs from prereqs. ENVR 1201 (lab for 1200) has 1200 as a prereq
 
 function FindMissingLabs() {
 	BaseProcessor.prototype.constructor.apply(this, arguments);

@@ -18,3 +18,22 @@ it('should work', function () {
 	})
 });
 
+it('isUpdatingEntireTerm should work', function () {
+	expect(baseProcessor.isUpdatingEntireTerm([{
+		host: 'neu.edu'
+	}])).toBe(true)
+
+
+	expect(baseProcessor.isUpdatingEntireTerm([{
+		host: 'neu.edu',
+		termId: '33443'
+	}])).toBe(true)
+
+	expect(baseProcessor.isUpdatingEntireTerm([{
+		host: 'neu.edu',
+		host: 'neu.edu',
+		subject: 'neu.edu'
+	}])).toBe(false)
+
+});
+

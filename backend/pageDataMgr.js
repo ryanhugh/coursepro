@@ -3,6 +3,7 @@ var async = require('async');
 var fs = require('fs');
 var _ = require('lodash');
 var queue = require('d3-queue').queue
+var URI = require('urijs')
 
 
 var requireDir = require('require-dir');
@@ -12,6 +13,7 @@ var processors = [
 	require('./processors/addClassUids'),
 	require('./processors/prereqClassUids'),
 	require('./processors/termStartEndDate'),
+	require('./processors/termSearchHints'),
 
 	// Add new processors here
 	require('./processors/notifyOnChanges'),
@@ -23,6 +25,7 @@ var emailMgr = require('./emailMgr');
 var dbUpdater = require('./databases/updater')
 var classesDB = require('./databases/classesDB')
 var linksDB = require('./databases/linksDB')
+var differentCollegeUrls = require('./differentCollegeUrls');
 
 
 
@@ -321,9 +324,60 @@ PageDataMgr.prototype.finish = function (pageData, callback) {
 
 
 
-PageDataMgr.prototype.main = function () {
+// Called from the gulpfile with a list of college abbriviates to process
+// Get the urls from the file with the urls.
+// ['neu','gatech',...]
+PageDataMgr.prototype.processColleges = function (colllegeAbbrs) {
 	var PageData = require('./PageData')
 
+	var toLog = colllegeAbbrs.join(' ')
+
+	var urlsToProcess = []
+
+	differentCollegeUrls.forEach(function (url) {
+
+		var urlParsed = new URI(url)
+
+		var primaryHost = urlParsed.hostname().slice(urlParsed.subdomain().length)
+
+		if (primaryHost.startsWith('.')) {
+			primaryHost = primaryHost.slice(1)
+		}
+
+		primaryHost = primaryHost.split('.')[0]
+
+
+		if (_(colllegeAbbrs).includes(primaryHost)) {
+			_.pull(colllegeAbbrs, primaryHost)
+
+			urlsToProcess.push(url)
+		}
+	}.bind(this))
+
+	console.log("Processing ", urlsToProcess);
+
+	var pageDatas = []
+
+	urlsToProcess.forEach(function (url) {
+		var pageData = PageData.createFromURL(url);
+		if (!PageData) {
+			elog()
+			process.exit()
+		}
+		pageDatas.push(pageData);
+
+	}.bind(this))
+
+	this.go(pageDatas, function (err) {
+		console.log('all done!!', err, toLog)
+	}.bind(this));
+};
+
+
+
+
+PageDataMgr.prototype.main = function () {
+	var PageData = require('./PageData')
 
 	// console.log(process)
 
@@ -400,25 +454,25 @@ PageDataMgr.prototype.main = function () {
 	// 
 
 	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=EECE&crse_numb_in=2160');
-	var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
+	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
 
-	pageData.dbData.termId = '201710';
-	pageData.dbData.host = 'neu.edu'
-	pageData.dbData.subject = 'EECE'
+	// pageData.dbData.termId = '201710';
+	// pageData.dbData.host = 'neu.edu'
+	// pageData.dbData.subject = 'EECE'
 
-	// pageData.database = linksDB;
-	pageData.findSupportingParser()
+	// // pageData.database = linksDB;
+	// pageData.findSupportingParser()
 
 
 	// console.log(pageData);
 
-	this.go([pageData], function () {
-		console.log('all done!! neu')
+	// this.go([pageData], function () {
+	// 	console.log('all done!! neu')
 
-	}.bind(this));
+	// }.bind(this));
 
-	// this.go(PageData.createFromURL('https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched'), function () {
-	// 	console.log('all done!! swath')
+	// this.go([PageData.createFromURL('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched')], function () {
+	// 	console.log('all done!! gatech')
 	// }.bind(this));
 
 	// 	console.log('all done!! neu')

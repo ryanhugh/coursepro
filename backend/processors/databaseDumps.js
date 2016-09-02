@@ -90,7 +90,7 @@ DatabaseDumps.prototype.go = function (queries, callback) {
 	if (!this.isUpdatingEntireTerm(queries)) {
 		return callback()
 	}
-	
+
 
 	// Get all the classes in a term, or all the classes in the entire host
 	var query = this.getCommonHostAndTerm(queries)
@@ -158,10 +158,10 @@ module.exports = new DatabaseDumps();
 
 
 if (require.main === module) {
-	module.exports.go({
+	module.exports.go([{
 		host: 'neu.edu',
 		// termId: "201710"
-	}, function (err, results) {
+	}], function (err, results) {
 		console.log("done,", err, results);
 
 	}.bind(this));

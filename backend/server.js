@@ -126,7 +126,8 @@ app.use(function (req, res, next) {
 
 // add cache forever to external js libraries
 app.use(function (req, res, next) {
-	if (req.protocol == 'http' && !_(req.connection.remoteAddress).includes('127.0.0.1') && req.connection.remoteAddress != '::1' && !_(req.connection.remoteAddress).includes('10.0.0.')) {
+	var remoteIp = req.connection.remoteAddress;
+	if (req.protocol == 'http' && !_(remoteIp).includes('127.0.0.1') && remoteIp != '::1' && !_(remoteIp).includes('10.0.0.') && !_(remoteIp).includes('192.168.1.')) {
 		logData(req, {
 			msg: {
 				summary: 'http -> https redirect'
@@ -916,6 +917,10 @@ async.parallel([
 		}
 	],
 	function (err, results) {
+		if (err) {
+			elog(err)
+			return;
+		}
 		var credentials = {
 			key: results[0],
 			cert: results[1]

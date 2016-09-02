@@ -100,19 +100,24 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 		callback = function () {}
 	};
 
+	user.setValue(macros.EXPANDED_PANEL_ONCE, true)
+	Graph.instance.hideHelpTooltips();
+
 	var q = queue()
 
-	q.defer(function (callback) {
-		node.class.loadSections(function (err) {
-			callback(err)
+	if (!node.class.isString) {
+		q.defer(function (callback) {
+			node.class.loadSections(function (err) {
+				callback(err)
+			}.bind(this))
 		}.bind(this))
-	}.bind(this))
 
-	q.defer(function (callback) {
-		node.class.downloadPrereqs(function (err) {
-			callback(err)
+		q.defer(function (callback) {
+			node.class.downloadPrereqs(function (err) {
+				callback(err)
+			}.bind(this))
 		}.bind(this))
-	}.bind(this))
+	}
 
 
 	//this returns instantly if already loaded
@@ -132,7 +137,7 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 
 			//if it failed, toggle isExpanded and update the scope
 			if (err) {
-				console.log("ERRor loading loadSections", err)
+				elog("ERRor loading loadSections", err)
 			}
 
 
@@ -157,45 +162,59 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 	}.bind(this))
 };
 
-GraphPanelExpand.prototype.togglePanelPrompt = function (node, callback) {
-	setTimeout(function () {
-		clearTimeout(node.graphPanelPromptTimeout);
-		node.showSelectPanel = !node.showSelectPanel;
-		node.$scope.$apply()
 
-		node.updateWidth();
-		node.updateHeight();
+// This saves a string representation of the children of this node (eg ['PHYS 1151', 'PHYS 1161'])
+// on each node before the prereqs are mucked with
+GraphPanelExpand.prototype.getNeighborsString = function (node) {
 
-		// and tell d3 to move the panel back to where it should be
-		Graph.instance.force.alpha(.0051)
-
-		callback()
-	}.bind(this), 0)
-};
-
-GraphPanelExpand.prototype.openPanelPrompt = function (node, callback) {
-	if (!callback) {
-		callback = function () {}
-	};
-	if (node.isExpanded || node.showSelectPanel) {
-		return callback();
+	if (user.getListIncludesClass(macros.SELECTED_LIST, node.class)) {
+		if (node.allParents.length > 1) {
+			return 'some other classes'
+		}
+		else {
+			return node.neightborsString
+		}
 	}
-	this.togglePanelPrompt(node, callback);
-	this.updateScope(node, true)
+
+
+	var neighbors = [];
+
+	node.allParents.forEach(function (parent) {
+		if (parent.prereqs.type === 'or') {
+			neighbors = neighbors.concat(parent.prereqs.values)
+		}
+	}.bind(this))
+
+	neighbors = _.uniq(neighbors)
+	_.pull(neighbors, node);
+
+	var foundBranch = false;
+
+	neighbors.forEach(function (node, index) {
+		if (!node.isClass) {
+			foundBranch = true;
+			return;
+		}
+		if (node.class.isString) {
+			neighbors[index] = node.class.desc
+		}
+		else {
+			neighbors[index] = node.class.subject + ' ' + node.class.classId
+		}
+	}.bind(this))
+
+
+	if (neighbors.length === 0 || foundBranch) {
+		return 'some other classes'
+	}
+	else {
+		neighbors = _.uniq(neighbors)
+		return neighbors.join(' or ')
+	}
 };
 
-GraphPanelExpand.prototype.closePanelPrompt = function (node, callback) {
-	if (!callback) {
-		callback = function () {}
-	};
-	if (node.isExpanded || !node.showSelectPanel) {
-		return callback()
-	}
-	this.togglePanelPrompt(node, callback);
-	setTimeout(function () {
-		this.updateScope(node, false);
-	}.bind(this), 0)
-};
+
+
 
 GraphPanelExpand.prototype.onPanelClick = function (node, callback) {
 	if (!callback) {
@@ -205,15 +224,11 @@ GraphPanelExpand.prototype.onPanelClick = function (node, callback) {
 	if (node.isExpanded) {
 		return callback()
 	}
-	else if (node.class.isString) {
-		this.onPanelSelect(node, callback);
+	if (node.class.isString && !node.wouldSatisfyNode && !user.getListIncludesClass(macros.SELECTED_LIST, node.class)) {
+		return callback()
 	}
-	else if (!node.lowestParent || node.isCoreq) {
-		this.openPanel(node, callback);
-	}
-	else {
-		this.openPanelPrompt(node, callback);
-	}
+
+	this.openPanel(node, callback);
 }
 
 
@@ -228,16 +243,16 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 		return callback();
 	}
 
+	node.timeout(function () {
 
-	user.toggleListContainsClass(macros.SELECTED_LIST, node.class, false, function (err) {
-		if (err) {
-			elog(err);
-			return callback();
-		}
-		node.timeout(function () {
+		user.toggleListContainsClass(macros.SELECTED_LIST, node.class, false, function (err) {
+			if (err) {
+				elog(err);
+				return callback();
+			}
 
 
-			// Run the entire big node through all of treeMgr again
+			// Run the entire graph through all of treeMgr again
 			// this is needed to rediscover any common prereqs, recalculate depths, and pretty much 
 			// everything else that treeMgr does. 
 
@@ -247,9 +262,11 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 			treeMgr.go(Graph.instance.rootNode)
 			Graph.instance.loadNodes(function () {
 
-				// After all the graph stuff is done, shink this panel back to avoid the redraw
 				node.showSelectPanel = false;
-				node.isExpanded = false;
+				node.activateForceOnClose = true;
+
+				// Actually, keep the panel expanded when the toggle button is clicked
+				node.isExpanded = true;
 				clearTimeout(node.graphPanelPromptTimeout);
 				node.$scope.$apply();
 
@@ -260,11 +277,119 @@ GraphPanelExpand.prototype.onPanelSelect = function (node, callback) {
 
 				node.updateWidth();
 				node.updateHeight()
+				node.bringToFront()
 				callback()
 			}.bind(this))
 		}.bind(this))
 	}.bind(this))
 };
+
+// Due to a bug in chrome, opacity css on an element in a foreign object in a svg causes the element to move across the screen
+// So manually animate the font alpha instead. 
+GraphPanelExpand.prototype.showChangesSaved = function (node) {
+
+	var element = node.foreignObject.querySelector('.changesSaved')
+
+	// .5 seconds to transition from current value to some grey color
+	// 5 sec on the grey color
+	// .5 sec to transition away
+	// goal grey is 136
+
+	clearInterval(node.changesSavedInterval);
+	if (!element) {
+		elog('Cant animate if dont have element')
+		return;
+	}
+
+	var alphaMatch;
+
+	if (element.style.color.startsWith('rgb(') || !element.style.color) {
+		alphaMatch = 1
+	}
+	else {
+
+		alphaMatch = element.style.color.match(/([\d\.]+)\)/i)
+		if (!alphaMatch) {
+			elog(element.style.color)
+			alphaMatch = 0
+		}
+		else {
+			alphaMatch = parseFloat(alphaMatch[1])
+		}
+	}
+
+	// Color match is current color of element, where 255 = white and 0 = black
+	// Go from this to 0 in .5 sec with updates every 10ms (so 50 updates)
+
+	var delta = (1 - alphaMatch) / 50
+	var currAlpha = alphaMatch;
+
+	var count = 0;
+	node.changesSavedInterval = setInterval(function () {
+		count++;
+		if (count <= 50) {
+			currAlpha += delta;
+
+			if (currAlpha < 1) {
+				element.style.color = 'rgba(136,136,136,' + currAlpha + ')'
+			}
+		}
+
+		// Set alpha to 1
+		else if (count >= 50 && count <= 500) {
+			element.style.color = 'rgb(136,136,136)'
+		}
+
+		// Fade away
+		else if (count >= 500 && count <= 550) {
+			// Over 50 ticks, need to go from alpha =1 to alpha=0
+			delta = 1 / 50
+			var currStep = count - 500;
+			var alpha = 1 - currStep * delta;
+			element.style.color = 'rgba(136,136,136,' + alpha + ')'
+		}
+		else {
+			clearTimeout(node.changesSavedInterval)
+		}
+	}, 10)
+};
+
+GraphPanelExpand.prototype.selectedFun = function (node) {
+	return function (value) {
+		if (value === undefined) {
+			return user.getListIncludesClass(macros.SELECTED_LIST, node.class)
+		}
+		else {
+			this.showChangesSaved(node)
+			this.onPanelSelect(node)
+		}
+	}.bind(this)
+};
+
+
+// This is called directly from angular
+// If given undefined as argument, return the current value
+// else, set value with given value
+GraphPanelExpand.prototype.watchingFunc = function (node) {
+	return function (value) {
+		if (value === undefined) {
+			return user.getListIncludesClass(macros.WATCHING_LIST, node.class)
+		}
+		else if (!user.getAuthenticated()) {
+			Graph.instance.openWatchModel(node)
+		}
+		else if (value) {
+			this.showChangesSaved(node)
+			user.addToList(macros.WATCHING_LIST, [node.class], node.class.sections)
+		}
+		else {
+			this.showChangesSaved(node)
+			user.removeFromList(macros.WATCHING_LIST, [node.class], node.class.sections)
+		}
+	}.bind(this)
+};
+
+
 
 
 //called from graph.html 
@@ -289,17 +414,23 @@ GraphPanelExpand.prototype.openPanel = function (node, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-	if (node.isExpanded || node.class.isString) {
-
+	if (node.isExpanded) {
 		elog('openPanel was called and the panel is already open?')
-		if (node.class.isString) {
-			return callback();
-		}
+		return callback()
 	}
+
+	var logUrl;
+	if (node.class.isString) {
+		logUrl = Keys.createWithString(node.class).getHash();
+	}
+	else {
+		logUrl = Keys.create(node.class).getHashWithEndpoint('/listSections')
+	}
+
 
 	ga('send', {
 		'hitType': 'pageview',
-		'page': Keys.create(node.class).getHashWithEndpoint('/listSections'),
+		'page': logUrl,
 		'title': 'Coursepro.io'
 	});
 
@@ -320,17 +451,37 @@ GraphPanelExpand.prototype.closePanel = function (node, callback) {
 		elog('closePanel was called and the panel is already closed?')
 	}
 
+	var logUrl;
+	if (node.class.isString) {
+		logUrl = Keys.createWithString(node.class).getHash();
+	}
+	else {
+		// NOTE WHEN REFACTORING this isnt actually a valid enpoint, just used for GA
+		logUrl = Keys.create(node.class).getHashWithEndpoint('/closePanel')
+	}
+
+
 	ga('send', {
 		'hitType': 'pageview',
-
-		// NOTE WHEN REFACTORING this isnt actually a valid enpoint, just used for GA
-		'page': Keys.create(node.class).getHashWithEndpoint('/closePanel'),
+		'page': logUrl,
 		'title': 'Coursepro.io'
 	});
+
 
 	_.pull(this.openOrder, node)
 
 	this.onExpandClick(node, false, callback)
+
+	if (node.activateForceOnClose) {
+		node.activateForceOnClose = false;
+		setTimeout(function () {
+			Graph.instance.force.start()
+			Graph.instance.force.alpha(.03)
+		}.bind(this))
+	}
+
+
+
 };
 
 GraphPanelExpand.prototype.setUpwardLines = function (node, lineWidth) {
@@ -402,10 +553,37 @@ GraphPanelExpand.prototype.startPromptTimer = function (node, event) {
 			return;
 		}
 		else {
-			this.openPanelPrompt(node);
+			// this.openPanelPrompt(node);
 		}
 	}.bind(this), 1500)
 };
+
+
+
+// Removes any nodes from thi.openOrder that are not in the graph or are not expanded
+GraphPanelExpand.prototype.reloadOpenOrder = function (rootNode) {
+
+	if (this.openOrder.length === 0) {
+		return;
+	}
+
+	var newOpenOrder = []
+
+	var stack = [rootNode]
+	var curr;
+	while ((curr = stack.pop())) {
+		if (curr.isExpanded && _(this.openOrder).includes(curr)) {
+			newOpenOrder.push(curr)
+		}
+
+
+		stack = stack.concat(curr.prereqs.values)
+	}
+
+
+	this.openOrder = newOpenOrder;
+};
+
 
 //this is called once when $scope.node === undefined, when the root node first loads
 GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
@@ -420,13 +598,14 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 	element = element.parent()
 
 	if (!node.lowestParent) {
-		this.openOrder = []
+		this.reloadOpenOrder(node)
 	};
 
 	//if only this panel, expand it
 	//&& treeMgr.countClassesInTree(node) === 1
-	if (!node.lowestParent && node.class._id != this.rootNodeId) {
+	if (!node.lowestParent && node.class._id != this.rootNodeId && node.prereqs.values.length === 0 && node.coreqs.values.length === 0) {
 		this.rootNodeId = node.class._id;
+
 
 		this.timeout(function () {
 			//this is undone when openPanel is done, a couple lines down

@@ -80,7 +80,7 @@ TreeMgr.prototype.simplifyTree = function (node) {
 
 };
 
-TreeMgr.prototype.dedupeNode = function(node) {
+TreeMgr.prototype.dedupeNode = function (node) {
 
 	//remove duplicates
 	// This is a map of the _ids to the child
@@ -122,6 +122,7 @@ TreeMgr.prototype.dedupeNode = function(node) {
 		this.dedupeNode(child);
 	}.bind(this))
 }
+
 
 // one part of the above function that runs after the node injection that changes allParents...
 TreeMgr.prototype.skipNodesPostStuff = function (node) {
@@ -916,7 +917,7 @@ TreeMgr.prototype.removeLightBluePrereqs = function (node) {
 			type: node.prereqs.type
 		}
 	}
-	if (node.wouldSatisfyNode && node.isClass) {
+	if (!node.isRequired && node.isClass) {
 		node.prereqs = {
 			values: [],
 			type: 'and'
@@ -927,6 +928,55 @@ TreeMgr.prototype.removeLightBluePrereqs = function (node) {
 		this.removeLightBluePrereqs(child);
 	}.bind(this));
 };
+
+
+TreeMgr.prototype.saveNeighborsString = function (node) {
+
+	if (node.prereqs.type === 'or') {
+		var children = [];
+
+		node.prereqs.values.forEach(function (child) {
+			if (!child.isClass) {
+				return;
+			}
+
+			children.push(child)
+		}.bind(this))
+
+		children.forEach(function (child) {
+			var neightborsSet = children.slice(0)
+			_.pull(neightborsSet, child)
+
+			neightborsSet.forEach(function (childNode, index) {
+				if (childNode.class.isString) {
+					neightborsSet[index] = childNode.class.desc
+				}
+				else {
+					neightborsSet[index] = childNode.class.subject + ' ' + childNode.class.classId
+				}
+			}.bind(this))
+
+			// If this child has multiple parents whose prereq type is "or".
+			if (child.neightborsString) {
+				child.neightborsString = 'some other classes'
+			}
+			else if (neightborsSet.length === 0) {
+				child.neightborsString = 'some other classes';
+			}
+			else {
+				child.neightborsString = _.uniq(neightborsSet).join(' or ')
+			}
+
+		}.bind(this))
+	}
+
+
+	node.prereqs.values.forEach(function (child) {
+		this.saveNeighborsString(child)
+	}.bind(this))
+};
+
+
 
 // returns a node or null
 TreeMgr.prototype.getSatisfyingNode = function (node) {
@@ -962,9 +1012,16 @@ TreeMgr.prototype.setWouldSatisfy = function (node) {
 	if (node.isClass) {
 		if (node.isCoreq) {
 			node.wouldSatisfyNode = node.allParents[0].wouldSatisfyNode
-		} 
+			node.isRequired = node.allParents[0].isRequired
+		}
 		else {
 			node.wouldSatisfyNode = this.wouldSatisfyNode(node)
+			if (node.allParents.length === 0) {
+				node.isRequired = true;
+			}
+			else {
+				node.isRequired = this.getIsRequired(node)
+			}
 		}
 	}
 
@@ -977,6 +1034,7 @@ TreeMgr.prototype.setWouldSatisfy = function (node) {
 	}.bind(this));
 };
 
+
 // returns true if this node would satisfy a node if selected and make the graph simpler,
 // else it returns false
 TreeMgr.prototype.wouldSatisfyNode = function (node) {
@@ -987,6 +1045,17 @@ TreeMgr.prototype.wouldSatisfyNode = function (node) {
 		}
 	}
 
+	return false;
+};
+
+
+TreeMgr.prototype.getIsRequired = function (node) {
+	for (var i = 0; i < node.allParents.length; i++) {
+		var parent = node.allParents[i]
+		if (parent.prereqs.values.length === 1 || parent.prereqs.type == 'and') {
+			return true;
+		}
+	}
 	return false;
 };
 
@@ -1122,6 +1191,7 @@ TreeMgr.prototype.resetRequisites = function (node) {
 		}.bind(this))
 	}
 
+	node.neightborsString = null;
 
 	node.prereqs.values.forEach(function (child) {
 		this.resetRequisites(child);
@@ -1164,10 +1234,15 @@ TreeMgr.prototype.go = function (node) {
 	// SimplifyTree requires _id's but simplifyIfSelected changes what the _ids whould be generated to so have to update them again
 	this.simplifyTree(node)
 	this.dedupeNode(node)
+
+	// This saves a string representation of the children of this node (eg ['PHYS 1151', 'PHYS 1161'])
+	// on each node before the prereqs are mucked with
+	this.saveNeighborsString(node);
+
+	// This needs to be cleaned up, but setParentString needs to have parents on nodes, but simplify if needs there to not be any parents
 	this.simplifyIfSelected(node);
 
 	this.sortTree(node);
-
 	this.addAllParentRelations(node);
 	this.setWouldSatisfy(node);
 	this.removeAllParents(node);

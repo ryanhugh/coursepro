@@ -16,7 +16,7 @@ function Updater() {
 	}
 
 	//run updater on boot if in production
-	if (macros.PRODUCTION || 1) {
+	if (macros.PRODUCTION) {
 		this.onInterval();
 	};
 
@@ -39,6 +39,10 @@ Updater.prototype.onInterval = function () {
 		var classIds = _.keys(classWatchCache.classes)
 
 		console.log("updating ", classIds.length, ' classes', JSON.stringify(classIds));
+
+		if (classIds.length === 0) {
+			return;
+		}
 
 		var pageDatas = []
 

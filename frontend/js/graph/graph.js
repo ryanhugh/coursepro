@@ -7,6 +7,8 @@ var d3 = require('d3')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
+var user = require('../data/user')
+
 //tree stuff
 var downloadTree = require('./downloadTree')
 var treeMgr = require('./treeMgr')
@@ -40,19 +42,17 @@ function Graph() {
 	// the container, which is the only child of the svg, defined in go
 	this.container = null;
 
-
 	this.links = []
 	this.linkElements = null;
 
 	this.nodes = []
-
-	this.tree = null;
 
 	// When calculating the position of all the nodes for the first time, 
 	// initially, focus more on grouping similar nodes together,
 	// and then increase the y multiplyer to move the nodes to the correct y coordinate. 
 	this.yCoordAttractionMultiplyer = 1;
 
+	this.$scope.user = user;
 
 	var path = {};
 
@@ -68,6 +68,7 @@ function Graph() {
 	}
 
 	this.$scope.$on('$destroy', function () {
+		this.hideHelpTooltips()
 		if (this.force) {
 			this.force.stop();
 		}
@@ -77,6 +78,9 @@ function Graph() {
 		this.calculateGraphSize();
 	}.bind(this))
 }
+
+
+macros.inherent(BaseDirective, Graph)
 
 Graph.prototype.getSvgWidth = function () {
 	return this.$window.innerWidth - macros.SEARCH_WIDTH;
@@ -91,6 +95,13 @@ Graph.$inject = ['$scope', '$routeParams', '$location', '$uibModal', '$compile',
 Graph.isPage = true;
 Graph.urls = ['/graph/:host/:termId/:subject?/:classUid?']
 Graph.fnName = 'Graph'
+
+
+Graph.prototype.onPanZoonButtonClick = function (deltaScale) {
+	var currScale = this.zoom.scale()
+	this.zoom.scale(currScale + deltaScale);
+	this.zoom.event(this.svg)
+};
 
 Graph.prototype.getWidth = function (node) {
 	var width = Math.min(200, macros.NODE_WIDTH);
@@ -255,7 +266,7 @@ Graph.prototype.onTick = function (e) {
 	for (var k = 0; k < this.nodes.length; k++) {
 		var currNode = this.nodes[k];
 
-		if (currNode.isCoreq) {
+		if (currNode.isCoreq || currNode.isExpanded) {
 			continue;
 		}
 
@@ -273,6 +284,7 @@ Graph.prototype.onTick = function (e) {
 
 
 		// collision between children on different depths
+		// TODO: this needs to be converted to actual trig that makes sure that the angle between any two parents or any two children is not too small.
 		if (!currNode.allChildrenAtSameDepth) {
 			for (var i = 0; i < currNode.prereqs.values.length; i++) {
 				for (var j = i + 1; j < currNode.prereqs.values.length; j++) {
@@ -309,6 +321,36 @@ Graph.prototype.onTick = function (e) {
 	}.bind(this));
 }
 
+Graph.prototype.showHelpTooltips = function () {
+	if (user.getValue(macros.EXPANDED_PANEL_ONCE)) {
+		this.hideHelpTooltips();
+		return;
+	}
+
+	// If a panel has never been expanded, show a help tooltip above the root node
+	var panel = this.rootNode.foreignObject.querySelector('.panel');
+
+	var toolTip = $(panel).tooltip({
+		container: 'body',
+		html: 'true',
+		placement: 'left',
+		trigger: 'manual',
+		title: '<span style="font-size:18px">Click to expand</span>',
+	})
+
+	this.timeout(function () {
+		toolTip.tooltip('show')
+	}.bind(this), 100)
+};
+
+// Hide the help tooltip over the root node created by showHelpTooltips.
+Graph.prototype.hideHelpTooltips = function () {
+	var panel = this.rootNode.foreignObject.querySelector('.panel');
+	$(panel).tooltip('hide')
+};
+
+
+
 // This is called when the graph is first loaded, and whenever a panel on the graph is selected. 
 Graph.prototype.loadNodes = function (callback) {
 
@@ -318,7 +360,7 @@ Graph.prototype.loadNodes = function (callback) {
 		node.$scope.$destroy();
 	}.bind(this))
 
-	// Remove the lines
+	// Remove everything else from the container
 	while (this.container[0][0].firstChild) {
 		this.container[0][0].removeChild(this.container[0][0].firstChild);
 	}
@@ -453,6 +495,8 @@ Graph.prototype.loadNodes = function (callback) {
 		node.sortCoreqs();
 	}.bind(this));
 
+	this.showHelpTooltips()
+
 	this.force.nodes(this.nodes)
 		.links(this.links)
 
@@ -497,7 +541,7 @@ Graph.prototype.go = function (config, callback) {
 				.linkDistance(5)
 
 			// Use querySelector instead of getElementById in case this.$document is a document fragment.
-			// (It could be in testing and im phantomJS document fragments don't have getElementById but do have querySelector).
+			// (It could be in testing and in phantomJS document fragments don't have getElementById but do have querySelector).
 			var d3GraphId = d3.select(this.$document[0].querySelector('#d3GraphId'))
 
 			this.svg = d3GraphId.append("svg")
@@ -515,8 +559,20 @@ Graph.prototype.go = function (config, callback) {
 
 			this.zoom = d3.behavior.zoom()
 				.scaleExtent([.1, 1.5])
+				.on('zoomstart', function () {
+
+					// Hide the help tooltips
+					this.hideHelpTooltips()
+
+				}.bind(this))
 				.on("zoom", function () {
 					this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+				}.bind(this))
+				.on('zoomend', function () {
+					// Only show the tooltip if zoomed in to some degree
+					if (this.zoom.scale() > .6) {
+						this.showHelpTooltips()
+					}
 				}.bind(this));
 
 			this.svg.call(this.zoom)
@@ -600,6 +656,7 @@ Graph.prototype.moveNodeOnScreen = function (node) {
 	}
 	else if (coords.top + coords.height > bounds.height + bounds.top - padding) {
 		deltaY = bounds.height + bounds.top - padding - coords.top - coords.height
+			// TODO: dont move past the top of the screen
 	}
 
 	if (coords.left < padding + bounds.left) {
@@ -626,8 +683,8 @@ Graph.prototype.getCollegeName = function () {
 
 
 
-Graph.prototype.openWatchModel = function ($scope) {
-	WatchClassesModel.open(this, $scope.node)
+Graph.prototype.openWatchModel = function (node) {
+	WatchClassesModel.open(this, node)
 };
 
 

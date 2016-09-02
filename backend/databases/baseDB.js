@@ -113,7 +113,7 @@ BaseDB.prototype.updateDatabase = function (newData, oldData, callback) {
 				return callback(err)
 			};
 			if (numReplaced.nModified !== 1) {
-				console.log('ERROR: updated !==1?', numReplaced.nModified, newData);
+				console.log('ERROR: updated !==1?', numReplaced.nModified, newData, numReplaced);
 			};
 			callback(null, newData);
 		}.bind(this));

@@ -34,13 +34,34 @@ var q = queue(1);
 
 Class.downloadResultsGroup({
 	keys: Keys.create({
+		// host: 'neu.edu',
+		// termId: '201710'
+		// host: 'swarthmore.edu',
+		// termId: '201604'
+
 		host: 'neu.edu',
 		termId: '201710'
 	})
 }, function (err, results) {
+	if (err) {
+		elog(err)
+		return;
+	}
 
+	var currSubject = null;
 	results.forEach(function (row) {
 		q.defer(function (callback) {
+			if (row.subject != currSubject) {
+				console.log("Now processing:", row.subject);
+				currSubject = row.subject
+			}
+
+			if (row.subject[0] < 'N') {
+				return callback()
+			}
+
+
+
 			graph.instance.go({
 				host: row.host,
 				termId: row.termId,
@@ -55,10 +76,6 @@ Class.downloadResultsGroup({
 					console.log("Node caused error:", row.host, row.termId, row.subject, row.classUid);
 				}
 				didError = false;
-				// expect(!err).toBe(true)
-
-
-
 
 
 				callback()
@@ -71,10 +88,5 @@ Class.downloadResultsGroup({
 			elog(err)
 		}
 		console.log("DONE!!!");
-		done()
 	}.bind(this))
-
-
 }.bind(this))
-
-

@@ -72,7 +72,7 @@ EllucianClassListParser.prototype.parseElement = function (pageData, element) {
 			return
 		};
 
-		if (_(url).startsWith('javascript')) {
+		if (_(url).startsWith('javascript') || _(url).startsWith('mailto')) {
 			return;
 		};
 

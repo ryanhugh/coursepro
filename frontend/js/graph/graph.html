@@ -17,7 +17,11 @@ body {
     overflow: hidden;
 }
 
-.glyphicon {
+.glyphicon,
+.bootstrap-switch,
+.row,
+.helpToolTip,
+.helpToolTip {
     position: initial !important;
 }
 
@@ -62,12 +66,71 @@ path.link.licensing {
 }
 
 #d3GraphId {
-	margin-top: 50px;
-	margin-left: 300px;
+    margin-top: 50px;
+    margin-left: 300px;
+    position: relative;
 }
 
+.bootstrap-switch {
+    display: block;
+    margin: 0 auto;
+    width: 104px !important;
+}
+
+.bootstrap-switch-container {
+    transform: none !important;
+    white-space: nowrap;
+    width: 153px !important;
+}
+
+.bootstrap-switch-primary,
+.bootstrap-switch-default,
+.bootstrap-switch-label {
+    width: 51px !important;
+}
+
+.bootstrap-switch-on > .bootstrap-switch-container {
+    margin-left: 0px !important;
+}
+
+.bootstrap-switch-off > .bootstrap-switch-container {
+    margin-left: -51px !important;
+}
+
+.row {
+    margin: 0;
+}
+
+.actionTextContainer {
+    position: inherit;
+    min-width: 412px;
+    display: inline-block;
+}
+
+.clickToExpandTooltip {
+    font-size: 18px;
+}
+
+.panZoonButton {
+    display: block;
+    text-align: center;
+    padding: 4px 9px !important;
+    margin-bottom: 8px;
+}
 </style>
 
 <div search></div>
 
-<div id="d3GraphId"></div>
+<div id="d3GraphId">
+
+    <!-- Zoom and pan buttons in top left corner -->
+    <div style="position:absolute;left:10px;top:10px;text-align:center">
+        <button type="button" class="btn btn-default panZoonButton" ng-click="graph.onPanZoonButtonClick(.1)">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+
+        <button type="button" class="btn btn-default panZoonButton" ng-click="graph.onPanZoonButtonClick(-.1)">
+            <span class="glyphicon glyphicon-minus"></span>
+        </button>
+    </div>
+</div>

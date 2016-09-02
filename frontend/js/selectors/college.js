@@ -22,6 +22,9 @@ College.prototype.constructor = College;
  
 College.prototype.onSelect = function (value) {
 	user.setValue(macros.LAST_SELECTED_COLLEGE, value)
+
+	// and clear out the last selected term, because a term on a different college will not be valid on this one
+	user.setValue(macros.LAST_SELECTED_TERM, null);
 };
 
 College.prototype.download = function(callback) {
@@ -30,6 +33,9 @@ College.prototype.download = function(callback) {
 	}
 
 	Host.createMany(Keys.create({}), function (err, colleges) {
+		if (err) {
+			return callback(err)
+		}
 
 		var retVal = [];
 		colleges.forEach(function (college) {

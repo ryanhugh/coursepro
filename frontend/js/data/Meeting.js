@@ -38,10 +38,16 @@ function Meeting(serverData) {
 			//3 is to set in the second week of 1970
 			var day = parseInt(dayIndex) + 3
 
-			timeMoments.push({
+			var obj = {
 				start: moment.utc(event.start * 1000).add(day, 'day'),
 				end: moment.utc(event.end * 1000).add(day, 'day'),
-			})
+			}
+
+			if (parseInt(obj.start.format('YYYY')) !== 1970) {
+				elog()
+			}
+
+			timeMoments.push(obj)
 		}.bind(this))
 	}
 
