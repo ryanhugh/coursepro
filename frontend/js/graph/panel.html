@@ -1,7 +1,7 @@
 <div graph-panel-expand ng-click="graphPanelExpand.onPanelClick(node)">
 
     <!-- main panel -->
-    <div class="panel {{node.wouldSatisfyNode?'panel-info':'panel-primary'}} treePanel" ng-if="node.isClass" panel-close=".closePanel">
+    <div class="panel {{node.isRequired?'panel-primary':'panel-info'}} treePanel" ng-if="node.isClass" panel-close=".closePanel">
         <!--  uib-tooltip="Click to expand" tooltip-class="clickToExpandTooltip" tooltip-append-to-body="true" -->
 
         <div class="panel-heading">
@@ -89,7 +89,7 @@
 
                 <div class="row" ng-if="node.lowestParent && (node.wouldSatisfyNode || graphPanelExpand.getNodeIsSelected(node)) && !node.isCoreq" style="margin-bottom: 28px;line-height: 16px;">
                     <div class="col-md-8 actionTextContainer">
-                        <span style="font-size:18px">Use this class to satisfy the prerequisites of {{node.getParentString()}}?</span>
+                        <span style="font-size:18px">Use this class to satisfy the prerequisites of {{node.parentString}}?</span>
                         <br>
                         <span>Instead of this class, you could also pick {{node.neightborsString}}</span>
                         <br>
@@ -264,13 +264,13 @@
 
             </div>
             <div ng-if="!node.isCoreq" style="text-align: center;">
-                <div ng-if="node.wouldSatisfyNode && !user.getListIncludesClass(macros.SELECTED_LIST, node.class)" style="padding-bottom:7px">
+                <div ng-if="!node.isRequired && !user.getListIncludesClass(macros.SELECTED_LIST, node.class)" style="padding-bottom:7px">
                     <div ng-if="::node.class.dataStatus===macros.DATASTATUS_FAIL">0 sections this term</div>
 
                     <ng-pluralize ng-if="::node.class.dataStatus!==macros.DATASTATUS_FAIL" count="::node.class.crns.length" when="{'1':'{} section this term','other':'{} sections this term'}"></ng-pluralize>
                 </div>
 
-                <div ng-if="!node.wouldSatisfyNode || user.getListIncludesClass(macros.SELECTED_LIST, node.class)">
+                <div ng-if="node.isRequired || user.getListIncludesClass(macros.SELECTED_LIST, node.class)">
                     <div ng-if="node.prereqs.values.length === 0" style="padding-bottom:7px">
                         <div ng-if="node.class.prereqs.values.length === 0">
                             No Prerequisites

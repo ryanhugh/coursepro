@@ -171,17 +171,11 @@ GraphPanelExpand.prototype.onPanelClick = function (node, callback) {
 	if (node.isExpanded) {
 		return callback()
 	}
-	if (!node.class.isString || node.wouldSatisfyNode) {
-		this.openPanel(node, callback);
+	if (node.class.isString && !node.wouldSatisfyNode) {
+		return callback()
 	}
-	// else if (node.class.isString) {
-	// 	this.onPanelSelect(node, callback);
-	// }
-	// else if (!node.lowestParent || node.isCoreq) {
-	// }
-	// else {
-	// 	this.openPanelPrompt(node, callback);
-	// }
+	
+	this.openPanel(node, callback);
 }
 
 

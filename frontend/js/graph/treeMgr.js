@@ -962,7 +962,7 @@ TreeMgr.prototype.removeLightBluePrereqs = function (node) {
 			type: node.prereqs.type
 		}
 	}
-	if (node.wouldSatisfyNode && node.isClass) {
+	if (!node.isRequired && node.isClass) {
 		node.prereqs = {
 			values: [],
 			type: 'and'
@@ -1008,9 +1008,16 @@ TreeMgr.prototype.setWouldSatisfy = function (node) {
 	if (node.isClass) {
 		if (node.isCoreq) {
 			node.wouldSatisfyNode = node.allParents[0].wouldSatisfyNode
+			node.isRequired = node.allParents[0].isRequired
 		}
 		else {
 			node.wouldSatisfyNode = this.wouldSatisfyNode(node)
+			if (node.allParents.length === 0) {
+				node.isRequired = true;
+			}
+			else {
+				node.isRequired = this.getIsRequired(node)
+			}
 		}
 	}
 
@@ -1023,6 +1030,56 @@ TreeMgr.prototype.setWouldSatisfy = function (node) {
 	}.bind(this));
 };
 
+
+// Gets a list of parents that would be satisfied if this class is selected
+// If this node has parents that are classes and have type of 'or' prereqs, just show them
+// If not, and it would satisfy a requisiteBranch, show the class above the requisite branch
+TreeMgr.prototype.setParentString = function (node) {
+
+	var stack = node.allParents.slice(0);
+	var retVal = []
+	var andParents = []
+	var curr;
+
+	while ((curr = stack.pop())) {
+
+		if (!curr.isClass) {
+			stack = stack.concat(curr.allParents)
+			continue;
+		}
+
+		var classSubjectandId = curr.class.subject + ' ' + curr.class.classId
+
+		if (curr.prereqs.type === 'and') {
+			if (!_(andParents).includes(classSubjectandId)) {
+				andParents.push(classSubjectandId)
+			}
+		}
+		else if (curr.prereqs.type === 'or') {
+			if (!_(retVal).includes(classSubjectandId)) {
+				retVal.push(classSubjectandId)
+			}
+		}
+	}
+
+	if (retVal.length > 0) {
+		node.parentString = retVal.join(' and ')
+	}
+	else if (andParents.length > 0) {
+		node.parentString = andParents.join(' and ')
+	}
+	else {
+		node.parentString = null
+	}
+
+
+	node.prereqs.values.forEach(function (child) {
+		this.setParentString(child);
+	}.bind(this));
+}
+
+
+
 // returns true if this node would satisfy a node if selected and make the graph simpler,
 // else it returns false
 TreeMgr.prototype.wouldSatisfyNode = function (node) {
@@ -1033,6 +1090,17 @@ TreeMgr.prototype.wouldSatisfyNode = function (node) {
 		}
 	}
 
+	return false;
+};
+
+
+TreeMgr.prototype.getIsRequired = function(node) {
+	for (var i = 0; i < node.allParents.length; i++) {
+		var parent = node.allParents[i]
+		if (parent.prereqs.values.length === 1 || parent.prereqs.type == 'and') {
+			return true;
+		}
+	}
 	return false;
 };
 
@@ -1214,10 +1282,15 @@ TreeMgr.prototype.go = function (node) {
 	// This saves a string representation of the children of this node (eg ['PHYS 1151', 'PHYS 1161'])
 	// on each node before the prereqs are mucked with
 	this.saveNeighborsString(node);
+
+	// This needs to be cleaned up, but setParentString needs to have parents on nodes, but simplify if needs there to not be any parents
+	this.addAllParentRelations(node);
+	this.setParentString(node);
+	this.removeAllParents(node);
+
 	this.simplifyIfSelected(node);
 
 	this.sortTree(node);
-
 	this.addAllParentRelations(node);
 	this.setWouldSatisfy(node);
 	this.removeAllParents(node);

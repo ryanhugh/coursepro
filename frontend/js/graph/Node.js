@@ -69,6 +69,10 @@ function Node(classOrRequisiteBranch) {
 	// Added by treeMgr to keep track of weather this node should be light blue or dark blue
 	this.wouldSatisfyNode = false;
 
+	// Keeps track of wheather is class is required for any classes above. 
+	// When there is only 1 parent, it will be !== wouldSatisfyNode, but 
+	this.isRequired = false;
+
 	// Added by treeMgr to determine weather this node should be linked to by other panels or should just follow a non coreq node around
 	this.isCoreq = false;
 	// Added by treemgr, is the index of this node in the paren't .coreqs.values, if this node is a coreq
@@ -286,49 +290,6 @@ Node.prototype.compareTo = function (other) {
 		return 0;
 	}
 };
-
-// Gets a list of parents that would be satisfied if this class is selected
-// If this node has parents that are classes and have type of 'or' prereqs, just show them
-// If not, and it would satisfy a requisiteBranch, show the class above the requisite branch
-Node.prototype.getParentString = function () {
-
-	var stack = this.allParents.slice(0);
-	var retVal = []
-	var andParents = []
-	var curr;
-
-	while ((curr = stack.pop())) {
-
-		if (!curr.isClass) {
-			stack = stack.concat(curr.allParents)
-			continue;
-		}
-
-		var classSubjectandId = curr.class.subject + ' ' + curr.class.classId
-
-		if (curr.prereqs.type === 'and') {
-			if (!_(andParents).includes(classSubjectandId)) {
-				andParents.push(classSubjectandId)
-			}
-		}
-		else if (curr.prereqs.type === 'or') {
-			if (!_(retVal).includes(classSubjectandId)) {
-				retVal.push(classSubjectandId)
-			}
-		}
-	}
-
-	if (retVal.length > 0) {
-		return retVal.join(' and ')
-	}
-	else if (andParents.length > 0) {
-		return andParents.join(' and ')
-	}
-	else {
-		return null
-	}
-}
-
 
 // change z index of a node
 Node.prototype.bringToFront = function () {
