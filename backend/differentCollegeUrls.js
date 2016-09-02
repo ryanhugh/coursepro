@@ -30,8 +30,8 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://appprod.udayton.edu:9000/prod/bwckschd.p_disp_dyn_sched", // worked 9/1/16, 4 prereq parsing issues but besides that worked perfectly
   "https://ui2web4.apps.uillinois.edu/BANPROD4/bwckschd.p_disp_dyn_sched", // worked 9/2/16 no errors
   "https://lpar2.jsu.edu/DADNormalPRO8/bwckschd.p_disp_dyn_sched", //  worked 9/2/16 no errors
-  "https://ssb.isu.edu/bprod/bwckschd.p_disp_dyn_sched",
-  "https://ssb.columbiastate.edu/PROD/bwckschd.p_disp_dyn_sched/",
+  "https://ssb.isu.edu/bprod/bwckschd.p_disp_dyn_sched", //  worked 9/2/16 no errors
+  "https://ssb.columbiastate.edu/PROD/bwckschd.p_disp_dyn_sched",
   "https://selfservice.brown.edu/ss/bwckschd.p_disp_dyn_sched",
   "https://ssbprod.wichita.edu/PROD/bwckschd.p_disp_dyn_sched",
   "https://prodssb.mscc.edu/PROD/bwckschd.p_disp_dyn_sched",
