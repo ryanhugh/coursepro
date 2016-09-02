@@ -48,7 +48,7 @@
                             <br/>
 
                             <span ng-init="prereqString = node.class.getPrereqsString()">
-                                Prerequisites: 
+                                Prerequisites:
                                 <span ng-if="prereqString.length < 100">
                                     {{prereqString}}
                                 </span>
@@ -122,126 +122,128 @@
                     </div>
                 </div>
 
+                <div ng-if="!node.class.isString">
 
 
-                <div style="width:100%;border-bottom: 1px solid #ddd;"></div>
+                    <div style="width:100%;border-bottom: 1px solid #ddd;"></div>
 
-                <div ng-if="node.class.sections.length === 0" style="padding:12px">No sections in {{node.class.name}} this term.</div>
-                <div ng-if="node.class.sections.length>0">
-                    <div style="font-size: 18px;padding: 15px 15px 10px 15px;">Sections in {{node.class.name}}</div>
-                    <table class="table table-striped" style="margin-bottom:0">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body="true">CRN</span>
-                                </th>
-                                <th>
-                                    <ng-pluralize count="node.class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
-                                </th>
+                    <div ng-if="node.class.sections.length === 0" style="padding:12px">No sections in {{node.class.name}} this term.</div>
+                    <div ng-if="node.class.sections.length>0">
+                        <div style="font-size: 18px;padding: 15px 15px 10px 15px;">Sections in {{node.class.name}}</div>
+                        <table class="table table-striped" style="margin-bottom:0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span uib-tooltip="Course Reference Number" tooltip-class="listIconTooltip" tooltip-append-to-body="true">CRN</span>
+                                    </th>
+                                    <th>
+                                        <ng-pluralize count="node.class.getHeighestProfCount()" when="{'1':'Professor','other':'Professors'}"></ng-pluralize>
+                                    </th>
 
-                                <th>Weekdays</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Location</th>
-                                <th ng-if="node.class.sectionsHaveExam()">Exam start</th>
-                                <th ng-if="node.class.sectionsHaveExam()">Exam end</th>
-                                <th ng-if="node.class.sectionsHaveExam()">Exam date</th>
-                                <th>
+                                    <th>Weekdays</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Location</th>
+                                    <th ng-if="node.class.sectionsHaveExam()">Exam start</th>
+                                    <th ng-if="node.class.sectionsHaveExam()">Exam end</th>
+                                    <th ng-if="node.class.sectionsHaveExam()">Exam date</th>
+                                    <th>
 
-                                    <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                                        Seats
-                                    </span>
-
-                                </th>
-                                <th ng-if="node.class.getHasWaitList()">Open/Total Waitlist Seats</th>
-                                <th>Link</th>
-                                <!-- <th>Email
-                        <br>Notifications</th> -->
-                                <!-- <th>Saved</th> -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="section in node.class.sections.slice(0, node.showingSectionCount)">
-                                <td>{{::section.crn}}</td>
-                                <td>{{::section.getProfs().join(', ')}}</td>
-                                <td style="white-space: nowrap;">
-                                    <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
-
-                                        <!-- avoid calculating the string more than once -->
-                                        <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip="{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
-
-                                            <div ng-if="::section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in ::section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
-                                            </div>
-
-                                            <div ng-if="::(!section.meetsOnWeekends())" class="weekDayBox" ng-repeat="weekDay in ::section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
-
-                                            </div>
+                                        <span uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                            Seats
                                         </span>
-                                    </span>
-                                </td>
 
-                                <td>{{::section.getUniqueStartTimes().join(", ")}}</td>
-                                <td>{{::section.getUniqueEndTimes().join(", ")}}</td>
+                                    </th>
+                                    <th ng-if="node.class.getHasWaitList()">Open/Total Waitlist Seats</th>
+                                    <th>Link</th>
+                                    <!-- <th>Email
+                        <br>Notifications</th> -->
+                                    <!-- <th>Saved</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="section in node.class.sections.slice(0, node.showingSectionCount)">
+                                    <td>{{::section.crn}}</td>
+                                    <td>{{::section.getProfs().join(', ')}}</td>
+                                    <td style="white-space: nowrap;">
+                                        <span ng-if="section.dataStatus == macros.DATASTATUS_DONE">
 
-                                <td>
-                                    <span ng-repeat="location in ::section.getLocations()">
-                                        <span ng-if="location != 'TBA' || section.getLocations().length <= 1">{{::location}}</span>
-                                        <span ng-if="!$last">,&nbsp;</span>
-                                    </span>
-                                </td>
+                                            <!-- avoid calculating the string more than once -->
+                                            <span ng-init="toolTipString = section.getWeekDaysAsStringArray().length == 0?'No meetings found':'Meets on '+section.getWeekDaysAsStringArray().join(', ')" uib-tooltip="{{toolTipString}}" tooltip-class="weekDayToolTip" tooltip-append-to-body="true">
 
+                                                <div ng-if="::section.meetsOnWeekends()" class="weekDayBox" ng-repeat="weekDay in ::section.getWeekDaysAsBooleans()  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
+                                                </div>
 
-                                <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().start.format('h:mm a')}}</td>
-                                <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().end.format('h:mm a')}}</td>
-                                <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().start.format('MMM Do')}}</td>
+                                                <div ng-if="::(!section.meetsOnWeekends())" class="weekDayBox" ng-repeat="weekDay in ::section.getWeekDaysAsBooleans().slice(1,6)  track by $index" ng-class="weekDay?'weekDayBoxChecked':''">
 
-                                <td>
+                                                </div>
+                                            </span>
+                                        </span>
+                                    </td>
 
-                                    <!-- don't display the "/" until these are loaded -->
-                                    <span ng-if="::(section.seatsRemaining || section.seatsCapacity)" uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                                        {{::section.seatsRemaining}}/{{::section.seatsCapacity}}
-                                    </span>
+                                    <td>{{::section.getUniqueStartTimes().join(", ")}}</td>
+                                    <td>{{::section.getUniqueEndTimes().join(", ")}}</td>
 
-                                </td>
-
-
-                                <td ng-if="node.class.getHasWaitList()">
-
-                                    <!-- don't display the "/" until these are loaded -->
-                                    <span ng-if="::section.waitRemaining || ::section.waitCapacity">
-                                        {{::section.waitRemaining}}/{{::section.waitCapacity}}
-                                    </span>
-
-
-                                    <!-- don't display the "/" until these are loaded -->
-                                    <span ng-if="!section.waitRemaining && !section.waitCapacity">
-                                        0/0
-                                    </span>
+                                    <td>
+                                        <span ng-repeat="location in ::section.getLocations()">
+                                            <span ng-if="location != 'TBA' || section.getLocations().length <= 1">{{::location}}</span>
+                                            <span ng-if="!$last">,&nbsp;</span>
+                                        </span>
+                                    </td>
 
 
+                                    <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().start.format('h:mm a')}}</td>
+                                    <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().end.format('h:mm a')}}</td>
+                                    <td ng-if="node.class.sectionsHaveExam()">{{::section.getExamMoments().start.format('MMM Do')}}</td>
 
-                                </td>
+                                    <td>
 
-                                <td>
-                                    <a href="{{::section.url}}" target="_blank">
-                                        <div style="color:black" class="glyphicon glyphicon-globe" uib-tooltip="View on {{::node.class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
-                                        </div>
-                                    </a>
-                                </td>
-                                <!-- 
+                                        <!-- don't display the "/" until these are loaded -->
+                                        <span ng-if="::(section.seatsRemaining || section.seatsCapacity)" uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                            {{::section.seatsRemaining}}/{{::section.seatsCapacity}}
+                                        </span>
+
+                                    </td>
+
+
+                                    <td ng-if="node.class.getHasWaitList()">
+
+                                        <!-- don't display the "/" until these are loaded -->
+                                        <span ng-if="::section.waitRemaining || ::section.waitCapacity">
+                                            {{::section.waitRemaining}}/{{::section.waitCapacity}}
+                                        </span>
+
+
+                                        <!-- don't display the "/" until these are loaded -->
+                                        <span ng-if="!section.waitRemaining && !section.waitCapacity">
+                                            0/0
+                                        </span>
+
+
+
+                                    </td>
+
+                                    <td>
+                                        <a href="{{::section.url}}" target="_blank">
+                                            <div style="color:black" class="glyphicon glyphicon-globe" uib-tooltip="View on {{::node.class.host}}" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <!-- 
                     <td>
                         <span list-icon='{{macros.WATCHING_LIST}}' toggle="section"></span>
                     </td> -->
 
-                                <!-- <td>
+                                    <!-- <td>
                                 <span list-icon='{{macros.SAVED_LIST}}' toggle="section" style="padding-left: 11px;"></span>
                             </td> -->
-                            </tr>
-                        </tbody>
-                    </table>
+                                </tr>
+                            </tbody>
+                        </table>
 
-                    <div ng-if="node.showingSectionCount<node.class.sections.length" class="showMoreButton" ng-click="graphPanelExpand.increaseShowing(node)">
-                        Show More..
+                        <div ng-if="node.showingSectionCount<node.class.sections.length" class="showMoreButton" ng-click="graphPanelExpand.increaseShowing(node)">
+                            Show More..
+                        </div>
                     </div>
                 </div>
 

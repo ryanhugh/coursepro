@@ -17,7 +17,7 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://bappas2.gram.edu:9000/pls/gram/bwckschd.p_disp_dyn_sched", //dosent work in nodejs!!!!??? works in python, browser, etc
   "https://sail.oakland.edu/PROD/bwckschd.p_disp_dyn_sched", // works 8/31/16, some minor errors in trello spider but nothing major 
   "https://banweb.wm.edu/pls/PROD/bwckschd.p_disp_dyn_sched", // thier site worked on 8/31/16, but need to update spider code before can use (fatal errors)
-  "https://prod-ssb-01.dccc.edu/PROD/bwckschd.p_disp_dyn_sched",
+  "https://prod-ssb-01.dccc.edu/PROD/bwckschd.p_disp_dyn_sched", //worked in like dec 2015 and limited rate to about 100 connections at once.
   "https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched", // i think i fixed the bug. need to test again. 8/31/16
   "https://xbss-prod.lasalle.edu/PROD/bwckschd.p_disp_dyn_sched", // works 8/31/16
   "https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched", //works
@@ -27,9 +27,9 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://pssb.stockton.edu/prod/bwckschd.p_disp_dyn_sched", //was port 9000, now is 443
   "https://www8.unm.edu/pls/banp/bwckschd.p_disp_dyn_sched", // took about 3 hours but it worked without any errors. 8/31/16
   "https://banssbprod.xavier.edu:8099/PROD/bwckschd.p_disp_dyn_sched", // works 9/1/16 took about 40 min
-  "https://appprod.udayton.edu:9000/prod/bwckschd.p_disp_dyn_sched",
-  "https://ui2web4.apps.uillinois.edu/BANPROD4/bwckschd.p_disp_dyn_sched",
-  "https://lpar2.jsu.edu/DADNormalPRO8/bwckschd.p_disp_dyn_sched",
+  "https://appprod.udayton.edu:9000/prod/bwckschd.p_disp_dyn_sched", // worked 9/1/16, 4 prereq parsing issues but besides that worked perfectly
+  "https://ui2web4.apps.uillinois.edu/BANPROD4/bwckschd.p_disp_dyn_sched", // worked 9/2/16 no errors
+  "https://lpar2.jsu.edu/DADNormalPRO8/bwckschd.p_disp_dyn_sched", //  worked 9/2/16 no errors
   "https://ssb.isu.edu/bprod/bwckschd.p_disp_dyn_sched",
   "https://ssb.columbiastate.edu/PROD/bwckschd.p_disp_dyn_sched/",
   "https://selfservice.brown.edu/ss/bwckschd.p_disp_dyn_sched",

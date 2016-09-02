@@ -188,7 +188,13 @@ GraphPanelExpand.prototype.getNeighborsString = function (node) {
 	neighbors = _.uniq(neighbors)
 	_.pull(neighbors, node);
 
+	var foundBranch = false;
+
 	neighbors.forEach(function (node, index) {
+		if (!node.isClass) {
+			foundBranch = true;
+			return;
+		}
 		if (node.class.isString) {
 			neighbors[index] = node.class.desc
 		}
@@ -197,58 +203,14 @@ GraphPanelExpand.prototype.getNeighborsString = function (node) {
 		}
 	}.bind(this))
 
-	
-	neighbors = _.uniq(neighbors)
 
-	if (neighbors.length === 0) {
+	if (neighbors.length === 0 || foundBranch) {
 		return 'some other classes'
 	}
 	else {
+		neighbors = _.uniq(neighbors)
 		return neighbors.join(' or ')
 	}
-	return;
-
-
-
-	// treeMgr.getUpwardNeighbors(node)
-
-	// if (node.prereqs.type === 'or') {
-	// 	var children = [];
-
-	// 	node.prereqs.values.forEach(function (child) {
-	// 		if (!child.isClass) {
-	// 			return;
-	// 		}
-
-	// 		children.push(child)
-	// 	}.bind(this))
-
-	// 	children.forEach(function (child) {
-	// 		var neightborsSet = children.slice(0)
-	// 		_.pull(neightborsSet, child)
-
-	// 		neightborsSet.forEach(function (childNode, index) {
-	// 			if (childNode.class.isString) {
-	// 				neightborsSet[index] = childNode.class.desc
-	// 			}
-	// 			else {
-	// 				neightborsSet[index] = childNode.class.subject + ' ' + childNode.class.classId 
-	// 			}
-	// 		}.bind(this))
-
-	// 		// If this child has multiple parents whose prereq type is "or". 
-	// 		if (child.neightborsString) {
-	// 			child.neightborsString = 'some other classes'
-	// 		}
-	// 		else if (neightborsSet.length === 0) {
-	// 			child.neightborsString = 'some other classes';
-	// 		}
-	// 		else {
-	// 			child.neightborsString = _.uniq(neightborsSet).join(' or ')
-	// 		}
-
-	// 	}.bind(this))
-	// }
 };
 
 
@@ -262,7 +224,7 @@ GraphPanelExpand.prototype.onPanelClick = function (node, callback) {
 	if (node.isExpanded) {
 		return callback()
 	}
-	if (node.class.isString && !node.wouldSatisfyNode) {
+	if (node.class.isString && !node.wouldSatisfyNode && !user.getListIncludesClass(macros.SELECTED_LIST, node.class)) {
 		return callback()
 	}
 
