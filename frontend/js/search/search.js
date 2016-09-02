@@ -31,10 +31,7 @@ function Search() {
 	}
 
 
-	this.$scope.loadMore2 = this.loadMore2.bind(this)
-
-
-	// this.setRyanClasses()
+	this.$scope.loadMore = this.loadMore.bind(this)
 }
 
 
@@ -195,85 +192,21 @@ Search.prototype.go = function () {
 }
 
 Search.focusSearchBox = function () {
-	document.getElementById('leftSearchBoxID').focus()
+	var elem = document.getElementById('leftSearchBoxID')
+	if (elem) {
+		elem.focus()
+	}
 }
 
-Search.prototype.loadMore2 = function () {
+Search.prototype.loadMore = function () {
 	var more = this.constructor.unrenderedClasses.shift()
 	if (more) {
 		this.constructor.renderedClasses.push(more)
 	};
 };
 
-Search.prototype.setRyanClasses = function () {
-
-	// search here
-
-	// class = JSON.stringify()
-
-	this.constructor.classes = []
-
-
-	// stuff i need to take
-	var keys = [{
-		subject: 'EECE',
-		classUid: '2322_1420743956',
-	}, {
-		subject: 'EECE',
-		classUid: '2323_2018952043',
-	}, {
-		subject: 'EECE',
-		classUid: '2540_2092162332',
-	}, {
-		subject: 'CS',
-		classUid: '4800_1303374065'
-	}, {
-		subject: 'CS',
-		classUid: '3700_1941416797'
-	}, {
-		subject: 'CS',
-		classUid: '4400_1871949484'
-	}, {
-		subject: 'CS',
-		classUid: '4500_118506562'
-	}, {
-		subject: 'PHYS',
-		classUid: '1155_521395573'
-	}, {
-		subject: 'CHEM',
-		classUid: '3505_1161594881'
-	}]
-	keys.forEach(function (row) {
-		row.termId = '201710'
-		row.host = 'neu.edu'
-	}.bind(this));
-
-
-	var q = queue()
-
-	keys.forEach(function (row) {
-		var aClass = Class.create(row)
-		q.defer(function (callback) {
-			aClass.download(function (err) {
-				callback(err)
-			}.bind(this))
-		}.bind(this))
-		this.constructor.classes.push(aClass)
-	}.bind(this))
-
-	q.awaitAll(function (err) {
-		if (err) {
-			elog(err);
-			return;
-		}
-		this.$scope.$apply();
-	}.bind(this))
-}
-
-
 Search.prototype.onClick = function (aClass) {
-	var obj = aClass;
-	var url = '/graph/' + encodeURIComponent(obj.host) + '/' + encodeURIComponent(obj.termId) + '/' + encodeURIComponent(obj.subject) + '/' + encodeURIComponent(obj.classUid)
+	var url = '/graph/' + encodeURIComponent(aClass.host) + '/' + encodeURIComponent(aClass.termId) + '/' + encodeURIComponent(aClass.subject) + '/' + encodeURIComponent(aClass.classUid)
 	this.$location.path(url)
 }
 
