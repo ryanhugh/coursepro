@@ -97,20 +97,10 @@ Graph.urls = ['/graph/:host/:termId/:subject?/:classUid?']
 Graph.fnName = 'Graph'
 
 
-Graph.prototype.onPanZoonButtonClick = function(deltaScale, deltaX, deltaY) {
-	if (deltaY !== 0 || deltaY !== 0) {
-		var currPos = this.zoom.translate()
-
-		// Center the root node by translating the container <g> inside the svg
-		this.zoom.translate([deltaX + currPos[0], deltaY + currPos[1]])
-		this.zoom.event(this.svg)
-	}
-
-	if (deltaScale !== 0) {
-		var currScale = this.zoom.scale()
-		this.zoom.scale(currScale + deltaScale);
-		this.zoom.event(this.svg)
-	}
+Graph.prototype.onPanZoonButtonClick = function (deltaScale) {
+	var currScale = this.zoom.scale()
+	this.zoom.scale(currScale + deltaScale);
+	this.zoom.event(this.svg)
 };
 
 Graph.prototype.getWidth = function (node) {
