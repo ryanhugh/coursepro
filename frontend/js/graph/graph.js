@@ -247,6 +247,10 @@ Graph.prototype.estimateNodePositions = function () {
 
 
 Graph.prototype.calculateGraphSize = function () {
+	if (!this.force) {
+		return;
+	}
+
 	this.graphWidth = this.getSvgWidth();
 	this.graphHeight = this.getSvgHeight();
 
@@ -327,6 +331,10 @@ Graph.prototype.showHelpTooltips = function () {
 		return;
 	}
 
+	if (!this.rootNode || !this.rootNode.foreignObject) {
+		return;
+	}
+
 	// If a panel has never been expanded, show a help tooltip above the root node
 	var panel = this.rootNode.foreignObject.querySelector('.panel');
 
@@ -345,6 +353,9 @@ Graph.prototype.showHelpTooltips = function () {
 
 // Hide the help tooltip over the root node created by showHelpTooltips.
 Graph.prototype.hideHelpTooltips = function () {
+	if (!this.rootNode || !this.rootNode.foreignObject) {
+		return;
+	}
 	var panel = this.rootNode.foreignObject.querySelector('.panel');
 	$(panel).tooltip('hide')
 };
