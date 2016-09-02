@@ -15,7 +15,7 @@
 }
 
 .rightNavBarItem {
-    float: right;
+    /*float: right;*/
     display: inline-block;
     margin-left: 31px;
     margin-top: 14px;
@@ -31,65 +31,48 @@
                 <img src="images/whiteicon.png" id="navbarIconId">
             </a>
 
-            <div id="navbar" class="collapse navbar-collapse">
+            <div id="navbar" class="collapse navbar-collapse" style="white-space: nowrap;overflow: hidden !important;">
 
-
-                <div selectors-mgr style="display:inline-block"></div>
-
-                <div ng-if ="!navBar.getHost() || !navBar.getTerm()" ng-click="navBar.openSelectors()" style="right: 0;top: 0;position: absolute;display: inline-block;float: right;width: 500px;height: 100%;margin-right: 50px;z-index:999999;cursor:pointer"></div>
-
-
-                <!--<div class="rightNavBarItem" ng-click="navBar.openHelp()">-->
-                <!--    <div class="glyphicon glyphicon-question-sign navBarItem" style="color: white"></div>-->
-                <!--    <div style="position: relative;top: -3px" class="navBarItem navBarText">-->
-                        <!-- Help -->
-                <!--    </div>-->
-                <!--</div>-->
-
-                <!--<div class="rightNavBarItem">-->
-                <!--    <a href="/#/saved">-->
-                <!--        <div class="glyphicon glyphicon-star navBarItem" style="color: white"></div>-->
-                <!--        <div style="position: relative;top: -3px" class="navBarItem navBarText">-->
-                <!--            Saved-->
-                <!--        </div>-->
-                <!--    </a>-->
-                <!--</div>-->
-
-
-                <div class="rightNavBarItem" style="margin-top: 11px;">
-                    <a ng-href="/#/graph/{{navBar.getHost()}}/{{navBar.getTerm()}}/">
-                        <img src="/images/white_tree.png" style="margin-left: -4px;">
-                        <div class="navBarItem navBarText" style="margin-left: 1px;">Graph</div>
-
-                    </a>
+                <div style="text-align: left;display: inline-block;">
+                    <div selectors-mgr style="display:inline-block"></div>
                 </div>
 
 
-                <!--<div class="rightNavBarItem">-->
-                <!--    <a href="/#/search/{{navBar.getHost()}}/{{navBar.getTerm()}}/">-->
-                <!--        <div class="glyphicon glyphicon-search navBarItem"></div>-->
-                <!--        <div style="vertical-align: top;" class="navBarItem navBarText">Search</div>-->
-                <!--    </a>-->
-                <!--</div>-->
+
+                <div style="text-align: right;display: inline-block;">
+                    <div ng-if ="!navBar.getHost() || !navBar.getTerm()" ng-click="navBar.openSelectors()" style="right: 0;top: 0;position: absolute;display: inline-block;float: right;width: 500px;height: 100%;margin-right: 50px;z-index:999999;cursor:pointer"></div>
 
 
-                <div class="rightNavBarItem">
-                    <a ng-href="/#/list/{{navBar.getHost()}}/{{navBar.getTerm()}}/">
-                        <div class="glyphicon glyphicon-th-list navBarItem" style="color: white"></div>
-                        <div style="position: relative;top: -3px" class="navBarItem navBarText">
-                            List
-                        </div>
-                    </a>
+                    <div class="rightNavBarItem" style="margin-top: 11px;">
+                        <a ng-href="/#/graph/{{navBar.getHost()}}/{{navBar.getTerm()}}/">
+                            <img src="/images/white_tree.png" style="margin-left: -4px;">
+                            <div class="navBarItem navBarText" style="margin-left: 1px;">Graph</div>
+
+                        </a>
+                    </div>
+
+                    <div class="rightNavBarItem">
+                        <a ng-href="/#/list/{{navBar.getHost()}}/{{navBar.getTerm()}}/">
+                            <div class="glyphicon glyphicon-th-list navBarItem" style="color: white"></div>
+                            <div style="position: relative;top: -3px" class="navBarItem navBarText">
+                                List
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="rightNavBarItem">
+                        <a href="/#/calendar/">
+                            <div class="glyphicon glyphicon-calendar navBarItem" style="color: white"></div>
+                            <div style="position: relative;top: -3px" class="navBarItem navBarText">
+                                Calendar
+                            </div>
+                        </a>
+                    </div>
                 </div>
 
-                <div class="rightNavBarItem">
-                    <a href="/#/calendar/">
-                        <div class="glyphicon glyphicon-calendar navBarItem" style="color: white"></div>
-                        <div style="position: relative;top: -3px" class="navBarItem navBarText">
-                            Calendar
-                        </div>
-                    </a>
-                </div>
+
+
+
             </div>
         </div>
     </nav>
