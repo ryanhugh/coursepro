@@ -163,6 +163,97 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 };
 
 
+// This saves a string representation of the children of this node (eg ['PHYS 1151', 'PHYS 1161'])
+// on each node before the prereqs are mucked with
+GraphPanelExpand.prototype.getNeighborsString = function (node) {
+
+	if (user.getListIncludesClass(macros.SELECTED_LIST, node.class)) {
+		if (node.allParents.length > 1) {
+			return 'some other classes'
+		}
+		else {
+			return node.neightborsString
+		}
+	}
+
+
+	var neighbors = [];
+
+	node.allParents.forEach(function (parent) {
+		if (parent.prereqs.type === 'or') {
+			neighbors = neighbors.concat(parent.prereqs.values)
+		}
+	}.bind(this))
+
+	neighbors = _.uniq(neighbors)
+	_.pull(neighbors, node);
+
+	neighbors.forEach(function (node, index) {
+		if (node.class.isString) {
+			neighbors[index] = node.class.desc
+		}
+		else {
+			neighbors[index] = node.class.subject + ' ' + node.class.classId
+		}
+	}.bind(this))
+
+	
+	neighbors = _.uniq(neighbors)
+
+	if (neighbors.length === 0) {
+		return 'some other classes'
+	}
+	else {
+		return neighbors.join(' or ')
+	}
+	return;
+
+
+
+	// treeMgr.getUpwardNeighbors(node)
+
+	// if (node.prereqs.type === 'or') {
+	// 	var children = [];
+
+	// 	node.prereqs.values.forEach(function (child) {
+	// 		if (!child.isClass) {
+	// 			return;
+	// 		}
+
+	// 		children.push(child)
+	// 	}.bind(this))
+
+	// 	children.forEach(function (child) {
+	// 		var neightborsSet = children.slice(0)
+	// 		_.pull(neightborsSet, child)
+
+	// 		neightborsSet.forEach(function (childNode, index) {
+	// 			if (childNode.class.isString) {
+	// 				neightborsSet[index] = childNode.class.desc
+	// 			}
+	// 			else {
+	// 				neightborsSet[index] = childNode.class.subject + ' ' + childNode.class.classId 
+	// 			}
+	// 		}.bind(this))
+
+	// 		// If this child has multiple parents whose prereq type is "or". 
+	// 		if (child.neightborsString) {
+	// 			child.neightborsString = 'some other classes'
+	// 		}
+	// 		else if (neightborsSet.length === 0) {
+	// 			child.neightborsString = 'some other classes';
+	// 		}
+	// 		else {
+	// 			child.neightborsString = _.uniq(neightborsSet).join(' or ')
+	// 		}
+
+	// 	}.bind(this))
+	// }
+};
+
+
+
+
 GraphPanelExpand.prototype.onPanelClick = function (node, callback) {
 	if (!callback) {
 		callback = function () {}
@@ -174,7 +265,7 @@ GraphPanelExpand.prototype.onPanelClick = function (node, callback) {
 	if (node.class.isString && !node.wouldSatisfyNode) {
 		return callback()
 	}
-	
+
 	this.openPanel(node, callback);
 }
 

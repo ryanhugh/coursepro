@@ -89,9 +89,9 @@
 
                 <div class="row" ng-if="node.lowestParent && (node.wouldSatisfyNode || graphPanelExpand.getNodeIsSelected(node)) && !node.isCoreq" style="margin-bottom: 28px;line-height: 16px;">
                     <div class="col-md-8 actionTextContainer">
-                        <span style="font-size:18px">Use this class to satisfy the prerequisites of {{node.parentString}}?</span>
+                        <span style="font-size:18px">Use this class to satisfy the prerequisites of {{node.getParentString()}}?</span>
                         <br>
-                        <span>Instead of this class, you could also pick {{node.neightborsString}}</span>
+                        <span>Instead of this class, you could also pick {{graphPanelExpand.getNeighborsString(node)}}</span>
                         <br>
                         <a href="" ng-click="graph.openSelectHelpModel()">Learn more</a>
                     </div>

@@ -291,6 +291,52 @@ Node.prototype.compareTo = function (other) {
 	}
 };
 
+// Gets a list of parents that would be satisfied if this class is selected
+// If this node has parents that are classes and have type of 'or' prereqs, just show them
+// If not, and it would satisfy a requisiteBranch, show the class above the requisite branch
+Node.prototype.getParentString = function () {
+
+	if (user.getListIncludesClass(macros.SELECTED_LIST, this.class) && this.allParents.length > 1) {
+		return 'above classes'
+	}
+
+	var stack = this.allParents.slice(0);
+	var retVal = []
+	var andParents = []
+	var curr;
+
+	while ((curr = stack.pop())) {
+
+		if (!curr.isClass) {
+			stack = stack.concat(curr.allParents)
+			continue;
+		}
+
+		var classSubjectandId = curr.class.subject + ' ' + curr.class.classId
+
+		if (curr.prereqs.type === 'and') {
+			if (!_(andParents).includes(classSubjectandId)) {
+				andParents.push(classSubjectandId)
+			}
+		}
+		else if (curr.prereqs.type === 'or') {
+			if (!_(retVal).includes(classSubjectandId)) {
+				retVal.push(classSubjectandId)
+			}
+		}
+	}
+
+	if (retVal.length > 0) {
+		return retVal.join(' and ')
+	}
+	else if (andParents.length > 0) {
+		return andParents.join(' and ')
+	}
+	else {
+		return null
+	}
+}
+
 // change z index of a node
 Node.prototype.bringToFront = function () {
 
