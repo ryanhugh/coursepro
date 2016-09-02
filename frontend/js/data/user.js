@@ -601,7 +601,7 @@ User.prototype.subscribeForNews = function (email, callback) {
 };
 
 
-User.prototype.loadList = function (listName, callback) {
+User.prototype.loadList = memoize(function (listName, callback) {
 	if (!callback) {
 		callback = function () {}
 	};
@@ -671,7 +671,9 @@ User.prototype.loadList = function (listName, callback) {
 			callback(null, this.lists[listName])
 		}.bind(this))
 	}.bind(this))
-};
+}, function (listName) {
+	return listName
+}.bind(this));
 
 User.prototype.loadAllLists = function (callback) {
 
@@ -817,7 +819,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				// }
 				// else {
 				classesObjs.push(keys.getObj())
-				// }
+					// }
 			}
 			if (addToClasses) {
 				this.lists[listName].classes.push(aClass);

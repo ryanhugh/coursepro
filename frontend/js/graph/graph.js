@@ -667,7 +667,9 @@ Graph.prototype.moveNodeOnScreen = function (node) {
 	}
 	else if (coords.top + coords.height > bounds.height + bounds.top - padding) {
 		deltaY = bounds.height + bounds.top - padding - coords.top - coords.height
-			// TODO: dont move past the top of the screen
+		if (-deltaY > coords.top + padding) {
+			deltaY = - (coords.top + padding);
+		}
 	}
 
 	if (coords.left < padding + bounds.left) {
