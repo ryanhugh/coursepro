@@ -19,19 +19,25 @@
     overflow-y: scroll;
     max-height: calc(100% - 30px);
 }
+
+.searchResultRow {
+    cursor: pointer
+}
+
+
 </style>
 
 
-<div id="searchContainerID">
+<div id="searchContainerID" ng-keydown="search.onKeyDown($event)">
 
     <div class="input-group" style="width:100%">
-        <input type="text" id="leftSearchBoxID" class="form-control" placeholder="Search for..." ng-model="search.constructor.searchText" ng-change="search.go()" ng-model-options="{ debounce: 75 }">
+        <input type="text" id="leftSearchBoxID" class="form-control" placeholder="Search for..." ng-model="search.constructor.searchText" ng-change="search.go()" ng-model-options="{ debounce: 75 }" tabindex="0">
     </div>
 
 
     <div class="list-group" id="searchResultsId">
         <div infinite-scroll='loadMore()' infinite-scroll-distance='2' testbinding="true">
-            <a ng-repeat="aClass in search.constructor.renderedClasses track by aClass._id" class="list-group-item {{search.isActive(aClass)?'active':''}}" href="" ng-click="search.onClick(aClass)" style="border-radius: 0">
+            <a ng-repeat="aClass in search.constructor.renderedClasses track by aClass._id" class="list-group-item {{search.isActive(aClass)?'active':''}} searchResultRow" ng-click="search.onClick(aClass)" style="border-radius: 0" tabindex="0">
                 <h4 class="list-group-item-heading">{{::aClass.subject}} {{::aClass.classId}}</h4>
                 <p class="list-group-item-text">{{::aClass.name}}</p>
             </a>

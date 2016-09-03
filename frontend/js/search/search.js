@@ -32,6 +32,22 @@ function Search() {
 
 
 	this.$scope.loadMore = this.loadMore.bind(this)
+
+	// Focus the highlighted result
+	this.timeout(function () {
+		var elem = this.$document[0].getElementById('searchResultsId')
+		if (!elem) {
+			return
+		}
+
+		elem = elem.querySelector('.searchResultRow.active')
+
+		if (!elem) {
+			return
+		}
+		elem.focus()
+
+	}.bind(this))
 }
 
 
@@ -43,7 +59,7 @@ Search.renderedClasses = []
 Search.unrenderedClasses = []
 
 Search.fnName = 'Search'
-Search.$inject = ['$scope', '$location', '$routeParams', '$timeout']
+Search.$inject = ['$scope', '$location', '$routeParams', '$timeout', '$document']
 
 //prototype constructor
 Search.prototype = Object.create(BaseDirective.prototype);
@@ -70,6 +86,80 @@ Search.prototype.getHost = function () {
 Search.setSearchText = function (text) {
 	this.searchText = text;
 	document.getElementById('leftSearchBoxID').value = text
+};
+
+// This is only fired if the focus is somewhere inside <div search></div>
+Search.prototype.onKeyDown = function ($event) {
+	if ($event.which === 13) {
+		setTimeout(function () {
+			$event.target.click()
+		}.bind(this), 0)
+		$event.preventDefault();
+		return;
+	}
+
+	if ($event.which === 38 || $event.which === 40) {
+		var currElement = this.$document[0].activeElement
+
+		// Up
+		if ($event.which === 38) {
+			if (_(currElement.classList).includes('searchResultRow')) {
+
+				var nextItem = currElement;
+
+				// After this loop nextItem will either be null or the prior row in the search results
+				while ((nextItem = nextItem.previousSibling)) {
+					if (_(nextItem.classList).includes('searchResultRow')) {
+						break;
+					}
+				}
+
+				if (!nextItem) {
+					this.constructor.focusSearchBox()
+				}
+				else {
+					nextItem.focus()
+				}
+			}
+			else {
+				this.constructor.focusSearchBox()
+			}
+		}
+
+		// Down
+		else {
+			if (_(currElement.classList).includes('searchResultRow')) {
+
+				var nextItem = currElement;
+
+				// After this loop nextItem will either be null or the prior row in the search results
+				while ((nextItem = nextItem.nextSibling)) {
+					if (_(nextItem.classList).includes('searchResultRow')) {
+						break;
+					}
+				}
+
+				if (!nextItem) {
+					var firstResult = document.getElementsByClassName('searchResultRow')[0];
+					if (firstResult) {
+						firstResult.focus()
+					}
+				}
+				else {
+					nextItem.focus()
+				}
+			}
+			else {
+				var firstResult = document.getElementsByClassName('searchResultRow')[0];
+				if (firstResult) {
+					firstResult.focus()
+				}
+			}
+		}
+
+
+		$event.preventDefault(); // prevent the default action (scroll / move caret)
+	}
 };
 
 Search.prototype.getTermId = function () {
