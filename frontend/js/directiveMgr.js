@@ -88,7 +88,7 @@ function DirectiveMgr() {
 
 	var ua = navigator.userAgent;
 	if (_(ua).includes("MSIE ") || ua.match(/Trident.*rv\:11\./)) {
-		alert("This site doesn't work so great in Internet Explorer/Edge. Try upgrading to Google Chrome or Firefox!")
+		alert("This site doesn't work so great in Internet Explorer/Edge. Try upgrading to Google Chrome!")
 		return;
 	}
 
