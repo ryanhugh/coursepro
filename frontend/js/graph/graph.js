@@ -326,7 +326,7 @@ Graph.prototype.onTick = function (e) {
 }
 
 Graph.prototype.showHelpTooltips = function () {
-	if (user.getValue(macros.EXPANDED_PANEL_ONCE)) {
+	if (user.getValue(macros.EXPANDED_PANEL_ONCE) || (this.rootNode.prereqs.values.length === 0 && this.rootNode.coreqs.values.length === 0)) {
 		this.hideHelpTooltips();
 		return;
 	}
