@@ -636,14 +636,20 @@ User.prototype.loadList = memoize(function (listName, callback) {
 		//fetch all the class data from the keys in the user watch list
 		this.dbData.lists[listName].classes.forEach(function (classKeys) {
 			q.defer(function (callback) {
-				Class.create(classKeys).download(function (err, aClass) {
-					if (err) {
-						return callback(err)
-					}
+				var aClass = Class.create(classKeys);
+				if (aClass.isString) {
+					return callback()
+				}
+				else {
+					aClass.download(function (err, aClass) {
+						if (err) {
+							return callback(err)
+						}
 
-					this.lists[listName].classes.push(aClass);
-					callback()
-				}.bind(this))
+						this.lists[listName].classes.push(aClass);
+						callback()
+					}.bind(this))
+				}
 			}.bind(this))
 		}.bind(this))
 
