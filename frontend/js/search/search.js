@@ -33,9 +33,13 @@ function Search() {
 
 	this.$scope.loadMore = this.loadMore.bind(this)
 
+
 	// Focus the highlighted result
 	this.timeout(function () {
+		this.loadScrollOffset()
+
 		var elem = this.$document[0].getElementById('searchResultsId')
+
 		if (!elem) {
 			return
 		}
@@ -48,11 +52,23 @@ function Search() {
 		elem.focus()
 
 	}.bind(this))
+
+	this.$scope.$on('$destroy', function () {
+		var elem = this.$document[0].getElementById('searchResultsId')
+		if (!elem) {
+			return
+		}
+		this.constructor.scrollTop = elem.scrollTop
+	}.bind(this))
+
+
 }
 
 
 // Keep the search text and results outside of the instance so it survives route changes and other stuff
 Search.searchText = ''
+
+Search.scrollTop = 0;
 
 // Updated on search, used in ng-repeat
 Search.renderedClasses = []
@@ -64,6 +80,20 @@ Search.$inject = ['$scope', '$location', '$routeParams', '$timeout', '$document'
 //prototype constructor
 Search.prototype = Object.create(BaseDirective.prototype);
 Search.prototype.constructor = Search;
+
+Search.prototype.loadScrollOffset = function () {
+
+	var elem = this.$document[0].getElementById('searchResultsId')
+
+
+	if (!elem) {
+		return
+	}
+
+	if (this.constructor.scrollTop) {
+		elem.scrollTop = this.constructor.scrollTop;
+	}
+};
 
 // 1. Check this.$routeParams
 // 2. if that is null, check user.getValue(macros.LAST_SELECTED_TERM)
@@ -221,6 +251,7 @@ Search.prototype.loadSearchIndex = memoize(function (callback) {
 
 
 Search.prototype.go = function () {
+	this.constructor.scrollTop = 0;
 	if (!this.constructor.searchText) {
 		this.constructor.classes = []
 		return;

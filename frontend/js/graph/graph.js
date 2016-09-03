@@ -658,6 +658,7 @@ Graph.prototype.createGraph = function (config, callback) {
 Graph.prototype.moveNodeOnScreen = function (node) {
 
 	var padding = 20;
+	var additionalTopPadding = 50;
 	var bounds = this.svg[0][0].getBoundingClientRect()
 	var deltaY = 0;
 	var deltaX = 0;
@@ -667,8 +668,8 @@ Graph.prototype.moveNodeOnScreen = function (node) {
 	}
 	else if (coords.top + coords.height > bounds.height + bounds.top - padding) {
 		deltaY = bounds.height + bounds.top - padding - coords.top - coords.height
-		if (-deltaY > coords.top + padding) {
-			deltaY = - (coords.top + padding);
+		if (-deltaY > coords.top - padding - additionalTopPadding) {
+			deltaY = -(coords.top - padding - additionalTopPadding);
 		}
 	}
 
