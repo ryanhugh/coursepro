@@ -100,9 +100,6 @@ GraphPanelExpand.prototype.onExpandClick = function (node, openPanel, callback) 
 		callback = function () {}
 	};
 
-	user.setValue(macros.EXPANDED_PANEL_ONCE, true)
-	Graph.instance.hideHelpTooltips();
-
 	var q = queue()
 
 	if (!node.class.isString) {
@@ -438,6 +435,9 @@ GraphPanelExpand.prototype.openPanel = function (node, callback) {
 	});
 
 
+	user.setValue(macros.EXPANDED_PANEL_ONCE, true)
+	Graph.instance.hideHelpTooltips();
+
 	this.openOrder.push(node)
 
 	this.onExpandClick(node, true, callback)
@@ -608,19 +608,16 @@ GraphPanelExpand.prototype.link = function ($scope, element, attrs) {
 	//&& treeMgr.countClassesInTree(node) === 1
 	if (!node.lowestParent && node.class._id != this.rootNodeId && node.prereqs.values.length === 0 && node.coreqs.values.length === 0) {
 		this.rootNodeId = node.class._id;
-
+		node.foreignObject.style.visibility = 'hidden'
 
 		this.timeout(function () {
 			//this is undone when openPanel is done, a couple lines down
-			// var panel = this.getTreePanel(node);
-			// panel.style.visibility = 'hidden'
-
-			this.openPanel(node, function (err) {
+			
+			this.onExpandClick(node, true, function (err) {
+				node.foreignObject.style.visibility = ''
 				if (err) {
-					elog(err);
+					elog(err)
 				}
-
-				// panel.style.visibility = ''
 			}.bind(this))
 		}.bind(this))
 
