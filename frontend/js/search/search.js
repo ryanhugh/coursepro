@@ -281,10 +281,15 @@ Search.prototype.go = function () {
 	}.bind(this))
 }
 
+// Keep the cursor at the end of the text in the box after focus
+// http://stackoverflow.com/questions/1056359/set-mouse-focus-and-move-cursor-to-end-of-input-using-jquery
 Search.focusSearchBox = function () {
 	var elem = document.getElementById('leftSearchBoxID')
 	if (elem) {
+		var value = elem.value;
+		elem.value = '';
 		elem.focus()
+		elem.value = value;
 	}
 }
 
