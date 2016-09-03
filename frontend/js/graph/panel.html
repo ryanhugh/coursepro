@@ -97,6 +97,10 @@
                     </div>
                     <div class="col-md-3" style="position: inherit;display: inline-block;">
                         <input bs-switch ng-model="graphPanelExpand.selectedFun(node)" type="checkbox" ng-model-options="{ getterSetter: true }" switch-on-text="YES" switch-off-text="NO">
+
+                        <!-- The color part of this style is animated by graph panel expand.  -->
+                        <!-- If the class is not a string, the changes saved element appears below, in the watching row. -->
+                        <div class="changesSaved" style="color:rgba(0,0,0,0)" ng-if="node.class.isString">Changes saved.</div>
                     </div>
                 </div>
 
@@ -117,8 +121,7 @@
                     <div class="col-md-3" style="position: inherit;display: inline-block;">
                         <input bs-switch ng-model="graphPanelExpand.watchingFunc(node)" type="checkbox" ng-model-options="{ getterSetter: true }">
 
-                        <!-- The color part of this style is animated by graph panel expand.  -->
-                        <div class="changesSaved" style="margin: 0 auto;text-align: center;padding-top: 12px;color:rgba(0,0,0,0)">Changes saved.</div>
+                        <div class="changesSaved" style="color:rgba(0,0,0,0)" ng-if="!node.class.isString">Changes saved.</div>
                     </div>
                 </div>
 
