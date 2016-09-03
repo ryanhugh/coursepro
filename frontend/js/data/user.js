@@ -638,6 +638,8 @@ User.prototype.loadList = memoize(function (listName, callback) {
 			q.defer(function (callback) {
 				var aClass = Class.create(classKeys);
 				if (aClass.isString) {
+
+					this.lists[listName].classes.push(aClass);
 					return callback()
 				}
 				else {
