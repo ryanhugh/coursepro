@@ -740,6 +740,47 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		return callback()
 	};
 
+
+	// Add them to the dbData before the call to loadLists, so they are added synchronously 
+	sections.forEach(function (section) {
+		var addToDBSections = true;
+		var keys = Keys.create(section, macros.LIST_SECTIONS)
+		for (var i = 0; i < this.dbData.lists[listName].sections.length; i++) {
+			if (keys.propsEqual(this.dbData.lists[listName].sections[i])) {
+				addToDBSections = false;
+				break;
+			}
+		}
+
+		if (addToDBSections) {
+			this.dbData.lists[listName].sections.push(keys.getObj())
+		}
+	}.bind(this))
+
+
+	classes.forEach(function (aClass) {
+		var addToDBClasses = true;
+		var keys;
+		if (aClass.isString) {
+			keys = Keys.createWithString(aClass)
+		}
+		else {
+			keys = Keys.create(aClass)
+		}
+		for (var i = 0; i < this.dbData.lists[listName].classes.length; i++) {
+			if (keys.propsEqual(this.dbData.lists[listName].classes[i])) {
+				addToDBClasses = false;
+				break;
+			}
+		}
+
+		if (addToDBClasses) {
+			this.dbData.lists[listName].classes.push(keys.getObj())
+		}
+	}.bind(this))
+
+
+
 	this.loadList(listName, function (err) {
 		if (err) {
 			return callback(err)
@@ -764,26 +805,10 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 			}
 
 			var keys = Keys.create(section, macros.LIST_SECTIONS)
-			var addToDBSections = true;
-			for (var i = 0; i < this.dbData.lists[listName].sections.length; i++) {
-				if (keys.propsEqual(this.dbData.lists[listName].sections[i])) {
-					addToDBSections = false;
-					break;
-				}
-			}
-			if (addToSections != addToDBSections) {
-				elog()
-			}
-			if (addToSections || addToDBSections) {
-				sectionObjs.push(keys.getObj())
-			}
 			if (addToSections) {
+				sectionObjs.push(keys.getObj())
 				this.lists[listName].sections.push(section);
 			}
-			if (addToDBSections) {
-				this.dbData.lists[listName].sections.push(keys.getObj())
-			}
-
 		}.bind(this))
 
 		// Add the new class to this.lists and this.dbData.lists
@@ -796,36 +821,16 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 				}
 			}
 
-			var addToDBClasses = true;
-			var keys;
-			if (aClass.isString) {
-				keys = Keys.createWithString(aClass)
-			}
-			else {
-				keys = Keys.create(aClass)
-			}
-			for (var i = 0; i < this.dbData.lists[listName].classes.length; i++) {
-				if (keys.propsEqual(this.dbData.lists[listName].classes[i])) {
-					addToDBClasses = false;
-					break;
-				}
-			}
-			if (addToClasses != addToDBClasses) {
-				elog()
-			}
-			if (addToClasses || addToDBClasses) {
-				// if (aClass.isString) {
-				// 	elog('Cant add string to db')
-				// }
-				// else {
-				classesObjs.push(keys.getObj())
-					// }
-			}
 			if (addToClasses) {
+				var keys;
+				if (aClass.isString) {
+					keys = Keys.createWithString(aClass)
+				}
+				else {
+					keys = Keys.create(aClass)
+				}
 				this.lists[listName].classes.push(aClass);
-			}
-			if (addToDBClasses) {
-				this.dbData.lists[listName].classes.push(keys.getObj())
+				classesObjs.push(keys.getObj())
 			}
 		}.bind(this))
 
