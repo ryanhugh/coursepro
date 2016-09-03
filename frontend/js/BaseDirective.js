@@ -23,7 +23,7 @@ function BaseDirective() {
 	};
 
 	if (this.constructor.instance && this.$scope) {
-		console.error('already have instance of ',this,'?')
+		console.error('already have instance of ', this, '?')
 	}
 
 	this.constructor.instance = this;
@@ -44,7 +44,7 @@ function BaseDirective() {
 
 // Use the angular timeout so it is automatically cancelled if the directive is deallocated.
 // But don't run the $digest loop so can run that manually in code
-BaseDirective.prototype.timeout = function(fn, ms) {
+BaseDirective.prototype.timeout = function (fn, ms) {
 	if (!this.$timeout) {
 		elog('no timeout on ' + this.constructor.name)
 	}
@@ -54,7 +54,7 @@ BaseDirective.prototype.timeout = function(fn, ms) {
 		ms = 0;
 	}
 
-	this.$timeout(fn,ms,false);
+	this.$timeout(fn, ms, false);
 };
 
 

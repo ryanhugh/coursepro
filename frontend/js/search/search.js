@@ -61,7 +61,7 @@ function Search() {
 		this.constructor.scrollTop = elem.scrollTop
 	}.bind(this))
 
-
+	this.loggingTimer = null;
 }
 
 
@@ -96,7 +96,7 @@ Search.prototype.loadScrollOffset = function () {
 };
 
 // 1. Check this.$routeParams
-// 2. if that is null, check user.getValue(macros.LAST_SELECTED_TERM)
+// 2. if that is null, check user.getValue(macros.LAST_SELECTED_COLLEGE)
 // 3. return null
 Search.prototype.getHost = function () {
 
@@ -249,6 +249,32 @@ Search.prototype.loadSearchIndex = memoize(function (callback) {
 	return this.getHost() + this.getTermId()
 })
 
+Search.prototype.startLoggingTimer = function () {
+	clearTimeout(this.loggingTimer);
+	this.loggingTimer = setTimeout(function () {
+
+		ga('send', {
+			'hitType': 'pageview',
+			'page': '/search/' + encodeURIComponent(this.constructor.searchText),
+			'title': 'Coursepro.io'
+		});
+
+
+		request({
+			url: '/log',
+			body: {
+				type: 'search',
+				text: this.constructor.searchText,
+			},
+			useCache: false
+		}, function (err, response) {
+			if (err) {
+				elog("ERROR: couldn't log search :(", err, response);
+			}
+		}.bind(this))
+	}.bind(this), 2000)
+};
+
 
 Search.prototype.go = function () {
 	this.constructor.scrollTop = 0;
@@ -261,6 +287,8 @@ Search.prototype.go = function () {
 		if (err) {
 			elog(err)
 		}
+
+		this.startLoggingTimer();
 
 		// Returns an array of objects that has a .ref and a .score
 		// The array is sorted by score (with the highest matching closest to the beginning)
