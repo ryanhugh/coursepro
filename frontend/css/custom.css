@@ -20,6 +20,8 @@
 .listIconTooltip {
 	font-size: 10px;
 	z-index: 999999;
+	overflow: hidden;
+	white-space: nowrap;
 }
 .listIconTooltip > .tooltip-inner {
 	font-size: 14px;
@@ -169,7 +171,6 @@
 	transform: translate(-50%, 0);
 }
 
-
 /*inside an expanded panel*/
 
 
@@ -217,7 +218,6 @@
 	margin: 0px auto;
 	position: relative
 }
-
 .lineToParentLink, .lineToParentLink:focus {
 	outline: 0;
 	border: 0 none;
