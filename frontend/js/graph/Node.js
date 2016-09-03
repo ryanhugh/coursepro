@@ -422,7 +422,11 @@ Node.prototype.getWidth = function () {
 
 Node.prototype.updateWidth = function () {
 	this.width = this.getWidth();
-	this.foreignObject.setAttribute('width', this.width);
+	var addition = 0
+	if (macros.FIREFOX) {
+		addition = 10
+	}
+	this.foreignObject.setAttribute('width', this.width + addition);
 	this.updatePos();
 };
 
@@ -436,10 +440,15 @@ Node.prototype.updateHeight = function () {
 
 	// update the height of the panel
 	this.height = this.foreignObject.lastChild.offsetHeight
+	
+	var addition = 0
+	if (macros.FIREFOX) {
+		addition = 10
+	}
 
 	//update the foreign object and the g with the new height
-	this.foreignObject.setAttribute('height', this.height)
-	this.foreignObject.parentNode.setAttribute('height', this.height)
+	this.foreignObject.setAttribute('height', this.height + addition)
+	this.foreignObject.parentNode.setAttribute('height', this.height + addition)
 	this.updatePos();
 };
 

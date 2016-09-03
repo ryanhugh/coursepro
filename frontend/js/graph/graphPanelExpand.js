@@ -306,6 +306,9 @@ GraphPanelExpand.prototype.showChangesSaved = function (node) {
 	if (element.style.color.startsWith('rgb(') || !element.style.color) {
 		alphaMatch = 1
 	}
+	else if (element.style.color === 'transparent') {
+		alphaMatch = 0;
+	}
 	else {
 
 		alphaMatch = element.style.color.match(/([\d\.]+)\)/i)

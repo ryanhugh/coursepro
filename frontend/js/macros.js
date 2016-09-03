@@ -1,4 +1,5 @@
 'use strict';
+var _ = require('lodash')
 var commonMacros = require('../../common/macros')
 var request = require('./request')
 window.jQuery = window.$ = require('jquery')
@@ -27,6 +28,8 @@ function Macros() {
 
 	this.SELECT_PANEL_WIDTH = 300;
 
+	this.FIREFOX = _(navigator.userAgent.toLowerCase()).includes('firefox')
+
 	// In unit tests, window.elog is defined in main.tests.js to be just console.error
 	if (!macros.UNIT_TESTS) {
 		//used all over the place for logging erros
@@ -39,8 +42,7 @@ function Macros() {
 
 			console.log.apply(console, ['ELOG'].concat(args));
 			debugger
-			// console.trace();
-			console.log(new Error().stack)
+			console.trace();
 
 			var bodyString;
 
