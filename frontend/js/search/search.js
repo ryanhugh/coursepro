@@ -67,7 +67,7 @@ Search.prototype.getHost = function () {
 	}
 };
 
-Search.setSearchText = function(text) {
+Search.setSearchText = function (text) {
 	this.searchText = text;
 	document.getElementById('leftSearchBoxID').value = text
 };
@@ -94,12 +94,12 @@ Search.prototype.loadSearchIndex = memoize(function (callback) {
 	if (!host || !termId) {
 		return callback('need host and term')
 	}
-	
+
 	var url = Keys.create({
 		host: host,
 		termId: termId
 	}).getHashWithEndpoint('/getSearchIndex');
-	
+
 	request({
 		url: url,
 		host: host,
@@ -141,10 +141,10 @@ Search.prototype.go = function () {
 			elog(err)
 		}
 
-		// Return with a ref: and a score: 
+		// Returns an array of objects that has a .ref and a .score
+		// The array is sorted by score (with the highest matching closest to the beginning)
+		// eg {ref:"neu.edu/201710/ARTF/1123_1835962771", score: 3.1094880801464573}
 		var results = searchIndex.search(this.constructor.searchText, searchConfig)
-
-		// console.log("Search results length:", results.length);
 
 		var classes = [];
 
