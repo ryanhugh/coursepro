@@ -24,7 +24,6 @@ CreateSearchIndex.prototype.constructor = CreateSearchIndex;
 
 CreateSearchIndex.prototype.go = function (queries, callback) {
 	if (!this.isUpdatingEntireTerm(queries)) {
-		console.log("Not creating another search index when running on a subject or a class", JSON.stringify(queries));
 		return callback()
 	}
 

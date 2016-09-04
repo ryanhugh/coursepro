@@ -63,9 +63,11 @@ BaseDB.prototype.shouldUpdateDB = function (newData, oldData) {
 
 			//only print lastupdate time if in verbose mode
 			if (attrName != 'lastUpdateTime' || macros.VERBOSE) {
-				console.log('updating db because of change in', attrName)
+				if (attrName != 'prereqs') {
+					console.log('updating db because of change in', attrName)
+				}
 				if (attrName === 'deps') {
-					console.log('Change in deps:',newData[attrName], oldData[attrName]);
+					console.log('Change in deps:', newData[attrName], oldData[attrName]);
 				}
 			};
 
@@ -246,7 +248,7 @@ BaseDB.prototype.update = function (query, updateQuery, config, callback) {
 
 		mongoConfig[attrName] = config[attrName]
 	}
-	
+
 	if (!config.shouldBeOnlyOne) {
 		mongoConfig.multi = true
 	}
