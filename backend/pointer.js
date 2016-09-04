@@ -6,6 +6,8 @@ var _ = require('lodash');
 var URI = require('urijs');
 var queue = require('d3-queue').queue;
 var async = require('async')
+var memoize = require('../common/memoize')
+var dns = require('dns')
 
 var macros = require('./macros')
 
@@ -24,54 +26,104 @@ Pointer.prototype.handleRequestResponce = function (body, callback) {
 	parser.done();
 };
 
+// By default, needle and nodejs does a DNS lookup for each request.
+// Avoid that by only doing a dns lookup once per domain
+Pointer.prototype.getDns = memoize(function (hostname, callback) {
+
+	// Just the host + subdomains are needed, eg blah.google.com
+	if (hostname.startsWith('http')) {
+		elog(hostname)
+	}
+
+	dns.lookup(hostname, {
+		all: true,
+		family: 4
+	}, function (err, results) {
+		if (results.length > 1) {
+			console.log('INFO: more than 1 dns result', results)
+		}
+		callback(err, results)
+	}.bind(this))
+}, function (hostname) {
+	return hostname;
+}.bind(this));
+
 
 
 Pointer.prototype.fireRequest = function (url, options, callback) {
 
-	var needleConfig = {
-		follow_max: 5,
+	var urlParsed = new URI(url)
 
-		//ten min
-		open_timeout: 60 * 10000,
-		read_timeout: 60 * 10000,
-		rejectUnauthorized: false,
-		headers: {
-			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:24.0) Gecko/20100101 Firefox/24.0',
-			"Referer": url, //trololololol - needed on temple, etc
-			// 'Accept-Encoding': '*' if data is returned as gzip, is is not uncompressed...
+	this.getDns(urlParsed.hostname(), function (err, results) {
+
+		var ip;
+		if (results.length === 0) {
+			elog("DNS lookup returned 0 results!!!")
+			return callback('dns fail')
 		}
-	}
-
-
-	//if more headers given, copy them to the needleConfig headers
-	if (options.headers) {
-		for (var attrName in options.headers) {
-			needleConfig.headers[attrName] = options.headers[attrName];
+		else if (results.length === 1) {
+			ip = results[0].address
 		}
-	}
-
-	if (options.payload) {
-
-
-		if (!needleConfig.headers['Content-Type']) {
-			elog('ERROR:content type not given for request!')
-			return callback('no content type for post')
-		};
-
-		if (macros.VERBOSE) {
-			console.log('firing post len ', options.payload.length, ' to ', url);
-			console.log('data', options.payload)
+		else {
+			var index = Math.floor(Math.random() * results.length);
+			ip = results[index].address
 		}
 
-		needle.post(url, options.payload, needleConfig, callback);
-	}
-	else {
-		if (macros.VERBOSE) {
-			console.log('firing get to ', url);
+		// Make the start of the new url with the ip from the DNS lookup and the protocol from the url
+		var urlStart = new URI(ip).protocol(urlParsed.protocol()).toString()
+
+		// Then add on everything after the host
+		var urlWithIp = new URI(urlParsed.resource()).absoluteTo(urlStart).toString()
+
+		var needleConfig = {
+			follow_max: 5,
+
+			//ten min
+			open_timeout: 60 * 10000,
+			read_timeout: 60 * 10000,
+			rejectUnauthorized: false,
+			headers: {
+				'Host': urlParsed.hostname(),
+				'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:24.0) Gecko/20100101 Firefox/24.0',
+				"Referer": url, //trololololol - needed on temple, etc
+				// 'Accept-Encoding': '*' if data is returned as gzip, is is not uncompressed...
+			}
 		}
 
-		needle.get(url, needleConfig, callback);
-	}
+		//if more headers given, copy them to the needleConfig headers
+		if (options.headers) {
+			for (var attrName in options.headers) {
+				needleConfig.headers[attrName] = options.headers[attrName];
+			}
+		}
+
+		if (options.payload) {
+
+
+			if (!needleConfig.headers['Content-Type']) {
+				elog('ERROR:content type not given for request!')
+				return callback('no content type for post')
+			};
+
+			if (macros.VERBOSE) {
+				console.log('firing post len ', options.payload.length, ' to ', urlWithIp);
+				console.log('data', options.payload)
+			}
+
+			needle.post(urlWithIp, options.payload, needleConfig, callback);
+		}
+		else {
+			if (macros.VERBOSE) {
+				console.log('firing get to ', urlWithIp);
+			}
+
+			needle.get(urlWithIp, needleConfig, callback);
+		}
+
+	}.bind(this))
+
+
+
 	//callback is called by the needle code
 }
 

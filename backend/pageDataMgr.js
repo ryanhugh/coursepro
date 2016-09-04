@@ -454,22 +454,22 @@ PageDataMgr.prototype.main = function () {
 	// 
 
 	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=EECE&crse_numb_in=2160');
-	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
+	var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
 
-	// pageData.dbData.termId = '201710';
-	// pageData.dbData.host = 'neu.edu'
-	// pageData.dbData.subject = 'EECE'
+	pageData.dbData.termId = '201710';
+	pageData.dbData.host = 'neu.edu'
+	pageData.dbData.subject = 'EECE'
 
-	// // pageData.database = linksDB;
-	// pageData.findSupportingParser()
+	// pageData.database = linksDB;
+	pageData.findSupportingParser()
 
 
-	// console.log(pageData);
+	console.log(pageData);
 
-	// this.go([pageData], function () {
-	// 	console.log('all done!! neu')
+	this.go([pageData], function () {
+		console.log('all done!! neu')
 
-	// }.bind(this));
+	}.bind(this));
 
 	// this.go([PageData.createFromURL('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched')], function () {
 	// 	console.log('all done!! gatech')
