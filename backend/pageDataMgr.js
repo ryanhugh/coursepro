@@ -4,6 +4,7 @@ var fs = require('fs');
 var _ = require('lodash');
 var queue = require('d3-queue').queue
 var URI = require('urijs')
+var macros = require('./macros')
 
 
 var requireDir = require('require-dir');
