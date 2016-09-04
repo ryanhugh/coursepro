@@ -161,7 +161,12 @@ BaseSelector.prototype.setupSelector = function (values, config) {
 		this.element.select2('open');
 	}
 	else {
-		this.element.select2("val", this.defaultValue);
+		if (_(ids).includes(this.defaultValue)) {
+			this.element.select2("val", this.defaultValue);
+		}
+		else {
+			this.element.select2("val", this.helpId);
+		}
 	}
 	this.defaultValue = null
 
