@@ -7,6 +7,7 @@ var user = require('./data/user')
 
 
 function SignInWithGoogle() {
+	this.link = this.link.bind(this)
 }
 
 SignInWithGoogle.$inject = []
