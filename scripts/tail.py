@@ -16,6 +16,7 @@ def getInput():
 		sys.exit()
 		
 	if not a:
+		print 'EXITING'
 		exit()
 		
 	try:
