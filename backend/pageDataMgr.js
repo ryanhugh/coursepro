@@ -133,7 +133,9 @@ PageDataMgr.prototype.go = function (pageDatas, callback) {
 
 				// Run the before update hook
 				async.eachSeries(processors, function (processor, callback) {
-					console.log("Running Pre update hook:", processor.constructor.name);
+					if (macros.DEVELOPMENT) {
+						console.log("Running Pre update hook:", processor.constructor.name);
+					}
 
 					processor.preUpdateParse(updateQueries, function (err) {
 						if (err) {
@@ -188,7 +190,9 @@ PageDataMgr.prototype.go = function (pageDatas, callback) {
 
 			// Run the processors
 			async.eachSeries(processors, function (processor, callback) {
-				console.log("Running", processor.constructor.name);
+				if (macros.DEVELOPMENT) {
+					console.log("Running", processor.constructor.name);
+				}
 
 				processor.go(queries, function (err) {
 					if (err) {
