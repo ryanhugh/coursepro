@@ -27,6 +27,8 @@ function ListIcon() {
 	}
 
 	this.templateUrl = 'listIcon.html'
+
+	this.link = this.link.bind(this)
 }
 
 ListIcon.$inject = []
