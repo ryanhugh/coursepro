@@ -175,7 +175,7 @@ module.exports = new TermSearchHints();
 
 if (require.main === module) {
 	module.exports.go([{
-		host: 'lasalle.edu',
+		host: 'neu.edu',
 		// termId: "201710"
 	}], function (err, results) {
 		console.log("done,", err, results);
