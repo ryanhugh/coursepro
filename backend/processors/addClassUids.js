@@ -151,9 +151,9 @@ module.exports = new AddClassUids();
 if (require.main === module) {
 
 
-	module.exports.go({
+	module.exports.go([{
 		host: 'neu.edu'
-	}, function (err) {
+	}], function (err) {
 		console.log("DONE!", err);
 	})
 
