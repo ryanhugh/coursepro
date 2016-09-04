@@ -15,9 +15,9 @@ def getInput():
 		print e.type
 		sys.exit()
 		
-	if not a:
-		print 'EXITING'
-		exit()
+	# if not a:
+	# 	print 'EXITING'
+	# 	exit()
 		
 	try:
 		b= json.loads(a)
