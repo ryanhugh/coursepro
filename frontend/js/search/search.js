@@ -331,7 +331,21 @@ Search.prototype.go = function () {
 		for (var i = 0; i < subjects.length; i++) {
 			var subject = subjects[i]
 			if (lowerCaseSearchTerm.startsWith(subject.subject.toLowerCase())) {
-				searchTerm = searchTerm.slice(0, subject.subject.length) + ' ' + searchTerm.slice(subject.subject.length)
+				var remainingSearch = searchTerm.slice(0, subject.subject.length);
+
+				// Only rewrite the search if the rest of the query has a high probability of being a classId.
+				if (remainingSearch.length > 5) {
+					break;
+				}
+				var match = remainingSearch.match(/\d/g)
+
+				if (!match || match.length < 3) {
+					break;
+				}
+				else {
+					searchTerm =  + ' ' + searchTerm.slice(subject.subject.length)
+				}
+				break;
 			}
 		}
 
