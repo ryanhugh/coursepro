@@ -267,7 +267,7 @@ Class.prototype.updateWithData = function (config) {
 
 		//dont copy over some attr
 		//these are copied below and processed a bit
-		if (_(['coreqs', 'prereqs', 'download', 'hash']).includes(attrName) || config[attrName] === undefined) {
+		if (_(['coreqs', 'prereqs', 'download']).includes(attrName) || config[attrName] === undefined) {
 			continue;
 		}
 
@@ -359,11 +359,6 @@ Class.prototype.updateWithData = function (config) {
 	else if (this.sections.length > 0 && config.crns && config.crns.length > 0 && !_.isEqual(this.crns, config.crns)) {
 		elog('updateWithData called but already have sections?', this, config)
 	}
-
-	if (this.hash) {
-		elog()
-	}
-
 };
 
 

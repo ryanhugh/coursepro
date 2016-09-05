@@ -227,6 +227,10 @@ BaseData.downloadGroup = memoize(function (config, callback) {
 		if (err) {
 			return callback(err)
 		}
+		
+		if (results.length > 1000) {
+			elog('Warning: making',results.length,'instances of something',config)
+		}
 
 		var instances = [];
 

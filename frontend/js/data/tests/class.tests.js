@@ -362,3 +362,30 @@ it('should remove missing prereqs and dedupe stuf', function () {
 	expect(aClass.prereqs.values[0].classUid).toBe('123')
 
 });
+
+it('should create a class with a hash',function(done){
+	var aClass = Class.create({
+		'hash':'neu.edu/201710/GE/5000_202147161',
+		"termId": "201710",
+		"host":"neu.edu"
+	})
+	
+	aClass.download(function(err){
+		expect(!err).toBe(true);
+		
+		
+		expect(aClass.dataStatus).toBe(macros.DATASTATUS_DONE);
+		
+		// Make sure that no other classes were created
+		
+		var aClass2 = Class.create({
+			'hash': 'neu.edu/201710/GE/1501_380026403',
+			"host": "neu.edu",
+			"termId": "201710",
+		})
+		
+		expect(aClass2.dataStatus).toBe(macros.DATASTATUS_NOTSTARTED)
+		
+		done()
+	})
+})

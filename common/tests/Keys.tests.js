@@ -109,3 +109,36 @@ it('containsAllProperties should work', function() {
 	var keys = Keys.create(obj,macros.LIST_TERMS);
 	expect(keys.isValid()).toBe(true)
  });
+ 
+ it('should work with hash',function(){
+ 	
+ 	
+ 	var a = 'blablah'
+ 	var b = 'flkdsjlafjalskjfsl'
+ 	var c = 'hiii'
+ 	var keys = Keys.createWithHash({
+ 		host:a,
+ 		hash:b,
+ 		termId:c
+ 	})
+ 	
+ 	expect(keys.host).toBe(a);
+ 	expect(keys.hash).toBe(b);
+ 	expect(keys.termId).toBe(c);
+ 	
+ 	var d = 'iuiiii'
+ 	var e = 'fdjklsa'
+ 	
+ 	var keys = Keys.createWithHash({
+ 		host:a,
+ 		hash:b,
+ 		termId:c,
+ 		classUid:d,
+ 		subject:e
+ 	})
+ 	
+ 	expect(keys.hash).toBe(undefined)
+ 	expect(keys.subject).toBe(e)
+ 	expect(keys.classUid).toBe(d)
+ 	
+ })

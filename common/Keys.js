@@ -65,9 +65,8 @@ function Keys(obj, endpoint, config) {
 				elog(obj, endpoint)
 			}
 		}
-		
-		
-		if (!hasAllKeys) {
+
+		if (!obj.subject) {
 			if (obj.host && obj.termId && obj.hash) {
 		
 				if (startsWith(obj.hash, '/list') || startsWith(obj.hash, '/') || !config.hashAllowed) {
@@ -79,12 +78,14 @@ function Keys(obj, endpoint, config) {
 					// A obj hash SHOULD NOT START WITH /LISTsomething
 					// the api endpoint is added below
 					this.hash = obj.hash
+					hasAllKeys = true;
+					
 				}
 				
 			}
-			else {
-				elog('dont have all keys',obj, endpoint)
-			}
+		}
+		if (!hasAllKeys) {
+			elog('dont have all keys',obj, endpoint)
 		}
 		
 		
