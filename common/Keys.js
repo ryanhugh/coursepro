@@ -35,11 +35,12 @@ function Keys(obj, endpoint, config) {
 	}
 
 	// Prefer obj over hash
-	else if (obj.host && !obj.hash) {
+	else if (obj.host) {
 		var endpointIndex;
 		if (endpoint) {
 			endpointIndex = endpoints.indexOf(endpoint)
 		}
+		var hasAllKeys = true;
 		var i;
 		for (i = 0; i < Keys.allKeys.length; i++) {
 			var currValue = obj[Keys.allKeys[i]];
@@ -47,6 +48,7 @@ function Keys(obj, endpoint, config) {
 				break
 			}
 			else if (endpointIndex && i > endpointIndex) {
+				hasAllKeys = false;
 				elog(obj, endpoint)
 				break;
 			}
@@ -63,27 +65,31 @@ function Keys(obj, endpoint, config) {
 				elog(obj, endpoint)
 			}
 		}
-	}
-
-	// this hash shall be "neu.edu/201710/..."
-	else if (obj.hash) {
-		if (startsWith(obj.hash, '/list') || startsWith(obj.hash, '/') || !config.hashAllowed) {
-			elog(obj, endpoint, config.hashAllowed)
-		}
-
-		// console.log('made with hash')
-		// console.trace()
-		// A obj hash SHOULD NOT START WITH /LISTsomething
-		// the api endpoint is added below
-		this.hash = obj.hash
-
-		if (obj.host) {
-			this.host = obj.host
-			if (obj.termId) {
-				this.termId = obj.termId
+		
+		
+		if (!hasAllKeys) {
+			if (obj.host && obj.termId && obj.hash) {
+		
+				if (startsWith(obj.hash, '/list') || startsWith(obj.hash, '/') || !config.hashAllowed) {
+					elog(obj, endpoint, config.hashAllowed)
+				}
+				else {
+					
+					// this hash shall be "neu.edu/201710/..."
+					// A obj hash SHOULD NOT START WITH /LISTsomething
+					// the api endpoint is added below
+					this.hash = obj.hash
+				}
+				
+			}
+			else {
+				elog('dont have all keys',obj, endpoint)
 			}
 		}
+		
+		
 	}
+
 	else if (endpoint !== undefined && endpoint !== macros.LIST_COLLEGES) {
 		elog(obj, endpoint);
 	}

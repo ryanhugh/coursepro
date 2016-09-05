@@ -1,16 +1,17 @@
 'use strict';
 var treeMgr = require('../../graph/treeMgr')
 var Node = require('../../graph/Node')
+var Class = require('../../data/Class')
 var downloadTree = require('../../graph/downloadTree')
 
 it('makes sure fetchFullTree is constant on constant data', function (done) {
 
-	downloadTree.fetchFullTree({
+	downloadTree.fetchFullTree(Class.create({
 		host: 'neu.edu',
 		termId: '201710',
 		subject: 'CS',
 		classUid: "4750_1045395676",
-	}, function (err, tree) {
+	}), function (err, tree) {
 		expect(err).toBe(null);
 
 		var rootNode = Node.create(tree);
