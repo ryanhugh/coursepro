@@ -13,7 +13,9 @@ var user = require('../data/user')
 var downloadTree = require('./downloadTree')
 var treeMgr = require('./treeMgr')
 var Node = require('./Node')
+var Class = require('../data/Class')
 
+var Search = require('../search/search')
 var SelectHelpModel = require('../selectHelpModel/selectHelpModel')
 var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
 
@@ -519,120 +521,160 @@ Graph.prototype.loadNodes = function (callback) {
 	return callback()
 };
 
+Graph.prototype.searchFromObj = function (obj) {
+	var query = []
+	if (obj.subject) {
+		query.push(obj.subject)
+	}
+	if (obj.classUid) {
+		query.push(obj.classUid)
+	}
+
+	if (Search.instance) {
+		Search.setSearchText(query.join(' '))
+		Search.instance.go()
+	}
+	else {
+		elog('And search.instance isnt valid')
+	}
+};
+
 
 Graph.prototype.go = function (config, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
-	downloadTree.fetchFullTree(config, function (err, rootClass) {
-		setTimeout(function () {
-			if (err) {
-				return callback(err);
-			};
 
 
-			var rootNode = Node.create(rootClass);
+	var rootClass = Class.create(config);
+	if (!rootClass) {
+		this.searchFromObj(config)
+		elog('Invalid class creation data')
+		return callback('Invalid subject + classId given, sending to search')
+	}
 
-			// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
-			// setTimeout(function () {
-			// this.$scope.$apply()
+	rootClass.download(function (err) {
+		if (err) {
+			elog(err)
+			return callback(err)
+		}
 
-			treeMgr.go(rootNode);
-			this.rootNode = rootNode;
+		if (rootClass.dataStatus === macros.DATASTATUS_FAIL) {
+			// Invalid config, log error with server and redirect to search
+			this.searchFromObj(config)
+			return callback('Invalid subject + classId given, sending to search')
+		}
 
-			if (this.force) {
-				this.force.stop();
-			}
-
-			this.force = d3.layout.force()
-				.charge(function (node) {
-					return -20000 - node.coreqs.values.length * 7000
-				}.bind(this))
-				.gravity(0.2)
-				.linkDistance(5)
-
-			// Use querySelector instead of getElementById in case this.$document is a document fragment.
-			// (It could be in testing and in phantomJS document fragments don't have getElementById but do have querySelector).
-			var d3GraphId = d3.select(this.$document[0].querySelector('#d3GraphId'))
-
-			this.svg = d3GraphId.append("svg")
-
-			this.calculateGraphSize();
+		downloadTree.fetchFullTree(rootClass, function (err, rootClass) {
+			setTimeout(function () {
+				if (err) {
+					return callback(err);
+				};
 
 
-			// can move this to the same as above? this was a separate #d3graphId selector
-			d3GraphId.on("mousedown", function () {
-				d3.event.stopPropagation();
-			}.bind(this))
+				var rootNode = Node.create(rootClass);
 
+				// Scope needs to be updated in case user went forwards or backwards and it will swap the ng-view
+				// setTimeout(function () {
+				// this.$scope.$apply()
 
-			this.container = this.svg.append("g");
+				treeMgr.go(rootNode);
+				this.rootNode = rootNode;
 
-			this.zoom = d3.behavior.zoom()
-				.scaleExtent([.1, 1.5])
-				.on('zoomstart', function () {
-
-					// Hide the help tooltips
-					this.hideHelpTooltips()
-
-				}.bind(this))
-				.on("zoom", function () {
-					this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-				}.bind(this))
-				.on('zoomend', function () {
-					// Only show the tooltip if zoomed in to some degree
-					if (this.zoom.scale() > .6) {
-						this.showHelpTooltips()
-					}
-				}.bind(this));
-
-			this.svg.call(this.zoom)
-
-			this.loadNodes(function () {
-				this.yCoordAttractionMultiplyer = 1;
-
-				this.classCount = treeMgr.countClassesInTree(rootNode);
-				if (this.classCount === 0) {
-					elog('0 classes found?', rootNode)
-				}
-				this.force.on('tick', this.onTick.bind(this));
-
-				this.force.start();
-
-				// Two step process:
-				// make nodes find the nodes near them
-				var safety = 0;
-				// D3 cuts off at .005 alpha and freezes everything
-				// the higher it is, the faster it loads, but it will not be done when it moves to the next step
-				// You'll want to try out different, "small" values for this
-				// perhaps make this higher if on slower hardware??
-				while (this.force.alpha() > 0.005) {
-					this.force.tick();
-					if (safety++ > 500) {
-						// Avoids infinite looping in case this solution was a bad idea
-						break;
-					}
+				if (this.force) {
+					this.force.stop();
 				}
 
-				//2. make nodes go towards their depth level
-				this.yCoordAttractionMultiplyer = 10;
-				this.force.start();
+				this.force = d3.layout.force()
+					.charge(function (node) {
+						return -20000 - node.coreqs.values.length * 7000
+					}.bind(this))
+					.gravity(0.2)
+					.linkDistance(5)
 
-				safety = 0;
-				while (this.force.alpha() > 0.01) {
-					this.force.tick();
-					if (safety++ > 500) {
-						break;
+				// Use querySelector instead of getElementById in case this.$document is a document fragment.
+				// (It could be in testing and in phantomJS document fragments don't have getElementById but do have querySelector).
+				var d3GraphId = d3.select(this.$document[0].querySelector('#d3GraphId'))
+
+				this.svg = d3GraphId.append("svg")
+
+				this.calculateGraphSize();
+
+
+				// can move this to the same as above? this was a separate #d3graphId selector
+				d3GraphId.on("mousedown", function () {
+					d3.event.stopPropagation();
+				}.bind(this))
+
+
+				this.container = this.svg.append("g");
+
+				this.zoom = d3.behavior.zoom()
+					.scaleExtent([.1, 1.5])
+					.on('zoomstart', function () {
+
+						// Hide the help tooltips
+						this.hideHelpTooltips()
+
+					}.bind(this))
+					.on("zoom", function () {
+						this.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+					}.bind(this))
+					.on('zoomend', function () {
+						// Only show the tooltip if zoomed in to some degree
+						if (this.zoom.scale() > .6) {
+							this.showHelpTooltips()
+						}
+					}.bind(this));
+
+				this.svg.call(this.zoom)
+
+				this.loadNodes(function () {
+					this.yCoordAttractionMultiplyer = 1;
+
+					this.classCount = treeMgr.countClassesInTree(rootNode);
+					if (this.classCount === 0) {
+						elog('0 classes found?', rootNode)
 					}
-				}
+					this.force.on('tick', this.onTick.bind(this));
+
+					this.force.start();
+
+					// Two step process:
+					// make nodes find the nodes near them
+					var safety = 0;
+					// D3 cuts off at .005 alpha and freezes everything
+					// the higher it is, the faster it loads, but it will not be done when it moves to the next step
+					// You'll want to try out different, "small" values for this
+					// perhaps make this higher if on slower hardware??
+					while (this.force.alpha() > 0.005) {
+						this.force.tick();
+						if (safety++ > 500) {
+							// Avoids infinite looping in case this solution was a bad idea
+							break;
+						}
+					}
+
+					//2. make nodes go towards their depth level
+					this.yCoordAttractionMultiplyer = 10;
+					this.force.start();
+
+					safety = 0;
+					while (this.force.alpha() > 0.01) {
+						this.force.tick();
+						if (safety++ > 500) {
+							break;
+						}
+					}
 
 
-				// Center the root node by translating the container <g> inside the svg
-				this.zoom.translate([this.getSvgWidth() / 2 - this.rootNode.x, 0])
-				this.zoom.event(this.svg)
-				callback(null, this.rootNode)
-			}.bind(this))
-		}.bind(this), 0)
+					// Center the root node by translating the container <g> inside the svg
+					this.zoom.translate([this.getSvgWidth() / 2 - this.rootNode.x, 0])
+					this.zoom.event(this.svg)
+					callback(null, this.rootNode)
+				}.bind(this))
+			}.bind(this), 0)
+		}.bind(this))
 	}.bind(this))
 };
 

@@ -50,7 +50,7 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 			treeIsDone = false;
 
 			// subTree is asigned to above, so need to keep another reference to this one for the async operation
-			
+
 			var currTree = subTree;
 			q.defer(function (callback) {
 				currTree.download(function (err, currTree) {
@@ -75,18 +75,14 @@ DownloadTree.prototype.increaseTreeDepth = function (tree, callback) {
 };
 
 
-DownloadTree.prototype.fetchFullTree = function (serverData, callback) {
+DownloadTree.prototype.fetchFullTree = function (tree, callback) {
 
-	var tree = Class.create(serverData);
-	if (!tree) {
-		console.log(serverData)
-		return callback('wtf')
-	}
 	if (this.tree) {
 		elog('already downloading a different tree', serverData)
 	}
 
 	this.tree = tree;
+
 	this.counter = 0
 	var treeIsDone = false;
 
