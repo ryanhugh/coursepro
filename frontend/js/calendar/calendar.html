@@ -128,7 +128,7 @@ uib-accordion .accordion-toggle {
                             <td>
 
                                 <!-- don't display the "/" until these are loaded -->
-                                <span ng-if="section.seatsRemaining || section.seatsCapacity">
+                                <span ng-if="section.seatsRemaining || section.seatsCapacity" uib-tooltip="Open Seats/Total Seats" tooltip-class="listIconTooltip" tooltip-append-to-body="true">
                                     {{section.seatsRemaining}}/{{section.seatsCapacity}}
                                 </span>
 
