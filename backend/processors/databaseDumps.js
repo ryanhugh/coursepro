@@ -91,16 +91,17 @@ DatabaseDumps.prototype.go = function (queries, callback) {
 		return callback()
 	}
 
-
 	// Get all the classes in a term, or all the classes in the entire host
 	var query = this.getCommonHostAndTerm(queries)
 
-	var searchQuery = {
-		host: query.host
-	}
+	var searchQuery = {};
 
-	if (query.termId) {
-		searchQuery.termId = query.termId
+	if (query.host) {
+		searchQuery.host = query.host
+		
+		if (query.termId) {
+			searchQuery.termId = query.termId
+		}
 	}
 
 	var q = queue()
@@ -159,7 +160,7 @@ module.exports = new DatabaseDumps();
 
 if (require.main === module) {
 	module.exports.go([{
-		host: 'neu.edu',
+		// host: 'swarthmore.edu',
 		// termId: "201710"
 	}], function (err, results) {
 		console.log("done,", err, results);
