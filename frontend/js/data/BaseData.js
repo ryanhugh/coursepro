@@ -112,7 +112,7 @@ BaseData.prototype.equals = function (other) {
 	if (this.dataStatus != macros.DATASTATUS_DONE || other.dataStatus != macros.DATASTATUS_DONE) {
 		elog('BaseData comparing nodes that are not both done', this, other)
 	}
-	return Keys.create(this).equals(Keys.create(other))
+	return Keys.createWithHash(this).equals(Keys.createWithHash(other))
 };
 
 
@@ -316,7 +316,7 @@ BaseData.prototype.download = memoize(function (callback) {
 
 	}.bind(this))
 }, function () {
-	return Keys.create(this).getHashWithEndpoint(this.constructor.API_ENDPOINT)
+	return Keys.createWithHash(this).getHashWithEndpoint(this.constructor.API_ENDPOINT)
 });
 
 
