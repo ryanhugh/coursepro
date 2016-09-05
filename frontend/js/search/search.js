@@ -10,6 +10,7 @@ var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 var request = require('../request')
 var Class = require('../data/Class')
+var Subject = require('../data/Subject')
 var user = require('../data/user')
 
 
@@ -283,17 +284,63 @@ Search.prototype.go = function () {
 		return;
 	}
 
-	this.loadSearchIndex(function (err, searchIndex, searchConfig) {
+	var q = queue();
+
+	var subjects = [];
+
+	q.defer(function (callback) {
+		Subject.createMany(Keys.create({
+			host: this.getHost(),
+			termId: this.getTermId()
+		}), function (err, results) {
+			if (err) {
+				callback(err)
+			}
+			subjects = results
+			callback()
+
+		}.bind(this))
+	}.bind(this))
+
+	var searchIndex = null
+	var searchConfig = null;
+
+	q.defer(function (callback) {
+		this.loadSearchIndex(function (err, theSearchIndex, theSearchConfig) {
+			if (err) {
+				return callback(err)
+			}
+			searchIndex = theSearchIndex;
+			searchConfig = theSearchConfig;
+			callback()
+		}.bind(this))
+	}.bind(this))
+
+	q.awaitAll(function (err) {
 		if (err) {
-			elog(err)
+			elog(err);
+			return callback(err)
 		}
 
 		this.startLoggingTimer();
 
+		// If the search term starts with a subject (eg cs2500), put a space after the subject
+
+		var searchTerm = this.constructor.searchText;
+		var lowerCaseSearchTerm = searchTerm.toLowerCase()
+
+		for (var i = 0; i < subjects.length; i++) {
+			var subject = subjects[i]
+			if (lowerCaseSearchTerm.startsWith(subject.subject.toLowerCase())) {
+				searchTerm = searchTerm.slice(0, subject.subject.length) + ' ' + searchTerm.slice(subject.subject.length)
+			}
+		}
+
+
 		// Returns an array of objects that has a .ref and a .score
 		// The array is sorted by score (with the highest matching closest to the beginning)
 		// eg {ref:"neu.edu/201710/ARTF/1123_1835962771", score: 3.1094880801464573}
-		var results = searchIndex.search(this.constructor.searchText, searchConfig)
+		var results = searchIndex.search(searchTerm, searchConfig)
 
 		var classes = [];
 
@@ -337,7 +384,9 @@ Search.prototype.go = function () {
 			}.bind(this))
 
 		}.bind(this))
+
 	}.bind(this))
+
 }
 
 // Keep the cursor at the end of the text in the box after focus

@@ -63,11 +63,14 @@ function Graph() {
 	}
 
 	//if given path, load graph
-	if (path.classUid && path.subject) {
-		setTimeout(function () {
+	setTimeout(function () {
+		if (path.classUid && path.subject) {
 			this.createGraph(path)
-		}.bind(this), 0);
-	}
+		}
+		else {
+			this.searchFromObj(path)
+		}
+	}.bind(this), 0);
 
 	this.$scope.$on('$destroy', function () {
 		this.hideHelpTooltips()
