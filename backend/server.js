@@ -250,7 +250,7 @@ app.use(function (req, res, next) {
 
 var reverseDNS = memoize(function (ip, callback) {
 	if (ip.startsWith('155.33') || ip.startsWith('129.10')) {
-		callback(null, ['neu.edu'])
+		return callback(null, ['neu.edu'])
 	}
 	dns.reverse(ip, function (err, results) {
 		callback(err, results)
