@@ -103,6 +103,9 @@ Graph.fnName = 'Graph'
 
 
 Graph.prototype.onPanZoonButtonClick = function (deltaScale) {
+	if (!this.rootNode) {
+		return;
+	}
 	var currScale = this.zoom.scale()
 	this.zoom.scale(currScale + deltaScale);
 	this.zoom.event(this.svg)
