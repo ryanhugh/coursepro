@@ -298,7 +298,7 @@ app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 		//when going international use this list https://publicsuffix.org/list/public_suffix_list.dat
 		//for now only supports .edu
 
-		var match = fullHost.match(/\.([^.]+?\.edu)$/);
+		var match = fullHost.match(/([^.]+?\.edu)$/);
 		if (!match) {
 			elog('no match on result?')
 			res.send('{}');
