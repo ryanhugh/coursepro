@@ -31,6 +31,10 @@ TermSelector.prototype.download = function (callback) {
 		host: selectorsMgr.college.getValue(),
 	})
 
+	if (!keys.host) {
+		elog('Called term download but host is null?', user.getValue(macros.LAST_SELECTED_COLLEGE), user.getValue(macros.LAST_SELECTED_TERM), keys.host)
+	}
+
 	Term.createMany(keys, function (err, terms) {
 		if (err) {
 			elog(err)

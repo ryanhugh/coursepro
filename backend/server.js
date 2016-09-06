@@ -259,6 +259,10 @@ app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 		return;
 	}
 
+	if (_(ip).startsWith('::ffff:')) {
+		ip = ip.slice(7)
+	};
+
 	dns.reverse(ip, function (err, results) {
 		if (err) {
 			elog(ip, err);
