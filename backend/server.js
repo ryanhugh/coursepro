@@ -133,6 +133,7 @@ app.use(function (req, res, next) {
 				summary: 'http -> https redirect'
 			}
 		})
+		res.setHeader('Cache-Control', 'public, max-age=5256000'); // 2 months (in seconds)
 		res.redirect('https://coursepro.io' + req.url);
 		return;
 	}
