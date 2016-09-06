@@ -10,6 +10,7 @@ var request = require('../request')
 var Class = require('./Class')
 var Section = require('./Section')
 var Term = require('./Term')
+var Host = require('./Host')
 var Section = require('./Section')
 var Keys = require('../../../common/Keys')
 
@@ -176,80 +177,160 @@ User.prototype.onDataStabilize = function (callback) {
 		elog()
 	}
 
+	var allValidHosts = [];
+	var allValidTerms = [];
+
 
 	async.waterfall([function (callback) {
 
-		if (this.getValue(macros.LAST_SELECTED_COLLEGE)) {
-			return callback()
-		}
-		else {
-			this.guessHost(function (err) {
-				if (err) {
-					elog(err)
-				}
-				return callback()
+			var q = queue();
+
+			q.defer(function (callback) {
+				Host.createMany(Keys.create({}), function (err, hosts) {
+					if (err) {
+						return callback(err)
+					}
+					allValidHosts = hosts;
+					callback()
+				}.bind(this))
 			}.bind(this))
-		}
-	}.bind(this), function (callback) {
-		if (this.getValue(macros.LAST_SELECTED_TERM)) {
-			return callback()
-		}
-		else {
-			this.guessTerm(function (err) {
-				if (err) {
-					elog(err)
+
+			q.defer(function (callback) {
+
+				var lastSelectedCollege = this.getValue(macros.LAST_SELECTED_COLLEGE);
+
+				if (!lastSelectedCollege) {
+					return callback()
 				}
-				return callback()
+				else {
+					Term.createMany(Keys.create({
+						host: lastSelectedCollege
+					}), function (err, terms) {
+						if (err) {
+							return callback(err)
+						}
+						allValidTerms = terms;
+						callback()
+					}.bind(this))
+				}
 			}.bind(this))
-		}
 
-	}.bind(this), function (callback) {
-		var host = this.getValue(macros.LAST_SELECTED_COLLEGE);
-		var termId = this.getValue(macros.LAST_SELECTED_TERM);
-		if (!host || !termId) {
-			return callback()
-		}
+			q.awaitAll(function (err) {
+				if (err) {
+					return callback(err)
+				}
 
-		var keys = Keys.create({
-			host: host,
-			termId: termId
-		})
+				var lastSelectedCollege = this.getValue(macros.LAST_SELECTED_COLLEGE);
 
-		//Prefetch the term and host data for this term
+				var foundHost = false;
+				for (var i = 0; i < allValidHosts.length; i++) {
+					if (lastSelectedCollege == allValidHosts[i].host) {
+						foundHost = true;
+						break;
+					}
+				}
 
-		var q = queue();
+				if (!foundHost) {
+					this.setValue(macros.LAST_SELECTED_COLLEGE, null)
+					this.setValue(macros.LAST_SELECTED_TERM, null)
+					return callback()
+				}
+				else {
+					var lastSelectedTerm = this.getValue(macros.LAST_SELECTED_TERM);
+					var foundTerm = false;
 
-		q.defer(function (callback) {
+					for (var i = 0; i < allValidTerms.length; i++) {
+						if (lastSelectedTerm == allValidTerms[i].termId) {
+							foundTerm = true;
+							break;
+						}
+					}
 
-			// Get all the data in this term
-			var requestQuery = {
-				url: macros.LIST_CLASSES,
-				keys: keys
+					if (!foundTerm) {
+						this.setValue(macros.LAST_SELECTED_TERM, null)
+					}
+
+					callback()
+				}
+			}.bind(this))
+
+		}.bind(this),
+		function (callback) {
+
+			if (this.getValue(macros.LAST_SELECTED_COLLEGE)) {
+				return callback()
+			}
+			else {
+				this.guessHost(function (err) {
+					if (err) {
+						elog(err)
+					}
+					return callback()
+				}.bind(this))
+			}
+		}.bind(this),
+		function (callback) {
+			if (this.getValue(macros.LAST_SELECTED_TERM)) {
+				return callback()
+			}
+			else {
+				this.guessTerm(function (err) {
+					if (err) {
+						elog(err)
+					}
+					return callback()
+				}.bind(this))
 			}
 
-			Class.downloadResultsGroup(requestQuery, function (err) {
-				return callback(err)
-			}.bind(this))
-		}.bind(this))
-
-		q.defer(function (callback) {
-
-			// Get all the data in this term
-			var requestQuery = {
-				url: macros.LIST_SECTIONS,
-				keys: keys
+		}.bind(this),
+		function (callback) {
+			var host = this.getValue(macros.LAST_SELECTED_COLLEGE);
+			var termId = this.getValue(macros.LAST_SELECTED_TERM);
+			if (!host || !termId) {
+				return callback()
 			}
 
-			Section.downloadResultsGroup(requestQuery, function (err) {
-				return callback(err)
+			var keys = Keys.create({
+				host: host,
+				termId: termId
+			})
+
+			//Prefetch the term and host data for this term
+
+			var q = queue();
+
+			q.defer(function (callback) {
+
+				// Get all the data in this term
+				var requestQuery = {
+					url: macros.LIST_CLASSES,
+					keys: keys
+				}
+
+				Class.downloadResultsGroup(requestQuery, function (err) {
+					return callback(err)
+				}.bind(this))
 			}.bind(this))
-		}.bind(this))
 
-		q.awaitAll(function (err) {
-			callback(err)
-		}.bind(this))
+			q.defer(function (callback) {
 
-	}.bind(this)], function (err) {
+				// Get all the data in this term
+				var requestQuery = {
+					url: macros.LIST_SECTIONS,
+					keys: keys
+				}
+
+				Section.downloadResultsGroup(requestQuery, function (err) {
+					return callback(err)
+				}.bind(this))
+			}.bind(this))
+
+			q.awaitAll(function (err) {
+				callback(err)
+			}.bind(this))
+
+		}.bind(this)
+	], function (err) {
 		if (err) {
 			elog(err);
 		}

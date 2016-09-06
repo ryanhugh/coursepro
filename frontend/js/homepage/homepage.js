@@ -74,7 +74,9 @@ Homepage.prototype.calculatePlaceholderText = memoize(function (host, termId) {
 			this.$scope.$apply()
 		}.bind(this), 0)
 	}.bind(this))
-});
+},function (host, termId) {
+	return host + termId;
+}.bind(this));
 
 
 Homepage.prototype.openCollegeSelector = function () {

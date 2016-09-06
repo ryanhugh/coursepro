@@ -14,6 +14,7 @@ var async = require('async')
 var Keys = require('../common/Keys')
 var macros = require('./macros')
 var pageDataMgr = require('./pageDataMgr');
+var memoize = require('../common/memoize')
 
 var blacklistedEmails = require('./blacklistedEmails.json')
 
@@ -247,6 +248,18 @@ app.use(function (req, res, next) {
 });
 
 
+var reverseDNS = memoize(function (ip, callback) {
+	if (ip.startsWith('155.33') || ip.startsWith('129.10')) {
+		callback('neu.edu')
+	}
+	dns.reverse(ip, function (err, results) {
+		callback(err, results)
+	})
+}, function (ip) {
+	return ip
+})
+
+
 app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 
 	var ip = req.connection.remoteAddress;
@@ -263,7 +276,7 @@ app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 		ip = ip.slice(7)
 	};
 
-	dns.reverse(ip, function (err, results) {
+	reverseDNS(ip, function (err, results) {
 		if (err) {
 			elog(ip, err);
 			res.send('{"error":"internal server error :/"}');
