@@ -374,9 +374,11 @@ User.prototype.guessHost = function (callback) {
 		}
 
 		// Make sure the host exists and is valid
-		Host.create({
+		var host = Host.create({
 			host: body.host
-		}, function (err, host) {
+		})
+
+		host.download(function (err, host) {
 			if (err) {
 				elog(err)
 				return callback(err)
