@@ -300,13 +300,13 @@ app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 		//when going international use this list https://publicsuffix.org/list/public_suffix_list.dat
 		//for now only supports .edu
 
-		if (!fullHost.endsWith('.edu')) {
+		if (!fullHost.toLowerCase().endsWith('.edu')) {
 			console.log(fullHost, "is not a edu domain");
 			res.send('{}');
 			return;
 		}
 
-		var match = fullHost.match(/([^.]+?\.edu)$/);
+		var match = fullHost.match(/([^.]+?\.edu)$/i);
 		if (!match) {
 			elog('no match on result?', fullHost)
 			res.send('{}');
