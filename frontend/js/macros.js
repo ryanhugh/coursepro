@@ -32,17 +32,18 @@ function Macros() {
 
 	// In unit tests, window.elog is defined in main.tests.js to be just console.error
 	if (!macros.UNIT_TESTS) {
-		//used all over the place for logging erros
-		window.elog = function () {
-
+		
+		
+		window.elogWithoutStack = function () {
+			
 			var args = [];
 			for (var i = 0; i < arguments.length; i++) {
 				args[i] = arguments[i];
 			}
 
 			console.log.apply(console, ['ELOG'].concat(args));
-			debugger
 			console.trace();
+			debugger
 
 			var bodyString;
 
@@ -77,6 +78,21 @@ function Macros() {
 					};
 				}.bind(this))
 			}.bind(this), 0)
+		}
+		
+		
+		
+		//used all over the place for logging erros
+		window.elog = function () {
+			
+			var args = [];
+			for (var i = 0; i < arguments.length; i++) {
+				args[i] = arguments[i];
+			}
+			
+			args.push(new Error().stack)
+
+			window.elogWithoutStack.apply(window, args)
 		}.bind(this)
 	}
 }

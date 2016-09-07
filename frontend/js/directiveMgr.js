@@ -44,6 +44,9 @@ var angularModule = angular.module('app', dependencies, ['$rootScopeProvider', '
 }]);
 
 
+window.addEventListener('error', function (evt) {
+	elogWithoutStack('uncaught_error:',evt.error.stack,evt.error.name)
+});
 
 
 angularModule.factory('$exceptionHandler', function () {
@@ -58,7 +61,7 @@ angularModule.factory('$exceptionHandler', function () {
 
 		console.error(exception.stack)
 
-		elog(JSON.stringify(toLog))
+		elogWithoutStack(JSON.stringify(toLog))
 
 		throw exception;
 	};
