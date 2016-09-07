@@ -1,5 +1,6 @@
 'use strict';
 
+var macros = require('./macros')
 var directiveMgr = require('./directiveMgr')
 var BaseDirective = require('./BaseDirective')
 
@@ -7,8 +8,10 @@ var user = require('./data/user')
 
 
 function SignInWithGoogle() {
-	this.link = this.link.bind(this)
+	BaseDirective.prototype.constructor.apply(this, arguments);
 }
+
+macros.inherent(BaseDirective, SignInWithGoogle)
 
 SignInWithGoogle.$inject = []
 

@@ -1,6 +1,7 @@
 'use strict';
 var _ = require('lodash')
 
+var macros = require('../macros')
 var directiveMgr = require('../directiveMgr')
 var BaseDirective = require('../BaseDirective')
 
@@ -8,6 +9,7 @@ var user = require('../data/user')
 
 
 function ListIcon() {
+	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	//which tooltips to show for which state on which list
 	this.listNameToTooltip = {
@@ -27,9 +29,9 @@ function ListIcon() {
 	}
 
 	this.templateUrl = 'listIcon.html'
-
-	this.link = this.link.bind(this)
 }
+
+macros.inherent(BaseDirective, ListIcon)
 
 ListIcon.$inject = []
 ListIcon.fnName = 'ListIcon'

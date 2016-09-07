@@ -18,8 +18,6 @@ function GraphPanelExpand() {
 	this.rootNodeId = null;
 
 	this.$document.keydown(this.onKeyDown.bind(this))
-
-	this.link = this.link.bind(this)
 }
 
 macros.inherent(BaseDirective, GraphPanelExpand)

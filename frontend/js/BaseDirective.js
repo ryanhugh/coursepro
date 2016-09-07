@@ -39,6 +39,10 @@ function BaseDirective() {
 			this.constructor.instance = null;
 		}.bind(this))
 	}
+
+	if (this.link) {
+		this.link = this.link.bind(this)
+	}
 }
 
 
