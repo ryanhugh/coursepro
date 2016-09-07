@@ -364,13 +364,30 @@ User.prototype.guessHost = function (callback) {
 	}, function (err, body) {
 		if (err) {
 			elog(err);
+
+			// Don't propagate the error because it doesn't matter if this failed. 
 			return callback()
 		}
 
-		if (body && body.host) {
-			this.setValue(macros.LAST_SELECTED_COLLEGE, body.host)
+		if (!body || !body.host) {
+			return callback()
 		}
-		return callback()
+
+		// Make sure the host exists and is valid
+		Host.create({
+			host: body.host
+		}, function (err, host) {
+			if (err) {
+				elog(err)
+				return callback(err)
+			}
+
+			if (host.dataStatus === macros.DATASTATUS_DONE) {
+				this.setValue(macros.LAST_SELECTED_COLLEGE, body.host)
+			}
+			return callback()
+
+		}.bind(this))
 	}.bind(this))
 };
 

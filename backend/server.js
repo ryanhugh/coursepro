@@ -268,7 +268,7 @@ app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 	}
 	if (ip === '::1') {
 		// res.send('{"error":"cant do a rdns of localhost"}');
-		res.send('{"host":"neu.edu"}');
+		res.send('{"host":"rpi.edu"}');
 		return;
 	}
 
@@ -278,8 +278,10 @@ app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 
 	reverseDNS(ip, function (err, results) {
 		if (err) {
-			elog(ip, err);
-			res.send('{"error":"internal server error :/"}');
+			console.log("RDNS failed", ip, err)
+
+			// Don't tell the client that it failed, because this is not required
+			res.send('{}');
 			return;
 		}
 		if (results.length < 1) {
@@ -298,9 +300,15 @@ app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 		//when going international use this list https://publicsuffix.org/list/public_suffix_list.dat
 		//for now only supports .edu
 
+		if (!fullHost.endsWith('.edu')) {
+			console.log(fullHost, "is not a edu domain");
+			res.send('{}');
+			return;
+		}
+
 		var match = fullHost.match(/([^.]+?\.edu)$/);
 		if (!match) {
-			elog('no match on result?')
+			elog('no match on result?', fullHost)
 			res.send('{}');
 			return;
 		}

@@ -392,14 +392,14 @@ Search.prototype.go = function () {
 				this.$scope.$apply();
 
 				// Scroll to the top of the search results
-				document.getElementById('searchResultsId').scrollTop = 0;
+				var elem = document.getElementById('searchResultsId');
+				if (elem) {
+					elem.scrollTop = 0;
+				}
 
 			}.bind(this))
-
 		}.bind(this))
-
 	}.bind(this))
-
 }
 
 // Keep the cursor at the end of the text in the box after focus
