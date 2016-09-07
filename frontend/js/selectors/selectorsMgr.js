@@ -43,7 +43,7 @@ SelectorsMgr.prototype.constructor = SelectorsMgr;
 SelectorsMgr.prototype.getHost = function () {
 
 	if (this.$routeParams.host) {
-		return this.$routeParams.host
+		return decodeURIComponent(this.$routeParams.host)
 	}
 
 	var host = user.getValue(macros.LAST_SELECTED_COLLEGE);
@@ -58,7 +58,7 @@ SelectorsMgr.prototype.getHost = function () {
 SelectorsMgr.prototype.getTermId = function () {
 
 	if (this.$routeParams.termId) {
-		return this.$routeParams.termId
+		return decodeURIComponent(this.$routeParams.termId)
 	}
 
 	var termId = user.getValue(macros.LAST_SELECTED_TERM)
@@ -127,10 +127,6 @@ SelectorsMgr.prototype.updateSelectors = function () {
 	};
 
 	var values = [params.host, params.termId]
-
-	values.forEach(function (value, i) {
-		values[i] = decodeURIComponent(value)
-	}.bind(this))
 
 	selectorsMgr.setSelectors(values, true);
 };
