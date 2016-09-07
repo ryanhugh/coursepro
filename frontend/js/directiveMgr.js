@@ -45,7 +45,17 @@ var angularModule = angular.module('app', dependencies, ['$rootScopeProvider', '
 
 
 window.addEventListener('error', function (evt) {
-	elogWithoutStack('uncaught_error:',evt.error.stack,evt.error.name)
+	var primaryMessage;
+	var secondaryMessage;
+	if (evt.error) {
+		primaryMessage = evt.error.stack
+		secondaryMessage = evt.error.name
+	}
+	else {
+		primaryMessage = evt.message
+	}
+
+	elogWithoutStack('uncaught_error:', primaryMessage, secondaryMessage)
 });
 
 
@@ -207,7 +217,7 @@ DirectiveMgr.prototype.addDirective = function (Directive) {
 		console.warn('no $inject?');
 		Directive.$inject = []
 	}
-	
+
 	if (!_(Directive.$inject).includes('$timeout')) {
 		Directive.$inject.push('$timeout')
 	}

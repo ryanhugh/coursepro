@@ -150,9 +150,6 @@ BaseData.downloadResultsGroup = memoize(function (config, callback) {
 //all requests from all trafic go through here
 BaseData.download = function (config, callback) {
 
-	console.log(config.keys);
-	console.trace()
-
 	var hashStr = config.keys.getHashWithEndpoint(this.API_ENDPOINT)
 
 	var isFullHashIndex;
