@@ -82,11 +82,12 @@ User.prototype.loadFromLocalStorage = function () {
 	if (localStorage.dbData) {
 		var localData = JSON.parse(localStorage.dbData);
 
-		if (localData.loginKey && 0) {
+		if (localData.loginKey) {
 
 			// cool, user logged in with google before, download the rest of the data from the server
-			this.dbData.loginKey = localData.loginKey
-			this.dbData.vars = localData.vars
+			// this.dbData.loginKey = localData.loginKey
+			// this.dbData.vars = localData.vars
+			this.dbData = localData;
 			this.download(_.noop)
 		}
 		// Must be v1, where class _id's were stored and version was not kept track of
@@ -594,6 +595,11 @@ User.prototype.internalDownload = memoize(function (config, callback) {
 
 		this.dbData.loginKey = user.loginKey;
 		this.dbData.email = user.email;
+		
+		
+		// When enabling this again, need to think about how possibly different data is going to be merged on every page load
+		// Right now, when this instance first loads, the data is loaded from localstorage even if have login key.
+		// ALso need to send download request when have loginKey, to verify loginkey
 		if (0) {
 
 			if (!user.loginKey) {

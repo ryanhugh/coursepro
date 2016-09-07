@@ -16,18 +16,18 @@ userDB.table.remove({},function (err, i) {
 
 // process.exit()
 
-if (macros.PRODUCTION) {
-	fjdsklajfdsjkljlkjl
-	console.log("NOOOOOO");
-	process.exit()
-}
-var toClear = [collegeNamesDB, termsDB, classesDB, linksDB, sectionsDB, subjectsDB]
+// if (macros.PRODUCTION) {
+// 	fjdsklajfdsjkljlkjl
+// 	console.log("NOOOOOO");
+// 	process.exit()
+// }
+// var toClear = [collegeNamesDB, termsDB, classesDB, linksDB, sectionsDB, subjectsDB]
 
-toClear.forEach(function (db) {
-	db.table.remove({}, function (err, i) {
-		console.log(err, db.tableName);
-	}.bind(this))
-}.bind(this))
+// toClear.forEach(function (db) {
+// 	db.table.remove({}, function (err, i) {
+// 		console.log(err, db.tableName);
+// 	}.bind(this))
+// }.bind(this))
 
 // var usersDB = require('./backend/databases/usersDB')
 
