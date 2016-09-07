@@ -98,6 +98,9 @@ def main():
 		sys.stdout.write(str(line['body']['subject'])+'/')
 	if 'classId' in line['body']:
 		sys.stdout.write(str(line['body']['classId'])+'/')
+
+	if 'text' in line['body']:
+		sys.stdout.write(line['body']['text']+' ')
 		
 	if 'url' in line['body']:
 		sys.stdout.write(line['body']['url']+' ')
