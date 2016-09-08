@@ -615,7 +615,7 @@ function unsubscribe(body, callback) {
 		
 		usersDB.removeIdsFromLists(macros.WATCHING_LIST, classMongoIds, sectionMongoIds, query, function(err) {
 			if (err) {
-				console.log('couldn"t unsubscribe... ', userData.userId, err);
+				console.log('couldn"t unsubscribe... ', body, err);
 				return callback(JSON.stringify({
 					error: 'internal error'
 				}));
