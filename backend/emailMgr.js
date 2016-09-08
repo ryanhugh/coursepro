@@ -145,19 +145,15 @@ EmailMgr.prototype.classDataToHTML = function (classData) {
 };
 
 EmailMgr.prototype.getUnsubscribeLink = function (user, row) {
-	
-		var retVal = new URI('https://coursepro.io/unsubscribe/')
-		retVal.setQuery('host', row.host);
-		retVal.setQuery('termId', row.termId);
-		retVal.setQuery('subject', row.subject);
-		retVal.setQuery('classUid', row.classUid);
-		// if (row.crn) {
-		// 	retVal.setQuery('crn', row.crn);
-		// }
-		
-		retVal.setQuery('email', user.email);
-		retVal.setQuery('unsubscribeKey', user.unsubscribeKey);
-		return retVal.toString()
+
+	var retVal = new URI('https://coursepro.io/unsubscribe/')
+	retVal.setQuery('host', row.host);
+	retVal.setQuery('termId', row.termId);
+	retVal.setQuery('subject', row.subject);
+	retVal.setQuery('classUid', row.classUid);
+	retVal.setQuery('email', user.email);
+	retVal.setQuery('unsubscribeKey', user.unsubscribeKey);
+	return retVal.toString()
 }
 
 EmailMgr.prototype.sendSectionUpdatedEmail = function (users, oldData, newData, diff) {
@@ -189,11 +185,11 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (users, oldData, newData, 
 
 	email.push('<br><a href="https://coursepro.io/#' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
 
-	users.forEach(function (user){
-		
+	users.forEach(function (user) {
+
 		var userSpecificEmail = email.slice(0)
-		
-		userSpecificEmail.push('<br><br>Want to unsubscribe? <a href="'+this.getUnsubscribeLink(user,newData)+'">Click here</a>')
+
+		userSpecificEmail.push('<br><br>Want to unsubscribe? <a href="' + this.getUnsubscribeLink(user, newData) + '">Click here</a>')
 		this.sendEmail([user.email], 'A section in ' + newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', userSpecificEmail.join(''))
 
 	}.bind(this))
@@ -225,20 +221,20 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (users, oldData, newData, di
 			email.push(diffDescription + ' changed<br>')
 		}
 	}.bind(this))
-	
+
 	if (email.length === 0) {
 		console.log("Only properties not whitelisted changed, not sending email");
 		return;
 	}
 
 	email.push('<br><a href="https://coursepro.io/#' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
-	
-	
-	users.forEach(function (user){
-		
+
+
+	users.forEach(function (user) {
+
 		var userSpecificEmail = email.slice(0);
-		
-		userSpecificEmail.push('<br><br>Want to unsubscribe? <a href="'+this.getUnsubscribeLink(user,newData)+'">Click here</a>')
+
+		userSpecificEmail.push('<br><br>Want to unsubscribe? <a href="' + this.getUnsubscribeLink(user, newData) + '">Click here</a>')
 		this.sendEmail([user.email], newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', userSpecificEmail.join(''))
 
 	}.bind(this))
