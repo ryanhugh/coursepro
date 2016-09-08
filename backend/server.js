@@ -549,17 +549,15 @@ app.post('/registerForEmails', function (req, res) {
 
 
 function unsubscribe(body, callback) {
-	// if (!body.userId || body.userId.length < 10) {
-		
-		// console.log(body)
-		// callback(JSON.stringify({
-		// 	error: 'need userId'
-		// }));
-		// return;
-	// }
+	if (body.crn) {
+		console.log('no support for unsubscribing from individual sections rn ',body);
+		return callback(JSON.stringify({
+			error: 'no support for unsubscribing from individual sections rn'
+		}));
+	}
 	
 	
-	var keys = Keys.create(body,macros.LIST_COLLEGES);
+	var keys = Keys.create(body,macros.LIST_CLASSES);
 	if (!keys.isValid() || !body.unsubscribeKey) {
 		console.log('couldn"t unsubscribe, given invalid body... ',body);
 			return callback(JSON.stringify({
@@ -567,8 +565,7 @@ function unsubscribe(body, callback) {
 			}));
 	}
 	
-	var obj = Keys.getObj();
-	
+	var obj = keys.getObj();
 	
 	var q = queue();
 	
@@ -582,7 +579,7 @@ function unsubscribe(body, callback) {
 				if (err) {
 					return callback(err);
 				}
-				classIds.push(aClass._id)
+				classMongoIds.push(aClass._id)
 				callback()
 			}.bind(this))
 	}.bind(this))
@@ -596,7 +593,7 @@ function unsubscribe(body, callback) {
 			}
 			
 			sections.forEach(function(section){
-				sectionIds.push(section._id)
+				sectionMongoIds.push(section._id)
 			}.bind(this))
 			callback()
 		}.bind(this))
@@ -605,7 +602,7 @@ function unsubscribe(body, callback) {
 	
 	q.awaitAll(function(err){
 		if (err) {
-			console.log('couldn"t unsubscribe... ', userData.userId, err);
+			console.log('couldn"t unsubscribe... ', body, err);
 			return callback(JSON.stringify({
 				error: 'internal error'
 			}));
@@ -616,7 +613,7 @@ function unsubscribe(body, callback) {
 		}
 		
 		
-		this.removeIdsFromLists(macros.WATCHING_LIST, classMongoIds, sectionMongoIds, query, function(err) {
+		usersDB.removeIdsFromLists(macros.WATCHING_LIST, classMongoIds, sectionMongoIds, query, function(err) {
 			if (err) {
 				console.log('couldn"t unsubscribe... ', userData.userId, err);
 				return callback(JSON.stringify({
