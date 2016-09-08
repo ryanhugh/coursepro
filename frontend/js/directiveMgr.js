@@ -55,7 +55,7 @@ window.addEventListener('error', function (evt) {
 		primaryMessage = evt.message
 	}
 
-	elogWithoutStack('uncaught_error:', primaryMessage, secondaryMessage)
+	elogWithoutStack('uncaught_error:', primaryMessage, secondaryMessage, evt.filename)
 });
 
 
