@@ -106,6 +106,12 @@ EllucianClassParser.prototype.parseTimeStamps = function (times, days) {
 //this is called for each section that is found on the page
 EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 
+	if (!pageData.dbData.url) {
+		elog(pageData.dbData)
+		console.log(pageData)
+		return;
+	}
+
 
 	//if different name than this class, save to new class
 	var classToAddSectionTo = pageData;
@@ -381,6 +387,11 @@ EllucianClassParser.prototype.parseClassData = function (pageData, element) {
 	//if section dependency already exists, just add the data
 	for (var i = 0; i < classToAddSectionTo.deps.length; i++) {
 		var currDep = classToAddSectionTo.deps[i];
+		if (!currDep.dbData.url) {
+			elog(currDep.dbData)
+			console.log(currDep);
+			continue;
+		}
 
 		if (new URI(currDep.dbData.url).equals(new URI(sectionStartingData.url))) {
 			if (currDep.dbData.crn != sectionStartingData.crn) {

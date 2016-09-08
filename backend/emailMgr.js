@@ -5,6 +5,7 @@ var fs = require('fs')
 var async = require('async')
 var _ = require('lodash')
 var queue = require('d3-queue').queue;
+var URI = require('urijs')
 
 var macros = require('./macros')
 
@@ -81,14 +82,14 @@ EmailMgr.prototype.sendEmail = function (toEmails, subject, html, callback) {
 			console.log("WARNING: not sending email because don't have email password", toEmails);
 			console.log(subject)
 			console.log(html)
-			return;
+			return callback();
 		}
 
 		if (!macros.PRODUCTION) {
 			console.log('Not sending email to ', toEmails, ' because not in PRODUCTION mode');
 			console.log(subject)
 			console.log(html)
-			return;
+			return callback();
 		}
 
 
