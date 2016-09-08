@@ -549,20 +549,27 @@ app.post('/registerForEmails', function (req, res) {
 
 
 function unsubscribe(body, callback) {
-	if (!body.userId || body.userId.length < 10) {
-		console.log(body)
-		callback(JSON.stringify({
-			error: 'need userId'
-		}));
-		return;
+	// if (!body.userId || body.userId.length < 10) {
+		
+		// console.log(body)
+		// callback(JSON.stringify({
+		// 	error: 'need userId'
+		// }));
+		// return;
+	// }
+	
+	var keys = Keys.create(body,macros.LIST_COLLEGES);
+	if (!keys.isValid() || !body.unsubscribeKey) {
+		console.log('couldn"t unsubscribe, given invalid body... ',body);
+			return callback(JSON.stringify({
+				error: 'invalid json, need host, termId, subject, classUid, unsubscribeKey'
+			}));
 	}
+	
+	var obj = Keys.getObj();
+	obj.unsubscribeKey = body.unsubscribeKey
 
-	var userData = {
-		userId: body.userId
-	}
-
-
-	usersDB.unsubscribe(userData, function (err) {
+	usersDB.unsubscribe(obj, function (err) {
 		if (err) {
 			console.log('couldn"t unsubscribe... ', userData.userId, err);
 			return callback(JSON.stringify({

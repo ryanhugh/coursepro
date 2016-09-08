@@ -139,48 +139,28 @@ EmailMgr.prototype.generateDBDataURL = function (dbData) {
 	}
 };
 
-EmailMgr.prototype.printDBRow = function (dbData) {
-	elog('Something called printDBRow, but this function isnt done yet!')
-	return;
-
-	var html = [];
-	for (var attrName in dbData) {
-		if (!dbData[attrName]) {
-			continue;
-		}
-		if (!this.classAttrDescriptions[attrName]) {
-			continue;
-		}
-
-		html.push(this.classAttrDescriptions[attrName] + ': ')
-
-		// basic data type, print the data
-		if (_(['number', 'string', 'boolean']).includes(typeof (dbData[attrName]))) {
-			html.push(dbData[attrName])
-		}
-		else if (Array.isArray(dbData[attrName])) {
-			var arrayDescription = [];
-
-			dbData[attrName].forEach(function (obj) {
-
-
-			}.bind(this))
-		}
-		else {
-			html.push('<a href="https://coursepro.io/#' + this.generateDBDataURL(dbData) + '">View on CoursePro.io</a>')
-		}
-		html.push('<br>\n')
-	}
-
-	return html.join('');
-
-};
 
 EmailMgr.prototype.classDataToHTML = function (classData) {
 	return this.printDBRow(classData);
 };
 
-EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newData, diff) {
+EmailMgr.prototype.getUnsubscribeLink = function (user, row) {
+	
+		var retVal = new URI('https://coursepro.io/unsubscribe/')
+		retVal.setQuery('host', row.host);
+		retVal.setQuery('termId', row.termId);
+		retVal.setQuery('subject', row.subject);
+		retVal.setQuery('classUid', row.classUid);
+		// if (row.crn) {
+		// 	retVal.setQuery('crn', row.crn);
+		// }
+		
+		retVal.setQuery('email', user.email);
+		retVal.setQuery('unsubscribeKey', user.unsubscribeKey);
+		return retVal.toString()
+}
+
+EmailMgr.prototype.sendSectionUpdatedEmail = function (users, oldData, newData, diff) {
 	if (!diff) {
 		console.log('ERROR no diff in send section update email?')
 		return;
@@ -209,9 +189,14 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newDat
 
 	email.push('<br><a href="https://coursepro.io/#' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
 
-	email.push('<br><br>Want to unsubscribe? <a href="https://coursepro.io/#unsubscribe/' + this.generateDBDataURL(newData) + '">Click here</a>')
+	users.forEach(function (user){
+		
+		var userSpecificEmail = email.slice(0)
+		
+		userSpecificEmail.push('<br><br>Want to unsubscribe? <a href="'+this.getUnsubscribeLink(user,newData)+'">Click here</a>')
+		this.sendEmail([user.email], 'A section in ' + newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', userSpecificEmail.join(''))
 
-	this.sendEmail(toEmails, 'A section in ' + newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', email.join(''))
+	}.bind(this))
 
 	// email.push('And in case you\'re wondering, here is the section before and after the change:<br>\n')
 
@@ -221,7 +206,7 @@ EmailMgr.prototype.sendSectionUpdatedEmail = function (toEmails, oldData, newDat
 
 };
 
-EmailMgr.prototype.sendClassUpdatedEmail = function (toEmails, oldData, newData, diff) {
+EmailMgr.prototype.sendClassUpdatedEmail = function (users, oldData, newData, diff) {
 	if (!diff) {
 		console.log('ERROR no diff in send class update email?')
 		return;
@@ -247,10 +232,17 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (toEmails, oldData, newData,
 	}
 
 	email.push('<br><a href="https://coursepro.io/#' + this.generateDBDataURL(newData) + '">View on CoursePro.io</a>')
+	
+	
+	users.forEach(function (user){
+		
+		var userSpecificEmail = email.slice(0);
+		
+		userSpecificEmail.push('<br><br>Want to unsubscribe? <a href="'+this.getUnsubscribeLink(user,newData)+'">Click here</a>')
+		this.sendEmail([user.email], newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', userSpecificEmail.join(''))
 
-	email.push('<br><br>Want to unsubscribe? <a href="https://coursepro.io/#unsubscribe/' + this.generateDBDataURL(newData) + '">Click here</a>')
+	}.bind(this))
 
-	this.sendEmail(toEmails, newData.subject + ' ' + newData.classId + ' was changed - CoursePro.io', email.join(''))
 
 }
 

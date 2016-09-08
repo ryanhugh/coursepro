@@ -333,11 +333,13 @@ UsersDB.prototype.subscribeForEverything = function (userData, callback) {
 
 
 UsersDB.prototype.unsubscribe = function (userData, callback) {
-	if (!userData.loginKey) {
-		return callback('unsubscribe without loginKey is not implemented!');
+	if (!userData.unsubscribeKey) {
+		return callback('unsubscribe without unsubscribeKey is not implemented!');
 	}
 
-	this.update(userData, {
+	this.table.update({
+		unsubscribeKey:userData.unsubscribeKey
+	}, {
 		$set: {
 			"subscriptions.everything": false
 		}
@@ -445,6 +447,7 @@ UsersDB.prototype.authenticateUser = function (idToken, callback) {
 
 				if (!doc.loginKey) {
 					doc.loginKey = this.randomString()
+					doc.unsubscribeKey = this.randomString();
 					doc.loginKeyCreationDate = new Date().getTime()
 				}
 
@@ -558,21 +561,21 @@ UsersDB.prototype.rowUpdatedTrigger = function (oldData, newData, idUsersMap, ca
 		return callback()
 	};
 
-	var emails = [];
+	var users = [];
 
 
 	if (idUsersMap[newDataClone._id]) {
 		idUsersMap[newDataClone._id].forEach(function (user) {
 			console.log('class/section ', newDataClone._id, 'was updated and ', user.email, 'was watching!');
-			emails.push(user.email)
+			users.push(user)
 		}.bind(this))
 	}
 
-	if (emails.length != 0) {
+	if (users.length != 0) {
 		console.log("data link:", newData.url);
 	};
 
-	return callback(null, emails, differences);
+	return callback(null, users, differences);
 };
 
 UsersDB.prototype.classUpdated = function (oldData, newData, callback) {
@@ -586,16 +589,16 @@ UsersDB.prototype.classUpdated = function (oldData, newData, callback) {
 			return callback(err)
 		}
 
-		this.rowUpdatedTrigger(oldData, newData, watchCache.classes, function (err, emails, diff) {
+		this.rowUpdatedTrigger(oldData, newData, watchCache.classes, function (err, users, diff) {
 			if (err) {
 				return callback(err)
 			}
-			if (!emails) {
+			if (!users) {
 				return callback();
 			};
 
 			//calculate email content here
-			emailMgr.sendClassUpdatedEmail(emails, oldData, newData, diff);
+			emailMgr.sendClassUpdatedEmail(users, oldData, newData, diff);
 
 			return callback()
 
@@ -616,12 +619,12 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 			return callback(err)
 		}
 
-		this.rowUpdatedTrigger(oldData, newData, watchCache.sections, function (err, emails, diff) {
+		this.rowUpdatedTrigger(oldData, newData, watchCache.sections, function (err, users, diff) {
 			if (err) {
 				console.log(err)
 				return callback(err)
 			}
-			if (!emails || emails.length === 0) {
+			if (!users || users.length === 0) {
 				return callback();
 			};
 
@@ -661,7 +664,7 @@ UsersDB.prototype.sectionUpdated = function (oldData, newData, callback) {
 			};
 
 			//calculate email content here
-			emailMgr.sendSectionUpdatedEmail(emails, oldData, newData, diff);
+			emailMgr.sendSectionUpdatedEmail(users, oldData, newData, diff);
 
 			return callback()
 
