@@ -409,8 +409,11 @@ UsersDB.prototype.authenticateUser = function (idToken, callback) {
 
 				if (!doc.loginKey) {
 					doc.loginKey = this.randomString()
-					doc.unsubscribeKey = this.randomString();
 					doc.loginKeyCreationDate = new Date().getTime()
+				}
+
+				if (!doc.unsubscribeKey) {
+					doc.unsubscribeKey = this.randomString();
 				}
 
 				doc.name = payload.name
