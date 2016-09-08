@@ -558,6 +558,7 @@ function unsubscribe(body, callback) {
 		// return;
 	// }
 	
+	
 	var keys = Keys.create(body,macros.LIST_COLLEGES);
 	if (!keys.isValid() || !body.unsubscribeKey) {
 		console.log('couldn"t unsubscribe, given invalid body... ',body);
@@ -567,21 +568,69 @@ function unsubscribe(body, callback) {
 	}
 	
 	var obj = Keys.getObj();
-	obj.unsubscribeKey = body.unsubscribeKey
-
-	usersDB.unsubscribe(obj, function (err) {
+	
+	
+	var q = queue();
+	
+	var classMongoIds = [];
+	var sectionMongoIds = []
+	
+	q.defer(function(callback){
+		classesDB.find(obj, {
+				shouldBeOnlyOne: true
+			}, function (err, aClass) {
+				if (err) {
+					return callback(err);
+				}
+				classIds.push(aClass._id)
+				callback()
+			}.bind(this))
+	}.bind(this))
+	
+	q.defer(function(callback){
+		sectionsDB.find(obj, {
+			shouldBeOnlyOne: false
+		}, function (err, sections) {
+			if (err) {
+				return callback(err)
+			}
+			
+			sections.forEach(function(section){
+				sectionIds.push(section._id)
+			}.bind(this))
+			callback()
+		}.bind(this))
+	}.bind(this))
+	
+	
+	q.awaitAll(function(err){
 		if (err) {
 			console.log('couldn"t unsubscribe... ', userData.userId, err);
 			return callback(JSON.stringify({
 				error: 'internal error'
 			}));
 		}
-		else {
+		
+		var query = {
+			unsubscribeKey: body.unsubscribeKey
+		}
+		
+		
+		this.removeIdsFromLists(macros.WATCHING_LIST, classMongoIds, sectionMongoIds, query, function(err) {
+			if (err) {
+				console.log('couldn"t unsubscribe... ', userData.userId, err);
+				return callback(JSON.stringify({
+					error: 'internal error'
+				}));
+			}
+			
 			return callback(JSON.stringify({
 				status: 'success'
 			}));
-		}
-	}.bind(this));
+				
+			
+		}.bind(this))
+	}.bind(this))
 }
 
 
@@ -762,9 +811,13 @@ app.post('/removeFromUserLists', function (req, res) {
 			}));
 			return;
 		};
+		
+		var query = {
+			loginKey:req.body.loginKey
+		}
 
 		//register for the class
-		usersDB.removeIdsFromLists(req.body.listName, classIds, sectionIds, req.body.loginKey, function (err, clientMsg) {
+		usersDB.removeIdsFromLists(req.body.listName, classIds, sectionIds, query, function (err, clientMsg) {
 
 			if (err) {
 				console.log('ERROR couldnt add class', req.body.classesMongoIds, ' id to user', req.body.loginKey)

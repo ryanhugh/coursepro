@@ -170,23 +170,9 @@ UsersDB.prototype.getQuery = function (userData) {
 // config: shouldBeOnlyOne (not sure how this is going to work). maybe just run a find() to get count before the update? and some way to disable the debug mode
 // might be able to do this.table.driver.count
 
-UsersDB.prototype.update = function (userData, updateQuery, config, callback) {
-	var query = getQuery(userData);
-	if (!config) {
-		config = {}
-	};
-	if (config.shouldBeOnlyOne === undefined) {
-		config.shouldBeOnlyOne = true;
-	};
-	if (userData.idToken) {
-		elog("Error id token on userDB.update?", userData, updateQuery)
-		userData.idToken = undefined
-	}
 
-	this.constructor.update(query, updateQuery, config, function (err, docs) {
-		callback(err, docs)
-	}.bind(this))
-};
+
+
 
 
 //looks up user in database, and ensures that user is same authentication level as the found user in db
@@ -332,30 +318,6 @@ UsersDB.prototype.subscribeForEverything = function (userData, callback) {
 }
 
 
-UsersDB.prototype.unsubscribe = function (userData, callback) {
-	if (!userData.unsubscribeKey) {
-		return callback('unsubscribe without unsubscribeKey is not implemented!');
-	}
-
-	this.table.update({
-		unsubscribeKey:userData.unsubscribeKey
-	}, {
-		$set: {
-			"subscriptions.everything": false
-		}
-	}, {}, function (err, user) {
-		if (err) {
-			return callback(err)
-		}
-
-		if (!user) {
-			return callback('no user found')
-		};
-
-		console.log("unsubscribed ", user.email, 'from everything');
-		return callback(null, 'Successfully unsubscribed.')
-	}.bind(this));
-}
 
 UsersDB.prototype.randomString = function (length) {
 	if (!length) {
@@ -738,14 +700,12 @@ UsersDB.prototype.addIdsToLists = function (listName, classMongoIds, sectionMong
 };
 
 
-UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectionMongoIds, loginKey, callback) {
+UsersDB.prototype.removeIdsFromLists = function (listName, classMongoIds, sectionMongoIds, query, callback) {
 	var toPull = {};
 	toPull["lists." + listName + ".classes"] = classMongoIds
 	toPull["lists." + listName + ".sections"] = sectionMongoIds
 
-	this.table.findAndModify({
-		loginKey: loginKey
-	}, {
+	this.table.findAndModify(query, {
 		$pullAll: toPull
 	}, {
 		"new": true
