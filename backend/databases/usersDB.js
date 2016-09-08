@@ -528,10 +528,12 @@ UsersDB.prototype.getUsersWatchCache = memoize(function (callback) {
 		callback(null, this.classWatchCache)
 	}.bind(this))
 }, function () {
+	
+	var time = Math.floor(Date.now() / (1000 * 60 * this.CLASS_WATCH_CACHE_TIMEOUT))
 
 	// Cache the return value of this function for 5 min
-	return Math.floor(Date.now() / (1000 * 60 * this.CLASS_WATCH_CACHE_TIMEOUT))
-}.bind(this));
+	return time;
+});
 
 //users id map is this.classWatchCache.classes or this.classWatchCache.sections
 UsersDB.prototype.rowUpdatedTrigger = function (oldData, newData, idUsersMap, callback) {
