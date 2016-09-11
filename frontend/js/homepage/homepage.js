@@ -74,7 +74,7 @@ Homepage.prototype.calculatePlaceholderText = memoize(function (host, termId) {
 			this.$scope.$apply()
 		}.bind(this), 0)
 	}.bind(this))
-},function (host, termId) {
+}, function (host, termId) {
 	return host + termId;
 }.bind(this));
 
@@ -88,12 +88,18 @@ Homepage.prototype.openTermSelector = function () {
 };
 
 Homepage.prototype.focusSearch = function () {
-	search.setSearchText(this.searchText);
+	var string = this.searchText
+	search.setSearchText(string);
 	this.showSearch = true;
 	this.searchText = ''
 
 	setTimeout(function () {
 		search.focusSearchBox()
+		if (string.length > 1) {
+			setTimeout(function () {
+				search.instance.go()
+			}, 100)
+		}
 	}.bind(this), 0)
 };
 

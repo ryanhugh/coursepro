@@ -163,7 +163,18 @@ SubjectClassSelector.prototype.onSelectSubject = function (fireTrigger) {
 			this.$scope.$apply()
 
 			if (fireTrigger) {
-				$("#subjectSelectorId")[0].nextSibling.getElementsByTagName('input')[0].focus()
+				var elem = $("#subjectSelectorId")[0];
+				if (!elem) {
+					return;
+				}
+
+				elem = elem.nextSibling.getElementsByTagName('input')[0]
+
+				if (!elem) {
+					return;
+				}
+
+				elem.focus()
 			};
 		}.bind(this), 0)
 
