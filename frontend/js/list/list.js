@@ -25,8 +25,8 @@ function List() {
 
 		setTimeout(function () {
 			this.$scope.$apply();
-		}.bind(this),0)
- 
+		}.bind(this), 0)
+
 
 	}.bind(this))
 
@@ -35,7 +35,7 @@ function List() {
 
 List.fnName = 'List'
 List.isPage = true;
-List.$inject = ['$scope', '$routeParams','$route']
+List.$inject = ['$scope', '$routeParams', '$route']
 List.urls = ['/list/:host/:termId/:subject?']
 
 //prototype constructor
@@ -44,6 +44,14 @@ List.prototype.constructor = List;
 
 List.prototype.go = function () {
 	this.isLoading = true;
+	if (!this.$routeParams.subject) {
+		this.$scope.focusSelector = true;
+		setTimeout(function () {
+			this.$scope.$apply();
+		}.bind(this), 0)
+		return;
+	}
+
 	async.waterfall([
 
 			//fetch the user data
@@ -57,8 +65,8 @@ List.prototype.go = function () {
 		],
 		function (err, classes) {
 			if (err) {
-				console.log('ERROR', err)
-					//don't return
+				elog('ERROR', err)
+				return;
 			}
 
 			classes.sort(function (a, b) {
@@ -74,8 +82,10 @@ List.prototype.go = function () {
 
 };
 
-List.prototype.addSubject = function(subject) {
-	this.$route.updateParams({subject:subject.subject})
+List.prototype.addSubject = function (subject) {
+	this.$route.updateParams({
+		subject: subject.subject
+	})
 };
 
 
