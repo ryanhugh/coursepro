@@ -1,129 +1,154 @@
-// var algebra = require('algebra.js');
-// var Fraction = algebra.Fraction;
-// var Expression = algebra.Expression;
-// var Equation = algebra.Equation
-
-
-// // var a= algebra.parse("xx + 3x + 3x + 3 * 3 + y + y + y + 3y(x+y)/(b-(2b-bndkasghoidhfkadsfkds f,ds fks fsjlk))")
-// var a= algebra.parse("1x3y7h8+x+x3y7h8")
-// // console.log(a);
-
-
-// // var exp = new Expression();
-
-// console.log(a.simplify().toString());
-// 
-
+'use strict';
 var fs = require('fs')
 var pointer = require('./backend/pointer')
 var domutils = require('domutils')
-
-// var index = 0
+var _ = require('lodash')
 
 var string = '(CS 2222 and CS 23()843) or CS 2343'
-	// var string = 'CS 23()843 or CS 2343'
 
 var buffer = string.split('')
 
 function parseString(buffer) {
 
-	// var parsingElement = false;
 	var numOpenParens = 0;
 
-	console.log(buffer);
-
 	var retVal = [];
-	while (1) {
-		if (buffer[0] === ')') {
-			if (numOpenParens === 0) {
-				return retVal.join('')
+	while (buffer.length > 0) {
+		if (buffer[0].type === 'char') {
+			if (buffer[0].value === ')') {
+				if (numOpenParens === 0) {
+					console.log(buffer[0],'HERE!')
+					break;
+				}
+				else {
+					retVal.push(')')
+					numOpenParens--
+				}
+			}
+			else if (buffer[0].value == '(') {
+				numOpenParens++;
+				retVal.push('(')
+			}
+			else if (bufferStartsWith(buffer,' or ') || bufferStartsWith(buffer,' and ')) {
+				break;
 			}
 			else {
-				retVal.push(')')
-				numOpenParens--
+				retVal.push(buffer[0].value)
 			}
 		}
-		else if (buffer[0] == '(') {
-			numOpenParens++;
-			retVal.push('(')
-		}
-		else if (buffer.join('').startsWith(' or ') || buffer.join('').startsWith(' and ')) {
-			return retVal.join('')
+		else if (buffer[0].type === 'element') {
+			
 		}
 		else {
-			retVal.push(buffer[0])
+			elog(buffer[0])
 		}
 		buffer.shift()
-		if (buffer.length === 0) {
-			return retVal.join('');
-		}
 	}
+	return retVal.join('').trim()
 }
 
 // parseString('CS 23()843'.split(''))
 // process.exit()
 
+function bufferStartsWith(buffer, string) {
+	if (buffer.length < string.length) {
+		return false;
+	}
+	
+	
+	for (var i = 0;i<string.length;i++) {
+		if (buffer[i].value != string[i]) {
+			return false;
+		}
+	}
+	return true;
+}
 
 
-function parse(elements) {
+
+function parse(buffer, stackCount) {
 	var retVal = [
 		[]
 	]
+	
+	if (stackCount === undefined) {
+		stackCount = 0
+	}
+	
 	var type = null;
 
 
-	for (var i = 0; i < elements.length; i++) {
-		var element = elements[i]
+	while (buffer.length > 0) {
+		
+		console.log("Parsing:",buffer[0].value || buffer[0],buffer.length)
 
-
-		if (element.type === 'tag') {
-			// When hit a tag, need to parse and then consume the rest of the current element somehow....
-		}
-		else {
-			var buffer = domutils.getOuterHTML(element).split('');
-
-			while (1) {
-
-
-				if (buffer[0] == '(') {
-					buffer.shift()
-					retVal[retVal.length - 1] = parse(buffer)
-				}
-				else if (buffer[0] === ')') {
-					buffer.shift()
-					break;
-				}
-				else if (buffer[0] === ' ') {
-					var next5Letters = buffer.slice(0, 6).join('')
-					if (next5Letters.startsWith(' or ')) {
-						buffer.splice(0, 5)
-						if (type) {
-							elog('mismatched types?')
-						}
-						type = 'or'
-						retVal.push([])
+		if (buffer[0].type === 'char') {
+		
+			if (buffer[0].value == '(') {
+				buffer.shift()
+				console.log('calling and type is ',type)
+				retVal[retVal.length - 1] = parse(buffer,stackCount+1)
+				console.log('just afte rthe call ',type)
+			}
+			else if (buffer[0].value === ')') {
+				buffer.shift()
+				break;
+			}
+			else if (bufferStartsWith(buffer,' or ') || bufferStartsWith(buffer,' and ')) {
+				
+				if (bufferStartsWith(buffer,' or ')) {
+					if (type && type!='or') {
+						elog('mismatched types? or',type,stackCount,retVal,buffer.slice(0,10))
+						process.exit()
 					}
-					else if (next5Letters.startsWith(' and ')) {
-						buffer.splice(0, 6)
-						if (type) {
-							elog('mismatched types?')
-						}
-						type = 'and'
-						retVal.push([])
+					console.log('setting to or',stackCount)
+					buffer.splice(0, 4)
+					type = 'or'
+					retVal.push([])
+				}
+				else if (bufferStartsWith(buffer,' and ')) {
+					if (type && type !='and') {
+						elog('mismatched types? and ',type,stackCount)
 					}
-				}
-				else {
-
-					var element = parseString(buffer);
-					console.log("Parsed: ", element);
-					retVal[retVal.length - 1] = element
-				}
-				if (buffer.length === 0) {
-					break
+					console.log('setting to and',stackCount)
+					buffer.splice(0, 5)
+					type = 'and'
+					retVal.push([])
 				}
 			}
+			else {
+	
+				var element = parseString(buffer);
+				console.log("Parsed: ", element);
+				retVal[retVal.length - 1] = element
+			}
+		}
+		else if (buffer[0].type === 'element') {
+			if (buffer[0].name === 'br') {
+				// buffer.shift();
+				if (retVal.length > 1) {
+					if (type) {
+						elog('mismatched types?')
+					}
+					console.log('HIIII',retVal)
+					type = 'and'
+					retVal.push([])
+				}
+			}
+			else if (buffer[0].name == 'a') {
+				elog('got a outside of an element??',buffer[0])
+			}
+			else {
+				elog('unknown buffer[0]',buffer[0])
+			}
+			buffer.shift()
+		}
+		else {
+			elog('unknown buffer[0]',buffer[0])
+			buffer.shift()
 		}
 	}
+	console.log("returning",retVal)
 	return {
 		type: type,
 		values: retVal
@@ -131,10 +156,57 @@ function parse(elements) {
 }
 
 
+function convertElementListToWideMode (elements) {
+	
+	
+	var retVal = []
+	
+	elements.forEach(function(element){
+		
+		if (element.type == 'text') {
+			domutils.getText(element).trim().split('').forEach(function(char){
+				retVal.push({
+					type:"char",
+					value:char
+				})
+			}.bind(this))
+		}
+		else if (element.type === 'tag') {
+			if (element.name == 'br') {
+				retVal.push({
+					type:'element',
+					name:element.name,
+				})
+			}
+			else if (element.name == 'a') {
+				retVal.push({
+					type:'element',
+					name:element.name,
+					href:element.attribs.href
+				})
+			}
+			else {
+				elog('Skipping unknown element',element.name)
+			}
+		}
+		else {
+			elog('Skipping unknown type:',element.type)
+		}
+	}.bind(this))
+	
+	return retVal;
+}
 
+
+
+
+// Class details should be a list of dom elements
+// sectionName should be either 'prerequisites' or 'corequisites'
+// This function will find all elements in the given section from a part of the dom where the section we are looking for are on the top part
 function findRequisitesSection(classDetails, sectionName) {
 	var elements = [];
 	var i = 0;
+	sectionName = sectionName.toLowerCase()
 
 	//skip all elements until the section
 	for (; i < classDetails.length; i++) {
@@ -172,6 +244,15 @@ fs.readFile('../coursepro/backend/parsers/tests/data/ellucianSectionParser/many 
 		// expect(err).toBe(null);
 
 		// var url = 'http://test.hostname.com/PROD/';
+		
+		
+		// console.log(dom)
+		
+		var elements = findRequisitesSection(dom,'prerequisites')
+		
+		var a = convertElementListToWideMode(elements)
+		
+		console.log(JSON.stringify(parse(a),null,4))
 
 
 
@@ -180,4 +261,4 @@ fs.readFile('../coursepro/backend/parsers/tests/data/ellucianSectionParser/many 
 }.bind(this))
 
 
-console.log(JSON.stringify(parse(buffer), null, 4));
+// console.log(JSON.stringify(parse(buffer), null, 4));
