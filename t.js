@@ -16,6 +16,7 @@
 
 var fs = require('fs')
 var pointer = require('./backend/pointer')
+var domutils = require('domutils')
 
 // var index = 0
 
@@ -64,50 +65,63 @@ function parseString(buffer) {
 
 
 
-function parse(buffer) {
+function parse(elements) {
 	var retVal = [
 		[]
 	]
 	var type = null;
 
-	while (1) {
+
+	for (var i = 0; i < elements.length; i++) {
+		var element = elements[i]
 
 
-		if (buffer[0] == '(') {
-			buffer.shift()
-			retVal[retVal.length - 1] = parse(buffer)
-		}
-		else if (buffer[0] === ')') {
-			buffer.shift()
-			break;
-		}
-		else if (buffer[0] === ' ') {
-			var next5Letters = buffer.slice(0, 6).join('')
-			if (next5Letters.startsWith(' or ')) {
-				buffer.splice(0, 5)
-				if (type) {
-					elog('mismatched types?')
-				}
-				type = 'or'
-				retVal.push([])
-			}
-			else if (next5Letters.startsWith(' and ')) {
-				buffer.splice(0, 6)
-				if (type) {
-					elog('mismatched types?')
-				}
-				type = 'and'
-				retVal.push([])
-			}
+		if (element.type === 'tag') {
+			// When hit a tag, need to parse and then consume the rest of the current element somehow....
 		}
 		else {
+			var buffer = domutils.getOuterHTML(element).split('');
 
-			var element = parseString(buffer);
-			console.log("Parsed: ", element);
-			retVal[retVal.length - 1] = element
-		}
-		if (buffer.length === 0) {
-			break
+			while (1) {
+
+
+				if (buffer[0] == '(') {
+					buffer.shift()
+					retVal[retVal.length - 1] = parse(buffer)
+				}
+				else if (buffer[0] === ')') {
+					buffer.shift()
+					break;
+				}
+				else if (buffer[0] === ' ') {
+					var next5Letters = buffer.slice(0, 6).join('')
+					if (next5Letters.startsWith(' or ')) {
+						buffer.splice(0, 5)
+						if (type) {
+							elog('mismatched types?')
+						}
+						type = 'or'
+						retVal.push([])
+					}
+					else if (next5Letters.startsWith(' and ')) {
+						buffer.splice(0, 6)
+						if (type) {
+							elog('mismatched types?')
+						}
+						type = 'and'
+						retVal.push([])
+					}
+				}
+				else {
+
+					var element = parseString(buffer);
+					console.log("Parsed: ", element);
+					retVal[retVal.length - 1] = element
+				}
+				if (buffer.length === 0) {
+					break
+				}
+			}
 		}
 	}
 	return {
@@ -115,6 +129,40 @@ function parse(buffer) {
 		values: retVal
 	};
 }
+
+
+
+function findRequisitesSection(classDetails, sectionName) {
+	var elements = [];
+	var i = 0;
+
+	//skip all elements until the section
+	for (; i < classDetails.length; i++) {
+		if (classDetails[i].type == 'tag' && _(domutils.getText(classDetails[i]).trim().toLowerCase()).includes(sectionName)) {
+			break;
+		}
+	}
+	i++;
+
+	//add all text/elements until next element
+	for (; i < classDetails.length; i++) {
+		if (classDetails[i].type == 'tag') {
+			if (classDetails[i].name == 'br' || classDetails[i].name == 'a') {
+				elements.push(classDetails[i])
+				continue;
+			}
+			else {
+				break;
+			}
+		}
+		else {
+			elements.push(classDetails[i]);
+		}
+	}
+
+	return elements
+}
+
 
 
 fs.readFile('../coursepro/backend/parsers/tests/data/ellucianSectionParser/many non linked.html', 'utf8', function (err, body) {
