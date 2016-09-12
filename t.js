@@ -67,7 +67,12 @@ function bufferStartsWith(buffer, string) {
 
 
 function parse(buffer, stackCount) {
-	var retVal = []
+	var stack = []
+	var retVal = {
+		type:null,
+		values:[]
+	};
+	stack.push(retVal);
 	
 	if (stackCount === undefined) {
 		stackCount = 0
@@ -84,7 +89,7 @@ function parse(buffer, stackCount) {
 		
 			if (buffer[0].value == '(') {
 				buffer.shift()
-				retVal.push(parse(buffer,stackCount+1))
+				retVal.values.push(parse(buffer,stackCount+1))
 			}
 			else if (buffer[0].value === ')') {
 				buffer.shift()
@@ -93,31 +98,31 @@ function parse(buffer, stackCount) {
 			else if (bufferStartsWith(buffer,' or ') || bufferStartsWith(buffer,' and ')) {
 				
 				if (bufferStartsWith(buffer,' or ')) {
-					if (type && type!='or') {
-						elog('mismatched types? or',type,stackCount,retVal,buffer.slice(0,10))
+					if (retVal.type && retVal.type!='or') {
+						elog('mismatched types? or',retVal.type,stackCount,retVal.values,buffer.slice(0,10))
 						process.exit()
 					}
 					buffer.splice(0, 4)
-					type = 'or'
+					retVal.type = 'or'
 				}
 				else if (bufferStartsWith(buffer,' and ')) {
-					if (type && type !='and') {
-						elog('mismatched types? and ',type,stackCount)
+					if (retVal.type && retVal.type !='and') {
+						elog('mismatched retVal.types? and ',retVal.type,stackCount)
 					}
 					buffer.splice(0, 5)
-					type = 'and'
+					retVal.type = 'and'
 				}
 			}
 			else {
 	
 				var element = parseString(buffer);
 				console.log("Parsed: ", element);
-				retVal.push(element)
+				retVal.values.push(element)
 			}
 		}
 		else if (buffer[0].type === 'element') {
 			if (buffer[0].name === 'br') {
-				if (retVal.length > 0) {
+				if (retVal.values.length > 0) {
 					if (type) {
 						elog('mismatched types?')
 					}
@@ -138,10 +143,7 @@ function parse(buffer, stackCount) {
 		}
 	}
 	console.log("returning",retVal)
-	return {
-		type: type,
-		values: retVal
-	};
+	return retVal;
 }
 
 
