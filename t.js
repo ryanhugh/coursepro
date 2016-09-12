@@ -84,9 +84,7 @@ function parse(buffer, stackCount) {
 		
 			if (buffer[0].value == '(') {
 				buffer.shift()
-				console.log('calling and type is ',type)
 				retVal.push(parse(buffer,stackCount+1))
-				console.log('just afte rthe call ',type)
 			}
 			else if (buffer[0].value === ')') {
 				buffer.shift()
@@ -99,19 +97,15 @@ function parse(buffer, stackCount) {
 						elog('mismatched types? or',type,stackCount,retVal,buffer.slice(0,10))
 						process.exit()
 					}
-					console.log('setting to or',stackCount)
 					buffer.splice(0, 4)
 					type = 'or'
-					// retVal.push([])
 				}
 				else if (bufferStartsWith(buffer,' and ')) {
 					if (type && type !='and') {
 						elog('mismatched types? and ',type,stackCount)
 					}
-					console.log('setting to and',stackCount)
 					buffer.splice(0, 5)
 					type = 'and'
-					// retVal.push([])
 				}
 			}
 			else {
@@ -123,14 +117,11 @@ function parse(buffer, stackCount) {
 		}
 		else if (buffer[0].type === 'element') {
 			if (buffer[0].name === 'br') {
-				// buffer.shift();
 				if (retVal.length > 0) {
 					if (type) {
 						elog('mismatched types?')
 					}
-					console.log('HIIII',retVal)
 					type = 'and'
-					// retVal.push([])
 				}
 			}
 			else if (buffer[0].name == 'a') {
