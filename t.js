@@ -124,7 +124,7 @@ function parse(buffer, stackCount) {
 		else if (buffer[0].type === 'element') {
 			if (buffer[0].name === 'br') {
 				// buffer.shift();
-				if (retVal.length === 0) {
+				if (retVal.length > 0) {
 					if (type) {
 						elog('mismatched types?')
 					}
