@@ -17,7 +17,7 @@ function parseString(buffer) {
 		if (buffer[0].type === 'char') {
 			if (buffer[0].value === ')') {
 				if (numOpenParens === 0) {
-					console.log(buffer[0],'HERE!')
+					// console.log(buffer[0], 'HERE!')
 					break;
 				}
 				else {
@@ -29,7 +29,7 @@ function parseString(buffer) {
 				numOpenParens++;
 				retVal.push('(')
 			}
-			else if (bufferStartsWith(buffer,' or ') || bufferStartsWith(buffer,' and ')) {
+			else if (bufferStartsWith(buffer, ' or ') || bufferStartsWith(buffer, ' and ')) {
 				break;
 			}
 			else {
@@ -37,7 +37,7 @@ function parseString(buffer) {
 			}
 		}
 		else if (buffer[0].type === 'element') {
-			
+
 		}
 		else {
 			elog(buffer[0])
@@ -54,9 +54,9 @@ function bufferStartsWith(buffer, string) {
 	if (buffer.length < string.length) {
 		return false;
 	}
-	
-	
-	for (var i = 0;i<string.length;i++) {
+
+
+	for (var i = 0; i < string.length; i++) {
 		if (buffer[i].value != string[i]) {
 			return false;
 		}
@@ -69,62 +69,64 @@ function bufferStartsWith(buffer, string) {
 function parse(buffer, stackCount) {
 	var stack = []
 	var retVal = {
-		type:null,
-		values:[]
+		type: null,
+		values: []
 	};
 	stack.push(retVal);
-	
+
 	if (stackCount === undefined) {
 		stackCount = 0
 	}
-	
+
 	var type = null;
 
 
 	while (buffer.length > 0) {
-		
-		console.log("Parsing:",buffer[0].value || buffer[0],buffer.length)
+
+		console.log("Parsing:", buffer[0].value || buffer[0], buffer.length)
 
 		if (buffer[0].type === 'char') {
-		
+
 			if (buffer[0].value == '(') {
 				buffer.shift()
 				var parentValue = retVal;
 				retVal = {
-					type:null,
-					values:[]
+					type: null,
+					values: []
 				};
 				stack.push(retVal)
 				parentValue.values.push(retVal)
+				console.log("Pusing on stack!", stack.length);
 				// retVal.values.push(parse(buffer,stackCount+1))
 			}
 			else if (buffer[0].value === ')') {
-				retVal = stack.pop()
+				stack.pop()
+				retVal = stack[stack.length - 1]
 				buffer.shift()
 				if (!retVal) {
 					break;
 				}
 			}
-			else if (bufferStartsWith(buffer,' or ') || bufferStartsWith(buffer,' and ')) {
-				
-				if (bufferStartsWith(buffer,' or ')) {
-					if (retVal.type && retVal.type!='or') {
-						elog('mismatched types? or',retVal.type,stackCount,retVal.values,buffer.slice(0,10))
+			else if (bufferStartsWith(buffer, ' or ') || bufferStartsWith(buffer, ' and ')) {
+
+				if (bufferStartsWith(buffer, ' or ')) {
+					if (retVal.type && retVal.type != 'or') {
+						elog('mismatched types? or', retVal.type, stackCount, retVal.values, buffer.slice(0, 10))
 						process.exit()
 					}
 					buffer.splice(0, 4)
 					retVal.type = 'or'
 				}
-				else if (bufferStartsWith(buffer,' and ')) {
-					if (retVal.type && retVal.type !='and') {
-						elog('mismatched retVal.types? and ',retVal.type,stackCount)
+				else if (bufferStartsWith(buffer, ' and ')) {
+					if (retVal.type && retVal.type != 'and') {
+						elog('mismatched retVal.types? and ', retVal.type, stackCount)
 					}
 					buffer.splice(0, 5)
 					retVal.type = 'and'
 				}
 			}
 			else {
-	
+
 				var element = parseString(buffer);
 				console.log("Parsed: ", element);
 				retVal.values.push(element)
@@ -140,61 +142,61 @@ function parse(buffer, stackCount) {
 				}
 			}
 			else if (buffer[0].name == 'a') {
-				elog('got a outside of an element??',buffer[0])
+				elog('got a outside of an element??', buffer[0])
 			}
 			else {
-				elog('unknown buffer[0]',buffer[0])
+				elog('unknown buffer[0]', buffer[0])
 			}
 			buffer.shift()
 		}
 		else {
-			elog('unknown buffer[0]',buffer[0])
+			elog('unknown buffer[0]', buffer[0])
 			buffer.shift()
 		}
 	}
-	console.log("returning",retVal)
+	console.log("returning", retVal)
 	return retVal;
 }
 
 
-function convertElementListToWideMode (elements) {
-	
-	
+function convertElementListToWideMode(elements) {
+
+
 	var retVal = []
-	
-	elements.forEach(function(element){
-		
+
+	elements.forEach(function (element) {
+
 		if (element.type == 'text') {
-			domutils.getText(element).trim().split('').forEach(function(char){
+			domutils.getText(element).trim().split('').forEach(function (char) {
 				retVal.push({
-					type:"char",
-					value:char
+					type: "char",
+					value: char
 				})
 			}.bind(this))
 		}
 		else if (element.type === 'tag') {
 			if (element.name == 'br') {
 				retVal.push({
-					type:'element',
-					name:element.name,
+					type: 'element',
+					name: element.name,
 				})
 			}
 			else if (element.name == 'a') {
 				retVal.push({
-					type:'element',
-					name:element.name,
-					href:element.attribs.href
+					type: 'element',
+					name: element.name,
+					href: element.attribs.href
 				})
 			}
 			else {
-				elog('Skipping unknown element',element.name)
+				elog('Skipping unknown element', element.name)
 			}
 		}
 		else {
-			elog('Skipping unknown type:',element.type)
+			elog('Skipping unknown type:', element.type)
 		}
 	}.bind(this))
-	
+
 	return retVal;
 }
 
@@ -245,15 +247,15 @@ fs.readFile('../coursepro/backend/parsers/tests/data/ellucianSectionParser/many 
 		// expect(err).toBe(null);
 
 		// var url = 'http://test.hostname.com/PROD/';
-		
-		
+
+
 		// console.log(dom)
-		
-		var elements = findRequisitesSection(dom,'prerequisites')
-		
+
+		var elements = findRequisitesSection(dom, 'prerequisites')
+
 		var a = convertElementListToWideMode(elements)
-		
-		console.log(JSON.stringify(parse(a),null,4))
+
+		console.log(JSON.stringify(parse(a), null, 4))
 
 
 
