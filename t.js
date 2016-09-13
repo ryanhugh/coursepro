@@ -11,13 +11,13 @@ var buffer = string.split('')
 function parseString(buffer) {
 
 	var numOpenParens = 0;
+	var href = null;
 
 	var retVal = [];
 	while (buffer.length > 0) {
 		if (buffer[0].type === 'char') {
 			if (buffer[0].value === ')') {
 				if (numOpenParens === 0) {
-					// console.log(buffer[0], 'HERE!')
 					break;
 				}
 				else {
@@ -37,14 +37,30 @@ function parseString(buffer) {
 			}
 		}
 		else if (buffer[0].type === 'element') {
+			if (buffer[0].name === 'a') {
+				if (href) {
+					elog('already have href',buffer[0],href)
+				}
 
+				// DO checks to make sure valid url, and keep track of the obj and not the herf
+				console.log("HIIIII");
+				href = buffer[0].href
+			}
+			else {
+
+			}
 		}
 		else {
 			elog(buffer[0])
 		}
 		buffer.shift()
 	}
-	return retVal.join('').trim()
+	if (href) {
+		return href
+	}
+	else {
+		return retVal.join('').trim()
+	}
 }
 
 // parseString('CS 23()843'.split(''))
@@ -66,42 +82,38 @@ function bufferStartsWith(buffer, string) {
 
 
 
-function parse(buffer, stackCount) {
+function parse(buffer) {
+
+	// Keep track of the current list of groups being parsed. 
+	// This stack does not include the current group being parsed, which is kept track in retVal.
 	var stack = []
 	var retVal = {
 		type: null,
 		values: []
 	};
-	stack.push(retVal);
-
-	if (stackCount === undefined) {
-		stackCount = 0
-	}
-
-	var type = null;
-
 
 	while (buffer.length > 0) {
-
-		console.log("Parsing:", buffer[0].value || buffer[0], buffer.length)
 
 		if (buffer[0].type === 'char') {
 
 			if (buffer[0].value == '(') {
 				buffer.shift()
+				stack.push(retVal)
 				var parentValue = retVal;
 				retVal = {
 					type: null,
 					values: []
 				};
-				stack.push(retVal)
 				parentValue.values.push(retVal)
-				console.log("Pusing on stack!", stack.length);
-				// retVal.values.push(parse(buffer,stackCount+1))
 			}
 			else if (buffer[0].value === ')') {
-				stack.pop()
-				retVal = stack[stack.length - 1]
+				var newRetVal = stack.pop();
+				if (newRetVal) {
+					retVal = newRetVal;
+				}
+				else {
+					console.log("No history, ignoring closing paren");
+				}
 				buffer.shift()
 				if (!retVal) {
 					break;
@@ -111,25 +123,21 @@ function parse(buffer, stackCount) {
 
 				if (bufferStartsWith(buffer, ' or ')) {
 					if (retVal.type && retVal.type != 'or') {
-						elog('mismatched types? or', retVal.type, stackCount, retVal.values, buffer.slice(0, 10))
-						process.exit()
+						elog('mismatched types? or', retVal.type, retVal.values, buffer.slice(0, 10))
 					}
 					buffer.splice(0, 4)
 					retVal.type = 'or'
 				}
 				else if (bufferStartsWith(buffer, ' and ')) {
 					if (retVal.type && retVal.type != 'and') {
-						elog('mismatched retVal.types? and ', retVal.type, stackCount)
+						elog('mismatched retVal.types? and ', retVal.type)
 					}
 					buffer.splice(0, 5)
 					retVal.type = 'and'
 				}
 			}
 			else {
-
-				var element = parseString(buffer);
-				console.log("Parsed: ", element);
-				retVal.values.push(element)
+				retVal.values.push(parseString(buffer))
 			}
 		}
 		else if (buffer[0].type === 'element') {
@@ -160,8 +168,6 @@ function parse(buffer, stackCount) {
 
 
 function convertElementListToWideMode(elements) {
-
-
 	var retVal = []
 
 	elements.forEach(function (element) {
@@ -196,6 +202,16 @@ function convertElementListToWideMode(elements) {
 			elog('Skipping unknown type:', element.type)
 		}
 	}.bind(this))
+
+	// Strip leading and trailing BRs
+	while (elements.length > 0 && elements[0].type === 'element' && elements[0].name === 'br') {
+		elements.shift()
+	}
+
+	
+	while (elements.length > 0 && elements[elements.length -1 ].type === 'element' && elements[elements.length -1].name === 'br') {
+		elements.pop()
+	}
 
 	return retVal;
 }
