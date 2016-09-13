@@ -89,11 +89,21 @@ function parse(buffer, stackCount) {
 		
 			if (buffer[0].value == '(') {
 				buffer.shift()
-				retVal.values.push(parse(buffer,stackCount+1))
+				var parentValue = retVal;
+				retVal = {
+					type:null,
+					values:[]
+				};
+				stack.push(retVal)
+				parentValue.values.push(retVal)
+				// retVal.values.push(parse(buffer,stackCount+1))
 			}
 			else if (buffer[0].value === ')') {
+				retVal = stack.pop()
 				buffer.shift()
-				break;
+				if (!retVal) {
+					break;
+				}
 			}
 			else if (bufferStartsWith(buffer,' or ') || bufferStartsWith(buffer,' and ')) {
 				
