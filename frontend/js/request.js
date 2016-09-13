@@ -87,7 +87,7 @@ Request.prototype.fireRequest = function (config, callback) {
 				err = xmlhttp.response;
 			}
 			else {
-				err = 'unknown ajax error'
+				err = 'unknown ajax error' + String(xmlhttp.status)
 			}
 
 			err += 'config = ' + JSON.stringify(config)
