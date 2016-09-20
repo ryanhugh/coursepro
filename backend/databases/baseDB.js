@@ -107,23 +107,40 @@ BaseDB.prototype.updateDatabase = function (newData, oldData, callback) {
 	//note, without the set, the entire row is overriden. with the set newData is copied on top of the old row.
 	//it should be without the $set
 	if (newData._id) {
-		this.table.update({
-			_id: newData._id
-		}, _.cloneDeep(newData), {}, function (err, numReplaced) {
+
+		async.retry({
+			times: 10,
+			internal: 5000,
+		}, function (callback) {
+			this.table.update({
+				_id: newData._id
+			}, _.cloneDeep(newData), {}, function (err, numReplaced) {
+				callback(err, numReplaced);
+			}.bind(this))
+		}.bind(this), function (err, numReplaced) {
+
 			if (err) {
-				console.log("ERROR", err);
+				elog(err);
 				return callback(err)
 			};
 			if (numReplaced.nModified !== 1) {
-				console.log('ERROR: updated !==1?', numReplaced.nModified, newData, numReplaced);
+				elog('ERROR: updated !==1?', numReplaced.nModified, newData, numReplaced);
 			};
 			callback(null, newData);
 		}.bind(this));
 	}
 	else {
-		this.table.insert(_.cloneDeep(newData), function (err, newDoc) {
+
+		async.retry({
+			times: 10,
+			internal: 5000,
+		}, function (callback) {
+			this.table.insert(_.cloneDeep(newData), function (err, newDoc) {
+				callback(err, newDoc);
+			}.bind(this))
+		}.bind(this), function (err, newDoc) {
 			if (err) {
-				console.log('error, nedb inserting error', err);
+				elog('error, nedb inserting error', err);
 				return callback(err);
 			}
 
