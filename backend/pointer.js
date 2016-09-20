@@ -174,7 +174,7 @@ var throtteling = {
 	'telaris.wlu.ca': queue(400),
 	'myswat.swarthmore.edu': queue(1000),
 	'bannerweb.upstate.edu': queue(200),
-	'wl11gp.neu.edu': queue(800)
+	'wl11gp.neu.edu': queue(2000)
 }
 
 var infinateQueue = queue();
