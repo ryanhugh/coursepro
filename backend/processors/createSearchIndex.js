@@ -85,7 +85,7 @@ CreateSearchIndex.prototype.go = function (queries, callback) {
 			if (!classLists[termHash].classHash[classHash]) {
 				elog('no class exists with same data?', classHash, section.url)
 				errorCount++;
-				return
+				return;
 			}
 
 			classLists[termHash].classHash[classHash].sections.push(section)

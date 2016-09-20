@@ -86,9 +86,9 @@ NotifyOnChanges.prototype.go = function (queries, callback) {
 
 			var hash = Keys.create(newClass, macros.LIST_CLASSES).getHash();
 
-			// This could fire if classes were removed/added during parsing, but should not fire too many times each parsing
 			if (!classHash[hash]) {
-				console.log("Dont have updated class in dump??", hash, newClass);
+				console.log("New class in NotifyOnChanges: ", hash);
+				return;
 			}
 
 			q.defer(function (callback) {
@@ -103,7 +103,8 @@ NotifyOnChanges.prototype.go = function (queries, callback) {
 
 			// This could fire if classes were removed/added during parsing, but should not fire too many times each parsing
 			if (!sectionHash[hash]) {
-				console.log("Dont have updated section in dump??", hash, newSection);
+				console.log("New section in NotifyOnChanges: ", hash);
+				return;
 			}
 
 			q.defer(function (callback) {
