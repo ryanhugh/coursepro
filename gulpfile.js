@@ -684,7 +684,7 @@ gulp.task('teeOutput', function () {
 
 	var fileName = path.join('scripts', argvToInclude.join('_').replace(/-/gi, '') + '_' + moment().format('MMMMD_hh.mm') + '.log')
 
-	process.stdout.setNoDelay(true)
+	// process.stdout.setNoDelay(true)
 
 	var access = fs.createWriteStream(fileName);
 	var _processOut = process.stdout.write.bind(process.stdout);
