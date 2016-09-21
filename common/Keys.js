@@ -302,7 +302,6 @@ Keys.prototype.propsEqual = function (other) {
 		}
 		return true;
 	}
-	elog()
 };
 
 

@@ -101,6 +101,18 @@ process.on('uncaughtException', function (err) {
 });
 
 
+// var gulp = require('gulp');
+var ts = require('gulp-typescript');
+ 
+gulp.task('ts', function () {
+    return gulp.src('backend/**/*.js')
+        .pipe(ts({
+            noImplicitAny: true,
+            out: 'output.js',
+            allowJs: true
+        }))
+});
+
 //this is not used now. 
 // This searches the html for used css rules and removes the ones it cant find
 // It can easily remove too many, especially when a angular/js is used to dynamically add classes

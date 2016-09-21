@@ -31,7 +31,6 @@ it('isUpdatingEntireTerm should work', function () {
 
 	expect(baseProcessor.isUpdatingEntireTerm([{
 		host: 'neu.edu',
-		host: 'neu.edu',
 		subject: 'neu.edu'
 	}])).toBe(false)
 
