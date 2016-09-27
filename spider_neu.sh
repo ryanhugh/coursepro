@@ -1,0 +1,1 @@
+node --max_old_space_size=4000 node_modules/gulp/bin/gulp.js spider -neu
