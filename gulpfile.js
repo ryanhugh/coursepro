@@ -102,9 +102,9 @@ process.on('uncaughtException', function (err) {
 
 
 // var gulp = require('gulp');
-var ts = require('gulp-typescript');
  
 gulp.task('ts', function () {
+	var ts = require('gulp-typescript');
     return gulp.src('backend/**/*.js')
         .pipe(ts({
             noImplicitAny: true,
