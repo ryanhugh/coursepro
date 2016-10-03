@@ -13,11 +13,11 @@ var database;
 
 if (macros.PRODUCTION || macros.DEVELOPMENT) {
 	if (macros.PRODUCTION) {
-		username = 'productionUser'
+		username = 'prod'
 		password = fs.readFileSync('/etc/coursepro/mongoDBProductionPassword').toString().trim();
 	}
 	else {
-		username = 'developmentOnly'
+		username = 'dev'
 		password = fs.readFileSync('/etc/coursepro/mongoDBDevelopmentPassword').toString().trim();
 	}
 

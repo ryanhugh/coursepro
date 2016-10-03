@@ -113,7 +113,7 @@ function Macros() {
 
 
 	//setup database ip and mongo db name
-	var databaseIp = '52.20.189.150'
+	var databaseIp = '52.1.52.224'
 
 
 	var databaseName = null;
