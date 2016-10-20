@@ -194,7 +194,7 @@ module.exports = new TermStartEndDate();
 
 if (require.main === module) {
 	module.exports.go([{
-		host: 'neu.edu'
+		host:'neu.edu'
 	}], function (err) {
 		console.log("DONE!", err);
 	}.bind(this))
