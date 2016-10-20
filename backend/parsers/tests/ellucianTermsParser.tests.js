@@ -48,19 +48,41 @@ it('should behave...', function (done) {
 			expect(pageData.deps[1].dbData.host).toBe('upstate.edu')
 			expect(pageData.deps[1].dbData.updatedByParent).toBe(true)
 			expect(pageData.deps[1].dbData.termId).toBe('201611')
-
-			// assert.deepEqual(pageData.dbData,{ url: url,
-			// 	terms:
-			// 	[ { id: '201610', text: 'Spring 2016' },
-			// 	{ id: '201580', text: 'Fall 2015' },
-			// 	{ id: '201550', text: 'Summer 2015' },
-			// 	{ id: '201510', text: 'Spring 2015' } ],
-			// 	host: 'upstate.edu' });
-
 			done()
 
 		});
 	});
+});
 
 
+
+it('should behave...', function (done) {
+
+	fs.readFile('backend/parsers/tests/data/ellucianTermsParser/2.html', 'utf8', function (err, body) {
+		expect(err).toBe(null);
+
+		pointer.handleRequestResponce(body, function (err, dom) {
+			expect(err).toBe(null);
+
+			var url = 'https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched';
+
+			var pageData = PageData.create({
+				dbData: {
+					url: url
+				}
+			});
+
+			ellucianTermsParser.parseDOM(pageData, dom);
+
+
+			expect(true).toBe(ellucianTermsParser.supportsPage(url));
+
+			expect(pageData.deps.length).toBe(21);
+			expect(pageData.deps[1].dbData.text).toBe('Spring 2017 Semester')
+			expect(pageData.deps[1].dbData.host).toBe('neu.edu/law')
+
+
+			done()
+		});
+	});
 });
