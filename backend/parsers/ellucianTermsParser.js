@@ -207,7 +207,7 @@ EllucianTermsParser.prototype.onEndParsing = function (pageData, dom) {
 
 
 EllucianTermsParser.prototype.shouldParseEntry = function(entry) {
-	if (entry.name == 'p_term' || entry.name == 'cat_term_in' || (entry.alts && entry.alts.length > 10)){
+	if (entry.name == 'p_term'){
 		return true;
 	}
 	else {
