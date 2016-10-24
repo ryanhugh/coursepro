@@ -134,7 +134,7 @@ def main():
 			print ' -> ',line['body']['classCount'],
 			
 			
-		if line['method'] not in ['GET','POST']:
+		if line['method'] not in ['GET','POST'] and not 'ryanhugh.github.io' in line['body']['url']:
 			print '',line['method'],'Request',
 			if 'userAgent' in line and line['userAgent']:
 				print ' -> ',line['userAgent'][:70],
