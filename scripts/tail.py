@@ -58,6 +58,10 @@ def main():
 	if not line:
 		return
 	
+	# print line
+	if line['method'] not in ['GET','POST'] and 'ryanhugh.github.io' in line['referer']:
+		return;
+	
 	if line['method'] =='POST' and 'userId' in line['body']:
 	
 		line['body']['userId']=re.sub(r'[\W_]', '',line['body']['userId'])[0:5]
@@ -134,7 +138,7 @@ def main():
 			print ' -> ',line['body']['classCount'],
 			
 			
-		if line['method'] not in ['GET','POST'] and not 'ryanhugh.github.io' in line['body']['url']:
+		if line['method'] not in ['GET','POST']:
 			print '',line['method'],'Request',
 			if 'userAgent' in line and line['userAgent']:
 				print ' -> ',line['userAgent'][:70],
