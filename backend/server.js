@@ -971,6 +971,16 @@ app.options('/sharePrinter', function (req, res) {
 
 }.bind(this))
 
+app.options('/log', function (req, res) {
+	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+	res.send(JSON.stringify({
+		status: 'success',
+	}));
+
+}.bind(this))
+
 app.post('/log', function (req, res) {
 	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
 	res.setHeader('Access-Control-Allow-Origin', '*');
