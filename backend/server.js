@@ -26,6 +26,8 @@ var sectionsDB = require('./databases/sectionsDB');
 var usersDB = require('./databases/usersDB');
 var dbUpdater = require('./databases/updater')
 
+var printer = require('./printer')
+
 var dns;
 if (macros.UNIT_TESTS) {
 	dns = require('./tests/mockDns')
@@ -550,82 +552,82 @@ app.post('/registerForEmails', function (req, res) {
 
 function unsubscribe(body, callback) {
 	if (body.crn) {
-		console.log('no support for unsubscribing from individual sections rn ',body);
+		console.log('no support for unsubscribing from individual sections rn ', body);
 		return callback(JSON.stringify({
 			error: 'no support for unsubscribing from individual sections rn'
 		}));
 	}
-	
-	
-	var keys = Keys.create(body,macros.LIST_CLASSES);
+
+
+	var keys = Keys.create(body, macros.LIST_CLASSES);
 	if (!keys.isValid() || !body.unsubscribeKey) {
-		console.log('couldn"t unsubscribe, given invalid body... ',body);
-			return callback(JSON.stringify({
-				error: 'invalid json, need host, termId, subject, classUid, unsubscribeKey'
-			}));
+		console.log('couldn"t unsubscribe, given invalid body... ', body);
+		return callback(JSON.stringify({
+			error: 'invalid json, need host, termId, subject, classUid, unsubscribeKey'
+		}));
 	}
-	
+
 	var obj = keys.getObj();
-	
+
 	var q = queue();
-	
+
 	var classMongoIds = [];
 	var sectionMongoIds = []
-	
-	q.defer(function(callback){
+
+	q.defer(function (callback) {
 		classesDB.find(obj, {
-				shouldBeOnlyOne: true
-			}, function (err, aClass) {
-				if (err) {
-					return callback(err);
-				}
-				classMongoIds.push(aClass._id)
-				callback()
-			}.bind(this))
+			shouldBeOnlyOne: true
+		}, function (err, aClass) {
+			if (err) {
+				return callback(err);
+			}
+			classMongoIds.push(aClass._id)
+			callback()
+		}.bind(this))
 	}.bind(this))
-	
-	q.defer(function(callback){
+
+	q.defer(function (callback) {
 		sectionsDB.find(obj, {
 			shouldBeOnlyOne: false
 		}, function (err, sections) {
 			if (err) {
 				return callback(err)
 			}
-			
-			sections.forEach(function(section){
+
+			sections.forEach(function (section) {
 				sectionMongoIds.push(section._id)
 			}.bind(this))
 			callback()
 		}.bind(this))
 	}.bind(this))
-	
-	
-	q.awaitAll(function(err){
+
+
+	q.awaitAll(function (err) {
 		if (err) {
 			console.log('couldn"t unsubscribe... ', body, err);
 			return callback(JSON.stringify({
 				error: 'internal error'
 			}));
 		}
-		
+
 		var query = {
 			unsubscribeKey: body.unsubscribeKey
 		}
-		
-		
-		usersDB.removeIdsFromLists(macros.WATCHING_LIST, classMongoIds, sectionMongoIds, query, function(err) {
+
+
+		usersDB.removeIdsFromLists(macros.WATCHING_LIST, classMongoIds, sectionMongoIds, query, function (err) {
 			if (err) {
 				console.log('couldn"t unsubscribe... ', body, err);
 				return callback(JSON.stringify({
 					error: 'internal error'
 				}));
 			}
-			
+
 			return callback(JSON.stringify({
 				status: 'success'
 			}));
-				
-			
+
+
 		}.bind(this))
 	}.bind(this))
 }
@@ -808,9 +810,9 @@ app.post('/removeFromUserLists', function (req, res) {
 			}));
 			return;
 		};
-		
+
 		var query = {
-			loginKey:req.body.loginKey
+			loginKey: req.body.loginKey
 		}
 
 		//register for the class
@@ -902,13 +904,87 @@ app.post('/setUserVar', function (req, res) {
 		}));
 
 	}.bind(this))
+}.bind(this))
+
+app.post('/sharePrinter', function (req, res) {
+	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
+	res.setHeader('Access-Control-Allow-Origin', '*');
+
+	if (!req.body.email) {
+		console.log("nope", req.body);
+		res.send(JSON.stringify({
+			status: 'error',
+		}));
+		return;
+	}
+
+	if (typeof req.body.email != 'string') {
+		console.log("type is not a string, not sharing", req.body.email);
+		res.send(JSON.stringify({
+			status: 'error',
+		}));
+		return;
+	}
 
 
+	if (req.body.email.length > 50) {
+		console.log("email over 50 char, not sharing", req.body.email.slice(0, 50));
+		res.send(JSON.stringify({
+			status: 'error',
+		}));
+		return;
+	}
+
+	if (_(req.body.email).includes('@')) {
+		console.log("email includes @, not sharing", req.body.email);
+		res.send(JSON.stringify({
+			status: 'error',
+		}));
+		return;
+	}
+
+
+	printer.go(req.body.email, function (err) {
+		if (err) {
+			elog(err)
+			res.send(JSON.stringify({
+				status: 'error',
+			}));
+			return;
+		}
+		else {
+			res.send(JSON.stringify({
+				status: 'success',
+			}));
+		}
+	}.bind(this))
+}.bind(this))
+
+
+app.options('/sharePrinter', function (req, res) {
+	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+	res.send(JSON.stringify({
+		status: 'success',
+	}));
+
+}.bind(this))
+
+app.options('/log', function (req, res) {
+	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+	res.send(JSON.stringify({
+		status: 'success',
+	}));
 
 }.bind(this))
 
 app.post('/log', function (req, res) {
 	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 	res.send(JSON.stringify({
 		status: 'success'
 	}));

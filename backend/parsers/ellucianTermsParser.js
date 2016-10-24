@@ -95,7 +95,7 @@ EllucianTermsParser.prototype.onEndParsing = function (pageData, dom) {
 
 		//record all the terms and their id's
 		singleRequestPayload.forEach(function (payloadVar) {
-			if (payloadVar.name == 'p_term') {
+			if (this.shouldParseEntry(payloadVar)) {
 				terms.push({
 					id: payloadVar.value,
 					text: payloadVar.text
@@ -206,6 +206,15 @@ EllucianTermsParser.prototype.onEndParsing = function (pageData, dom) {
 };
 
 
+EllucianTermsParser.prototype.shouldParseEntry = function(entry) {
+	if (entry.name == 'p_term'){
+		return true;
+	}
+	else {
+		return false;
+	}
+};
+
 
 
 //step 1, select the terms
@@ -214,7 +223,7 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL, dom) {
 	var parsedForm = this.parseForm(startingURL, dom);
 
 	if (!parsedForm) {
-		console.log('default form data failed');
+		elog('default form data failed');
 		return;
 	}
 
@@ -225,7 +234,10 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL, dom) {
 	var termEntry;
 	var otherEntries = [];
 	defaultFormData.forEach(function (entry) {
-		if (entry.name == 'p_term') {
+		if (this.shouldParseEntry(entry)) {
+			if (termEntry) {
+				elog("Already and entry???", termEntry)
+			}
 			termEntry = entry;
 		}
 		else {
@@ -233,14 +245,16 @@ EllucianTermsParser.prototype.parseTermsPage = function (startingURL, dom) {
 		}
 	}.bind(this));
 
+	if (!termEntry) {
+		elog('Could not find an entry!', startingURL, JSON.stringify(parsedForm));
+		return;
+	}
 
-
-
-	var requestsData = [];
+	var requestsData = []; 
 
 	//setup an indidual request for each valid entry on the form - includes the term entry and all other other entries
 	termEntry.alts.forEach(function (entry) {
-		if (entry.name != 'p_term') {
+		if (!this.shouldParseEntry(entry)) {
 			console.log('ERROR: entry was alt of term entry but not same name?', entry);
 			return;
 		}
