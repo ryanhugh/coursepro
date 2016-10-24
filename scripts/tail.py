@@ -49,7 +49,7 @@ def getTimeString(timeStamp):
 
 def shouldIgnoreReferrer(currRef):
 
-	if re.match('https?://(?:\w+.)?coursepro.io/',currRef):
+	if re.match('https?://(?:\w+.)?coursepro.io/',currRef) or 'ryanhugh.github.io' in currRef:
 		return True
 	return False
 
@@ -107,6 +107,11 @@ def main():
 
 	if 'type' in line['body'] and line['body']['type']=='addToList':
 		print 'saved classes Old Classes:'+str(line['body']['initClassCount']),'Sections:',str(line['body']['initSectionCount']),'New Classes:',str(line['body']['finalClassCount']),'Sections: ',str(line['body']['finalSectionCount']),
+		
+	if 'type' in line['body'] and line['body']['type'] == 'employee_search':
+		print 'Employee search: ',line['body']['value'], line['body']['count']
+		return
+		
 		
 	print ' ',
 	
