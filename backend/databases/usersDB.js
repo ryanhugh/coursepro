@@ -450,8 +450,6 @@ UsersDB.prototype.authenticateUser = function (idToken, callback) {
 
 UsersDB.prototype.getUsersWatchCache = memoize(function (callback) {
 
-	console.log("Generating the user watch cache");
-
 	this.find({}, {
 		skipValidation: true,
 		shouldBeOnlyOne: false
