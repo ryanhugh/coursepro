@@ -319,7 +319,7 @@ Search.prototype.go = function () {
 	q.awaitAll(function (err) {
 		if (err) {
 			elog(err);
-			return callback(err)
+			return;
 		}
 
 		this.startLoggingTimer();
