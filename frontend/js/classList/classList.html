@@ -42,6 +42,10 @@
     margin-left: -3px;
     margin-right: 3px;
 }
+
+.panel-body {
+    padding: 0px;
+}
 </style>
 
 
@@ -67,7 +71,7 @@
                         <!-- stop event propagation outside the icons -->
                         <span ng-click="$event.stopPropagation()">
 
-                            <span list-icon='{{macros.SAVED_LIST}}' toggle="class" class="rightIcon"></span>
+                            <!-- <span list-icon='{{macros.SAVED_LIST}}' toggle="class" class="rightIcon"></span> -->
                             <!-- <span list-icon='{{macros.WATCHING_LIST}}' toggle="class" class="rightIcon"></span> -->
 
                             <!-- link icon -->
@@ -94,7 +98,7 @@
 
                 </uib-accordion-heading>
 
-                <div>
+                <div style="padding:15px;">
 
                     {{class.desc}}
                     <div style="display: inline-block;float: right;padding-right: 6px;padding-top: 9px" ng-if="class.maxCredits !== undefined || class.minCredits !== undefined">
@@ -116,7 +120,7 @@
                 </div>
 
 
-                <div style="padding-top:5px" ng-if="::class.getLastUpdateString()">Updated {{::class.getLastUpdateString()}}</div>
+                <div style="padding:5px 0px 15px 15px" ng-if="::class.getLastUpdateString()">Updated {{::class.getLastUpdateString()}}</div>
 
 
                 <table class="table table-striped" ng-if="class.sections.length>0" style="margin-bottom:0">
@@ -147,7 +151,7 @@
                             <th>Link</th>
                             <!-- <th>Email
                         <br>Notifications</th> -->
-                            <th>Saved</th>
+                            <!-- <th>Saved</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -225,9 +229,9 @@
                         <span list-icon='{{macros.WATCHING_LIST}}' toggle="section"></span>
                     </td> -->
 
-                            <td>
+                            <!--     <td>
                                 <span list-icon='{{macros.SAVED_LIST}}' toggle="section" style="padding-left: 11px;"></span>
-                            </td>
+                            </td> -->
                         </tr>
                     </tbody>
                 </table>
