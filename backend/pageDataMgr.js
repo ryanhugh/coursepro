@@ -17,6 +17,7 @@ var processors = [
 	require('./processors/termSearchHints'),
 
 	// Add new processors here
+	require('./processors/simplifyProfList'),
 	require('./processors/notifyOnChanges'),
 	require('./processors/databaseDumps'),
 	require('./processors/createSearchIndex')
