@@ -233,15 +233,44 @@ Search.prototype.loadSearchIndex = memoize(function (callback) {
 
 		var searchIndex = elasticlunr.Index.load(result);
 
-		// Todo: optimize this and hopefully move it server side
-		var searchConfig = {}
-		searchIndex.getFields().forEach(function (field) {
-			searchConfig[field] = {
-				boost: 1,
-				bool: "OR",
-				expand: false
-			};
-		});
+		var searchConfig = {
+			"desc": {
+				"boost": 1,
+				"bool": "OR",
+				"expand": false
+			},
+			"name": {
+				"boost": 1,
+				"bool": "OR",
+				"expand": true
+			},
+			"classId": {
+				"boost": 1,
+				"bool": "OR",
+				"expand": true
+			},
+			"subject": {
+				"boost": 1,
+				"bool": "OR",
+				"expand": true
+			},
+			"profs": {
+				"boost": 1,
+				"bool": "OR",
+				"expand": true
+			},
+			"locations": {
+				"boost": 1,
+				"bool": "OR",
+				"expand": true
+			},
+			"crns": {
+				"boost": 1,
+				"bool": "OR",
+				"expand": false
+			},
+			expand: true
+		}
 
 
 		return callback(null, searchIndex, searchConfig)
