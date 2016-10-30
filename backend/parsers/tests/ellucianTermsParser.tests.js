@@ -56,7 +56,7 @@ it('should behave...', function (done) {
 
 
 
-fit('should behave...', function (done) {
+it('should behave...', function (done) {
 
 	fs.readFile('backend/parsers/tests/data/ellucianTermsParser/2.html', 'utf8', function (err, body) {
 		expect(err).toBe(null);

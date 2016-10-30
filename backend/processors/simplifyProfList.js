@@ -52,7 +52,9 @@ SimplifyProfList.prototype.go = function (queries, callback) {
 					}
 
 					// Keep a reference to the full list of professors
-					meeting.allProfs = meeting.profs.slice(0)
+					if (!meeting.allProfs) {
+						meeting.allProfs = meeting.profs.slice(0)
+					}
 
 					meeting.profs.forEach(function (prof) {
 						if (!_(thisSectionProfs).includes(prof)) {
@@ -157,7 +159,7 @@ module.exports = new SimplifyProfList();
 
 if (require.main === module) {
 	module.exports.go([{
-		host: 'neu.edu',
+		// host: 'neu.edu',
 		// termId: "201710",
 		// subject: 'PHYS',
 		// classUid: '1161_1407358072'
