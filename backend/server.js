@@ -432,7 +432,7 @@ app.post(macros.LIST_CLASSES, function (req, res) {
 
 app.post(macros.LIST_SECTIONS, function (req, res) {
 
-	var keys = Keys.create(req.body, macros.LIST_SECTIONS).toObj()
+	var keys = Keys.create(req.body, macros.LIST_SECTIONS)
 
 	if (!keys.isValid()) {
 		console.log('error, no host or termId or subject or classId given body:');
