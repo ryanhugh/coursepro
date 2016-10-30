@@ -435,9 +435,9 @@ app.post(macros.LIST_SECTIONS, function (req, res) {
 	var keys = Keys.create(req.body, macros.LIST_SECTIONS)
 
 	if (!keys.isValid()) {
-		console.log('error, no host or termId or subject or classId given body:');
+		console.log('error, no host or termId or subject or classUid given body:');
 		console.log(req.body)
-		res.send('{"error":"no host or termId or subject or classId given (expected JSON)"}')
+		res.send('{"error":"no host or termId or subject or classUid given (expected JSON)"}')
 		return;
 	};
 
