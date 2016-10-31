@@ -535,7 +535,12 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 
 	this.finish()
 
-	return retVal
+	if (retVal.values.length === 0) {
+		return;
+	}
+	else {
+		return retVal
+	}
 };
 
 
