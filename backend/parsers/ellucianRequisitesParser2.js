@@ -133,9 +133,9 @@ EllucianRequisitesParser.prototype.logError = function (message) {
 	// Log to elog with url from this.pageData, divider, currFrame, a a good way to display the next 10 or so char from the buffer
 
 	var message = [];
-	for (var i = 0; i < Math.min(this.buffer.length,10); i++) {
+	for (var i = 0; i < Math.min(this.buffer.length, 10); i++) {
 		var bufferItem = this.buffer[i]
-		if (bufferItem.type ==='char') {
+		if (bufferItem.type === 'char') {
 			message.push(bufferItem.value)
 		}
 		else if (bufferItem.type == 'element') {
@@ -289,7 +289,10 @@ EllucianRequisitesParser.prototype.parseString = function () {
 		this.buffer.shift()
 	}
 	if (classInfo) {
-		this.currFrame.values.push(classInfo)
+		this.currFrame.values.push({
+			classId: classInfo.classId,
+			subject: classInfo.subject
+		})
 	}
 	else {
 		var text = retVal.join('').trim()
@@ -519,6 +522,11 @@ EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData,
 	this.init(pageData)
 
 	var elements = this.findRequisitesSection(classDetails, sectionName)
+
+	if (elements.length === 0) {
+		this.finish();
+		return;
+	}
 
 	this.buffer = this.convertElementListToWideMode(elements)
 
