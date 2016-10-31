@@ -10,6 +10,7 @@ var sectionDB = require('../databases/sectionsDB');
 var pointer = require('../pointer');
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 var ellucianRequisitesParser = require('./ellucianRequisitesParser');
+var ellucianRequisitesParser2 = require('./ellucianRequisitesParser2');
 
 //700+ college sites use this poor interface for their registration
 //good thing tho, is that it is easily scrapeable and does not require login to access seats avalible
@@ -100,7 +101,17 @@ EllucianSectionParser.prototype.parseElement = function (pageData, element) {
 		if (coreqs) {
 			pageData.setParentData('coreqs', coreqs);
 		}
-
+		
+		//find co and pre reqs and restrictions
+		var prereqs2 = ellucianRequisitesParser2.parseRequirementSection(pageData, element.children, 'prerequisites');
+		if (!_.isEqual(prereqs, prereqs2)) {
+			console.log("WARNING: prereqs parsed by the new parser are not equal", JSON.stringify(prereqs, null, 4), JSON.stringify(prereqs2, null, 4))
+		}
+	
+		var coreqs2 = ellucianRequisitesParser2.parseRequirementSection(pageData, element.children, 'corequisites');
+		if (!_.isEqual(coreqs, coreqs2)) {
+			console.log("WARNING: coreqs parsed by the new parser are not equal", JSON.stringify(coreqs, null, 4), JSON.stringify(coreqs2, null, 4))
+		}
 
 
 		//grab credits

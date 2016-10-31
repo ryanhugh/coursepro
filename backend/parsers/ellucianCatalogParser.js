@@ -44,7 +44,7 @@ EllucianCatalogParser.prototype.parseClass = function (pageData, element) {
 	if (!catalogURLQuery.crse_numb_in) {
 		console.log('error could not find Current courseId??', catalogURLQuery, pageData.dbData.url)
 		return;
-	};
+	}
 
 
 	var depData = {
