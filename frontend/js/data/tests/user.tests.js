@@ -108,15 +108,17 @@ describe('user', function () {
 
 
 	fit('should behave...', function (done) {
+		var d = window.setTimeout;
 		jasmine.clock().install();
         jasmine.clock().mockDate(new Date('2016-8-8'));
-		
+		window.setTimeout = d;
+
 		user.setValue(macros.LAST_SELECTED_COLLEGE, 'neu.edu');
 		user.guessTerm(function (err, term) {
 			expect(term).toBe('201710')
 			
 			jasmine.clock().uninstall();
 			done()
-		}.bind(this))
+		}.bind(this)) 
 	});
 });

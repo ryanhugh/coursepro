@@ -35,8 +35,8 @@ var mockData = {
 	'listClasses': mockClassData,
 	'listSections': mockSectionData,
 	'getSearchIndex': mockSearchIndex,
-	'getCurrentCollege':[{
-		'host':'neu.edu'
+	'getCurrentCollege': [{
+		'host': 'neu.edu'
 	}]
 }
 
