@@ -415,9 +415,9 @@ User.prototype.guessTerm = function (callback) {
 			var endDate = moment((parseInt(term.endDate) + 1) * 24 * 60 * 60 * 1000);
 
 			// If the endDate of the semester is in less than 45 days, skip
-			if (endDate.clone().subtract(45, 'days').diff(moment()) < 0) {
+			if (endDate.clone().subtract(45, 'days').diff(moment(new Date())) < 0) {
 				return;
-			}
+			} 
 
 			//Less than 80 days in this term, remove summer classes and other short terms
 			if (endDate.diff(startDate, 'days') < 80) {

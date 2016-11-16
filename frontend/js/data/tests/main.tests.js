@@ -34,7 +34,10 @@ var mockData = {
 	'listSubjects': mockSubjectData,
 	'listClasses': mockClassData,
 	'listSections': mockSectionData,
-	'getSearchIndex': mockSearchIndex
+	'getSearchIndex': mockSearchIndex,
+	'getCurrentCollege':[{
+		'host':'neu.edu'
+	}]
 }
 
 window.elog = console.error.bind(console);
