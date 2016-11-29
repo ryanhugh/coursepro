@@ -103,8 +103,9 @@ app.use('/', le.middleware());
 
 
 // Check in-memory cache of certificates for the named domain
-le.check({ domains: ['coursepro.io'] }).then(function(results) {
+le.check({ domains: ['coursepro.io', 'www.coursepro.io'] }).then(function(results) {
     if (results) {
+    	console.log("CErts:", results)
         // we already have certificates
         return;
     }
@@ -114,7 +115,7 @@ le.check({ domains: ['coursepro.io'] }).then(function(results) {
     le.register({
 
         // CHANGE TO YOUR DOMAIN (list for SANS)
-        domains: ['coursepro.io'],
+        domains: ['coursepro.io', 'www.coursepro.io'],
 
         // CHANGE TO YOUR EMAIL
         email: 'ryanhughes624@gmail.com',
