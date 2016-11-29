@@ -1161,12 +1161,12 @@ getCert(function(err, results) {
     console.log(typeof results.chain)
     console.log('HERE')
     console.log(typeof results.cert)
-    console.log(String(results.chain) + '\n' + String(results.cert))
+    console.log(String(results.chain) + String(results.cert))
 
 
     var credentials = {
         key: results.privkey,
-        cert: String(results.chain) + '\n' + String(results.cert)
+        cert: String(results.chain) + String(results.cert)
     };
     var server = https.createServer(credentials, app);
     if (macros.UNIT_TESTS) {
