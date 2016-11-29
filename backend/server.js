@@ -96,55 +96,55 @@ le = LE.create({
 
 // If using express you should use the middleware
 app.use('/', le.middleware());
-//
-// Otherwise you should see the test file for usage of this:
-// le.challenges['http-01'].get(opts.domain, key, val, done)
 
 
+function getCert(callback) {
 
-// Check in-memory cache of certificates for the named domain
-le.check({ domains: ['coursepro.io', 'www.coursepro.io'] }).then(function(results) {
-    if (results) {
-    	console.log("CErts:", results)
-        // we already have certificates
-        return;
-    }
+    // Check in-memory cache of certificates for the named domain
+    le.check({ domains: ['coursepro.io', 'www.coursepro.io'] }).then(function(results) {
+        if (results) {
+            // we already have certificates
+            return callback(null, results);
+        }
 
 
-    // Register Certificate manually
-    le.register({
+        // Register Certificate manually
+        le.register({
 
-        // CHANGE TO YOUR DOMAIN (list for SANS)
-        domains: ['coursepro.io', 'www.coursepro.io'],
+            // CHANGE TO YOUR DOMAIN (list for SANS)
+            domains: ['coursepro.io', 'www.coursepro.io'],
 
-        // CHANGE TO YOUR EMAIL
-        email: 'ryanhughes624@gmail.com',
+            // CHANGE TO YOUR EMAIL
+            email: 'ryanhughes624@gmail.com',
 
-        // set to tosUrl string (or true) to pre-approve (and skip agreeToTerms)
-        agreeTos: 'true',
+            // set to tosUrl string (or true) to pre-approve (and skip agreeToTerms)
+            agreeTos: 'true',
 
-        // 2048 or higher
-        rsaKeySize: 2048,
+            // 2048 or higher
+            rsaKeySize: 2048,
 
-        // http-01, tls-sni-01, or dns-01
-        challengeType: 'http-01'
+            // http-01, tls-sni-01, or dns-01
+            challengeType: 'http-01'
 
-    }).then(function(results) {
+        }).then(function(results) {
 
-        console.log('success');
+            console.log('success');
 
-    }, function(err) {
+            return callback(null, results);
 
-        // Note: you must either use le.middleware() with express,
-        // manually use le.challenges['http-01'].get(opts, domain, key, val, done)
-        // or have a webserver running and responding
-        // to /.well-known/acme-challenge at `webrootPath`
-        console.error('[Error]: node-letsencrypt/examples/standalone');
-        console.error(err.stack);
+        }, function(err) {
 
+            // Note: you must either use le.middleware() with express,
+            // manually use le.challenges['http-01'].get(opts, domain, key, val, done)
+            // or have a webserver running and responding
+            // to /.well-known/acme-challenge at `webrootPath`
+            console.error('[Error]: node-letsencrypt/examples/standalone');
+            console.error(err.stack);
+
+            return callback('error with letsencrypt');
+        });
     });
-
-});
+}
 
 
 
@@ -1150,35 +1150,15 @@ if (macros.UNIT_TESTS) {
 }
 
 
-//https
-async.parallel([
-        function(callback) {
-            fs.readFile('/etc/coursepro/privateKey.pem', 'utf8', function(err, data) {
-                if (err) {
-                    console.log('ERROR reading private key for https', err);
-                    return callback(err);
-                }
-                return callback(null, data);
-            });
-        },
-        function(callback) {
-            fs.readFile('/etc/coursepro/publicKey.crt', 'utf8', function(err, data) {
-                if (err) {
-                    console.log('ERROR reading public cert for https', err);
-                    return callback(err);
-                }
-                return callback(null, data);
-            });
-        }
-    ],
+getCert(function(results) {
     function(err, results) {
         if (err) {
             elog(err)
             return;
         }
         var credentials = {
-            key: results[0],
-            cert: results[1]
+            key: results.privkey,
+            cert: results.cert
         };
         var server = https.createServer(credentials, app);
         if (macros.UNIT_TESTS) {
@@ -1204,5 +1184,27 @@ async.parallel([
             }
             global.expressHttpsServer = server.listen(443);
         }
+    }
+})
 
-    })
+// //https
+// async.parallel([
+//     function(callback) {
+//         fs.readFile('/etc/coursepro/privateKey.pem', 'utf8', function(err, data) {
+//             if (err) {
+//                 console.log('ERROR reading private key for https', err);
+//                 return callback(err);
+//             }
+//             return callback(null, data);
+//         });
+//     },
+//     function(callback) {
+//         fs.readFile('/etc/coursepro/publicKey.crt', 'utf8', function(err, data) {
+//             if (err) {
+//                 console.log('ERROR reading public cert for https', err);
+//                 return callback(err);
+//             }
+//             return callback(null, data);
+//         });
+//     }
+// ], )
