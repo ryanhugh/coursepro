@@ -90,7 +90,10 @@ le = LE.create({
     debug: false,
 
     // handles debug outputs
-    log: function(debug) { console.log.apply(console, arguments); }
+    // if debugging the cert it might be helpful to enable this
+    // log: function(debug) { 
+    // 	console.log.apply(console, arguments);
+    // 	 }
 });
 
 
@@ -99,9 +102,9 @@ app.use('/', le.middleware());
 
 
 function getCert(callback) {
-	if (!macros.PRODUCTION) {
-		return callback('not running in PROD so will not request cert')
-	}
+    if (!macros.PRODUCTION) {
+        return callback('not running in PROD so will not request cert')
+    }
 
     // Check in-memory cache of certificates for the named domain
     le.check({ domains: ['coursepro.io', 'www.coursepro.io'] }).then(function(results) {
@@ -1158,15 +1161,12 @@ getCert(function(err, results) {
         elog(err)
         return;
     }
-    console.log(typeof results.chain)
-    console.log('HERE')
-    console.log(typeof results.cert)
-    console.log(String(results.cert) + String(results.chain))
-
 
     var credentials = {
         key: results.privkey,
-        cert: String(results.cert) + String(results.chain)
+
+        // Cert must be first here or else the createServer call will fail
+        cert: results.cert + results.chain
     };
     var server = https.createServer(credentials, app);
     if (macros.UNIT_TESTS) {
