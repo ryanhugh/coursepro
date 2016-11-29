@@ -1150,40 +1150,38 @@ if (macros.UNIT_TESTS) {
 }
 
 
-getCert(function(results) {
-    function(err, results) {
-        if (err) {
-            elog(err)
-            return;
-        }
-        var credentials = {
-            key: results.privkey,
-            cert: results.cert
-        };
-        var server = https.createServer(credentials, app);
-        if (macros.UNIT_TESTS) {
+getCert(function(err, results) {
+    if (err) {
+        elog(err)
+        return;
+    }
+    var credentials = {
+        key: results.privkey,
+        cert: results.cert
+    };
+    var server = https.createServer(credentials, app);
+    if (macros.UNIT_TESTS) {
 
-            var q = queue();
+        var q = queue();
 
-            // close the old server, if one existed
-            if (global.expressHttpsServer) {
-                q.defer(function(callback) {
-                    global.expressHttpsServer.close(callback)
-                }.bind(this))
-            }
-            q.awaitAll(function(err) {
-                if (err) {
-                    elog(err);
-                }
-                global.expressHttpsServer = server.listen(8443);
+        // close the old server, if one existed
+        if (global.expressHttpsServer) {
+            q.defer(function(callback) {
+                global.expressHttpsServer.close(callback)
             }.bind(this))
-
-        } else {
-            if (global.expressHttpsServer) {
-                elog('already running a https server???')
-            }
-            global.expressHttpsServer = server.listen(443);
         }
+        q.awaitAll(function(err) {
+            if (err) {
+                elog(err);
+            }
+            global.expressHttpsServer = server.listen(8443);
+        }.bind(this))
+
+    } else {
+        if (global.expressHttpsServer) {
+            elog('already running a https server???')
+        }
+        global.expressHttpsServer = server.listen(443);
     }
 })
 
