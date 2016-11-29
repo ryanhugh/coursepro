@@ -1149,7 +1149,7 @@ if (macros.UNIT_TESTS) {
     global.expressHttpServer = app.listen(80);
 }
 
-
+//https
 getCert(function(err, results) {
     if (err) {
         elog(err)
@@ -1157,7 +1157,7 @@ getCert(function(err, results) {
     }
     var credentials = {
         key: results.privkey,
-        cert: results.cert
+        cert: results.chain + '\n' + results.cert
     };
     var server = https.createServer(credentials, app);
     if (macros.UNIT_TESTS) {
@@ -1184,25 +1184,3 @@ getCert(function(err, results) {
         global.expressHttpsServer = server.listen(443);
     }
 })
-
-// //https
-// async.parallel([
-//     function(callback) {
-//         fs.readFile('/etc/coursepro/privateKey.pem', 'utf8', function(err, data) {
-//             if (err) {
-//                 console.log('ERROR reading private key for https', err);
-//                 return callback(err);
-//             }
-//             return callback(null, data);
-//         });
-//     },
-//     function(callback) {
-//         fs.readFile('/etc/coursepro/publicKey.crt', 'utf8', function(err, data) {
-//             if (err) {
-//                 console.log('ERROR reading public cert for https', err);
-//                 return callback(err);
-//             }
-//             return callback(null, data);
-//         });
-//     }
-// ], )
