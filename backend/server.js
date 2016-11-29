@@ -99,6 +99,9 @@ app.use('/', le.middleware());
 
 
 function getCert(callback) {
+	if (!macros.PRODUCTION) {
+		return callback('not running in PROD so will not request cert')
+	}
 
     // Check in-memory cache of certificates for the named domain
     le.check({ domains: ['coursepro.io', 'www.coursepro.io'] }).then(function(results) {
@@ -1155,6 +1158,12 @@ getCert(function(err, results) {
         elog(err)
         return;
     }
+    console.log(typeof results.chain)
+    console.log('HERE')
+    console.log(typeof results.cert)
+    console.log(String(results.chain) + '\n' + String(results.cert))
+
+
     var credentials = {
         key: results.privkey,
         cert: results.chain + '\n' + results.cert
