@@ -1166,7 +1166,7 @@ getCert(function(err, results) {
 
     var credentials = {
         key: results.privkey,
-        cert: results.chain + '\n' + results.cert
+        cert: String(results.chain) + '\n' + String(results.cert)
     };
     var server = https.createServer(credentials, app);
     if (macros.UNIT_TESTS) {
