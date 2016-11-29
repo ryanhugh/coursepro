@@ -74,7 +74,7 @@ function leAgree(opts, agreeCb) {
 
 le = LE.create({
     // or LE.productionServerUrl
-    server: LE.stagingServerUrl,
+    server: LE.productionServerUrl,
 
     // handles saving of config, accounts, and certificates
     store: leStore,
