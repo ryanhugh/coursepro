@@ -118,7 +118,7 @@ function getCert(callback) {
         le.register({
 
             // CHANGE TO YOUR DOMAIN (list for SANS)
-            domains: ['coursepro.io', 'www.coursepro.io'],
+            domains: ['www.coursepro.io', 'coursepro.io'],
 
             // CHANGE TO YOUR EMAIL
             email: 'ryanhughes624@gmail.com',
