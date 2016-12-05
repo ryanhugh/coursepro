@@ -107,18 +107,41 @@ describe('user', function () {
 	});
 
 
-	fit('should behave...', function (done) {
-		var d = window.setTimeout;
-		jasmine.clock().install();
-        jasmine.clock().mockDate(new Date('2016-8-8'));
-		window.setTimeout = d;
+	fit('the picked date should be fall 2016 when date is set to aug 2016', function (done) {
+
+		var globalDate = Date;
+		window.Date = function () {
+			switch (arguments.length) {
+				case 0:
+
+					// Phantoms js does not support creating dates in the format yyyy-mm-dd
+					return new globalDate('2016-08-08T04:00:00.000Z');
+				case 1:
+					return new globalDate(arguments[0]);
+				case 2:
+					return new globalDate(arguments[0], arguments[1]);
+				case 3:
+					return new globalDate(arguments[0], arguments[1], arguments[2]);
+				case 4:
+					return new globalDate(arguments[0], arguments[1], arguments[2], arguments[3]);
+				case 5:
+					return new globalDate(arguments[0], arguments[1], arguments[2], arguments[3],
+						arguments[4]);
+				case 6:
+					return new globalDate(arguments[0], arguments[1], arguments[2], arguments[3],
+						arguments[4], arguments[5]);
+				default:
+					return new globalDate(arguments[0], arguments[1], arguments[2], arguments[3],
+						arguments[4], arguments[5], arguments[6]);
+			}
+		}
 
 		user.setValue(macros.LAST_SELECTED_COLLEGE, 'neu.edu');
 		user.guessTerm(function (err, term) {
 			expect(term).toBe('201710')
-			
-			jasmine.clock().uninstall();
+
+			window.Date = globalDate;
 			done()
-		}.bind(this)) 
+		}.bind(this))
 	});
 });
