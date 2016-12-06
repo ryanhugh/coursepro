@@ -40,7 +40,8 @@ var leChallengeFs = require('le-challenge-fs');
 var dns;
 if (macros.UNIT_TESTS) {
 	dns = require('./tests/mockDns')
-} else {
+}
+else {
 	dns = require('dns')
 }
 
@@ -80,7 +81,9 @@ le = LE.create({
 	store: leStore,
 
 	// handles /.well-known/acme-challege keys and tokens
-	challenges: { 'http-01': leChallenge },
+	challenges: {
+		'http-01': leChallenge
+	},
 
 	// handles /.well-known/acme-challege keys and tokens
 	challengeType: 'http-01',
@@ -101,24 +104,57 @@ le = LE.create({
 app.use('/', le.middleware());
 
 function getTestingCert(callback) {
-	
+	async.parallel([
+
+			function (callback) {
+				fs.readFile('backend/tests/test.pem', 'utf8', function (err, data) {
+					if (err) {
+						console.log('ERROR reading private key for https', err);
+						return callback(err);
+					}
+					return callback(null, data);
+				});
+			},
+			function (callback) {
+				fs.readFile('backend/tests/test.cert', 'utf8', function (err, data) {
+					if (err) {
+						console.log('ERROR reading public cert for https', err);
+						return callback(err);
+					}
+					return callback(null, data);
+				});
+			}
+		],
+		function (err, results) {
+			if (err) {
+				elog(err)
+				return;
+			}
+			return callback(null, {
+				chain: '',
+				privkey: results[0],
+				cert: results[1]
+			})
+		})
 }
 
 
 function getCert(callback) {
 	// If this is unit tests, load up the self signed cert
 
-		// key: results.privkey,
+	// key: results.privkey,
 
-		// // Cert must be first here or else the createServer call will fail
-		// cert: results.cert + results.chain
+	// // Cert must be first here or else the createServer call will fail
+	// cert: results.cert + results.chain
 
 	if (!macros.PRODUCTION) {
 		return getTestingCert(callback);
 	}
 
 	// Check in-memory cache of certificates for the named domain
-	le.check({ domains: ['coursepro.io', 'www.coursepro.io'] }).then(function(results) {
+	le.check({
+		domains: ['coursepro.io', 'www.coursepro.io']
+	}).then(function (results) {
 		if (results) {
 			// we already have certificates
 			return callback(null, results);
@@ -146,13 +182,13 @@ function getCert(callback) {
 			// http-01, tls-sni-01, or dns-01
 			challengeType: 'http-01'
 
-		}).then(function(results) {
+		}).then(function (results) {
 
 			console.log('success');
 
 			return callback(null, results);
 
-		}, function(err) {
+		}, function (err) {
 
 			// Note: you must either use le.middleware() with express,
 			// manually use le.challenges['http-01'].get(opts, domain, key, val, done)
@@ -200,7 +236,7 @@ function logData(req, info) {
 
 
 //catch errors with invalid requests
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
 	if (err) {
 		logData(req, {
 			msg: {
@@ -211,7 +247,8 @@ app.use(function(err, req, res, next) {
 		res.status(400);
 		res.send('ya dun goofed');
 		res.end();
-	} else {
+	}
+	else {
 		next();
 	}
 });
@@ -219,7 +256,7 @@ app.use(function(err, req, res, next) {
 
 
 //if no user agent present, drop request
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 
 	var ua = req.get('User-Agent');
 	if (!ua) {
@@ -230,7 +267,8 @@ app.use(function(req, res, next) {
 		})
 		res.status(418)
 		res.send('trolololololol');
-	} else {
+	}
+	else {
 		next()
 	}
 });
@@ -238,7 +276,7 @@ app.use(function(req, res, next) {
 
 //if you didnt go to courespro.io, redirect to coursepro.io (going direcly to ip, etc)
 //this catches lots of robots scanning all ip addresses
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 
 	//send redirect request
 	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost', '10.0.0.7']).includes(req.hostname) && 0) {
@@ -249,13 +287,14 @@ app.use(function(req, res, next) {
 			}
 		})
 		res.redirect('https://coursepro.io');
-	} else {
+	}
+	else {
 		next();
 	}
 })
 
 // add cache forever to external js libraries
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	var remoteIp = req.connection.remoteAddress;
 	if (req.protocol == 'http' && !_(remoteIp).includes('127.0.0.1') && remoteIp != '::1' && !_(remoteIp).includes('10.0.0.') && !_(remoteIp).includes('192.168.1.')) {
 		logData(req, {
@@ -266,7 +305,8 @@ app.use(function(req, res, next) {
 		res.setHeader('Cache-Control', 'public, max-age=5256000'); // 2 months (in seconds)
 		res.redirect('https://coursepro.io' + req.url);
 		return;
-	} else {
+	}
+	else {
 		next()
 	}
 })
@@ -278,7 +318,8 @@ function isAlphaNumeric(string) {
 	};
 	if (string.match(/^[a-zA-Z0-9]+$/i)) {
 		return true;
-	} else {
+	}
+	else {
 		return false;
 	}
 }
@@ -309,7 +350,8 @@ function isObjectSanitized(object) {
 				return false;
 			};
 		}
-	} else {
+	}
+	else {
 		console.log("error type", typeof object, 'not whitelisted!!', object);
 		return false
 	}
@@ -319,7 +361,7 @@ function isObjectSanitized(object) {
 
 
 //sanitize the input
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	if (!isObjectSanitized(req.body)) {
 
 		logData(req, {
@@ -332,18 +374,19 @@ app.use(function(req, res, next) {
 		res.setHeader('LEEROOOOOOOOOOOOOOOOOOOOOOY', 'JEEEEEEENKIIIIIIIIIIIIIIINS!!!!');
 		res.send('trolololololol');
 		return;
-	} else {
+	}
+	else {
 		next()
 	}
 }.bind(this))
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	logData(req);
 	next()
 });
 
 //prevent being in an iframe
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	res.setHeader('X-Frame-Options', 'DENY');
 	res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
 	res.setHeader("X-XSS-Protection", "1; mode=block");
@@ -353,12 +396,13 @@ app.use(function(req, res, next) {
 
 
 // add cache forever to external js libraries
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	if (macros.PRODUCTION) {
 		if (_(req.path).startsWith('/js/external') || _(req.path).startsWith('/fonts') || _(req.path).startsWith('/css') || _(req.path).startsWith('/images')) {
 			// console.log('setting to 1 yr')
 			res.setHeader('Cache-Control', 'public, max-age=31557600'); // one year (in seconds)
-		} else {
+		}
+		else {
 			// console.log('setting to 5 min')
 			res.setHeader('Cache-Control', 'public, max-age=300'); // 5 min (in seconds)
 		}
@@ -372,19 +416,19 @@ app.use(function(req, res, next) {
 });
 
 
-var reverseDNS = memoize(function(ip, callback) {
+var reverseDNS = memoize(function (ip, callback) {
 	if (ip.startsWith('155.33') || ip.startsWith('129.10')) {
 		return callback(null, ['neu.edu'])
 	}
-	dns.reverse(ip, function(err, results) {
+	dns.reverse(ip, function (err, results) {
 		callback(err, results)
 	})
-}, function(ip) {
+}, function (ip) {
 	return ip
 })
 
 
-app.post(macros.GET_CURRENT_COLLEGE, function(req, res) {
+app.post(macros.GET_CURRENT_COLLEGE, function (req, res) {
 
 	var ip = req.connection.remoteAddress;
 	if (req.body.ip) {
@@ -400,7 +444,7 @@ app.post(macros.GET_CURRENT_COLLEGE, function(req, res) {
 		ip = ip.slice(7)
 	};
 
-	reverseDNS(ip, function(err, results) {
+	reverseDNS(ip, function (err, results) {
 		if (err) {
 			console.log("RDNS failed", ip, err)
 
@@ -445,11 +489,11 @@ app.post(macros.GET_CURRENT_COLLEGE, function(req, res) {
 
 
 
-app.post(macros.LIST_COLLEGES, function(req, res) {
+app.post(macros.LIST_COLLEGES, function (req, res) {
 	collegeNamesDB.find({}, {
 		shouldBeOnlyOne: false,
 		sanitize: true
-	}, function(err, names) {
+	}, function (err, names) {
 		if (err) {
 			console.log('error college names failed', req.url, err);
 			res.status(500);
@@ -462,7 +506,7 @@ app.post(macros.LIST_COLLEGES, function(req, res) {
 	});
 })
 
-app.post(macros.LIST_TERMS, function(req, res) {
+app.post(macros.LIST_TERMS, function (req, res) {
 
 	var keys = Keys.create(req.body, macros.LIST_TERMS)
 
@@ -478,7 +522,7 @@ app.post(macros.LIST_TERMS, function(req, res) {
 		shouldBeOnlyOne: false,
 		sanitize: true,
 		removeControllers: true
-	}, function(err, terms) {
+	}, function (err, terms) {
 		if (err) {
 			res.status(500);
 			res.send('internal server error :/')
@@ -489,7 +533,7 @@ app.post(macros.LIST_TERMS, function(req, res) {
 	})
 })
 
-app.post(macros.LIST_SUBJECTS, function(req, res) {
+app.post(macros.LIST_SUBJECTS, function (req, res) {
 
 	var keys = Keys.create(req.body, macros.LIST_SUBJECTS);
 
@@ -505,7 +549,7 @@ app.post(macros.LIST_SUBJECTS, function(req, res) {
 		shouldBeOnlyOne: false,
 		sanitize: true,
 		removeControllers: true
-	}, function(err, subjects) {
+	}, function (err, subjects) {
 		if (err) {
 			console.log(err)
 			res.status(500);
@@ -518,7 +562,7 @@ app.post(macros.LIST_SUBJECTS, function(req, res) {
 })
 
 
-app.post(macros.LIST_CLASSES, function(req, res) {
+app.post(macros.LIST_CLASSES, function (req, res) {
 
 	var keys = Keys.create(req.body, macros.LIST_CLASSES);
 
@@ -541,7 +585,7 @@ app.post(macros.LIST_CLASSES, function(req, res) {
 	classesDB.find(lookup, {
 		shouldBeOnlyOne: false,
 		sanitize: true
-	}, function(err, classes) {
+	}, function (err, classes) {
 		if (err) {
 			console.log(err)
 			res.status(500);
@@ -552,7 +596,7 @@ app.post(macros.LIST_CLASSES, function(req, res) {
 	})
 })
 
-app.post(macros.LIST_SECTIONS, function(req, res) {
+app.post(macros.LIST_SECTIONS, function (req, res) {
 
 	var keys = Keys.create(req.body, macros.LIST_SECTIONS)
 
@@ -567,7 +611,7 @@ app.post(macros.LIST_SECTIONS, function(req, res) {
 	sectionsDB.find(keys.getObj(), {
 		shouldBeOnlyOne: false,
 		sanitize: true
-	}, function(err, classes) {
+	}, function (err, classes) {
 		if (err) {
 			console.log(err)
 			res.status(500);
@@ -586,7 +630,7 @@ app.post(macros.LIST_SECTIONS, function(req, res) {
 // curl -H "Content-Type: application/json" -X POST -d '{"url":"https://ssb.sju.edu/pls/PRODSSB/bwckschd.p_disp_dyn_sched"}' http://localhost/spider
 // curl -H "Content-Type: application/json" -X POST -d '{"url":"https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched"}' http://localhost/spider
 // curl -H "Content-Type: application/json" -X POST -d '{"url":"https://myswat.swarthmore.edu/pls/bwckschd.p_disp_dyn_sched"}' http://localhost/spider
-app.post('/spider', function(req, res) {
+app.post('/spider', function (req, res) {
 	return res.send('404, yo');
 	if (!_(req.connection.remoteAddress).includes('127.0.0.1') && req.connection.remoteAddress != '::1') {
 		return res.send('404, yo'); // ;)
@@ -630,7 +674,7 @@ function validateEmail(email) {
 
 
 
-app.post('/registerForEmails', function(req, res) {
+app.post('/registerForEmails', function (req, res) {
 	if (!req.body.email || !req.body.userId || req.body.userId.length < 10) {
 		console.log('ERROR invalid user data given ', req.body);
 		return res.send(JSON.stringify({
@@ -654,14 +698,15 @@ app.post('/registerForEmails', function(req, res) {
 		ip: req.connection.remoteAddress
 	}
 
-	usersDB.subscribeForEverything(userData, function(err) {
+	usersDB.subscribeForEverything(userData, function (err) {
 		if (err) {
 			console.log('ERROR couldnt subscribe for everthing', err);
 			return res.send(JSON.stringify({
 				error: 'error',
 				msg: 'Internal error :/'
 			}));
-		} else {
+		}
+		else {
 			return res.end(JSON.stringify({
 				status: 'success',
 				msg: 'Success!'
@@ -695,10 +740,10 @@ function unsubscribe(body, callback) {
 	var classMongoIds = [];
 	var sectionMongoIds = []
 
-	q.defer(function(callback) {
+	q.defer(function (callback) {
 		classesDB.find(obj, {
 			shouldBeOnlyOne: true
-		}, function(err, aClass) {
+		}, function (err, aClass) {
 			if (err) {
 				return callback(err);
 			}
@@ -707,15 +752,15 @@ function unsubscribe(body, callback) {
 		}.bind(this))
 	}.bind(this))
 
-	q.defer(function(callback) {
+	q.defer(function (callback) {
 		sectionsDB.find(obj, {
 			shouldBeOnlyOne: false
-		}, function(err, sections) {
+		}, function (err, sections) {
 			if (err) {
 				return callback(err)
 			}
 
-			sections.forEach(function(section) {
+			sections.forEach(function (section) {
 				sectionMongoIds.push(section._id)
 			}.bind(this))
 			callback()
@@ -723,7 +768,7 @@ function unsubscribe(body, callback) {
 	}.bind(this))
 
 
-	q.awaitAll(function(err) {
+	q.awaitAll(function (err) {
 		if (err) {
 			console.log('couldn"t unsubscribe... ', body, err);
 			return callback(JSON.stringify({
@@ -736,7 +781,7 @@ function unsubscribe(body, callback) {
 		}
 
 
-		usersDB.removeIdsFromLists(macros.WATCHING_LIST, classMongoIds, sectionMongoIds, query, function(err) {
+		usersDB.removeIdsFromLists(macros.WATCHING_LIST, classMongoIds, sectionMongoIds, query, function (err) {
 			if (err) {
 				console.log('couldn"t unsubscribe... ', body, err);
 				return callback(JSON.stringify({
@@ -756,15 +801,15 @@ function unsubscribe(body, callback) {
 
 //unsubscribe can be either post or get so it works in emails and in other pages
 //in boh cases need email and userId
-app.post('/unsubscribe', function(req, res) {
-	unsubscribe(req.body, function(response) {
+app.post('/unsubscribe', function (req, res) {
+	unsubscribe(req.body, function (response) {
 		res.send(response);
 	})
 })
 
-app.get('/unsubscribe', function(req, res) {
+app.get('/unsubscribe', function (req, res) {
 	var body = new URI(req.url).query(true);
-	unsubscribe(body, function(response) {
+	unsubscribe(body, function (response) {
 		res.send(response);
 	})
 })
@@ -779,8 +824,8 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 
 	var allValid = true;
 
-	classObjects.forEach(function(classObj) {
-		q.defer(function(callback) {
+	classObjects.forEach(function (classObj) {
+		q.defer(function (callback) {
 
 			var keys = Keys.create(classObj, macros.LIST_CLASSES);
 			if (!keys.isValid()) {
@@ -791,14 +836,15 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 
 			classesDB.find(keys.getObj(), {
 				shouldBeOnlyOne: true
-			}, function(err, aClass) {
+			}, function (err, aClass) {
 				if (err) {
 					console.log("err", err);
 					return callback(err)
 				}
 				if (aClass) {
 					classIds.push(aClass._id)
-				} else {
+				}
+				else {
 					console.log("Could not find with class keys!", keys.getObj());
 					allValid = false;
 				}
@@ -808,8 +854,8 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 	}.bind(this))
 
 
-	sectionObjects.forEach(function(sectionObj) {
-		q.defer(function(callback) {
+	sectionObjects.forEach(function (sectionObj) {
+		q.defer(function (callback) {
 
 			var keys = Keys.create(sectionObj, macros.LIST_SECTIONS)
 			if (!keys.isValid()) {
@@ -820,7 +866,7 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 
 			sectionsDB.find(keys.getObj(), {
 				shouldBeOnlyOne: true
-			}, function(err, section) {
+			}, function (err, section) {
 				if (err) {
 					console.log("err", err);
 					return callback(err)
@@ -828,7 +874,8 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 
 				if (section) {
 					sectionIds.push(section._id)
-				} else {
+				}
+				else {
 					console.log("Could not find with section keys!", keys.getObj());
 					allValid = false;
 				}
@@ -837,7 +884,7 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 		}.bind(this))
 	}.bind(this))
 
-	q.awaitAll(function(err) {
+	q.awaitAll(function (err) {
 		if (err) {
 			return callback(err)
 		}
@@ -846,7 +893,7 @@ function verifyClassSectionObjs(classObjects, sectionObjects, callback) {
 }
 
 
-app.post('/addToUserLists', function(req, res) {
+app.post('/addToUserLists', function (req, res) {
 	if (!req.body.loginKey || !req.body.listName || !req.body.classes || !req.body.sections) {
 		res.send(JSON.stringify({
 			error: 'addToUserLists needs loginKey as json and listName'
@@ -862,7 +909,7 @@ app.post('/addToUserLists', function(req, res) {
 		return;
 	};
 
-	verifyClassSectionObjs(req.body.classes, req.body.sections, function(err, classIds, sectionIds, allValid) {
+	verifyClassSectionObjs(req.body.classes, req.body.sections, function (err, classIds, sectionIds, allValid) {
 		if (err) {
 			res.send(JSON.stringify({
 				error: 'error',
@@ -880,7 +927,7 @@ app.post('/addToUserLists', function(req, res) {
 		};
 
 		//register for the class
-		usersDB.addIdsToLists(req.body.listName, classIds, sectionIds, req.body.loginKey, function(err, clientMsg) {
+		usersDB.addIdsToLists(req.body.listName, classIds, sectionIds, req.body.loginKey, function (err, clientMsg) {
 
 			if (err) {
 				console.log('ERROR couldnt add class', req.body.classesMongoIds, ' id to user', req.body.loginKey)
@@ -904,7 +951,7 @@ app.post('/addToUserLists', function(req, res) {
 })
 
 
-app.post('/removeFromUserLists', function(req, res) {
+app.post('/removeFromUserLists', function (req, res) {
 	if (!req.body.loginKey || !req.body.listName || !req.body.classes || !req.body.sections) {
 		res.send(JSON.stringify({
 			error: 'removeFromUserLists needs loginKey as json and listName'
@@ -912,7 +959,7 @@ app.post('/removeFromUserLists', function(req, res) {
 		return;
 	};
 
-	verifyClassSectionObjs(req.body.classes, req.body.sections, function(err, classIds, sectionIds, allValid) {
+	verifyClassSectionObjs(req.body.classes, req.body.sections, function (err, classIds, sectionIds, allValid) {
 		if (err) {
 			elog(err)
 			res.send(JSON.stringify({
@@ -935,7 +982,7 @@ app.post('/removeFromUserLists', function(req, res) {
 		}
 
 		//register for the class
-		usersDB.removeIdsFromLists(req.body.listName, classIds, sectionIds, query, function(err, clientMsg) {
+		usersDB.removeIdsFromLists(req.body.listName, classIds, sectionIds, query, function (err, clientMsg) {
 
 			if (err) {
 				console.log('ERROR couldnt add class', req.body.classesMongoIds, ' id to user', req.body.loginKey)
@@ -959,7 +1006,7 @@ app.post('/removeFromUserLists', function(req, res) {
 })
 
 
-app.post('/getUser', function(req, res) {
+app.post('/getUser', function (req, res) {
 	if (!req.body.loginKey && !req.body.idToken) {
 		res.send(JSON.stringify({
 			error: 'getUser needs loginKey as json'
@@ -970,7 +1017,8 @@ app.post('/getUser', function(req, res) {
 	var lookup = {};
 	if (req.body.idToken) {
 		lookup.idToken = req.body.idToken
-	} else if (req.body.loginKey) {
+	}
+	else if (req.body.loginKey) {
 		lookup.loginKey = req.body.loginKey;
 	}
 
@@ -979,7 +1027,7 @@ app.post('/getUser', function(req, res) {
 		lookup, {
 			sanitize: true
 		},
-		function(err, user) {
+		function (err, user) {
 			if (err || !user) {
 				console.log('ERROR couldnt get user', req.body.loginKey)
 				console.log(err)
@@ -991,7 +1039,7 @@ app.post('/getUser', function(req, res) {
 		}.bind(this))
 }.bind(this))
 
-app.post('/setUserVar', function(req, res) {
+app.post('/setUserVar', function (req, res) {
 	if (!req.body.name || !req.body.value || !req.body.loginKey) {
 		res.send(JSON.stringify({
 			error: '/setUserVar needs loginKey, name and value as json'
@@ -1008,7 +1056,7 @@ app.post('/setUserVar', function(req, res) {
 	};
 
 
-	usersDB.setUserVar(req.body.name, req.body.value, req.body.loginKey, function(err, clientMsg) {
+	usersDB.setUserVar(req.body.name, req.body.value, req.body.loginKey, function (err, clientMsg) {
 		if (err) {
 			console.log('ERROR couldnt set var for user', req.body.loginKey)
 			console.log(err)
@@ -1024,7 +1072,7 @@ app.post('/setUserVar', function(req, res) {
 	}.bind(this))
 }.bind(this))
 
-app.post('/sharePrinter', function(req, res) {
+app.post('/sharePrinter', function (req, res) {
 	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
 	res.setHeader('Access-Control-Allow-Origin', '*');
 
@@ -1062,14 +1110,15 @@ app.post('/sharePrinter', function(req, res) {
 	}
 
 
-	printer.go(req.body.email, function(err) {
+	printer.go(req.body.email, function (err) {
 		if (err) {
 			elog(err)
 			res.send(JSON.stringify({
 				status: 'error',
 			}));
 			return;
-		} else {
+		}
+		else {
 			res.send(JSON.stringify({
 				status: 'success',
 			}));
@@ -1078,7 +1127,7 @@ app.post('/sharePrinter', function(req, res) {
 }.bind(this))
 
 
-app.options('/sharePrinter', function(req, res) {
+app.options('/sharePrinter', function (req, res) {
 	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -1088,7 +1137,7 @@ app.options('/sharePrinter', function(req, res) {
 
 }.bind(this))
 
-app.options('/log', function(req, res) {
+app.options('/log', function (req, res) {
 	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -1098,7 +1147,7 @@ app.options('/log', function(req, res) {
 
 }.bind(this))
 
-app.post('/log', function(req, res) {
+app.post('/log', function (req, res) {
 	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -1109,7 +1158,7 @@ app.post('/log', function(req, res) {
 
 
 
-app.post('/logError', function(req, res) {
+app.post('/logError', function (req, res) {
 	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
 	res.send(JSON.stringify({
 		status: 'success'
@@ -1119,7 +1168,7 @@ app.post('/logError', function(req, res) {
 
 
 // serve the webpage
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
 	res.sendFile('dist/index.html', {
 		"root": process.cwd()
 	});
@@ -1128,14 +1177,14 @@ app.get('/', function(req, res) {
 
 app.use(express.static('dist'));
 
-app.get("/*", function(req, res, next) {
+app.get("/*", function (req, res, next) {
 
 	console.log('error: 404: ' + req.url)
 	res.status(404);
 	res.send('404, yo')
 });
 
-app.post("/*", function(req, res, next) {
+app.post("/*", function (req, res, next) {
 
 	console.log('error: 404: ' + req.url)
 	res.status(404);
@@ -1151,18 +1200,19 @@ if (macros.UNIT_TESTS) {
 
 	// close the old server, if one existed
 	if (global.expressHttpServer) {
-		q.defer(function(callback) {
+		q.defer(function (callback) {
 			global.expressHttpServer.close(callback)
 		}.bind(this))
 	}
-	q.awaitAll(function(err) {
+	q.awaitAll(function (err) {
 		if (err) {
 			elog(err);
 		}
 		global.expressHttpServer = app.listen(8123);
 	}.bind(this))
 
-} else {
+}
+else {
 	if (global.expressHttpServer) {
 		elog('already running a http server???')
 	}
@@ -1170,7 +1220,7 @@ if (macros.UNIT_TESTS) {
 }
 
 //https
-getCert(function(err, results) {
+getCert(function (err, results) {
 	if (err) {
 		if (!macros.PRODUCTION) {
 			console.log(err)
@@ -1194,18 +1244,19 @@ getCert(function(err, results) {
 
 		// close the old server, if one existed
 		if (global.expressHttpsServer) {
-			q.defer(function(callback) {
+			q.defer(function (callback) {
 				global.expressHttpsServer.close(callback)
 			}.bind(this))
 		}
-		q.awaitAll(function(err) {
+		q.awaitAll(function (err) {
 			if (err) {
 				elog(err);
 			}
 			global.expressHttpsServer = server.listen(8443);
 		}.bind(this))
 
-	} else {
+	}
+	else {
 		if (global.expressHttpsServer) {
 			elog('already running a https server???')
 		}
