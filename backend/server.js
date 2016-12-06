@@ -100,8 +100,22 @@ le = LE.create({
 // If using express you should use the middleware
 app.use('/', le.middleware());
 
+function getTestingCert(callback) {
+	
+}
+
 
 function getCert(callback) {
+	// If this is unit tests, load up the self signed cert
+
+		// key: results.privkey,
+
+		// // Cert must be first here or else the createServer call will fail
+		// cert: results.cert + results.chain
+
+	if (!macros.PRODUCTION) {
+		return getTestingCert(callback);
+	}
 
 	// Check in-memory cache of certificates for the named domain
 	le.check({ domains: ['coursepro.io', 'www.coursepro.io'] }).then(function(results) {

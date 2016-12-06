@@ -107,7 +107,7 @@ describe('user', function () {
 	});
 
 
-	fit('the picked date should be fall 2016 when date is set to aug 2016', function (done) {
+	it('the picked date should be fall 2016 when date is set to aug 2016', function (done) {
 
 		var globalDate = Date;
 		window.Date = function () {
