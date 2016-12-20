@@ -46,7 +46,8 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_dyn_sched",
   "https://banner.drexel.edu/pls/duprod/bwckschd.p_disp_dyn_sched",
   "https://infobear.bridgew.edu/BANP/bwckschd.p_disp_dyn_sched",
-  "https://new-sis-app.sph.harvard.edu:9010/prod/bwckschd.p_disp_dyn_sched"
+  "https://new-sis-app.sph.harvard.edu:9010/prod/bwckschd.p_disp_dyn_sched",
+  "https://novasis.villanova.edu/pls/bannerprd/bwckschd.p_disp_dyn_sched"
 ]
 
 
