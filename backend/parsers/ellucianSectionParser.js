@@ -103,14 +103,14 @@ EllucianSectionParser.prototype.parseElement = function (pageData, element) {
 		}
 		
 		//find co and pre reqs and restrictions
-		var prereqs2 = ellucianRequisitesParser2.parseRequirementSection(pageData, element.children, 'prerequisites');
+		var prereqs2 = ellucianRequisitesParser2.parseRequirementSection(pageData, element.parent.children, 'prerequisites');
 		if (!_.isEqual(prereqs, prereqs2)) {
-			console.log("WARNING: prereqs parsed by the new parser are not equal", JSON.stringify(prereqs, null, 4), JSON.stringify(prereqs2, null, 4), element.children)
+			console.log("WARNING: prereqs parsed by the new parser are not equal", JSON.stringify(prereqs, null, 4), JSON.stringify(prereqs2, null, 4), element.parent.children)
 		}
 	
-		var coreqs2 = ellucianRequisitesParser2.parseRequirementSection(pageData, element.children, 'corequisites');
+		var coreqs2 = ellucianRequisitesParser2.parseRequirementSection(pageData, element.parent.children, 'corequisites');
 		if (!_.isEqual(coreqs, coreqs2)) {
-			console.log("WARNING: coreqs parsed by the new parser are not equal", JSON.stringify(coreqs, null, 4), JSON.stringify(coreqs2, null, 4), element.children)
+			console.log("WARNING: coreqs parsed by the new parser are not equal", JSON.stringify(coreqs, null, 4), JSON.stringify(coreqs2, null, 4), element.parent.children)
 		}
 
 
