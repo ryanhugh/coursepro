@@ -544,3 +544,55 @@ it('3 levels', function (done) {
 		})
 	});
 });
+
+
+// 
+it('mismatched_dividers', function (done) {
+
+
+	fs.readFile('backend/parsers/tests/data/ellucianRequisitesParser/mismatched_dividers.html', 'utf8', function (err, body) {
+		expect(err).toBe(null);
+
+		var url = 'https://oscar.gatech.edu/pls/bprod/bwckctlg.p_disp_course_detail?cat_term_in=201605&subj_code_in=APPH&crse_numb_in=4238'
+
+		var pageData = PageData.create({
+			dbData: {
+				url: url
+			}
+		});
+
+		pointer.handleRequestResponce(body, function (err, dom) {
+			expect(err).toBe(null);
+
+			console.log(dom)
+			debugger
+
+			var prereqs = ellucianRequisitesParser.parseRequirementSection(pageData, dom, 'prerequisites');
+			console.log(prereqs);
+
+			expect(prereqs).toEqual(Object({
+				type: 'or',
+				values: [Object({
+					type: 'and',
+					values: [Object({
+						type: 'or',
+						values: [Object({
+							classId: '1115', 
+							subject: 'BIOL'
+						}), Object({
+							classId: '1111',
+							subject: 'BIOL'
+						})]
+					}), Object({
+						classId: '1342',
+						subject: 'MATH'
+					}), Object({
+						classId: '2311',
+						subject: 'CHEM'
+					})]
+				}), 'Graduate Admission REQ']
+			}))
+			done()
+		})
+	});
+});

@@ -127,9 +127,7 @@ EllucianRequisitesParser.prototype.simplifyRequirements = function (data) {
 	}
 }
 
-
-EllucianRequisitesParser.prototype.logError = function (message) {
-
+EllucianRequisitesParser.prototype.getLogString = function (message) {
 	// Log to elog with url from this.pageData, divider, currFrame, a a good way to display the next 10 or so char from the buffer
 
 	var message = [message, ' '];
@@ -154,9 +152,17 @@ EllucianRequisitesParser.prototype.logError = function (message) {
 	if (this.pageData) {
 		url = this.pageData.dbData.url
 	}
+	return [message, url, this.currFrame]
+};
 
 
-	elog(message, url, message, this.currFrame)
+EllucianRequisitesParser.prototype.logWarning = function (message) {
+	elogWithoutStack.apply(this, this.getLogString(message));
+};
+
+
+EllucianRequisitesParser.prototype.logError = function (message) {
+	elog.apply(this, this.getLogString(message));
 };
 
 
@@ -215,7 +221,7 @@ EllucianRequisitesParser.prototype.parseDivider = function () {
 	}
 
 	if (this.currFrame.type && this.currFrame.type != dividerObj.type) {
-		this.logError('Mismatched types. divider=' + this.currFrame.type + ':' + dividerObj.type)
+		this.logWarning('Mismatched types. divider=' + this.currFrame.type + ':' + dividerObj.type)
 	}
 
 	this.buffer.splice(0, dividerObj.length)
@@ -333,7 +339,7 @@ EllucianRequisitesParser.prototype.parseCloseParen = function () {
 	return true;
 };
 
-EllucianRequisitesParser.prototype.parseSpace = function() {
+EllucianRequisitesParser.prototype.parseSpace = function () {
 	if (!(this.buffer[0].type === 'char' && this.buffer[0].value === ' ')) {
 		return false;
 	}
@@ -345,7 +351,7 @@ EllucianRequisitesParser.prototype.parseSpace = function() {
 
 
 
- 
+
 // this.parseString('CS 23()843'.split(''))
 // process.exit()
 
