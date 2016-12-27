@@ -184,7 +184,7 @@ CollegeNamesParser.prototype.hitWhois = function (host, callback) {
 		function (err, data) {
 			if (err) {
 
-				console.log('ERROR whois error', err, host, tryCount);
+				console.log('ERROR whois error', err, host);
 				return callback('whois error');
 			}
 

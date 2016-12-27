@@ -297,11 +297,11 @@ it('simplifyRequirements shoudl work', function () {
 		type: 'or',
 		values: ['1', '6', '1', '1', '6', '1', '6']
 	});
- 
+
 });
 
 
-it('simplifyRequirements shoudl work', function () {  
+it('simplifyRequirements shoudl work', function () {
 
 	expect(ellucianRequisitesParser.simplifyRequirements({
 		"type": "and",
@@ -539,6 +539,60 @@ it('works with a ton of ors', function (done) {
 					subject: 'PHYS'
 				}]
 			})
+			done()
+		})
+	});
+});
+
+// note that this site has a lot of options for classes to take under the catalog listing and then only 3 under the section page
+it('3 levels', function (done) {
+
+
+	fs.readFile('backend/parsers/tests/data/ellucianRequisitesParser/3 levels.html', 'utf8', function (err, body) {
+		expect(err).toBe(null);
+
+		var url = 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201660&subj_code_in=BIOE&crse_numb_in=5410'
+
+		var pageData = PageData.create({
+			dbData: {
+				url: url
+			}
+		});
+
+		pointer.handleRequestResponce(body, function (err, dom) {
+			expect(err).toBe(null);
+
+			console.log(dom)
+
+			var prereqs = ellucianRequisitesParser.parseRequirementSection(pageData, dom, 'prerequisites');
+			console.log(prereqs);
+
+			expect(prereqs).toEqual(Object({
+				type: 'or',
+				values: [Object({
+					type: 'and',
+					values: [Object({
+						type: 'or',
+						values: [Object({
+							classId: '1115',
+							termId: '201660',
+							subject: 'BIOL'
+						}), Object({
+							classId: '1111',
+							termId: '201660',
+							subject: 'BIOL'
+						})]
+					}), Object({
+						classId: '1342',
+						termId: '201660',
+						subject: 'MATH'
+					}), Object({
+						classId: '2311',
+						termId: '201660',
+						subject: 'CHEM'
+					})]
+				}), 'Graduate Admission REQ']
+			}))
 			done()
 		})
 	});

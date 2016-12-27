@@ -132,7 +132,7 @@ EllucianRequisitesParser.prototype.logError = function (message) {
 
 	// Log to elog with url from this.pageData, divider, currFrame, a a good way to display the next 10 or so char from the buffer
 
-	var message = [];
+	var message = [message, ' '];
 	for (var i = 0; i < Math.min(this.buffer.length, 10); i++) {
 		var bufferItem = this.buffer[i]
 		if (bufferItem.type === 'char') {
@@ -455,7 +455,7 @@ EllucianRequisitesParser.prototype.convertElementListToWideMode = function (elem
 // Class details should be a list of dom elements
 // sectionName should be either 'prerequisites' or 'corequisites'
 // This function will find all elements in the given section from a part of the dom where the section we are looking for are on the top part
-EllucianRequisitesParser.prototype.findRequisitesSection = function (classDetails, sectionName) {
+EllucianRequisitesParser.prototype.findRequisitesSection = function (classDetails, sectionName, pageData) {
 	var elements = [];
 	var i = 0;
 	sectionName = sectionName.toLowerCase()
@@ -471,7 +471,32 @@ EllucianRequisitesParser.prototype.findRequisitesSection = function (classDetail
 	//add all text/elements until next element
 	for (; i < classDetails.length; i++) {
 		if (classDetails[i].type == 'tag') {
-			if (classDetails[i].name == 'br' || classDetails[i].name == 'a') {
+
+			if (classDetails[i].name == 'br') {
+				elements.push(classDetails[i])
+				continue;
+			}
+			else if (classDetails[i].name == 'a') {
+
+				var elementText = domutils.getText(classDetails[i]);
+				if (elementText.trim() === '') {
+					console.log('warning, not matching ', sectionName, ' with no text in the link', pageData.dbData.url);
+					continue;
+				}
+
+				var classListUrl = he.decode(classDetails[i].attribs.href);
+				if (!classListUrl || classListUrl === '') {
+					console.log('error could not get classListUrl', classListUrl, classDetails[i].attribs, pageData.dbData.url);
+					continue;
+				}
+
+				classListUrl = new URI(classListUrl).absoluteTo(pageData.dbData.url).toString();
+				if (!classListUrl) {
+					console.log('error could not find classListUrl url', classListUrl, classDetails[i], classDetails[i].attribs.href);
+					continue;
+				};
+
+
 				elements.push(classDetails[i])
 				continue;
 			}
@@ -521,7 +546,7 @@ EllucianRequisitesParser.prototype.finish = function () {
 EllucianRequisitesParser.prototype.parseRequirementSection = function (pageData, classDetails, sectionName) {
 	this.init(pageData)
 
-	var elements = this.findRequisitesSection(classDetails, sectionName)
+	var elements = this.findRequisitesSection(classDetails, sectionName, pageData)
 
 	if (elements.length === 0) {
 		this.finish();
