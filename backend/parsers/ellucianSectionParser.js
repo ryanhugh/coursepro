@@ -65,6 +65,14 @@ EllucianSectionParser.prototype.parseElement = function (pageData, element) {
 
 		if (seatsActual + seatsRemaining != seatsCapacity) {
 			console.log('warning, actual + remaining != capacity', seatsCapacity, seatsActual, seatsRemaining, pageData.dbData.url);
+
+			// Oddly enough, sometimes this check fails.
+			// In this case, use the greater number for capacity
+			// https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201630&crn_in=31813
+			// https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201630&crn_in=38114
+			if (seatsCapacity < seatsActual + seatsRemaining) {
+				seatsCapacity = seatsActual + seatsRemaining;
+			}
 		}
 
 		pageData.setData('seatsCapacity', seatsCapacity);
@@ -79,6 +87,10 @@ EllucianSectionParser.prototype.parseElement = function (pageData, element) {
 
 			if (waitActual + waitRemaining != waitCapacity) {
 				console.log('warning, wait actual + remaining != capacity', waitCapacity, waitActual, waitRemaining, pageData.dbData.url);
+
+				if (waitCapacity < waitActual + waitRemaining) {
+					waitCapacity = waitActual + waitRemaining;
+				}
 			}
 
 			pageData.setData('waitCapacity', waitCapacity);
@@ -101,13 +113,13 @@ EllucianSectionParser.prototype.parseElement = function (pageData, element) {
 		if (coreqs) {
 			pageData.setParentData('coreqs', coreqs);
 		}
-		
+
 		//find co and pre reqs and restrictions
 		var prereqs2 = ellucianRequisitesParser2.parseRequirementSection(pageData, element.parent.children, 'prerequisites');
 		if (!_.isEqual(prereqs, prereqs2)) {
 			console.log("WARNING: prereqs parsed by the new parser are not equal", JSON.stringify(prereqs, null, 4), JSON.stringify(prereqs2, null, 4), element.parent.children)
 		}
-	
+
 		var coreqs2 = ellucianRequisitesParser2.parseRequirementSection(pageData, element.parent.children, 'corequisites');
 		if (!_.isEqual(coreqs, coreqs2)) {
 			console.log("WARNING: coreqs parsed by the new parser are not equal", JSON.stringify(coreqs, null, 4), JSON.stringify(coreqs2, null, 4), element.parent.children)
