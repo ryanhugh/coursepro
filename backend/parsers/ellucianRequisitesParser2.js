@@ -8,19 +8,33 @@ var _ = require('lodash');
 var pointer = require('../pointer')
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
-// Sometimes the prereqs section parens dont match, here are some examples that dont work:
+// This file parses the Prequisites and Corequisites section on the section and catalog page. This code is used from both EllucianCatalogParser.js and 
+// EllucianSectionParser.js. Some of these Strings are pretty simple, like this
+
+// (Undergraduate Semester level ME 2801 Minimum Grade of D or Undergraduate Semester level AE 2220 Minimum Grade of D) and Undergraduate Semester level ME 2016 Minimum Grade of D
+// (where the ME 2801 and AE 2220 would be hyperlinked)
+
+
+// And some are way more complicated. This file uses a AST (https://en.wikipedia.org/wiki/Abstract_syntax_tree) to parse them. This is very similar to how programming languages and
+// math equations (eg x*y+2/(z*2)) are parsed. It outputs a reasonable JSON structure (see unit tests)
+
+// I originally wrote this in Aug 2015, and re wrote it in Oct 2016 and did it totally differently.
+
+// However, sometimes the school's websites have invalid or inconsistent prereq string. 
+
+// Here is an example of one with more closing parens than opening parens. The extra closing parens are ignored. 
 // https://lewisweb.cc.lehigh.edu/PROD/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=ISE&crse_numb_in=251
 // https://lewisweb.cc.lehigh.edu/PROD/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=ISE&crse_numb_in=251
 // https://lewisweb.cc.lehigh.edu/PROD/bwckctlg.p_disp_course_detail?cat_term_in=201620&subj_code_in=ISE&crse_numb_in=251
 // (Undergraduate level ISE 121 Minimum Grade of TR or Undergraduate level IE 121 Minimum Grade of TR) and ( (Undergraduate level ISE 220 Minimum Grade of TR or Undergraduate level IE 220 Minimum Grade of TR) ) ) or ( (Undergraduate level ISE 230 Minimum Grade of TR or Undergraduate level IE 230 Minimum Grade of TR) and (Undergraduate level ISE 240 Minimum Grade of TR or Undergraduate level IE 240 Minimum Grade of TR) ) ) 
 
-
-// This file parses the Prerequisites and Corequisites section eg: (Undergraduate level ISE 121 Minimum Grade of TR or Undergraduate level IE 121 Minimum Grade of TR)
-// (where the ISE 121 and IE 121 would be hyperlinked)
-// 
-// and converts it into a resonable JSON structure (see unit tests)
-// 
-// I originally wrote this in Aug 2015, and re wrote it in Oct 2016 and did it totally differently and used: https://en.wikipedia.org/wiki/Abstract_syntax_tree
+// Other times, it will not be grouped by parens, eg [a or b and c or d], and I am not sure if the " and " is a typo and should be and " or ", or if the order of operations should be applied.
+// and parens should be added around the "b and c". There were 4 occurrences of this at NEU, but more at other colleges. GATECH had 876/25261 (3.5%) classes like this. 363 of them parsed something different than the old parser.
+// The old parser grouped these by order of operations. This one assumes that the last divider at a given level is correct.  
+// https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201602&crn_in=29120
+// https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201702&crn_in=26627
+// https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201702&crn_in=25982
+// https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201602&crn_in=24775
 
 
 

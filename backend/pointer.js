@@ -73,7 +73,7 @@ Pointer.prototype.fireRequest = function (url, options, callback) {
 		var urlStart = new URI(ip).protocol(urlParsed.protocol()).toString()
 
 		// Then add on everything after the host
-		var urlWithIp = new URI(urlParsed.resource()).absoluteTo(urlStart).toString()
+		var urlWithIp = new URI(urlParsed.resource()).absoluteTo(urlStart).port(urlParsed.port()).toString()
 
 		var needleConfig = {
 			follow_max: 5,

@@ -28,10 +28,15 @@ function Macros() {
 
 
 	// set up elog
+	global.elogWithoutStack = function () {
+		console.log.apply(console, arguments)
+	}.bind(this)
+
 	global.elog = function () {
 		console.log.apply(console, arguments)
 		console.log(new Error('elog Trace').stack)
 	}.bind(this)
+
 
 
 

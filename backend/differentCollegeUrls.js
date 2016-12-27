@@ -27,7 +27,7 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://pssb.stockton.edu/prod/bwckschd.p_disp_dyn_sched", //was port 9000, now is 443
   "https://www8.unm.edu/pls/banp/bwckschd.p_disp_dyn_sched", // took about 3 hours but it worked without any errors. 8/31/16
   "https://banssbprod.xavier.edu:8099/PROD/bwckschd.p_disp_dyn_sched", // works 9/1/16 took about 40 min
-  "https://appprod.udayton.edu:9000/prod/bwckschd.p_disp_dyn_sched", // worked 9/1/16, 4 prereq parsing issues but besides that worked perfectly
+  "https://appprod.udayton.edu:9000/prod/bwckschd.p_disp_dyn_sched", // worked 9/1/16, 4 prereq parsing issues but besides that worked perfectly.
   "https://ui2web4.apps.uillinois.edu/BANPROD4/bwckschd.p_disp_dyn_sched", // worked 9/2/16 no errors
   "https://lpar2.jsu.edu/DADNormalPRO8/bwckschd.p_disp_dyn_sched", //  worked 9/2/16 no errors
   "https://ssb.isu.edu/bprod/bwckschd.p_disp_dyn_sched", //  worked 9/2/16 no errors
