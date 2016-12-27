@@ -1,8 +1,7 @@
 
 # CoursePro
 
-Easily navigate class registration data.
-
+Easily navigate class registration data.   
 
 # Setup
 
@@ -37,3 +36,6 @@ Runs the app in production mode. Don't actually use this to run in production, u
 #### gulp spider [-neu][-gatech][-brown][-swarthmore] [ etc...]
 Scrapes the data from a specific college. Tees the output to a file, but you still might want to use `| tee log.log`. Takes anywhere from 20 min to a couple hours to run, totally depends on the college. NEU takes about 1 hour. 
 
+# More READMEs
+
+This is the top level readme, there are more READMEs talking about more spefic things in the folders. 
