@@ -81,7 +81,12 @@ Pointer.prototype.fireRequest = function (url, options, callback) {
 			//ten min
 			open_timeout: 60 * 10000,
 			read_timeout: 60 * 10000,
+
+			// Allow fallback to old depreciated insecure SSL ciphers. Some school websites are really old  :/
+			// We don't really care about security (hence the rejectUnauthorized:false), and will accept anything. 
 			rejectUnauthorized: false,
+			ciphers: 'ALL',
+
 			headers: {
 				'Host': urlParsed.hostname(),
 				'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:24.0) Gecko/20100101 Firefox/24.0',
