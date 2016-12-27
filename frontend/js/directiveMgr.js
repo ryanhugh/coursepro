@@ -48,8 +48,13 @@ window.addEventListener('error', function (evt) {
 	var primaryMessage;
 	var secondaryMessage;
 	if (evt.error) {
-		primaryMessage = evt.error.stack
-		secondaryMessage = evt.error.name
+		if (typeof evt.error == string) {
+			primaryMessage = evt.error
+		}
+		else {
+			primaryMessage = evt.error.stack
+			secondaryMessage = evt.error.name
+		}
 	}
 	else {
 		primaryMessage = evt.message

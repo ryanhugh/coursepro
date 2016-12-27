@@ -415,9 +415,9 @@ User.prototype.guessTerm = function (callback) {
 			var endDate = moment((parseInt(term.endDate) + 1) * 24 * 60 * 60 * 1000);
 
 			// If the endDate of the semester is in less than 45 days, skip
-			if (endDate.clone().subtract(45, 'days').diff(moment()) < 0) {
+			if (endDate.clone().subtract(45, 'days').diff(moment(new Date())) < 0) {
 				return;
-			}
+			} 
 
 			//Less than 80 days in this term, remove summer classes and other short terms
 			if (endDate.diff(startDate, 'days') < 80) {
@@ -848,11 +848,20 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 	if (!callback) {
 		callback = function () {}
 	}
+	
+	this.ensureList(listName);
 
 	if (classes.length == 0 && sections.length == 0) {
 		console.log("addto lists called with no classes or section");
 		return callback()
 	};
+	
+	
+	var initClassCount = this.lists[listName].classes.length
+	var initSectionCount = this.lists[listName].sections.length
+
+	var sectionObjs = [];
+	var classesObjs = [];
 
 
 	// Add them to the dbData before the call to loadLists, so they are added synchronously 
@@ -867,6 +876,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		}
 
 		if (addToDBSections) {
+			sectionObjs.push(keys.getObj())
 			this.dbData.lists[listName].sections.push(keys.getObj())
 		}
 	}.bind(this))
@@ -890,6 +900,7 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 
 		if (addToDBClasses) {
 			this.dbData.lists[listName].classes.push(keys.getObj())
+			classesObjs.push(keys.getObj())
 		}
 	}.bind(this))
 
@@ -899,54 +910,55 @@ User.prototype.addToList = function (listName, classes, sections, callback) {
 		if (err) {
 			return callback(err)
 		}
-
-
-		var initClassCount = this.lists[listName].classes.length
-		var initSectionCount = this.lists[listName].sections.length
-
-		var sectionObjs = [];
-		var classesObjs = [];
-
+		
+		
 		//add the section, but make sure to not add duplicate section
 		//it could be a different instance of that same section
 		sections.forEach(function (section) {
 			var addToSections = true;
+			var keys = Keys.create(section, macros.LIST_SECTIONS)
 			for (var i = 0; i < this.lists[listName].sections.length; i++) {
-				if (this.lists[listName].sections[i].equals(section)) {
+				if (keys.propsEqual(this.lists[listName].sections[i])) {
 					addToSections = false;
 					break;
 				}
 			}
-
-			var keys = Keys.create(section, macros.LIST_SECTIONS)
+	
 			if (addToSections) {
-				sectionObjs.push(keys.getObj())
+				// Unless loaded lists earlier ...
+				console.log("Probably shouldn't add to list here because did it above and then loaded lists?");
 				this.lists[listName].sections.push(section);
 			}
 		}.bind(this))
-
-		// Add the new class to this.lists and this.dbData.lists
+	
+		// Add the new class to this.lists and this.lists
 		classes.forEach(function (aClass) {
 			var addToClasses = true;
+			
+			var keys;
+			if (aClass.isString) {
+				keys = Keys.createWithString(aClass)
+			}
+			else {
+				keys = Keys.create(aClass)
+			}
+			
 			for (var i = 0; i < this.lists[listName].classes.length; i++) {
-				if (this.lists[listName].classes[i].equals(aClass)) {
+				if (keys.propsEqual(this.lists[listName].classes[i])) {
 					addToClasses = false;
 					break;
 				}
 			}
-
+	
 			if (addToClasses) {
-				var keys;
-				if (aClass.isString) {
-					keys = Keys.createWithString(aClass)
-				}
-				else {
-					keys = Keys.create(aClass)
-				}
+				console.log("Probably shouldn't add to list here because did it above and then loaded lists?");
 				this.lists[listName].classes.push(aClass);
-				classesObjs.push(keys.getObj())
+				
 			}
 		}.bind(this))
+
+
+
 
 		if (this.dbData.lists[listName].sections.length != this.lists[listName].sections.length) {
 			elog()
