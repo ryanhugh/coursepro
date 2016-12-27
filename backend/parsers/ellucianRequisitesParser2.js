@@ -333,10 +333,19 @@ EllucianRequisitesParser.prototype.parseCloseParen = function () {
 	return true;
 };
 
+EllucianRequisitesParser.prototype.parseSpace = function() {
+	if (!(this.buffer[0].type === 'char' && this.buffer[0].value === ' ')) {
+		return false;
+	}
+
+	this.buffer.shift()
+	return true;
+};
 
 
 
 
+ 
 // this.parseString('CS 23()843'.split(''))
 // process.exit()
 
@@ -345,7 +354,6 @@ EllucianRequisitesParser.prototype.parseCloseParen = function () {
 EllucianRequisitesParser.prototype.parse = function () {
 
 	while (this.buffer.length > 0) {
-
 		if (this.parseOpenParen()) {
 			continue;
 		}
@@ -353,6 +361,9 @@ EllucianRequisitesParser.prototype.parse = function () {
 			continue;
 		}
 		else if (this.parseDivider()) {
+			continue;
+		}
+		else if (this.parseSpace()) {
 			continue;
 		}
 		else if (this.parseString()) {

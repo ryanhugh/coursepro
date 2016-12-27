@@ -400,7 +400,7 @@ PageDataMgr.prototype.main = function () {
 	this.runPostProcessors([{
 		host: 'neu.edu'
 	}], function (err) {
-		console.log('DONE!',err);
+		console.log('DONE!', err);
 	}.bind(this))
 
 
@@ -469,7 +469,7 @@ PageDataMgr.prototype.main = function () {
 	// 	console.log('all done!! neu')
 
 	// }.bind(this));
-	// 
+	
 
 	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=EECE&crse_numb_in=2160');
 	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
@@ -519,11 +519,17 @@ PageDataMgr.prototype.main = function () {
 
 
 
-	// this.createFromURL('https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_course_detail?cat_term_in=201504&subj_code_in=MATH&crse_numb_in=027',function () {
-	// var pageData = this.create({dbData:{url:'https://myswat.swarthmore.edu/pls/bwckctlg.p_disp_course_detail?cat_term_in=201504&subj_code_in=MATH&crse_numb_in=027',termId:'201504',subject:'MATH'}});
-	// pageDataMgr.go(pageData,function () {
-	// 	console.log('done!!')
-	// })
+	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=BIOE&crse_numb_in=5410',function () {
+	var pageData = PageData.create({
+		dbData: {
+			url: 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=BIOE&crse_numb_in=5410',
+			termId: '201640',
+			subject: 'BIOE'
+		}
+	});
+	pageDataMgr.go([pageData], function () {
+		console.log('done!!')
+	})
 
 
 
