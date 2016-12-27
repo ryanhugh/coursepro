@@ -115,7 +115,7 @@ Calendar.prototype.updateCalendar = function () {
 				}
 
 				section.meetings.forEach(function (meeting) {
-					if (meeting.isExam) {
+					if (meeting.getIsExam()) {
 						return;
 					};
 

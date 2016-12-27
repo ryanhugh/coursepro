@@ -1,0 +1,1 @@
+The test.pem and test.cert in this folder are only used for unit testing the https server and are just some generated self-signed certificates. They are not used for production. 

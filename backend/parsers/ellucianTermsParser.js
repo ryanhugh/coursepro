@@ -186,6 +186,8 @@ EllucianTermsParser.prototype.onEndParsing = function (pageData, dom) {
 			};
 		};
 
+		console.log("Parsing term: ", JSON.stringify(term));
+
 		//if not, add it
 		var termPageData = pageData.addDep({
 			updatedByParent: true,

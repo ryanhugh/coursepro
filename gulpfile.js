@@ -199,6 +199,13 @@ var getFilesToProcess = memoize(function (config, callback) {
 				}
 			}
 		})
+		
+		// Move main.tests.js to the beginning to inject mocks before the code runs
+		// var includesMainTests
+		if (config.includeTests) {
+			_.pull('frontend/js/data/tests/main.tests.js', filesToProccess)
+			filesToProccess = ['frontend/js/data/tests/main.tests.js'].concat(filesToProccess)
+		}
 
 		return callback(null, filesToProccess)
 	}).catch(function (err) {

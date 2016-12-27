@@ -105,6 +105,39 @@ BaseProcessor.prototype.getClassesAndSections = function (queries, callback) {
 };
 
 
+BaseProcessor.prototype.groupSectionsByClass = function(sections) {
+	var classHash = {};
+
+	sections.forEach(function (section) {
+
+		var obj = {
+			host:section.host,
+			termId: section.termId,
+			subject: section.subject,
+			classUid: section.classUid
+		}
+
+		var hash = Keys.create(obj).getHash();
+
+		if (!classHash[hash]) {
+			classHash[hash] = []
+		}
+
+		classHash[hash].push(section)
+
+	}.bind(this))
+
+
+	var retVal = [];
+
+	for (var hash in classHash){
+		retVal.push(classHash[hash])
+	}
+
+	return retVal;
+};
+
+
 // Get the minimum part of queries that overlap. eg,
 // if given query {host:'neu.edu',termId:'201710'} and {host:'neu.edu',termId:'201630'}, the result would be {host:'neu.edu'}
 BaseProcessor.prototype.getCommonHostAndTerm = function (queries) {

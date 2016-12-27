@@ -17,6 +17,7 @@ var processors = [
 	require('./processors/termSearchHints'),
 
 	// Add new processors here
+	require('./processors/simplifyProfList'),
 	require('./processors/notifyOnChanges'),
 	require('./processors/databaseDumps'),
 	require('./processors/createSearchIndex')
@@ -73,6 +74,30 @@ PageDataMgr.prototype.getQuery = function (pageData) {
 		}
 	}.bind(this))
 	return query;
+};
+
+
+PageDataMgr.prototype.runPostProcessors = function (queries, callback) {
+
+	// Run the processors
+	async.eachSeries(processors, function (processor, callback) {
+		if (macros.DEVELOPMENT) {
+			console.log("Running", processor.constructor.name);
+		}
+
+		processor.go(queries, function (err) {
+			if (err) {
+				console.log("ERROR processor", processor, 'errored out', err);
+				return callback(err)
+			}
+			return callback()
+		}.bind(this))
+	}.bind(this), function (err) {
+		if (err) {
+			console.log("ERROR some processor failed, aborting", err);
+		}
+		callback(err)
+	}.bind(this))
 };
 
 // This is the main starting point for processing a page data. 
@@ -181,7 +206,6 @@ PageDataMgr.prototype.go = function (pageDatas, callback) {
 
 		}.bind(this),
 		function (callback) {
-
 			var queries = [];
 
 			pageDatas.forEach(function (pageData) {
@@ -189,25 +213,7 @@ PageDataMgr.prototype.go = function (pageDatas, callback) {
 			}.bind(this))
 
 
-			// Run the processors
-			async.eachSeries(processors, function (processor, callback) {
-				if (macros.DEVELOPMENT) {
-					console.log("Running", processor.constructor.name);
-				}
-
-				processor.go(queries, function (err) {
-					if (err) {
-						console.log("ERROR processor", processor, 'errored out', err);
-						return callback(err)
-					}
-					return callback()
-				}.bind(this))
-			}.bind(this), function (err) {
-				if (err) {
-					console.log("ERROR some processor failed, aborting", err);
-				}
-				callback(err)
-			}.bind(this))
+			this.runPostProcessors(queries, callback);
 		}.bind(this)
 
 		// Done
@@ -391,6 +397,13 @@ PageDataMgr.prototype.main = function () {
 	// }.bind(this))
 	// return;
 
+	this.runPostProcessors([{
+		host: 'neu.edu'
+	}], function (err) {
+		console.log('DONE!',err);
+	}.bind(this))
+
+
 
 	// this.createFromURL('https://selfservice.mypurdue.purdue.edu/prod/bwckschd.p_disp_dyn_sched')
 	// this.createFromURL('https://ssb.ccsu.edu/pls/ssb_cPROD/bwckctlg.p_display_courses?term_in=201610&one_subj=MUS&sel_crse_strt=147A&sel_crse_end=147A&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=')
@@ -459,22 +472,26 @@ PageDataMgr.prototype.main = function () {
 	// 
 
 	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201710&subj_code_in=EECE&crse_numb_in=2160');
-	var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
+	// var pageData = PageData.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_listcrse?schd_in=%&term_in=201710&subj_in=EECE&crse_in=2160');
 
-	pageData.dbData.termId = '201710';
-	pageData.dbData.host = 'neu.edu'
-	pageData.dbData.subject = 'EECE'
+	// pageData.dbData.termId = '201710';
+	// pageData.dbData.host = 'neu.edu'
+	// pageData.dbData.subject = 'EECE'
 
-	// pageData.database = linksDB;
-	pageData.findSupportingParser()
+	// // pageData.database = linksDB;
+	// pageData.findSupportingParser()
 
 
-	console.log(pageData);
+	// console.log(pageData);
 
-	this.go([pageData], function () {
-		console.log('all done!! neu')
+	// this.go([pageData], function () {
+	// 	console.log('all done!! neu')
 
-	}.bind(this));
+	// }.bind(this));
+	// 
+	// 
+
+
 
 	// this.go([PageData.createFromURL('https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched')], function () {
 	// 	console.log('all done!! gatech')

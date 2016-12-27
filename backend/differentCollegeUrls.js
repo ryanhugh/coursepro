@@ -46,8 +46,190 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://www2.augustatech.edu/pls/ban8/bwckschd.p_disp_dyn_sched",
   "https://banner.drexel.edu/pls/duprod/bwckschd.p_disp_dyn_sched",
   "https://infobear.bridgew.edu/BANP/bwckschd.p_disp_dyn_sched",
-  "https://new-sis-app.sph.harvard.edu:9010/prod/bwckschd.p_disp_dyn_sched"
+  "https://new-sis-app.sph.harvard.edu:9010/prod/bwckschd.p_disp_dyn_sched",
+  "https://novasis.villanova.edu/pls/bannerprd/bwckschd.p_disp_dyn_sched"
 ]
+
+// This is the list of colleges on coursicle.com as of Dec 20th, 2016. Looks like they have the scrapers for the same types as sites I'm scraping here. 
+// Auburn University – Auburn
+// Auburn University at Montgomery – AUM
+// Samford University – Samford
+// University of Alabama – UA
+// University of Alabama at Birmingham – UAB
+// University of Alabama in Huntsville – UAH
+// University of Alaska Anchorage – UAA
+// Arkansas State University – ASU
+// Arkansas Tech University – ATU
+// University of Central Arkansas – UCA
+// City College of San Francisco – CCSF
+// Carleton University – Carleton
+// University of Regina – Regina
+// University of Victoria – University of Victoria
+// Wilfrid Laurier University – WLU
+// Colorado School of Mines – Mines
+// University of Denver – DU
+// Delaware State University – DESU
+// Georgetown University – Georgetown
+// Howard University – HU
+// Florida Atlantic University – FAU
+// Florida SouthWestern State College – FSW
+// Northwest Florida State College – NWFSC
+// South Florida State College – SFSC
+// University of North Florida – UNF
+// University of West Florida – UWF
+// Georgia Gwinnett College – GGC
+// Georgia Institute of Technology – Georgia Tech
+// Georgia Southern University – GS
+// Morehouse College – Morehouse
+// Savannah College of Art and Design – SCAD
+// University of Georgia – UGA
+// Idaho State University – ISU
+// Illinois Institute of Technology – IIT
+// Northeastern Illinois University – NIU
+// Oakton Community College – Oakton
+// Southern Illinois University – SIU
+// Southern Illinois University Edwardsville – SIUE
+// University of Illinois at Urbana-Champaign – UIUC
+// University of Illinois Springfield – UIS
+// Wheaton College – Wheaton
+// Indiana State University – ISU
+// Purdue University – Purdue
+// Purdue University Northwest – PNW
+// University of Notre Dame – Notre Dame
+// Vincennes University – VU
+// Drake University – Drake
+// Emporia State University – Emporia https://ssb.emporia.edu/pls/prod/bwckschd.p_disp_dyn_sched
+// Wichita State University – Wichita
+// Delago Community College – DCC
+// Northwestern State University – NSULA
+// University of Louisiana Lafayette – UL Lafayette
+// Morgan State University – Morgan
+// University of Maryland The Founding Campus – UMaryland
+// Emerson College – Emerson
+// Framingham State University – Framingham
+// Northeastern University – NEU
+// Smith College – Smith
+// Ferris State University – Ferris
+// Grand Valley State University – GVSU
+// Lansing Community College – LCC
+// Oakland University – Oakland
+// University of Michigan-Dearborn – UMDearborn
+// University of Michigan-Flint – UMFlint
+// Western Michigan University – WMich
+// Concordia University Saint Paul – CSP
+// University of St. Thomas – UST
+// Mississippi College – MC
+// Missouri Southern State University – MSSU
+// Missouri State University – MSU
+// Saint Louis University – SLU
+// Southeast Missouri State University – SEMO
+// Truman State University – Truman
+// University of Central Missouri – UCMO
+// Washington University in St. Louis – WashU
+// University Of Montana – UM
+// Creighton University – Creighton
+// Dartmouth College – Dartmouth
+// University of New Hampshire – UNH
+// New Jersey Institute of Technology – NJIT
+// Ramapo College – Ramapo
+// Rowan College Gloucester County – RCGC
+// Stockton University – Stockton
+// William Paterson University – WPUNJ
+// University of New Mexico – UNM
+// Binghamton University – Binghamton
+// Canisius College – Canisius
+// Delhi State University – Delhi
+// Farmingdale State College – Farmingdale
+// Fashion Institute of Technology – FITNYC
+// Fordham University – Fordham
+// Hudson Valley Community College – HVCC
+// Marist College – Marist
+// Pace University – Pace
+// Siena College – Siena
+// St. Thomas Aquinas College – STAC
+// Suffolk County Community College – SCCC
+// The New School – Newschool
+// Appalachian State University – App
+// Duke University – Duke
+// East Carolina University – ECU
+// Elon University – Elon
+// Guilford College – Guilford
+// University of North Carolina at Chapel Hill – UNC
+// University of North Carolina at Charlotte – UNCC
+// University of North Carolina at Greensboro – UNCG
+// University of North Carolina at Wilmington – UNCW
+// Wake Forest University – WFU
+// Western Carolina University – WCU
+// University of Toledo – UT
+// Cameron University – CU
+// Northeastern State University – NSUOK
+// Oklahoma State University – OKState
+// University of Oklahoma – OU
+// Portland State University – PDX
+// University of Portland – UP
+// California University of Pennsylvania – CalU
+// Drexel University – Drexel
+// East Stroudsburg University – ESU
+// Edinboro University of Pennsylvania – Edinboro
+// Lehigh University – Lehigh
+// Shippensburg University of Pennsylvania – SHIP
+// Slippery Rock University – SRU
+// Swarthmore College – Swarthmore
+// Temple University – Temple
+// University of Pennsylvania – Penn
+// University of Scranton – Scranton
+// Villanova University – Villanova
+// Brown University – Brown
+// Johnson and Wales University – JWU
+// Clemson University – Clemson
+// College of Charleston – CofC
+// Lander University – Lander
+// University of South Carolina – USC
+// Austin Peay State University – APSU
+// Christian Brothers University – CBU
+// Cleveland State Community College – CSCC
+// East Tennessee State University – ETSU
+// Pellissippi State Community College – PSTCC
+// Rhodes College – Rhodes
+// Sewanee: The University of the South – Sewanee
+// Tennessee Technological University – TNTech
+// University of Memphis – U of M
+// University of Tennessee – UTK
+// Walters State Community College – WSCC
+// Alamo Colleges – Alamo
+// Lamar University – Lamar
+// Rice University – Rice
+// South Texas College – STC
+// St. Edward's University – St. Edward's
+// St. Mary's University – St. Mary's
+// Texas A&amp;M University – A&amp;M
+// Texas A&amp;M University Central Texas – TAMU CT
+// Texas Southern University – TSU
+// University of Dallas – UDallas
+// University of Texas at Austin – UT Austin
+// University of Texas at El Paso – El Paso
+// University of Texas Rio Grande Valley – UTRGV
+// University of Texas San Antonio – UTSA
+// Victoria College – VC
+// Dixie State University – Dixie
+// Southern Utah University – SUU
+// Utah State University – USU
+// Utah Valley University – UVU
+// College of William &amp; Mary – W&amp;M
+// George Mason University – GMU
+// Longwood University – Longwood
+// Old Dominion University – ODU
+// Radford University – Radford
+// Regent University – Regent
+// Virginia Commonwealth University – VCU
+// Virginia State University – VSU
+// Eastern Washington University – EWU
+// Marshall University – Marshall
+// Mountwest Community &amp; Technical College – MCTC
+// West Virginia University – WVU
+
+
+
 
 
 // non -ellucian sites

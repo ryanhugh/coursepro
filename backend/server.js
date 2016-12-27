@@ -26,7 +26,16 @@ var sectionsDB = require('./databases/sectionsDB');
 var usersDB = require('./databases/usersDB');
 var dbUpdater = require('./databases/updater')
 
+// For https://github.com/ryanhugh/NEU-Google-cloudprint
 var printer = require('./printer')
+
+// Lets encrypt
+var LE = require('letsencrypt');
+var leStoreCertbot = require('le-store-certbot');
+var leChallengeFs = require('le-challenge-fs');
+
+
+
 
 var dns;
 if (macros.UNIT_TESTS) {
@@ -40,6 +49,163 @@ else {
 var app = express();
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(compress()); // gzip the output
+
+
+var le;
+
+// Storage Backend
+var leStore = leStoreCertbot.create({
+	configDir: '/etc/coursepro/letsencrypt',
+	debug: false
+});
+
+
+// ACME Challenge Handlers
+var leChallenge = leChallengeFs.create({
+	webrootPath: './dist',
+	debug: false
+});
+
+
+function leAgree(opts, agreeCb) {
+	console.log(opts)
+		// opts = { email, domains, tosUrl }
+	agreeCb(null, opts.tosUrl);
+}
+
+le = LE.create({
+	// or LE.productionServerUrl
+	server: LE.productionServerUrl,
+
+	// handles saving of config, accounts, and certificates
+	store: leStore,
+
+	// handles /.well-known/acme-challege keys and tokens
+	challenges: {
+		'http-01': leChallenge
+	},
+
+	// handles /.well-known/acme-challege keys and tokens
+	challengeType: 'http-01',
+
+	// hook to allow user to view and accept LE TOS
+	agreeToTerms: leAgree,
+	debug: false,
+
+	// handles debug outputs
+	// if debugging the cert it might be helpful to enable this
+	// log: function(debug) { 
+	// 	console.log.apply(console, arguments);
+	// 	 }
+});
+
+
+// If using express you should use the middleware
+app.use('/', le.middleware());
+
+function getTestingCert(callback) {
+	async.parallel([
+
+			function (callback) {
+				fs.readFile('backend/tests/test.pem', 'utf8', function (err, data) {
+					if (err) {
+						console.log('ERROR reading private key for https', err);
+						return callback(err);
+					}
+					return callback(null, data);
+				});
+			},
+			function (callback) {
+				fs.readFile('backend/tests/test.cert', 'utf8', function (err, data) {
+					if (err) {
+						console.log('ERROR reading public cert for https', err);
+						return callback(err);
+					}
+					return callback(null, data);
+				});
+			}
+		],
+		function (err, results) {
+			if (err) {
+				elog(err)
+				return;
+			}
+			return callback(null, {
+				chain: '',
+				privkey: results[0],
+				cert: results[1]
+			})
+		})
+}
+
+
+function getCert(callback) {
+	// If this is unit tests, load up the self signed cert
+
+	// key: results.privkey,
+
+	// // Cert must be first here or else the createServer call will fail
+	// cert: results.cert + results.chain
+
+	if (!macros.PRODUCTION) {
+		return getTestingCert(callback);
+	}
+
+	// Check in-memory cache of certificates for the named domain
+	le.check({
+		domains: ['coursepro.io', 'www.coursepro.io']
+	}).then(function (results) {
+		if (results) {
+			// we already have certificates
+			return callback(null, results);
+		}
+
+		if (!macros.PRODUCTION) {
+			return callback('not running in PROD so will not request cert')
+		}
+
+		// Register Certificate manually
+		le.register({
+
+			// CHANGE TO YOUR DOMAIN (list for SANS)
+			domains: ['www.coursepro.io', 'coursepro.io'],
+
+			// CHANGE TO YOUR EMAIL
+			email: 'ryanhughes624@gmail.com',
+
+			// set to tosUrl string (or true) to pre-approve (and skip agreeToTerms)
+			agreeTos: 'true',
+
+			// 2048 or higher
+			rsaKeySize: 2048,
+
+			// http-01, tls-sni-01, or dns-01
+			challengeType: 'http-01'
+
+		}).then(function (results) {
+
+			console.log('success');
+
+			return callback(null, results);
+
+		}, function (err) {
+
+			// Note: you must either use le.middleware() with express,
+			// manually use le.challenges['http-01'].get(opts, domain, key, val, done)
+			// or have a webserver running and responding
+			// to /.well-known/acme-challenge at `webrootPath`
+			console.error('[Error]: node-letsencrypt/examples/standalone');
+			console.error(err.stack);
+
+			return callback('error with letsencrypt');
+		});
+	});
+}
+
+
+
+
+
 
 
 function logData(req, info) {
@@ -432,12 +598,12 @@ app.post(macros.LIST_CLASSES, function (req, res) {
 
 app.post(macros.LIST_SECTIONS, function (req, res) {
 
-	var keys = Keys.create(req.body, macros.LIST_SECTIONS).toObj()
+	var keys = Keys.create(req.body, macros.LIST_SECTIONS)
 
 	if (!keys.isValid()) {
-		console.log('error, no host or termId or subject or classId given body:');
+		console.log('error, no host or termId or subject or classUid given body:');
 		console.log(req.body)
-		res.send('{"error":"no host or termId or subject or classId given (expected JSON)"}')
+		res.send('{"error":"no host or termId or subject or classUid given (expected JSON)"}')
 		return;
 	};
 
@@ -1053,61 +1219,47 @@ else {
 	global.expressHttpServer = app.listen(80);
 }
 
-
 //https
-async.parallel([
-		function (callback) {
-			fs.readFile('/etc/coursepro/privateKey.pem', 'utf8', function (err, data) {
-				if (err) {
-					console.log('ERROR reading private key for https', err);
-					return callback(err);
-				}
-				return callback(null, data);
-			});
-		},
-		function (callback) {
-			fs.readFile('/etc/coursepro/publicKey.crt', 'utf8', function (err, data) {
-				if (err) {
-					console.log('ERROR reading public cert for https', err);
-					return callback(err);
-				}
-				return callback(null, data);
-			});
-		}
-	],
-	function (err, results) {
-		if (err) {
-			elog(err)
-			return;
-		}
-		var credentials = {
-			key: results[0],
-			cert: results[1]
-		};
-		var server = https.createServer(credentials, app);
-		if (macros.UNIT_TESTS) {
-
-			var q = queue();
-
-			// close the old server, if one existed
-			if (global.expressHttpsServer) {
-				q.defer(function (callback) {
-					global.expressHttpsServer.close(callback)
-				}.bind(this))
-			}
-			q.awaitAll(function (err) {
-				if (err) {
-					elog(err);
-				}
-				global.expressHttpsServer = server.listen(8443);
-			}.bind(this))
-
+getCert(function (err, results) {
+	if (err) {
+		if (!macros.PRODUCTION) {
+			console.log(err)
 		}
 		else {
-			if (global.expressHttpsServer) {
-				elog('already running a https server???')
-			}
-			global.expressHttpsServer = server.listen(443);
+			elog(err)
 		}
+		return;
+	}
 
-	})
+	var credentials = {
+		key: results.privkey,
+
+		// Cert must be first here or else the createServer call will fail
+		cert: results.cert + results.chain
+	};
+	var server = https.createServer(credentials, app);
+	if (macros.UNIT_TESTS) {
+
+		var q = queue();
+
+		// close the old server, if one existed
+		if (global.expressHttpsServer) {
+			q.defer(function (callback) {
+				global.expressHttpsServer.close(callback)
+			}.bind(this))
+		}
+		q.awaitAll(function (err) {
+			if (err) {
+				elog(err);
+			}
+			global.expressHttpsServer = server.listen(8443);
+		}.bind(this))
+
+	}
+	else {
+		if (global.expressHttpsServer) {
+			elog('already running a https server???')
+		}
+		global.expressHttpsServer = server.listen(443);
+	}
+})

@@ -30,55 +30,56 @@ function Macros() {
 
 	this.FIREFOX = _(navigator.userAgent.toLowerCase()).includes('firefox')
 
+
+	window.elogWithoutStack = function () {
+
+		var args = [];
+		for (var i = 0; i < arguments.length; i++) {
+			args[i] = arguments[i];
+		}
+
+		console.log.apply(console, ['ELOG'].concat(args));
+		console.trace();
+		debugger
+
+		var bodyString;
+
+		var outputString = []
+
+		args.forEach(function (arg) {
+
+			var str;
+			try {
+				str = JSON.stringify(arg)
+			}
+			catch (e) {
+				str = 'circular data'
+			}
+			outputString.push(str)
+		}.bind(this))
+
+		bodyString = {
+			msg: outputString.join(''),
+			url: location.hash
+		}
+
+		//use a separate calls stack in case this throws an error, it will not affect code that calls this
+		setTimeout(function () {
+			request({
+				url: '/logError',
+				useCache: false,
+				body: bodyString
+			}, function (err, response) {
+				if (err) {
+					console.log("error logging error... lol");
+				};
+			}.bind(this))
+		}.bind(this), 0)
+	}
+	
 	// In unit tests, window.elog is defined in main.tests.js to be just console.error
 	if (!macros.UNIT_TESTS) {
 
-
-		window.elogWithoutStack = function () {
-
-			var args = [];
-			for (var i = 0; i < arguments.length; i++) {
-				args[i] = arguments[i];
-			}
-
-			console.log.apply(console, ['ELOG'].concat(args));
-			console.trace();
-			debugger
-
-			var bodyString;
-
-			var outputString = []
-
-			args.forEach(function (arg) {
-
-				var str;
-				try {
-					str = JSON.stringify(arg)
-				}
-				catch (e) {
-					str = 'circular data'
-				}
-				outputString.push(str)
-			}.bind(this))
-
-			bodyString = {
-				msg: outputString.join(''),
-				url: location.hash
-			}
-
-			//use a separate calls stack in case this throws an error, it will not affect code that calls this
-			setTimeout(function () {
-				request({
-					url: '/logError',
-					useCache: false,
-					body: bodyString
-				}, function (err, response) {
-					if (err) {
-						console.log("error logging error... lol");
-					};
-				}.bind(this))
-			}.bind(this), 0)
-		}
 
 
 
