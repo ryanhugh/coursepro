@@ -45,7 +45,7 @@ Scrapes the data from a specific college. Tees the output to a file, but you sti
 # Adding support for another college
 
 Right now we have scrapers for Ellucian's Banner product and can support any college that uses that system. 
-If your school uses this, we can add support for them pretty fast. Send me a link your registration system.  
+If your school uses this, we can add support for them pretty fast. Open a bug or send me a link your registration system.  
 Check differentCollegeUrls.js for some examples of URLs. 
 
 If they use something else, we would have to write scrapers for that system and it would require more work.
