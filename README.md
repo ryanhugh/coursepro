@@ -47,7 +47,7 @@ Same as gulp test, but just runs frontend tests.
 #### gulp prod
 Runs the app in production mode. Don't actually use this to run in production, use run.sh instead. The only difference is that run.sh uses forever to restart the server if it ever crashes and redirects stdout and stderr to log files. 
 
-#### gulp spider [-neu][-gatech][-brown][-swarthmore] [ etc...]
+#### gulp spider [-neu][-gatech][-brown][-swarthmore] [ etc...] | tee log.log
 Scrapes the data from a specific college. Tees the output to a file, but you still might want to use `| tee log.log`. Takes anywhere from 20 min to a couple hours to run, totally depends on the college. NEU takes about 1 hour. 
 
 # Adding support for another college

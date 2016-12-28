@@ -3,6 +3,11 @@ var request = require('request');
 var memoize = require('../common/memoize')
 var fs = require('fs')
 
+// This is the backend for http://neuprint.org/
+// When you go to that site and click share printer, this is the code that interacts with the Google API 
+// and shares the printer. 
+
+
 function Printer() {
 
 }

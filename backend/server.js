@@ -1065,6 +1065,9 @@ app.post('/setUserVar', function (req, res) {
 	}.bind(this))
 }.bind(this))
 
+
+// This method and printer.js are the backend for http://neuprint.org
+// Not at all related to CoursePro. I just put them in here so I didn't need a separate backend. 
 app.post('/sharePrinter', function (req, res) {
 	res.setHeader('Cache-Control', 'public, max-age=0'); // don't cache this
 	res.setHeader('Access-Control-Allow-Origin', '*');
