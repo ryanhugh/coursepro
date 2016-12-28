@@ -12,12 +12,20 @@ AAAYYYY!! We are TOTALLY looking for more people to help out and add more featur
 # Setup
 
 ``` 
-git clone 
-npm install
-npm install gulp -g
-npm install forever -g
+git clone git@github.com:ryanhugh/coursepro.git
+npm install yarn -g # If you don't already have yarn installed
+yarn
+yarn global add gulp forever
 
-# This lets nodejs bind to port 80 without root
+# Or if you want to use npm
+npm install
+npm install gulp forever -g
+
+
+# This bash command lets nodejs bind to port 80 without root
+sudo setcap 'cap_net_bind_service=+ep' $(which nodejs)
+
+# or if you are using the fish shell
 sudo setcap 'cap_net_bind_service=+ep' (which nodejs)
 
 ```
