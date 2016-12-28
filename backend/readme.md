@@ -14,4 +14,11 @@ Term -> Subject (and College) -> Links -> Class -> Section
 
 
 ## API 
+
 The api is pretty simple and is just server.js connecting directly to the classes in database/ for the data. 
+
+One of the processors makes dumps of the data in the database. This allows clients to get a lot more data a lot faster. These dumps are stored as files on the EC2 server's storage. The POST requests connect to the MongoDB backend. This takes longer, but the data in the database is updated more often. 
+
+The API is documented here: https://github.com/ryanhugh/CoursePro-API
+
+

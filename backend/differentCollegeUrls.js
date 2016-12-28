@@ -31,7 +31,7 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://ui2web4.apps.uillinois.edu/BANPROD4/bwckschd.p_disp_dyn_sched", // worked 9/2/16 no errors
   "https://lpar2.jsu.edu/DADNormalPRO8/bwckschd.p_disp_dyn_sched", //  worked 9/2/16 no errors
   "https://ssb.isu.edu/bprod/bwckschd.p_disp_dyn_sched", //  worked 9/2/16 no errors
-  "https://ssb.columbiastate.edu/PROD/bwckschd.p_disp_dyn_sched",
+  "https://ssb.columbiastate.edu/PROD/bwckschd.p_disp_dyn_sched", // worked dec 27th, 2016
   "https://selfservice.brown.edu/ss/bwckschd.p_disp_dyn_sched", // mongo inserting errors on 9/2/16, need to try again. 
   "https://ssbprod.wichita.edu/PROD/bwckschd.p_disp_dyn_sched",
   "https://prodssb.mscc.edu/PROD/bwckschd.p_disp_dyn_sched",

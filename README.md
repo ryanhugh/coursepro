@@ -3,6 +3,12 @@
 
 Easily navigate class registration data.   
 
+
+# Contributing!!!!
+
+AAAYYYY!! We are TOTALLY looking for more people to help out and add more features to the site. Let me know if you are interested in helping out! (facebook.com/ryan.hughes.35). Right now there are a couple students working on it from Northeastern. 
+
+
 # Setup
 
 ``` 
@@ -36,6 +42,17 @@ Runs the app in production mode. Don't actually use this to run in production, u
 #### gulp spider [-neu][-gatech][-brown][-swarthmore] [ etc...]
 Scrapes the data from a specific college. Tees the output to a file, but you still might want to use `| tee log.log`. Takes anywhere from 20 min to a couple hours to run, totally depends on the college. NEU takes about 1 hour. 
 
+# Adding support for another college
+
+Right now we have scrapers for Ellucian's Banner product and can support any college that uses that system. 
+If your school uses this, we can add support for them pretty fast. Send me a link your registration system! Check differentCollegeUrls.js for some examples. 
+
+If they use something else, we would have to write scrapers for that system and it would take more effort.
+
+
 # More READMEs
 
 This is the top level readme, there are more READMEs talking about more spefic things in the folders. 
+
+Let me know if you have any questions about anything! I can totally explain stuff in more detail than the READMEs do.
+

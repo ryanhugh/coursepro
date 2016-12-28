@@ -353,6 +353,8 @@ EllucianRequisitesParser.prototype.parseCloseParen = function () {
 	return true;
 };
 
+// This was a fix for a bug where if there were two open parens and a space between them, it would start parsing a string when it hit the space
+// so the second open paren would be parsed as part of the string, instead of a open paren. 
 EllucianRequisitesParser.prototype.parseSpace = function () {
 	if (!(this.buffer[0].type === 'char' && this.buffer[0].value === ' ')) {
 		return false;
@@ -366,11 +368,12 @@ EllucianRequisitesParser.prototype.parseSpace = function () {
 
 
 
-// this.parseString('CS 23()843'.split(''))
-// process.exit()
 
-
-
+// This is the main control function as part of the parser.
+// Each parsing function is responsible for removing the chunk that it parsed from the buffer.
+// and modifying this.currFrame accordingly. 
+// Only parseOpenParen and parseCloseParen modify this.parentFrames
+// When any of them matches something, start from the beginning again. 
 EllucianRequisitesParser.prototype.parse = function () {
 
 	while (this.buffer.length > 0) {
