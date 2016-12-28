@@ -649,6 +649,8 @@ var btestRun = batch(function (events, callback) {
 		// 2. includes a custom reporter, which was bad and was using a custom one anyway
 		// so after some more problems with it just decided to bypass it instead
 		var jasmine = new Jasmine();
+		jasmine.env.clearReporters();
+		jasmine.addReporter(new JasmineReporter());
 
 
 		var filesToProccess = [];
@@ -661,7 +663,6 @@ var btestRun = batch(function (events, callback) {
 			};
 		})
 
-		jasmine.addReporter(new JasmineReporter());
 		jasmine.execute();
 		jasmine.onComplete(function (passedAll) {
 			callback()

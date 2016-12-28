@@ -33,7 +33,7 @@ sudo setcap 'cap_net_bind_service=+ep' (which nodejs)
 # Running the code
 
 #### gulp dev
-Runs the code in development mode. Connects to the MongoDB coursepro_dev table for the data. 
+Runs the code in development mode. Connects to the MongoDB coursepro_dev table for the data. Messaged me and I will add your IP to the whitelist and send you the username + password. 
 
 #### gulp test
 Runs the frontend and backend tests. Automatically re-runs when any file in frontend/, backend/ or common/ changes.
