@@ -586,12 +586,12 @@ it('3 levels', function (done) {
 // 						classId: '1342',
 // 						subject: 'MATH'
 // 					}), Object({
-// 						classId: '2311',
-// 						subject: 'CHEM' 
+// 						classId: '2311', 
+// 						subject: 'CHEM'
 // 					})]
 // 				}), 'Graduate Admission REQ'] 
 // 			}))
-// 			done()
+// 			done() 
 // 		})
 // 	});
 // });
