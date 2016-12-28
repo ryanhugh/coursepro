@@ -23,7 +23,7 @@ var WatchClassesModel = require('../watchClassesModel/watchClassesModel')
 //thing that calls on download tree, treeMgr, render, popup and help
 //manages the page that generates the tree graphs
 
-function Graph() {
+function Graph() { 
 	BaseDirective.prototype.constructor.apply(this, arguments);
 
 	this.graphWidth = this.getSvgWidth();

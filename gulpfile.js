@@ -52,12 +52,11 @@ var KARMA_CONFIG = {
 		'karma-phantomjs-launcher',
 		'karma-jasmine',
 		'karma-logcapture-reporter',
-		'karma-mocha-reporter',
 	],
 	frameworks: ['jasmine'],
 	preprocessors: {},
 	browsers: ['PhantomJS'],
-	reporters: ['logcapture', 'progress', 'mocha'],
+	reporters: ['logcapture', 'progress'],
 	client: {
 		captureConsole: true
 	},
@@ -69,9 +68,6 @@ var KARMA_CONFIG = {
 		suppressPassed: true, // do not print information about passed tests 
 		suppressSkipped: true, // do not print information about skipped tests 
 		showSpecTiming: false // print the time elapsed for each spec 
-	},
-	mochaReporter: {
-		output: 'minimal'
 	},
 }
 
@@ -242,7 +238,8 @@ function compileJSBundle(config, compileRequire, callback) {
 				console.log(node_module_dependencies);
 			}
 			else {
-				console.log(filesToProccess);
+				// Uncomment this to print out files that are being bundled. 
+				// console.log(filesToProccess);
 			}
 
 			if (compileRequire) {

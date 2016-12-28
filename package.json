@@ -49,7 +49,6 @@
     "karma-chrome-launcher": "^1.0.1",
     "karma-jasmine": "^1.0.2",
     "karma-logcapture-reporter": "0.0.1",
-    "karma-mocha-reporter": "^2.0.4",
     "karma-phantomjs-launcher": "^1.0.1",
     "letsencrypt-express": "^2.0.5",
     "lodash": "^4.0.0",
