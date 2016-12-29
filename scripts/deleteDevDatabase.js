@@ -9,25 +9,25 @@ var userDB = require('../backend/databases/usersDB')
 
 
 
-userDB.table.remove({},function (err, i) {
-	console.log("done user db");
-}.bind(this))
+// userDB.table.remove({},function (err, i) {
+// 	console.log("done user db");
+// }.bind(this))
 
 
 // process.exit()
 
-// if (macros.PRODUCTION) {
-// 	fjdsklajfdsjkljlkjl
-// 	console.log("NOOOOOO");
-// 	process.exit()
-// }
-// var toClear = [collegeNamesDB, termsDB, classesDB, linksDB, sectionsDB, subjectsDB]
+if (macros.PRODUCTION) {
+	fjdsklajfdsjkljlkjl
+	console.log("NOOOOOO");
+	process.exit()
+}
+var toClear = [collegeNamesDB, termsDB, classesDB, linksDB, sectionsDB, subjectsDB]
 
-// toClear.forEach(function (db) {
-// 	db.table.remove({}, function (err, i) {
-// 		console.log(err, db.tableName);
-// 	}.bind(this))
-// }.bind(this))
+toClear.forEach(function (db) {
+	db.table.remove({host:'brown.edu'}, function (err, i) {
+		console.log(err, db.tableName);
+	}.bind(this))
+}.bind(this))
 
 // var usersDB = require('./backend/databases/usersDB')
 

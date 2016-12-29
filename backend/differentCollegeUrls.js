@@ -32,7 +32,7 @@ module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched"
   "https://lpar2.jsu.edu/DADNormalPRO8/bwckschd.p_disp_dyn_sched", //  worked 9/2/16 no errors
   "https://ssb.isu.edu/bprod/bwckschd.p_disp_dyn_sched", //  worked 9/2/16 no errors
   "https://ssb.columbiastate.edu/PROD/bwckschd.p_disp_dyn_sched", // worked dec 27th, 2016
-  "https://selfservice.brown.edu/ss/bwckschd.p_disp_dyn_sched", // mongo inserting errors on 9/2/16, need to try again. 
+  "https://selfservice.brown.edu/ss/bwckschd.p_disp_dyn_sched", // uses 12GB RAM, works. Dec 28th.  Dec mongo inserting errors on 9/2/16, need to try again.
   "https://ssbprod.wichita.edu/PROD/bwckschd.p_disp_dyn_sched",
   "https://prodssb.mscc.edu/PROD/bwckschd.p_disp_dyn_sched",
   "https://ssbprod11g.uncfsu.edu/pls/FSUPROD/bwckschd.p_disp_dyn_sched",
