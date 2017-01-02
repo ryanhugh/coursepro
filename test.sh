@@ -1,8 +1,8 @@
 #!/bin/bash
 
-for i in *.js # or whatever other pattern...
+for i in $(find . | grep .*.js\$) # or whatever other pattern...
 do
-	echo hi
+	echo $i
   if ! grep -q Copyright $i
   then
     cat header.txt $i >$i.new && mv $i.new $i
