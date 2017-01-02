@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in $(find . | grep .*.js\$) # or whatever other pattern...
+for i in $(find . | grep .*.html\$) # or whatever other pattern...
 do
 	echo $i
   if ! grep -q Copyright $i
