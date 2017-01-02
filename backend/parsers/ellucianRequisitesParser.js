@@ -8,22 +8,12 @@ var _ = require('lodash');
 var pointer = require('../pointer')
 var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
-// Sometimes the prereqs section parens dont match, here are some examples that dont work:
-// https://lewisweb.cc.lehigh.edu/PROD/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=ISE&crse_numb_in=251
-// https://lewisweb.cc.lehigh.edu/PROD/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=ISE&crse_numb_in=251
-// https://lewisweb.cc.lehigh.edu/PROD/bwckctlg.p_disp_course_detail?cat_term_in=201620&subj_code_in=ISE&crse_numb_in=251
-// (Undergraduate level ISE 121 Minimum Grade of TR or Undergraduate level IE 121 Minimum Grade of TR) and ( (Undergraduate level ISE 220 Minimum Grade of TR or Undergraduate level IE 220 Minimum Grade of TR) ) ) or ( (Undergraduate level ISE 230 Minimum Grade of TR or Undergraduate level IE 230 Minimum Grade of TR) and (Undergraduate level ISE 240 Minimum Grade of TR or Undergraduate level IE 240 Minimum Grade of TR) ) ) 
-
-
-// This file parses the Prerequisites and Corequisites section eg: (Undergraduate level ISE 121 Minimum Grade of TR or Undergraduate level IE 121 Minimum Grade of TR)
-// (where the ISE 121 and IE 121 would be hyperlinked)
-// 
-// and converts it into a resonable JSON structure (see unit tests)
-// 
-// I wrote this in Aug 2015, and if I were to do it again I would do it totally differently https://en.wikipedia.org/wiki/Abstract_syntax_tree
-// Eg, add something to stack when hit (, and remove from stack when hit a )....
-
-
+// This is the old requisite parser. See ellucianRequisiteParser2.js for the new one. 
+// Right now both run every time a requisite section is parsed. The new one supports mismatched parens and this one does not.
+// Sometimes there are mismatched dividers and it is not clear what the options are, even when reading them by hand.
+// The two parsers handle this case differently. 
+// Once it is known for sure how to handle this, the new parser will be updated and this file will be removed. 
+// eg https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201730&crn_in=35984
 
 function EllucianRequisitesParser() {
 	EllucianBaseParser.prototype.constructor.apply(this, arguments);
