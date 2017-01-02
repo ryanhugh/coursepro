@@ -16,7 +16,7 @@ var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
 
 // And some are way more complicated. This file uses a AST (https://en.wikipedia.org/wiki/Abstract_syntax_tree) to parse them. This is very similar to how programming languages and
-// math equations (eg x*y+2/(z*2)) are parsed. It outputs a reasonable JSON structure (see unit tests)
+// math equations (eg x*y+2/(z*2)) are parsed. It outputs a reasonable JSON structure (see unit tests in tests/EllucianRequisitesParser.tests.js)
 
 // I originally wrote this in Aug 2015, and re wrote it in Oct 2016 and did it totally differently.
 
