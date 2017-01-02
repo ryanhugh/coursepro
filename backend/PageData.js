@@ -26,7 +26,7 @@ function PageData(startingData) {
 
 	this.parser = null;
 
-	//some tem variables used while parsing, not relavant when done
+	//some tem variables used while parsing, not relevant when done
 	this.parsingData = {};
 
 
@@ -59,7 +59,7 @@ function PageData(startingData) {
 // when loading from db, 3 steps
 // load data from db
 // find parser
-// ^ these steps for all deps (recursivly)
+// ^ these steps for all deps (recursively)
 
 // when loading from page,
 // 1 set parser
@@ -94,7 +94,7 @@ PageData.createFromURL = function (url, callback) {
 };
 
 
-// parsername is optionall, used when loading from db
+// parser name is optional, used when loading from db
 PageData.prototype.findSupportingParser = function (parserName) {
 	if (this.parser) {
 		elog('error, told to find a parser but already have one???', this)

@@ -74,5 +74,6 @@
     "watchify": "^3.7.0",
     "whois": "^2.1.5"
   },
-  "description": "Awesome sauce! Yay!"
+  "description": "Awesome sauce! Yay!",
+  "license": "AGPLv3"
 }
