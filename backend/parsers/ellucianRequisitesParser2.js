@@ -28,14 +28,17 @@ var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 // https://lewisweb.cc.lehigh.edu/PROD/bwckctlg.p_disp_course_detail?cat_term_in=201620&subj_code_in=ISE&crse_numb_in=251
 // (Undergraduate level ISE 121 Minimum Grade of TR or Undergraduate level IE 121 Minimum Grade of TR) and ( (Undergraduate level ISE 220 Minimum Grade of TR or Undergraduate level IE 220 Minimum Grade of TR) ) ) or ( (Undergraduate level ISE 230 Minimum Grade of TR or Undergraduate level IE 230 Minimum Grade of TR) and (Undergraduate level ISE 240 Minimum Grade of TR or Undergraduate level IE 240 Minimum Grade of TR) ) ) 
 
-// Other times, it will not be grouped by parens, eg [a or b and c or d], and I am not sure if the " and " is a typo and should be and " or ", or if the order of operations should be applied.
-// and parens should be added around the "b and c". There were 4 occurrences of this at NEU, but more at other colleges. GATECH had 876/25261 (3.5%) classes like this. 363 of them parsed something different than the old parser.
+// Other times, it will not be grouped by parens, eg [a or b and c or d], and it is not clear what the options are, even when reading them by hand.
+// (Should the order of operations be applied? Did they make a typo and the "and" should have been an or?)
+// There were 4 occurrences of this at NEU, but more at other colleges. GATECH had 876/25261 (3.5%) classes like this. 363 of them parsed something different than the old parser.
 // The old parser grouped these by order of operations. This one assumes that the last divider at a given level is correct.  
 // https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201602&crn_in=29120
 // https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201702&crn_in=26627
 // https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201702&crn_in=25982
 // https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_detail_sched?term_in=201602&crn_in=24775
 
+// Once it is known for sure how to handle this, the new parser will be updated and the old one will be removed. 
+// eg https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201730&crn_in=35984
 
 
 

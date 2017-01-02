@@ -10,10 +10,7 @@ var EllucianBaseParser = require('./ellucianBaseParser').EllucianBaseParser;
 
 // This is the old requisite parser. See ellucianRequisiteParser2.js for the new one. 
 // Right now both run every time a requisite section is parsed. The new one supports mismatched parens and this one does not.
-// Sometimes there are mismatched dividers and it is not clear what the options are, even when reading them by hand.
-// The two parsers handle this case differently. 
-// Once it is known for sure how to handle this, the new parser will be updated and this file will be removed. 
-// eg https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_detail_sched?term_in=201730&crn_in=35984
+
 
 function EllucianRequisitesParser() {
 	EllucianBaseParser.prototype.constructor.apply(this, arguments);
