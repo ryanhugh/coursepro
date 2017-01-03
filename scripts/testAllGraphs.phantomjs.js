@@ -16,7 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  */
 
- var page = require('webpage').create()
+// This file was used with 'gulp testAllGraphs' to load every graph on the site to make sure every
+// possible graph could be loaded without any errors. 
+
+'use strict';
+var page = require('webpage').create()
 var system = require('system');
 var foo = 42;
 

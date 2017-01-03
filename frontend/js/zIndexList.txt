@@ -1,5 +1,7 @@
 //z index list:
 
+(This is old, and most likely outdated)
+
 //3000 modal 
 //2050 .modal-backdrop (the gray behind the model)
 //2000 the dropdowns

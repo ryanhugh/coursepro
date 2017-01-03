@@ -6,6 +6,9 @@ import sys
 import re
 
 
+# This processes the logs that are logged by server.js
+
+
 def getInput():
 	try:
 		a= raw_input()

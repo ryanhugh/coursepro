@@ -400,19 +400,6 @@ Node.prototype.updatePos = function () {
 	else {
 		value = "translate(" + (this.x - this.width / 2) + "," + (this.y - this.height / 2) + ")";
 
-
-		// if (this.floatingTextBox) {
-		// 	if (!this.testThing) {
-		// 		this.testThing = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-		// 		this.foreignObject.parentElement.appendChild(this.testThing)
-		// 	}
-
-		// 	this.test
-
-
-		// }
-
-
 	}
 
 	this.foreignObject.parentElement.setAttribute('transform', value);

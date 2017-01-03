@@ -23,13 +23,10 @@ var queue = require('d3-queue').queue
 var Class = require('../../data/Class')
 var graph = require('../graph')
 var Keys = require('../../../../common/Keys')
-	// This file renders all graphs in the entire semester
-	// As a "fuzzing" attempt to find bugs
-	// Run by specifying #testAllGraphs after debug.html in karma
-	// 
-	// 
-	// 
-	// 
+
+// This file renders all graphs in the entire semester
+// As a "fuzzing" attempt to find bugs
+// Run with gulp testAllGraphs
 
 var _error = console.error.bind(console)
 
@@ -52,11 +49,6 @@ var q = queue(1);
 
 Class.downloadResultsGroup({
 	keys: Keys.create({
-		// host: 'neu.edu',
-		// termId: '201710'
-		// host: 'swarthmore.edu',
-		// termId: '201604'
-
 		host: 'neu.edu',
 		termId: '201710'
 	})

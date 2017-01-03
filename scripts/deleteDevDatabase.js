@@ -16,7 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  */
 
- var macros = require('../backend/macros')
+'use strict';
+var macros = require('../backend/macros')
 var collegeNamesDB = require('../backend/databases/collegeNamesDB')
 var termsDB = require('../backend/databases/termsDB')
 var classesDB = require('../backend/databases/classesDB')
