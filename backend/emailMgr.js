@@ -264,7 +264,7 @@ EmailMgr.prototype.sendClassUpdatedEmail = function (users, oldData, newData, di
 
 EmailMgr.prototype.tests = function () {
 
-	this.sendEmail(['rysquash@gmail.com'], 'CS 4800 was changed - CoursePro.io', 'Number of open seats in the class changed<br><br><a href="https://coursepro.io/#neu.edu/201630/ENGW/1111/">View on CoursePro.io</a>')
+	this.sendEmail(['ryanhughes624@gmail.com'], 'CS 4800 was changed - CoursePro.io', 'Number of open seats in the class changed<br><br><a href="https://coursepro.io/#neu.edu/201630/ENGW/1111/">View on CoursePro.io</a>')
 	this.loadEmailPassword(_.noop)
 	this.loadEmailPassword(_.noop)
 }

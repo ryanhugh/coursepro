@@ -74,7 +74,7 @@ function UsersDB() {
 // April 11, schema example:  (this is same as above)
 // {
 // 	"ips": [],
-// 	"email": "rysquash@gmail.com",
+// 	"email": "ryanhughes624@gmail.com",
 // 	"subscriptions": {},
 // 	"authenticated": true,
 // 	"lists": {
