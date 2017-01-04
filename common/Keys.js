@@ -331,11 +331,11 @@ Keys.prototype.propsEqual = function (other) {
 // func where give array ('host','termId') and it checks if you have all of them
 // func that returns hash (regex to replace (and something else?))
 // equals (instanceof check)
-// propsEqual (no instanceof check)
+// propsEqual (no instance of check)
 
 
 // endpoint string here
-// -- grab from dump database, server, all the datas, and ctrl f frontedn backend
+// -- grab from dump database, server, all the datas, and ctrl f frontend backend
 
 
 module.exports = Keys
