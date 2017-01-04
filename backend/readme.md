@@ -5,12 +5,21 @@ The backend is divided up into two main parts: Scraping and API.
 
 ## Scraping 
 
-1. Scraping starts with an entry point to a college's URL. A bunch of these urls can be found in differentCollegeUrls.js. 
-2. Then, pageDataMgr.js finds a parser that says it can parse that URL. The parser parses the one specific page at the URL and adds dependencies (other parsers) to parse pages that the first page leads to. Those dependiencies then parse other pages and then add more parsers as dependencies to parse more pages. The order of parsers currently is:
+- Scraping starts with an entry point to a college's URL. A bunch of these urls can be found in differentCollegeUrls.js. 
+- Then, a starting PageData is created with that url and pageDataMgr.js finds a parser that says it can parse that URL. Right now, EllucianTermParser will match all the URLs in differentCollegeUrls.js.
+- Then, EllucianTermParser runs and parses the HTML at that URL. 
+- EllucianTermParser will create other PageDatas as dependencies to the starting PageData and will set their parsers to one of the parsers in the parsers folder.
+- Then the other parsers will run and possibly add more dependencies to the pageData they are running on. 
+- This process will continue recursively until none of the parsers add any dependencies to the pageData they are parsing. 
 
-Term -> Subject (and College) -> Links -> Class -> Section
 
-3. After all the parsing is done and the data is loaded into mongo, the processors are ran. The processors run in series and can pretty much do whatever they want. Most of them dump the data from mongo, do some stuff to it (add fields, change fields, etc) and then upload it again. databaseDumps.js just dumps the data to a static file. 
+Right now:  
+ellucianTermParser will add collegeNamesParser and ellucianSubjectParser as dependencies.   
+And from ellucianSubjectParser the order is:  
+ellucianSubjectParser -> ellucianClassListParser -> ellucianCatalogParser -> ellucianClassParser -> ellucianSectionParser
+
+
+- After all the parsing is done and the data is loaded into mongo, the processors are ran. The processors run in series and can pretty much do whatever they want. Most of them dump the data from mongo, do some stuff to it (add fields, change fields, etc) and then upload it again. databaseDumps.js just dumps the data to a static file. 
 
 
 ## API 
