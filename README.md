@@ -36,7 +36,7 @@ sudo setcap 'cap_net_bind_service=+ep' (which nodejs)
 Runs the code in development mode. Connects to the MongoDB coursepro_dev table for the data. Messaged me and I will add your IP to the whitelist and send you the username + password. 
 
 #### gulp test
-Runs the frontend and backend tests. Automatically re-runs when any file in frontend/, backend/ or common/ changes.
+Runs the frontend and backend tests. Automatically re-runs when any file in frontend/, backend/ or common/ changes. Does not need to connect to the database and can run totally offline. 
 
 #### gulp btest
 Same as gulp test, but just runs backend tests.
@@ -48,7 +48,7 @@ Same as gulp test, but just runs frontend tests.
 Runs the app in production mode. Don't actually use this to run in production, use run.sh instead. The only difference is that run.sh uses forever to restart the server if it ever crashes and redirects stdout and stderr to log files. 
 
 #### gulp spider [-neu][-gatech][-brown][-swarthmore] [ etc...] | tee log.log
-Scrapes the data from a specific college. Tees the output to a file, but you still might want to use `| tee log.log`. Takes anywhere from 20 min to a couple hours to run, totally depends on the college. NEU takes about 1 hour. 
+Scrapes the data from a specific college. Tees the output to a file, but you still might want to use `| tee log.log`. Takes anywhere from 20 min to a couple hours to run, totally depends on the college. NEU takes about 1 hour. I would recommend keeping a eye on the scrapers when scraping a college for the first time. Sometimes the spidering code can send so many requests that the school's registration website crashes. 
 
 # Adding support for another college
 
