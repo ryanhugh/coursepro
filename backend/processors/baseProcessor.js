@@ -327,7 +327,6 @@ BaseProcessor.prototype.ensureDataUpdated = function (callback) {
 				q.defer(function (callback) {
 					
 					fs.stat(fileName, function (err, stat) {
-						console.log('back from ',fileName, err, stat)
 						if (err) {
 							if (err.code == 'ENOENT') {
 								console.log(fileName, 'does not exist, downloading')
