@@ -27,6 +27,7 @@ var BaseProcessor = require('./baseProcessor').BaseProcessor;
 var classesDB = require('../databases/classesDB')
 var sectionsDB = require('../databases/sectionsDB')
 var subjectsDB = require('../databases/subjectsDB')
+var termsDB = require('../databases/termsDB')
 var Keys = require('../../common/Keys')
 
 
@@ -116,7 +117,7 @@ DatabaseDumps.prototype.go = function (queries, callback) {
 
 	if (query.host) {
 		searchQuery.host = query.host
-		
+
 		if (query.termId) {
 			searchQuery.termId = query.termId
 		}
@@ -168,6 +169,74 @@ DatabaseDumps.prototype.go = function (queries, callback) {
 }
 
 
+// This will ensure that all data that the local dumps of the data in the database is at most a week old
+DatabaseDumps.prototype.ensureDataUpdated = function (callback) {
+	termsDB.find({}, {
+		skipValidation: true,
+		shouldBeOnlyOne: false,
+		sanitize: true,
+		removeControllers: true
+	}, function (err, results) {
+		if (err) {
+			return callback(err);
+		}
+
+		var q = queue()
+		var toUpdate = [];
+
+		results.forEach(function (result) {
+
+			[macros.LIST_SUBJECTS, macros.LIST_CLASSES, macros.LIST_SECTIONS].forEach(function (endpoint) {
+
+				var keys = Keys.create({
+					host: result.host,
+					termId: result.termId
+				});
+
+				var fileName = path.join('.', 'dist', keys.getHashWithEndpoint(endpoint));
+
+				q.defer(function (callback) {
+
+					fs.stat(fileName, function (err, stat) {
+						if (err) {
+							if (err.code == 'ENOENT') {
+								console.log(fileName, 'does not exist, downloading')
+								toUpdate.push({
+									host: result.host,
+									termId: result.termId
+								})
+								return callback()
+							}
+							else {
+								console.log(err)
+								return callback(err);
+							}
+						}
+
+						var millisecondsPerWeek = 6.048e+8;
+
+						if (stat.mtime.getTime() + millisecondsPerWeek < new Date().getTime()) {
+							console.log(fileName, 'is outdated, getting latest version', stat.mtime.toUTCString())
+							toUpdate.push({
+								host: result.host,
+								termId: result.termId
+							})
+						}
+						return callback()
+					}.bind(this))
+				}.bind(this));
+			}.bind(this));
+		}.bind(this));
+
+		q.awaitAll(function (err) {
+			this.go(toUpdate, function (err) {
+
+				return callback(err)
+
+			}.bind(this))
+		}.bind(this))
+	}.bind(this))
+};
 
 
 
@@ -177,13 +246,16 @@ module.exports = new DatabaseDumps();
 
 
 if (require.main === module) {
-	module.exports.go([{
-		// host: 'swarthmore.edu',
-		// termId: "201710"
-	}], function (err, results) {
-		console.log("done,", err, results);
+	module.exports.ensureDataUpdated(function (err) {
+		console.log(err, 'done')
+	});
+	// module.exports.go([{
+	// 	// host: 'swarthmore.edu',
+	// 	// termId: "201710"
+	// }], function (err, results) {
+	// 	console.log("done,", err, results);
 
-	}.bind(this));
+	// }.bind(this));
 
 
 	// module.exports.go({
