@@ -614,12 +614,12 @@ gulp.task('watchCopyStatic', ['watchCopyFonts', 'watchCopyImages', 'watchcopyRoo
 
 
 //main prod starting point
-gulp.task('prod', ['uglifyJS', 'copyStatic', 'watchCopyStatic'], function () {
+gulp.task('prod', ['uglifyJS', 'copyStatic', 'watchCopyStatic', 'ensureDataUpdated'], function () {
 	require('./backend/server')
 })
 
 
-gulp.task('dev', ['compressJS', 'copyStatic', 'watchCopyStatic'], function () {
+gulp.task('dev', ['compressJS', 'copyStatic', 'watchCopyStatic', 'ensureDataUpdated'], function () {
 	require('./backend/server')
 })
 

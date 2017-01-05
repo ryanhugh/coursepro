@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  */
 
- 'use strict'
+'use strict';
 var queue = require('d3-queue').queue
 
 var Keys = require('../../common/Keys')
@@ -326,10 +326,6 @@ BaseProcessor.prototype.ensureDataUpdated = function (callback) {
 
 				q.defer(function (callback) {
 					
-					console.log('looking at ',fileName)
-					
-					try {
-
 					fs.stat(fileName, function (err, stat) {
 						console.log('back from ',fileName, err, stat)
 						if (err) {
@@ -358,12 +354,6 @@ BaseProcessor.prototype.ensureDataUpdated = function (callback) {
 						}
 						return callback()
 					}.bind(this))
-					}
-					
-					catch (e) {
-						console.log(e);
-					}
-					
 				}.bind(this));
 			}.bind(this));
 		}.bind(this));
