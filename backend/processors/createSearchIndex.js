@@ -33,6 +33,8 @@ var Keys = require('../../common/Keys')
 
 function CreateSearchIndex() {
 	BaseProcessor.prototype.constructor.apply(this, arguments);
+	
+	this.dumpEndpoints = [macros.GET_SEARCH_INDEX];
 }
 
 

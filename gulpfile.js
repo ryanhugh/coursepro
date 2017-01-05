@@ -58,6 +58,9 @@ var fs = require('fs-extra')
 var macros = require('./backend/macros')
 var memoize = require('./common/memoize')
 
+var databaseDumps = require('./backend/processors/databaseDumps')
+var createSearchIndex = require('./backend/processors/createSearchIndex')
+
 var KARMA_CONFIG = {
 	files: [
 		"dist/js/vender.tests.js",
@@ -126,6 +129,27 @@ gulp.task('ts', function () {
             allowJs: true
         }))
 });
+
+gulp.task('ensureDataUpdated', function (callback) {
+	var q = queue();
+	
+	q.defer(function(callback){
+		databaseDumps.ensureDataUpdated(function(err){
+			callback(err)	
+		})
+	})
+	
+	q.defer(function(callback){
+		createSearchIndex.ensureDataUpdated(function(err){
+			callback(err)	
+		})
+	})
+	
+	q.awaitAll(function(err) {
+		console.log('done!!!', err)
+		callback(err)
+	})
+})
 
 //this is not used now. 
 // This searches the html for used css rules and removes the ones it cant find
