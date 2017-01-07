@@ -17,7 +17,6 @@
  */
 
 'use strict';
-// var require = require('./lazyRequire')
 
 // gulp stuff
 var gulp = require('gulp');
@@ -47,7 +46,6 @@ var watchify = require('watchify')
 var globby = require('globby');
 var karma = require('karma')
 var cssnano = require('gulp-cssnano');
-// var cleanCSS = require('gulp-clean-css'); 
 
 //other stuff
 var _ = require('lodash')
@@ -117,8 +115,6 @@ process.on('uncaughtException', function (err) {
 	onError('Restart gulp', err)
 });
 
-
-// var gulp = require('gulp');
  
 gulp.task('ts', function () {
 	var ts = require('gulp-typescript');
@@ -374,7 +370,6 @@ function compileJSBundle(config, compileRequire, callback) {
 			bundler.on('update', rebundle);
 			rebundle();
 		}).catch(function (err) {
-			// console.log('recursiveDeps FAILED!', err,JSON.stringify(err),arguments)
 			onError(err)
 		});
 	});
@@ -586,9 +581,6 @@ gulp.task('copyCSS', function (callback) {
 				removeAll: true
 			}
 		}))
-		// .pipe(cleanCSS({
-		// 	keepSpecialComments: 0
-		// }))
 		.pipe(addsrc('frontend/css/*.min.css'))
 		.pipe(concat('allthecss.css'))
 		.pipe(gulp.dest('dist/css'));
