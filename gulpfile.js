@@ -146,7 +146,6 @@ gulp.task('ensureDataUpdated', function (callback) {
 	})
 	
 	q.awaitAll(function(err) {
-		console.log('done!!!', err)
 		callback(err)
 	})
 })

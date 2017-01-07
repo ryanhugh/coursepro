@@ -308,8 +308,6 @@ BaseProcessor.prototype.ensureDataUpdated = function (callback) {
 			return callback(err);
 		}
 		
-		console.log(results.length)
-
 		var q = queue()
 		var toUpdate = [];
 
