@@ -107,7 +107,7 @@ function DirectiveMgr() {
 
 	//convert the old style urls
 	var hash = document.location.hash.slice(1);
-	if (hash.startsWith('!')) {
+	if (_(hash).startsWith('!')) {
 		hash = hash.slice(1)
 	}
 
