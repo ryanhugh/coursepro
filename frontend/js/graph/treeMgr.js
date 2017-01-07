@@ -1221,7 +1221,7 @@ TreeMgr.prototype.resetRequisites = function (node) {
 };
 
 
-// http://localhost/#/graph/swarthmore.edu/201604/MATH/043
+// http://localhost/#!/graph/swarthmore.edu/201604/MATH/043
 TreeMgr.prototype.go = function (node) {
 
 	// plan: wrap tree in nodes in between download tree and treemgr.

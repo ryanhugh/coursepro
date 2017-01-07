@@ -100,9 +100,9 @@ angular-route@^1.4.8:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/angular-route/-/angular-route-1.6.1.tgz#6d1087f4d6a1422026f91a13be86adc8f1d20ec7"
 
-angular-ui-bootstrap@^1.0.3:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-1.3.3.tgz#4820f895d433c17abeb4ac7387f2f122cbf8c11c"
+angular-ui-bootstrap@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-2.4.0.tgz#1a46e1bfacedcf50281684a88f5548be01546e7a"
 
 angular@^1.4.8:
   version "1.6.1"
@@ -735,7 +735,7 @@ certpem@^1.0.0:
     node.extend "^1.1.5"
     pkijs "^1.3.27"
 
-chalk@1.1.3, chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
+chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-1.1.3.tgz#a8115c55e4a702fe4d150abd3872822a7e09fc98"
   dependencies:
@@ -3045,12 +3045,6 @@ karma-jasmine@^1.0.2:
 karma-logcapture-reporter@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/karma-logcapture-reporter/-/karma-logcapture-reporter-0.0.1.tgz#bf1b0b1c915e0de295a15fe2f0179d4281bacddc"
-
-karma-mocha-reporter@^2.0.4:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/karma-mocha-reporter/-/karma-mocha-reporter-2.2.1.tgz#8508b2f0925433a6417f0c528e53fcb411745758"
-  dependencies:
-    chalk "1.1.3"
 
 karma-phantomjs-launcher@^1.0.1:
   version "1.0.2"

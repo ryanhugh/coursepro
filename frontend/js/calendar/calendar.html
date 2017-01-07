@@ -99,7 +99,8 @@ uib-accordion .accordion-toggle {
 
     <div class="calendarRightPanel">
         <uib-accordion close-others="false" ng-if="classes.length != 0">
-            <uib-accordion-group is-open="isOpen" ng-repeat="class in classes">
+            <div uib-accordion-group class="panel-default" is-open="isOpen" ng-repeat="class in classes">
+
                 <uib-accordion-heading>
 
                     <div style="position:relative;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;">
@@ -116,7 +117,6 @@ uib-accordion .accordion-toggle {
                     </div>
 
                 </uib-accordion-heading>
-
 
                 <table class="table table-striped" ng-if="class.sections.length>0">
                     <thead>
@@ -162,7 +162,7 @@ uib-accordion .accordion-toggle {
 
 
                 <!-- body here -->
-            </uib-accordion-group>
+            </div uib-accordion-group>
         </uib-accordion>
 
 
