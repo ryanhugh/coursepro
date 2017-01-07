@@ -6,7 +6,7 @@
     "angular-mocks": "^1.5.2",
     "angular-route": "^1.4.8",
     "angular-ui-bootstrap": "^2.4.0",
-    "async": "^1.5.2",
+    "async": "^2.1.4",
     "body-parser": "^1.15.0",
     "bootstrap": "^3.3.6",
     "browserify": "^13.0.0",
@@ -75,5 +75,5 @@
     "whois": "^2.1.5"
   },
   "description": "Awesome sauce! Yay!",
-  "license": "AGPLv3"
+  "license": "AGPL-3.0"
 }
