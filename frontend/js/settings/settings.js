@@ -47,7 +47,6 @@ function Settings() {
 		Class.create(path).download(function (err, aClass) {
 			aClass.loadSections(function (err) {
 				user.removeFromList(macros.WATCHING_LIST, [aClass], aClass.sections, function (errMsg, clientMsg) {
-					console.log("msg here", errMsg, clientMsg);
 					if (errMsg) {
 						this.alertMsgText = errMsg;
 					}
@@ -145,7 +144,7 @@ function Settings() {
 
 Settings.fnName = 'Settings'
 Settings.isPage = true;
-Settings.urls = ['/saved', '/unsubscribe/:host/:termId/:subject/:classUid']
+Settings.urls = ['/unsubscribe/:host/:termId/:subject/:classUid']
 Settings.$inject = ['$scope', '$timeout', '$routeParams', '$location']
 
 //prototype constructor
