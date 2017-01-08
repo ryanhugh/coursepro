@@ -1230,7 +1230,7 @@ else {
 	if (global.expressHttpServer) {
 		elog('already running a http server???')
 	}
-	global.expressHttpServer = app.listen(80);
+	global.expressHttpServer = app.listen(macros.HTTP_PORT);
 }
 
 //https
@@ -1271,9 +1271,12 @@ getCert(function (err, results) {
 
 	}
 	else {
+		if (!macros.START_HTTPS_SERVER) {
+			return;
+		}
 		if (global.expressHttpsServer) {
 			elog('already running a https server???')
 		}
-		global.expressHttpsServer = server.listen(443);
+		global.expressHttpsServer = server.listen(macros.HTTPS_PORT);
 	}
 })

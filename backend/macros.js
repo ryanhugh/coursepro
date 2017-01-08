@@ -194,6 +194,49 @@ function Macros() {
 
 
 	this.VERBOSE = false;
+
+	if (this.PRODUCTION) {
+		this.HTTP_PORT = 80;
+		this.HTTPS_PORT = 443;
+		this.START_HTTPS_SERVER = true;
+	}
+	else {
+		// constants stored in user_config.js
+		var userConfig = {}
+		try {
+			userConfig = require('/etc/coursepro/user_config');
+		}
+		catch (e) {
+
+		}
+
+		if (userConfig.http_dev_server_port) {
+			this.HTTP_PORT = userConfig.http_dev_server_port
+		}
+		else {
+			this.HTTP_PORT = 8080;	
+		}
+
+		if (userConfig.https_dev_server_port) {
+			this.HTTPS_PORT = userConfig.https_dev_server_port
+		}
+		else {
+			this.HTTPS_PORT = 8081;	
+		}
+
+		if (userConfig.start_https_server_in_dev !== undefined) {
+			this.START_HTTPS_SERVER = userConfig.start_https_server_in_dev
+		}
+		else {
+			this.START_HTTPS_SERVER = true;
+		}
+		
+	}
+
+
+
+
+
 }
 
 
