@@ -61,7 +61,6 @@
     "needle": "^1.0.0",
     "nodemailer": "^2.2.0",
     "nodemailer-smtp-transport": "^2.4.0",
-    "querystring": "^0.2.0",
     "recursive-deps": "^1.0.2",
     "request": "^2.69.0",
     "require-dir": "^0.3.0",
