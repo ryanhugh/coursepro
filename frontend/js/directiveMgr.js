@@ -44,7 +44,6 @@ var dependencies = [
 	require('angular-route'),
 	require('angular-ui-bootstrap'),
 	require('angular-animate'),
-	// require('angular-q-promisify'),
 	'selectize',
 	'ui.calendar',
 	'templates',
@@ -54,12 +53,15 @@ var dependencies = [
 
 var angularModule = angular.module('app', dependencies, ['$rootScopeProvider', '$compileProvider', '$locationProvider', function ($rootScopeProvider, $compileProvider, $locationProvider) {
 
-	//max depth for a tree, if it reaches this angular will barf
+	// Max recursion depth for a angular directive being included in another angular directive
+	// if it reaches this angular will barf. 
 	$rootScopeProvider.digestTtl(20);
 
 	// https://docs.angularjs.org/guide/production
 	$compileProvider.debugInfoEnabled(false);
 
+	// There was a bug that caused some links to require a exclamation mark after the hash in URLs and other links to not
+	// this standardizes everything to not requiring a exclamation mark. 
 	$locationProvider.hashPrefix('');
 }]);
 
