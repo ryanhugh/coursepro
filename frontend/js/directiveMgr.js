@@ -52,13 +52,15 @@ var dependencies = [
 	'frapontillo.bootstrap-switch',
 ]
 
-var angularModule = angular.module('app', dependencies, ['$rootScopeProvider', '$compileProvider', function ($rootScopeProvider, $compileProvider) {
+var angularModule = angular.module('app', dependencies, ['$rootScopeProvider', '$compileProvider', '$locationProvider', function ($rootScopeProvider, $compileProvider, $locationProvider) {
 
 	//max depth for a tree, if it reaches this angular will barf
 	$rootScopeProvider.digestTtl(20);
 
 	// https://docs.angularjs.org/guide/production
 	$compileProvider.debugInfoEnabled(false);
+
+	$locationProvider.hashPrefix('');
 }]);
 
 
