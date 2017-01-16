@@ -10,7 +10,7 @@ The backend is written in NodeJS and the data is scraped into MongoDB. The front
 
 # Contributing!!!!
 
-We are TOTALLY looking for more people to help out and add more features to the site. Let me know if you are interested in helping out! (facebook.com/ryan.hughes.35). Right now there are a couple students working on it from Northeastern. 
+We are looking for more people to help out and add more features to the site! Let me know if you are interested in helping out! (ryanhughes624@gmail.com). Right now there are a couple students working on it from Northeastern. 
 
 
 # Setup
