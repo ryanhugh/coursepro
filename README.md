@@ -3,6 +3,10 @@
 
 Easily navigate class registration data.   
 
+CoursePro scrapes all of the registration data from college sites (class description, seats open, seat capacity, class times and locations, professors, etc), and presents it in a much easier to use format. The most popular features are a prerequisite graph to visualize class prerequisites, automatic notifications when seats open up, and a calendar to show when during the week classes are.
+
+The backend is written in NodeJS and the data is scraped into MongoDB. The frontend is written in AngularJS v1 and the prereq graph was created with D3.js. 
+
 
 # Contributing!!!!
 
