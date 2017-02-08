@@ -33,7 +33,7 @@ var Keys = require('../../common/Keys')
 
 function CreateSearchIndex() {
 	BaseProcessor.prototype.constructor.apply(this, arguments);
-	
+
 	this.dumpEndpoints = [macros.GET_SEARCH_INDEX];
 }
 
@@ -112,10 +112,10 @@ CreateSearchIndex.prototype.go = function (queries, callback) {
 		}.bind(this))
 
 
-		var q = queue();
+		var q = queue(1);
 
 		for (var attrName in classLists) {
-			q.defer(function (callback) {
+			q.defer(function (attrName, callback) {
 
 				var termData = classLists[attrName]
 				var keys = Keys.create(termData)
@@ -188,7 +188,7 @@ CreateSearchIndex.prototype.go = function (queries, callback) {
 						return callback()
 					}.bind(this));
 				}.bind(this));
-			}.bind(this))
+			}.bind(this, attrName))
 		}
 
 		q.awaitAll(function (err) {
