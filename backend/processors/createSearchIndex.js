@@ -185,6 +185,8 @@ CreateSearchIndex.prototype.go = function (queries, callback) {
 
 						console.log("Successfully saved", fileName, 'errorCount:', errorCount);
 
+						classLists[attrName] = null
+
 						return callback()
 					}.bind(this));
 				}.bind(this));
