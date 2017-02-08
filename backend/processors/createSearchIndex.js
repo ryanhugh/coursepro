@@ -204,7 +204,7 @@ module.exports = new CreateSearchIndex();
 
 if (require.main === module) {
 	module.exports.go([{
-		host: 'neu.edu',
+		// host: 'neu.edu',
 		// termId: "201710"
 	}], function (err, results) {
 		console.log(err, results);
