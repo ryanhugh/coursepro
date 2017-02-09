@@ -141,6 +141,7 @@ if (macros.PRODUCTION) {
 				console.log('had a valid cert, but rejecting it because it is about to expire')
 				console.log(results)
 			}
+			console.log('Existing cert:', results)
 
 
 			if (!macros.PRODUCTION) {
