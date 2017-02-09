@@ -128,10 +128,19 @@ if (macros.PRODUCTION) {
 		le.check({
 			domains: ['coursepro.io', 'www.coursepro.io']
 		}).then(function (results) {
-			if (results) {
+
+			// 15 days in ms is 1296000000
+			// 20 days is 1728000000
+			if (results && results.expiresAt - 1728000000 < Date.now()) {
 				// we already have certificates
 				return callback(null, results);
 			}
+
+			if (results) {
+				console.log('had a valid cert, but rejecting it because it is about to expire')
+				console.log(results)
+			}
+
 
 			if (!macros.PRODUCTION) {
 				return callback('not running in PROD so will not request cert')
