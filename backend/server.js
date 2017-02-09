@@ -132,16 +132,15 @@ if (macros.PRODUCTION) {
 			// 15 days in ms is 1296000000
 			// 20 days is 1728000000
 			if (results && results.expiresAt - 1728000000 < Date.now()) {
-				console.log("Current cert is good", results)
+				console.log("Current cert is good", results.expiresAt)
+
 				// we already have certificates
 				return callback(null, results);
 			}
 
 			if (results) {
-				console.log('had a valid cert, but rejecting it because it is about to expire')
-				console.log(results)
+				console.log('had a valid cert, but rejecting it because it is about to expire', results.expiresAt)
 			}
-			console.log('Existing cert:', results)
 
 
 			if (!macros.PRODUCTION) {
@@ -168,7 +167,7 @@ if (macros.PRODUCTION) {
 
 			}).then(function (results) {
 
-				console.log('Got new cert!', results);
+				console.log('Got new cert!', results.expiresAt);
 
 				return callback(null, results);
 
