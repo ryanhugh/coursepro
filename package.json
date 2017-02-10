@@ -73,9 +73,6 @@
         "watchify": "^3.7.0",
         "whois": "^2.1.5"
     },
-    "scripts": {
-        "test": "gulp test"
-    },
     "description": "Awesome sauce! Yay!",
     "license": "AGPL-3.0"
 }
