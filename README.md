@@ -1,5 +1,5 @@
 
-# CoursePro [![Travis](https://travis-ci.org/ryanhugh/coursepro.svg?branch=master)](https://google.com)
+# CoursePro [![Travis](https://travis-ci.org/ryanhugh/coursepro.svg?branch=master)](https://travis-ci.org/ryanhugh/coursepro/)
 
 Easily navigate class registration data.   
 
