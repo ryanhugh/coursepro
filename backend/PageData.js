@@ -26,7 +26,7 @@ var macros = require('./macros')
 	// pageDataMgr needs to be here, but cannot be required due to circular dependencies...
 
 //this is called in 3 places
-//server.js
+//server.js 
 //baseParser.js (for deps)
 //datamgr.js (for auto updates)
 function PageData(startingData) {
@@ -35,7 +35,7 @@ function PageData(startingData) {
 		return null;
 	}
 	if (!startingData.dbData.url && !startingData.dbData._id && !startingData.dbData.updatedByParent) {
-		elog('page data needs a url or an _id or an updater id!', startingData);
+		elog('page data needs  a url or an _id or an updater id!', startingData);
 		return null;
 	}
 

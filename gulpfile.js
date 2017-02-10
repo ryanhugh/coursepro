@@ -115,33 +115,33 @@ process.on('uncaughtException', function (err) {
 	onError('Restart gulp', err)
 });
 
- 
+
 gulp.task('ts', function () {
 	var ts = require('gulp-typescript');
-    return gulp.src('backend/**/*.js')
-        .pipe(ts({
-            noImplicitAny: true,
-            out: 'output.js',
-            allowJs: true
-        }))
+	return gulp.src('backend/**/*.js')
+		.pipe(ts({
+			noImplicitAny: true,
+			out: 'output.js',
+			allowJs: true
+		}))
 });
 
 gulp.task('ensureDataUpdated', function (callback) {
 	var q = queue();
-	
-	q.defer(function(callback){
-		databaseDumps.ensureDataUpdated(function(err){
-			callback(err)	
+
+	q.defer(function (callback) {
+		databaseDumps.ensureDataUpdated(function (err) {
+			callback(err)
 		})
 	})
-	
-	q.defer(function(callback){
-		createSearchIndex.ensureDataUpdated(function(err){
-			callback(err)	
+
+	q.defer(function (callback) {
+		createSearchIndex.ensureDataUpdated(function (err) {
+			callback(err)
 		})
 	})
-	
-	q.awaitAll(function(err) {
+
+	q.awaitAll(function (err) {
 		callback(err)
 	})
 })
@@ -232,7 +232,7 @@ var getFilesToProcess = memoize(function (config, callback) {
 				}
 			}
 		})
-		
+
 		// Move main.tests.js to the beginning to inject mocks before the code runs
 		// var includesMainTests
 		if (config.includeTests) {
@@ -614,7 +614,7 @@ gulp.task('dev', ['compressJS', 'copyStatic', 'watchCopyStatic', 'ensureDataUpda
 	require('./backend/server')
 })
 
-gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
+gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function (callback) {
 
 	// This is called every time the js is rebundled, and we only want to start the karma server once
 	var hasCompiledOnce = false;
@@ -627,10 +627,12 @@ gulp.task('ftest', ['copyStatic', 'watchCopyStatic'], function () {
 		}
 		hasCompiledOnce = true;
 
-		new karma.Server(KARMA_CONFIG, function (exitCode) {
+		var server = new karma.Server(KARMA_CONFIG, function (exitCode) {
 			onError('KARMA has crashed!!!!', exitCode);
+			callback
 			// process.exit()
-		}).start();
+		})
+		server.start();
 	});
 });
 
@@ -655,18 +657,7 @@ gulp.task('testAllGraphs', ['copyStatic', 'watchCopyStatic'], function () {
 
 
 
-// if u want to u can run individual test files with
-// jasmine-node ellucianSectionParser.tests.js  --matchall
-// also don't compare pageDatas directly with expect(pageData).toEqual, it will cause jasmine to eat up all yo ram and crash
-
-// the batch is a solution for a async problem,
-// where if you quickly saved a file a bunch of times, 
-// gulp would run the watcher again before the prior run finished
-// so the require.cache would be cleared halfway through the excecution of the first tests
-// which messed up a lot of stuff
-var btestRun = batch(function (events, callback) {
-
-
+function runBackendTestsOnce(events, callback) {
 
 	globby(['backend/**/*.js', 'common/**/*.js']).then(function (files) {
 		files.forEach(function (file) {
@@ -695,16 +686,26 @@ var btestRun = batch(function (events, callback) {
 
 		jasmine.execute();
 		jasmine.onComplete(function (passedAll) {
-			callback()
+			callback(null, passedAll)
 		})
 	}).catch(function (err) {
 		onError('glob failed', err)
 		callback(err)
 	}.bind(this));
-}, function (err) {
+}
+
+// if u want to u can run individual test files with
+// jasmine-node ellucianSectionParser.tests.js  --matchall
+// also don't compare pageDatas directly with expect(pageData).toEqual, it will cause jasmine to eat up all yo ram and crash
+
+// the batch is a solution for a async problem,
+// where if you quickly saved a file a bunch of times, 
+// gulp would run the watcher again before the prior run finished
+// so the require.cache would be cleared halfway through the excecution of the first tests
+// which messed up a lot of stuff
+var btestRun = batch(runBackendTestsOnce, function (err) {
 	onError('BATCH FAILED!', err);
 });
-
 
 
 gulp.task('btest', function () {
@@ -713,6 +714,46 @@ gulp.task('btest', function () {
 });
 
 gulp.task('test', ['btest', 'ftest'], function () {});
+
+
+gulp.task('test_backend_once', function() {
+	runBackendTestsOnce({}, function (err, passedAll) {
+		if (err || !passedAll) {
+			console.log(err, passedAll)
+			process.exit(1)
+		}
+		process.exit(0);
+	});
+})
+
+gulp.task('test_frontend_once', ['copyStatic'], function () {
+
+	// This is called every time the js is rebundled, and we only want to start the karma server once
+	var hasCompiledOnce = false;
+	compileJS({
+		uglifyJS: false,
+		includeTests: true
+	}, function () {
+		if (hasCompiledOnce) {
+			return;
+		}
+		hasCompiledOnce = true;
+
+		var server = new karma.Server(KARMA_CONFIG, function (exitCode) {
+			onError('KARMA has crashed!!!!', exitCode);
+			process.exit(1)
+		})
+		server.start();
+		server.on('browser_complete', function (browser, result) {
+			if (browser.lastResult.failed != 0) {
+				process.exit(1)
+			}
+			else {
+				process.exit(0)
+			}
+		})
+	});
+})
 
 
 
@@ -770,7 +811,3 @@ gulp.task('spider', ['teeOutput'], function () {
 
 
 module.exports = gulp;
-
-
-
-
