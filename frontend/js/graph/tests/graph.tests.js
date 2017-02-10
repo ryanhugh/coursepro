@@ -120,7 +120,6 @@ describe('Graph', function () {
 			expect(isWithinBound(aClass.x, (win.innerWidth - macros.SEARCH_WIDTH) / 2, 5))
 			expect(aClass.y > 0 && aClass.y < graph.graphHeight);
 
-			expect(false).toBe(true);
 			done();
 		})
 	});
