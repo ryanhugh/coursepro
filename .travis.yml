@@ -6,3 +6,5 @@ before_script:
 script:
   - gulp test_frontend_once
   - gulp test_backend_once
+
+cache: yarn
