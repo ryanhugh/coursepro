@@ -11,7 +11,7 @@
         "bootstrap": "^3.3.6",
         "browserify": "^14.0.0",
         "compression": "^1.6.1",
-        "d3": "^4.5.0",
+        "d3": "^3",
         "d3-queue": "^3.0.1",
         "deep-diff": "^0.3.3",
         "domutils": "^1.5.1",
@@ -72,6 +72,11 @@
         "vinyl-source-stream": "^1.1.0",
         "watchify": "^3.7.0",
         "whois": "^2.1.5"
+    },
+    "greenkeeper": {
+        "ignore": [
+            "d3"
+        ]
     },
     "description": "Awesome sauce! Yay!",
     "license": "AGPL-3.0"
