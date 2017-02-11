@@ -1,5 +1,5 @@
 
-# CoursePro [![Travis CI Builds](https://travis-ci.org/ryanhugh/coursepro.svg?branch=master)](https://travis-ci.org/ryanhugh/coursepro/)[![Website](https://img.shields.io/website/https/coursepro.io.svg)](https://coursepro.io)
+# CoursePro [![Travis CI Builds](https://travis-ci.org/ryanhugh/coursepro.svg?branch=master)](https://travis-ci.org/ryanhugh/coursepro/)  [![Website](https://img.shields.io/website/https/coursepro.io.svg)](https://coursepro.io)
 
 Easily navigate class registration data.   
 
