@@ -232,6 +232,9 @@ CollegeNamesParser.prototype.hitWhois = function (host, callback) {
 
 //hits database, and if not in db, hits page and adds it to db
 CollegeNamesParser.prototype.getTitle = function (host, callback) {
+	if (host === 'neu.edu') {
+		return callback(null, "Northeastern University")
+	}
 
 	this.hitWhois(host, callback);
 
