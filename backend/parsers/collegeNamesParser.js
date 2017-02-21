@@ -16,6 +16,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  */
 
+
+ // The point of this file is to get the name of a college from the hostname of their domain
+ // Eg neu.edu -> Northeastern University
+ // Couple different ways to do this
+ // 1. There is a data dump for 7000 Universities created in 2013 that has many colleges in it. 
+ //     This was found here https://inventory.data.gov/dataset/032e19b4-5a90-41dc-83ff-6e4cd234f565/resource/38625c3d-5388-4c16-a30f-d105432553a4
+ //     and is rehosted here: https://github.com/ryanhugh/coursepro/blob/master/docs/universities%20in%202013.csv
+ //     This file, however, sometimes lists different colleges in the same University on the spreadsheet. Probably want manually investigate if there is > 1 row that lists a given domain
+ //     Might be able to find the minimum overlap in the college name
+ // 2. Hit whois. This has been suprisingly unreliable over the last couple years. Sometimes the whois server switches, etc.
+ // 3. Hit the website and inspect the https certificate. 
+ // 4. Hit the website and find the <title> in the html. This is the least reliable of all of them. 
+ // Once have a name for a given college, can store forever because it is not going to change. 
+
+
 'use strict';
 
 var macros = require('../macros')
@@ -232,6 +247,9 @@ CollegeNamesParser.prototype.hitWhois = function (host, callback) {
 
 //hits database, and if not in db, hits page and adds it to db
 CollegeNamesParser.prototype.getTitle = function (host, callback) {
+	if (host === 'neu.edu') {
+		return callback(null, "Northeastern University")
+	}
 
 	this.hitWhois(host, callback);
 
