@@ -68,6 +68,8 @@
   "https://novasis.villanova.edu/pls/bannerprd/bwckschd.p_disp_dyn_sched"
 ]
 
+// https://ssb.vcu.edu/proddad/bwckschd.p_disp_dyn_sched
+
 // This is the list of colleges on coursicle.com as of Dec 20th, 2016. Looks like they have the scrapers for the same types as sites I'm scraping here. 
 // Auburn University – Auburn
 // Auburn University at Montgomery – AUM
