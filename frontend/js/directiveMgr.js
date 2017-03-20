@@ -27,13 +27,21 @@ require('angular-bootstrap-switch')
 
 if ('serviceWorker' in navigator) {
 	if (!macros.UNIT_TESTS) {
-		navigator.serviceWorker.register('sw.js').then(function (reg) {
-			// registration worked
-			console.log('Registration succeeded. Scope is ' + reg.scope);
-		}).catch(function (error) {
-			// registration failed
-			elog('Service worker registration failed with ', error);
-		});
+
+		// Remove all service workers because they are causing more trouble then they are worth
+		navigator.serviceWorker.getRegistrations().then(function (registrations) {
+			for (let registration of registrations) {
+				registration.unregister()
+			}
+		})
+
+		// navigator.serviceWorker.register('sw.js').then(function (reg) {
+		// 	// registration worked
+		// 	console.log('Registration succeeded. Scope is ' + reg.scope);
+		// }).catch(function (error) {
+		// 	// registration failed
+		// 	elog('Service worker registration failed with ', error);
+		// });
 	}
 }
 else {
