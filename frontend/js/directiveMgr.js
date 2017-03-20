@@ -30,9 +30,9 @@ if ('serviceWorker' in navigator) {
 
 		// Remove all service workers because they are causing more trouble then they are worth
 		navigator.serviceWorker.getRegistrations().then(function (registrations) {
-			for (let registration of registrations) {
+			registrations.forEach(function(registration) {
 				registration.unregister()
-			}
+			})
 		})
 
 		// navigator.serviceWorker.register('sw.js').then(function (reg) {
