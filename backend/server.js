@@ -1199,7 +1199,9 @@ app.get('/', function (req, res) {
 });
 
 app.use(function(req, res, next) {
-	res.setHeader('content-type', 'application/json');
+	if (req.url.endsWith('.json')) {
+		res.setHeader('content-type', 'application/json');
+	}
 	next()
 })
 
