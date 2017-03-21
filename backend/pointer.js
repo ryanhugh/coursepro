@@ -104,6 +104,8 @@ Pointer.prototype.fireRequest = function (url, options, callback) {
 			// We don't really care about security (hence the rejectUnauthorized:false), and will accept anything. 
 			rejectUnauthorized: false,
 			ciphers: 'ALL',
+			
+			connection: 'Keep-Alive',
 
 			headers: {
 				'Host': urlParsed.hostname(),
