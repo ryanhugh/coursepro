@@ -1198,6 +1198,12 @@ app.get('/', function (req, res) {
 	});
 });
 
+app.use(function(req, res, next) {
+	if (req.url.endsWith('.json')) {
+		res.setHeader('content-type', 'application/json');
+	}
+	next()
+})
 
 app.use(express.static('dist'));
 

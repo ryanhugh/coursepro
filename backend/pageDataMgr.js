@@ -391,6 +391,7 @@ PageDataMgr.prototype.processColleges = function (colllegeAbbrs) {
 		var pageData = PageData.createFromURL(url);
 		if (!PageData) {
 			elog()
+			console.error("ERRROR could not make page data from ", url, 'exiting')
 			process.exit()
 		}
 		pageDatas.push(pageData);
