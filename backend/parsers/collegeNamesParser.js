@@ -27,7 +27,8 @@
  //     Might be able to find the minimum overlap in the college name
  // 2. Hit whois. This has been suprisingly unreliable over the last couple years. Sometimes the whois server switches, etc.
  // 3. Hit the website and inspect the https certificate. 
- // 4. Hit the website and find the <title> in the html. This is the least reliable of all of them. 
+ // 4. https://github.com/leereilly/swot
+ // 5. Hit the website and find the <title> in the html. This is the least reliable of all of them. 
  // Once have a name for a given college, can store forever because it is not going to change. 
 
 
