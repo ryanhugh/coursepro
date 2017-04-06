@@ -59,7 +59,7 @@
         "mongodb": "^2.1.18",
         "monk": "^3.1.4",
         "needle": "^1.0.0",
-        "nodemailer": "^3.0.2",
+        "nodemailer": "^4.0.0",
         "nodemailer-smtp-transport": "^2.4.0",
         "promise-retry": "^1.1.1",
         "recursive-deps": "^1.0.2",
