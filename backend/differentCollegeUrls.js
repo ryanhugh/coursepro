@@ -28,6 +28,8 @@
 // and check to see if it the server running the registration system
 // can check for link to https://<ip here>/css/web_defaultapp.css
 // which is the same for all the links
+// Two ways to rdns: actual rdns, and then look at the https cert for the url it presented. 
+// Was able to go from dccc.edu to their site with this method. Will take longer for bigger schools. 
 
 
 // Some other ways to find subdomains:
