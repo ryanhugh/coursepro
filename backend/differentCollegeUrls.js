@@ -16,6 +16,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  */
 
+// How to find more sites.
+// To find a specific college's site, the best way is probably use Google
+// Just google search for ["Dynamic Schedule" site:neu.edu] or ["ellucian" site:neu.edu] and it will likely come up
+// but not allways.
+
+// Other way that is scalable is to rdns their main hostname (neu.edu -> 155.33.17.68)
+// Then do a whois lookup on that ip (whois 155.33.17.68) to get the netrange (155.33.0.0/16)
+// all of these IP addresses are owned by NEU
+// Then scan all of them for any server that has port 443 open
+// and check to see if it the server running the registration system
+// can check for link to https://<ip here>/css/web_defaultapp.css
+// which is the same for all the links
+
+
+// Some other ways to find subdomains:
+// Wolfram alpha, but idk if they have an free API and it is not a full list, idk where they are getting the data from
+// https://github.com/faizann24/XssPy
+//     Havent looked into this much. 
+//     They mentioned that they have some way of getting subdomains though. Looks like it just spiders the site, which can totally work. 
+//     Some sites have robots.txt set to deny so Google and Bing do not spider it. 
+
  module.exports = ["https://oscar.gatech.edu/pls/bprod/bwckschd.p_disp_dyn_sched", //works
   "https://wl11gp.neu.edu/udcprod8/bwckschd.p_disp_dyn_sched", //works
   "https://sisssb.clemson.edu/sisbnprd/bwckschd.p_disp_dyn_sched", //works
