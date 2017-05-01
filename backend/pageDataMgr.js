@@ -539,16 +539,16 @@ PageDataMgr.prototype.main = function () {
 
 
 	// this.createFromURL('https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=BIOE&crse_numb_in=5410',function () {
-	var pageData = PageData.create({
-		dbData: {
-			url: 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=BIOE&crse_numb_in=5410',
-			termId: '201640',
-			subject: 'BIOE'
-		}
-	});
-	pageDataMgr.go([pageData], function () {
-		console.log('done!!')
-	})
+	// var pageData = PageData.create({
+	// 	dbData: {
+	// 		url: 'https://wl11gp.neu.edu/udcprod8/bwckctlg.p_disp_course_detail?cat_term_in=201640&subj_code_in=BIOE&crse_numb_in=5410',
+	// 		termId: '201640',
+	// 		subject: 'BIOE'
+	// 	}
+	// });
+	// pageDataMgr.go([pageData], function () {
+	// 	console.log('done!!')
+	// })
 
 
 

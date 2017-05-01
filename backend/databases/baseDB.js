@@ -45,7 +45,14 @@ if (macros.PRODUCTION || macros.DEVELOPMENT) {
 
 	//all the db files (classes.js, sections.js etc) all share the same database instance,
 	//so if it is closed or modified anywhere, it will affect them all
-	database = monk(username + ':' + password + '@' + macros.DATABASE_URL);
+	database = monk(username + ':' + password + '@' + macros.DATABASE_URL, {
+		server: {
+			socketOptions: {
+				connectTimeoutMS: 999999999,
+				socketTimeoutMS: 999999999
+			}
+		}
+	});
 }
 else if (macros.UNIT_TESTS) {
 	database = require('./tests/mockDB');

@@ -809,6 +809,10 @@ bson@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/bson/-/bson-1.0.3.tgz#a3b66f724b1673067efc32249e1151205d3ba854"
 
+bson@~1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-1.0.4.tgz#93c10d39eaa5b58415cbc4052f3e53e562b0b72c"
+
 buffer-equal-constant-time@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz#f8e71132f7ffe6e01a5c9697a4c6f3e48d5cc819"
@@ -4208,6 +4212,13 @@ mongodb-core@2.1.4:
     bson "~1.0.3"
     require_optional "~1.0.0"
 
+mongodb-core@2.1.9:
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-2.1.9.tgz#85aa71ee4fb716196e06b787557bf139f801daf5"
+  dependencies:
+    bson "~1.0.4"
+    require_optional "~1.0.0"
+
 mongodb@^2.1.18:
   version "2.2.19"
   resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-2.2.19.tgz#9d84745f9369ff301df5a1790cf485375f1df7d7"
@@ -4216,9 +4227,17 @@ mongodb@^2.1.18:
     mongodb-core "2.1.4"
     readable-stream "2.1.5"
 
-monk@^3.1.4:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/monk/-/monk-3.1.4.tgz#6e98b753f600f562125489b57e424cd48cbd2c10"
+mongodb@^2.2.25:
+  version "2.2.25"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-2.2.25.tgz#d3b25dad00eda2bdfcbc996210ba082ac686a6b6"
+  dependencies:
+    es6-promise "3.2.1"
+    mongodb-core "2.1.9"
+    readable-stream "2.1.5"
+
+monk@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/monk/-/monk-4.0.0.tgz#ac5439e3543b1b486d787d1704bd7e10a2ddd0d2"
   dependencies:
     debug "*"
     mongodb "^2.1.18"
