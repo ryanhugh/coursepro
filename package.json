@@ -58,7 +58,7 @@
         "mkdirp": "^0.5.1",
         "moment": "^2.11.2",
         "mongodb": "^2.2.25",
-        "monk": "^4.0.0",
+        "monk": "^5.0.0",
         "needle": "^1.0.0",
         "nodemailer": "^3.0.2",
         "nodemailer-smtp-transport": "^2.4.0",
