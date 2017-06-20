@@ -31,7 +31,7 @@
         "gulp-flatten": "^0.3.0",
         "gulp-htmlmin": "^3.0.0",
         "gulp-notify": "^3.0.0",
-        "gulp-replace": "^0.5.4",
+        "gulp-replace": "^0.6.0",
         "gulp-streamify": "^1.0.2",
         "gulp-uglify": "^2.0.0",
         "gulp-uncss": "^1.0.4",
