@@ -10,11 +10,6 @@ CoursePro scrapes all of the registration data from college sites (class descrip
 The backend is written in NodeJS and the data is scraped into MongoDB. The frontend is written in AngularJS v1 and the prereq graph was created with D3.js. 
 
 
-# Contributing!!!!
-
-We are looking for more people to help out and add more features to the site! Let me know if you are interested in helping out! (ryanhughes624@gmail.com). Right now there are a couple students working on it from Northeastern. 
-
-
 # Setup
 
 ``` 
