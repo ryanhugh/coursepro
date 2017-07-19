@@ -180,7 +180,7 @@ if (macros.PRODUCTION) {
 				console.error('[Error]: node-letsencrypt/examples/standalone');
 				console.error(err.stack);
 
-				return callback('error with letsencrypt');
+				return callback('error with letsencrypt' + err + err.stack);
 			});
 		});
 	}
