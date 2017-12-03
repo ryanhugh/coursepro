@@ -196,7 +196,7 @@ function Macros() {
 	this.VERBOSE = false;
 
 	if (this.PRODUCTION) {
-		this.HTTP_PORT = 80;
+		this.HTTP_PORT = 8080;
 		this.HTTPS_PORT = 443;
 		this.START_HTTPS_SERVER = true;
 	}

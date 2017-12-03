@@ -1251,6 +1251,7 @@ else {
 
 //https
 getCert(function (err, results) {
+	return;
 	if (err) {
 		if (!macros.PRODUCTION) {
 			console.log(err)
