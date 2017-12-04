@@ -1246,8 +1246,15 @@ else {
 	if (global.expressHttpServer) {
 		elog('already running a http server???')
 	}
+	console.log('listening on port', macros.HTTP_PORT)
+	console.warn('listening on port', macros.HTTP_PORT)
+	console.error('listening on port', macros.HTTP_PORT)
 	global.expressHttpServer = app.listen(macros.HTTP_PORT);
 }
+
+console.log("HIIIII there!!")
+	console.warn('rt', macros.HTTP_PORT)
+	console.error('rt', macros.HTTP_PORT)
 
 //https
 getCert(function (err, results) {

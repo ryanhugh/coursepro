@@ -606,6 +606,7 @@ gulp.task('watchCopyStatic', ['watchCopyFonts', 'watchCopyImages', 'watchcopyRoo
 
 //main prod starting point
 gulp.task('prod', ['uglifyJS', 'copyStatic', 'watchCopyStatic'], function () {
+	console.log('running the server!')
 	require('./backend/server')
 })
 
