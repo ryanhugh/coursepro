@@ -203,12 +203,12 @@ function Macros() {
 	else {
 		// constants stored in user_config.js
 		var userConfig = {}
-		try {
-			userConfig = require('/etc/coursepro/user_config');
-		}
-		catch (e) {
+		// try {
+		// 	userConfig = require('/etc/coursepro/user_config');
+		// }
+		// catch (e) {
 
-		}
+		// }
 
 		if (userConfig.http_dev_server_port) {
 			this.HTTP_PORT = userConfig.http_dev_server_port

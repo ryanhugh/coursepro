@@ -611,7 +611,7 @@ gulp.task('prod', ['uglifyJS', 'copyStatic', 'watchCopyStatic'], function () {
 })
 
 
-gulp.task('dev', ['compressJS', 'copyStatic', 'watchCopyStatic', 'ensureDataUpdated'], function () {
+gulp.task('dev', ['compressJS', 'copyStatic', 'watchCopyStatic'], function () {
 	require('./backend/server')
 })
 
