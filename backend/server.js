@@ -315,22 +315,22 @@ app.use(function (req, res, next) {
 // })
 
 // add cache forever to external js libraries
-app.use(function (req, res, next) {
-	var remoteIp = req.connection.remoteAddress;
-	if (req.protocol == 'http' && !_(remoteIp).includes('127.0.0.1') && remoteIp != '::1' && !_(remoteIp).includes('10.0.0.') && !_(remoteIp).includes('192.168.1.')) {
-		logData(req, {
-			msg: {
-				summary: 'http -> https redirect'
-			}
-		})
-		res.setHeader('Cache-Control', 'public, max-age=5256000'); // 2 months (in seconds)
-		res.redirect('https://coursepro.io' + req.url);
-		return;
-	}
-	else {
-		next()
-	}
-})
+// app.use(function (req, res, next) {
+// 	var remoteIp = req.connection.remoteAddress;
+// 	if (req.protocol == 'http' && !_(remoteIp).includes('127.0.0.1') && remoteIp != '::1' && !_(remoteIp).includes('10.0.0.') && !_(remoteIp).includes('192.168.1.')) {
+// 		logData(req, {
+// 			msg: {
+// 				summary: 'http -> https redirect'
+// 			}
+// 		})
+// 		res.setHeader('Cache-Control', 'public, max-age=5256000'); // 2 months (in seconds)
+// 		res.redirect('https://coursepro.io' + req.url);
+// 		return;
+// 	}
+// 	else {
+// 		next()
+// 	}
+// })
 
 // accepts any type, requires a-zA-Z0-9
 function isAlphaNumeric(string) {
