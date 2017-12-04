@@ -297,22 +297,22 @@ app.use(function (req, res, next) {
 
 //if you didnt go to courespro.io, redirect to coursepro.io (going direcly to ip, etc)
 //this catches lots of robots scanning all ip addresses
-app.use(function (req, res, next) {
+// app.use(function (req, res, next) {
 
-	//send redirect request
-	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost', '10.0.0.7']).includes(req.hostname) && 0) {
+// 	//send redirect request
+// 	if (!_(['coursepro.io', 'www.coursepro.io', 'beta.coursepro.io', 'api.coursepro.io', 'localhost', '10.0.0.7']).includes(req.hostname) && 0) {
 
-		logData(req, {
-			msg: {
-				summary: 'Redirect from ' + req.hostname + ' to coursepro.io'
-			}
-		})
-		res.redirect('https://coursepro.io');
-	}
-	else {
-		next();
-	}
-})
+// 		logData(req, {
+// 			msg: {
+// 				summary: 'Redirect from ' + req.hostname + ' to coursepro.io'
+// 			}
+// 		})
+// 		res.redirect('https://coursepro.io');
+// 	}
+// 	else {
+// 		next();
+// 	}
+// })
 
 // add cache forever to external js libraries
 app.use(function (req, res, next) {
