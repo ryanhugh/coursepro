@@ -1,6 +1,7 @@
 
 # CoursePro [![Travis CI Builds](https://travis-ci.org/ryanhugh/coursepro.svg?branch=master)](https://travis-ci.org/ryanhugh/coursepro/)  [![Website](https://img.shields.io/website/https/coursepro.io.svg)](https://coursepro.io)  [![GitHub issues](https://img.shields.io/github/issues/ryanhugh/coursepro.svg)](https://github.com/ryanhugh/coursepro/issues)  [![Greenkeeper badge](https://badges.greenkeeper.io/ryanhugh/coursepro.svg)](https://greenkeeper.io/)  [![GitHub license](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://raw.githubusercontent.com/ryanhugh/coursepro/master/license.txt) 
 
+**This project is deprecated in favor of Search NEU. Most of the feature here are also available there, and we are working on adding support for the other features. Check out Search NEU at https://searchneu.com!**
 
 
 Easily navigate class registration data.   
